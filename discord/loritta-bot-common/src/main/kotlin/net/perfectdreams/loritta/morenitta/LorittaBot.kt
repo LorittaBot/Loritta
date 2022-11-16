@@ -26,6 +26,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -150,6 +151,7 @@ import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.RandomAccessFile
 import java.lang.reflect.Modifier
@@ -690,6 +692,7 @@ class LorittaBot(
 							val jdaImpl = shard as JDAImpl
 							val sessionId = jdaImpl.client.sessionId
 							val resumeUrl = jdaImpl.client.resumeUrl
+							val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
 
 							// Only get connected shards, invalidate everything else
 							if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
@@ -723,8 +726,19 @@ class LorittaBot(
 
 								logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
 
+								val byteArrayChannel = Channel<ByteArray>()
+
+								val fileOutputStreamJob = GlobalScope.launch(Dispatchers.IO) {
+									FileOutputStream(guildsCacheFile).use {
+										for (byteArray in byteArrayChannel) {
+											it.write(byteArray)
+											it.write(newLineUtf8)
+										}
+									}
+								}
+
 								val jobs = jdaImpl.guildsView.map { guild ->
-									GlobalScope.async(Dispatchers.IO) {
+									GlobalScope.launch(Dispatchers.IO) {
 										guild as GuildImpl
 
 										// We want to minimize resizes of the backed stream, to make it go zooooom
@@ -735,22 +749,15 @@ class LorittaBot(
 										// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 										guild.invalidate()
 
-										baos.toByteArray()
+										byteArrayChannel.send(baos.toByteArray())
 									}
 								}
 
-								val byteArrays = runBlocking { jobs.awaitAll() }
-
-								logger.info { "Writing cache file for shard ${jdaImpl.shardInfo.shardId}..." }
-								// We + the guild count because we need to add new lines
-								val fileSize = byteArrays.sumOf { it.size } + guildCount.toInt()
-								RandomAccessFile(guildsCacheFile, "rw").channel.use {
-									val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
-									val wrBuf: ByteBuffer = it.map(FileChannel.MapMode.READ_WRITE, 0, fileSize.toLong())
-									for (byteArray in byteArrays) {
-										wrBuf.put(byteArray)
-										wrBuf.put(newLineUtf8)
-									}
+								runBlocking { jobs.joinAll() }
+								// Already sent all data to the channel, cancel the channel!
+								byteArrayChannel.cancel()
+								runBlocking {
+									fileOutputStreamJob.join()
 								}
 
 								logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
