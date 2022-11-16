@@ -730,7 +730,9 @@ class LorittaBot(
 									for (guild in jdaImpl.guildsView) {
 										guild as GuildImpl
 
-										logger.info { "Processed $i/$guildCount guilds for shard ${jdaImpl.shardInfo.shardId}... ${(i/guildCount.toDouble() * 100)}%" }
+										if (i % 100 == 0)
+											logger.info { "Processed $i/$guildCount guilds for shard ${jdaImpl.shardInfo.shardId}... ${(i/guildCount.toDouble() * 100)}%" }
+
 										byteArrays.add(
 											DeviousConverter.toJson(guild).toString().toByteArray(Charsets.UTF_8)
 										)
