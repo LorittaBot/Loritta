@@ -124,10 +124,8 @@ class GuildSetupQueue(val loritta: LorittaBot) {
             }
 
             for (mute in mutes) {
-                val member = guild.retrieveMemberOrNullById(mute.userId) ?: continue
-
                 logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-                MuteCommand.spawnRoleRemovalThread(loritta, guild, loritta.localeManager.getLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
+                MuteCommand.spawnRoleRemovalThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), mute.userId, mute.expiresAt!!)
             }
 
             val allActiveGiveaways = loritta.newSuspendedTransaction {
