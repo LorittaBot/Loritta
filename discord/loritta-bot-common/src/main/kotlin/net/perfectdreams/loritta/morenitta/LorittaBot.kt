@@ -409,8 +409,7 @@ class LorittaBot(
 			.writeTimeout(config.loritta.discord.okHttp.writeTimeout, TimeUnit.SECONDS)
 			.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
-
-		for (shardId in lorittaCluster.minShard..lorittaCluster.maxShard.toInt()) {
+		for (shardId in lorittaCluster.minShard..lorittaCluster.maxShard) {
 			val initialSession = initialSessions[shardId]
 			val state = MutableStateFlow(
 				if (initialSession != null) {
@@ -469,7 +468,7 @@ class LorittaBot(
 				// long for her to reply to new messages.
 				Activity.playing(createActivityText(config.loritta.discord.activity.name, it))
 			}
-			.addEventListeners(
+			/* .addEventListeners(
 				discordListener,
 				eventLogListener,
 				messageListener,
@@ -477,7 +476,7 @@ class LorittaBot(
 				gatewayRelayerListener,
 				addReactionFurryAminoPtListener,
 				boostGuildListener
-			)
+			) */
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
 					this,
@@ -672,6 +671,19 @@ class LorittaBot(
 				// A semaphore to avoid processing everything at once, causing a OOM
 				val semaphore = Semaphore(1)
 
+				shardManager.shards.forEach { jda ->
+					// Indicate on our presence that we are restarting
+					jda.presence.setPresence(
+						OnlineStatus.IDLE,
+						Activity.playing(
+							createActivityText(
+								"\uD83D\uDE34 Loritta is restarting...",
+								jda.shardInfo.shardId
+							)
+						)
+					)
+				}
+
 				val jobs = shardManager.shards.map { shard ->
 					GlobalScope.async(Dispatchers.IO) {
 						semaphore.withPermit {
@@ -688,21 +700,6 @@ class LorittaBot(
 									File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
 								} else {
 									logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
-
-									// Indicate on our presence that we are restarting
-									jdaImpl.presence.setPresence(
-										OnlineStatus.IDLE,
-										Activity.playing(
-											createActivityText(
-												"\uD83D\uDE34 Loritta is restarting...",
-												jdaImpl.shardInfo.shardId
-											)
-										)
-									)
-
-									// We need to wait until JDA *really* sends the presence
-									// TODO: Maybe implement a way to wait until all events have been sent?
-									delay(1_000)
 
 									// Connected, store to the cache
 									// Using close code 1012 does not invalidate your gateway session!
