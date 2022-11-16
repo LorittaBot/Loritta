@@ -691,10 +691,20 @@ class LorittaBot(
 							val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
 
 							guildsCacheFile.bufferedWriter().use { bufWriter ->
+								val guildCount = jdaImpl.guildsView.size()
+								var i = 0L
+
 								for (guild in jdaImpl.guildsView) {
+									if (i != 0L && i % 10 == 0L) {
+										logger.info { "Flushing guild writes of shard ${jdaImpl.shardInfo.shardId}... Processed $i/$guildCount (${i / guildCount.toDouble()}%)" }
+										bufWriter.flush()
+									}
+
 									bufWriter.appendLine(DeviousConverter.toJson(guild).toString())
 									// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 									jdaImpl.guildsView.remove(guild.idLong)
+
+									i++
 								}
 							}
 
