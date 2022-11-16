@@ -725,7 +725,7 @@ class LorittaBot(
 								val jobs = jdaImpl.guildsView.map { guild ->
 									GlobalScope.async(Dispatchers.IO) {
 										guild as GuildImpl
-										
+
 										val byteArray = DeviousConverter.toJson(guild).toString().toByteArray(Charsets.UTF_8)
 
 										// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory

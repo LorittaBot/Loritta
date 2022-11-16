@@ -106,7 +106,7 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 			}
 
 			while (startingFromScratchShards.isNotEmpty()) {
-				val node = reconnectingShards.poll()
+				val node = startingFromScratchShards.poll()
 
 				fun setLoginPoolLockToShardController(): ControllerResponseType {
 					return runBlocking {
