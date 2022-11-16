@@ -26,7 +26,7 @@ import kotlin.time.measureTime
 /**
  * Replays gateway events when the session is resumed, this should only be triggered on the first resume event received!
  */
-class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, private val initialSession: GatewaySessionData?, private val cacheFolder: File, private val state: MutableStateFlow<ProcessorState>) : ListenerAdapter() {
+class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, private val initialSession: GatewaySessionData, private val cacheFolder: File, private val state: MutableStateFlow<ProcessorState>) : ListenerAdapter() {
     companion object {
         private const val FAKE_EVENT_FIELD = "fakeout"
         private val logger = KotlinLogging.logger {}
@@ -134,57 +134,52 @@ class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, privat
             return
 
         if (event.newStatus == JDA.Status.CONNECTING_TO_WEBSOCKET) {
-            if (initialSession != null) {
-                logger.info { "Connecting to WebSocket, sending faked READY event..." }
+            logger.info { "Connecting to WebSocket, sending faked READY event..." }
 
-                val jdaImpl = event.jda as JDAImpl
+            val jdaImpl = event.jda as JDAImpl
 
-                // Update the current event sequence for resume
-                jdaImpl.setResponseTotal(initialSession.sequence.toInt())
+            // Update the current event sequence for resume
+            jdaImpl.setResponseTotal(initialSession.sequence.toInt())
 
-                // Send a fake READY event
-                jdaImpl.client.handleEvent(
-                    DataObject.fromJson(
-                        buildJsonObject {
-                            this.put("op", 0)
-                            this.putJsonObject("d") {
-                                this.putJsonArray("guilds") {
-                                    for (guildId in initialSession.guilds) {
-                                        addJsonObject {
-                                            this.put("id", guildId)
-                                            this.put("unavailable", true)
-                                        }
+            // Send a fake READY event
+            jdaImpl.client.handleEvent(
+                DataObject.fromJson(
+                    buildJsonObject {
+                        this.put("op", 0)
+                        this.putJsonObject("d") {
+                            this.putJsonArray("guilds") {
+                                for (guildId in initialSession.guilds) {
+                                    addJsonObject {
+                                        this.put("id", guildId)
+                                        this.put("unavailable", true)
                                     }
                                 }
-                                this.putJsonObject("user") {
-                                    put("id", event.jda.selfUser.idLong)
-                                    put("username", event.jda.selfUser.name)
-                                    put("discriminator", event.jda.selfUser.discriminator)
-                                    put("avatar", event.jda.selfUser.avatarId)
-                                    put("public_flags", event.jda.selfUser.flagsRaw)
-                                }
-                                this.putJsonObject("application") {
-                                    // This requires the verifyToken to be enabled since we need JDA to query the self user before proceeding
-                                    // If you aren't using it, store the bot's app ID somewhere and pass it here instead!
-                                    put("id", (event.jda.selfUser as SelfUserImpl).applicationId)
-                                }
-                                this.put("session_id", initialSession.sessionId)
-                                this.put("resume_gateway_url", initialSession.resumeGatewayUrl)
-                                // This is always empty
-                                this.putJsonArray("private_channels") {}
                             }
-                            this.put("t", "READY")
-                            this.put(FAKE_EVENT_FIELD, true)
-                        }.toString()
-                    )
+                            this.putJsonObject("user") {
+                                put("id", event.jda.selfUser.idLong)
+                                put("username", event.jda.selfUser.name)
+                                put("discriminator", event.jda.selfUser.discriminator)
+                                put("avatar", event.jda.selfUser.avatarId)
+                                put("public_flags", event.jda.selfUser.flagsRaw)
+                            }
+                            this.putJsonObject("application") {
+                                // This requires the verifyToken to be enabled since we need JDA to query the self user before proceeding
+                                // If you aren't using it, store the bot's app ID somewhere and pass it here instead!
+                                put("id", (event.jda.selfUser as SelfUserImpl).applicationId)
+                            }
+                            this.put("session_id", initialSession.sessionId)
+                            this.put("resume_gateway_url", initialSession.resumeGatewayUrl)
+                            // This is always empty
+                            this.putJsonArray("private_channels") {}
+                        }
+                        this.put("t", "READY")
+                        this.put(FAKE_EVENT_FIELD, true)
+                    }.toString()
                 )
-                state.value = ProcessorState.WAITING_FOR_RESUME
+            )
+            state.value = ProcessorState.WAITING_FOR_RESUME
 
-                // When JDA connects, it will see that it has a non-null session ID and resume gateway URL, which will trigger a resume state instead of a identify... sweet!
-            } else {
-                // We don't have a gateway session, so just skip the gateway event processing shenanigans
-                state.value = ProcessorState.FINISHED
-            }
+            // When JDA connects, it will see that it has a non-null session ID and resume gateway URL, which will trigger a resume state instead of a identify... sweet!
         }
     }
 
