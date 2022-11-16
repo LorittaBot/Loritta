@@ -740,7 +740,7 @@ class LorittaBot(
 
 										// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 										guild.invalidate()
-										
+
 										i++
 									}
 

@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
 import java.io.File
 import java.io.PrintStream
 import java.lang.management.ManagementFactory
@@ -34,6 +35,12 @@ object DebugLog {
 		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
 		logger.info("Pending Requests: ${loritta.rateLimitChecker.getAllPendingRequests().size}")
 		logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.config.loritta.discord.requestLimiter.maxRequestsPer10Minutes}")
+		logger.info("Shards Pre Login states that aren't finished:")
+		for ((shardId, state) in loritta.preLoginStates) {
+			if (state.value != PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {
+				logger.info("Shard $shardId: $state")
+			}
+		}
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
