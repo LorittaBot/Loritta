@@ -27,6 +27,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -149,7 +151,10 @@ import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.InputStream
+import java.io.RandomAccessFile
 import java.lang.reflect.Modifier
+import java.nio.ByteBuffer
+import java.nio.channels.FileChannel
 import java.nio.file.*
 import java.security.SecureRandom
 import java.sql.Connection
@@ -157,6 +162,7 @@ import java.time.*
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 import kotlin.io.path.*
@@ -653,76 +659,101 @@ class LorittaBot(
 
 				File(cacheFolder, "version").writeText(connectionVersion.toString())
 
+				// A semaphore to avoid processing everything at once, causing a OOM
+				val semaphore = Semaphore(8)
+
 				val jobs = shardManager.shards.map { shard ->
 					GlobalScope.async(Dispatchers.IO) {
-						val jdaImpl = shard as JDAImpl
-						val sessionId = jdaImpl.client.sessionId
-						val resumeUrl = jdaImpl.client.resumeUrl
+						semaphore.withPermit {
+							measureTime {
+								val jdaImpl = shard as JDAImpl
+								val sessionId = jdaImpl.client.sessionId
+								val resumeUrl = jdaImpl.client.resumeUrl
 
-						// Only get connected shards, invalidate everything else
-						if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
-							// Not connected, shut down and invalidate our cached data
-							shard.shutdownNow(1000) // We don't care about persisting our gateway session
-							File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
-						} else {
-							// Indicate on our presence that we are restarting
-							jdaImpl.presence.setPresence(OnlineStatus.IDLE, Activity.playing(createActivityText("\uD83D\uDE34 Loritta is restarting...", jdaImpl.shardInfo.shardId)))
-
-							// We need to wait until JDA *really* sends the presence
-							// TODO: Maybe implement a way to wait until all events have been sent?
-							delay(1_000)
-
-							// Connected, store to the cache
-							// Using close code 1012 does not invalidate your gateway session!
-							shard.shutdownNow(1012)
-
-							val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
-
-							// Delete the current cached data for this shard
-							shardCacheFolder.deleteRecursively()
-
-							// Create the shard cache folder
-							shardCacheFolder.mkdirs()
-
-							val guildsCacheFile = File(shardCacheFolder, "guilds.json")
-							val sessionCacheFile = File(shardCacheFolder, "session.json")
-							val versionFile = File(shardCacheFolder, "version")
-
-							val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
-
-							guildsCacheFile.bufferedWriter().use { bufWriter ->
-								val guildCount = jdaImpl.guildsView.size()
-								var i = 0L
-
-								for (guild in jdaImpl.guildsView) {
-									if (i != 0L && i % 10 == 0L) {
-										logger.info { "Flushing guild writes of shard ${jdaImpl.shardInfo.shardId}... Processed $i/$guildCount (${i / guildCount.toDouble()}%)" }
-										bufWriter.flush()
-									}
-
-									bufWriter.appendLine(DeviousConverter.toJson(guild).toString())
-									// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
-									jdaImpl.guildsView.remove(guild.idLong)
-
-									i++
-								}
-							}
-
-							sessionCacheFile
-								.writeText(
-									Json.encodeToString(
-										GatewaySessionData(
-											sessionId,
-											resumeUrl,
-											jdaImpl.responseTotal,
-											guildIdsForReadyEvent
+								// Only get connected shards, invalidate everything else
+								if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
+									// Not connected, shut down and invalidate our cached data
+									shard.shutdownNow(1000) // We don't care about persisting our gateway session
+									File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
+								} else {
+									// Indicate on our presence that we are restarting
+									jdaImpl.presence.setPresence(
+										OnlineStatus.IDLE,
+										Activity.playing(
+											createActivityText(
+												"\uD83D\uDE34 Loritta is restarting...",
+												jdaImpl.shardInfo.shardId
+											)
 										)
 									)
-								)
 
-							// Only write after everything has been successfully written
-							versionFile.writeText(connectionVersion.toString())
-						}
+									// We need to wait until JDA *really* sends the presence
+									// TODO: Maybe implement a way to wait until all events have been sent?
+									delay(1_000)
+
+									// Connected, store to the cache
+									// Using close code 1012 does not invalidate your gateway session!
+									shard.shutdownNow(1012)
+
+									val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
+
+									// Delete the current cached data for this shard
+									shardCacheFolder.deleteRecursively()
+
+									// Create the shard cache folder
+									shardCacheFolder.mkdirs()
+
+									val guildsCacheFile = File(shardCacheFolder, "guilds.json")
+									val sessionCacheFile = File(shardCacheFolder, "session.json")
+									val versionFile = File(shardCacheFolder, "version")
+
+									val guildIdsForReadyEvent =
+										jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
+
+									val guildCount = jdaImpl.guildsView.size()
+
+									// Allocate an LinkedBlockingQueue with the guild count size, to avoid spending time resizing the array
+									// We use a LinkedBlockingQueue because, if we remove the element from the queue, then it means that it can be GC'd (yay)
+									val byteArrays = LinkedBlockingQueue<ByteArray>(guildCount.toInt())
+
+									for (guild in jdaImpl.guildsView) {
+										byteArrays.add(
+											DeviousConverter.toJson(guild).toString().toByteArray(Charsets.UTF_8)
+										)
+
+										// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
+										jdaImpl.guildsView.remove(guild.idLong)
+									}
+
+									// We + the guild count because we need to add new lines
+									val fileSize = byteArrays.sumOf { it.size } + guildCount.toInt()
+									RandomAccessFile(guildsCacheFile, "rw").channel.use {
+										val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
+										val wrBuf: ByteBuffer =
+											it.map(FileChannel.MapMode.READ_WRITE, 0, fileSize.toLong())
+										while (byteArrays.isNotEmpty()) {
+											wrBuf.put(byteArrays.poll())
+											wrBuf.put(newLineUtf8)
+										}
+									}
+
+									sessionCacheFile
+										.writeText(
+											Json.encodeToString(
+												GatewaySessionData(
+													sessionId,
+													resumeUrl,
+													jdaImpl.responseTotal,
+													guildIdsForReadyEvent
+												)
+											)
+										)
+
+									// Only write after everything has been successfully written
+									versionFile.writeText(connectionVersion.toString())
+								}
+							}
+						}.also { logger.info { "Took $it to write shard's ${shard.shardInfo.shardId} cache!" } }
 					}
 				}
 
