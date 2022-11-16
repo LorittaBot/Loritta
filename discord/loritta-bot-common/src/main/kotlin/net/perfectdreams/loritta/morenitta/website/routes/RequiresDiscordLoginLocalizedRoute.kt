@@ -93,8 +93,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 					val forCache = userIdentification.toWebSessionIdentification()
 					call.sessions.set(
 						session.copy(
-							cachedIdentification = forCache.toJson(),
-							storedDiscordAuthTokens = auth.toJson()
+							base64CachedIdentification = Base64.getEncoder().encode(forCache.toJson().toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8),
+							base64StoredDiscordAuthTokens = Base64.getEncoder().encode(auth.toJson().toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
 						)
 					)
 

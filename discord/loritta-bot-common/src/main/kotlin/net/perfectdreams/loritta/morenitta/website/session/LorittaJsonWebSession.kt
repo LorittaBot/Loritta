@@ -9,10 +9,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.toWebSessionIdentification
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import java.util.*
 
 data class LorittaJsonWebSession(
-		val cachedIdentification: String?,
-		val storedDiscordAuthTokens: String?
+		val base64CachedIdentification: String?,
+		val base64StoredDiscordAuthTokens: String?
 ) {
 	companion object {
 		fun empty() = LorittaJsonWebSession(
@@ -26,8 +27,8 @@ data class LorittaJsonWebSession(
 	suspend fun getUserIdentification(loritta: LorittaBot, call: ApplicationCall, loadFromCache: Boolean = true): UserIdentification? {
 		if (loadFromCache) {
 			try {
-				cachedIdentification?.let {
-					return gson.fromJson(it)
+				base64CachedIdentification?.let {
+					return gson.fromJson(Base64.getDecoder().decode(it).toString(Charsets.UTF_8))
 				}
 			} catch (e: Throwable) {
 				logger.error(e) { "Error while loading cached identification for $call" }
@@ -41,7 +42,7 @@ data class LorittaJsonWebSession(
 			val forCache = userIdentification.toWebSessionIdentification()
 
 			call.lorittaSession = this.copy(
-					cachedIdentification = forCache.toJson()
+				base64CachedIdentification = Base64.getEncoder().encode(forCache.toJson().toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
 			)
 
 			return forCache
@@ -51,11 +52,11 @@ data class LorittaJsonWebSession(
 	}
 
 	fun getDiscordAuthFromJson(loritta: LorittaBot): TemmieDiscordAuth? {
-		if (storedDiscordAuthTokens == null)
+		if (base64StoredDiscordAuthTokens == null)
 			return null
 
 		val json = try {
-			JsonParser.parseString(storedDiscordAuthTokens)
+			JsonParser.parseString(Base64.getEncoder().encode(base64StoredDiscordAuthTokens.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
 		} catch (e: Exception) {
 			logger.error(e) { "Error while loading cached discord auth" }
 			return null
