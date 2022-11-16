@@ -402,6 +402,18 @@ class LorittaBot(
 			.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
 
 
+		for (shardId in lorittaCluster.minShard..lorittaCluster.maxShard.toInt()) {
+			val initialSession = initialSessions[shardId]
+			val state = MutableStateFlow(
+				if (initialSession != null) {
+					PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION
+				} else {
+					PreStartGatewayEventReplayListener.ProcessorState.FINISHED
+				}
+			)
+			preLoginStates[it] = state
+		}
+
 		builder = DefaultShardManagerBuilder.create(
 			config.loritta.discord.token,
 			GatewayIntent.MESSAGE_CONTENT,
@@ -459,22 +471,11 @@ class LorittaBot(
 				boostGuildListener
 			)
 			.addEventListenerProvider {
-				val initialSession = initialSessions[it]
-				val state = MutableStateFlow(
-					if (initialSession != null) {
-						PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION
-					} else {
-						PreStartGatewayEventReplayListener.ProcessorState.FINISHED
-					}
-				)
-
-				preLoginStates[it] = state
-
 				PreStartGatewayEventReplayListener(
 					this,
 					initialSessions[it],
 					cacheFolder,
-					state,
+					preLoginStates[it]!!,
 				)
 			}
 	}
