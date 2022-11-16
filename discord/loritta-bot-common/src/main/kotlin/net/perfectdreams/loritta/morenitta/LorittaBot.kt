@@ -621,8 +621,6 @@ class LorittaBot(
 			raffleThread.start()
 		}
 
-		DebugLog.startCommandListenerThread(this)
-
 		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
