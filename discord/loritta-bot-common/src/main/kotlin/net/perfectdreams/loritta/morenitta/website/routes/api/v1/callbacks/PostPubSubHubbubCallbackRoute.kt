@@ -198,8 +198,8 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			GlobalScope.launch {
 				try {
 					withTimeout(25_000) {
-						logger.info { "Sending request to ${"https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}"}..." }
-						loritta.http.post("https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}") {
+						logger.info { "Sending request to ${"${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}"}..." }
+						loritta.http.post("${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}") {
 							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							header("X-Hub-Signature", originalSignature)
 

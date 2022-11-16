@@ -145,7 +145,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 							logger.info { "Received guild $guildId via OAuth2 scope, but the guild isn't in this cluster! Redirecting to where the user should be... $cluster" }
 
 							// Vamos redirecionar!
-							redirect("$scheme://${cluster.getUrl(loritta)}/dashboard?guild_id=${guildId}&code=from_master", true)
+							redirect("${cluster.getUrl(loritta)}/dashboard?guild_id=${guildId}&code=from_master", true)
 						}
 					}
 

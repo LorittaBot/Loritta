@@ -37,7 +37,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					try {
 						withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 							val start = System.currentTimeMillis()
-							val response = loritta.http.get("https://${it.getUrl(loritta)}/api/v1/loritta/status") {
+							val response = loritta.http.get("${it.getUrl(loritta)}/api/v1/loritta/status") {
 								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 								header("Authorization", loritta.lorittaInternalApiKey.name)
 							}

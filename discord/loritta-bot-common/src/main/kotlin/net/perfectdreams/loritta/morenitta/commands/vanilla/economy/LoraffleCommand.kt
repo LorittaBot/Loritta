@@ -77,7 +77,7 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 				return
 			}
 
-			val body = HttpRequest.post("https://${shard.getUrl(loritta)}/api/v1/loritta/raffle")
+			val body = HttpRequest.post("${shard.getUrl(loritta)}/api/v1/loritta/raffle")
 				.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 				.header("Authorization", loritta.lorittaInternalApiKey.name)
 				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
@@ -160,7 +160,7 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 			return
 		}
 
-		val body = HttpRequest.get("https://${shard.getUrl(loritta)}/api/v1/loritta/raffle")
+		val body = HttpRequest.get("${shard.getUrl(loritta)}/api/v1/loritta/raffle")
 			.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 			.header("Authorization", loritta.lorittaInternalApiKey.name)
 			.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)

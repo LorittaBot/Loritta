@@ -261,7 +261,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-					val response = loritta.http.get("https://${shard.getUrl(loritta)}$path") {
+					val response = loritta.http.get("${shard.getUrl(loritta)}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
 						userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 					}
@@ -283,7 +283,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-					val response = loritta.http.get("https://${cluster.getUrl(loritta)}$path") {
+					val response = loritta.http.get("${cluster.getUrl(loritta)}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
 						userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 					}
@@ -310,7 +310,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 						logger.info { "Executing ${path} to ${it.getUserAgent(loritta)}" }
 
-						val response = loritta.http.get("https://${it.getUrl(loritta)}$path") {
+						val response = loritta.http.get("${it.getUrl(loritta)}$path") {
 							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 						}
@@ -354,7 +354,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("https://${it.getUrl(loritta)}/api/v1/users/search") {
+						val response = loritta.http.post("${it.getUrl(loritta)}/api/v1/users/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 
@@ -404,7 +404,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("https://${it.getUrl(loritta)}/api/v1/guilds/search") {
+						val response = loritta.http.post("${it.getUrl(loritta)}/api/v1/guilds/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 

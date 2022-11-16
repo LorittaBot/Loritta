@@ -229,7 +229,7 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 									logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 									val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
 
-									val body = HttpRequest.post("https://${shard.getUrl(loritta)}/api/v1/loritta/transfer-balance")
+									val body = HttpRequest.post("${shard.getUrl(loritta)}/api/v1/loritta/transfer-balance")
 											.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 											.header("Authorization", loritta.lorittaInternalApiKey.name)
 											.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)

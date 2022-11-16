@@ -57,7 +57,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 				val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId.toLong())
 
 				try {
-					HttpRequest.post("https://${cluster.getUrl(loritta)}/api/v1/loritta/send-reputation-message")
+					HttpRequest.post("${cluster.getUrl(loritta)}/api/v1/loritta/send-reputation-message")
 						.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 						.header("Authorization", loritta.lorittaInternalApiKey.name)
 						.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
