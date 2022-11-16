@@ -20,12 +20,20 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 		val maxMemory = runtime.maxMemory() / mb
 		val totalMemory = runtime.totalMemory() / mb
 
+		val buildNumber = System.getenv("BUIILD_ID")
+		val commitHash = System.getenv("COMMIT_HASH")
+
 		val jsonObject = jsonObject(
 			"id" to currentShard.id,
 			"name" to currentShard.name,
 			"versions" to jsonObject(
 				"kotlin" to KotlinVersion.CURRENT.toString(),
 				"java" to System.getProperty("java.version")
+			),
+			"build" to jsonObject(
+				"buildNumber" to buildNumber,
+				"commitHash" to commitHash,
+				"environment" to loritta.config.loritta.environment.name
 			),
 			"memory" to jsonObject(
 				"used" to usedMemory,

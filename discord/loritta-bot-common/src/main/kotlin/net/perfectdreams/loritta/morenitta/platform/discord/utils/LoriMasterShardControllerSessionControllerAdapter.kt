@@ -5,10 +5,13 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.put
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
 import net.perfectdreams.loritta.morenitta.utils.NetAddressUtils
 import java.util.concurrent.TimeUnit
 
@@ -71,6 +74,13 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 		protected fun processQueue() {
 			while (!connectQueue.isEmpty()) {
 				val node = connectQueue.poll()
+
+				// We will only start identifying new connections when all pre login states are FINISHED, to avoid using too much memory
+				runBlocking {
+					loritta.preLoginStates.values.forEach {
+						it.first { it == PreStartGatewayEventReplayListener.ProcessorState.FINISHED }
+					}
+				}
 
 				fun setLoginPoolLockToShardController(): ControllerResponseType {
 					return runBlocking {

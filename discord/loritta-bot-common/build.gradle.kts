@@ -130,6 +130,17 @@ tasks {
 jib {
     container {
         mainClass = "net.perfectdreams.loritta.morenitta.LorittaLauncher"
+        environment = environment.toMutableMap().apply {
+            fun setIfPresent(propName: String, envName: String) {
+                val propValue = System.getProperty(propName, null)
+                // Only set if it is not null, because if it is, Jib complains
+                if (propValue != null)
+                    this[envName] = propValue
+            }
+
+            setIfPresent("commit.hash", "COMMIT_SHA")
+            setIfPresent("build.id", "BUIILD_ID")
+        }
     }
 
     to {

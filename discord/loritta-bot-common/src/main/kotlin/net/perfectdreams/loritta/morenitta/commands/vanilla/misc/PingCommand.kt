@@ -84,6 +84,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 
 					val shardId = json["id"].long
 					val name = json["name"].string
+					val loriBuild = json["build"]["buildNumber"].string
 					val pendingMessages = json["pendingMessages"].long
 
 					val totalGuildCount = json["shards"].array.sumBy { it["guildCount"].int }
@@ -107,7 +108,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 						else -> "!"
 					}
 
-					row0.add("$pendingMessagesStatus Cluster $shardId ($name)")
+					row0.add("$pendingMessagesStatus Cluster $shardId ($name) [b$loriBuild]")
 					row1.add("~${pingAverage}ms")
 					row2.add("~${time}ms")
 					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")

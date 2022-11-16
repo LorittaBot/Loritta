@@ -50,17 +50,13 @@ data class LorittaConfig(
         val authorizationUrl: String,
         val maxShards: Int,
         val maxRequestsPerHost: Int,
-        val status: OnlineStatus,
         val activity: LorittaGameStatus,
         val okHttp: JdaOkHttpConfig,
         val shardController: ShardControllerConfig,
         val requestLimiter: RequestLimiterConfig
     ) {
         @Serializable
-        data class LorittaGameStatus(
-            val name: String,
-            val type: String
-        )
+        data class LorittaGameStatus(val name: String)
 
         @Serializable
         data class JdaOkHttpConfig(

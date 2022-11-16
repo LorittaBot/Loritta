@@ -26,8 +26,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
@@ -46,6 +48,8 @@ import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import mu.KotlinLogging
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -54,6 +58,7 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.dv8tion.jda.internal.JDAImpl
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
@@ -129,6 +134,8 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
+import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
+import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
@@ -155,14 +162,12 @@ import kotlin.concurrent.thread
 import kotlin.io.path.*
 import kotlin.math.ceil
 import kotlin.reflect.KClass
+import kotlin.time.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTimedValue
 
 /**
  * Loritta's main class, where everything (and anything) can happen!
@@ -174,7 +179,9 @@ class LorittaBot(
 	val config: BaseConfig,
 	val languageManager: LanguageManager,
 	val localeManager: LocaleManager,
-	val pudding: Pudding
+	val pudding: Pudding,
+	val cacheFolder: File,
+	val initialSessions: Map<Int, GatewaySessionData>
 ) {
 	// ===[ STATIC ]===
 	companion object {
@@ -376,6 +383,8 @@ class LorittaBot(
 
 	private val debugWebServer = DebugWebServer()
 
+	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
+
 	init {
 		FOLDER = config.loritta.folders.root
 		ASSETS = config.loritta.folders.assets
@@ -395,6 +404,7 @@ class LorittaBot(
 
 		builder = DefaultShardManagerBuilder.create(
 			config.loritta.discord.token,
+			GatewayIntent.MESSAGE_CONTENT,
 			GatewayIntent.GUILD_MEMBERS,
 			GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
 			GatewayIntent.GUILD_BANS,
@@ -425,23 +435,19 @@ class LorittaBot(
 			}
 			.setShardsTotal(config.loritta.discord.maxShards)
 			.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())
-			.setStatus(config.loritta.discord.status)
+			.setStatus(OnlineStatus.ONLINE)
 			.setBulkDeleteSplittingEnabled(false)
+			// Required for PreProcessedRawGatewayEvent and RawGatewayEvent
 			.setHttpClientBuilder(okHttpBuilder)
 			.setRawEventsEnabled(true)
+			// We want to override JDA's shutdown hook to store the cache on disk when shutting down
+			.setEnableShutdownHook(false)
 			.setActivityProvider {
 				// Before we updated the status every 60s and rotated between a list of status
 				// However this causes issues, Discord blocks all gateway events until the status is
 				// updated in all guilds in the shard she is in, which feels... bad, because it takes
 				// long for her to reply to new messages.
-
-				// Used to display the current Loritta cluster in the status
-				val currentCluster = this.lorittaCluster
-
-				Activity.of(
-					Activity.ActivityType.valueOf(config.loritta.discord.activity.type),
-					"${config.loritta.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
-				)
+				Activity.playing(createActivityText(config.loritta.discord.activity.name, it))
 			}
 			.addEventListeners(
 				discordListener,
@@ -452,6 +458,16 @@ class LorittaBot(
 				addReactionFurryAminoPtListener,
 				boostGuildListener
 			)
+			.addEventListenerProvider {
+				val state = MutableStateFlow(PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION)
+				preLoginStates[it] = state
+				PreStartGatewayEventReplayListener(
+					this,
+					initialSessions[it],
+					cacheFolder,
+					state,
+				)
+			}
 	}
 
 	val lorittaCluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig
@@ -494,6 +510,7 @@ class LorittaBot(
 	)
 
 	// Inicia a Loritta
+	@OptIn(ExperimentalTime::class)
 	fun start() {
 		logger.info { "Starting Debug Web Server..." }
 		debugWebServer.start()
@@ -619,6 +636,84 @@ class LorittaBot(
 		}
 
 		// Ou seja, agora a Loritta está funcionando, Yay!
+		Runtime.getRuntime().addShutdownHook(
+			thread(false) {
+				// This is used to validate if our cache was successfully written or not
+				val connectionVersion = UUID.randomUUID()
+
+				File(cacheFolder, "version").writeText(connectionVersion.toString())
+
+				val jobs = shardManager.shards.map { shard ->
+					GlobalScope.async(Dispatchers.IO) {
+						val jdaImpl = shard as JDAImpl
+						val sessionId = jdaImpl.client.sessionId
+						val resumeUrl = jdaImpl.client.resumeUrl
+
+						// Only get connected shards, invalidate everything else
+						if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
+							// Not connected, shut down and invalidate our cached data
+							shard.shutdownNow(1000) // We don't care about persisting our gateway session
+							File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
+						} else {
+							// Indicate on our presence that we are restarting
+							jdaImpl.presence.setPresence(OnlineStatus.IDLE, Activity.playing(createActivityText("\uD83D\uDE34 Loritta is restarting...", jdaImpl.shardInfo.shardId)))
+
+							// We need to wait until JDA *really* sends the presence
+							// TODO: Maybe implement a way to wait until all events have been sent?
+							delay(1_000)
+
+							// Connected, store to the cache
+							// Using close code 1012 does not invalidate your gateway session!
+							shard.shutdownNow(1012)
+
+							val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
+
+							// Delete the current cached data for this shard
+							shardCacheFolder.deleteRecursively()
+
+							// Create the shard cache folder
+							shardCacheFolder.mkdirs()
+
+							val guildsCacheFile = File(shardCacheFolder, "guilds.json")
+							val sessionCacheFile = File(shardCacheFolder, "session.json")
+							val versionFile = File(shardCacheFolder, "version")
+
+							val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
+
+							guildsCacheFile.bufferedWriter().use { bufWriter ->
+								for (guild in jdaImpl.guildsView) {
+									bufWriter.appendLine(DeviousConverter.toJson(guild).toString())
+									// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
+									jdaImpl.guildsView.remove(guild.idLong)
+								}
+							}
+
+							sessionCacheFile
+								.writeText(
+									Json.encodeToString(
+										GatewaySessionData(
+											sessionId,
+											resumeUrl,
+											jdaImpl.responseTotal,
+											guildIdsForReadyEvent
+										)
+									)
+								)
+
+							// Only write after everything has been successfully written
+							versionFile.writeText(connectionVersion.toString())
+						}
+					}
+				}
+
+				val time = measureTime {
+					runBlocking {
+						jobs.awaitAll()
+					}
+				}
+				logger.info { "Took $time to persist the shards' data to disk!" }
+			}
+		)
 	}
 
 	fun initPostgreSql() {
@@ -1460,4 +1555,6 @@ class LorittaBot(
 
 		return net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage(bytes.inputStream())
 	}
+
+	fun createActivityText(activityText: String, shardId: Int) = "$activityText | Cluster ${lorittaCluster.id} [$shardId]"
 }

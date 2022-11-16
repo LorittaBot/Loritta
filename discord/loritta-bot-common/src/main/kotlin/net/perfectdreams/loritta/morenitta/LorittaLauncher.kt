@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.morenitta
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
@@ -10,6 +12,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import java.io.File
 import java.util.*
@@ -62,7 +65,8 @@ object LorittaLauncher {
 			config.loritta.clusters.clusterIdOverride ?: 1
 		}
 
-		logger.info { "Loritta's Cluster ID: $clusterId" }
+		val lorittaCluster = config.loritta.clusters.instances.first { it.id == clusterId }
+		logger.info { "Loritta's Cluster ID: $clusterId (${lorittaCluster.name})" }
 
 		InteractionsMetrics.registerJFRExports()
 		InteractionsMetrics.registerInteractions()
@@ -86,8 +90,43 @@ object LorittaLauncher {
 		// Used for Logback
 		System.setProperty("cluster.name", config.loritta.clusters.instances.first { it.id == clusterId }.getUserAgent(config.loritta.environment))
 
+		val cacheFolder = File("cache")
+		cacheFolder.mkdirs()
+
+		val initialSessions = mutableMapOf<Int, GatewaySessionData>()
+		val previousVersionKeyFile = File(cacheFolder, "version")
+		if (previousVersionKeyFile.exists()) {
+			val previousVersion = UUID.fromString(previousVersionKeyFile.readText())
+			for (shard in lorittaCluster.minShard..lorittaCluster.maxShard) {
+				try {
+					val shardCacheFolder = File(cacheFolder, shard.toString())
+					val sessionFile = File(shardCacheFolder, "session.json")
+					val cacheVersionKeyFile = File(shardCacheFolder, "version")
+					// Does not exist, so bail out
+					if (!cacheVersionKeyFile.exists()) {
+						logger.warn("Couldn't load shard $shard cached data because the version file does not exist!")
+						continue
+					}
+
+					val cacheVersion = UUID.fromString(cacheVersionKeyFile.readText())
+					// Only load the data if the version matches
+					if (cacheVersion == previousVersion) {
+						if (sessionFile.exists()) {
+							val sessionData = if (sessionFile.exists()) Json.decodeFromString<GatewaySessionData>(sessionFile.readText()) else null
+							if (sessionData != null)
+								initialSessions[shard] = sessionData
+						}
+					} else {
+						logger.warn { "Couldn't load shard $shard cached data because the cache version does not match!" }
+					}
+				} catch (e: Exception) {
+					logger.warn { "Failed to load shard $shard cached data!" }
+				}
+			}
+		}
+
 		// Iniciar instância da Loritta
-		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services)
+		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions)
 		loritta.start()
 	}
 
