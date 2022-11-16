@@ -411,7 +411,7 @@ class LorittaBot(
 					PreStartGatewayEventReplayListener.ProcessorState.FINISHED
 				}
 			)
-			preLoginStates[it] = state
+			preLoginStates[shardId] = state
 		}
 
 		builder = DefaultShardManagerBuilder.create(
