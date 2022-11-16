@@ -264,8 +264,8 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 					when (type) {
 						LevelUpAnnouncementType.SAME_CHANNEL -> {
 							logger.info { "Same channel, sending msg" }
-							if (event.textChannel!!.canTalk()) {
-								event.textChannel.sendMessage(
+							if (event.channel.canTalk()) {
+								event.channel.sendMessage(
 									message
 								).queue()
 							}

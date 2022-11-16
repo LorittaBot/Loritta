@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
@@ -21,7 +22,7 @@ object LorittaUtils {
 	private val logger = KotlinLogging.logger {}
 
 	fun canUploadFiles(context: CommandContext): Boolean {
-		if (!context.isPrivateChannel && !context.guild.selfMember.hasPermission(context.event.textChannel!!, Permission.MESSAGE_ATTACH_FILES)) {
+		if (!context.isPrivateChannel && !context.guild.selfMember.hasPermission(context.event.channel as GuildChannel, Permission.MESSAGE_ATTACH_FILES)) {
 			context.message.channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["loritta.imageUploadNoPerm"].f() + " \uD83D\uDE22").queue()
 			return false
 		}

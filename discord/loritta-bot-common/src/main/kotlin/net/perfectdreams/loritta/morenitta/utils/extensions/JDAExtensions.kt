@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -302,7 +303,7 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalanc
  * @return Updated MessageAction for chaining convenience
  */
 fun MessageCreateAction.referenceIfPossible(message: Message): MessageCreateAction {
-    if (message.isFromGuild && !message.guild.selfMember.hasPermission(message.textChannel, MESSAGE_HISTORY))
+    if (message.isFromGuild && !message.guild.selfMember.hasPermission(message.channel as GuildChannel, MESSAGE_HISTORY))
         return this
     return this.setMessageReference(message)
 }

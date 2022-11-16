@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -162,7 +163,7 @@ class CommandContext(
 	}
 
 	suspend fun sendMessage(message: MessageCreateData, addInlineReply: Boolean = true): Message {
-		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+		if (isPrivateChannel || event.channel.canTalk()) {
 			return event.channel.sendMessage(message)
 				.referenceIfPossible(event.message, config, addInlineReply)
 				.await()
@@ -250,7 +251,7 @@ class CommandContext(
 	}
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: MessageCreateData): Message {
-		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+		if (isPrivateChannel || event.channel.canTalk()) {
 			val sentMessage = event.channel.sendMessage(
 				MessageCreateBuilder.from(message)
 					.addFiles(FileUpload.fromData(inputStream, name))
@@ -332,7 +333,7 @@ class CommandContext(
 		}
 
 		// Nothing found? Try retrieving the replied message content
-		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel!!, Permission.MESSAGE_HISTORY)) {
+		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.channel as GuildChannel, Permission.MESSAGE_HISTORY)) {
 			val referencedMessage = message.referencedMessage
 			if (referencedMessage != null) {
 				for (embed in referencedMessage.embeds) {
@@ -347,7 +348,7 @@ class CommandContext(
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && !this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel!!, Permission.MESSAGE_HISTORY)) {
+		if (search > 0 && !this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.channel as GuildChannel, Permission.MESSAGE_HISTORY)) {
 			try {
 				val message = this.message.channel.history.retrievePast(search).await()
 

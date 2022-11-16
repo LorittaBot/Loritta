@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
 import org.jetbrains.exposed.sql.and
@@ -164,7 +165,7 @@ class GuildLorittaUser(loritta: LorittaBot, val member: Member, permissions: Enu
 			return false
 
 		// E, finalmente, iremos verificar as permissões do usuário
-		if (member.hasPermission(context.event.textChannel!!, context.cmd.getDiscordPermissions())) {
+		if (member.hasPermission((context.event.channel as GuildChannel), context.cmd.getDiscordPermissions())) {
 			return true
 		}
 
