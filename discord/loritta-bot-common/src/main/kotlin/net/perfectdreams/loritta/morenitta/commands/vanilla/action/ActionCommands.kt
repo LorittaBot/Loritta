@@ -45,8 +45,6 @@ abstract class ActionCommand(loritta: LorittaBot, labels: List<String>): Discord
                 if (args.isEmpty()) return@executesDiscord explain()
 
                 OutdatedCommandUtils.sendOutdatedCommandMessage(this, this.locale, "roleplay ${labels.first()}")
-
-                it.handle(this, user, userOrFail(0).toJDA())
             }
         }
     }
@@ -68,116 +66,6 @@ class ActionCommandDSL(val command: ActionCommand) {
 }
 
 fun ActionCommand.action(block: ActionCommandScope) =
-        ActionCommandDSL(this).apply(block)
-
-data class CachedGif(
-        val folderName: String,
-        val fileName: String
-)
-
-private fun getCachedGifs(dsl: ActionCommandDSL): MutableList<CachedGif> {
-    val list = mutableListOf<CachedGif>()
-
-    val folder = File(LorittaBot.ASSETS, "actions/${dsl.folderName}")
-    val folderNames = listOf(
-            Constants.ACTION_GENERIC,
-            Constants.ACTION_MALE_AND_FEMALE,
-            Constants.ACTION_FEMALE_AND_MALE,
-            Constants.ACTION_MALE_AND_MALE,
-            Constants.ACTION_FEMALE_AND_FEMALE,
-            Constants.ACTION_BOTH
-    )
-
-    folderNames.forEach {
-        File(folder, it).listFiles()?.filter { it.extension == "gif" || it.extension == "png" }?.forEach { file ->
-            list.add(CachedGif(
-                    it,
-                    file.name
-            ))
-        }
-    }
-
-    return list
-}
-
-private fun ActionCommandDSL.selectGifsByGender(userGender: Gender, receiverGender: Gender): List<CachedGif> {
-    val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
-    if (folderNames.size != 1 && LorittaBot.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
-        folderNames.remove("generic")
-
-    return getCachedGifs(this).filter { folderNames.any { folderName -> folderName == it.folderName } }
-}
-
-private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, sender: User, receiver: User, repeat: Boolean = false) {
-    val senderProfile = context.loritta.getLorittaProfile(sender.idLong)
-    val receiverProfile = context.loritta.getLorittaProfile(receiver.idLong)
-
-    // Anti-idiot people
-    if (command is KissCommand && receiver.id == context.loritta.config.loritta.discord.applicationId.toString()) {
-        context.addIdiotReply()
-        return
-    }
-
-    // Searching for receiver's and sender's genders
-    val userGender = context.loritta.pudding.transaction { senderProfile?.settings?.gender ?: Gender.UNKNOWN }
-    val receiverGender = context.loritta.pudding.transaction { receiverProfile?.settings?.gender ?: Gender.UNKNOWN  }
-
-    val response: String
-
-    // If the sender tried to slap Lori, Lori'll slap him!
-    var files = if ((command is SlapCommand || command is AttackCommand) && receiver.id == context.loritta.config.loritta.discord.applicationId.toString()) {
-        response = response(context.locale, receiver, sender)
-        selectGifsByGender(receiverGender, userGender)
-    } else {
-        response = response(context.locale, sender, receiver)
-        selectGifsByGender(userGender, receiverGender)
-    }
-
-    // If there're no GIFs available, we'll try to avoid errors by searching for all gifs
-    while (files.isEmpty()) {
-        files = selectGifsByGender(Gender.UNKNOWN, Gender.UNKNOWN)
-    }
-
-    val randomImage = files.random()
-
-    val message = context.sendMessage(sender.asMention,
-            EmbedBuilder()
-                    .setDescription("$emoji $response")
-                    .setColor(color)
-                    .setImage(context.loritta.config.loritta.website.url + "assets/img/actions/$folderName/${randomImage.folderName}/${randomImage.fileName}")
-                    .also {
-                        if (sender != receiver && !repeat) {
-                            it.setFooter(context.locale["commands.category.action.clickToRetribute", "\uD83D\uDD01"], null)
-                        }
-                    }
-                    .build()
-    )
-
-    // To avoid actions flood, we'll only add the reaction if the receiver is another person or the action is already a retribution.
-    if (sender != receiver && !repeat) {
-        context.addReactionButton(context.loritta, this, message, sender, receiver)
-    }
-}
-
-// Adding the "retribute" button
-private fun DiscordCommandContext.addReactionButton(loritta: LorittaBot, dsl: ActionCommandDSL, message: Message, sender: User, receiver: User) {
-    message.addReaction("\uD83D\uDD01").queue()
-
-    message.onReactionAdd(this) {
-        val user = it.user ?: return@onReactionAdd
-
-        if (it.emoji.name == "\uD83D\uDD01" && user.id == receiver.id) {
-            message.removeAllFunctions(loritta)
-            dsl.handle(this, receiver, sender,true)
-        }
-    }
-}
-
-private suspend fun DiscordCommandContext.addIdiotReply() = reply(
-        LorittaReply(
-                locale["commands.command.kiss.responseAntiIdiot"],
-                "\uD83D\uDE45"
-        )
-)
+    ActionCommandDSL(this).apply(block)
 
 
