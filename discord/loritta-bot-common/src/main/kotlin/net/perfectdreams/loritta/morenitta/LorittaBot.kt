@@ -542,8 +542,8 @@ class LorittaBot(
 		)
 
 		logger.info { "Starting Pudding tasks..." }
-		// TODO: Fix this
-		// services.startPuddingTasks()
+		pudding.startPuddingTasks()
+		GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
 
 		logger.info { "Registering interactions features..." }
 		runBlocking {
