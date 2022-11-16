@@ -661,8 +661,8 @@ class LorittaBot(
 				isActive = false
 
 				// Remove all event listeners to make Loritta not process new events while restarting
-				shardManager.shards.forEach {
-					it.removeEventListener(it)
+				shardManager.shards.forEach { shard ->
+					shard.removeEventListener(*shard.registeredListeners.toTypedArray())
 				}
 
 				// This is used to validate if our cache was successfully written or not
