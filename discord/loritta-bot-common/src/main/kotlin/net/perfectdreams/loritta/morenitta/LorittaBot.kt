@@ -468,7 +468,7 @@ class LorittaBot(
 				// long for her to reply to new messages.
 				Activity.playing(createActivityText(config.loritta.discord.activity.name, it))
 			}
-			/* .addEventListeners(
+			.addEventListeners(
 				discordListener,
 				eventLogListener,
 				messageListener,
@@ -476,7 +476,7 @@ class LorittaBot(
 				gatewayRelayerListener,
 				addReactionFurryAminoPtListener,
 				boostGuildListener
-			) */
+			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
 					this,
@@ -669,7 +669,7 @@ class LorittaBot(
 				File(cacheFolder, "version").writeText(connectionVersion.toString())
 
 				// A semaphore to avoid processing everything at once, causing a OOM
-				val semaphore = Semaphore(4)
+				val semaphore = Semaphore(1)
 
 				shardManager.shards.forEach { jda ->
 					// Indicate on our presence that we are restarting
