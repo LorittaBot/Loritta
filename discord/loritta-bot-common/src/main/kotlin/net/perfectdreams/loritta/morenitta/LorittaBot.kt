@@ -714,6 +714,8 @@ class LorittaBot(
 				logger.info { "Took $time to persist the shards' data to disk!" }
 			}
 		)
+
+		logger.info { "Yay! Loritta is up and running :3" }
 	}
 
 	fun initPostgreSql() {
