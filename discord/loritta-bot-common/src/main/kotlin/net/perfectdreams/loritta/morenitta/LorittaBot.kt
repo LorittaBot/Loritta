@@ -459,20 +459,14 @@ class LorittaBot(
 				boostGuildListener
 			)
 			.addEventListenerProvider {
-				val initialSession = initialSessions[it]
-				if (initialSession != null) {
-					// Only create the listener if the initialSession is not null, if else
-					val state = MutableStateFlow(PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION)
-					preLoginStates[it] = state
-					PreStartGatewayEventReplayListener(
-						this,
-						initialSession,
-						cacheFolder,
-						state,
-					)
-				} else {
-					null
-				}
+				val state = MutableStateFlow(PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION)
+				preLoginStates[it] = state
+				PreStartGatewayEventReplayListener(
+					this,
+					initialSessions[it],
+					cacheFolder,
+					state,
+				)
 			}
 	}
 
