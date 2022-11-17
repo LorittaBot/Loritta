@@ -200,7 +200,7 @@ class CommandContext(
 
 	suspend fun sendFile(file: File, name: String, message: MessageCreateData): Message {
 		val inputStream = file.inputStream()
-		return sendFile(inputStream, name, message)
+		return sendFile(inputStream, name, MessageCreateBuilder.from(message))
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): Message {
@@ -223,14 +223,14 @@ class CommandContext(
 
 		val inputStream = ByteArrayInputStream(output.toByteArray(), 0, output.size())
 
-		return sendFile(inputStream, name, message)
+		return sendFile(inputStream, name, MessageCreateBuilder.from(message))
 	}
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: String): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageCreateBuilder()
 		builder.addContent(if (message.isEmpty()) " " else message)
-		return sendFile(inputStream, name, builder.build())
+		return sendFile(inputStream, name, builder)
 	}
 
 	suspend fun sendFile(inputStream: InputStream, name: String, embed: MessageEmbed): Message {
@@ -247,16 +247,12 @@ class CommandContext(
 		builder.addContent(if (message.isEmpty()) " " else message)
 		if (embed != null)
 			builder.addEmbeds(embed)
-		return sendFile(inputStream, name, builder.build())
+		return sendFile(inputStream, name, builder)
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: MessageCreateData): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, builder: MessageCreateBuilder): Message {
 		if (isPrivateChannel || event.channel.canTalk()) {
-			val sentMessage = event.channel.sendMessage(
-				MessageCreateBuilder.from(message)
-					.addFiles(FileUpload.fromData(inputStream, name))
-					.build()
-			)
+			val sentMessage = event.channel.sendMessage(builder.addFiles(FileUpload.fromData(inputStream, name)).build())
 				.referenceIfPossible(event.message, config, true)
 				.await()
 			return sentMessage

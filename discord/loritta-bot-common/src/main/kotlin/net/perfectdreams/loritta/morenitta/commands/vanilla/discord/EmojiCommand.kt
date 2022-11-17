@@ -101,7 +101,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 			} else {
 				fileName += ".png"
 			}
-			context.sendFile(emojiImage!!, fileName, MessageCreateBuilder().addContent(" ").build())
+			context.sendFile(emojiImage!!, fileName, MessageCreateBuilder().addContent(" "))
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
