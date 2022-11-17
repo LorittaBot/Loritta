@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard
 
+import io.ktor.http.*
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
@@ -45,7 +46,11 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		logger.info { "Getting some stuff lol: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		if (host != theNewUrl)
+		val hostUrl = Url(host)
+		val clusterUrl = Url(theNewUrl)
+		val matches = hostUrl.host == clusterUrl.host && hostUrl.port == clusterUrl.port
+
+		if (matches)
 			redirect("$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)

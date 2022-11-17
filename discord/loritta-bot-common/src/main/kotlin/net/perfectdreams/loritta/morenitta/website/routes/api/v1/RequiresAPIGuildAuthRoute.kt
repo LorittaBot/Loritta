@@ -34,18 +34,22 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
 		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 
-		if (host != theNewUrl)
+		val hostUrl = Url(host)
+		val clusterUrl = Url(theNewUrl)
+		val matches = hostUrl.host == clusterUrl.host && hostUrl.port == clusterUrl.port
+
+		if (matches)
 			redirect("$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
-				?: throw WebsiteAPIException(
-						HttpStatusCode.BadRequest,
-						WebsiteUtils.createErrorPayload(
-								loritta,
-								LoriWebCode.UNKNOWN_GUILD,
-								"Guild $guildId doesn't exist or it isn't loaded yet"
-						)
+			?: throw WebsiteAPIException(
+				HttpStatusCode.BadRequest,
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.UNKNOWN_GUILD,
+					"Guild $guildId doesn't exist or it isn't loaded yet"
 				)
+			)
 
 		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
@@ -62,12 +66,12 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 		val canBypass = loritta.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
 			throw WebsiteAPIException(
-					HttpStatusCode.Forbidden,
-					WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.FORBIDDEN,
-							"User ${member?.user?.id} doesn't have permission to edit ${guildId}'s config"
-					)
+				HttpStatusCode.Forbidden,
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.FORBIDDEN,
+					"User ${member?.user?.id} doesn't have permission to edit ${guildId}'s config"
+				)
 			)
 		}
 
