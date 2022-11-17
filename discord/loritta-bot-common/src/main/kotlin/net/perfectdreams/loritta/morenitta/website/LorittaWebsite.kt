@@ -92,6 +92,17 @@ class LorittaWebsite(
 				else -> UserPermissionLevel.MEMBER
 			}
 		}
+
+		private val FAKE_LOCALIZED_REDIRECTION_ROUTES = setOf(
+			"/",
+			"/commands",
+			"/staff",
+			"/extras",
+			"/wiki",
+			"/donate",
+			"/daily",
+			"/blog"
+		)
 	}
 
 	init {
@@ -271,6 +282,53 @@ class LorittaWebsite(
 
 				File("${config.websiteFolder}/static/").listFiles().filter { it.isFile }.forEach {
 					file(it.name, it)
+				}
+
+				// This is needed because some routes were moved to Showtime, so accessing "/" shows a error 404 page
+				for (originalPath in FAKE_LOCALIZED_REDIRECTION_ROUTES) {
+					val pathWithoutTrailingSlash = originalPath.removeSuffix("/")
+
+					// This is a workaround, I don't really like it
+					// See: https://youtrack.jetbrains.com/issue/KTOR-372
+					if (pathWithoutTrailingSlash.isNotEmpty()) {
+						get(pathWithoutTrailingSlash) {
+							val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+							var localeId = "en-us"
+							for (range in ranges) {
+								localeId = range.range.toLowerCase()
+								if (localeId == "pt-br" || localeId == "pt") {
+									localeId = "default"
+								}
+								if (localeId == "en") {
+									localeId = "en-us"
+								}
+							}
+
+							val locale = loritta.localeManager.getLocaleById(localeId)
+
+							redirect("/${locale.path}${call.request.uri}")
+						}
+					}
+
+					get("$pathWithoutTrailingSlash/") {
+						val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+						val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+						var localeId = "en-us"
+						for (range in ranges) {
+							localeId = range.range.toLowerCase()
+							if (localeId == "pt-br" || localeId == "pt") {
+								localeId = "default"
+							}
+							if (localeId == "en") {
+								localeId = "en-us"
+							}
+						}
+
+						val locale = loritta.localeManager.getLocaleById(localeId)
+
+						redirect("/${locale.path}${call.request.uri}")
+					}
 				}
 
 				for (route in routes) {
