@@ -78,7 +78,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 						return
 					}
 					val emojiImage = LorittaUtils.downloadImage(loritta, "https://twemoji.maxcdn.com/2/72x72/$value.png")
-					context.sendFile(emojiImage!!, "emoji.png", MessageCreateBuilder().addContent(" "))
+					context.sendFile(emojiImage!!, "emoji.png", " ")
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}
