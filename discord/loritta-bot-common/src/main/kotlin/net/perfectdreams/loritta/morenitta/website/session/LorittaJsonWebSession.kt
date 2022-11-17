@@ -28,7 +28,7 @@ data class LorittaJsonWebSession(
 		if (loadFromCache) {
 			try {
 				base64CachedIdentification?.let {
-					return gson.fromJson(Base64.getDecoder().decode(it).toString(Charsets.UTF_8))
+					return gson.fromJson(Base64.getDecoder().decode(it.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
 				}
 			} catch (e: Throwable) {
 				logger.error(e) { "Error while loading cached identification for $call" }
@@ -56,7 +56,7 @@ data class LorittaJsonWebSession(
 			return null
 
 		val json = try {
-			JsonParser.parseString(Base64.getEncoder().encode(base64StoredDiscordAuthTokens.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
+			JsonParser.parseString(Base64.getDecoder().decode(base64StoredDiscordAuthTokens.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
 		} catch (e: Exception) {
 			logger.error(e) { "Error while loading cached discord auth" }
 			return null
