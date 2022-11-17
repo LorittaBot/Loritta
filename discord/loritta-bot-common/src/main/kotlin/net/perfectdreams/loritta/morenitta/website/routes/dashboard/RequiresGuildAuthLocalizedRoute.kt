@@ -46,7 +46,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		start = System.currentTimeMillis()
 
 		if (host != theNewUrl)
-			redirect("$scheme://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
+			redirect("$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
 				?: redirect(loritta.config.loritta.discord.addBotUrl + "&guild_id=$guildId", false)

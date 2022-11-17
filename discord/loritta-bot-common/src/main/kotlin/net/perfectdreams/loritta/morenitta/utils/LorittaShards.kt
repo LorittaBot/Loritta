@@ -493,7 +493,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		val url = DiscordUtils.getUrlForLorittaClusterId(loritta, clusterId)
 
 		val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-			val response = loritta.http.get("https://$url/api/v1/guilds/$id") {
+			val response = loritta.http.get("$url/api/v1/guilds/$id") {
 				header("Authorization", loritta.lorittaInternalApiKey.name)
 				userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 			}
