@@ -22,7 +22,7 @@ class GatewayEventRelayerListener(val m: LorittaBot) : ListenerAdapter() {
     }
     override fun onPreProcessedRawGateway(event: PreProcessedRawGatewayEvent) {
         // We can't use RawGatewayEvent due to https://github.com/DV8FromTheWorld/JDA/issues/2333
-        val type = event.`package`.getString("type", null)
+        val type = event.`package`.getString("t", null)
         if (type !in EVENTS_TO_BE_RELAYED)
             return
 
