@@ -84,7 +84,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 
 					val shardId = json["id"].long
 					val name = json["name"].string
-					val loriBuild = json["build"]["buildNumber"].string
+					val loriBuild = json["build"]["buildNumber"].nullString ?: "Unknown"
 					val pendingMessages = json["pendingMessages"].long
 
 					val totalGuildCount = json["shards"].array.sumBy { it["guildCount"].int }
