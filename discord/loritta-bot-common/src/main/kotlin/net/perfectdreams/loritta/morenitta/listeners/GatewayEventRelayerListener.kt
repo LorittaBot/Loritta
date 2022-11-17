@@ -17,7 +17,8 @@ class GatewayEventRelayerListener(val m: LorittaBot) : ListenerAdapter() {
             "MESSAGE_REACTION_ADD",
             "MESSAGE_REACTION_REMOVE",
             "MESSAGE_REACTION_REMOVE_EMOJI",
-            "MESSAGE_REACTION_REMOVE_ALL"
+            "MESSAGE_REACTION_REMOVE_ALL",
+            "INTERACTION_CREATE"
         )
     }
     override fun onPreProcessedRawGateway(event: PreProcessedRawGatewayEvent) {

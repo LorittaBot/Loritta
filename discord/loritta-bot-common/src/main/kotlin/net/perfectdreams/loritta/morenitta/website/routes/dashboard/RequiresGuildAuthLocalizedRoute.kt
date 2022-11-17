@@ -50,7 +50,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		val clusterUrl = Url(theNewUrl)
 		val matches = hostUrl.host == clusterUrl.host && hostUrl.port == clusterUrl.port
 
-		if (matches)
+		if (!matches)
 			redirect("$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
