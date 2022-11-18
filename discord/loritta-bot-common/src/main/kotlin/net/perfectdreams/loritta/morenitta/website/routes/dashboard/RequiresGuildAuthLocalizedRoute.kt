@@ -18,10 +18,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDashboardPath: String) : RequiresDiscordLoginLocalizedRoute(loritta, "/guild/{guildId}$originalDashboardPath") {
@@ -37,21 +34,15 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 
 		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, guildId.toLong())
 
-		val host = call.request.hostFromHeader()
-		val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
-
 		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
-		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 
 		logger.info { "Getting some stuff lol: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		val hostUrl = Url(host)
-		val clusterUrl = Url(theNewUrl)
-		val matches = hostUrl.host == clusterUrl.host && hostUrl.port == clusterUrl.port
-
-		if (!matches)
+		if (loriShardId != loritta.clusterId) {
+			val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 			redirect("$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
+		}
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
 				?: redirect(loritta.config.loritta.discord.addBotUrl + "&guild_id=$guildId", false)

@@ -29,17 +29,12 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 
 		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, guildId.toLong())
 
-		val host = call.request.hostFromHeader()
-
 		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
-		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 
-		val hostUrl = Url(host)
-		val clusterUrl = Url(theNewUrl)
-		val matches = hostUrl.host == clusterUrl.host && hostUrl.port == clusterUrl.port
-
-		if (!matches)
+		if (loriShardId != loritta.clusterId) {
+			val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 			redirect("$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
+		}
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
 			?: throw WebsiteAPIException(
