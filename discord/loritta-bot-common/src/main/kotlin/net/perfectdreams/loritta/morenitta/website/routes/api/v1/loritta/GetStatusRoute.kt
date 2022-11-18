@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import io.ktor.server.application.*
+import kotlinx.serialization.json.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -23,48 +24,44 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 		val buildNumber = System.getenv("BUILD_ID")
 		val commitHash = System.getenv("COMMIT_HASH")
 
-		val jsonObject = jsonObject(
-			"id" to currentShard.id,
-			"name" to currentShard.name,
-			"versions" to jsonObject(
-				"kotlin" to KotlinVersion.CURRENT.toString(),
-				"java" to System.getProperty("java.version")
-			),
-			"build" to jsonObject(
-				"buildNumber" to buildNumber,
-				"commitHash" to commitHash,
-				"environment" to loritta.config.loritta.environment.name
-			),
-			"memory" to jsonObject(
-				"used" to usedMemory,
-				"free" to freeMemory,
-				"max" to maxMemory,
-				"total" to totalMemory
-			),
-			"threadCount" to ManagementFactory.getThreadMXBean().threadCount,
-			"globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
-			"isIgnoringRequests" to loritta.rateLimitChecker.checkIfRequestShouldBeIgnored(),
-			"pendingMessages" to loritta.pendingMessages.size,
-			"minShard" to currentShard.minShard,
-			"maxShard" to currentShard.maxShard,
-			"uptime" to ManagementFactory.getRuntimeMXBean().uptime
-		)
+		val jsonObject = buildJsonObject {
+			put("id", currentShard.id)
+			put("name", currentShard.name)
+			putJsonObject("versions") {
+				put("kotlin", KotlinVersion.CURRENT.toString())
+				put("java", "java.version")
+			}
+			putJsonObject("build") {
+				put("buildNumber", buildNumber)
+				put("commitHash", commitHash)
+				put("environment", loritta.config.loritta.environment.name)
+			}
+			putJsonObject("memory") {
+				put("used", usedMemory)
+				put("free", freeMemory)
+				put("max", maxMemory)
+				put("total", totalMemory)
+			}
+			put("threadCount", ManagementFactory.getThreadMXBean().threadCount)
+			put("globalRateLimitHits", loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute())
+			put("isIgnoringRequests", loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+			put("pendingMessages", loritta.pendingMessages.size)
+			put("minShard", currentShard.minShard)
+			put("maxShard", currentShard.maxShard)
+			put("uptime", ManagementFactory.getRuntimeMXBean().uptime)
 
-		val array = jsonArray()
-
-		for (shard in loritta.lorittaShards.shardManager.shards) {
-			array.add(
-				jsonObject(
-					"id" to shard.shardInfo.shardId,
-					"ping" to shard.gatewayPing,
-					"status" to shard.status.toString(),
-					"guildCount" to shard.guildCache.size(),
-					"userCount" to shard.userCache.size()
-				)
-			)
+			putJsonArray("shards") {
+				for (shard in loritta.lorittaShards.shardManager.shards) {
+					addJsonObject {
+						put("id", shard.shardInfo.shardId)
+						put("ping", shard.gatewayPing)
+						put("status", shard.status.toString())
+						put("guildCount", shard.guildCache.size())
+						put("userCount", shard.userCache.size())
+					}
+				}
+			}
 		}
-
-		jsonObject["shards"] = array
 
 		call.respondJson(jsonObject)
 	}
