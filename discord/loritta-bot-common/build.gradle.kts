@@ -138,7 +138,7 @@ jib {
                     this[envName] = propValue
             }
 
-            setIfPresent("commit.hash", "COMMIT_SHA")
+            setIfPresent("commit.hash", "COMMIT_HASH")
             setIfPresent("build.id", "BUILD_ID")
         }
     }
