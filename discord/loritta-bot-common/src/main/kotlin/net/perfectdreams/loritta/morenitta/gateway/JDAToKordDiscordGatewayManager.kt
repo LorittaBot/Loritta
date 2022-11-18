@@ -5,15 +5,9 @@ import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayM
 import net.perfectdreams.loritta.morenitta.utils.LorittaShards
 
 class JDAToKordDiscordGatewayManager(val lorittaShards: LorittaShards) : LorittaDiscordGatewayManager(lorittaShards.loritta.config.loritta.discord.maxShards) {
-    private val proxiedKordGateways = mutableMapOf<Int, JDAProxiedKordGateway>()
+    val proxiedKordGateways = mutableMapOf<Int, JDAProxiedKordGateway>()
     override val gateways: Map<Int, JDAProxiedKordGateway>
         get() = proxiedKordGateways
-
-    init {
-        lorittaShards.shardManager.shards.forEach {
-            proxiedKordGateways[it.shardInfo.shardId] = JDAProxiedKordGateway(it as JDAImpl)
-        }
-    }
 
     override fun getGatewayForShardOrNull(shardId: Int) = gateways[shardId]
 }
