@@ -505,7 +505,7 @@ class LorittaBot(
 	val prometheusPushClient = PrometheusPushClient("loritta-morenitta", config.loritta.prometheusPush.url)
 	val voiceConnectionsManager = LorittaVoiceConnectionManager(this)
 
-	private val scope = CoroutineScope(Dispatchers.Default)
+	val scope = CoroutineScope(Dispatchers.Default)
 
 	val analyticHandlers = mutableListOf<EventAnalyticsTask.AnalyticHandler>()
 	val cinnamonTasks = CinnamonTasks(this)
@@ -1469,7 +1469,7 @@ class LorittaBot(
 	}
 
 	@OptIn(ExperimentalTime::class)
-	private fun launchEventProcessorJob(context: GatewayEventContext) {
+	fun launchEventProcessorJob(context: GatewayEventContext) {
 		if (context.event != null) {
 			val coroutineName = "Event ${context.event::class.simpleName}"
 			launchEventJob(coroutineName, context.durations) {

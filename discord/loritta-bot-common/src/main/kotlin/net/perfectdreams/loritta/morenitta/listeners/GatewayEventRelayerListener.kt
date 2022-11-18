@@ -1,11 +1,15 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.events.PreProcessedRawGatewayEvent
 import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.internal.JDAImpl
+import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.gateway.JDAProxiedKordGateway
 
@@ -37,6 +41,24 @@ class GatewayEventRelayerListener(val m: LorittaBot) : ListenerAdapter() {
     }
 
     override fun onReady(event: ReadyEvent) {
-        m.lorittaShards.gatewayManager.proxiedKordGateways[event.jda.shardInfo.shardId] = JDAProxiedKordGateway(event.jda as JDAImpl)
+        val gateway = JDAProxiedKordGateway(event.jda as JDAImpl)
+        m.lorittaShards.gatewayManager.proxiedKordGateways[event.jda.shardInfo.shardId] = gateway
+
+        val shardId = event.jda.shardInfo.shardId
+        m.scope.launch {
+            gateway.events.collect {
+                DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
+                    .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
+                    .inc()
+
+                m.launchEventProcessorJob(
+                    GatewayEventContext(
+                        it,
+                        shardId,
+                        Clock.System.now()
+                    )
+                )
+            }
+        }
     }
 }

@@ -68,6 +68,7 @@ object DeviousConverter {
                         put("discriminator", user.discriminator)
                         put("avatar", user.avatarId)
                         put("public_flags", user.flagsRaw)
+                        put("bot", user.isBot)
                     }
                     put("nick", member.nickname)
                     put("avatar", member.avatarId)
