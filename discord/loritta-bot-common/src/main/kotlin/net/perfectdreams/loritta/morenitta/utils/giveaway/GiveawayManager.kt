@@ -2,9 +2,6 @@ package net.perfectdreams.loritta.morenitta.utils.giveaway
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import kotlinx.coroutines.*
@@ -12,7 +9,7 @@ import kotlinx.coroutines.future.await
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -22,7 +19,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.sequins.text.StringUtils
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -96,7 +93,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         return builder.build()
     }
 
-    suspend fun spawnGiveaway(locale: BaseLocale, channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?, roleIds: List<String>?): Giveaway {
+    suspend fun spawnGiveaway(locale: BaseLocale, channel: GuildMessageChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?, roleIds: List<String>?): Giveaway {
         logger.debug { "Spawning Giveaway! locale = $locale, channel = $channel, reason = $reason, description = $description, reason = $reason, epoch = $epoch, numberOfWinners = $numberOfWinners, customMessage = $customMessage, roleIds = $roleIds" }
 
         val giveawayMessage = createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
@@ -167,7 +164,7 @@ class GiveawayManager(val loritta: LorittaBot) {
      */
     private suspend fun getGiveawayRelatedEntities(giveaway: Giveaway, shouldCancel: Boolean): GiveawayCombo? {
         val guild = getGiveawayGuild(giveaway, shouldCancel) ?: return null
-        val channel = getGiveawayTextChannel(giveaway, guild, shouldCancel) ?: return null
+        val channel = getGiveawayGuildMessageChannel(giveaway, guild, shouldCancel) ?: return null
 
         val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
@@ -194,8 +191,8 @@ class GiveawayManager(val loritta: LorittaBot) {
         return guild
     }
 
-    private fun getGiveawayTextChannel(giveaway: Giveaway, guild: Guild, shouldCancel: Boolean): TextChannel? {
-        val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
+    private fun getGiveawayGuildMessageChannel(giveaway: Giveaway, guild: Guild, shouldCancel: Boolean): GuildMessageChannel? {
+        val channel = guild.getGuildMessageChannelById(giveaway.textChannelId) ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
 
             if (shouldCancel)
@@ -211,7 +208,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         logger.info { "Creating giveaway ${giveaway.id.value} job..." }
 
         // Vamos tentar pegar e ver se a guild ou o canal de texto existem
-        getGiveawayTextChannel(giveaway, getGiveawayGuild(giveaway, false) ?: return, false) ?: return
+        getGiveawayGuildMessageChannel(giveaway, getGiveawayGuild(giveaway, false) ?: return, false) ?: return
 
         giveawayTasks[giveaway.id.value] = GlobalScope.launch {
             try {
@@ -226,7 +223,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                         return@launch
                     }
 
-                    val channel = getGiveawayTextChannel(giveaway, guild, true) ?: run {
+                    val channel = getGiveawayGuildMessageChannel(giveaway, guild, true) ?: run {
                         giveawayTasks.remove(giveaway.id.value)
                         return@launch
                     }
@@ -473,7 +470,7 @@ class GiveawayManager(val loritta: LorittaBot) {
 
     private data class GiveawayCombo(
             val guild: Guild,
-            val channel: TextChannel,
+            val channel: GuildMessageChannel,
             val message: Message
     )
 }

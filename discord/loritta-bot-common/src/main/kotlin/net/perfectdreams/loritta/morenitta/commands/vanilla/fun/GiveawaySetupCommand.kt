@@ -7,6 +7,8 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.perfectdreams.loritta.common.entities.LorittaEmote
 import net.perfectdreams.loritta.common.entities.UnicodeEmote
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -16,6 +18,8 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelByName
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 
 class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
@@ -165,12 +169,12 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
         message.onResponseByAuthor(context) {
             val pop = it.message.contentRaw
-            var channel: TextChannel? = null
+            var channel: GuildMessageChannel? = null
 
-            val channels = context.guild.getTextChannelsByName(pop, true)
+            val queriedChannel = context.guild.getGuildMessageChannelByName(pop, true)
 
-            if (channels.isNotEmpty()) {
-                channel = channels[0]
+            if (queriedChannel != null) {
+                channel = queriedChannel
             } else {
                 val id = pop
                         .replace("<", "")
@@ -178,7 +182,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         .replace(">", "")
 
                 if (id.isValidSnowflake()) {
-                    channel = context.guild.getTextChannelById(id)
+                    channel = context.guild.getGuildMessageChannelById(id)
                 }
             }
 
@@ -421,7 +425,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
         var description: String? = null
         var duration: String? = null
         var reaction: LorittaEmote? = null
-        var channel: TextChannel? = null
+        var channel: GuildMessageChannel? = null
         var numberOfWinners: Int? = null
         var roleIds: List<String>? = null
 
@@ -441,7 +445,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
             return reaction!!
         }
 
-        operator fun component5(): TextChannel {
+        operator fun component5(): GuildMessageChannel {
             return channel!!
         }
 

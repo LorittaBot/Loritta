@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -322,6 +323,20 @@ fun MessageCreateAction.referenceIfPossible(message: Message, serverConfig: Serv
     if (!addInlineReply || serverConfig.deleteMessageAfterCommand)
         return this
     return this.referenceIfPossible(message)
+}
+
+fun Guild.getGuildMessageChannelByName(channelName: String, ignoreCase: Boolean) = this.channels
+    .asSequence()
+    .filterIsInstance<GuildMessageChannel>().filter { it.name.equals(channelName, ignoreCase) }
+    .firstOrNull()
+
+fun Guild.getGuildMessageChannelById(channelId: String) = getGuildMessageChannelById(channelId.toLong())
+
+fun Guild.getGuildMessageChannelById(channelId: Long): GuildMessageChannel? {
+    return this.channels
+        .asSequence()
+        .filterIsInstance<GuildMessageChannel>().filter { it.idLong == channelId }
+        .firstOrNull()
 }
 
 fun Permission.localized(locale: BaseLocale): String {
