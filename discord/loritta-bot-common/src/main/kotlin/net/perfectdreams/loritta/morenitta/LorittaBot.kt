@@ -587,28 +587,6 @@ class LorittaBot(
 		cinnamonTasks.start()
 		startTasks()
 
-		// On every gateway instance present on our gateway manager, collect and process events
-		logger.info { "Preparing gateway event collectors for ${lorittaShards.gatewayManager.gateways.size} gateway instances..." }
-		lorittaShards.gatewayManager.gateways.forEach { (shardId, gateway) ->
-			gateway.installDiscordInteraKTions(interaKTions)
-
-			scope.launch {
-				gateway.events.collect {
-					DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
-						.labels(shardId.toString(), it::class.simpleName ?: "Unknown")
-						.inc()
-
-					launchEventProcessorJob(
-						GatewayEventContext(
-							it,
-							shardId,
-							Clock.System.now()
-						)
-					)
-				}
-			}
-		}
-
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
 		logger.info { "Iniciando Tasks..." }

@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.internal.JDAImpl
+import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
@@ -46,6 +47,8 @@ class GatewayEventRelayerListener(val m: LorittaBot) : ListenerAdapter() {
 
         val shardId = event.jda.shardInfo.shardId
         m.scope.launch {
+            gateway.installDiscordInteraKTions(m.interaKTions)
+
             gateway.events.collect {
                 DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
                     .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
