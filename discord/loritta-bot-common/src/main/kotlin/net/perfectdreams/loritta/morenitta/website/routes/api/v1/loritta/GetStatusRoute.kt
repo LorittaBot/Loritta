@@ -29,7 +29,7 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 			put("name", currentShard.name)
 			putJsonObject("versions") {
 				put("kotlin", KotlinVersion.CURRENT.toString())
-				put("java", "java.version")
+				put("java", System.getProperty("java.version"))
 			}
 			putJsonObject("build") {
 				put("buildNumber", buildNumber)
