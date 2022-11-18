@@ -108,7 +108,8 @@ class LorittaWebsite(
 	init {
 		OptimizeAssets.optimizeCss()
 
-		WEBSITE_URL = websiteUrl
+		// The website code expects the website URL with a trailing slash at the end
+		WEBSITE_URL = "${websiteUrl.removeSuffix("/")}/"
 		FOLDER = frontendFolder
 
 		val fl = FileLoader()
