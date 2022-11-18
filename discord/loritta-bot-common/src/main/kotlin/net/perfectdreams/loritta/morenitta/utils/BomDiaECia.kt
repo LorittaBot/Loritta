@@ -178,7 +178,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-1.png",
 		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-2.png",
 		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-3.png",
-		"${loritta.config.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
+		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-4.png"
 	)
 
 	init {
