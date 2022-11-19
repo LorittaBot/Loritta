@@ -54,22 +54,6 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					}
 				}
 			}
-			val shardControllerStatus = if (loritta.config.loritta.discord.shardController.enabled) {
-				GlobalScope.async(loritta.coroutineDispatcher) {
-					try {
-						val body = HttpRequest.get("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/login-pools")
-								.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-								.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-								.readTimeout(loritta.config.loritta.clusterReadTimeout)
-								.body()
-
-						JsonParser.parseString(body)
-					} catch (e: Exception) {
-						logger.warn(e) { "Shard Controller is offline!" }
-						throw RuntimeException("Shard Controller is offline!")
-					}
-				}
-			} else null
 
 			val row0 = mutableListOf("Cluster Name")
 			val row1 = mutableListOf("WS")
@@ -138,60 +122,6 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					}
 				} catch (e: ClusterOfflineException) {
 					row0.add("X Cluster ${e.id} (${e.name})")
-					row1.add("---")
-					row2.add("---")
-					row3.add("OFFLINE!")
-					row4.add("---")
-					row5.add("---")
-				}
-			}
-
-			if (shardControllerStatus != null) {
-				row0.add("Shard Controller (Tsuki)")
-				row1.add("---")
-
-				try {
-					val payload = shardControllerStatus.await()
-					var jvmUpTime = payload["uptime"].long
-					val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
-					jvmUpTime -= TimeUnit.DAYS.toMillis(days)
-					val hours = TimeUnit.MILLISECONDS.toHours(jvmUpTime)
-					jvmUpTime -= TimeUnit.HOURS.toMillis(hours)
-					val minutes = TimeUnit.MILLISECONDS.toMinutes(jvmUpTime)
-					jvmUpTime -= TimeUnit.MINUTES.toMillis(minutes)
-					val seconds = TimeUnit.MILLISECONDS.toSeconds(jvmUpTime)
-
-					row2.add("---")
-					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
-
-					val wasMutexLocked = payload["isMutexLocked"].bool
-					row4.add(
-							if (wasMutexLocked)
-								"waiting"
-							else
-								"available"
-					)
-
-					val usedLoginPools = payload["loginPools"].obj.entrySet().filter { it.value.asBoolean }
-
-					if (usedLoginPools.isNotEmpty()) {
-						row0.add("* USED LOGIN POOLS:")
-						row1.add("---")
-						row2.add("---")
-						row3.add("---")
-						row4.add("---")
-						row5.add("---")
-
-						for (usedLoginPool in usedLoginPools) {
-							row0.add("> Login Pool ${usedLoginPool.key}")
-							row1.add("---")
-							row2.add("---")
-							row3.add("---")
-							row4.add("---")
-							row5.add("---")
-						}
-					}
-				} catch (e: Exception) {
 					row1.add("---")
 					row2.add("---")
 					row3.add("OFFLINE!")

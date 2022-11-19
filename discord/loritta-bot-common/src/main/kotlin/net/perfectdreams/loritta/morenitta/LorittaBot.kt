@@ -449,11 +449,9 @@ class LorittaBot(
 			.setChunkingFilter(ChunkingFilter.NONE) // No chunking policy because trying to load all members is hard
 			.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
 			.apply {
-				if (config.loritta.discord.shardController.enabled) {
-					logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-					bucketedController = BucketedController(this@LorittaBot, config.loritta.discord.shardController.buckets)
-					this.setSessionController(bucketedController)
-				}
+				logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
+				bucketedController = BucketedController(this@LorittaBot)
+				this.setSessionController(bucketedController)
 			}
 			.setShardsTotal(config.loritta.discord.maxShards)
 			.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())

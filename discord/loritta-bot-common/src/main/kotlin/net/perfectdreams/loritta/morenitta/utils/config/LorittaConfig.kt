@@ -50,9 +50,9 @@ data class LorittaConfig(
         val authorizationUrl: String,
         val maxShards: Int,
         val maxRequestsPerHost: Int,
+        val maxConcurrency: Int,
         val activity: LorittaGameStatus,
         val okHttp: JdaOkHttpConfig,
-        val shardController: ShardControllerConfig,
         val requestLimiter: RequestLimiterConfig
     ) {
         @Serializable
@@ -63,14 +63,6 @@ data class LorittaConfig(
             val readTimeout: Long,
             val connectTimeout: Long,
             val writeTimeout: Long
-        )
-
-        @Serializable
-        data class ShardControllerConfig(
-            val enabled: Boolean,
-            val url: String,
-            val buckets: Int,
-            val gatewayUrl: String?,
         )
 
         @Serializable

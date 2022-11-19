@@ -11,11 +11,21 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
+import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ConcurrentLoginBuckets
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
 import net.perfectdreams.loritta.morenitta.utils.NetAddressUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
+import java.time.Instant
+import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 /**
  * Session Controller for bots migrated to the "Very Large Bots" sharding system
@@ -108,44 +118,37 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 			while (startingFromScratchShards.isNotEmpty()) {
 				val node = startingFromScratchShards.poll()
 
-				fun setLoginPoolLockToShardController(): ControllerResponseType {
-					return runBlocking {
-						try {
-							val status = loritta.http.put("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
-								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-							}.status
+				val bucketId = node.shardInfo.shardId % loritta.config.loritta.discord.maxConcurrency
 
-							if (status == HttpStatusCode.OK)
-								ControllerResponseType.OK
-							else if (status == HttpStatusCode.Conflict)
-								ControllerResponseType.CONFLICT
-							else {
-								log.error("Weird status code while fetching shard ${node.shardInfo.shardId} login pool status, status code: ${status}")
-								ControllerResponseType.OFFLINE
+				// PostgreSQL should handle conflicts by itself, so if two instances try to edit the same column at the same time, a concurrent modification exception will happen
+				// If randomKey == null, then this bucket is already being used
+				// If randomKey != null, then this bucket isn't being used
+				val randomKey = runBlocking {
+					// We want to repeat indefinitely if a concurrent modification error happens
+					loritta.pudding.transaction(repetitions = Int.MAX_VALUE) {
+						val currentStatus = ConcurrentLoginBuckets.select {
+							ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.lockedAt greaterEq Instant.now()
+								.minusSeconds(60))
+						}.firstOrNull()
+
+						if (currentStatus != null) {
+							return@transaction null
+						} else {
+							val newRandomKey = Base64.getEncoder().encodeToString(Random.Default.nextBytes(20))
+
+							ConcurrentLoginBuckets.upsert(ConcurrentLoginBuckets.id) {
+								it[ConcurrentLoginBuckets.id] = bucketId
+								it[ConcurrentLoginBuckets.randomKey] = newRandomKey
+								it[ConcurrentLoginBuckets.lockedAt] = Instant.now()
 							}
-						} catch (e: Exception) {
-							log.error("Exception while checking if shard ${node.shardInfo.shardId} can login", e)
-							ControllerResponseType.OFFLINE
+
+							return@transaction newRandomKey
 						}
 					}
 				}
 
-				fun removeLoginPoolLockFromShardController() {
-					runBlocking {
-						try {
-							loritta.http.delete("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
-								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-							}
-						} catch (e: Exception) {
-							log.error("Exception while telling master shard controller that shard ${node.shardInfo.shardId} already logged in! Other clusters may have temporary issues while logging in...", e)
-						}
-					}
-				}
-
-				val canLogin = setLoginPoolLockToShardController()
-
-				if (canLogin == ControllerResponseType.CONFLICT) {
-					log.info("Shard ${node.shardInfo.shardId} (login pool: ${node.shardInfo.shardId % 16}) can't login! Another cluster is logging in that shard, delaying login...")
+				if (randomKey == null) {
+					log.info("Shard ${node.shardInfo.shardId} (login pool: $bucketId) can't login! Another cluster is logging in that shard, delaying login...")
 					if (delay > 0) sleep(delay)
 					appendSession(node)
 					continue
@@ -156,16 +159,40 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 
 					lastConnect = System.currentTimeMillis()
 					if (delay > 0) sleep(delay)
-					removeLoginPoolLockFromShardController()
+					runBlocking {
+						val deletedBucketsCount = loritta.pudding.transaction {
+							ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
+						}
+						when (deletedBucketsCount) {
+							0 -> log.warn("Couldn't release lock for bucket $bucketId (shard ${node.shardInfo.shardId}) because our random key does not match or the bucket was already released!")
+							else -> log.info("Successfully released lock for bucket $bucketId (shard ${node.shardInfo.shardId})!")
+						}
+					}
 				} catch (e: IllegalStateException) {
 					val t = e.cause
 					if (t is OpeningHandshakeException) log.error("Failed opening handshake, appending to queue. Message: {}", e.message) else log.error("Failed to establish connection for a node, appending to queue", e)
 					appendSession(node)
-					removeLoginPoolLockFromShardController()
+					runBlocking {
+						val deletedBucketsCount = loritta.pudding.transaction {
+							ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
+						}
+						when (deletedBucketsCount) {
+							0 -> log.warn("Couldn't release lock for bucket $bucketId (shard ${node.shardInfo.shardId}) because our random key does not match or the bucket was already released!")
+							else -> log.info("Successfully released lock for bucket $bucketId (shard ${node.shardInfo.shardId})!")
+						}
+					}
 				} catch (e: InterruptedException) {
 					log.error("Failed to run node", e)
 					appendSession(node)
-					removeLoginPoolLockFromShardController()
+					runBlocking {
+						val deletedBucketsCount = loritta.pudding.transaction {
+							ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
+						}
+						when (deletedBucketsCount) {
+							0 -> log.warn("Couldn't release lock for bucket $bucketId (shard ${node.shardInfo.shardId}) because our random key does not match or the bucket was already released!")
+							else -> log.info("Successfully released lock for bucket $bucketId (shard ${node.shardInfo.shardId})!")
+						}
+					}
 					return  // caller should start a new thread
 				}
 			}
