@@ -332,12 +332,7 @@ fun Guild.getGuildMessageChannelByName(channelName: String, ignoreCase: Boolean)
 
 fun Guild.getGuildMessageChannelById(channelId: String) = getGuildMessageChannelById(channelId.toLong())
 
-fun Guild.getGuildMessageChannelById(channelId: Long): GuildMessageChannel? {
-    return this.channels
-        .asSequence()
-        .filterIsInstance<GuildMessageChannel>().filter { it.idLong == channelId }
-        .firstOrNull()
-}
+fun Guild.getGuildMessageChannelById(channelId: Long) = this.getGuildChannelById(channelId) as? GuildMessageChannel
 
 fun Permission.localized(locale: BaseLocale): String {
     return when (this) {

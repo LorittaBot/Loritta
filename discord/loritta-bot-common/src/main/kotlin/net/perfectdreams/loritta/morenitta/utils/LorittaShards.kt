@@ -257,12 +257,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		if (id == null)
 			return null
 
-		return shardManager.guildCache.firstNotNullOfOrNull {
-			it.channels
-				.asSequence()
-				.filterIsInstance<GuildMessageChannel>().filter { it.id == id }
-				.firstOrNull()
-		}
+		return shardManager.getGuildChannelById(id) as? GuildMessageChannel
 	}
 
 	fun getShards(): List<JDA> {
