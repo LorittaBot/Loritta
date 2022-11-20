@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 
 class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("falar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.say.description")
@@ -58,7 +59,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 					val messageId = split.last()
 					val channelId = split.dropLast(1).last()
 
-					editMessage = context.guild.getTextChannelById(channelId)!!
+					editMessage = context.guild.getGuildMessageChannelById(channelId)!!
 							.retrieveMessageById(messageId)
 							.await()
 					args = args.remove(0) // Removes the "edit"
@@ -70,7 +71,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 			val channel = if (isEditMode) editMessage!!.channel else if (args.size >= 2) {
 				if (channelIdOrMessageLink.startsWith("<#") && channelIdOrMessageLink.endsWith(">")) {
 					try {
-						val ch = context.guild.getTextChannelById(channelIdOrMessageLink.substring(2, channelIdOrMessageLink.length - 1))
+						val ch = context.guild.getGuildMessageChannelById(channelIdOrMessageLink.substring(2, channelIdOrMessageLink.length - 1))
 						args = args.remove(0)
 						ch
 					} catch (e: Exception) {
@@ -78,7 +79,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 					}
 				} else {
 					try {
-						val ch = context.guild.getTextChannelById(channelIdOrMessageLink)
+						val ch = context.guild.getGuildMessageChannelById(channelIdOrMessageLink)
 						args = args.remove(0)
 						ch
 					} catch (e: Exception) {

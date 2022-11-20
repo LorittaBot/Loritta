@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 
 class ChannelInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("channelinfo", "channel"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	companion object {

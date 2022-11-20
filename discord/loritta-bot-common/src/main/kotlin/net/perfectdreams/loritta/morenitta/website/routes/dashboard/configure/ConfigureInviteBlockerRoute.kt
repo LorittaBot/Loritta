@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
@@ -23,7 +24,7 @@ class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocali
 		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "invite_blocker"
-		variables["whitelistedChannels"] = (inviteBlockerConfig?.whitelistedChannels?.filter { guild.getTextChannelById(it) != null } ?: listOf()).joinToString(separator = ";")
+		variables["whitelistedChannels"] = (inviteBlockerConfig?.whitelistedChannels?.filter { guild.getGuildMessageChannelById(it) != null } ?: listOf()).joinToString(separator = ";")
 		variables["serverConfig"] = FakeServerConfig(
 				FakeServerConfig.FakeInviteBlockerConfig(
 						inviteBlockerConfig?.enabled ?: false,

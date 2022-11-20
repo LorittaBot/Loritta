@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import org.json.JSONException
 import pw.forst.exposed.insertOrUpdate
@@ -276,7 +277,7 @@ object EventLog {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && (eventLogConfig.messageEdited || eventLogConfig.messageDeleted)) {
-				val textChannel = message.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+				val textChannel = message.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return
 
 				if (textChannel.canTalk()) {
 					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -326,7 +327,7 @@ object EventLog {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
-				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+				val textChannel = member.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -366,7 +367,7 @@ object EventLog {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
-				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+				val textChannel = member.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return

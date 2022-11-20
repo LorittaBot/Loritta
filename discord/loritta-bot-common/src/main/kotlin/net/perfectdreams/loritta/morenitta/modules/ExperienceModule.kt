@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByE
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.morenitta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
@@ -297,7 +298,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 							val channelId = announcement[LevelAnnouncementConfigs.channelId]
 
 							if (channelId != null) {
-								val channel = guild.getTextChannelById(channelId)
+								val channel = guild.getGuildMessageChannelById(channelId)
 
 								channel?.sendMessage(
 									message

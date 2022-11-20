@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import org.apache.commons.io.IOUtils
 import java.nio.charset.Charset
 import java.util.concurrent.CopyOnWriteArrayList
@@ -45,7 +46,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 							if (welcomerConfig.tellOnJoin && !welcomerConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) {
 								val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
 
-								val textChannel = guild.getTextChannelById(channelJoinId)
+								val textChannel = guild.getGuildMessageChannelById(channelJoinId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -95,7 +96,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 							if (welcomerConfig.tellOnRemove && !welcomerConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
 								val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
 
-								val textChannel = guild.getTextChannelById(channelRemoveId)
+								val textChannel = guild.getGuildMessageChannelById(channelRemoveId)
 
 								if (textChannel != null) {
 									if (textChannel.canTalk()) {
@@ -148,7 +149,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 			logger.trace { "Member = ${event.member}, canalJoinId is not null for $guild, canalJoinId = ${joinLeaveConfig.channelJoinId}"}
 
-			val textChannel = guild.getTextChannelById(channelJoinId)
+			val textChannel = guild.getGuildMessageChannelById(channelJoinId)
 
 			logger.trace { "Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
 			if (textChannel != null) {
@@ -226,7 +227,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 			logger.trace { "User = ${event.user}, Member = ${event.member}, canalLeaveId is not null for $guild, canalLeaveId = ${joinLeaveConfig.channelRemoveId}"}
 
-			val textChannel = guild.getTextChannelById(channelRemoveId)
+			val textChannel = guild.getGuildMessageChannelById(channelRemoveId)
 
 			logger.trace { "User = ${event.user}, Member = ${event.member}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}, it is $textChannel for $guild"}
 			if (textChannel != null) {

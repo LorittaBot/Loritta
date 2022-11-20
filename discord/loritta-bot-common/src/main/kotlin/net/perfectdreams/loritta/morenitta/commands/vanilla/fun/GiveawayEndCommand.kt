@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -101,7 +102,7 @@ class GiveawayEndCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 				return@executesDiscord
 			}
 
-			val textChannel = context.guild.getTextChannelById(giveaway.textChannelId)
+			val textChannel = context.guild.getGuildMessageChannelById(giveaway.textChannelId)
 
 			if (textChannel == null) {
 				context.reply(

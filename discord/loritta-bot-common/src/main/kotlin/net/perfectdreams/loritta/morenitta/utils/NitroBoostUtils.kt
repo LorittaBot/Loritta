@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SortOrder
@@ -191,7 +192,7 @@ object NitroBoostUtils {
 			logger.info { "Updating Valid Guild Boost Messages..." }
 
 			try {
-				val channel = loritta.lorittaShards.getTextChannelById(config.channelId.toString())
+				val channel = loritta.lorittaShards.getGuildMessageChannelById(config.channelId.toString())
 
 				if (channel == null) {
 					logger.warn { "Nitro Guilds Channel not found!" }

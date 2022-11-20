@@ -23,6 +23,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
@@ -148,7 +149,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 				val guild = loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
 
-				val textChannel = guild.getTextChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
+				val textChannel = guild.getGuildMessageChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
 
 				if (!textChannel.canTalk())
 					continue
@@ -179,7 +180,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			}
 
 			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
-			val textChannel = loritta.lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
+			val textChannel = loritta.lorittaShards.getGuildMessageChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
 
 			textChannel?.sendMessage("""${lastVideoTitle.escapeMentions()} — https://youtu.be/$videoId
 						|**Enviado em...**

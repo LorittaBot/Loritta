@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
 
@@ -93,7 +94,7 @@ class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 				return@executesDiscord
 			}
 
-			val textChannel = context.guild.getTextChannelById(giveaway.textChannelId)
+			val textChannel = context.guild.getGuildMessageChannelById(giveaway.textChannelId)
 
 			if (textChannel == null) {
 				context.reply(

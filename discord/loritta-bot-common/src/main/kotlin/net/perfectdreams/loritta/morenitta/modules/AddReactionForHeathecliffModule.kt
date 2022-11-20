@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 
 class AddReactionForHeathecliffModule(val loritta: LorittaBot) : MessageReceivedModule {
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
@@ -36,7 +37,7 @@ class AddReactionForHeathecliffModule(val loritta: LorittaBot) : MessageReceived
 
 			event.message.addReaction("gato_joinha:593161404937404416").queue()
 
-			val chatStaff = event.guild?.getTextChannelById(643604594114691122L)
+			val chatStaff = event.guild?.getGuildMessageChannelById(643604594114691122L)
 
 			chatStaff?.sendMessage("<@&320608529398497280> <@&300279961686638603> Um formulário foi preenchido por ${event.author.asMention}! ${Emotes.LORI_PAT} ${event.message.jumpUrl}")
 					?.queue()

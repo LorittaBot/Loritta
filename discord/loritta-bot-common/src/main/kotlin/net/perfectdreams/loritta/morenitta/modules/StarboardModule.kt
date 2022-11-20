@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import org.jetbrains.exposed.sql.and
 import java.awt.Color
@@ -39,7 +40,7 @@ class StarboardModule(val loritta: LorittaBot) {
 		val starboardId = starboardConfig.starboardChannelId
 
 		if (e.emoji.isEmote("⭐")) {
-			val textChannel = guild.getTextChannelById(starboardId) ?: return
+			val textChannel = guild.getGuildMessageChannelById(starboardId) ?: return
 
 			// Caso não tenha permissão para ver o histórico de mensagens, retorne!
 			if (!e.guild.selfMember.hasPermission(eventTextChannel, Permission.MESSAGE_HISTORY, Permission.MESSAGE_EMBED_LINKS))

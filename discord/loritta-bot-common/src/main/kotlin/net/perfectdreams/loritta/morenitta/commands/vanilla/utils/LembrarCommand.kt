@@ -6,8 +6,6 @@ import net.perfectdreams.loritta.morenitta.dao.Reminder
 import net.perfectdreams.loritta.morenitta.tables.Reminders
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
@@ -23,8 +21,7 @@ import java.awt.Color
 import java.time.Instant
 import java.time.ZonedDateTime
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
 
 class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
@@ -148,7 +145,7 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 
 			val reminder = visReminders.getOrNull(idx) ?: return@onReactionAddByAuthor
 
-			val textChannel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString())
+			val textChannel = loritta.lorittaShards.getGuildMessageChannelById(reminder.channelId.toString())
 
 			val guild = textChannel?.guild
 

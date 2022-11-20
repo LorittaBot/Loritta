@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -33,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -249,6 +251,18 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 			return null
 
 		return shardManager.getTextChannelById(id)
+	}
+
+	fun getGuildMessageChannelById(id: String?): GuildMessageChannel? {
+		if (id == null)
+			return null
+
+		return shardManager.guildCache.firstNotNullOfOrNull {
+			it.channels
+				.asSequence()
+				.filterIsInstance<GuildMessageChannel>().filter { it.id == id }
+				.firstOrNull()
+		}
 	}
 
 	fun getShards(): List<JDA> {

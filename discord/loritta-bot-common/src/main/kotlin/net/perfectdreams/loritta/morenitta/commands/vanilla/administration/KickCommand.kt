@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 
 class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf("expulsar", "kickar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.kick.description")
@@ -124,7 +125,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 				}
 
 				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
-					val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
+					val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(

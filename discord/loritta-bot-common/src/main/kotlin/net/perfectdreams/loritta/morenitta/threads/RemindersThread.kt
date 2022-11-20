@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import org.jetbrains.exposed.sql.deleteWhere
 import java.util.*
 
@@ -59,7 +60,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             for (reminder in reminders) {
                 if (reminder.id.value !in remindersThatFailedToDelete) {
                     try {
-                        val channel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString())
+                        val channel = loritta.lorittaShards.getGuildMessageChannelById(reminder.channelId.toString())
 
                         val reminderText =
                             "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${

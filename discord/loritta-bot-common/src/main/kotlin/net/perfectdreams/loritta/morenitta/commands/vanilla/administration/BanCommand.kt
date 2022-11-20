@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import java.util.concurrent.TimeUnit
 
 class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("banir", "hackban", "forceban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
@@ -115,7 +116,7 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 				}
 
 				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
-					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)
+					val textChannel = guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(

@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.common.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -122,7 +123,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 							val guild = guilds.first { it.idLong == guildId }
 
-							val textChannel = guild.getTextChannelById(eventLogChannelId)
+							val textChannel = guild.getGuildMessageChannelById(eventLogChannelId)
 
 							if (textChannel != null && textChannel.canTalk()) {
 								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
@@ -178,7 +179,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -242,7 +243,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -287,7 +288,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						val channelName = event.guild.getTextChannelById(storedMessages.first().channelId)?.name ?: "unknown"
+						val channelName = event.guild.getGuildMessageChannelById(storedMessages.first().channelId)?.name ?: "unknown"
 
 						EventLog.sendMessageInEventLogViaWebhook(
 							loritta,
@@ -326,7 +327,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -386,7 +387,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
@@ -440,7 +441,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl))
 
 				// ===[ NICKNAME ]===
-				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				if (!textChannel.canTalk())
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))

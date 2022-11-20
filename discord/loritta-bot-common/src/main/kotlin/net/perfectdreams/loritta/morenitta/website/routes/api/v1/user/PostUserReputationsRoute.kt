@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
@@ -86,7 +87,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
 				// Iremos verificar se o usuário *pode* usar comandos no canal especificado
-				val channel = loritta.lorittaShards.getTextChannelById(channelId)
+				val channel = loritta.lorittaShards.getGuildMessageChannelById(channelId)
 
 				if (channel != null) {
 					if (!channel.canTalk()) // Eu não posso falar!

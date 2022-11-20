@@ -20,6 +20,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 
 class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
@@ -83,7 +84,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 						)
 
 						if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
-							val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
+							val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 							if (textChannel != null && textChannel.canTalk()) {
 								val message = MessageUtils.generateMessage(
