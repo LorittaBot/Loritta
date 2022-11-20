@@ -191,6 +191,9 @@ class TemmieDiscordAuth(
 
 	private suspend fun <T> doStuff(checkForRefresh: Boolean = true, callback: suspend () -> (T)): T {
 		logger.info { "doStuff(...) Is mutex locked for rate limiting? ${rateLimitCheckMutex.isLocked}" }
+		// Lock for rate limit checks before proceeding
+		rateLimitCheckMutex.withLock {}
+
 		return try {
 			if (checkForRefresh)
 				refreshTokenIfNeeded()
