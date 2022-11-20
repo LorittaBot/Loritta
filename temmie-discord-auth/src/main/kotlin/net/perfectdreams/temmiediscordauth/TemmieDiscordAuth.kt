@@ -18,19 +18,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import kotlin.time.Duration.Companion.seconds
 
-class TemmieDiscordAuth(
-	val clientId: String,
-	val clientSecret: String,
-	val authCode: String?,
-	val redirectUri: String,
-	val scope: List<String>,
-	var accessToken: String? = null,
-	var refreshToken: String? = null,
-	var expiresIn: Long? = null,
-	var generatedAt: Long? = null,
-	val rateLimitCheckMutex: Mutex,
+class TemmieDiscordAuth(val clientId: String,
+						val clientSecret: String,
+						val authCode: String?,
+						val redirectUri: String,
+						val scope: List<String>,
+						var accessToken: String? = null,
+						var refreshToken: String? = null,
+						var expiresIn: Long? = null,
+						var generatedAt: Long? = null
 ) {
 	companion object {
 		private const val PREFIX = "https://discordapp.com/api"
@@ -45,6 +42,8 @@ class TemmieDiscordAuth(
 			this.expectSuccess = false
 		}
 	}
+
+	private val mutex = Mutex()
 
 	suspend fun doTokenExchange(): JsonObject {
 		logger.info { "doTokenExchange()" }
@@ -95,22 +94,23 @@ class TemmieDiscordAuth(
 
 		doStuff(false) {
 			val result = checkIfRequestWasValid(
-				http.post {
-					url(TOKEN_BASE_URL)
-					userAgent(USER_AGENT)
+					http.post {
+						url(TOKEN_BASE_URL)
+						userAgent(USER_AGENT)
 
-					setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
-				}
+						setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
+					}
 			)
 
 			logger.info { result }
 
-			checkForRateLimit(result)
+			val tree = JsonParser.parseString(result).asJsonObject
 
-			val resultAsJson = JsonParser.parseString(result.bodyAsText()).asJsonObject
+			if (tree.has("error"))
+				throw TokenExchangeException("Error while exchanging token: ${tree["error"].asString}")
 
-			if (resultAsJson.isJsonObject && resultAsJson.has("error"))
-				throw TokenExchangeException("Error while exchanging token: ${resultAsJson["error"].asString}")
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
 
 			readTokenPayload(resultAsJson.obj)
 		}
@@ -120,17 +120,17 @@ class TemmieDiscordAuth(
 		logger.info { "getUserIdentification()" }
 		return doStuff {
 			val result = checkIfRequestWasValid(
-				http.get {
-					url(USER_IDENTIFICATION_URL)
-					userAgent(USER_AGENT)
-					header("Authorization", "Bearer $accessToken")
-				}
+					http.get {
+						url(USER_IDENTIFICATION_URL)
+						userAgent(USER_AGENT)
+						header("Authorization", "Bearer $accessToken")
+					}
 			)
 
 			logger.info { result }
 
-			val resultAsJson = JsonParser.parseString(result.bodyAsText())
-			checkForRateLimit(result)
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
 
 			return@doStuff gson.fromJson<UserIdentification>(resultAsJson)
 		}
@@ -140,19 +140,19 @@ class TemmieDiscordAuth(
 		logger.info { "getUserGuilds()" }
 		return doStuff {
 			val result = checkIfRequestWasValid(
-				http.get {
-					url(USER_GUILDS_URL)
-					userAgent(USER_AGENT)
-					header("Authorization", "Bearer $accessToken")
-				}
+					http.get {
+						url(USER_GUILDS_URL)
+						userAgent(USER_AGENT)
+						header("Authorization", "Bearer $accessToken")
+					}
 			)
 
 			logger.info { result }
 
-			val resultAsJson = JsonParser.parseString(result.bodyAsText())
-			checkForRateLimit(result)
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
 
-			return@doStuff gson.fromJson<List<Guild>>(resultAsJson)
+			return@doStuff gson.fromJson<List<Guild>>(result)
 		}
 	}
 
@@ -160,19 +160,19 @@ class TemmieDiscordAuth(
 		logger.info { "getUserConnections()" }
 		return doStuff {
 			val result = checkIfRequestWasValid(
-				http.get {
-					url(CONNECTIONS_URL)
-					userAgent(USER_AGENT)
-					header("Authorization", "Bearer $accessToken")
-				}
+					http.get {
+						url(CONNECTIONS_URL)
+						userAgent(USER_AGENT)
+						header("Authorization", "Bearer $accessToken")
+					}
 			)
 
 			logger.info { result }
 
-			val resultAsJson = JsonParser.parseString(result.bodyAsText())
-			checkForRateLimit(result)
+			val resultAsJson = JsonParser.parseString(result)
+			checkForRateLimit(resultAsJson)
 
-			return@doStuff gson.fromJson<List<Connection>>(resultAsJson)
+			return@doStuff gson.fromJson<List<Connection>>(result)
 		}
 	}
 
@@ -190,14 +190,16 @@ class TemmieDiscordAuth(
 	}
 
 	private suspend fun <T> doStuff(checkForRefresh: Boolean = true, callback: suspend () -> (T)): T {
-		logger.info { "doStuff(...) Is mutex locked for rate limiting? ${rateLimitCheckMutex.isLocked}" }
+		logger.info { "doStuff(...) mutex locked? ${mutex.isLocked}" }
 		return try {
 			if (checkForRefresh)
 				refreshTokenIfNeeded()
 
-			callback.invoke()
+			mutex.withLock {
+				callback.invoke()
+			}
 		} catch (e: RateLimitedException) {
-			logger.info { "rate limited exception! locked? ${rateLimitCheckMutex.isLocked}" }
+			logger.info { "rate limited exception! locked? ${mutex.isLocked}" }
 			return doStuff(checkForRefresh, callback)
 		} catch (e: NeedsRefreshException) {
 			logger.info { "refresh exception!" }
@@ -213,14 +215,15 @@ class TemmieDiscordAuth(
 		generatedAt = System.currentTimeMillis()
 	}
 
-	private suspend fun checkForRateLimit(response: HttpResponse): Boolean {
-		val header = response.headers["X-RateLimit-Reset-After"]
-		if (header != null) {
-			rateLimitCheckMutex.withLock {
-				val retryAfterTime = header.toDouble().seconds
-				logger.info { "Got rate limited, oof! Retry After: $retryAfterTime" }
+	private suspend fun checkForRateLimit(element: JsonElement): Boolean {
+		if (element.isJsonObject) {
+			val asObject = element.obj
+			if (asObject.has("retry_after")) {
+				val retryAfter = asObject["retry_after"].long
+
+				logger.info { "Got rate limited, oof! Retry After: $retryAfter" }
 				// oof, ratelimited!
-				delay(retryAfterTime)
+				delay(retryAfter)
 				throw RateLimitedException()
 			}
 		}
@@ -228,69 +231,69 @@ class TemmieDiscordAuth(
 		return false
 	}
 
-	private fun checkIfRequestWasValid(response: HttpResponse): HttpResponse {
+	private suspend fun checkIfRequestWasValid(response: HttpResponse): String {
 		if (response.status.value == 401)
 			throw TokenUnauthorizedException(response.status)
 
-		return response
+		return response.bodyAsText()
 	}
 
 	class TokenUnauthorizedException(status: HttpStatusCode) : RuntimeException()
 	class TokenExchangeException(message: String) : RuntimeException(message)
 
 	class UserIdentification constructor(
-		@SerializedName("id")
-		val id: String,
-		@SerializedName("username")
-		val username: String,
-		@SerializedName("discriminator")
-		val discriminator: String,
-		@SerializedName("avatar")
-		val avatar: String?,
-		@SerializedName("bot")
-		val bot: Boolean?,
-		@SerializedName("mfa_enabled")
-		val mfaEnabled: Boolean?,
-		@SerializedName("locale")
-		val locale: String?,
-		@SerializedName("verified")
-		val verified: Boolean,
-		@SerializedName("email")
-		val email: String?,
-		@SerializedName("flags")
-		val flags: Int?,
-		@SerializedName("premium_type")
-		val premiumType: Int?
+			@SerializedName("id")
+			val id: String,
+			@SerializedName("username")
+			val username: String,
+			@SerializedName("discriminator")
+			val discriminator: String,
+			@SerializedName("avatar")
+			val avatar: String?,
+			@SerializedName("bot")
+			val bot: Boolean?,
+			@SerializedName("mfa_enabled")
+			val mfaEnabled: Boolean?,
+			@SerializedName("locale")
+			val locale: String?,
+			@SerializedName("verified")
+			val verified: Boolean,
+			@SerializedName("email")
+			val email: String?,
+			@SerializedName("flags")
+			val flags: Int?,
+			@SerializedName("premium_type")
+			val premiumType: Int?
 	)
 
 	class Guild constructor(
-		@SerializedName("id")
-		val id: String,
-		@SerializedName("name")
-		val name: String,
-		@SerializedName("icon")
-		val icon: String?,
-		@SerializedName("owner")
-		val owner: Boolean,
-		@SerializedName("permissions")
-		val permissions: Int
+			@SerializedName("id")
+			val id: String,
+			@SerializedName("name")
+			val name: String,
+			@SerializedName("icon")
+			val icon: String?,
+			@SerializedName("owner")
+			val owner: Boolean,
+			@SerializedName("permissions")
+			val permissions: Int
 	)
 
 	class Connection constructor(
-		@SerializedName("id")
-		val id: String,
-		@SerializedName("name")
-		val name: String,
-		@SerializedName("type")
-		val type: String,
-		@SerializedName("verified")
-		val verified: Boolean,
-		@SerializedName("friend_sync")
-		val friendSync: Boolean,
-		@SerializedName("show_activity")
-		val showActivity: Boolean,
-		@SerializedName("visibility")
-		val visibility: Int
+			@SerializedName("id")
+			val id: String,
+			@SerializedName("name")
+			val name: String,
+			@SerializedName("type")
+			val type: String,
+			@SerializedName("verified")
+			val verified: Boolean,
+			@SerializedName("friend_sync")
+			val friendSync: Boolean,
+			@SerializedName("show_activity")
+			val showActivity: Boolean,
+			@SerializedName("visibility")
+			val visibility: Int
 	)
 
 	private class RateLimitedException : RuntimeException()

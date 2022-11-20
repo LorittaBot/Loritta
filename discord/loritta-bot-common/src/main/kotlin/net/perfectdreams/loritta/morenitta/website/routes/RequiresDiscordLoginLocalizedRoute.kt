@@ -85,8 +85,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 						loritta.config.loritta.discord.clientSecret,
 						code,
 						"$scheme://$hostHeader/dashboard",
-						listOf("identify", "guilds", "email"),
-						rateLimitCheckMutex = loritta.temmieDiscordAuthRateLimitMutex
+						listOf("identify", "guilds", "email")
 					)
 
 					auth.doTokenExchange()

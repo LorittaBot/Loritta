@@ -22,8 +22,7 @@ class CreateWebhookRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks
 			loritta.config.loritta.discord.clientSecret,
 			code,
 			"https://$hostHeader/api/v1/callbacks/discord-webhook",
-			listOf("webhook.incoming"),
-			rateLimitCheckMutex = loritta.temmieDiscordAuthRateLimitMutex
+			listOf("webhook.incoming")
 		)
 
 		val authExchangePayload = auth.doTokenExchange()

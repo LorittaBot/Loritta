@@ -12,13 +12,13 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.*
 
 data class LorittaJsonWebSession(
-	val base64CachedIdentification: String?,
-	val base64StoredDiscordAuthTokens: String?
+		val base64CachedIdentification: String?,
+		val base64StoredDiscordAuthTokens: String?
 ) {
 	companion object {
 		fun empty() = LorittaJsonWebSession(
-			null,
-			null
+				null,
+				null
 		)
 
 		private val logger = KotlinLogging.logger {}
@@ -63,28 +63,27 @@ data class LorittaJsonWebSession(
 		}
 
 		return TemmieDiscordAuth(
-			loritta.config.loritta.discord.applicationId.toString(),
-			loritta.config.loritta.discord.clientSecret,
-			json["authCode"].string,
-			json["redirectUri"].string,
-			json["scope"].array.map { it.string },
-			json["accessToken"].string,
-			json["refreshToken"].string,
-			json["expiresIn"].long,
-			json["generatedAt"].long,
-			rateLimitCheckMutex = loritta.temmieDiscordAuthRateLimitMutex
+				loritta.config.loritta.discord.applicationId.toString(),
+				loritta.config.loritta.discord.clientSecret,
+				json["authCode"].string,
+				json["redirectUri"].string,
+				json["scope"].array.map { it.string },
+				json["accessToken"].string,
+				json["refreshToken"].string,
+				json["expiresIn"].long,
+				json["generatedAt"].long
 		)
 	}
 
 	data class UserIdentification(
-		val id: String,
-		val username: String,
-		val discriminator: String,
-		val verified: Boolean,
-		val email: String?,
-		val avatar: String?,
-		val createdAt: Long,
-		val updatedAt: Long
+			val id: String,
+			val username: String,
+			val discriminator: String,
+			val verified: Boolean,
+			val email: String?,
+			val avatar: String?,
+			val createdAt: Long,
+			val updatedAt: Long
 	) {
 		fun toJson() = gson.toJson(this)
 	}
