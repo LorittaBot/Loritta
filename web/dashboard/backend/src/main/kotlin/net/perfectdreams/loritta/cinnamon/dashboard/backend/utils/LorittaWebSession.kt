@@ -7,6 +7,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import java.util.*
 
 class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: LorittaJsonWebSession) {
     companion object {
@@ -16,8 +17,8 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
     suspend fun getUserIdentification(call: ApplicationCall, loadFromCache: Boolean = true): LorittaJsonWebSession.UserIdentification? {
         if (loadFromCache) {
             try {
-                jsonWebSession.cachedIdentification?.let {
-                    return Json.decodeFromString(it)
+                jsonWebSession.base64CachedIdentification?.let {
+                    return Json.decodeFromString(Base64.getDecoder().decode(it.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
                 }
             } catch (e: Throwable) {
                 logger.warn(e) { "Failed to load cached identification! Ignoring cached identification..." }
@@ -31,7 +32,7 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
             val forCache = convertToWebSessionIdentification(userIdentification)
 
             call.lorittaSession = jsonWebSession.copy(
-                cachedIdentification = convertToJson(discordIdentification)
+                base64CachedIdentification = Base64.getEncoder().encode(convertToJson(discordIdentification).toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
             )
 
             forCache
@@ -42,10 +43,10 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
     }
 
     fun getDiscordAuthFromJson(): TemmieDiscordAuth? {
-        if (jsonWebSession.storedDiscordAuthTokens == null)
+        if (jsonWebSession.base64StoredDiscordAuthTokens == null)
             return null
 
-        val json = Json.decodeFromString<LorittaJsonWebSession.StoredDiscordAuthTokens>(jsonWebSession.storedDiscordAuthTokens)
+        val json = Json.decodeFromString<LorittaJsonWebSession.StoredDiscordAuthTokens>(Base64.getDecoder().decode(jsonWebSession.base64StoredDiscordAuthTokens.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
 
         return TemmieDiscordAuth(
             "x",

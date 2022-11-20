@@ -9,8 +9,8 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 
 data class LorittaJsonWebSession(
-    val cachedIdentification: String?,
-    val storedDiscordAuthTokens: String?
+    val base64CachedIdentification: String?,
+    val base64StoredDiscordAuthTokens: String?
 ) {
     companion object {
         fun empty() = LorittaJsonWebSession(
