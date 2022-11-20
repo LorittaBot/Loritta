@@ -79,4 +79,3 @@ include(":web:dashboard:spicy-frontend")
 
 // ===[ MISC ]===
 include(":temmie-discord-auth")
-include(":shard-controller")
