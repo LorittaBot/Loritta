@@ -28,8 +28,6 @@ import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
@@ -47,7 +45,6 @@ import net.perfectdreams.loritta.morenitta.tables.UserSettings
 import net.perfectdreams.loritta.morenitta.threads.RaffleThread
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
@@ -62,7 +59,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.GuildImpl
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
-import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
@@ -153,10 +149,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.io.RandomAccessFile
 import java.lang.reflect.Modifier
-import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
 import java.nio.file.*
 import java.security.SecureRandom
 import java.sql.Connection
@@ -164,7 +157,6 @@ import java.time.*
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 import kotlin.io.path.*
@@ -388,6 +380,7 @@ class LorittaBot(
 	val giveawayManager = GiveawayManager(this)
 	val welcomeModule = WelcomeModule(this)
 	val ecbManager = ECBManager()
+	val activityUpdater = ActivityUpdater(this)
 
 	private val debugWebServer = DebugWebServer()
 
@@ -462,13 +455,6 @@ class LorittaBot(
 			.setRawEventsEnabled(true)
 			// We want to override JDA's shutdown hook to store the cache on disk when shutting down
 			.setEnableShutdownHook(false)
-			.setActivityProvider {
-				// Before we updated the status every 60s and rotated between a list of status
-				// However this causes issues, Discord blocks all gateway events until the status is
-				// updated in all guilds in the shard she is in, which feels... bad, because it takes
-				// long for her to reply to new messages.
-				Activity.playing(createActivityText(config.loritta.discord.activity.name, it))
-			}
 			.addEventListeners(
 				discordListener,
 				eventLogListener,
@@ -763,6 +749,13 @@ class LorittaBot(
 
 	fun initPostgreSql() {
 		logger.info("Iniciando PostgreSQL...")
+
+		transaction {
+			// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
+			SchemaUtils.createMissingTablesAndColumns(
+				GatewayActivities
+			)
+		}
 
 		// Hidden behind a env flag, because FOR SOME REASON Exposed thinks that it is a good idea to
 		// "ALTER TABLE serverconfigs ALTER COLUMN prefix TYPE TEXT, ALTER COLUMN prefix SET DEFAULT '+'"
@@ -1550,6 +1543,7 @@ class LorittaBot(
 	}
 
 	private fun startTasks() {
+		scheduleCoroutineAtFixedRate(1.minutes, action = activityUpdater)
 		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 

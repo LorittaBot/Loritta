@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -101,7 +102,10 @@ class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, privat
                         }
                         state.value = ProcessorState.FINISHED
                         logger.info("Successfully replayed events for shard ${event.jda.shardInfo.shardId}!")
-                        jdaImpl.presence.setPresence(OnlineStatus.ONLINE, Activity.playing(loritta.createActivityText(loritta.config.loritta.discord.activity.name, event.jda.shardInfo.shardId)))
+                        jdaImpl.presence.setPresence(
+                            OnlineStatus.ONLINE,
+                            runBlocking { loritta.activityUpdater.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId) }
+                        )
                         return
                     }
 

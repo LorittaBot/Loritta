@@ -51,13 +51,9 @@ data class LorittaConfig(
         val maxShards: Int,
         val maxRequestsPerHost: Int,
         val maxConcurrency: Int,
-        val activity: LorittaGameStatus,
         val okHttp: JdaOkHttpConfig,
         val requestLimiter: RequestLimiterConfig
     ) {
-        @Serializable
-        data class LorittaGameStatus(val name: String)
-
         @Serializable
         data class JdaOkHttpConfig(
             val readTimeout: Long,
