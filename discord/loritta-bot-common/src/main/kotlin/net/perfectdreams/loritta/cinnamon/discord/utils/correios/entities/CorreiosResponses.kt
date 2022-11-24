@@ -287,7 +287,7 @@ private object CorreiosCreationDateSerializer : KSerializer<Instant> {
     // Example: 2022-11-18T14:31:50
 
     override fun serialize(encoder: Encoder, value: Instant) {
-        encoder.encodeString("${value}Z")
+        encoder.encodeString(value.toString().removeSuffix("Z"))
     }
 
     override fun deserialize(decoder: Decoder): Instant {
