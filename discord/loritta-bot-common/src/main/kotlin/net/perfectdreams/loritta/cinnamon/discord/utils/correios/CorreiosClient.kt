@@ -93,7 +93,7 @@ class CorreiosClient : Closeable {
         }
 
         val objetos = httpResponses.awaitAll().flatMap {
-            JsonIgnoreUnknownKeys.decodeFromString<CorreiosResponse>(it.bodyAsText().also { println(it) })
+            JsonIgnoreUnknownKeys.decodeFromString<CorreiosResponse>(it.bodyAsText())
                 .objetos
         }
 
