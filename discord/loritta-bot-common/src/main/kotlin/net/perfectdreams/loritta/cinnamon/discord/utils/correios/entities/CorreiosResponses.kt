@@ -293,6 +293,8 @@ private object CorreiosCreationDateSerializer : KSerializer<Instant> {
 
     override fun deserialize(decoder: Decoder): Instant {
         val input = decoder.decodeString()
-        return Instant.parse(input + "Z")
+        // Correios does not include the "Z" at the end of the input, but if they end up including it in the future, then we are already "future-proofed" (sort of)
+        // The real reason: We mistakenly included the "Z" when serializing, when in reality it shouldn't be included since Correios does not include it, whoops!
+        return Instant.parse((input.replace("Z", "")) + "Z")
     }
 }
