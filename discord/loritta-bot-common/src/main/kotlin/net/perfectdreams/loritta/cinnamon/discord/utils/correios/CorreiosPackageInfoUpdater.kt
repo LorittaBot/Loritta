@@ -42,7 +42,7 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
                 }
 
                 logger.info { "Querying information about packages $trackedPackages" }
-                val packageInformations = runBlocking {
+                val objects = runBlocking {
                     m.correiosClient.getPackageInfo(
                         *trackedPackages.toTypedArray()
                     )
@@ -50,12 +50,12 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
 
                 val now = Instant.now()
 
-                packageInformations.objeto.forEach { correiosPackage ->
+                objects.forEach { correiosPackage ->
                     when (correiosPackage) {
                         is CorreiosFoundObjeto -> {
                             // Check when last event was received
                             val lastEventReceivedAt = TrackedCorreiosPackagesEvents.select {
-                                TrackedCorreiosPackagesEvents.trackingId eq correiosPackage.numero
+                                TrackedCorreiosPackagesEvents.trackingId eq correiosPackage.codObjeto
                             }.orderBy(TrackedCorreiosPackagesEvents.triggeredAt, SortOrder.DESC)
                                 .limit(1)
                                 .firstOrNull()
@@ -68,29 +68,23 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
                                 .let {
                                     if (lastEventReceivedAt != null) // I wanted to use hasNeverReceivedAnyEventsBefore here but Kotlin isn't smart enough to know that it is non null
                                         it.filter {
-                                            it.criacao > LocalDateTime.ofEpochSecond(
-                                                lastEventReceivedAt.epochSecond,
-                                                0,
-                                                JAVA_TIME_CORREIOS_OFFSET
-                                            )
-                                                .toKotlinLocalDateTime()
+                                            it.dtHrCriado > lastEventReceivedAt.toKotlinInstant()
                                         }
                                     else
                                         it
                                 }
-                                .sortedBy { it.criacao } // the order doesn't really matter because we sort when querying the database, but at least it looks prettier when querying the database without a sort
+                                .sortedBy { it.dtHrCriado } // the order doesn't really matter because we sort when querying the database, but at least it looks prettier when querying the database without a sort
                                 .forEach { event ->
                                     val packageEventId = TrackedCorreiosPackagesEvents.insertAndGetId {
-                                        it[TrackedCorreiosPackagesEvents.trackingId] = correiosPackage.numero
-                                        it[TrackedCorreiosPackagesEvents.triggeredAt] = event.criacao.toInstant(KTX_DATETIME_CORREIOS_OFFSET)
-                                            .toJavaInstant()
+                                        it[TrackedCorreiosPackagesEvents.trackingId] = correiosPackage.codObjeto
+                                        it[TrackedCorreiosPackagesEvents.triggeredAt] = event.dtHrCriado.toJavaInstant()
                                         it[TrackedCorreiosPackagesEvents.event] = Json.encodeToString(event)
                                     }
 
                                     val whoIsTrackingThisPackage = UsersFollowingCorreiosPackages.innerJoin(
                                         TrackedCorreiosPackages
                                     ).select {
-                                        TrackedCorreiosPackages.trackingId eq correiosPackage.numero
+                                        TrackedCorreiosPackages.trackingId eq correiosPackage.codObjeto
                                     }.map { it[UsersFollowingCorreiosPackages.user] }
 
                                     if (!hasNeverReceivedAnyEventsBefore) {
@@ -102,7 +96,7 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
 
                                             CorreiosPackageUpdateUserNotifications.insert {
                                                 it[CorreiosPackageUpdateUserNotifications.timestampLog] = userNotificationId
-                                                it[CorreiosPackageUpdateUserNotifications.trackingId] = correiosPackage.numero
+                                                it[CorreiosPackageUpdateUserNotifications.trackingId] = correiosPackage.codObjeto
                                                 it[CorreiosPackageUpdateUserNotifications.packageEvent] = packageEventId
                                             }
 
@@ -115,18 +109,18 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
                                         }
                                     }
 
-                                    if (event.type == EventType.PackageDeliveredToRecipient) {
+                                    if (event.codigo == EventType.PackageDeliveredToRecipient) {
                                         // If it is delivered, update the status with "delivered"
-                                        logger.info { "Package ${correiosPackage.numero} has been delivered! Updating its status in our database..." }
-                                        TrackedCorreiosPackages.update({ TrackedCorreiosPackages.trackingId eq correiosPackage.numero }) {
+                                        logger.info { "Package ${correiosPackage.codObjeto} has been delivered! Updating its status in our database..." }
+                                        TrackedCorreiosPackages.update({ TrackedCorreiosPackages.trackingId eq correiosPackage.codObjeto }) {
                                             it[TrackedCorreiosPackages.delivered] = true
                                         }
                                     }
                                 }
                         }
                         is CorreiosUnknownObjeto -> {
-                            logger.info { "Package ${correiosPackage.numero} is unknown! Updating its status in our database..." }
-                            TrackedCorreiosPackages.update({ TrackedCorreiosPackages.trackingId eq correiosPackage.numero }) {
+                            logger.info { "Package ${correiosPackage.codObjeto} is unknown! Updating its status in our database..." }
+                            TrackedCorreiosPackages.update({ TrackedCorreiosPackages.trackingId eq correiosPackage.codObjeto }) {
                                 it[TrackedCorreiosPackages.unknownPackage] = true
                             }
                         }

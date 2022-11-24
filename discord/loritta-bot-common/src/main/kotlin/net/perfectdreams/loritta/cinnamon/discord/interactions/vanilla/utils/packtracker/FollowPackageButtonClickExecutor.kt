@@ -31,12 +31,12 @@ class FollowPackageButtonClickExecutor(
         val decoded = context.decodeDataFromComponentAndRequireUserToMatch<FollowPackageData>()
 
         // Check if the package is already delivered and, if it is, don't allow the user to track it!
-        val correiosResponse = correios.getPackageInfo(decoded.trackingId)
+        val objects = correios.getPackageInfo(decoded.trackingId)
 
-        when (val firstObject = correiosResponse.objeto.first()) {
+        when (val firstObject = objects.first()) {
             is CorreiosFoundObjeto -> {
                 // Some Correios' packages are super wonky and while they are marked as delivered, they have duplicate events "package delievered to recipient" events (See: AA123456785BR)
-                if (firstObject.events.any { it.type == EventType.PackageDeliveredToRecipient })
+                if (firstObject.events.any { it.codigo == EventType.PackageDeliveredToRecipient })
                     context.failEphemerally(
                         context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.PackageAlreadyDelivered),
                         Emotes.LoriSob

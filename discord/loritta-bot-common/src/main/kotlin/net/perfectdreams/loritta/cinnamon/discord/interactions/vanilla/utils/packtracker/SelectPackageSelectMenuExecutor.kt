@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Barebone
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.CorreiosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosEvento
@@ -41,7 +40,7 @@ class SelectPackageSelectMenuExecutor(
 
         val trackingIdsTrackedByUser = context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
 
-        val lastEvent = packageEvents.maxByOrNull { it.criacao }
+        val lastEvent = packageEvents.maxByOrNull { it.dtHrCriado }
 
         context.updateMessage {
             embed {

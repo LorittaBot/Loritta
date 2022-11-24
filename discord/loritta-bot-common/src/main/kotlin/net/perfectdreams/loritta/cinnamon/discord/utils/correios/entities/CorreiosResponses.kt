@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities
 
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,21 +16,15 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable
-data class CorreiosResponse(
-    val versao: String,
-    val quantidade: Int,
-    val pesquisa: String,
-    val resultado: String,
-    val objeto: List<CorreiosObjeto>
-)
+data class CorreiosResponse(val objetos: List<CorreiosObjeto>)
 
 @Serializable(CorreiosObjeto.Serializer::class)
 sealed class CorreiosObjeto {
-    abstract val numero: String
+    abstract val codObjeto: String
 
     object Serializer : JsonContentPolymorphicSerializer<CorreiosObjeto>(CorreiosObjeto::class) {
         override fun selectDeserializer(element: JsonElement) = when {
-            "sigla" !in element.jsonObject -> CorreiosUnknownObjeto.serializer()
+            element.jsonObject.containsKey("mensagem") && element.jsonObject["mensagem"]?.jsonPrimitive?.content == "SRO-020: Objeto não encontrado na base de dados dos Correios." -> CorreiosUnknownObjeto.serializer()
             else -> CorreiosFoundObjeto.serializer()
         }
     }
@@ -39,32 +32,21 @@ sealed class CorreiosObjeto {
 
 @Serializable
 data class CorreiosFoundObjeto(
-    override val numero: String,
-    val sigla: String,
-    val nome: String,
-    val categoria: String,
-    @SerialName("evento")
+    override val codObjeto: String,
+    @SerialName("eventos")
     val events: List<CorreiosEvento>
 ) : CorreiosObjeto()
 
 @Serializable
-data class CorreiosUnknownObjeto(
-    override val numero: String,
-    val categoria: String
-) : CorreiosObjeto()
+data class CorreiosUnknownObjeto(override val codObjeto: String) : CorreiosObjeto()
 
 @Serializable
 data class CorreiosEvento(
     @Serializable(EventType.Serializer::class)
-    @SerialName("tipo")
-    val type: EventType,
-    val status: String,
-    @Serializable(LocalDateSerializer::class)
-    val data: LocalDate,
-    @Serializable(LocalTimeSerializer::class)
-    val hora: LocalTime,
+    val codigo: EventType,
+    val tipo: String,
     @Serializable(CorreiosCreationDateSerializer::class)
-    val criacao: LocalDateTime,
+    val dtHrCriado: Instant,
     val descricao: String,
     val detalhe: String? = null,
     val recebedor: JsonObject? = null,
@@ -90,34 +72,26 @@ data class CorreiosDetalheOEC(
 sealed class CorreiosUnidade {
     object Serializer : JsonContentPolymorphicSerializer<CorreiosUnidade>(CorreiosUnidade::class) {
         override fun selectDeserializer(element: JsonElement) = when {
-            element.jsonObject["tipounidade"]!!.jsonPrimitive.content == "País" -> CorreiosUnidadeExterior.serializer()
+            element.jsonObject["tipo"]!!.jsonPrimitive.content == "País" -> CorreiosUnidadeExterior.serializer()
             else -> CorreiosUnidadeBrasil.serializer()
         }
     }
 
-    abstract val local: String
-    abstract val codigo: String
-    abstract val sto: String
-    abstract val tipounidade: String
+    abstract val codSro: String?
+    abstract val tipo: String
 }
 
 @Serializable
 data class CorreiosUnidadeBrasil(
-    override val local: String,
-    override val codigo: String,
-    override val sto: String,
-    override val tipounidade: String,
-    val cidade: String? = null,
-    val uf: String,
+    override val codSro: String? = null,
+    override val tipo: String,
     val endereco: CorreiosEnderecoBrasil
 ) : CorreiosUnidade()
 
 @Serializable
 data class CorreiosUnidadeExterior(
-    override val local: String,
-    override val codigo: String,
-    override val sto: String,
-    override val tipounidade: String,
+    override val codSro: String? = null,
+    override val tipo: String,
     val endereco: CorreiosEnderecoExterior
 ) : CorreiosUnidade()
 
@@ -133,12 +107,11 @@ data class CorreiosDestino(
 
 @Serializable
 data class CorreiosEnderecoBrasil(
-    val codigo: String,
     val cep: String? = null,
     val logradouro: String? = null,
     val complemento: String? = null,
     val numero: String? = null,
-    val localidade: String? = null,
+    val cidade: String? = null,
     val uf: String,
     val bairro: String? = null,
     val latitude: Double? = null,
@@ -147,7 +120,7 @@ data class CorreiosEnderecoBrasil(
 
 @Serializable
 data class CorreiosEnderecoExterior(
-    val codigo: String,
+    val codigo: String? = null,
     val latitude: Double? = null,
     val longitude: Double? = null
 )
@@ -300,62 +273,23 @@ public sealed class StatusType(public val status: Int) {
     public class Unknown(value: Int) : StatusType(value)
 }
 
-private object LocalDateSerializer : KSerializer<LocalDate> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateSerializer", PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: LocalDate) {
-        encoder.encodeString("${value.dayOfMonth.toString().padStart(2, '0')}/${value.monthNumber.toString().padStart(2, '0')}/${value.year}")
-    }
-
-    override fun deserialize(decoder: Decoder): LocalDate {
-        val (day, month, year) = decoder.decodeString().split("/")
-        return LocalDate(year.toInt(), month.toInt(), day.toInt())
-    }
-}
-
-private object LocalTimeSerializer : KSerializer<LocalTime> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalTimeSerializer", PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: LocalTime) {
-        encoder.encodeString("${value.hour.toString().padStart(2, '0')}:${value.minute.toString().padStart(2, '0')}")
-    }
-
-    override fun deserialize(decoder: Decoder): LocalTime {
-        val (hour, minute) = decoder.decodeString().split(":")
-        return LocalTime(hour.toInt(), minute.toInt())
-    }
-}
-
-private object CorreiosCreationDateSerializer : KSerializer<LocalDateTime> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("CorreiosCreationDateSerializer", PrimitiveKind.STRING)
-
-    // Example: 24012022124519
-
-    override fun serialize(encoder: Encoder, value: LocalDateTime) {
-        encoder.encodeString("${value.dayOfMonth.toString().padStart(2, '0')}${value.monthNumber.toString().padStart(2, '0')}${value.year}${value.hour.toString().padStart(2, '0')}${value.minute.toString().padStart(2, '0')}${value.second.toString().padStart(2, '0')}")
-    }
-
-    override fun deserialize(decoder: Decoder): LocalDateTime {
-        val input = decoder.decodeString()
-
-        val day = input.substring(0..1).toInt()
-        val month = input.substring(2..3).toInt()
-        val year = input.substring(4..7).toInt()
-        val hour = input.substring(8..9).toInt()
-        val minute = input.substring(10..11).toInt()
-        val second = input.substring(12..13).toInt()
-
-        return LocalDateTime(year, month, day, hour, minute, second)
-    }
-}
-
-// kotlinx.datetime doesn't have LocalTime... yet
-data class LocalTime(val hour: Int, val minute: Int)
-
 val CorreiosEvento.eventTypeWithStatus
     get() = EventTypeWithStatus(
-        this.type,
-        this.type.getStatusById(this.status.toInt())
+        this.codigo,
+        this.codigo.getStatusById(this.tipo.toInt())
     )
 
 data class EventTypeWithStatus(val event: EventType, val status: StatusType)
+
+private object CorreiosCreationDateSerializer : KSerializer<Instant> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("CorreiosCreationDateSerializer", PrimitiveKind.STRING)
+
+    // Example: 2022-11-18T14:31:50
+
+    override fun serialize(encoder: Encoder, value: Instant) = TODO()
+
+    override fun deserialize(decoder: Decoder): Instant {
+        val input = decoder.decodeString()
+        return Instant.parse(input + "Z")
+    }
+}

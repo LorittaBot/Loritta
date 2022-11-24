@@ -40,7 +40,8 @@ class TrackPackageExecutor(loritta: LorittaBot, val client: CorreiosClient) : Ci
             val wouldHaveOverflown = obj.events.size > DiscordResourceLimits.Embed.FieldsPerEmbed
 
             embed {
-                title = "${Emotes.Correios} `${trackingId}` (${obj.nome})"
+                // TODO: Fix obj.nome, it seems to be within the postal object
+                title = "${Emotes.Correios} `${trackingId}`"
                 if (wouldHaveOverflown)
                     description = i18nContext.get(PackageCommand.I18N_PREFIX.Track.TooManyEventsFiltered(DiscordResourceLimits.Embed.FieldsPerEmbed))
 
@@ -98,7 +99,7 @@ class TrackPackageExecutor(loritta: LorittaBot, val client: CorreiosClient) : Ci
 
         val packageId = args[options.trackingId].uppercase()
 
-        val correiosResponse = try {
+        val objects = try {
             client.getPackageInfo(packageId)
         } catch (e: InvalidTrackingIdException) {
             context.failEphemerally(
@@ -107,7 +108,7 @@ class TrackPackageExecutor(loritta: LorittaBot, val client: CorreiosClient) : Ci
             )
         }
 
-        val obj = correiosResponse.objeto.firstOrNull()
+        val obj = objects.firstOrNull()
 
         if (obj is CorreiosUnknownObjeto)
             context.failEphemerally(

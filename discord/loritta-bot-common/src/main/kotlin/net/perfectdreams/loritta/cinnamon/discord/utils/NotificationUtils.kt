@@ -63,7 +63,7 @@ object NotificationUtils {
 
                         image = CorreiosUtils.getImage(eventTypeWithStatus)
                         color = LorittaColors.CorreiosYellow.toKordColor()
-                        timestamp = event.criacao.toInstant(KTX_DATETIME_CORREIOS_OFFSET)
+                        timestamp = event.dtHrCriado
                     }
                 }
             }

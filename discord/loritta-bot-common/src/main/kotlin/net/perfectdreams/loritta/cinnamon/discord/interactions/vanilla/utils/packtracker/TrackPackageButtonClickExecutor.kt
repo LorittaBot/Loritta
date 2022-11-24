@@ -24,7 +24,7 @@ class TrackPackageButtonClickExecutor(
         context.deferUpdateMessage()
         val (userId, trackingId) = context.decodeDataFromComponentAndRequireUserToMatch<TrackPackageData>()
 
-        val correiosResponse = try {
+        val objects = try {
             client.getPackageInfo(trackingId)
         } catch (e: InvalidTrackingIdException) {
             context.failEphemerally(
@@ -33,7 +33,7 @@ class TrackPackageButtonClickExecutor(
             )
         }
 
-        val pack = correiosResponse.objeto.firstOrNull()
+        val pack = objects.firstOrNull()
 
         if (pack is CorreiosUnknownObjeto)
             context.failEphemerally(

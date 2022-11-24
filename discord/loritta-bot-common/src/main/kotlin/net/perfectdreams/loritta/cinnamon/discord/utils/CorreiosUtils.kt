@@ -47,13 +47,13 @@ object CorreiosUtils {
         val unidade = event.unidade
 
         val local = when (unidade) {
-            is CorreiosUnidadeBrasil -> unidade.local
-            is CorreiosUnidadeExterior -> unidade.local
+            is CorreiosUnidadeBrasil -> unidade.endereco.cidade
+            is CorreiosUnidadeExterior -> unidade.endereco.codigo
         }
 
         val firstDestino = event.destino?.firstOrNull()
 
-        return if (event.type == EventType.PackageDeliveredToRecipient) {
+        return if (event.codigo == EventType.PackageDeliveredToRecipient) {
             buildString {
                 if (event.detalhe != null) {
                     append("> **${event.detalhe}**")
@@ -62,14 +62,14 @@ object CorreiosUtils {
 
                 append(
                     when (unidade) {
-                        is CorreiosUnidadeBrasil -> "pela ${unidade.tipounidade}, ${unidade.local}, ${unidade.endereco.localidade} - ${unidade.endereco.uf}"
-                        is CorreiosUnidadeExterior -> "pela ${unidade.tipounidade}, ${unidade.local}"
+                        is CorreiosUnidadeBrasil -> "pela ${unidade.tipo}, ${unidade.endereco.cidade} - ${unidade.endereco.uf}"
+                        is CorreiosUnidadeExterior -> "pela ${unidade.tipo}"
                     }
                 )
 
                 append("\n")
 
-                append("<t:${event.criacao.toInstant(UtcOffset(-3)).epochSeconds}:F>")
+                append("<t:${event.dtHrCriado.epochSeconds}:F>")
             }
         } else if (firstDestino != null && unidade is CorreiosUnidadeBrasil) {
             buildString {
@@ -78,17 +78,17 @@ object CorreiosUtils {
                     append("\n")
                 }
 
-                append("de ${unidade.tipounidade}, ${unidade.local}, ${unidade.endereco.localidade} - ${unidade.endereco.uf}")
+                append("de ${unidade.tipo}, ${unidade}, ${unidade.endereco.cidade} - ${unidade.endereco.uf}")
                 append("\n")
-                append("para ${firstDestino.local}, ${firstDestino.endereco.localidade} - ${unidade.endereco.uf}")
+                append("para ${firstDestino.local}, ${firstDestino.endereco.cidade} - ${unidade.endereco.uf}")
                 append("\n")
 
-                append("<t:${event.criacao.toInstant(UtcOffset(-3)).epochSeconds}:F>")
+                append("<t:${event.dtHrCriado.epochSeconds}:F>")
             }
         } else {
             val endereco = (unidade as? CorreiosUnidadeBrasil)
                 ?.let {
-                    "${it.endereco.localidade} - ${it.endereco.uf}"
+                    "${it.endereco.cidade} - ${it.endereco.uf}"
                 }
 
             buildString {
@@ -104,7 +104,7 @@ object CorreiosUtils {
                     append("\n")
                 }
 
-                append("<t:${event.criacao.toInstant(UtcOffset(-3)).epochSeconds}:F>")
+                append("<t:${event.dtHrCriado.epochSeconds}:F>")
             }
         }
     }
