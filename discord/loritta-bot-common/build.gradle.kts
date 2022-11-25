@@ -117,7 +117,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.12.2")
 }
 
-val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:browserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 tasks.test {
     useJUnitPlatform()

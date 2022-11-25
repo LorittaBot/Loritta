@@ -1,4 +1,6 @@
 @file:JsExport
+@file:NoLiveLiterals
+import androidx.compose.runtime.NoLiveLiterals
 import net.perfectdreams.spicymorenitta.locale
 import kotlin.js.*
 

@@ -1,6 +1,8 @@
 @file:JsExport
+@file:NoLiveLiterals
 package net.perfectdreams.spicymorenitta.utils
 
+import androidx.compose.runtime.NoLiveLiterals
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.html.dom.append

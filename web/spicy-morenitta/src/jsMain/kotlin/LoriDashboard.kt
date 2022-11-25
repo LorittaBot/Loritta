@@ -1,4 +1,6 @@
+@file:NoLiveLiterals
 
+import androidx.compose.runtime.NoLiveLiterals
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.html.*

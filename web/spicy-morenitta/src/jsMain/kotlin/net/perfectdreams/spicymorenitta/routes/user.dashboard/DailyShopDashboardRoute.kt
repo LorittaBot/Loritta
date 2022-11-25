@@ -1,5 +1,7 @@
+@file:NoLiveLiterals
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
+import androidx.compose.runtime.NoLiveLiterals
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
