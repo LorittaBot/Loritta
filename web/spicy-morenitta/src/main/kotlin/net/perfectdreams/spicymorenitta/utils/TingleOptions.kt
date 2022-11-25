@@ -1,12 +1,12 @@
 package net.perfectdreams.spicymorenitta.utils
 
-class TingleOptions(
-		val footer: Boolean? = null,
-		val stickyFooter: Boolean? = null,
-		val closeMethods: Array<String> = arrayOf(),
-		val closeLabel: String? = null,
-		val cssClass: Array<String> = arrayOf(),
-		val onOpen: (() -> Unit)? = null,
-		val onClose: (() -> Unit)? = null,
-		val beforeClose: (() -> Boolean)? = null
-)
+external interface TingleOptions {
+	var footer: Boolean?
+	var stickyFooter: Boolean?
+	var closeMethods: Array<String>
+	var closeLabel: String?
+	var cssClass: Array<String>
+	var onOpen: (() -> Unit)?
+	var onClose: (() -> Unit)?
+	var beforeClose: (() -> Boolean)?
+}

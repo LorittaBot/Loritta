@@ -34,17 +34,8 @@ import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.FanArtArtist
-import net.perfectdreams.spicymorenitta.utils.LockerUtils
-import net.perfectdreams.spicymorenitta.utils.TingleModal
-import net.perfectdreams.spicymorenitta.utils.TingleOptions
-import net.perfectdreams.spicymorenitta.utils.awaitLoad
-import net.perfectdreams.spicymorenitta.utils.generateAd
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
-import net.perfectdreams.spicymorenitta.utils.loriUrl
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.select
-import net.perfectdreams.spicymorenitta.utils.visibleModal
 import org.w3c.dom.Audio
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
@@ -390,10 +381,10 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
     fun openProfileDesignInformation(result: ProfileSectionsResponse.ProfileDataWrapper, background: ProfileDesign, alreadyBought: Boolean, image: Image, fanArtArtists: List<FanArtArtist>) {
         val modal = TingleModal(
-            TingleOptions(
-                footer = true,
+            jsObject<TingleOptions> {
+                footer = true
                 cssClass = arrayOf("tingle-modal--overflow")
-            )
+            }
         )
 
         modal.setContent(
@@ -514,10 +505,10 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
     fun openBackgroundInformation(result: ProfileSectionsResponse.ProfileDataWrapper, backgroundWithVariations: BackgroundWithVariations, alreadyBought: Boolean, backgroundImg: BackgroundImage, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
         val (background, variations) = backgroundWithVariations
         val modal = TingleModal(
-            TingleOptions(
-                footer = true,
+            jsObject<TingleOptions> {
+                footer = true
                 cssClass = arrayOf("tingle-modal--overflow")
-            )
+            }
         )
         val defaultVariation = variations.first { it is DefaultBackgroundVariation }
 

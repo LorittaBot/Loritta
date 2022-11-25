@@ -67,26 +67,7 @@ import net.perfectdreams.spicymorenitta.routes.user.dashboard.BackgroundsListDas
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.DailyShopDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileDesignsListDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.ShipEffectsDashboardRoute
-import net.perfectdreams.spicymorenitta.utils.AdvertisementUtils
-import net.perfectdreams.spicymorenitta.utils.AuthUtils
-import net.perfectdreams.spicymorenitta.utils.ErrorTracker
-import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
-import net.perfectdreams.spicymorenitta.utils.Logging
-import net.perfectdreams.spicymorenitta.utils.Moment
-import net.perfectdreams.spicymorenitta.utils.NitroPay
-import net.perfectdreams.spicymorenitta.utils.TingleModal
-import net.perfectdreams.spicymorenitta.utils.TingleOptions
-import net.perfectdreams.spicymorenitta.utils.WebsiteUtils
-import net.perfectdreams.spicymorenitta.utils.gtag
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.onDOMReady
-import net.perfectdreams.spicymorenitta.utils.onMouseEnter
-import net.perfectdreams.spicymorenitta.utils.onMouseLeave
-import net.perfectdreams.spicymorenitta.utils.onScroll
-import net.perfectdreams.spicymorenitta.utils.select
-import net.perfectdreams.spicymorenitta.utils.selectAll
-import net.perfectdreams.spicymorenitta.utils.trackOverflowChanges
-import net.perfectdreams.spicymorenitta.utils.visibleModal
+import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
@@ -224,7 +205,7 @@ class SpicyMorenitta : Logging {
 
 		ErrorTracker.start(this)
 
-		info("HELLO FROM KOTLIN ${KotlinVersion.CURRENT.toString()}!")
+		info("HELLO FROM KOTLIN ${KotlinVersion.CURRENT.toString()}! :3")
 		info("SpicyMorenitta :3")
 		info("Howdy, my name is Loritta!")
 		info("I want to make the world a better place... making people happier and helping other people... changing their lives...")
@@ -451,10 +432,10 @@ class SpicyMorenitta : Logging {
 
 				deleteAccountButton.onClick {
 					val modal = TingleModal(
-						TingleOptions(
-							footer = true,
+						jsObject<TingleOptions> {
+							footer = true
 							cssClass = arrayOf("tingle-modal--overflow")
-						)
+						}
 					)
 
 					var counterJob: Job? = null

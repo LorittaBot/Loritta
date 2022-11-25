@@ -404,30 +404,6 @@ external interface JQueryStatic {
 	fun parseHTML(data: String, context: Document? = definedExternally /* null */, keepScripts: Boolean? = definedExternally /* null */): Array<Any>
 }
 
-external interface `T$2` {
-	@nativeGetter
-	operator fun get(key: String): ((eventObject: JQueryEventObject, args: Any) -> Any)?
-
-	@nativeSetter
-	operator fun set(key: String, value: (eventObject: JQueryEventObject, args: Any) -> Any)
-}
-
-external interface `T$3` {
-	@nativeGetter
-	operator fun get(key: String): ((eventObject: JQueryEventObject, args: Any) -> Any)?
-
-	@nativeSetter
-	operator fun set(key: String, value: (eventObject: JQueryEventObject, args: Any) -> Any)
-}
-
-external interface `T$4` {
-	@nativeGetter
-	operator fun get(method: String): ((args: Any) -> Any)?
-
-	@nativeSetter
-	operator fun set(method: String, value: (args: Any) -> Any)
-}
-
 external interface JQuery {
 	fun ajaxComplete(handler: (event: JQueryEventObject, XMLHttpRequest: XMLHttpRequest, ajaxOptions: Any) -> Any): JQuery
 	fun ajaxError(handler: (event: JQueryEventObject, jqXHR: JQueryXHR, ajaxSettings: JQueryAjaxSettings, thrownError: Any) -> Any): JQuery
@@ -647,8 +623,6 @@ external interface JQuery {
 	fun on(events: String, data: Any, handler: (eventObject: JQueryEventObject, args: Any) -> Any): JQuery
 	fun on(events: String, selector: String, handler: (eventObject: JQueryEventObject, eventData: Any) -> Any): JQuery
 	fun on(events: String, selector: String, data: Any, handler: (eventObject: JQueryEventObject, eventData: Any) -> Any): JQuery
-	fun on(events: `T$2`, selector: String? = definedExternally /* null */, data: Any? = definedExternally /* null */): JQuery
-	fun on(events: `T$3`, data: Any? = definedExternally /* null */): JQuery
 	fun one(events: String, handler: (eventObject: JQueryEventObject) -> Any): JQuery
 	fun one(events: String, data: Any, handler: (eventObject: JQueryEventObject) -> Any): JQuery
 	fun one(events: String, selector: String, handler: (eventObject: JQueryEventObject) -> Any): JQuery
@@ -769,7 +743,6 @@ external interface JQuery {
 	fun wrapInner(wrappingElement: String): JQuery
 	fun wrapInner(func: (index: Number) -> String): JQuery
 	fun each(func: (index: Number, elem: Element) -> dynamic /* Boolean | Unit */): JQuery
-	fun get(index: Number): HTMLElement
 	fun get(): Array<HTMLElement>
 	fun index(): Number
 	fun index(selector: String): Number
@@ -777,10 +750,8 @@ external interface JQuery {
 	fun index(selector: Element): Number
 	var length: Number
 	var selector: String
-	@nativeGetter
-	operator fun get(index: Number): HTMLElement?
 
-	@nativeSetter
+	operator fun get(index: Number): HTMLElement?
 	operator fun set(index: Number, value: HTMLElement)
 
 	fun add(selector: String, context: Element? = definedExternally /* null */): JQuery
@@ -840,7 +811,6 @@ external interface JQuery {
 	fun queue(callback: Function<*>): JQuery
 	fun queue(queueName: String, newQueue: Array<Function<*>>): JQuery
 	fun queue(queueName: String, callback: Function<*>): JQuery
-	fun extend(`object`: `T$4`): JQuery
 }
 
 external var jQuery: JQueryStatic = definedExternally

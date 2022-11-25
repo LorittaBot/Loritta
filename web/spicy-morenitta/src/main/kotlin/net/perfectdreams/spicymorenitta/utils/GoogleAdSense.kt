@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.utils
 
 import org.w3c.dom.HTMLDivElement

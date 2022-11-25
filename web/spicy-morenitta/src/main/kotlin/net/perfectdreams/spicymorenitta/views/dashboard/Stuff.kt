@@ -7,14 +7,15 @@ import net.perfectdreams.spicymorenitta.utils.TingleModal
 import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import kotlinx.browser.document
 import kotlinx.browser.window
+import net.perfectdreams.spicymorenitta.utils.jsObject
 
 object Stuff {
     fun showPremiumFeatureModal(description: (DIV.() -> (Unit))? = null) {
         val modal = TingleModal(
-                TingleOptions(
-                        footer = true,
-                        cssClass = arrayOf("tingle-modal--overflow")
-                )
+            jsObject<TingleOptions> {
+                footer = true
+                cssClass = arrayOf("tingle-modal--overflow")
+            }
         )
 
         modal.setContent(

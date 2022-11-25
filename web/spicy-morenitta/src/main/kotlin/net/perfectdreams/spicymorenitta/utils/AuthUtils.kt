@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.serialization.json.JSON

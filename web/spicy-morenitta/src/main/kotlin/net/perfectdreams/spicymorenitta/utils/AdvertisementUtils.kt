@@ -91,10 +91,10 @@ object AdvertisementUtils : Logging {
 
 	fun openDisableAdblockModal() {
 		val modal = TingleModal(
-				TingleOptions(
-						footer = true,
-						cssClass = arrayOf("tingle-modal--overflow")
-				)
+			jsObject<TingleOptions> {
+				footer = true
+				cssClass = arrayOf("tingle-modal--overflow")
+			}
 		)
 
 		modal.addFooterBtn("<i class=\"far fa-thumbs-up\"></i> ${locale["website.antiAdblock.disabledAdblock"]}", "button-discord button-discord-info pure-button button-discord-modal") {

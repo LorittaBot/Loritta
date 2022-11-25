@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes
 
 import io.ktor.client.request.*
@@ -48,10 +49,10 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
         println("Channel is $channelId")
 
         val json = json(
-                "content" to (page.getElementById("reputation-reason") as HTMLTextAreaElement).value,
-                "token" to token,
-                "guildId" to guildId,
-                "channelId" to channelId
+            "content" to (page.getElementById("reputation-reason") as HTMLTextAreaElement).value,
+            "token" to token,
+            "guildId" to guildId,
+            "channelId" to channelId
         )
 
         println(json.toString())
@@ -92,11 +93,14 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
             reputationButton.addClass("button-discord-info")
             reputationButton.removeClass("button-discord-disabled")
 
-            GoogleRecaptchaUtils.render(jq("#reputation-captcha").get()[0], RecaptchaOptions(
-                    "6Ld273kUAAAAAIIKfAhF4eIhBmOC80M6rx4sY2NE",
-                    "recaptchaCallback",
-                    "invisible"
-            ))
+            GoogleRecaptchaUtils.render(
+                jq("#reputation-captcha").get()[0],
+                jsObject {
+                    sitekey = "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC"
+                    callback = "recaptchaCallback"
+                    size = "invisible"
+                }
+            )
 
             reputationButton.onClick {
                 GoogleRecaptcha.execute()
@@ -172,13 +176,13 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
 
     @Serializable
     data class ReputationLeaderboardResponse(
-            val count: Int,
-            val rank: List<ReputationLeaderboardEntry>
+        val count: Int,
+        val rank: List<ReputationLeaderboardEntry>
     )
 
     @Serializable
     data class ReputationLeaderboardEntry(
-            val count: Int,
-            val user: ServerConfig.SelfMember
+        val count: Int,
+        val user: ServerConfig.SelfMember
     )
 }

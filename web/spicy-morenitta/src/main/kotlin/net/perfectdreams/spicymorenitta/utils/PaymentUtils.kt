@@ -21,9 +21,9 @@ object PaymentUtils : Logging {
 	 */
 	fun requestAndRedirectToPaymentUrl(meta: dynamic, url: String = "${loriUrl}api/v1/users/donate") {
 		val modal = TingleModal(
-				TingleOptions(
-						footer = true
-				)
+			jsObject<TingleOptions> {
+				footer = true
+			}
 		)
 
 		modal.setContent(
@@ -64,9 +64,9 @@ object PaymentUtils : Logging {
 					SpicyMorenitta.INSTANCE.hideLoadingScreen()
 
 					val modal = TingleModal(
-							TingleOptions(
-									footer = true
-							)
+						jsObject<TingleOptions> {
+							footer = true
+						}
 					)
 
 					modal.setContent(

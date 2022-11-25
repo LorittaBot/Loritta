@@ -15,7 +15,7 @@ kotlin {
         withJava()
     }
 
-    js {
+    js(IR) {
         browser()
         nodejs()
     }

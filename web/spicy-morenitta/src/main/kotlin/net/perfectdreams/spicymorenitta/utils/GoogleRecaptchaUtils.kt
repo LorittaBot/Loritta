@@ -4,6 +4,7 @@ import org.w3c.dom.HTMLElement
 import utils.GoogleRecaptcha
 import utils.RecaptchaOptions
 
+@JsExport
 object GoogleRecaptchaUtils {
 	private var isGoogleRecaptchaLoaded = false
 	private val queuedRecaptchas = mutableListOf<QueuedRecaptcha>()

@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
@@ -198,10 +199,10 @@ class YouTubeRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 	private fun editTrackedYouTubeAccount(guild: PartialGuildConfiguration, accountInfo: YouTubeAccountInfo?, trackedYouTubeAccount: ServerConfig.TrackedYouTubeAccount) {
 		val modal = TingleModal(
-				TingleOptions(
-						footer = true,
-						cssClass = arrayOf("tingle-modal--overflow")
-				)
+			jsObject<TingleOptions> {
+				footer = true
+				cssClass = arrayOf("tingle-modal--overflow")
+			}
 		)
 
 		modal.addFooterBtn("Salvar", "button-discord button-discord-info pure-button button-discord-modal") {

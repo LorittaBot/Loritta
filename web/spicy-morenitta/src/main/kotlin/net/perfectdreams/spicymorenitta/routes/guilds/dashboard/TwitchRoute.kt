@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
@@ -201,10 +202,10 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 
 	private fun editTrackedTwitchAccount(guild: PartialGuildConfiguration, accountInfo: TwitchAccountInfo?, trackedTwitchAccount: ServerConfig.TrackedTwitchAccount) {
 		val modal = TingleModal(
-				TingleOptions(
-						footer = true,
-						cssClass = arrayOf("tingle-modal--overflow")
-				)
+			jsObject<TingleOptions> {
+				footer = true
+				cssClass = arrayOf("tingle-modal--overflow")
+			}
 		)
 
 		modal.addFooterBtn("Salvar", "button-discord button-discord-info pure-button button-discord-modal") {

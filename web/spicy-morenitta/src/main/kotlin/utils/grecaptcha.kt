@@ -9,4 +9,8 @@ external object GoogleRecaptcha {
 	fun execute()
 }
 
-class RecaptchaOptions(val sitekey: String, val callback: String, val size: String)
+external interface RecaptchaOptions {
+	var sitekey: String
+	var callback: String
+	var size: String
+}

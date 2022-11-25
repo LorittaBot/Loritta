@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
@@ -316,10 +317,10 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 						onClickFunction = {
 							val modal = TingleModal(
-									TingleOptions(
-											footer = true,
-											cssClass = arrayOf("tingle-modal--overflow")
-									)
+								jsObject<TingleOptions> {
+									footer = true
+									cssClass = arrayOf("tingle-modal--overflow")
+								}
 							)
 
 							modal.addFooterBtn("<i class=\"fas fa-redo\"></i> ${locale["$LOCALE_PREFIX.resetXp.clearAll"]}", "button-discord button-discord-attention pure-button button-discord-modal") {

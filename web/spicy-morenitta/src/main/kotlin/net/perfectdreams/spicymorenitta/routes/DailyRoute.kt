@@ -1,8 +1,10 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import jq
 import kotlinx.browser.document
@@ -19,11 +21,8 @@ import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
-import net.perfectdreams.spicymorenitta.utils.GoogleRecaptchaUtils
-import net.perfectdreams.spicymorenitta.utils.LoriWebCode
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.Audio
 import org.w3c.dom.Element
@@ -99,11 +98,14 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                 locale["website.daily.alreadyReceivedPrizesWithTheSameIp"]
             }
 
-            GoogleRecaptchaUtils.render(jq("#daily-captcha").get()[0], RecaptchaOptions(
-                "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC",
-                "recaptchaCallback",
-                "normal"
-            ))
+            GoogleRecaptchaUtils.render(
+                jq("#daily-captcha").get()[0],
+                jsObject {
+                    sitekey = "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC"
+                    callback = "recaptchaCallback"
+                    size = "normal"
+                }
+            )
             m.hideLoadingScreen()
         }
     }

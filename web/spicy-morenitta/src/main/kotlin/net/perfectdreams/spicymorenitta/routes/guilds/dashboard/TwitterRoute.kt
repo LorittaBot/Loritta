@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
@@ -201,10 +202,10 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 
 	private fun editTrackedTwitterAccount(guild: PartialGuildConfiguration, accountInfo: TwitterAccountInfo?, trackedTwitterAccount: TrackedTwitterAccount) {
 		val modal = TingleModal(
-				TingleOptions(
-						footer = true,
-						cssClass = arrayOf("tingle-modal--overflow")
-				)
+			jsObject<TingleOptions> {
+				footer = true
+				cssClass = arrayOf("tingle-modal--overflow")
+			}
 		)
 
 		modal.addFooterBtn("Salvar", "button-discord button-discord-info pure-button button-discord-modal") {

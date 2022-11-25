@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.embededitor.data.crosswindow.*
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.TingleModal
 import net.perfectdreams.spicymorenitta.utils.TingleOptions
+import net.perfectdreams.spicymorenitta.utils.jsObject
 import net.perfectdreams.spicymorenitta.utils.select
 import org.w3c.dom.Audio
 import org.w3c.dom.HTMLDivElement
@@ -135,10 +136,10 @@ object LoriDashboard {
 				selectChannelDropdown.asDynamic().select2("close")
 
 				val modal = TingleModal(
-						TingleOptions(
-								footer = true,
-								cssClass = arrayOf("tingle-modal--overflow")
-						)
+						jsObject<TingleOptions> {
+							footer = true
+							cssClass = arrayOf("tingle-modal--overflow")
+						}
 				)
 
 				modal.setContent(
@@ -243,10 +244,10 @@ object LoriDashboard {
 				select.asDynamic().select2("close")
 
 				val modal = TingleModal(
-						TingleOptions(
-								footer = true,
-								cssClass = arrayOf("tingle-modal--overflow")
-						)
+					jsObject<TingleOptions> {
+						footer = true
+						cssClass = arrayOf("tingle-modal--overflow")
+					}
 				)
 
 				modal.setContent(

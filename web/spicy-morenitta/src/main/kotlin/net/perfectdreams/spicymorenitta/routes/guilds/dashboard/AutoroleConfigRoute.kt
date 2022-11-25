@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
@@ -136,10 +137,10 @@ class AutoroleConfigRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 		if (role != null) {
 			if (role.isManaged || !role.canInteract) {
 				val modal = TingleModal(
-						TingleOptions(
-								footer = true,
-								cssClass = arrayOf("tingle-modal--overflow")
-						)
+					jsObject<TingleOptions> {
+						footer = true
+						cssClass = arrayOf("tingle-modal--overflow")
+					}
 				)
 
 				if (role.isManaged) {

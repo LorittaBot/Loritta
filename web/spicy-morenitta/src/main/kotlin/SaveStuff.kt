@@ -1,4 +1,4 @@
-
+@file:JsExport
 import net.perfectdreams.spicymorenitta.locale
 import kotlin.js.*
 

@@ -4,13 +4,9 @@ plugins {
 }
 
 kotlin {
-	// We need to use the Legacy compiler, see https://github.com/Kotlin/kotlinx.serialization/issues/1369
-	js(LEGACY) {
-		browser {
-			dceTask {
-				keep("ktor-ktor-io.\$\$importsForInline\$\$.ktor-ktor-io.io.ktor.utils.io")
-			}
-		}
+	js(IR) {
+		browser()
+		binaries.executable()
 	}
 
 	sourceSets["main"].dependencies {

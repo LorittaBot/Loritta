@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes.user.dashboard
 
 import kotlinx.browser.document

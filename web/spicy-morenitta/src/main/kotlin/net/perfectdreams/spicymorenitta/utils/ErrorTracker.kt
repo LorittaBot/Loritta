@@ -113,10 +113,10 @@ object ErrorTracker : Logging {
 		}
 
 		val modal = TingleModal(
-			TingleOptions(
-				footer = true,
+			jsObject<TingleOptions> {
+				footer = true
 				cssClass = arrayOf("tingle-modal--overflow")
-			)
+			}
 		)
 
 		modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {

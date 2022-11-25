@@ -1,3 +1,4 @@
+@file:JsExport
 package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 
 import LoriDashboard
@@ -29,21 +30,13 @@ import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.DashboardUtils
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingScreenAndFixContent
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
-import net.perfectdreams.spicymorenitta.utils.EmbedEditorStuff
-import net.perfectdreams.spicymorenitta.utils.SaveUtils
-import net.perfectdreams.spicymorenitta.utils.TingleModal
-import net.perfectdreams.spicymorenitta.utils.TingleOptions
 import net.perfectdreams.spicymorenitta.utils.customcommands.CustomCommandData
 import net.perfectdreams.spicymorenitta.utils.customcommands.CustomCommandWrapper
 import net.perfectdreams.spicymorenitta.utils.customcommands.GiveTakeRoleCustomCommand
 import net.perfectdreams.spicymorenitta.utils.customcommands.TextCustomCommand
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.select
-import net.perfectdreams.spicymorenitta.utils.trackOverflowChanges
-import net.perfectdreams.spicymorenitta.utils.visibleModal
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
@@ -88,10 +81,10 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 			val addNewEntryButton = document.select<HTMLButtonElement>("#add-new-entry")
 			addNewEntryButton.onClick {
 				val modal = TingleModal(
-						TingleOptions(
-								footer = true,
-								cssClass = arrayOf("tingle-modal--overflow")
-						)
+					jsObject<TingleOptions> {
+						footer = true
+						cssClass = arrayOf("tingle-modal--overflow")
+					}
 				)
 
 				modal.addFooterBtn("<i class=\"fas fa-times\"></i> Fechar", "button-discord pure-button button-discord-modal button-discord-modal-secondary-action") {
@@ -219,10 +212,10 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 
 	fun openTextCommandModal(label: String, text: String) {
 		val modal = TingleModal(
-				TingleOptions(
-						footer = true,
-						cssClass = arrayOf("tingle-modal--overflow")
-				)
+			jsObject<TingleOptions> {
+				footer = true
+				cssClass = arrayOf("tingle-modal--overflow")
+			}
 		)
 
 		modal.addFooterBtn("Salvar", "button-discord button-discord-info pure-button button-discord-modal") {
