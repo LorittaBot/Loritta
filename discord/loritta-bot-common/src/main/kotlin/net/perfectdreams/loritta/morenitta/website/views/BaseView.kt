@@ -104,7 +104,7 @@ window.addEventListener('load', function () {
                 script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/adsbygoogle.js") {}
 
                 // App itself
-                script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${assetHash("assets/js/app.js")}") {}
+                script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {}
 
                 // Google AdSense
                 script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}

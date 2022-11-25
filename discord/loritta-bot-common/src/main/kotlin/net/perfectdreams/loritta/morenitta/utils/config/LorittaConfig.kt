@@ -123,7 +123,8 @@ data class LorittaConfig(
         val apiKeys: List<AuthenticationKey>,
         val maxGuildTries: Int,
         val sessionHex: String,
-        val sessionName: String
+        val sessionName: String,
+        val spicyMorenittaJsPath: String?,
     ) {
         @Serializable
         data class AuthenticationKey (

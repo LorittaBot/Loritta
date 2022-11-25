@@ -117,6 +117,8 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.12.2")
 }
 
+val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:browserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+
 tasks.test {
     useJUnitPlatform()
 }
@@ -124,6 +126,11 @@ tasks.test {
 tasks {
     processResources {
         from("../../resources/") // Include folders from the resources root folder
+
+        // Copy the output from the frontend task to the backend resources
+        from(jsBrowserProductionWebpack.destinationDirectory) {
+            into("spicy_morenitta/js/")
+        }
     }
 }
 

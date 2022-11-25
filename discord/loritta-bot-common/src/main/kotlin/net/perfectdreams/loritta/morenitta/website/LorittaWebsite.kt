@@ -27,6 +27,7 @@ import kotlinx.html.pre
 import kotlinx.html.stream.appendHTML
 import kotlinx.html.title
 import mu.KotlinLogging
+import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
@@ -43,9 +44,12 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
 import java.io.StringWriter
+import java.nio.file.Files
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.readBytes
+import kotlin.io.path.readText
 
 /**
  * Clone of the original "LorittaWebsite" from the "sweet-morenitta" module
@@ -55,7 +59,8 @@ import java.util.concurrent.TimeUnit
 class LorittaWebsite(
     val loritta: LorittaBot,
     val websiteUrl: String,
-    var frontendFolder: String
+    var frontendFolder: String,
+	val spicyMorenittaBundle: SpicyMorenittaBundle
 ) {
 	companion object {
 		lateinit var INSTANCE: LorittaWebsite
@@ -283,6 +288,13 @@ class LorittaWebsite(
 
 				File("${config.websiteFolder}/static/").listFiles().filter { it.isFile }.forEach {
 					file(it.name, it)
+				}
+
+				get("/v2/assets/js/app.js") {
+					call.respondText(
+						spicyMorenittaBundle.content(),
+						ContentType.Application.JavaScript
+					)
 				}
 
 				// This is needed because some routes were moved to Showtime, so accessing "/" shows a error 404 page

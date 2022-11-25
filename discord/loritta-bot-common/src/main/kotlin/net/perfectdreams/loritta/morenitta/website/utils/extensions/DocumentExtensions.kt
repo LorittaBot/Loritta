@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.gson
 import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
@@ -59,6 +60,13 @@ suspend fun ApplicationCall.respondHtml(html: String, status: HttpStatusCode? = 
 val ApplicationRequest.trueIp: String get() {
 	val forwardedForHeader = this.header("X-Forwarded-For")
 	return forwardedForHeader?.split(",")?.map { it.trim() }?.first() ?: this.local.remoteHost
+		.let {
+			// TODO: When Ktor is updated to 2.2.0 this won't be needed: https://github.com/ktorio/ktor/pull/3122
+			if (it == "kubernetes.docker.internal")
+				"127.0.0.1"
+			else
+				it
+		}
 }
 
 fun ApplicationCall.legacyVariables(loritta: LorittaBot, locale: BaseLocale): MutableMap<String, Any?> {

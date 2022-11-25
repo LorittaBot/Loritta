@@ -135,6 +135,10 @@ import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
+import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaDevelopmentBundle
+import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaProductionBundle
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import okhttp3.Dispatcher
@@ -289,7 +293,7 @@ class LorittaBot(
 	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
 
-	var newWebsite: net.perfectdreams.loritta.morenitta.website.LorittaWebsite? = null
+	var newWebsite: LorittaWebsite? = null
 	var newWebsiteThread: Thread? = null
 
 	var twitch = TwitchAPI(config.loritta.twitch.clientId, config.loritta.twitch.clientSecret)
@@ -843,7 +847,18 @@ class LorittaBot(
 	fun startWebServer() {
 		// Carregar os blog posts
 		newWebsiteThread = thread(true, name = "Website Thread") {
-			val nWebsite = net.perfectdreams.loritta.morenitta.website.LorittaWebsite(this, lorittaCluster.websiteUrl, config.loritta.folders.website)
+			// Loads the appropriate bundle depending if we are overriding the JS file or not
+			val spicyMorenittaJsBundle = if (this@LorittaBot.config.loritta.website.spicyMorenittaJsPath != null) {
+				SpicyMorenittaDevelopmentBundle(this@LorittaBot)
+			} else {
+				SpicyMorenittaProductionBundle(
+					SpicyMorenittaBundle.createSpicyMorenittaJsBundleContent(
+						LorittaWebsite::class.getPathFromResources("/spicy_morenitta/js/spicy-morenitta.js")!!.readText()
+					)
+				)
+			}
+
+			val nWebsite = LorittaWebsite(this, lorittaCluster.websiteUrl, config.loritta.folders.website, spicyMorenittaJsBundle)
 			newWebsite = nWebsite
 			nWebsite.start()
 		}
