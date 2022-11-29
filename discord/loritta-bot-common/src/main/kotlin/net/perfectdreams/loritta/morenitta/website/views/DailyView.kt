@@ -154,6 +154,14 @@ class DailyView(
 
             div(classes = "media") {
                 div(classes = "media-body") {
+                    div {
+                        id = "daily-compose-wrapper"
+                    }
+                }
+            }
+
+            /* div(classes = "media") {
+                div(classes = "media-body") {
                     h1 {
                         + "Prêmio Diário"
                     }
@@ -229,7 +237,7 @@ class DailyView(
                         }
                     }
                 }
-            }
+            } */
 
             adWrapper {
                 generateNitroPayAdOrSponsor(

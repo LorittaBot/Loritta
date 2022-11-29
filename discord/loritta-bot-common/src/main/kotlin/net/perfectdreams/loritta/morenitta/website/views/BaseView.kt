@@ -46,6 +46,8 @@ document.domain = "loritta.website";
 
 function onGoogleRecaptchaLoadCallback() { this['spicy-morenitta'].net.perfectdreams.spicymorenitta.utils.GoogleRecaptchaUtils.onRecaptchaLoadCallback(); };
 
+function onCloudflareTurnstileLoadCallback() { this['spicy-morenitta'].net.perfectdreams.spicymorenitta.utils.CloudflareTurnstileUtils.onRecaptchaLoadCallback(); };
+
 window.addEventListener('load', function () {
     // Verificar se o usuário está usando o antigo Edge ou MSIE, já que nós não suportamos nenhum desses dois
     // ; MSIE == MS Internet Explorer
@@ -76,7 +78,7 @@ window.addEventListener('load', function () {
                 }
                 meta(name = "viewport", content = "width=device-width, initial-scale=1")
 
-                styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${assetHash("assets/css/style.css")}")
+                styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${assetHashFromResources("v2/assets/css/style.css")}")
 
                 styleLink("https://use.fontawesome.com/releases/v6.2.0/css/all.css")
 
@@ -111,6 +113,9 @@ window.addEventListener('load', function () {
 
                 // Google ReCAPTCHA
                 script(src = "https://www.google.com/recaptcha/api.js?render=explicit&onload=onGoogleRecaptchaLoadCallback") {}
+
+                // Cloudflare Turnstile
+                script(src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onCloudflareTurnstileLoadCallback") {}
 
                 // NitroPay
                 unsafe {
@@ -158,5 +163,6 @@ window.addEventListener('load', function () {
 
     abstract fun HTML.generateBody()
 
-    fun assetHash(asset: String) =  WebsiteAssetsHashes.getAssetHash(asset)
+    fun assetHash(asset: String) = WebsiteAssetsHashes.getAssetHash(asset)
+    fun assetHashFromResources(asset: String) = WebsiteAssetsHashes.getAssetHashFromResources(asset)
 }

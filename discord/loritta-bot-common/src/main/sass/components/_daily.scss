@@ -1,0 +1,126 @@
+.daily-overview {
+    .sonhos-reward-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2em;
+        @media screen and (orientation: portrait) {
+            flex-direction: column;
+        }
+
+        .sonhos-data {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sonhos-quantity {
+            font-size: 2em;
+            color: #29a6fe;
+            font-weight: bold;
+        }
+
+        .bonus-quantity {
+            font-size: 1.5em;
+            color: #29a6fe;
+            font-weight: bold;
+        }
+    }
+
+    .daily-question-wrapper {
+        display: flex;
+        gap: 0.5em;
+        flex-direction: column;
+
+        .daily-question {
+            font-size: 2em;
+            border: 1px;
+            border: 2px solid rgba(0,0,0,.05);
+            border-radius: 7px;
+        }
+
+        .daily-question-buttons {
+            display: flex;
+            gap: 1em;
+            justify-content: center;
+        }
+    }
+
+    .daily-warning {
+        color: red;
+    }
+}
+
+.daily-gift {
+    .scene {
+        width: 100px;
+        height: 100px;
+        margin: 75px;
+        perspective: 1000px;
+        perspective-origin: 50% -400%;
+        transition: 1s;
+        filter: drop-shadow(12px 12px 25px rgba(0,0,0,0.5));
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .scene:hover {
+        transform: scale(1.1);
+        transition: 1s;
+    }
+
+    .cube {
+        width: 100px;
+        height: 100px;
+        position: relative;
+        transform-style: preserve-3d;
+        transform: translateZ(-100px);
+        transition: transform 1s;
+        animation-name: rotate-cube;
+        animation-duration: 5s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    .cube img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    .cube__face {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        // border: 2px solid black;
+        font-size: 40px;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .cube__face--front  { background: hsla(  0, 100%, 50%, 0.7); }
+    .cube__face--right  { background: hsla( 60, 100%, 50%, 0.7); }
+    .cube__face--back   { background: hsla(120, 100%, 50%, 0.7); }
+    .cube__face--left   { background: hsla(180, 100%, 50%, 0.7); }
+    .cube__face--top    { background: hsla(240, 100%, 50%, 0.7); }
+    .cube__face--bottom { background: hsla(300, 100%, 50%, 0.7); }
+
+    .cube__face--front  { transform: rotateY(  0deg) translateZ(50px); }
+    .cube__face--right  { transform: rotateY( 90deg) translateZ(50px); }
+    .cube__face--back   { transform: rotateY(180deg) translateZ(50px); }
+    .cube__face--left   { transform: rotateY(-90deg) translateZ(50px); }
+    .cube__face--top    { transform: rotateX( 90deg) translateZ(50px); }
+    .cube__face--lace1 { transform: rotateX( 0deg) rotateY(45deg) translateY(-50px) translateZ(0px); }
+    .cube__face--lace2 { transform: rotateX( 0deg) rotateY(-45deg) translateY(-50px) translateZ(0px); }
+    .cube__face--bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+    label { margin-right: 10px; }
+
+    /* The animation code */
+    @keyframes rotate-cube {
+        0% {transform: rotateY(0deg); }
+        50% {transform: rotateY(180deg); }
+        100% {transform: rotateY(360deg); }
+    }
+}

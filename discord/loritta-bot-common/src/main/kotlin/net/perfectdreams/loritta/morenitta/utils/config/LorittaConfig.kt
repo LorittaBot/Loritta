@@ -32,6 +32,7 @@ data class LorittaConfig(
     val openWeatherMap: OpenWeatherMapConfig,
     val googleVision: GoogleVisionConfig,
     val googleRecaptcha: GoogleRecaptchaConfig,
+    val turnstileCaptchas: TurnstileCaptchas,
     val messageEncryption: MessageEncryptionConfig,
     val crowdin: CrowdinConfig,
     val twitter: TwitterConfig,
@@ -189,6 +190,17 @@ data class LorittaConfig(
     data class GoogleRecaptchaConfig(
         val serverVoteToken: String,
         val reputationToken: String
+    )
+
+    @Serializable
+    data class TurnstileCaptchas(
+        val dailyReward: CloudflareTurnstileConfig
+    )
+
+    @Serializable
+    data class CloudflareTurnstileConfig(
+        val siteKey: String,
+        val secretKey: String
     )
 
     @Serializable

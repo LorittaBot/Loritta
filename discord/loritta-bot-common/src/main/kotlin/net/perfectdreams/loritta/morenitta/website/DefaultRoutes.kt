@@ -16,8 +16,6 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.PostP
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.PostPubSubHubbubCallbackRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetBundlesRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetDailyShopRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetLoriDailyRewardRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetLoriDailyRewardStatusRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostBundlesRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostBuyDailyShopItemRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostTransferBalanceExternalRoute
@@ -31,22 +29,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PatchServ
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostObsoleteServerConfigRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostSearchGuildsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostSendMessageGuildRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetAvailableBackgroundsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetAvailableProfileDesignsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetCommandsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetFanArtsController
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetLocaleRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetLorittaActionRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetPrometheusMetricsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetRaffleStatusRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetStatusRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostErrorRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostLorittaActionRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostRaffleStatusRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostReputationMessageRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostTransferBalanceRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostUpdateReadyRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostUpdateUserBackgroundRoute
+import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitch.GetTwitchInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitter.GetShowTwitterUserRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.GetMutualGuildsRoute
@@ -151,8 +134,6 @@ object DefaultRoutes {
 		CreateWebhookRoute(loritta),
 
 		// Economy
-		GetLoriDailyRewardRoute(loritta),
-		GetLoriDailyRewardStatusRoute(loritta),
 		PostTransferBalanceExternalRoute(loritta),
 		GetBundlesRoute(loritta),
 		PostBundlesRoute(loritta),
@@ -182,6 +163,7 @@ object DefaultRoutes {
 		GetAvailableBackgroundsRoute(loritta),
 		GetAvailableProfileDesignsRoute(loritta),
 		GetSelfUserProfileRoute(loritta),
+		PostLorittaRpcRoute(website),
 		PostLorittaActionRoute(loritta),
 		PostRaffleStatusRoute(loritta),
 		PostReputationMessageRoute(loritta),

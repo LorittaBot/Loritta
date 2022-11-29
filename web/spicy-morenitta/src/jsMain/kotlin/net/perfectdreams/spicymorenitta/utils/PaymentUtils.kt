@@ -23,6 +23,7 @@ object PaymentUtils : Logging {
 		val modal = TingleModal(
 			jsObject<TingleOptions> {
 				footer = true
+				closeMethods = arrayOf()
 			}
 		)
 
@@ -66,6 +67,7 @@ object PaymentUtils : Logging {
 					val modal = TingleModal(
 						jsObject<TingleOptions> {
 							footer = true
+							closeMethods = arrayOf()
 						}
 					)
 

@@ -94,6 +94,7 @@ object AdvertisementUtils : Logging {
 			jsObject<TingleOptions> {
 				footer = true
 				cssClass = arrayOf("tingle-modal--overflow")
+				closeMethods = arrayOf()
 			}
 		)
 

@@ -205,6 +205,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 			jsObject<TingleOptions> {
 				footer = true
 				cssClass = arrayOf("tingle-modal--overflow")
+				closeMethods = arrayOf()
 			}
 		)
 

@@ -84,6 +84,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 					jsObject<TingleOptions> {
 						footer = true
 						cssClass = arrayOf("tingle-modal--overflow")
+						closeMethods = arrayOf()
 					}
 				)
 
@@ -215,6 +216,7 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 			jsObject<TingleOptions> {
 				footer = true
 				cssClass = arrayOf("tingle-modal--overflow")
+				closeMethods = arrayOf()
 			}
 		)
 

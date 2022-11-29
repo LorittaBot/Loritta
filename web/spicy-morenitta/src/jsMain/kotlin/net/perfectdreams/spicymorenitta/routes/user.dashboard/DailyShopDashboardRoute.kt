@@ -386,6 +386,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             jsObject<TingleOptions> {
                 footer = true
                 cssClass = arrayOf("tingle-modal--overflow")
+                closeMethods = arrayOf()
             }
         )
 
@@ -510,6 +511,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
             jsObject<TingleOptions> {
                 footer = true
                 cssClass = arrayOf("tingle-modal--overflow")
+                closeMethods = arrayOf()
             }
         )
         val defaultVariation = variations.first { it is DefaultBackgroundVariation }

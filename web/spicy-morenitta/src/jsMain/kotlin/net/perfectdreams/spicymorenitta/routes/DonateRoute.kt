@@ -215,6 +215,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                     jsObject<TingleOptions> {
                         footer = true
                         cssClass = arrayOf("tingle-modal--overflow")
+                        closeMethods = arrayOf()
                     }
                 )
 
@@ -278,6 +279,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
             jsObject<TingleOptions> {
                 footer = true
                 cssClass = arrayOf("tingle-modal--overflow")
+                closeMethods = arrayOf()
             }
         )
 

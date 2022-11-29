@@ -1,6 +1,9 @@
 @file:JsExport
 package net.perfectdreams.spicymorenitta.routes
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -19,11 +22,16 @@ import loriUrl
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.components.GetDailyRewardOverview
+import net.perfectdreams.spicymorenitta.components.GotDailyRewardOverview
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
 import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
+import org.jetbrains.compose.web.css.opacity
+import org.jetbrains.compose.web.dom.*
+import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.Audio
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
@@ -32,7 +40,6 @@ import org.w3c.dom.url.URLSearchParams
 import utils.CountUp
 import utils.CountUpOptions
 import utils.Moment
-import utils.RecaptchaOptions
 import kotlin.collections.set
 import kotlin.js.Date
 import kotlin.js.Json
@@ -43,25 +50,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
     override val keepLoadingScreen: Boolean
         get() = true
 
-    val dailyNotification: Element
-        get() = document.select<HTMLElement>(".daily-notification")
-    val dailyRewardButton: Element
-        get() = document.select<HTMLElement>(".daily-reward-button")
-    val dailyPrewrapper: Element
-        get() = document.select<HTMLDivElement>("#daily-prewrapper")
-    val dailyWrapper: Element
-        get() = document.select<HTMLDivElement>("#daily-wrapper")
-
     companion object {
-        const val USER_PADDING = 2
-
-        @JsName("recaptchaCallback")
-        fun recaptchaCallback(response: String) {
-            val currentRoute = SpicyMorenitta.INSTANCE.currentRoute
-            if (currentRoute is DailyRoute)
-                currentRoute.recaptchaCallback(response)
-        }
-
         private val randomEmotes = listOf(
             "/assets/img/daily/here_comes_the_money.gif",
             "/assets/img/daily/lori_rica.png",
@@ -73,349 +62,72 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
         )
     }
 
+    // Because we are "retro-fitting" Jetpack Compose to SpicyMorenitta, we need to act like our "renderComposable" is our own tiiiny application
+    var screen by mutableStateOf<DailyScreen?>(null)
+    var opacity by mutableStateOf<Double>(1.0)
+
     override fun onRender(call: ApplicationCall) {
         super.onRender(call)
 
         m.launch {
-            val response = http.get {
-                url("${window.location.origin}/api/v1/economy/daily-reward-status")
-            }
-
-            val dailyRewardStatusAsString = response.bodyAsText()
-
-            debug("Daily Reward Status: $dailyRewardStatusAsString")
-
-            val data = JSON.parse<Json>(dailyRewardStatusAsString)
-
-            if (checkIfThereAreErrors(response, data))
-                return@launch
-
-            val receivedDailyWithSameIp = data["receivedDailyWithSameIp"] as Int
-
-            dailyNotification.textContent = if (receivedDailyWithSameIp == 0) {
-                locale["website.daily.pleaseCompleteReCaptcha"]
-            } else {
-                locale["website.daily.alreadyReceivedPrizesWithTheSameIp"]
-            }
-
-            GoogleRecaptchaUtils.render(
-                jq("#daily-captcha").get()[0],
-                jsObject {
-                    sitekey = "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC"
-                    callback = "recaptchaCallback"
-                    size = "normal"
-                }
-            )
+            // Start the default screen
+            val getDailyRewardScreen = DailyScreen.GetDailyRewardScreen(this@DailyRoute)
+            getDailyRewardScreen.onLoad()
             m.hideLoadingScreen()
+            this@DailyRoute.screen = getDailyRewardScreen
         }
-    }
 
-    fun checkIfThereAreErrors(response: HttpResponse, data: Json): Boolean {
-        if (response.status != HttpStatusCode.OK) {
-            // oof, parece ser um erro!
-            val error = data["error"] as Json?
-
-            if (error == null) {
-                dailyNotification.textContent = locale["website.daily.thisShouldNeverHappen", response.status.value]
-                return true
+        renderComposable("daily-compose-wrapper") {
+            H1 {
+                Text("Prêmio Diário")
             }
 
-            val code = error["code"] as Int
-            val webCode = LoriWebCode.fromErrorId(code)
-
-            dailyNotification.textContent = when (webCode) {
-                LoriWebCode.UNAUTHORIZED -> {
-                    dailyRewardButton.addClass("button-discord-success")
-                    dailyRewardButton.removeClass("button-discord-disabled")
-                    dailyRewardButton.onClick {
-                        val json = json()
-                        json["redirectUrl"] = "${loriUrl}daily"
-                        window.location.href = "https://discordapp.com/oauth2/authorize?redirect_uri=${loriUrl}dashboard&scope=identify%20guilds%20email&response_type=code&client_id=297153970613387264&state=${window.btoa(JSON.stringify(json))}"
-                    }
-
-                    locale["website.daily.notLoggedIn"]
-                }
-                LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_ACCOUNT_TODAY -> {
-                    val moment = Moment(data["canPayoutAgain"].unsafeCast<Long>())
-                    locale["website.daily.alreadyReceivedDailyReward", moment.fromNow()]
-                }
-                LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_IP_TODAY -> {
-                    val moment = Moment(data["canPayoutAgain"].unsafeCast<Long>())
-                    locale["website.daily.alreadyReceivedDailyReward", moment.fromNow()]
-                }
-                LoriWebCode.BLACKLISTED_EMAIL -> locale["website.daily.blacklistedEmail"]
-                LoriWebCode.BLACKLISTED_IP -> locale["website.daily.blacklistedIp"]
-                LoriWebCode.UNVERIFIED_ACCOUNT -> locale["website.daily.unverifiedAccount"]
-                LoriWebCode.INVALID_RECAPTCHA -> locale["website.daily.invalidReCaptcha"]
-                LoriWebCode.MFA_DISABLED -> locale["website.daily.pleaseActivate2FA"]
-                else -> locale["website.daily.thisShouldNeverHappen", webCode.name]
-            }
-            return true
-        } else return false
-    }
-
-    @JsName("recaptchaCallback")
-    fun recaptchaCallback(response: String) {
-        val ts1Promotion2 = Audio("${loriUrl}assets/snd/ts1_promotion2.mp3")
-        val cash = Audio("${loriUrl}assets/snd/css1_cash.wav")
-        dailyNotification.clear()
-
-        debug("reCAPTCHA Token: $response")
-
-        dailyRewardButton.addClass("button-discord-success")
-        dailyRewardButton.removeClass("button-discord-disabled")
-        dailyRewardButton.onClick {
-            dailyRewardButton.addClass("button-discord-disabled")
-            dailyRewardButton.removeClass("button-discord-success")
-
-            m.launch {
-                val searchParams = URLSearchParams(window.location.search)
-                val guild = searchParams.get("guild")
-
-                val url = if (guild != null)
-                    "${window.location.origin}/api/v1/economy/daily-reward?guild=$guild"
-                else
-                    "${window.location.origin}/api/v1/economy/daily-reward"
-
-                val response = http.get {
-                    url(url)
-                    parameter("recaptcha", response)
-                }
-
-                val dailyRewardStatusAsString = response.bodyAsText()
-
-                debug("Daily Reward: $dailyRewardStatusAsString")
-
-                val data = JSON.parse<Json>(dailyRewardStatusAsString)
-
-                if (checkIfThereAreErrors(response, data))
-                    return@launch
-
-                val payload = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(DailyResponse.serializer(), JSON.stringify(data))
-
-                jq("#daily-wrapper").fadeTo(500, 0, {
-                    dailyWrapper.asDynamic().style.position = "absolute"
-
-                    dailyPrewrapper.prepend {
-                        div {
-                            id = "daily-info"
-                            style = "opacity: 0;"
-
-                            h2 {
-                                + locale["website.daily.congratulations"]
-                            }
-
-                            img(src = "https://assets.perfectdreams.media/loritta/sonhos/bundle-45b3b35d@320w.png") {
-                                width = "200"
-                            }
-
-                            h1 {
-                                + "0"
-                                id = "dailyPayout"
-                            }
-
-                            h2 {
-                                + "Sonhos!"
-                            }
-
-                            p {
-                                locale.buildAsHtml(locale["website.daily.wantMoreSonhos"], { control ->
-                                    if (control == 0) {
-                                        a(href = "/user/@me/dashboard/bundles") {
-                                            + locale["website.daily.clickingHere"]
-                                        }
-                                    }
-                                }, { str ->
-                                    + str
-                                })
-                            }
-
-                            div {
-                                style = "display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5em;"
-
-                                a(href = "https://twitter.com/LorittaBot", classes = "button primary", target = "_blank") {
-                                    i(classes = "fab fa-twitter")
-
-                                    +" Siga no Twitter"
-                                }
-
-                                a(href = "https://www.youtube.com/c/Loritta", classes = "button red", target = "_blank") {
-                                    i(classes = "fab fa-youtube")
-
-                                    +" Inscreva-se no YouTube"
-                                }
-
-                                a(href = "https://www.instagram.com/lorittabot/", classes = "button pink", target = "_blank") {
-                                    i(classes = "fab fa-instagram")
-
-                                    +" Siga no Instagram"
-                                }
-
-                                a(href = "https://tiktok.com/@lorittamorenittabot", classes = "button purple", target = "_blank") {
-                                    i(classes = "fab fa-tiktok")
-
-                                    +" Siga no TikTok"
-                                }
-                            }
-
-                            if (payload.sponsoredBy != null) {
-                                h1 {
-                                    + locale["website.daily.youEarnedMoreSonhos", payload.sponsoredBy.multipliedBy]
-                                }
-
-                                // https://discord.com/developers/docs/reference#image-formatting
-                                val guildIconUrl = "https://cdn.discordapp.com/icons/${payload.sponsoredBy.guild.id}/${payload.sponsoredBy.guild.iconUrl}" +
-                                        if (payload.sponsoredBy.guild.iconUrl.startsWith("a_"))
-                                            ".gif"
-                                        else
-                                            ".png"
-
-                                img(src = guildIconUrl) {
-                                    attributes["width"] = "128"
-                                    attributes["height"] = "128"
-                                    attributes["style"] = "border-radius: 99999px;"
-                                }
-                                h2 {
-                                    +payload.sponsoredBy.guild.name
-                                }
-                                p {
-                                    + locale["website.daily.sponsoredStatus", payload.sponsoredBy.originalPayout, payload.sponsoredBy.guild.name, payload.dailyPayout]
-                                }
-                                if (payload.sponsoredBy.user != null) {
-                                    p {
-                                        + locale["website.daily.thankTheSponsor", "${payload.sponsoredBy.user.name}#${payload.sponsoredBy.user.discriminator}", payload.dailyPayout - payload.sponsoredBy.originalPayout]
-                                    }
-                                }
-                            }
-
-                            p {
-                                +"Agora você possui ${payload.currentBalance} sonhos, que tal gastar os seus sonhos "
-                                val random = Random(Date().getTime().toInt()).nextInt(0, 9)
-                                when (random) {
-                                    0 -> {
-                                        +"na rifa (+rifa)"
-                                    }
-                                    1 -> {
-                                        a(href = "${loriUrl}user/@me/dashboard/ship-effects") {
-                                            +"alterando o valor do ship entre você e a sua namoradx"
-                                        }
-                                    }
-                                    2 -> {
-                                        a(href = "${loriUrl}user/@me/dashboard/profiles") {
-                                            +"alterando o look do seu perfil"
-                                        }
-                                    }
-                                    3 -> {
-                                        a(href = "${loriUrl}user/@me/dashboard/daily-shop") {
-                                            +"comprando novas bugigangas na loja"
-                                        }
-                                    }
-                                    4 -> {
-                                        +"doando eles para a sua pessoa favorita (/sonhos pay)"
-                                    }
-                                    5 -> {
-                                        +"apostando com seus amigos (+coinflip bet)"
-                                    }
-                                    6 -> {
-                                        +"apostando com outros usuários (/bet coinflip global)"
-                                    }
-                                    7 -> {
-                                        +"apostando em rinhas de emojis (+emojifight bet)"
-                                    }
-                                    8 -> {
-                                        +"jogando no SparklyPower, o servidor de Minecraft da Loritta (mc.sparklypower.net)"
-                                    }
-                                }
-
-                                +"?"
-                            }
-
-                            if (payload.failedGuilds.isNotEmpty()) {
-                                for (failedGuild in payload.failedGuilds) {
-                                    p {
-                                        +"Você poderia ganhar x${failedGuild.multiplier} sonhos "
-
-                                        when (failedGuild.type) {
-                                            DailyGuildMissingRequirement.REQUIRES_MORE_TIME -> {
-                                                +"após ficar por mais de 15 dias em "
-                                            }
-                                            DailyGuildMissingRequirement.REQUIRES_MORE_XP -> {
-                                                +"se você conseguir ser mais ativo ao ponto de ter 500 XP em "
-                                            }
-                                        }
-
-                                        +failedGuild.guild.name
-                                        +"!"
-                                    }
-                                }
-                            }
-
-                            img {
-                                width = "128"
-                                height = "128"
-
-                                src = randomEmotes.random()
-                            }
-
-                            p {
-                                + locale["website.daily.comeBackLater"]
-                            }
+            Div(attrs = { classes("daily-gift") }) {
+                Div(attrs = { classes("scene") }) {
+                    Div(attrs = { classes("cube") }) {
+                        Div(attrs = { classes("cube__face", "cube__face--front") }) {
+                            Img(src = "/assets/img/daily/present_side.png") {}
+                        }
+                        Div(attrs = { classes("cube__face", "cube__face--back") }) {
+                            Img(src = "/assets/img/daily/present_side.png") {}
+                        }
+                        Div(attrs = { classes("cube__face", "cube__face--right") }) {
+                            Img(src = "/assets/img/daily/present_side.png") {}
+                        }
+                        Div(attrs = { classes("cube__face", "cube__face--left") }) {
+                            Img(src = "/assets/img/daily/present_side.png") {}
+                        }
+                        Div(attrs = { classes("cube__face", "cube__face--top") }) {
+                            Img(src = "/assets/img/daily/present_top.png") {}
+                        }
+                        Div(attrs = { classes("cube__face", "cube__face--lace1") }) {
+                            Img(src = "/assets/img/daily/present_lace.png") {}
+                        }
+                        Div(attrs = { classes("cube__face", "cube__face--lace2") }) {
+                            Img(src = "/assets/img/daily/present_lace.png") {}
                         }
                     }
+                }
+            }
 
-                    jq("#daily-wrapper").css("position", "absolute")
-                    val prepended = jq("#daily-info")
-
-                    prepended.fadeTo(500, 1)
-
-                    val countUp = CountUp("dailyPayout", 0.0, payload.dailyPayout.toDouble(), 0, 7.5, CountUpOptions(
-                        true,
-                        true,
-                        "",
-                        ""
-                    ))
-
-                    ts1Promotion2.play()
-
-                    countUp.start {
-                        println("Finished!!!")
-                        cash.play()
+            Div(
+                attrs = {
+                    style {
+                        opacity(opacity)
                     }
-                })
+                }
+            ) {
+                when (val currentScreen = screen) {
+                    is DailyScreen.GetDailyRewardScreen -> {
+                        GetDailyRewardOverview(currentScreen)
+                    }
+                    is DailyScreen.GotDailyRewardScreen -> {
+                        GotDailyRewardOverview(currentScreen)
+                    }
+                    // Loading or something idk lol
+                    null -> {}
+                }
             }
         }
     }
-
-    @Serializable
-    class DailyResponse(
-        val receivedDailyAt: String,
-        val dailyPayout: Int,
-        val sponsoredBy: Sponsored? = null,
-        val currentBalance: Double,
-        val failedGuilds: Array<FailedGuildDailyStats>
-    )
-
-    @Serializable
-    class Guild(
-        // É deserializado para String pois JavaScript é burro e não funciona direito com Longs
-        val name: String,
-        val iconUrl: String,
-        val id: String
-    )
-
-    @Serializable
-    class Sponsored(
-        val guild: Guild,
-        val user: ServerConfig.SelfMember? = null,
-        val multipliedBy: Double,
-        val originalPayout: Double
-    )
-
-    @Serializable
-    class FailedGuildDailyStats(
-        val guild: Guild,
-        val type: DailyGuildMissingRequirement,
-        val data: Long,
-        val multiplier: Double
-    )
 }

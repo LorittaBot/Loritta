@@ -119,6 +119,12 @@ dependencies {
 
 val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
+val sass = tasks.register<SassTask>("sass-style-scss") {
+    this.inputSass.set(file("src/main/sass/style.scss"))
+    this.inputSassFolder.set(file("src/main/sass/"))
+    this.outputSass.set(file("$buildDir/sass/style-scss"))
+}
+
 tasks.test {
     useJUnitPlatform()
 }
@@ -127,9 +133,18 @@ tasks {
     processResources {
         from("../../resources/") // Include folders from the resources root folder
 
+        // We need to wait until the JS build finishes and the SASS files are generated
+        dependsOn(jsBrowserProductionWebpack)
+        dependsOn(sass)
+
         // Copy the output from the frontend task to the backend resources
         from(jsBrowserProductionWebpack.destinationDirectory) {
             into("spicy_morenitta/js/")
+        }
+
+        // Same thing with the SASS output
+        from(sass) {
+            into("static/v2/assets/css/")
         }
     }
 }

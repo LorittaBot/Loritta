@@ -205,6 +205,7 @@ class TwitterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 			jsObject<TingleOptions> {
 				footer = true
 				cssClass = arrayOf("tingle-modal--overflow")
+				closeMethods = arrayOf()
 			}
 		)
 

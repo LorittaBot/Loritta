@@ -31,9 +31,14 @@ import kotlinx.html.p
 import kotlinx.html.span
 import kotlinx.html.stream.createHTML
 import kotlinx.html.style
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import loadEmbeddedLocale
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.serializable.UserIdentification
+import net.perfectdreams.loritta.serializable.requests.GetDailyRewardStatusRequest
+import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
+import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.BaseRoute
 import net.perfectdreams.spicymorenitta.routes.Birthday2020Route
@@ -435,6 +440,7 @@ class SpicyMorenitta : Logging {
 						jsObject<TingleOptions> {
 							footer = true
 							cssClass = arrayOf("tingle-modal--overflow")
+							closeMethods = arrayOf()
 						}
 					)
 
@@ -910,5 +916,23 @@ class SpicyMorenitta : Logging {
 		call.invoke()
 		val newLeftSidebar = document.select<HTMLDivElement>("#left-sidebar")
 		newLeftSidebar.scrollTop = oldScroll
+	}
+
+	/**
+	 * Sends a SpicyMorenitta RPC request
+	 */
+	suspend inline fun <reified T> sendRPCRequest(request: LorittaRPCRequest): T {
+		val httpResponse = http.post("${window.location.origin}/api/v1/loritta/rpc") {
+			setBody(
+				kotlinx.serialization.json.Json.encodeToString<LorittaRPCRequest>(request)
+			)
+		}
+
+		val rpcResponse = kotlinx.serialization.json.Json.decodeFromString<LorittaRPCResponse>(httpResponse.bodyAsText())
+
+		if (rpcResponse !is T)
+			kotlin.error("RPC response does not match expected type! Received type $rpcResponse")
+
+		return rpcResponse
 	}
 }
