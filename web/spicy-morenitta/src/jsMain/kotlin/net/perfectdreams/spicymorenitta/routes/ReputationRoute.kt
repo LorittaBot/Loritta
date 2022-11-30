@@ -96,7 +96,7 @@ class ReputationRoute : BaseRoute("/user/{userId}/rep") {
             GoogleRecaptchaUtils.render(
                 jq("#reputation-captcha").get()[0],
                 jsObject {
-                    sitekey = "6LfRyUkUAAAAAASo0YM4IZBqvkzxyRWJ1Ydw5weC"
+                    sitekey = "6Ld273kUAAAAAIIKfAhF4eIhBmOC80M6rx4sY2NE"
                     callback = "recaptchaCallback"
                     size = "invisible"
                 }
