@@ -12,6 +12,8 @@ import kotlinx.html.js.onClickFunction
 import kotlinx.html.style
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -62,9 +64,12 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
                                         val id = entry.id.toString()
                                     }
 
-                                    println(JSON.stringify(o))
-
-                                    PaymentUtils.requestAndRedirectToPaymentUrl(o, "${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}")
+                                    PaymentUtils.requestAndRedirectToPaymentUrl(
+                                        buildJsonObject {
+                                            put("id", entry.id.toString())
+                                        },
+                                        "${loriUrl}api/v1/economy/bundles/sonhos/${entry.id}"
+                                    )
                                 }
                             }
                         }
