@@ -223,7 +223,7 @@ object WebsiteUtils {
 			variables["legacy_asset_hash_${asset.split("/").last().split(".").first()}"] = WebsiteAssetsHashes.getLegacyAssetHash(asset)
 		}
 
-		variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
+		variables["asset_hash_app"] = LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()
 	}
 
 	suspend fun toSerializable(loritta: LorittaBot, profileDesign: ProfileDesign) = loritta.pudding.transaction { fromProfileDesignToSerializable(loritta, profileDesign.readValues) }
