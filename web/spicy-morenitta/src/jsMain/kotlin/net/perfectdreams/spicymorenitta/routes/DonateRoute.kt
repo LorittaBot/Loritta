@@ -21,6 +21,8 @@ import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.tr
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -242,16 +244,14 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                                 + "Renovar"
 
                                 onClickFunction = {
-                                    val o = object {
-                                        val money = key.value // unused
-                                        val keyId = key.id.toString()
-                                    }
-
-                                    println(JSON.stringify(o))
-
                                     modal.close()
 
-                                    PaymentUtils.requestAndRedirectToPaymentUrl(o)
+                                    PaymentUtils.requestAndRedirectToPaymentUrl(
+                                        buildJsonObject {
+                                            put("money", key.value)
+                                            put("keyId", key.id.toString())
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -340,11 +340,11 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
     }
 
     fun showPaymentSelectionModal(price: Double) {
-        val o = object {
-            val money = price
-        }
-
-        PaymentUtils.requestAndRedirectToPaymentUrl(o)
+        PaymentUtils.requestAndRedirectToPaymentUrl(
+            buildJsonObject {
+                put("money", price)
+            }
+        )
     }
 
     data class DonationReward(val name: String, val minimumDonation: Double, val doNotDisplayInPlans: Boolean, val callback: TD.(Double) -> Unit = { column ->

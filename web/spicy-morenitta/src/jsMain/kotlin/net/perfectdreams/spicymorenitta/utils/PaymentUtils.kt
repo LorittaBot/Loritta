@@ -13,13 +13,14 @@ import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.serialization.json.JsonObject
 import kotlin.js.Json
 
 object PaymentUtils : Logging {
 	/**
 	 * Sends a payment request to Loritta and, if valid, redirects the user
 	 */
-	fun requestAndRedirectToPaymentUrl(meta: dynamic, url: String = "${loriUrl}api/v1/users/donate") {
+	fun requestAndRedirectToPaymentUrl(meta: JsonObject, url: String = "${loriUrl}api/v1/users/donate") {
 		val modal = TingleModal(
 			jsObject<TingleOptions> {
 				footer = true
@@ -57,7 +58,7 @@ object PaymentUtils : Logging {
 			GlobalScope.launch {
 				debug("Requesting a PerfectPayments payment URL...")
 				val response = http.post(url) {
-					setBody(JSON.stringify(meta))
+					setBody(meta)
 				}
 
 				if (response.status == HttpStatusCode.Forbidden) {
