@@ -60,10 +60,6 @@ class AvailableBundlesDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePo
                                 + "Comprar! (R$ ${entry.price})"
 
                                 onClickFunction = {
-                                    val o = object {
-                                        val id = entry.id.toString()
-                                    }
-
                                     PaymentUtils.requestAndRedirectToPaymentUrl(
                                         buildJsonObject {
                                             put("id", entry.id.toString())
