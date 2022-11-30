@@ -58,7 +58,7 @@ object PaymentUtils : Logging {
 			GlobalScope.launch {
 				debug("Requesting a PerfectPayments payment URL...")
 				val response = http.post(url) {
-					setBody(meta)
+					setBody(meta.toString())
 				}
 
 				if (response.status == HttpStatusCode.Forbidden) {
