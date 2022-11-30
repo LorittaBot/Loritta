@@ -56,7 +56,7 @@ object PaymentUtils : Logging {
 			SpicyMorenitta.INSTANCE.showLoadingScreen()
 
 			GlobalScope.launch {
-				debug("Requesting a PerfectPayments payment URL...")
+				debug("Requesting a PerfectPayments payment URL... Metadata: ${meta.toString()}")
 				val response = http.post(url) {
 					setBody(meta.toString())
 				}
