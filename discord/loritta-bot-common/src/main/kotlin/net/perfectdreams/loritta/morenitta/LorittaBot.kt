@@ -118,7 +118,6 @@ import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
-import net.perfectdreams.loritta.morenitta.platform.discord.utils.GuildSetupQueue
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
@@ -379,7 +378,6 @@ class LorittaBot(
 	fun createThreadPool(name: String) = Executors.newCachedThreadPool(ThreadFactoryBuilder().setNameFormat(name).build())
 
 	val pendingMessages = ConcurrentLinkedQueue<Job>()
-	val guildSetupQueue = GuildSetupQueue(this)
 	val commandCooldownManager = CommandCooldownManager(this)
 	val giveawayManager = GiveawayManager(this)
 	val welcomeModule = WelcomeModule(this)

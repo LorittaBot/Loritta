@@ -1,30 +1,27 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import kotlinx.coroutines.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.modules.AutoroleModule
 import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
-import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
-import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
@@ -33,6 +30,7 @@ import net.dv8tion.jda.api.events.http.HttpRequestEvent
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
+import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
@@ -45,7 +43,7 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MemberCo
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
+import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import okio.Buffer
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -463,9 +461,80 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		}
 	}
 
-	override fun onGuildReady(event: GuildReadyEvent) {
+	override fun onReady(event: ReadyEvent) {
+		// This is called when the shard is ready and all guilds are ready to be used
 		GlobalScope.launch(loritta.coroutineDispatcher) {
-			loritta.guildSetupQueue.addToSetupQueue(event.guild)
+			val start = Clock.System.now()
+
+			// Get all guild IDs
+			val guildIds = event.jda.guildCache.map { it.idLong }
+
+			// No need to process if the guild map is empty (this should never happen, but who knows right)
+			if (guildIds.isEmpty())
+				return@launch
+
+			logger.info { "Querying configs of ${guildIds.size} guilds to start the setup process" }
+
+			// Everything is good? Great! Let's prepare all guilds then!
+			val serverConfigs = loritta.newSuspendedTransaction {
+				// Workaround to avoid "PreparedStatement can have at most 65,535 parameters" issue
+				// This also should never happen since every shard can have a max of 2500 guilds, but who knows right
+				guildIds.chunked(65_535).flatMap {
+					ServerConfig.find {
+						ServerConfigs.id inList it
+					}.toList()
+				}
+			}
+
+			logger.info { "Preparing ${guildIds.size} guilds with ${serverConfigs.size} server configs" }
+
+			// And after getting all serverConfigs, we now can set up the guild!
+			val allJobs = mutableListOf<Deferred<Unit>>()
+
+			for (serverConfig in serverConfigs) {
+				val guild = event.jda.getGuildById(serverConfig.id.value)
+
+				if (guild != null)
+					allJobs.add(setupGuild(guild, serverConfig))
+			}
+
+			allJobs.forEach {
+				try {
+					it.await()
+				} catch (e: Exception) {
+					logger.warn(e) { "Exception while preparing guild!" }
+				}
+			}
+
+			logger.info { "Done! ${guildIds.size} guilds with ${serverConfigs.size} server configs were set up! Let's roll!! Took ${Clock.System.now() - start}ms" }
+		}
+	}
+
+	private suspend fun setupGuild(guild: Guild, serverConfig: ServerConfig): Deferred<Unit> {
+		return GlobalScope.async(loritta.coroutineDispatcher) {
+			val mutes = loritta.newSuspendedTransaction {
+				Mute.find {
+					(Mutes.isTemporary eq true) and (Mutes.guildId eq guild.idLong)
+				}.toMutableList()
+			}
+
+			for (mute in mutes) {
+				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
+				MuteCommand.spawnRoleRemovalThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), mute.userId, mute.expiresAt!!)
+			}
+
+			val allActiveGiveaways = loritta.newSuspendedTransaction {
+				Giveaway.find { (Giveaways.guildId eq guild.idLong) and (Giveaways.finished eq false) }.toMutableList()
+			}
+
+			allActiveGiveaways.forEach {
+				try {
+					if (loritta.giveawayManager.giveawayTasks[it.id.value] == null)
+						loritta.giveawayManager.createGiveawayJob(it)
+				} catch (e: Exception) {
+					logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${guild.idLong}" }
+				}
+			}
 		}
 	}
 }
