@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import dev.kord.common.Locale
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.locale.LanguageManager
@@ -34,6 +35,20 @@ object I18nContextUtils {
     fun convertLanguageIdToKordLocale(languageId: String) = when (languageId) {
         "en" -> Locale.ENGLISH_UNITED_STATES
         "pt" -> Locale.PORTUGUESE_BRAZIL
+        else -> null
+    }
+
+    /**
+     * Converts a [languageId] (example: "pt") to a JDA [DiscordLocale]
+     *
+     * This should be updated every time a new language is introduced to Loritta
+     *
+     * @param languageId the language ID
+     * @return           the [Locale] or, if it is not present, null
+     */
+    fun convertLanguageIdToJDALocale(languageId: String) = when (languageId) {
+        "en" -> DiscordLocale.ENGLISH_US
+        "pt" -> DiscordLocale.PORTUGUESE_BRAZILIAN
         else -> null
     }
 }

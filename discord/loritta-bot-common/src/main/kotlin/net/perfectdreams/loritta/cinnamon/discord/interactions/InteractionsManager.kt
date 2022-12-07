@@ -49,14 +49,9 @@ class InteractionsManager(
 
     private val discordConfig = loritta.config.loritta.discord
 
-    val interactionsRegistry = InteractionsRegistry(
-        loritta,
-        this
-    )
-
     val languageManager = loritta.languageManager
 
-    suspend fun register() {
+    fun register() {
         val publicLorittaCommands = PublicLorittaCommands(languageManager)
         publicLorittaCommands.commands().forEach {
             register(it)
@@ -149,8 +144,6 @@ class InteractionsManager(
         }
 
         logger.info { "Total Root Commands: ${interaKTions.manager.applicationCommandsDeclarations.size}/100" }
-
-        interactionsRegistry.updateAllCommands()
     }
 
     private fun register(declarationWrapper: CinnamonSlashCommandDeclarationWrapper) {

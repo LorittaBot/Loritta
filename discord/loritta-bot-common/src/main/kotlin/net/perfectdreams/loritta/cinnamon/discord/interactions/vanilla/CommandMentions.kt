@@ -1,13 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla
 
-import dev.kord.common.entity.DiscordApplicationCommand
+import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.perfectdreams.loritta.morenitta.interactions.commands.DiscordCommand
 
 /**
  * Holds Discord style command mentions of Loritta's commands.
  *
  * Mentions are automatically validated based on the commands registered. If a command doesn't exist, the class will fail to initialize!
  */
-class CommandMentions(private val registeredCommands: List<DiscordApplicationCommand>) {
+class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val achievements = commandMention("achievements")
 
     val daily = commandMention("daily")

@@ -34,7 +34,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(InviteCommand(languageManager))
             register(EmojiCommand(languageManager))
             register(WebhookCommand(languageManager))
-            register(LorittaCommand(languageManager))
 
             // ===[ MODERATION ]===
             register(DashboardCommand(languageManager))

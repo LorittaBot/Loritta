@@ -50,6 +50,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -116,6 +117,7 @@ import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.dao.*
+import net.perfectdreams.loritta.morenitta.interactions.components.ComponentManager
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
@@ -276,7 +278,7 @@ class LorittaBot(
 
 	val legacyCommandManager = CommandManager(this) // Nosso command manager
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
-
+	val componentManager = ComponentManager()
 	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
@@ -287,6 +289,7 @@ class LorittaBot(
 	val gatewayRelayerListener = GatewayEventRelayerListener(this)
 	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(this)
 	val boostGuildListener = BoostGuildListener(this)
+	val interactionsListener = InteractionsListener(this)
 	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
@@ -464,7 +467,8 @@ class LorittaBot(
 				voiceChannelListener,
 				gatewayRelayerListener,
 				addReactionFurryAminoPtListener,
-				boostGuildListener
+				boostGuildListener,
+				interactionsListener
 			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
@@ -551,23 +555,21 @@ class LorittaBot(
 			logger.info(e) { "Failed to start Loritta's webserver" }
 		}
 
+		logger.info { "Registering interactions features..." }
+		interactionsManager.register()
+
+		logger.info { "Starting Pudding tasks..." }
+		pudding.startPuddingTasks()
+		GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
+
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
-		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
+		logger.info { "Starting Loritta (Discord Bot)..." }
 
 		val shardManager = builder.build()
 		lorittaShards = LorittaShards(
 			this,
 			shardManager
 		)
-
-		logger.info { "Starting Pudding tasks..." }
-		pudding.startPuddingTasks()
-		GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
-
-		logger.info { "Registering interactions features..." }
-		runBlocking {
-			interactionsManager.register()
-		}
 
 		logger.info { "Starting Cinnamon tasks..." }
 		cinnamonTasks.start()
@@ -1273,6 +1275,7 @@ class LorittaBot(
 	fun launchMessageJob(event: Event, block: suspend CoroutineScope.() -> Unit) {
 		val coroutineName = when (event) {
 			is MessageReceivedEvent -> "Message ${event.message} by user ${event.author} in ${event.channel} on ${if (event.isFromGuild) event.guild else null}"
+			is SlashCommandInteractionEvent -> "Slash Command ${event.fullCommandName} by user ${event.user} in ${event.channel} on ${if (event.isFromGuild) event.guild else null}"
 			else -> throw IllegalArgumentException("You can't dispatch a $event in a launchMessageJob!")
 		}
 
