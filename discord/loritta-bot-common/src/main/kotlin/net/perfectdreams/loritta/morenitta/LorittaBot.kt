@@ -634,6 +634,15 @@ class LorittaBot(
 					shard.removeEventListener(*shard.registeredListeners.toTypedArray())
 				}
 
+				logger.info { "Disabling all components..." }
+				componentManager.scope.cancel()
+				runBlocking {
+					for (block in componentManager.pendingInteractionRemovals) {
+						block.invoke(this)
+					}
+				}
+				logger.info { "Disabled all components!" }
+
 				// This is used to validate if our cache was successfully written or not
 				val connectionVersion = UUID.randomUUID()
 

@@ -1,11 +1,12 @@
 package net.perfectdreams.loritta.morenitta.interactions.components
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -18,6 +19,7 @@ class ComponentManager {
 
     val scope = CoroutineScope(Dispatchers.Default)
     val buttonInteractionCallbacks = ConcurrentHashMap<UUID, suspend (ComponentContext) -> (Unit)>()
+    val pendingInteractionRemovals = ConcurrentLinkedQueue<suspend CoroutineScope.() -> (Unit)>()
 
     /**
      * Creates an interactive button
@@ -27,4 +29,17 @@ class ComponentManager {
         buttonInteractionCallbacks[buttonId] = callback
         return Button.of(style, buttonId.toString(), label)
     }
+
+    fun launch(block: suspend CoroutineScope.() -> Unit) = scope.launch(
+        Dispatchers.Default,
+        block = {
+            pendingInteractionRemovals.add(block)
+
+            delay(INTERACTION_INVALIDATION_DELAY)
+
+            pendingInteractionRemovals.remove(block)
+
+            block.invoke(this)
+        }
+    )
 }

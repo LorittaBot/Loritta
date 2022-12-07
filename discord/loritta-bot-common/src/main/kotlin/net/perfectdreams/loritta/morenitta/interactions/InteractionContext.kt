@@ -44,42 +44,40 @@ abstract class InteractionContext(
 
         if (event.isAcknowledged) {
             val message = event.hook.sendMessage(createdMessage).await()
+            if (message.components.isEmpty())
+                return
 
-            loritta.componentManager.scope.launch {
-                delay(ComponentManager.INTERACTION_INVALIDATION_DELAY)
-
-                message.also { message ->
-                    val components = message.components
-                    for (componentLayout in components) {
-                        for (button in componentLayout.buttons) {
-                            val buttonId = button.id?.let { UUID.fromString(it) } ?: continue
-                            // Invalidate all button callbacks
-                            loritta.componentManager.buttonInteractionCallbacks.remove(buttonId)
-                        }
+            loritta.componentManager.launch {
+                val components = message.components
+                for (componentLayout in components) {
+                    for (button in componentLayout.buttons) {
+                        val buttonId = button.id?.let { UUID.fromString(it) } ?: continue
+                        // Invalidate all button callbacks
+                        loritta.componentManager.buttonInteractionCallbacks.remove(buttonId)
                     }
-
-                    // Disable the components of the message EXCEPT if it is a link button
-                    event.hook.editOriginalComponents(
-                        message.components
-                            .map {
-                                ActionRow.of(
-                                    it.map { c ->
-                                        if (c is ActionComponent && (c is Button && c.style != ButtonStyle.LINK))
-                                            c.withDisabled(true)
-                                        else
-                                            c
-                                    }
-                                )
-                            }
-                    ).await()
                 }
+
+                // Disable the components of the message EXCEPT if it is a link button
+                message.editMessageComponents(
+                    message.components
+                        .map {
+                            ActionRow.of(
+                                it.map { c ->
+                                    if (c is ActionComponent && (c is Button && c.style != ButtonStyle.LINK))
+                                        c.withDisabled(true)
+                                    else
+                                        c
+                                }
+                            )
+                        }
+                ).await()
             }
         } else {
             event.reply(createdMessage).await()
+            if (createdMessage.components.isEmpty())
+                return
 
-            loritta.componentManager.scope.launch {
-                delay(ComponentManager.INTERACTION_INVALIDATION_DELAY)
-
+            loritta.componentManager.launch {
                 event.hook.retrieveOriginal()
                     .await()
                     .also { message ->
