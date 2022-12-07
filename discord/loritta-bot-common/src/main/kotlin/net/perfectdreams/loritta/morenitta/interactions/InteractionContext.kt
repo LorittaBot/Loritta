@@ -35,11 +35,11 @@ abstract class InteractionContext(
 
     suspend fun deferChannelMessage(): InteractionHook = event.deferReply().await()
 
-    suspend fun reply(content: String) = reply {
+    suspend inline fun reply(content: String) = reply {
         this.content = content
     }
 
-    suspend fun reply(builder: InlineMessage<MessageCreateData>.() -> Unit = {}) {
+    suspend inline fun reply(builder: InlineMessage<MessageCreateData>.() -> Unit = {}) {
         val createdMessage = InlineMessage(MessageCreateBuilder()).apply(builder).build()
 
         if (event.isAcknowledged) {

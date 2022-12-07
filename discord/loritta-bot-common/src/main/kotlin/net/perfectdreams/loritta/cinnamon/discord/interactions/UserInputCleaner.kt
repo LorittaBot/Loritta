@@ -25,6 +25,19 @@ suspend fun cleanUpForOutput(
  * Clean up and escape user input, useful when displaying user input
  */
 suspend fun cleanUpForOutput(
+    context: net.perfectdreams.loritta.morenitta.interactions.InteractionContext,
+    input: String,
+    escapeMentions: Boolean = true,
+    stripCodeBackticks: Boolean = true,
+    stripInvites: Boolean = true
+): String {
+    return cleanUpForOutput(context.loritta, context.event.guild?.idLong?.let { Snowflake(it) }, context.event.member?.roles?.map { Snowflake(it.idLong) }?.toSet() ?: emptySet(), input, escapeMentions, stripCodeBackticks, stripInvites)
+}
+
+/**
+ * Clean up and escape user input, useful when displaying user input
+ */
+suspend fun cleanUpForOutput(
     loritta: LorittaBot,
     guildId: Snowflake?,
     memberRoleIds: Set<Snowflake>?,
