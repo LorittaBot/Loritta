@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.Miscellaneo
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
+import net.perfectdreams.loritta.morenitta.utils.locale.getPronoun
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 

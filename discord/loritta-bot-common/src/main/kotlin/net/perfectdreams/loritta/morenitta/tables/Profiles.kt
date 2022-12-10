@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.tables
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.ReferenceOption
 
 object Profiles : SnowflakeTable() {

@@ -217,9 +217,20 @@ class EmojiFight(
                     return false
             }
 
-            val randomEmote = availableEmotes.random()
-            availableEmotes.remove(randomEmote)
-            participatingUsers[user] = randomEmote
+            val randomEmoji = loritta.newSuspendedTransaction {
+                val emojiFightEmoji = loritta._getLorittaProfile(user.idLong)?.settings?.emojiFightEmoji
+                val donationPlan = UserPremiumPlans.getPlanFromValue(loritta._getActiveMoneyFromDonations(user.idLong))
+
+                if (donationPlan.customEmojisInEmojiFight && emojiFightEmoji != null) {
+                    emojiFightEmoji
+                } else {
+                    val randomEmote = availableEmotes.random()
+                    availableEmotes.remove(randomEmote)
+                    randomEmote
+                }
+            }
+
+            participatingUsers[user] = randomEmoji
             return true
         }
     }

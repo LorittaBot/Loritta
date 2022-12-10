@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao
 
-import net.perfectdreams.loritta.morenitta.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -17,4 +17,5 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var discordAccountFlags by UserSettings.discordAccountFlags
 	var discordPremiumType by UserSettings.discordPremiumType
 	var language by UserSettings.language
+	var emojiFightEmoji by UserSettings.emojiFightEmoji
 }

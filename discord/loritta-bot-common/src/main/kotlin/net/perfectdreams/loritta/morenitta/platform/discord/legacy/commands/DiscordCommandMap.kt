@@ -92,6 +92,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			CoinFlipBetStatsCommand(loritta),
 			EmojiFightCommand(loritta),
 			EmojiFightBetCommand(loritta),
+			EmojiFightEmojiCommand(loritta),
 
 			// ===[ SOCIAL ]===
 			BomDiaECiaStatusCommand(loritta),

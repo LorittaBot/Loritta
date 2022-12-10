@@ -41,7 +41,7 @@ import net.perfectdreams.loritta.morenitta.tables.Marriages
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.tables.ShipEffects
 import net.perfectdreams.loritta.morenitta.tables.StarboardMessages
-import net.perfectdreams.loritta.morenitta.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.morenitta.threads.RaffleThread
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.utils.*
@@ -128,7 +128,6 @@ import net.perfectdreams.loritta.morenitta.utils.config.FanArt
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
-import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
@@ -766,7 +765,8 @@ class LorittaBot(
 		transaction {
 			// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
 			SchemaUtils.createMissingTablesAndColumns(
-				GatewayActivities
+				GatewayActivities,
+				UserSettings
 			)
 		}
 
@@ -1246,7 +1246,7 @@ class LorittaBot(
 
 		val profileSettings = transaction {
 			ProfileSettings.new {
-				gender = Gender.UNKNOWN
+				gender = net.perfectdreams.loritta.common.utils.Gender.UNKNOWN
 			}
 		}
 

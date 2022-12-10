@@ -4,10 +4,10 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -46,7 +46,6 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
 						)
 				)
             }
-
 
             if (it.emoji.asCustom().id == "384048518337265665") {
                 loritta.newSuspendedTransaction {

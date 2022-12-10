@@ -14,6 +14,7 @@ interface UserPremiumPlans {
 	val hasDailyInactivityTax: Boolean
 	val displayAds: Boolean
 	val customEmojisInAboutMe: Boolean
+	val customEmojisInEmojiFight: Boolean
 
 	val isCoinFlipBetRewardTaxed: Boolean
 		get() = coinFlipRewardTax != 0.0
@@ -53,6 +54,7 @@ interface UserPremiumPlans {
 		override val hasDailyInactivityTax = true
 		override val displayAds = true
 		override val customEmojisInAboutMe = false
+		override val customEmojisInEmojiFight = false
 	}
 
 	object Essential : UserPremiumPlans {
@@ -69,6 +71,7 @@ interface UserPremiumPlans {
 		override val hasDailyInactivityTax = true
 		override val displayAds = false
 		override val customEmojisInAboutMe = false
+		override val customEmojisInEmojiFight = false
 	}
 
 	object Recommended : UserPremiumPlans {
@@ -85,6 +88,7 @@ interface UserPremiumPlans {
 		override val hasDailyInactivityTax = true
 		override val displayAds = false
 		override val customEmojisInAboutMe = true
+		override val customEmojisInEmojiFight = true
 	}
 
 	object Complete : UserPremiumPlans {
@@ -101,5 +105,6 @@ interface UserPremiumPlans {
 		override val hasDailyInactivityTax = false
 		override val displayAds = false
 		override val customEmojisInAboutMe = true
+		override val customEmojisInEmojiFight = true
 	}
 }
