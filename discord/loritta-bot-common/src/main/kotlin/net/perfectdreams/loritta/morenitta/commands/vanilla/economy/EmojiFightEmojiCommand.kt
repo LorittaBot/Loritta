@@ -36,7 +36,6 @@ class EmojiFightEmojiCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
 		executesDiscord {
 			val canUseCustomEmojis = loritta.newSuspendedTransaction {
-				val emojiFightEmoji = loritta._getLorittaProfile(user.idLong)?.settings?.emojiFightEmoji
 				UserPremiumPlans.getPlanFromValue(loritta._getActiveMoneyFromDonations(user.idLong)).customEmojisInEmojiFight
 			}
 
