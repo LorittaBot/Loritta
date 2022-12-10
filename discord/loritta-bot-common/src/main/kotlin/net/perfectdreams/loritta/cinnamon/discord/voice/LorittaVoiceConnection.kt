@@ -5,9 +5,10 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Gateway
 import dev.kord.gateway.UpdateVoiceStatus
 import dev.kord.voice.VoiceConnection
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import kotlin.time.Duration.Companion.minutes
 
@@ -26,7 +27,8 @@ data class LorittaVoiceConnection(
 
     private val audioClips = Channel<AudioClipInfo>(Channel.UNLIMITED)
     private val scope = CoroutineScope(SupervisorJob())
-    private var detachJob: Job? by atomic(null)
+    private var detachMutex = Mutex()
+    private var detachJob: Job? = null
 
     fun isPlaying() = !audioProvider.audioFramesInOpusFormatQueue.isEmpty
 
@@ -59,10 +61,13 @@ data class LorittaVoiceConnection(
 
             // Initialize automatic shutdown after 5 minutes of inactivity
             detachJob?.cancel()
-            detachJob = scope.launch {
-                delay(5.minutes)
-                logger.info { "Shutting down connection $voiceConnection due to inactivity... Bye!" }
-                shutdown() // Technically the connection will be cleaned up from the voice connections map after the voice connection is shutdown...
+
+            detachMutex.withLock {
+                detachJob = scope.launch {
+                    delay(5.minutes)
+                    logger.info { "Shutting down connection $voiceConnection due to inactivity... Bye!" }
+                    shutdown() // Technically the connection will be cleaned up from the voice connections map after the voice connection is shutdown...
+                }
             }
 
             val audioClipInfo = audioClips.receive() // This will suspend if there isn't any request audio clips in the channel

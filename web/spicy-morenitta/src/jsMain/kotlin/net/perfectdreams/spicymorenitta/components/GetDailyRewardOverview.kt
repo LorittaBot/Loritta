@@ -2,6 +2,7 @@ package net.perfectdreams.spicymorenitta.components
 
 import androidx.compose.runtime.Composable
 import net.perfectdreams.loritta.serializable.responses.*
+import net.perfectdreams.spicymorenitta.i18nContext
 import net.perfectdreams.spicymorenitta.routes.DailyScreen
 import net.perfectdreams.spicymorenitta.utils.CloudflareTurnstileUtils
 import net.perfectdreams.spicymorenitta.utils.State
@@ -61,7 +62,7 @@ fun GetDailyRewardOverview(
                                         classes("daily-question")
                                     }
                                 ) {
-                                    Text(response.question.question)
+                                    Text(i18nContext.get(response.question.question))
                                 }
 
                                 Div(

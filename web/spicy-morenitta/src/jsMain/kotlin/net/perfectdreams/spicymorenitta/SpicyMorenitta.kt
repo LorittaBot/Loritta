@@ -34,9 +34,11 @@ import kotlinx.html.style
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import loadEmbeddedLocale
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.Language
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.UserIdentification
-import net.perfectdreams.loritta.serializable.requests.GetDailyRewardStatusRequest
 import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -92,6 +94,7 @@ val http = HttpClient(Js) {
 }
 
 lateinit var locale: BaseLocale
+lateinit var i18nContext: I18nContext
 
 class SpicyMorenitta : Logging {
 	companion object {
@@ -275,6 +278,7 @@ class SpicyMorenitta : Logging {
 
 					debug("Locale test: ${locale["commands.command.drawnword.description"]}")
 					debug("Locale test: ${locale["commands.command.ship.bribeLove", ":3"]}")
+					debug("i18nContext test: ${i18nContext.get(I18nKeysData.Commands.Command.Drawnmask.Description)}")
 				}
 				if (currentRoute.requiresUserIdentification)
 					deferred[1].await()
@@ -309,6 +313,17 @@ class SpicyMorenitta : Logging {
 		val payload = http.get("${window.location.origin}/api/v1/loritta/locale/$localeId")
 			.bodyAsText()
 		locale = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(BaseLocale.serializer(), payload)
+
+		val i18nPayload = http.get("${window.location.origin}/api/v1/languages/$localeId")
+			.bodyAsText()
+
+		val language = kotlinx.serialization.json.Json.decodeFromString<Language>(i18nPayload)
+
+		val loadedI18nContext = I18nContext(
+			IntlMFFormatter(language.info.formattingLanguageId),
+			language
+		)
+		i18nContext = loadedI18nContext
 
 		// Atualizar o locale que o moment utiliza, já que ele usa uma instância global para tuuuuudo
 		val momentLocaleId = when (locale.id) {

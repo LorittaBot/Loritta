@@ -81,8 +81,6 @@ object RawToFormated {
         GuildFeature.TicketedEventsEnabled to I18nKeys.GuildFeatures.TicketedEventsEnabled,
         GuildFeature.MonetizationEnabled to I18nKeys.GuildFeatures.MonetizationEnabled,
         GuildFeature.MoreStickers to I18nKeys.GuildFeatures.MoreStickers,
-        GuildFeature.ThreeDayThreadArchive to I18nKeys.GuildFeatures.ThreeDayThreadArchive,
-        GuildFeature.SevenDayThreadArchive to I18nKeys.GuildFeatures.SevenDayThreadArchive,
         GuildFeature.PrivateThreads to I18nKeys.GuildFeatures.PrivateThreads,
         GuildFeature.MemberVerificationGateEnabled to I18nKeys.GuildFeatures.MemberVerificationGateEnabled,
         GuildFeature.PreviewEnabled to I18nKeys.GuildFeatures.PreviewEnabled,

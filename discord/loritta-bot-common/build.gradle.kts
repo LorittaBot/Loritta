@@ -37,11 +37,6 @@ dependencies {
     implementation("com.github.MinnDevelopment:jda-ktx:0.10.0-beta.1")
     implementation("club.minnced:discord-webhooks:0.5.7")
 
-    // Discord InteraKTions my beloved
-    // We only depend in the common module here, the interactions/gateway will have the proper Discord InteraKTions modules related to them.
-    implementation("net.perfectdreams.discordinteraktions:common:${Versions.DISCORD_INTERAKTIONS}")
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:${Versions.DISCORD_INTERAKTIONS}")
-
     // Used to serialize state on components
     implementation("io.github.netvl.ecoji:ecoji:1.0.0")
 

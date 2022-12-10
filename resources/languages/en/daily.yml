@@ -1,0 +1,10 @@
+daily:
+  questions:
+    loriCute:
+      title: "A Loritta é fofa?"
+      'yes': "Sim"
+      'no': "Não"
+    powerIsOwner:
+      title: "MrPowerGamerBR é o criador da Loritta?"
+    lorittaWasMadeByABrazilian:
+      title: "A Loritta foi feita por um brasileiro?"

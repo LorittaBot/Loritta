@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PatchServ
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostObsoleteServerConfigRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostSearchGuildsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostSendMessageGuildRoute
+import net.perfectdreams.loritta.morenitta.website.routes.api.v1.languages.GetLanguageInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitch.GetTwitchInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitter.GetShowTwitterUserRoute
@@ -153,6 +154,7 @@ object DefaultRoutes {
 		GetServerConfigSectionRoute(loritta, website),
 
 		// Loritta
+		GetLanguageInfoRoute(loritta),
 		GetCommandsRoute(loritta),
 		GetFanArtsController(loritta),
 		GetLocaleRoute(loritta),

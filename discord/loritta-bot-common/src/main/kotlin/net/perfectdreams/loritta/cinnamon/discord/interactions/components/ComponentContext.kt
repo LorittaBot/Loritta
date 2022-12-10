@@ -300,6 +300,7 @@ open class ComponentContext(
                             }
                             ComponentType.TextInput -> error("This shouldn't exist here!")
                             is ComponentType.Unknown -> error("This shouldn't exist here!")
+                            else -> error("Unsupported Component Type!")
                         }
                     }
                 }
@@ -356,6 +357,7 @@ open class ComponentContext(
                             }
                             ComponentType.TextInput -> error("This shouldn't exist here!")
                             is ComponentType.Unknown -> error("This shouldn't exist here!")
+                            else -> error("Unsupported component type!")
                         }
                     }
                 }
