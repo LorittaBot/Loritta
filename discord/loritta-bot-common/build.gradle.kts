@@ -41,10 +41,10 @@ dependencies {
     implementation("io.github.netvl.ecoji:ecoji:1.0.0")
 
     // We want to use Kord on our project too!
-    implementation("dev.kord:kord-rest:${Versions.KORD}")
-    implementation("dev.kord:kord-gateway:${Versions.KORD}")
-    implementation("dev.kord:kord-core:${Versions.KORD}")
-    implementation("dev.kord:kord-voice:0.8.x-20220720.101712-210")
+    implementation("dev.kord:kord-rest:0.8.x-lori-fork-20221109.172532-14")
+    implementation("dev.kord:kord-gateway:0.8.x-lori-fork-20221109.172532-15")
+    implementation("dev.kord:kord-core:0.8.x-lori-fork-20221109.172532-14")
+    implementation("dev.kord:kord-voice:0.8.x-lori-fork-20221109.172532-15")
 
     // Exposed & Databases
     implementation("org.postgresql:postgresql:42.5.0")

@@ -31,7 +31,7 @@ dependencies {
     implementation("net.perfectdreams.sequins.ktor:base-route:1.0.4")
 
     // Kord Common, we use it for model classes
-    implementation("dev.kord:kord-common:${Versions.KORD}")
+    implementation("dev.kord:kord-common:0.8.x-lori-fork-20221109.172532-16")
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)

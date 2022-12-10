@@ -1,9 +1,6 @@
 package net.perfectdreams.loritta.morenitta.gateway
 
-import dev.kord.gateway.Command
-import dev.kord.gateway.Event
-import dev.kord.gateway.Gateway
-import dev.kord.gateway.GatewayConfiguration
+import dev.kord.gateway.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,11 +40,19 @@ class JDAProxiedKordGateway(private val jda: JDAImpl) : Gateway {
         TODO("Not yet implemented")
     }
 
+    override suspend fun resume(configuration: GatewayResumeConfiguration) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun start(configuration: GatewayConfiguration) {
         TODO("Not yet implemented")
     }
 
     override suspend fun stop() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun stop(closeReason: WebSocketCloseReason): GatewayResumeConfiguration {
         TODO("Not yet implemented")
     }
 }
