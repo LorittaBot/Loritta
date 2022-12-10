@@ -57,7 +57,7 @@ class KordComponentChecker(val kord: Kord, val interactionsManager: Interactions
                     .filter {
                         it.id == executorId
                     }
-                    .firstOrNull() ?: InteraKTionsExceptions.missingDeclaration("button")
+                    .firstOrNull() ?: return
 
                 val executor = interactionsManager.buttonExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent
@@ -85,7 +85,7 @@ class KordComponentChecker(val kord: Kord, val interactionsManager: Interactions
                     .filter {
                         it.id == executorId
                     }
-                    .firstOrNull() ?: InteraKTionsExceptions.missingDeclaration("select menu")
+                    .firstOrNull() ?: return
 
                 val executor = interactionsManager.selectMenusExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent

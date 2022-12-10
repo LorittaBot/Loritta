@@ -55,7 +55,7 @@ class KordCommandChecker(val kord: Kord, val interactionsManager: InteractionsMa
                 logger.debug { "Subcommand Labels: $commandLabels; Root Options: $relativeOptions" }
 
                 val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(interactionsManager, commandLabels)
-                    ?: InteraKTionsExceptions.missingDeclaration("slash command")
+                    ?: return
 
                 val executor = command.executor ?: InteraKTionsExceptions.missingExecutor("slash command")
 
@@ -85,7 +85,7 @@ class KordCommandChecker(val kord: Kord, val interactionsManager: InteractionsMa
 
             ApplicationCommandType.User -> {
                 val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<UserCommandDeclaration>(interactionsManager, commandLabels)
-                    ?: InteraKTionsExceptions.missingDeclaration("user command")
+                    ?: return
 
                 val executor = command.executor
 
@@ -112,7 +112,7 @@ class KordCommandChecker(val kord: Kord, val interactionsManager: InteractionsMa
 
             ApplicationCommandType.Message -> {
                 val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<MessageCommandDeclaration>(interactionsManager, commandLabels)
-                    ?: InteraKTionsExceptions.missingDeclaration("message command")
+                    ?: return
 
                 val executor = command.executor
 

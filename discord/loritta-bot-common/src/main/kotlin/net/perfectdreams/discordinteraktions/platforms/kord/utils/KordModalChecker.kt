@@ -48,7 +48,7 @@ class KordModalChecker(val kord: Kord, val interactionsManager: InteractionsMana
 
         val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(kord, guildId))
 
-        val modalSubmitDeclaration = interactionsManager.modalDeclarations.firstOrNull { it.id == executorId } ?: InteraKTionsExceptions.missingDeclaration("modal submit")
+        val modalSubmitDeclaration = interactionsManager.modalDeclarations.firstOrNull { it.id == executorId } ?: return
 
         // If the guild ID is not null, then it means that the interaction happened in a guild!
         val modalContext = if (guildId != null) {

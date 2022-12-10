@@ -79,7 +79,7 @@ class KordAutocompleteChecker(val kord: Kord, val interactionsManager: Interacti
         }
 
         val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(interactionsManager, commandLabels)
-            ?: InteraKTionsExceptions.missingDeclaration("slash command")
+            ?: return
 
         val focusedDiscordOption = relativeOptions.filterIsInstance<CommandArgument.AutoCompleteArgument>()
             .firstOrNull() ?: error("There isn't any autocomplete option on the autocomplete request! Bug?")
