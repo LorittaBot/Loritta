@@ -124,11 +124,6 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         Emotes.Twitter
                     ),
                     linkButton(
-                        "https://twitter.com/LorittaBot",
-                        "Twitter",
-                        Emotes.Twitter
-                    ),
-                    linkButton(
                         "https://instagram.com/lorittabot",
                         "Instagram",
                         Emotes.Instagram
@@ -142,10 +137,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         "https://www.tiktok.com/@lorittamorenittabot",
                         "TikTok",
                         Emotes.TikTok
-                    )
-                )
-
-                actionRow(
+                    ),
                     linkButton(
                         "https://github.com/LorittaBot",
                         "GitHub",
