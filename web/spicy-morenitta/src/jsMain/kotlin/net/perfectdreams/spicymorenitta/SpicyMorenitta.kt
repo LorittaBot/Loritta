@@ -159,10 +159,19 @@ class SpicyMorenitta : Logging {
 		"br-debug" to "pt-debug",
 		"en-debug" to "en-debug"
 	)
+	val websiteLocaleIdToLanguageId = mutableMapOf(
+		"br" to "pt",
+		"us" to "en"
+	)
 
 	val localeId: String
 		get() {
 			return websiteLocaleIdToLocaleId[websiteLocaleId] ?: "default"
+		}
+
+	val languageId: String
+		get() {
+			return websiteLocaleIdToLanguageId[websiteLocaleId] ?: "en"
 		}
 
 	val websiteLocaleId: String
@@ -314,7 +323,7 @@ class SpicyMorenitta : Logging {
 			.bodyAsText()
 		locale = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(BaseLocale.serializer(), payload)
 
-		val i18nPayload = http.get("${window.location.origin}/api/v1/languages/$localeId")
+		val i18nPayload = http.get("${window.location.origin}/api/v1/languages/$languageId")
 			.bodyAsText()
 
 		val language = kotlinx.serialization.json.Json.decodeFromString<Language>(i18nPayload)
