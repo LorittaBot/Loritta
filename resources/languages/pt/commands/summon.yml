@@ -1,10 +1,6 @@
-label: "invocar"
 tiodopave:
   label: "tiodopavê"
-  description: "É pra vê ou pra comer?"
 faustao:
   label: "faustão"
-  description: "Invoque o amado Faustão no seu servidor!"
 kenji:
   label: "kenji"
-  description: "\"Hai minasan genki deska!\", diretamente do Loop Infinito para o seu servidor no Discord!"
