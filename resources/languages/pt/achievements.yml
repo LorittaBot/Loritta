@@ -1,108 +1,15 @@
+---
 achievements:
   category:
-    all:
-      title: "Todas as Conquistas"
     ship:
       title: "Ship"
-      description: "O amor está no ar! ...e ele também pode ser competitivo! Conquistas relacionadas ao comando `{command}`" #This references the "/ship" description
-    rate:
-      title: "Avaliar"
-      description: "Você precisa de validação, e recompensas, de outra pessoa para ser feliz... Conquistas relacionadas ao comando `{command}`" #This references the "/rate" description
-    coinFlipBet:
-      title: "Apostas Girando uma Moeda"
-      description: "Eu nunca pensei que girar uma moeda fosse tão divertido! Conquistas relacionadas com o comando `{command}`"
-    broker:
-      title: "Simulador do Mercado de Ações da Loritta"
-      description: "Faça o seu sentimento triste depois de perder sonhos sumir com conquistas! Eles não trarão seus sonhos ou suas ações de volta, mas pelo menos elas são show de bola! Conquistas relacionadas ao comando `{command}`" #This references the "/broker" description
     roleplay:
       title: "Roleplay"
-      description: "Beijos, tapas, abraços e carinhos são legais... mas por que não apimentá-los com algumas conquistas? Conquistas relacionadas ao comando `{command}`" #This references the Roleplay category description
-    generic:
-      description: "Conquistas relacionadas ao comando `{command}`" #This is a generic description for achievements that do not have a custom description
-    miscellaneous:
-      title: "Miscelânea"
-      description: "Conquistas que ainda estão tentando descobrir em qual categoria deveriam estar" #Used in the Miscellaneous Achievements category. It is a joke, like "trying to find their purpose in life"
-  achievementUnlocked: "Conquista Desbloqueada!" #Shown to the user when an achievement is unlocked
-  viewYourAchievements: "Veja todas as suas conquistas usando {achievementsCommandMention}"
   achievement:
-    #===[ SHIP ]===
-    natural100Ship:
-      title: "Amor Verdadeiro"
-      description: "Encontre um ship 100% natural"
-    natural0Ship:
-      title: "Ódio Puro"
-      description: "Encontre um ship 0% natural"
     natural69Ship:
       title: "haha, nice"
-      description: "Encontre um ship 34+35% natural"
-    marriedShip:
-      title: "Feliz por estar com você"
-      description: "Shippe alguém casado com o parceiro dela"
-    fishyShip:
-      title: "Ship Suspeito"
-      description: "Encontre um ship que foi sabotado pelo Oráculo do Amor"
-    loveYourself:
-      title: "Ame a si mesmo"
-      description: "Shippe você mesmo... com você mesmo!"
-    friendzonedByLoritta:
-      title: "Friendzoneado pela Loritta"
-      description: "Seja friendzoneado pela Loritta"
-    sabotagedLorittaFriendzone:
-      title: "Você não pode sabotar a *minha* friendzone!"
-      description: "Ser friendzoneado pela Loritta depois que você tentou sabotar o seu relacionamento com ela"
-    #===[ RATE ]===
-    inflatedEgo:
-      title: "Ego Inflado"
-      description: "Avalie Loritta como Waifu ou como Husbando"
-    pressPlayToPayRespects:
-      title: "Aperte /play para prestar respeito"
-      description: "Avalie Groovy como Waifu ou como Husbando"
-    weirdo:
-      title: "Você é... um esquisito?"
-      description: "Avalie... ou bem, tente, avaliar uma criança"
-    #===[ COIN FLIP BET ]===
-    coinFlipBetProfessional:
-      title: "Lançador de Moedas Profissional"
-      description: "Jogar 500 partidas de apostas de sonhos girando uma moeda em menos de 24 horas"
-    coinFlipBetWin:
-      title: "Lançador de Moedas Talentoso"
-      description: "Ganhe uma aposta de sonhos girando uma moeda"
-    coinFlipBetLose:
-      title: "Pitada de Azar"
-      description: "Perder uma aposta de sonhos girando uma moeda"
-    coinFlipBetBugSevenSequentialWins:
-      title: "Coin Flip Bugado??" #This references the users that are always complaining that the coin flip is bugged and that's why they are always losing
-      description: "Ganhar sete vezes seguidas em apostas de sonhos girando uma moeda"
-    coinFlipBetBugSevenSequentialLosses:
-      title: "Bugaram meu Coin Flip!" #This references the users that are always complaining that the coin flip is bugged and that's why they are always losing
-      description: "Perder sete vezes seguidas em apostas de sonhos girando uma moeda"
     #===[ BROKER ]===
     stonks:
       title: "Stonks!"
-      description: "Tenha um lucro positivo ao vender uma ação"
     notStonks:
       title: "Not Stonks"
-      description: "Tenha um lucro negativo ao vender uma ação"
-    #===[ MISC ]===
-    isThatAnUndertaleReference:
-      title: "Isso é uma referência a Undertale???"
-      description: "Veja o seu próprio avatar"
-    onePlusOneCalculation:
-      title: "Eu só queria ter certeza que eu estava certo!"
-      description: "Calcule o cálculo mais fácil do mundo, sóóóóóó para ter certeza de que a matemática não mudou da noite para o dia"
-    #===[ ROLEPLAY ]===
-    receivedFirstKiss:
-      title: "Meu primeiro beijo!"
-      description: "Recebeu seu primeiro beijo"
-    gaveFirstKiss:
-      title: "Roubei um Beijo"
-      description: "Deu seu primeiro beijo"
-    triedKissingLoritta:
-      title: "Eu não sou tão carente assim, sabia??"
-      description: "Loritta rejeitou seu beijo"
-    triedHurtingLoritta:
-      title: "Por que você tentou me machucar??"
-      description: "Tentou bater ou atacar a Loritta"
-    grassCutter:
-      title: "Talarico"
-      description: "Beijou alguém que está casado, eita!"
