@@ -1,10 +1,1 @@
 label: "rank"
-description: "Veja os usuários mais ricos"
-youCantSeeTheLocalSonhosRankOutsideOfAServer: "Você não pode ver os sonhos locais fora de um servidor! Afinal, o ranking local aqui seria apenas você e eu."
-globalSonhosRank: "Rank Global de Sonhos"
-localSonhosRank: "Rank Local de Sonhos"
-options:
-  rankType:
-    text: "Qual tipo de rank de sonhos você deseja ver"
-  page:
-    text: "A página que você deseja ir"
