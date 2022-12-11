@@ -133,7 +133,7 @@ abstract class LocalizedApplicationCommandOptions(val loritta: LorittaBot) : App
         name: StringI18nData,
         value: ChoiceableType,
         block: CommandChoiceBuilder<ChoiceableType>.() -> (Unit) = {}
-    ) = choice(languageManager.defaultI18nContext.get(name).shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length), value) {
+    ) = choice(languageManager.getI18nContextById("en").get(name).shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length), value) {
         nameLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, name)
         block.invoke(this)
     }

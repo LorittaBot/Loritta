@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
  * Miscellaneous utilities for Application Commands' text
  */
 object SlashTextUtils {
-    fun shorten(languageManager: LanguageManager, i18nData: StringI18nData) = shorten(languageManager.defaultI18nContext.get(i18nData))
+    fun shorten(languageManager: LanguageManager, i18nData: StringI18nData) = shorten(languageManager.getI18nContextById("en").get(i18nData))
 
     fun shorten(string: String) = string.shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length)
 
@@ -42,7 +42,7 @@ object SlashTextUtils {
      * @param i18nKey the key
      */
     fun createLocalizedStringMapExcludingDefaultLocale(languageManager: LanguageManager, key: StringI18nData) = mutableMapOf<Locale, String>().apply {
-        val defaultI18nContext = languageManager.defaultI18nContext
+        val defaultI18nContext = languageManager.getI18nContextById("en")
 
         // We will ignore the default i18nContext because that would be redundant
         for ((languageId, i18nContext) in languageManager.languageContexts.filter { it.value != defaultI18nContext }) {
@@ -70,7 +70,7 @@ object SlashTextUtils {
      * @param i18nKey the key
      */
     fun createLocalizedDescriptionMapExcludingDefaultLocale(languageManager: LanguageManager, description: StringI18nData, category: CommandCategory) = mutableMapOf<Locale, String>().apply {
-        val defaultI18nContext = languageManager.defaultI18nContext
+        val defaultI18nContext = languageManager.getI18nContextById("en")
 
         // We will ignore the default i18nContext because that would be redundant
         for ((languageId, i18nContext) in languageManager.languageContexts.filter { it.value != defaultI18nContext }) {

@@ -25,7 +25,7 @@ class UserListCommandOption(
     val minimum: Int, // How many options are required
     val maximum: Int // Maximum options generated
 ) : InteraKTionsCommandOption<List<User>> {
-    val description = languageManager.defaultI18nContext.get(descriptionI18n).shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length)
+    val description = languageManager.getI18nContextById("en").get(descriptionI18n).shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length)
     val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, descriptionI18n)
 
     override fun register(builder: BaseInputChatBuilder) {

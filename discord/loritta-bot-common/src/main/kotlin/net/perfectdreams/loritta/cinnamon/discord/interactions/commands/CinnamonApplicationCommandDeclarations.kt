@@ -20,9 +20,9 @@ class CinnamonSlashCommandDeclaration(
     override val subcommands: List<SlashCommandDeclaration>,
     override val subcommandGroups: List<SlashCommandGroupDeclaration>,
 ) : SlashCommandDeclaration() {
-    override val name = languageManager.defaultI18nContext.get(nameI18n)
+    override val name = languageManager.getI18nContextById("en").get(nameI18n)
     override val nameLocalizations: Map<Locale, String> = SlashTextUtils.createLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
-    override val description = SlashTextUtils.buildDescription(languageManager.defaultI18nContext, descriptionI18n, category)
+    override val description = SlashTextUtils.buildDescription(languageManager.getI18nContextById("en"), descriptionI18n, category)
     override val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, descriptionI18n, category)
 }
 
@@ -33,9 +33,9 @@ class CinnamonSlashCommandGroupDeclaration(
     val category: CommandCategory,
     override val subcommands: List<SlashCommandDeclaration>
 ) : SlashCommandGroupDeclaration() {
-    override val name = languageManager.defaultI18nContext.get(nameI18n)
+    override val name = languageManager.getI18nContextById("en").get(nameI18n)
     override val nameLocalizations: Map<Locale, String> = SlashTextUtils.createLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
-    override val description = SlashTextUtils.buildDescription(languageManager.defaultI18nContext, descriptionI18n, category)
+    override val description = SlashTextUtils.buildDescription(languageManager.getI18nContextById("en"), descriptionI18n, category)
     override val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, descriptionI18n, category)
 }
 
@@ -47,7 +47,7 @@ class CinnamonUserCommandDeclaration(
     override val dmPermission: Boolean?,
     override val executor: UserCommandExecutor // User/Message commands always requires an executor, that's why it is not nullable!
 ) : UserCommandDeclaration() {
-    override val name = SlashTextUtils.shorten(languageManager.defaultI18nContext.get(nameI18n))
+    override val name = SlashTextUtils.shorten(languageManager.getI18nContextById("en").get(nameI18n))
     override val nameLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
 }
 
@@ -59,6 +59,6 @@ class CinnamonMessageCommandDeclaration(
     override val dmPermission: Boolean?,
     override val executor: MessageCommandExecutor // User/Message commands always requires an executor, that's why it is not nullable!
 ) : MessageCommandDeclaration() {
-    override val name = SlashTextUtils.shorten(languageManager.defaultI18nContext.get(nameI18n))
+    override val name = SlashTextUtils.shorten(languageManager.getI18nContextById("en").get(nameI18n))
     override val nameLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
 }
