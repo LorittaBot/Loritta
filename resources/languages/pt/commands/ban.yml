@@ -1,4 +1,1 @@
 label: "ban"
-description: "Bane usuários do seu servidor"
-punishAction: "Banido"
-youGotPunished: "Você foi banido de {guildName}!"
