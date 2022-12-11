@@ -1,32 +1,6 @@
+---
 label: "global"
-discordOldDiscordAppWorkaroundLabel: "girarmoedaglobal"
-description: "O clássico \"Gire uma moeda e veja se irá cair cara ou coroa!\", mas agora com sonhos! Eu não me responsabilizo se você perder tudo em apostas"
-invalidQuantity: "Você colocou uma quantidade inválida de sonhos! Quantidades válidas: {validQuantities}"
-quittedMatchmakingQueue: "Você saiu da fila de espera!"
-youArentInTheMatchmakingQueueToLeaveIt: "Você não está na fila de espera para sair dela!"
-addedToMatchmakingQueue: "Você entrou na fila de espera! Quando outro usuário entrar na fila, uma partida será feita entre vocês dois! Caso nenhuma partida seja encontrada em até 5 minutos, eu irei te remover da fila. Caso você queira sair da fila, use {betCoinflipGlobalCommandMention} e escolha para sair da fila atual, mas lembre-se que você só pode fazer isso antes de uma partida ser encontrada!"
-youAreAlreadyInTheMatchmakingQueue: "Você já está na fila de espera!" #This is only shown if the user uses the command to leave the matchmaking queue directly, because autocomplete would never display this option to the user
-leftMatchmakingQueueDueToNotEnoughSonhos: "Eu tinha encontrado alguém para apostar com você, mas tive que te remover da fila de espera pois você não possui sonhos suficientes para a aposta..."
-notEnoughSonhosToBet: "Como você vai apostar uma quantidade que você não tem? Não existe aposta fiada!"
-congratulationsTaxed: "Parabéns {user}, você ganhou {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {sonhosCountWithoutTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})! Financiado por `{loserTag}` (`{loserId}`) rsrs"
-lostTaxed: "Que pena {user}, você perdeu {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor com taxa: {sonhosCountWithoutTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}) para `{winnerTag}` (`{winnerId}`)... Eu sei, é chato perder sonhos, mas é o espírito do jogo! Tenha mais sorte da próxima vez!"
-congratulations: "Parabéns {user}, você ganhou {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}! Financiado por `{loserTag}` (`{loserId}`) rsrs"
-lost: "Que pena {user}, você perdeu {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para `{winnerTag}` (`{winnerId}`)... Eu sei, é chato perder sonhos, mas é o espírito do jogo! Tenha mais sorte da próxima vez!"
-congratulationsJustForFun: "Parabéns {user}, você ganhou de `{loserTag}` (`{loserId}`)"
-lostJustForFun: "Que pena {user}, você perdeu para `{winnerTag}` (`{winnerId}`)... Eu sei, é chato perder, mas é o espírito do jogo! Tenha mais sorte da próxima vez!"
-recentBetsStats: "Nas últimas 24 horas, você entrou em {playedCount,plural, =0 {# partidas} one {# partida} other {# partidas}}, ganhou {winCount,plural, =0 {# partidas} one {# partida} other {# partidas}} e perdeu {loseCount,plural, =0 {# partidas} one {# partida} other {# partidas}}! Total de sonhos: {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-dontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium: "Como o seu oponente possui o plano premium \"Recomendado\", você não teve que pagar taxa nos sonhos recebidos! Psiu, você quer ter isso também? Então compre o plano \"Recomendado\" na minha lojinha! Nós aceitamos pagamentos via boleto, cartão de crédito e Pix e comprando por lá você me ajuda a ficar online enquanto você se diverte com mais vantagens! Mas não se preocupe, a escolha é sua e você pode continuar a usar a Loritta sem se preocupar em tirar dinheiro do seu bolso. Ficou interessado? Então [clique aqui]({premiumShopWebsiteLink})!"
-joinMatchmakingQueueJustForFunButton: "Entrar na fila novamente, apenas para se divertir!"
-joinMatchmakingQueueButton: "Entrar na fila de {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} novamente"
-youHaveConsecutiveWins: "Você tem **{streak,plural, =0 {# vitórias consecutivas} one {# vitória consecutiva} other {# vitórias consecutivas}}**!"
-youHaveConsecutiveLosses: "Você tem **{streak,plural, =0 {# derrotas consecutivas} one {# derrota consecutiva} other {# derrotas consecutivas}}**!"
 options:
   quantity:
-    text: "A quantidade de sonhos que você deseja apostar"
     choice:
-      justForFun: "Apenas para se divertir!"
       matchmakingSonhos: "{sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-      quitMatchmakingQueue: "Sair da fila de {sonhosQuantity, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-      averageTimeInSeconds: "Estimado: {averageTimeSeconds,number,#.##}s"
-      playersInMatchmakingQueue: "Jogadores na fila!"
-      recentMatches: "{recentMatches, plural, =0 {# partidas recentes} one {# partida recente} other {# partidas recentes}}"
