@@ -1,7 +1,1 @@
 label: "ocr"
-description: "Leia o texto de uma imagem com OCR (Reconhecimento Ótico de Caracteres)"
-readTextFromImage: "Ler texto da imagem (OCR)"
-noTextWasFound: "Nenhum texto foi encontrado na imagem..."
-thereIsntAnyImageAttachmentOnTheMessage: "Não há nenhuma imagem anexada na mensagem!"
-languageDetected: "Idioma Detectado: {language}"
-translateToLanguage: "Traduzir para {language}"
