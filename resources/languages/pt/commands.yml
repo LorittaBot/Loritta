@@ -1,20 +1,6 @@
+---
 commands:
-  errorWhileExecutingCommand: "Algo deu extremamente errado ao executar este comando... {loriRage} Desculpe pela inconveniência... {loriSob} Espero que este problema seja resolvido em breve! {stacktrace}"
-  commandOnlyAvailableInGuilds: "Este comando só está disponível em um servidor! Se você realmente quiser usá-lo, por favor crie um servidor agradável e aconchegante, me adicione, e use o comando lá!"
-  noValidImageFound: "Desculpe, mas eu não achei nenhuma imagem que eu possa usar! Eu tentei pegar imagens em links, imagens anexadas, avatares de usuários mencionados, emojis... mas eu não achei nada disso na sua mensagem."
-  noValidUserFound: "Desculpe, mas não consegui encontrar nenhum usuário válido!"
-  sentImageIsTooLarge: "Desculpe, eu queria usar essa imagem incrível para o comando... mas ela é muito grande! Não quero arriscar abrindo a imagem e acabar morrendo... Por favor, envie uma imagem menor para que eu possa usá-la!"
-  imageUrlIsUntrusted: "Desculpe, mas esse link parece um pouco sus, então eu não quero arriscar a minha segurança acessando ele... Se você realmente quer usar essa imagem, faça o download e envie-a para mim!"
-  youArentTheUserGeneric: "Espere um pouquinho... Isso não é para você! Xô, xô! Sai daqui!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
-  youArentTheUserSingleUser: "Espere um pouquinho... Você não é {user}! Isso não é para você, sai daqui!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
-  invalidNumber: "Desculpe, mas eu não acho que `{number}` seja um número válido... Ou talvez seja só eu sendo burra, afinal, eu estou perdendo o meu tempo no Discord ao invés de prestar atenção na aula de matemática."
   sonhosWithQuantity: "{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-  wantingMoreSonhosBundlesUpsell: "Psiu, está querendo mais sonhos? Então compre na minha lojinha! Nós aceitamos pagamentos via boleto, cartão de crédito e Pix e comprando por lá você me ajuda a ficar online enquanto você se diverte com mais sonhos! Mas não se preocupe, a escolha é sua e você pode continuar a usar a Loritta sem se preocupar em tirar dinheiro do seu bolso. Ficou interessado? Então [clique aqui]({sonhosShopWebsiteLink})!"
-  wantingMoreSonhosDaily: "Psiu, você ainda não pegou a sua Recompensa Diária de Sonhos de hoje! Resgate-a agora e divirta-se! {dailyCommandMention}"
-  checkOutNews: "Tenho novidades para você! Descubra tudo que há de novo [clicando aqui]({link})!"
-  interactionDataIsMissingFromDatabaseGeneric: "Opa, parece que os dados de interação desapareceram porque você demorou muito para usá-los! Por favor, use o comando novamente... Desculpe!"
-  insufficientFunds: "Você não tem **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para fazer isso! Você precisa conseguir mais **{howMuchIsNeeded,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para continuar."
-  loriDoesntHavePermissionDiscord: "Eu queria executar esse comando, mas infelizmente eu não tenho permissão para {requiredPermissions}... Peça para alguém da equipe do servidor dar as permissões para mim! Obrigada!"
   youAreLorittaBannedPermanent:
     - "Você está **banido(a) permanentemente**! {loriHmpf}"
     - ""
@@ -57,6 +43,3 @@ commands:
     - "**Expira:** {expiresDate}"
     - ""
     - "*Será que é tarde demais para ele pedir desculpas?* {loriSob}"
-  usersFill:
-    notEnoughUsersPermissionsTip: "Eu poderia pegar membros das mensagens mais recentes do servidor, mas para isso eu preciso ter permissão para ler o histórico de mensagens do canal!"
-    notEnoughUsersGuildTip: "Eu poderia pegar membros das mensagens mais recentes de um servidor, mas... bem, estamos em um canal de mensagem diretas, os únicos dois usuários aqui são você e eu!"
