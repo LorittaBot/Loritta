@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
@@ -16,8 +15,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.a
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserAvatarUserCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserInfoUserCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.info.ShowGuildMemberPermissionsExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend.AcceptCoinFlipBetFriendButtonExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend.RematchCoinFlipBetFriendButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipglobal.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker.BrokerInfoCategorySelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.CancelSonhosTransferButtonExecutor
@@ -103,9 +100,6 @@ class InteractionsManager(
         register(ChangeSonhosRankPageButtonExecutor(loritta))
 
         register(BrokerInfoCategorySelectMenuExecutor(loritta))
-
-        register(AcceptCoinFlipBetFriendButtonExecutor(loritta))
-        register(RematchCoinFlipBetFriendButtonExecutor(loritta))
 
         // ===[ SOCIAL ]===
         register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))

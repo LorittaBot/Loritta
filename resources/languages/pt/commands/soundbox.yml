@@ -1,8 +1,13 @@
 label: "caixadesom"
+description: "Deixe suas conversas em canais de voz mais divertidas com efeitos sonoros legais!"
 falatron:
   label: "falatron"
+  description: "Toque uma voz TTS do Falatron em um canal de voz"
   options:
     voice:
       text: "A voz que falará o texto fornecido"
+    text:
+      text: "O texto que será falado"
 board:
   label: "board"
+  description: "Toque efeitos sonoros em um canal de voz"

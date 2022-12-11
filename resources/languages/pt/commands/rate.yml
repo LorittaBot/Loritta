@@ -25,7 +25,7 @@ waifuHusbando:
   score5:
     - "Não é tão ruim, não é tão bom, é apenas \"bom\". Mas pensando bem, você também é apenas \"bom\", então não importa! Apenas seja feliz!"
   score6:
-    - "Nem todo mundo é perfeito, mas qual é a graça de viver com uma pessoa perfeita?"
+    - "Nem todo mundo que é {type} é perfeito, mas qual é a graça de viver com uma pessoa perfeita?"
   score7:
     - "Se {typePlural} fosse uma nota da sua escola, seria uma nota \"acima da média\", yay!"
   score8:

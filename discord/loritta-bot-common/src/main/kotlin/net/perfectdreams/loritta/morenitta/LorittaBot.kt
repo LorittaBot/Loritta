@@ -66,7 +66,6 @@ import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend.CoinFlipBetUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosPackageInfoUpdater
@@ -268,7 +267,6 @@ class LorittaBot(
 	val graphicsFonts = GraphicsFonts()
 	val googleTranslateClient = HackyGoogleTranslateClient()
 	val googleVisionOCRClient = GoogleVisionOCRClient(config.loritta.googleVision.key)
-	val coinFlipBetUtils = CoinFlipBetUtils(this)
 
 	// ===[ LORITTA ]===
 	lateinit var lorittaShards: LorittaShards

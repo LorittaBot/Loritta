@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 
 import dev.kord.common.DiscordTimestampStyle
 import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Snowflake
 import dev.kord.common.toMessageFormat
 import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
@@ -16,7 +15,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.ShortenedToLongSonhosAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend.AcceptCoinFlipBetFriendButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
