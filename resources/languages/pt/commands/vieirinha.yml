@@ -1,5 +1,5 @@
+---
 label: "vieirinha"
-description: "Vieirinha é o oráculo de tudo que você deseja saber na sua vida, por que não lhe perguntar algo?"
 responses:
   - "Vá incomodar outra pessoa, obrigado."
   - "Não sei, mas o que eu sei é que eu morro lá no Cambuci!"
@@ -43,5 +43,3 @@ responses:
   - "Eu não sei... Pergunte novamente mais tarde{punctuation, select, exclamation {!} other {.}}"
   - "Eu não sei... Concentre-se e pergunte de novo{punctuation, select, exclamation {!} other {.}}"
   - "¯\\_(ツ)_/¯"
-options:
-  question: "A pergunta que você deseja uma resposta do oráculo"
