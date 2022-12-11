@@ -1,70 +1,10 @@
+---
 label: "usuário"
-description: "Comandos relacionados a usuários do Discord"
 avatar:
   label: "avatar"
-  description: "Mostra o avatar do seu perfil ou o avatar do perfil de outro usuário"
-  yourselfEasterEgg: "Apesar de tudo, ainda é você."
-  lorittaEasterEgg: "Sim, eu sei que sou muito fofa!"
-  pantufaEasterEgg: "Sim, a Pantufa também é muito fofa! Só olhe para ela, tããão fofinha!"
-  gabrielaEasterEgg: "Sim, a Gabriela também é bem fofa, as vezes eu sinto inveja o penteado dela, afinal, é um estilo bem legal e bonito!"
-  dankMemerEasterEgg: "Pepe o Sapo"
-  carlbotEasterEgg: "Uma tartaruga super fofa!"
-  mantaroEasterEgg: "Ela é na verdade Yuyuko de Touhou"
-  erislyEasterEgg: "Você sabia que ela é uma gigante? Não acredita em mim? Só olhe para ela!"
-  kuraminhaEasterEgg: "A raposa mais fofa... e bot, que existe!"
-  openAvatarInBrowser: "Abrir avatar no navegador" #Used in a button, when clicking the button, Discord opens the user's avatar in the user's browser
-  viewUserGuildProfileAvatar: "Ver o avatar do perfil do usuário no servidor"
-  viewUserGlobalAvatar: "Ver o avatar global do usuário"
-  viewAvatar: "Ver avatar" #Shown when right-clicking a user
-  options:
-    user: "O usuário que você deseja roubar... Quero dizer, ver o avatar (*/ω＼*)"
 banner:
   label: "banner"
-  description: "Mostra o banner do seu perfil ou o banner do perfil de outro usuário"
-  userDoesNotHaveAnBanner: "{user} não tem um banner no perfil! Talvez ele não tenha Discord Nitro... Ou talvez ele só teve muita preguiça de colocar um banner bonitinho."
-  openBannerInBrowser: "Abrir banner no navegador" #Used in a button, when clicking the button, Discord opens the user's banner in the user's browser
-  yourselfEasterEgg: "Apesar de tudo, ainda é o seu banner."
-  options:
-    user: "O usuário que você deseja roubar... Quero dizer, ver o banner (*/ω＼*)"
 info:
   label: "info"
-  description: "Mostra as suas informações da sua conta do Discord ou as informações de outro usuário"
-  infoAboutTheUser: "Informações sobre o Usuário"
-  infoAboutTheMember: "Informações sobre o Membro"
-  infoAboutTheApplication: "Informações sobre o Aplicativo"
-  interestingTidbits: "Curiosidades Interessantes"
-  user:
-    discordId: "ID do Discord"
-    discordTag: "Tag do Discord"
-    accountCreationDate: "Data de Criação da Conta"
-  member:
-    accountJoinDate: "Data de Entrada no Servidor"
-    timedOutUntil: "Quando acaba o castigo"
-    #The member isn't able to talk in the server? Ask them to check if their device's clock is correct
-    timeoutTip: "O membro não consegue falar no servidor? Peça para ele verificar se o relógio do dispositivo dele está correto!"
-    boostingSince: "Impulsionando o servidor desde"
-    highestRole: "Maior cargo"
-    completedMembershipScreening: "Completou a Avaliação de Associação"
-    isTimedOut: "Castigado"
-    memberPermissions: "Permissões do Membro"
-    roles: "Cargos"
-    permissions: "Permissões"
   application:
-    supportGuildId: "ID do Servidor de Suporte"
-    tags: "Marcadores"
     slug: "Slug" #Slug in a SEO context, not the animal
-    addToServer: "Adicionar ao Servidor"
-    termsOfService: "Termos de Serviço"
-    privacyPolicy: "Política de Privacidade"
-    public: "Público"
-    requiresOAuth2CodeGrant: "Requer Código de Autenticação via OAuth2"
-    usesInteractionsOverHttp: "Usa Interações via HTTP"
-    intentGatewayPresences: "Intent de Presenças pelo Gateway"
-    intentGuildMembers: "Intent de Membros de Servidores"
-    intentMessageContent: "Intent de Conteúdo de Mensagens"
-    publicKey: "Chave Pública de Verificação de Requisições HTTP"
-    noMatchingApplicationFound: "Eu não consegui encontrar as informações do aplicativo deste bot... Provavelmente o bot foi criado a tanto tempo, que o ID do aplicativo difere do ID do bot! (É... antigamente era assim)"
-  viewUserInfo: "Ver informações" #Shown when right-clicking a user
-  options:
-    user:
-      text: "O usuário que você quer ver informações sobre"
