@@ -8,6 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import kotlinx.serialization.json.Json.Default.encodeToJsonElement
 import mu.KotlinLogging
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
@@ -23,6 +24,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicati
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
+import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
+import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
@@ -174,8 +177,6 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         GlobalScope.launch {
-            // event.interaction.editButton(event.button.asDisabled()).await()
-
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
             var context: ComponentContext? = null
@@ -222,6 +223,61 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     event
                 )
                 callbackId?.invoke(context)
+            } catch (e: Exception) {
+                // TODO: Proper catch and throw
+                e.printStackTrace()
+            }
+        }
+    }
+
+    override fun onModalInteraction(event: ModalInteractionEvent) {
+        GlobalScope.launch {
+            // These variables are used in the catch { ... } block, to make our lives easier
+            var i18nContext: I18nContext? = null
+            var context: ModalContext? = null
+
+            try {
+                val guild = event.guild
+                val member = event.member
+
+                val serverConfigJob = if (guild != null)
+                    loritta.getOrCreateServerConfigDeferred(guild.idLong, true)
+                else
+                    loritta.getOrCreateServerConfigDeferred(-1, true)
+
+                val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.user.idLong)
+
+                val serverConfig = serverConfigJob.await()
+                val lorittaProfile = lorittaProfileJob.await()
+
+                val currentLocale = loritta.newSuspendedTransaction {
+                    (lorittaProfile?.settings?.language ?: serverConfig.localeId)
+                }
+
+                val locale = loritta.localeManager.getLocaleById(currentLocale)
+                i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+                val lorittaUser = if (guild != null && member != null) {
+                    // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+                    val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
+                    val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
+                        member,
+                        rolesLorittaPermissions
+                    )
+                    GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
+                } else {
+                    LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
+                }
+                // val callbackId = loritta.componentManager.buttonInteractionCallbacks[UUID.fromString(event.componentId)]
+                context = ModalContext(
+                    loritta,
+                    serverConfig,
+                    lorittaUser,
+                    locale,
+                    i18nContext,
+                    event
+                )
+                loritta.componentManager.modalCallback?.invoke(context, ModalArguments(event))
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()

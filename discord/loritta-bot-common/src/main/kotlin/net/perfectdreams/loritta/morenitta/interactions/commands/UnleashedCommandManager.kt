@@ -36,7 +36,9 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.dreamland.DreamLandCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
+import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
     val slashCommands = mutableListOf<SlashCommandDeclaration>()
@@ -50,6 +52,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     init {
         // ===[ DISCORD ]===
         register(LorittaCommand())
+
+        // ===[ DREAMLAND ]===
+        if (loritta.config.loritta.environment == EnvironmentType.CANARY)
+            register(DreamLandCommand(loritta))
 
         // ===[ UTILS ]===
         register(AnagramCommand())

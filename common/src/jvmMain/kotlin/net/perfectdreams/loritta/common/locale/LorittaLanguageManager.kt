@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 fun LorittaLanguageManager(clazz: KClass<*>): LanguageManager {
     val languageManager = LanguageManager(
         clazz,
-        "en",
+        "pt",
         "/languages/"
     )
     languageManager.loadLanguagesAndContexts()
