@@ -49,7 +49,7 @@ class DiscordCacheService(
      * Gets role informations of the following [roleIds] in [guildId]
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<Role> {
-        return loritta.lorittaShards.getGuildById(guildId.value.toLong())?.roles ?: return emptyList()
+        return loritta.lorittaShards.getGuildById(guildId.value.toLong())?.roles?.filter { Snowflake(it.idLong) in roleIds } ?: return emptyList()
     }
 
     /**
