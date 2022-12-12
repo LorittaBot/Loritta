@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import dev.kord.common.Locale
-import dev.kord.rest.builder.interaction.*
 import dev.minn.jda.ktx.interactions.commands.*
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Message.Attachment
@@ -14,7 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
@@ -29,14 +27,13 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customop
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.common.images.ImageReference
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.dreamland.DreamLandCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 
@@ -55,7 +52,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
-            register(DreamLandCommand(loritta))
+            register(LoriTuberCommand(loritta))
 
         // ===[ UTILS ]===
         register(AnagramCommand())
