@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions
 
 import dev.minn.jda.ktx.messages.InlineMessage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.components.ActionComponent
@@ -15,11 +13,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.interactions.components.ComponentManager
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import java.util.*
-
 
 abstract class InteractionContext(
     val loritta: LorittaBot,
@@ -29,31 +25,33 @@ abstract class InteractionContext(
     val i18nContext: I18nContext,
 ) {
     abstract val event: IReplyCallback
+    val guildId
+        get() = event.guild?.idLong
 
     val user
         get() = event.user
 
     suspend fun deferChannelMessage(): InteractionHook = event.deferReply().await()
 
-    suspend inline fun reply(content: String) = reply {
+    suspend inline fun reply(ephemeral: Boolean, content: String) = reply(ephemeral) {
         this.content = content
     }
 
-    suspend inline fun reply(builder: InlineMessage<MessageCreateData>.() -> Unit = {}) {
+    suspend inline fun reply(ephemeral: Boolean, builder: InlineMessage<MessageCreateData>.() -> Unit = {}) {
         val createdMessage = InlineMessage(MessageCreateBuilder()).apply(builder).build()
 
         if (event.isAcknowledged) {
-            val message = event.hook.sendMessage(createdMessage).await()
+            val message = event.hook.sendMessage(createdMessage).setEphemeral(ephemeral).await()
             if (message.components.isEmpty())
                 return
 
-            loritta.componentManager.launch {
+            loritta.interactivityManager.launch {
                 val components = message.components
                 for (componentLayout in components) {
                     for (button in componentLayout.buttons) {
                         val buttonId = button.id?.let { UUID.fromString(it) } ?: continue
                         // Invalidate all button callbacks
-                        loritta.componentManager.buttonInteractionCallbacks.remove(buttonId)
+                        loritta.interactivityManager.buttonInteractionCallbacks.remove(buttonId)
                     }
                 }
 
@@ -73,11 +71,11 @@ abstract class InteractionContext(
                 ).await()
             }
         } else {
-            event.reply(createdMessage).await()
+            event.reply(createdMessage).setEphemeral(ephemeral).await()
             if (createdMessage.components.isEmpty())
                 return
 
-            loritta.componentManager.launch {
+            loritta.interactivityManager.launch {
                 event.hook.retrieveOriginal()
                     .await()
                     .also { message ->
@@ -86,7 +84,7 @@ abstract class InteractionContext(
                             for (button in componentLayout.buttons) {
                                 val buttonId = button.id?.let { UUID.fromString(it) } ?: continue
                                 // Invalidate all button callbacks
-                                loritta.componentManager.buttonInteractionCallbacks.remove(buttonId)
+                                loritta.interactivityManager.buttonInteractionCallbacks.remove(buttonId)
                             }
                         }
 

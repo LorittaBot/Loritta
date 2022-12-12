@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import dev.minn.jda.ktx.messages.MessageCreate
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
@@ -11,21 +12,21 @@ import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlockerConfig
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
-import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
-import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -34,7 +35,14 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 	}
 
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun matches(
+		event: LorittaMessageEvent,
+		lorittaUser: LorittaUser,
+		lorittaProfile: Profile?,
+		serverConfig: ServerConfig,
+		locale: BaseLocale,
+		i18nContext: I18nContext
+	): Boolean {
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(loritta, ServerConfig::inviteBlockerConfig)
 				?: return false
 
@@ -50,7 +58,14 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun handle(
+		event: LorittaMessageEvent,
+		lorittaUser: LorittaUser,
+		lorittaProfile: Profile?,
+		serverConfig: ServerConfig,
+		locale: BaseLocale,
+		i18nContext: I18nContext
+	): Boolean {
 		val message = event.message
 		val guild = message.guild
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(loritta, ServerConfig::inviteBlockerConfig)
@@ -159,44 +174,70 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 						val topRole = event.member.roles.sortedByDescending { it.position }.firstOrNull { !it.isPublicRole }
 
 						if (topRole != null) {
-							val enableBypassMessage = message.textChannel.sendMessageAsync(
-									listOf(
-											LorittaReply(
-													locale["modules.inviteBlocker.activateInviteBlockerBypass", topRole.asMention, Emotes.LORI_PAT],
-													Emotes.LORI_SMILE
-											),
-											LorittaReply(
-													locale["modules.inviteBlocker.howToReEnableLater", "<${loritta.config.loritta.website.url}guild/${event.member.guild.idLong}/configure/permissions>"],
-													Emotes.LORI_HM
-											)
-									).joinToString("\n") { it.build(JDAUser(event.member.user)) }
-							)
+							val button = loritta.interactivityManager.buttonForUser(
+								message.author,
+								ButtonStyle.PRIMARY,
+								i18nContext.get(I18nKeysData.Modules.InviteBlocker.AllowSendingInvites),
+								{
+									loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat
+								}
+							) { context ->
+								val deferredEdit = context.deferEdit()
 
-							enableBypassMessage.onReactionAddByAuthor(loritta, event.author.idLong) {
-								if (it.emoji.asCustom().id == (Emotes.LORI_PAT as DiscordEmote).id) {
-									enableBypassMessage.removeAllFunctions(loritta)
-
-									loritta.newSuspendedTransaction {
-										ServerRolePermissions.insert {
-											it[ServerRolePermissions.guild] = serverConfig.id
-											it[ServerRolePermissions.roleId] = topRole.idLong
-											it[ServerRolePermissions.permission] = LorittaPermission.ALLOW_INVITES
-										}
+								val success = loritta.pudding.transaction {
+									// Check if it already exists
+									if (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.select {
+											net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.guild eq guild.idLong and
+													(net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.roleId eq topRole.idLong) and
+													(net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.permission eq net.perfectdreams.loritta.common.utils.LorittaPermission.ALLOW_INVITES)
+										}.count() == 1L
+									) {
+										return@transaction false
 									}
 
-									// Because Loritta caches role permissions, we need to invalidate the current config to avoid cache inconsistencies.
-									loritta.cachedServerConfigs.invalidate(serverConfig.id.value)
+									net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.insert {
+										it[net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.guild] = guild.idLong
+										it[net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.roleId] = topRole.idLong
+										it[net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.permission] = net.perfectdreams.loritta.common.utils.LorittaPermission.ALLOW_INVITES
+									}
+									return@transaction true
+								}
 
-									message.textChannel.sendMessage(
-											LorittaReply(
-													locale["modules.inviteBlocker.bypassEnabled", topRole.asMention],
-													Emotes.LORI_HAPPY
-											).build(JDAUser(event.member.user))
-									).queue()
+								// Update message updates the original interaction message, in this case, where the button is
+								deferredEdit.editOriginalComponents(ActionRow.of(context.event.component.asDisabled())).await()
+
+								context.reply(true) {
+									if (success) {
+										styled(
+											context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.BypassEnabled("<@&${topRole.idLong}>")),
+											net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappy
+										)
+									} else {
+										styled(
+											context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.RoleAlreadyHasInviteBlockerBypass("<@&${topRole.idLong}>")),
+											net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+										)
+									}
 								}
 							}
 
-							enableBypassMessage.addReaction((Emotes.LORI_PAT as DiscordEmote).reactionCode).queue()
+							message.textChannel.sendMessageAsync(
+								MessageCreate {
+									mentions {}
+
+									styled(
+										i18nContext.get(I18nKeysData.Modules.InviteBlocker.ActivateInviteBlockerBypass("<@&${topRole.id}>")),
+										net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile
+									)
+
+									styled(
+										i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${loritta.config.loritta.website.url}guild/${guild.idLong}/configure/permissions>")),
+										net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHi
+									)
+
+									actionRow(button)
+								}
+							)
 						}
 					}
 

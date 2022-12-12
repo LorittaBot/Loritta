@@ -58,7 +58,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 	private val messageReceivedModules = mutableListOf(
 		automodModule,
-		// inviteLinkModule,
+		inviteLinkModule,
 		experienceModule,
 		// afkModule,
 		bomDiaECiaModule,
@@ -272,13 +272,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 					for (module in messageReceivedModules) {
 						start = System.nanoTime()
-						if (module.matches(
-								lorittaMessageEvent,
-								lorittaUser,
-								lorittaProfile,
-								serverConfig,
-								locale
-							) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale)
+						if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext)
 						)
 							return@launchMessageJob
 						logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
@@ -434,7 +428,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				)
 
 				for (module in messageEditedModules) {
-					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale))
+					if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext))
 						return@launch
 				}
 

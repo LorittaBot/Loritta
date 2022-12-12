@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import kotlinx.serialization.json.Json.Default.encodeToJsonElement
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -15,7 +14,6 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.utils.data.DataObject
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
@@ -213,7 +211,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 } else {
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
-                val callbackId = loritta.componentManager.buttonInteractionCallbacks[UUID.fromString(event.componentId)]
+                val callbackId = loritta.interactivityManager.buttonInteractionCallbacks[UUID.fromString(event.componentId)]
                 context = ComponentContext(
                     loritta,
                     serverConfig,
@@ -277,7 +275,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
-                loritta.componentManager.modalCallback?.invoke(context, ModalArguments(event))
+                loritta.interactivityManager.modalCallback?.invoke(context, ModalArguments(event))
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()

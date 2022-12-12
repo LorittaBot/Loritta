@@ -34,7 +34,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             val executedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getExecutedApplicationCommands(since)
             val uniqueUsersExecutedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getUniqueUsersExecutedApplicationCommands(since)
 
-            context.reply {
+            context.reply(false) {
                 embed {
                     color = LorittaColors.LorittaAqua.rgb
 

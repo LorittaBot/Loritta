@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
@@ -78,14 +79,28 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun matches(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        i18nContext: I18nContext
+    ): Boolean {
 		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_AUTO_MOD))
 			return false
 
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun handle(
+		event: LorittaMessageEvent,
+		lorittaUser: LorittaUser,
+		lorittaProfile: Profile?,
+		serverConfig: ServerConfig,
+		locale: BaseLocale,
+		i18nContext: I18nContext
+	): Boolean {
 		if (ANTIRAID_ENABLED && (loritta.config.loritta.antiRaidIds.contains(Snowflake(event.channel.id))) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 

@@ -116,7 +116,7 @@ import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.dao.*
-import net.perfectdreams.loritta.morenitta.interactions.components.ComponentManager
+import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
@@ -275,7 +275,7 @@ class LorittaBot(
 
 	val legacyCommandManager = CommandManager(this) // Nosso command manager
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
-	val componentManager = ComponentManager()
+	val interactivityManager = InteractivityManager()
 	var ignoreIds = mutableSetOf<Long>() // IDs para serem ignorados nesta sessão
 	val apiCooldown = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.SECONDS).maximumSize(100).build<String, Long>().asMap()
 
@@ -503,12 +503,10 @@ class LorittaBot(
 	private val bomDiaECiaModule = BomDiaECiaModule(this)
 	private val debugGatewayModule = DebugGatewayModule(this)
 	private val owoGatewayModule = OwOGatewayModule(this)
-	private val inviteBlockerModule = InviteBlockerModule(this)
 	private val afkModule = AFKModule(this)
 
 	// This is executed sequentially!
 	val modules = listOf(
-		inviteBlockerModule,
 		afkModule,
 		addFirstToNewChannelsModule,
 		starboardModule,
@@ -632,9 +630,9 @@ class LorittaBot(
 				}
 
 				logger.info { "Disabling all components..." }
-				componentManager.scope.cancel()
+				interactivityManager.scope.cancel()
 				runBlocking {
-					for (block in componentManager.pendingInteractionRemovals) {
+					for (block in interactivityManager.pendingInteractionRemovals) {
 						block.invoke(this)
 					}
 				}

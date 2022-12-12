@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.stripZeroWidthSpace
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -17,11 +17,25 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.
 import java.util.concurrent.TimeUnit
 
 class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun matches(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        i18nContext: I18nContext
+    ): Boolean {
 		return event.textChannel?.canTalk() == true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun handle(
+		event: LorittaMessageEvent,
+		lorittaUser: LorittaUser,
+		lorittaProfile: Profile?,
+		serverConfig: ServerConfig,
+		locale: BaseLocale,
+		i18nContext: I18nContext
+	): Boolean {
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
 		for (mention in event.message.mentions.members) {

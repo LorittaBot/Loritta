@@ -18,6 +18,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.LevelConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
@@ -46,11 +47,25 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 		.build<Long, Mutex>()
 		.asMap()
 
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun matches(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        i18nContext: I18nContext
+    ): Boolean {
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun handle(
+		event: LorittaMessageEvent,
+		lorittaUser: LorittaUser,
+		lorittaProfile: Profile?,
+		serverConfig: ServerConfig,
+		locale: BaseLocale,
+		i18nContext: I18nContext
+	): Boolean {
 		// (copyright Loritta™)
 		var newProfileXp = lorittaProfile?.xp ?: 0L
 		val currentXp = newProfileXp

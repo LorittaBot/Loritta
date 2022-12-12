@@ -43,7 +43,7 @@ class AnagramCommand : SlashCommandDeclarationWrapper {
 
             val max = MathUtils.factorial(currentWord.length.toBigInteger()).divide(exp)
 
-            context.reply {
+            context.reply(false) {
                 styled(
                     content = context.i18nContext.get(
                         I18N_PREFIX.Result(

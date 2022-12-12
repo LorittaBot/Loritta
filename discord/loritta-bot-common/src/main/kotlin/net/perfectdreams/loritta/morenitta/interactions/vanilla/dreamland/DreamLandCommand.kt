@@ -1,15 +1,12 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.dreamland
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
-import net.perfectdreams.loritta.morenitta.interactions.modals.options.StringDiscordModalOptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 
 class DreamLandCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -25,12 +22,12 @@ class DreamLandCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.deferChannelMessage()
 
-            context.reply {
+            context.reply(false) {
                 content = "Bem-vindx a DreamLand!"
 
                 actionRow(
                     // TODO: Restrict button to an specific user
-                    loritta.componentManager.button(
+                    loritta.interactivityManager.button(
                         ButtonStyle.PRIMARY,
                         "Criar Personagem"
                     ) {
@@ -42,7 +39,7 @@ class DreamLandCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                         ) { it, args ->
                             val result = args[characterNameOption]
 
-                            it.reply {
+                            it.reply(false) {
                                 content = "Nome: $result"
                             }
                         }

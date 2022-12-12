@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.obj
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
@@ -17,7 +18,14 @@ import org.jetbrains.exposed.sql.and
 class CheckBoostStatusModule(val loritta: LorittaBot) : MessageReceivedModule {
 	val config = loritta.config.loritta.donatorsOstentation
 
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun matches(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        i18nContext: I18nContext
+    ): Boolean {
 		val guildId = event.guild?.idLong ?: return false
 
 		if (!config.boostEnabledGuilds.any { it.id == guildId })
@@ -32,7 +40,14 @@ class CheckBoostStatusModule(val loritta: LorittaBot) : MessageReceivedModule {
 		return true
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun handle(
+		event: LorittaMessageEvent,
+		lorittaUser: LorittaUser,
+		lorittaProfile: Profile?,
+		serverConfig: ServerConfig,
+		locale: BaseLocale,
+		i18nContext: I18nContext
+	): Boolean {
 		val donations = loritta.pudding.transaction {
 			Payment.find {
 				(Payments.gateway eq PaymentGateway.NITRO_BOOST) and (Payments.userId eq event.author.idLong)

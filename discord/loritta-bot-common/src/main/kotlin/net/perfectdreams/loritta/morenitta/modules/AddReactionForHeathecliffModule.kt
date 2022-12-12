@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.modules
 
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
@@ -12,11 +13,25 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 
 class AddReactionForHeathecliffModule(val loritta: LorittaBot) : MessageReceivedModule {
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun matches(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        i18nContext: I18nContext
+    ): Boolean {
 		return event.channel.idLong == 643828343325851648L || event.channel.idLong == 646871435465326592L
 	}
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+	override suspend fun handle(
+		event: LorittaMessageEvent,
+		lorittaUser: LorittaUser,
+		lorittaProfile: Profile?,
+		serverConfig: ServerConfig,
+		locale: BaseLocale,
+		i18nContext: I18nContext
+	): Boolean {
 		if (event.channel.idLong == 643828343325851648L) {
 			if (!event.message.contentRaw.startsWith(">")) {
 				event.message.addReaction("\uD83D\uDC4D").queue()
