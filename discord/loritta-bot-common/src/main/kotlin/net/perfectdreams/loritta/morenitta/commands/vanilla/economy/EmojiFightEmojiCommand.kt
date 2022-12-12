@@ -74,8 +74,7 @@ class EmojiFightEmojiCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 					),
 					LorittaReply(
 						"Lembre-se que eu preciso estar no servidor onde o emoji está para eu conseguir usar o emoji!"
-					)
-					,
+					),
 					LorittaReply(
 						"Observação: Você será banido de usar a Loritta caso você coloque emojis sugestivos ou NSFW. Tenha bom senso e não atrapalhe os servidores dos outros com bobagens!"
 					)
