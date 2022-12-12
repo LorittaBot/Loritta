@@ -62,7 +62,7 @@ class InteractivityManager {
         if (targetUserId != it.user.idLong) {
             it.reply(true) {
                 styled(
-                    it.i18nContext.get(I18nKeysData.Commands.YouArentTheUserSingleUser(it.user.asMention)),
+                    it.i18nContext.get(I18nKeysData.Commands.YouArentTheUserSingleUser("<@$targetUserId>")),
                     Emotes.LoriRage
                 )
             }
