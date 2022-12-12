@@ -70,13 +70,15 @@ class EmojiFightEmojiCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			else
 				reply(
 					LorittaReply(
-						"Emoji alterado! Nas próximas rinhas de emoji, o $newEmoji irá te acompanhar nas suas incríveis batalhas cativantes."
+						"Emoji alterado! Nas próximas rinhas de emoji, o $newEmoji irá te acompanhar nas suas incríveis batalhas cativantes.",
 					),
 					LorittaReply(
-						"Lembre-se que eu preciso estar no servidor onde o emoji está para eu conseguir usar o emoji!"
+						"Lembre-se que eu preciso estar no servidor onde o emoji está para eu conseguir usar o emoji!",
+						mentionUser = false
 					),
 					LorittaReply(
-						"Observação: Você será banido de usar a Loritta caso você coloque emojis sugestivos ou NSFW. Tenha bom senso e não atrapalhe os servidores dos outros com bobagens!"
+						"Observação: Você será banido de usar a Loritta caso você coloque emojis sugestivos ou NSFW. Tenha bom senso e não atrapalhe os servidores dos outros com bobagens!",
+						mentionUser = false
 					)
 				)
 		}
