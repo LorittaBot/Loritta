@@ -64,9 +64,10 @@ class GetChannelInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/youtube/
 			// https://www.youtube.com/channel/UCZ-uXTZGSN8lmp-nrXwz7-A
 			val channelId = if (urlPath.startsWith("/channel/")) {
 				urlPath.removePrefix("/channel/")
-			} else if (urlPath.startsWith("/c/")) {
+			} else if (urlPath.startsWith("/c/") || urlPath.startsWith("/@")) {
 				// Channels starting with "/c/" is harder because the API doesn't show them (for some reason...)
 				// To retrieve those, we need to query the channel URL and get the ID from there
+				// We also directly connect to the channel page if the URL starts with "/@", to handle new YouTube handles (example: https://www.youtube.com/@MrPowerGamerBR)
 				val youTubePage = Jsoup.connect(channelLink)
 					// Follow any redirects
 					.followRedirects(true)
