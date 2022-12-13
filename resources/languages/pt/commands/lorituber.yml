@@ -1,26 +1,2 @@
 label: "lorituber"
 description: "Experimental!"
-
-character:
-  label: "personagem"
-  description: "Ver seus personagens do LoriTuber"
-
-  create:
-    label: "criar"
-    description: "Cria um personagem no LoriTuber"
-
-  change:
-    label: "alterar"
-    description: "Altera o seu personagem ativo no LoriTuber"
-
-channel:
-  label: "canal"
-  description: "Gerencia e acessa informações sobre o canal do seu personagem no LoriTuber"
-
-  create:
-    label: "criar"
-    description: "Cria um canal para o seu personagem no LoriTuber"
-
-  manage:
-    label: "gerenciar"
-    description: "Gerencia o canal do seu personagem no LoriTuber"
