@@ -7,5 +7,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 data class BackgroundListResponse(
     val dreamStorageServiceUrl: String,
     val namespace: String,
+    val etherealGambiUrl: String,
     val backgroundsWithVariations: List<BackgroundWithVariations>
 )

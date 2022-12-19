@@ -32,6 +32,7 @@ data class ProfileSectionsResponse(
     data class BackgroundsWrapper(
         val dreamStorageServiceUrl: String,
         val dreamStorageServiceNamespace: String,
+        val etherealGambiUrl: String,
         val backgrounds: List<BackgroundWithVariations>
     )
 
