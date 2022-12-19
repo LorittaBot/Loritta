@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.modals
 
 import dev.minn.jda.ktx.interactions.components.replyModal
+import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.modals.ModalInteraction
@@ -22,4 +23,6 @@ class ModalContext(
     locale: BaseLocale,
     i18nContext: I18nContext,
     override val event: ModalInteraction
-) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext)
+) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext) {
+    suspend fun deferEdit(): InteractionHook = event.deferEdit().await()
+}

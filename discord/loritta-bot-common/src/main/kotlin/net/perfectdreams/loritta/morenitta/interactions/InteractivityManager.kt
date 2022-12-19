@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.emotes.DiscordEmote
@@ -32,6 +33,7 @@ class InteractivityManager {
     val scope = CoroutineScope(Dispatchers.Default)
     var modalCallback: (suspend (ModalContext, ModalArguments) -> Unit)? = null
     val buttonInteractionCallbacks = ConcurrentHashMap<UUID, suspend (ComponentContext) -> (Unit)>()
+    val selectMenuInteractionCallbacks = ConcurrentHashMap<UUID, suspend (ComponentContext, List<String>) -> (Unit)>()
     val pendingInteractionRemovals = ConcurrentLinkedQueue<suspend CoroutineScope.() -> (Unit)>()
 
     /**
@@ -89,6 +91,20 @@ class InteractivityManager {
             }
     }
 
+    /**
+     * Creates an interactive select menu
+     */
+    fun stringSelectMenu(
+        builder: (StringSelectMenu.Builder).() -> (Unit) = {},
+        callback: suspend (ComponentContext, List<String>) -> (Unit)
+    ): StringSelectMenu {
+        val buttonId = UUID.randomUUID()
+        selectMenuInteractionCallbacks[buttonId] = callback
+        return StringSelectMenu.create(buttonId.toString())
+            .apply(builder)
+            .build()
+    }
+
     fun launch(block: suspend CoroutineScope.() -> Unit) = scope.launch(
         Dispatchers.Default,
         block = {
@@ -125,6 +141,12 @@ class InteractivityManager {
                     )
                     is UnicodeEmote -> Emoji.fromUnicode(value.name)
                 }
+            }
+
+        var disabled
+            get() = button.isDisabled
+            set(value) {
+                this.button = button.withDisabled(value)
             }
     }
 }

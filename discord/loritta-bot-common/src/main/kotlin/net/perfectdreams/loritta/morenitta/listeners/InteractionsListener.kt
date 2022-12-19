@@ -10,6 +10,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -221,6 +222,61 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     event
                 )
                 callbackId?.invoke(context)
+            } catch (e: Exception) {
+                // TODO: Proper catch and throw
+                e.printStackTrace()
+            }
+        }
+    }
+
+    override fun onStringSelectInteraction(event: StringSelectInteractionEvent) {
+        GlobalScope.launch {
+            // These variables are used in the catch { ... } block, to make our lives easier
+            var i18nContext: I18nContext? = null
+            var context: ComponentContext? = null
+
+            try {
+                val guild = event.guild
+                val member = event.member
+
+                val serverConfigJob = if (guild != null)
+                    loritta.getOrCreateServerConfigDeferred(guild.idLong, true)
+                else
+                    loritta.getOrCreateServerConfigDeferred(-1, true)
+
+                val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.user.idLong)
+
+                val serverConfig = serverConfigJob.await()
+                val lorittaProfile = lorittaProfileJob.await()
+
+                val currentLocale = loritta.newSuspendedTransaction {
+                    (lorittaProfile?.settings?.language ?: serverConfig.localeId)
+                }
+
+                val locale = loritta.localeManager.getLocaleById(currentLocale)
+                i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+                val lorittaUser = if (guild != null && member != null) {
+                    // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+                    val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
+                    val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
+                        member,
+                        rolesLorittaPermissions
+                    )
+                    GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
+                } else {
+                    LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
+                }
+                val callbackId = loritta.interactivityManager.selectMenuInteractionCallbacks[UUID.fromString(event.componentId)]
+                context = ComponentContext(
+                    loritta,
+                    serverConfig,
+                    lorittaUser,
+                    locale,
+                    i18nContext,
+                    event
+                )
+                callbackId?.invoke(context, event.interaction.values)
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()

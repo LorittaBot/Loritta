@@ -123,14 +123,11 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAsse
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
-import net.perfectdreams.loritta.morenitta.utils.config.FanArt
-import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
+import net.perfectdreams.loritta.morenitta.utils.config.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
-import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
-import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason

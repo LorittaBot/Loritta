@@ -77,5 +77,8 @@ include(":web:dashboard:dashboard-common")
 include(":web:dashboard:backend")
 include(":web:dashboard:spicy-frontend")
 
+// ===[ LORITUBER ]===
+include(":lorituber:server")
+
 // ===[ MISC ]===
 include(":temmie-discord-auth")

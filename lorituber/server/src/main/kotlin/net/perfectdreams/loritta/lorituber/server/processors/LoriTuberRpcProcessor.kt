@@ -1,0 +1,3 @@
+package net.perfectdreams.loritta.lorituber.server.processors
+
+interface LoriTuberRpcProcessor
