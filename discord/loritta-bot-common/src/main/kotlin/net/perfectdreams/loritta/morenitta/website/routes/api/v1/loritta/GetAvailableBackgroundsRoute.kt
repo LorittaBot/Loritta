@@ -30,6 +30,7 @@ class GetAvailableBackgroundsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1
 					BackgroundListResponse(
 						loritta.dreamStorageService.baseUrl,
 						loritta.dreamStorageService.getCachedNamespaceOrRetrieve(),
+						loritta.config.loritta.etherealGambiService.url,
 						it
 					)
 				)

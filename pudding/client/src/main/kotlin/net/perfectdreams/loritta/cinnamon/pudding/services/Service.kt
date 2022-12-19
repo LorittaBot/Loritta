@@ -138,14 +138,16 @@ fun BackgroundVariation.Companion.fromRow(row: ResultRow): BackgroundVariation {
         DefaultBackgroundVariation(
             row[BackgroundVariations.file],
             row[BackgroundVariations.preferredMediaType],
-            crop
+            crop,
+            row[BackgroundVariations.storageType]
         )
     else
         ProfileDesignGroupBackgroundVariation(
             groupId.toString(),
             row[BackgroundVariations.file],
             row[BackgroundVariations.preferredMediaType],
-            crop
+            crop,
+            row[BackgroundVariations.storageType]
         )
 }
 

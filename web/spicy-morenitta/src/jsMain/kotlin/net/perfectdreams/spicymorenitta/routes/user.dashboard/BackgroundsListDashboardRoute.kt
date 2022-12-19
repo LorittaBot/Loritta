@@ -27,6 +27,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
@@ -141,6 +142,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                     "random",
                                     "image/png",
                                     null,
+                                    BackgroundStorageType.DREAM_STORAGE_SERVICE
                                 )
                             )
                         )
@@ -159,6 +161,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                     "custom",
                                     "image/png",
                                     null,
+                                    BackgroundStorageType.DREAM_STORAGE_SERVICE
                                 )
                             )
                         )
@@ -319,7 +322,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
                     m.launch {
                         val backgroundVariation = variations.filterIsInstance<DefaultBackgroundVariation>().first()
-                        val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, backgroundsWrapper.dreamStorageServiceUrl, backgroundsWrapper.dreamStorageServiceNamespace, backgroundVariation, canvasPreview)
+                        val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, backgroundsWrapper.dreamStorageServiceUrl, backgroundsWrapper.dreamStorageServiceNamespace, backgroundsWrapper.etherealGambiUrl, backgroundVariation, canvasPreview)
 
                         canvasPreview.parentElement!!.parentElement!!.onClick {
                             updateActiveBackground(profileWrapper, background, backgroundVariation, image, fanArtArtists)

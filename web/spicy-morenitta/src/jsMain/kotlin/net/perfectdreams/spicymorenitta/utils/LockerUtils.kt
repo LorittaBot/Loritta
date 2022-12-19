@@ -1,6 +1,7 @@
 package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.browser.window
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
@@ -11,24 +12,42 @@ import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.Image
 
 object LockerUtils : Logging {
-	fun getBackgroundUrl(dreamStorageServiceUrl: String, namespace: String, backgroundVariation: BackgroundVariation): String {
+	fun getDreamStorageServiceBackgroundUrl(dreamStorageServiceUrl: String, namespace: String, backgroundVariation: BackgroundVariation): String {
 		val extension = MediaTypeUtils.convertContentTypeToExtension(backgroundVariation.preferredMediaType)
 		return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(backgroundVariation.file).join()}.$extension"
 	}
 
+	fun getEtherealGambiBackgroundUrl(etherealGambiUrl: String, backgroundVariation: BackgroundVariation): String {
+		val extension = MediaTypeUtils.convertContentTypeToExtension(backgroundVariation.preferredMediaType)
+		return etherealGambiUrl.removeSuffix("/") + "/" + backgroundVariation.file + ".$extension"
+	}
+
 	fun getBackgroundUrlWithCropParameters(dreamStorageServiceUrl: String, namespace: String, backgroundVariation: BackgroundVariation): String {
-		var url = getBackgroundUrl(dreamStorageServiceUrl, namespace, backgroundVariation)
+		var url = getDreamStorageServiceBackgroundUrl(dreamStorageServiceUrl, namespace, backgroundVariation)
 		val crop = backgroundVariation.crop
 		if (crop != null)
 			url += "?crop_x=${crop.x}&crop_y=${crop.y}&crop_width=${crop.width}&crop_height=${crop.height}"
 		return url
 	}
 
-	suspend fun prepareBackgroundCanvasPreview(m: SpicyMorenitta, dreamStorageServiceUrl: String, namespace: String, backgroundVariation: BackgroundVariation, canvasPreview: HTMLCanvasElement): CanvasPreviewDownload {
+	suspend fun prepareBackgroundCanvasPreview(
+		m: SpicyMorenitta,
+		dreamStorageServiceUrl: String,
+		namespace: String,
+		etherealGambiUrl: String,
+		backgroundVariation: BackgroundVariation,
+		canvasPreview: HTMLCanvasElement
+	): CanvasPreviewDownload {
 		val job = m.async {
 			// Normal BG
 			val backgroundImg = Image()
-			backgroundImg.awaitLoad(getBackgroundUrl(dreamStorageServiceUrl, namespace, backgroundVariation))
+			backgroundImg.awaitLoad(
+				when (backgroundVariation.storageType) {
+					BackgroundStorageType.DREAM_STORAGE_SERVICE -> getDreamStorageServiceBackgroundUrl(dreamStorageServiceUrl, namespace, backgroundVariation)
+					BackgroundStorageType.ETHEREAL_GAMBI -> getEtherealGambiBackgroundUrl(etherealGambiUrl, backgroundVariation)
+					BackgroundStorageType.UNKNOWN -> kotlin.error("Unknown Storage Type!")
+				}
+			)
 			val canvasPreviewContext = (canvasPreview.getContext("2d")!! as CanvasRenderingContext2D)
 
 			canvasPreviewContext

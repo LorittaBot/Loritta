@@ -147,6 +147,7 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 				backgroundsWrapper = ProfileSectionsResponse.BackgroundsWrapper(
 					loritta.dreamStorageService.baseUrl,
 					loritta.dreamStorageService.getCachedNamespaceOrRetrieve(),
+					loritta.config.loritta.etherealGambiService.url,
 					backgrounds.map {
 						BackgroundWithVariations(
 							it,

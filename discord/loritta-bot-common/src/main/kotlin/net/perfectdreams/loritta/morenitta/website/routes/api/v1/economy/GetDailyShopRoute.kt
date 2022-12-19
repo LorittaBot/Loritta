@@ -64,6 +64,7 @@ class GetDailyShopRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/economy/da
 		val shopPayload = DailyShopResult(
 			loritta.dreamStorageService.baseUrl,
 			loritta.dreamStorageService.getCachedNamespaceOrRetrieve(),
+			loritta.config.loritta.etherealGambiService.url,
 			backgroundsInShop,
 			profileDesignsInShop,
 			generatedAt ?: -1L

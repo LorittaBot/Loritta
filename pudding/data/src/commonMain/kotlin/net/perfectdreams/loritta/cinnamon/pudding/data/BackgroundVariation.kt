@@ -7,13 +7,15 @@ sealed class BackgroundVariation {
     abstract val file: String
     abstract val preferredMediaType: String
     abstract val crop: Rectangle?
+    abstract val storageType: BackgroundStorageType
 }
 
 @Serializable
 class DefaultBackgroundVariation(
     override val file: String,
     override val preferredMediaType: String,
-    override val crop: Rectangle?
+    override val crop: Rectangle?,
+    override val storageType: BackgroundStorageType
 ) : BackgroundVariation() {
 }
 
@@ -23,5 +25,6 @@ class ProfileDesignGroupBackgroundVariation(
     val profileDesignGroupId: String,
     override val file: String,
     override val preferredMediaType: String,
-    override val crop: Rectangle?
+    override val crop: Rectangle?,
+    override val storageType: BackgroundStorageType
 ) : BackgroundVariation()

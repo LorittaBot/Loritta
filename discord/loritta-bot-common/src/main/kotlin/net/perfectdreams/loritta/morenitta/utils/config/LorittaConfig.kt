@@ -27,6 +27,7 @@ data class LorittaConfig(
     val falatron: FalatronConfig,
     val gabrielaImageServer: GabrielaImageServerConfig,
     val dreamStorageService: DreamStorageServiceConfig,
+    val etherealGambiService: EtherealGambiServiceConfig,
     val randomRoleplayPictures: RandomRoleplayPicturesConfig,
     val youtube: YouTubeConfig,
     val openWeatherMap: OpenWeatherMapConfig,
@@ -170,6 +171,9 @@ data class LorittaConfig(
         val url: String,
         val token: String
     )
+
+    @Serializable
+    data class EtherealGambiServiceConfig(val url: String)
 
     @Serializable
     data class RandomRoleplayPicturesConfig(val url: String)

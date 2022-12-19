@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.exposedpowerutils.sql.jsonb
+import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object BackgroundVariations : LongIdTable() {
@@ -9,6 +11,7 @@ object BackgroundVariations : LongIdTable() {
     val file = text("file")
     val preferredMediaType = text("preferred_media_type")
     val crop = jsonb("crop").nullable()
+    val storageType = postgresEnumeration<BackgroundStorageType>("storage_type").default(BackgroundStorageType.DREAM_STORAGE_SERVICE)
 
     init {
         // Combined index, we can only have a crop for a specific background + design group, not multiple

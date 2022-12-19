@@ -85,6 +85,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
@@ -123,6 +124,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAsse
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
+import net.perfectdreams.loritta.morenitta.utils.TrinketsStuff
 import net.perfectdreams.loritta.morenitta.utils.config.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
@@ -759,7 +761,8 @@ class LorittaBot(
 			// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
 			SchemaUtils.createMissingTablesAndColumns(
 				GatewayActivities,
-				UserSettings
+				UserSettings,
+				Backgrounds
 			)
 		}
 
@@ -843,7 +846,7 @@ class LorittaBot(
 			}
 		}
 
-		// TrinketsStuff.updateTrinkets(pudding)
+		TrinketsStuff.updateTrinkets(pudding)
 	}
 
 	fun startWebServer() {
@@ -988,10 +991,14 @@ class LorittaBot(
 
 		val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
 		val variation = background.getVariationForProfileDesign(activeProfileDesignInternalName)
-		return getBackgroundUrlWithCropParameters(this.config.loritta.dreamStorageService.url, dssNamespace, variation)
+		return when (variation.storageType) {
+			BackgroundStorageType.DREAM_STORAGE_SERVICE -> getDreamStorageServiceBackgroundUrlWithCropParameters(this.config.loritta.dreamStorageService.url, dssNamespace, variation)
+			BackgroundStorageType.ETHEREAL_GAMBI -> getEtherealGambiBackgroundUrl(variation)
+			BackgroundStorageType.UNKNOWN -> error("Unknown Storage Type!")
+		}
 	}
 
-	private fun getBackgroundUrl(
+	private fun getDreamStorageServiceBackgroundUrl(
 		dreamStorageServiceUrl: String,
 		namespace: String,
 		background: BackgroundVariation
@@ -1000,16 +1007,21 @@ class LorittaBot(
 		return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(background.file).join()}.$extension"
 	}
 
-	private fun getBackgroundUrlWithCropParameters(
+	private fun getDreamStorageServiceBackgroundUrlWithCropParameters(
 		dreamStorageServiceUrl: String,
 		namespace: String,
 		variation: BackgroundVariation
 	): String {
-		var url = getBackgroundUrl(dreamStorageServiceUrl, namespace, variation)
+		var url = getDreamStorageServiceBackgroundUrl(dreamStorageServiceUrl, namespace, variation)
 		val crop = variation.crop
 		if (crop != null)
 			url += "?crop_x=${crop.x}&crop_y=${crop.y}&crop_width=${crop.width}&crop_height=${crop.height}"
 		return url
+	}
+
+	private fun getEtherealGambiBackgroundUrl(background: BackgroundVariation): String {
+		val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
+		return config.loritta.dreamStorageService.url.removeSuffix("/") + "/" + background.file + ".$extension"
 	}
 
 	/**

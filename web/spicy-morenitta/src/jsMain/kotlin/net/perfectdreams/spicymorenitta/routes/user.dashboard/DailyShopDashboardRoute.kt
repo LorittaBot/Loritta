@@ -362,6 +362,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                         m,
                         dailyShop.dreamStorageServiceUrl,
                         dailyShop.namespace,
+                        dailyShop.etherealGambiUrl,
                         variation,
                         canvasPreview
                     )

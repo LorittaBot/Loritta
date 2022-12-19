@@ -118,6 +118,7 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                             m,
                             backgroundListRequest.dreamStorageServiceUrl,
                             backgroundListRequest.namespace,
+                            backgroundListRequest.etherealGambiUrl,
                             validVariation,
                             canvasPreview
                         )

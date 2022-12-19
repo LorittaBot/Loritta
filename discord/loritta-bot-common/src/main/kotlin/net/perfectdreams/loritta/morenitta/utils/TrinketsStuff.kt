@@ -6,6 +6,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
@@ -892,6 +893,30 @@ object TrinketsStuff {
         createBackground("sonicMovie2Poster", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
             addDefaultVariant("sonic-movie-2-poster", ContentType.Image.PNG)
         }
+        createBackground("ehMoleAnime", true, Rarity.EPIC, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("eh-mole-anime", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("Soritta", true, Rarity.EPIC, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("soritta", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("happyCatClown", true, Rarity.RARE, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("happy-cat-clown", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("sparklyNightPurple", true, Rarity.RARE, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("sparkly-night-purple", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("puddingAnime", true, Rarity.RARE, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("pudding-anime", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("feijoadaAnime", true, Rarity.RARE, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("feijoada-anime", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("loriDbz", true, Rarity.EPIC, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("lori-dbz", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("arthCute", true, Rarity.UNCOMMON, LocalDate.of(2022, 12, 19)) {
+            addDefaultVariant("arthCute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createBackground(
@@ -923,7 +948,7 @@ object TrinketsStuff {
     class VariantBuilder(private val backgroundInternalName: String) {
         // Upsert sadly does not work for us here, because upsert does not work with a column that has null values
         // So we will need to check ourselves
-        fun addDefaultVariant(file: String, preferredMediaType: ContentType, crop: Rectangle? = null) {
+        fun addDefaultVariant(file: String, preferredMediaType: ContentType, crop: Rectangle? = null, storageType: BackgroundStorageType = BackgroundStorageType.DREAM_STORAGE_SERVICE) {
             val firstResult = BackgroundVariations.selectFirstOrNull { BackgroundVariations.background eq backgroundInternalName and BackgroundVariations.profileDesignGroup.isNull() }
             if (firstResult != null) {
                 BackgroundVariations.update({ BackgroundVariations.id eq firstResult[BackgroundVariations.id] }) {
@@ -931,6 +956,7 @@ object TrinketsStuff {
                     it[BackgroundVariations.preferredMediaType] = preferredMediaType.toString()
                     if (crop != null)
                         it[BackgroundVariations.crop] = Json.encodeToString(crop)
+                    it[BackgroundVariations.storageType] = storageType
                 }
             } else {
                 BackgroundVariations.insert {
@@ -939,6 +965,7 @@ object TrinketsStuff {
                     it[BackgroundVariations.preferredMediaType] = preferredMediaType.toString()
                     if (crop != null)
                         it[BackgroundVariations.crop] = Json.encodeToString(crop)
+                    it[BackgroundVariations.storageType] = storageType
                 }
             }
         }
