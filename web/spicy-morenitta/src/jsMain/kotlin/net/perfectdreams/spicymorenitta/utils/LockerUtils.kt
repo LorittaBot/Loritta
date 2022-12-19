@@ -45,7 +45,6 @@ object LockerUtils : Logging {
 				when (backgroundVariation.storageType) {
 					BackgroundStorageType.DREAM_STORAGE_SERVICE -> getDreamStorageServiceBackgroundUrl(dreamStorageServiceUrl, namespace, backgroundVariation)
 					BackgroundStorageType.ETHEREAL_GAMBI -> getEtherealGambiBackgroundUrl(etherealGambiUrl, backgroundVariation)
-					BackgroundStorageType.UNKNOWN -> kotlin.error("Unknown Storage Type!")
 				}
 			)
 			val canvasPreviewContext = (canvasPreview.getContext("2d")!! as CanvasRenderingContext2D)

@@ -994,7 +994,6 @@ class LorittaBot(
 		return when (variation.storageType) {
 			BackgroundStorageType.DREAM_STORAGE_SERVICE -> getDreamStorageServiceBackgroundUrlWithCropParameters(this.config.loritta.dreamStorageService.url, dssNamespace, variation)
 			BackgroundStorageType.ETHEREAL_GAMBI -> getEtherealGambiBackgroundUrl(variation)
-			BackgroundStorageType.UNKNOWN -> error("Unknown Storage Type!")
 		}
 	}
 
