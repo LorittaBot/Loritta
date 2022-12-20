@@ -766,7 +766,8 @@ class LorittaBot(
 				GatewayActivities,
 				UserSettings,
 				Backgrounds,
-				BackgroundVariations
+				BackgroundVariations,
+				ConcurrentLoginBuckets
 			)
 		}
 

@@ -1,0 +1,15 @@
+label: "edit"
+description: "Edite o XP de usuário no servidor!"
+editedXp: "Prontinho! O XP de {user} foi alterado de **{oldXp,number}** para **{xp,number}**!"
+level: "Nível {level,number}"
+options:
+  user:
+    text: "O usuário que você deseja alterar o XP (caso não coloque ninguém o usuário será você)"
+  value:
+    text: "A quantidade de XP que o usuário deverá ter após o comando (caso não coloque nada, o valor será 0)"
+  mode:
+    text: "O modo que o comando deverá ser executado (Adicionar, Remover, Sobrepor)"
+    choice:
+      add: "Adicionar"
+      remove: "Remover"
+      set: "Sobrepor"
