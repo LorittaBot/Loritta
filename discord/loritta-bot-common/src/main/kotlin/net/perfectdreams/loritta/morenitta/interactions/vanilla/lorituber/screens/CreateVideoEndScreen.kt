@@ -5,8 +5,9 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberContentGenre
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
 import net.perfectdreams.loritta.serializable.lorituber.requests.CreatePendingVideoRequest
@@ -23,7 +24,8 @@ class CreateVideoEndScreen(
     val character: LoriTuberCommand.PlayerCharacter,
     val channelId: Long,
     private val contentGenre: LoriTuberContentGenre,
-    private val contentType: LoriTuberContentType
+    private val contentType: LoriTuberContentType,
+    private val contentLength: LoriTuberContentLength
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
         val channel = sendLoriTuberRPCRequest<GetChannelByIdResponse>(GetChannelByIdRequest(channelId))
@@ -49,7 +51,7 @@ class CreateVideoEndScreen(
         ) {
             val hook = it.deferEdit()
 
-            when (val response = sendLoriTuberRPCRequest<CreatePendingVideoResponse>(CreatePendingVideoRequest(character.id, channelId, contentGenre, contentType))) {
+            when (val response = sendLoriTuberRPCRequest<CreatePendingVideoResponse>(CreatePendingVideoRequest(character.id, channelId, contentGenre, contentType, contentLength))) {
                 is CreatePendingVideoResponse.Success -> {
                     // Successfully created pending video!
                     when (sendLoriTuberRPCRequest<StartTaskResponse>(StartTaskRequest(character.id, LoriTuberTask.WorkingOnVideo(channelId, response.videoId)))) {

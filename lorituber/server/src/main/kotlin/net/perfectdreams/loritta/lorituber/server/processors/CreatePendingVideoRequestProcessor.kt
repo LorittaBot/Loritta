@@ -19,6 +19,9 @@ class CreatePendingVideoRequestProcessor : LoriTuberRpcProcessor {
         val pendingVideoId = LoriTuberPendingVideos.insertAndGetId {
             it[LoriTuberPendingVideos.owner] = request.characterId
             it[LoriTuberPendingVideos.channel] = request.channelId
+            it[LoriTuberPendingVideos.contentLength] = request.contentLength
+            it[LoriTuberPendingVideos.contentGenre] = request.contentGenre
+            it[LoriTuberPendingVideos.contentType] = request.contentType
             it[LoriTuberPendingVideos.scriptScore] = 0
             it[LoriTuberPendingVideos.recordingScore] = 0
             it[LoriTuberPendingVideos.editingScore] = 0

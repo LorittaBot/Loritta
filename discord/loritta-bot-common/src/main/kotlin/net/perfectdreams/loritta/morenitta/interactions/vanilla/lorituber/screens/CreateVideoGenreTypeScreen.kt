@@ -6,8 +6,9 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberContentGenre
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.requests.GetChannelByIdRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetChannelByIdResponse
@@ -19,7 +20,8 @@ class CreateVideoGenreTypeScreen(
     val character: LoriTuberCommand.PlayerCharacter,
     val channelId: Long,
     private val contentGenre: LoriTuberContentGenre?,
-    private val contentType: LoriTuberContentType?
+    private val contentType: LoriTuberContentType?,
+    private val contentLength: LoriTuberContentLength?
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
         val channel = sendLoriTuberRPCRequest<GetChannelByIdResponse>(GetChannelByIdRequest(channelId))
@@ -43,7 +45,7 @@ class CreateVideoGenreTypeScreen(
             ButtonStyle.PRIMARY,
             "Continuar",
             {
-                disabled = contentType == null || contentGenre == null
+                disabled = contentType == null || contentGenre == null || contentLength == null
             }
         ) {
             command.switchScreen(
@@ -56,6 +58,7 @@ class CreateVideoGenreTypeScreen(
                     // Shouldn't be null here
                     contentGenre!!,
                     contentType!!,
+                    contentLength!!
                 )
             )
         }
@@ -88,6 +91,7 @@ class CreateVideoGenreTypeScreen(
                         |
                         |Combinação:
                         |**${contentGenre ?: "???"}** + **${contentType ?: "???"}** = **???** (Você nunca fez um vídeo com esta combinação!)
+                        |**${contentGenre ?: "???"}** + **${contentType ?: "???"}** + **${contentLength ?: "???"}** = **???** (Você nunca fez um vídeo com esta combinação!)
                     """.trimMargin()
                 }
 
@@ -111,7 +115,8 @@ class CreateVideoGenreTypeScreen(
                                 character,
                                 channel.id,
                                 LoriTuberContentGenre.valueOf(values.first()),
-                                contentType
+                                contentType,
+                                contentLength
                             )
                         )
                     }
@@ -137,7 +142,35 @@ class CreateVideoGenreTypeScreen(
                                 character,
                                 channel.id,
                                 contentGenre,
-                                LoriTuberContentType.valueOf(values.first())
+                                LoriTuberContentType.valueOf(values.first()),
+                                contentLength
+                            )
+                        )
+                    }
+                )
+
+                actionRow(
+                    loritta.interactivityManager.stringSelectMenu({
+                        placeholder = "Duração do Vídeo"
+
+                        for (type in LoriTuberContentLength.values()) {
+                            addOption(type.name, type.name)
+                        }
+
+                        val selectedContentType = contentLength?.name
+                        if (selectedContentType != null)
+                            setDefaultValues(selectedContentType)
+                    }) { it, values ->
+                        command.switchScreen(
+                            CreateVideoGenreTypeScreen(
+                                command,
+                                user,
+                                it.deferEdit(),
+                                character,
+                                channel.id,
+                                contentGenre,
+                                contentType,
+                                LoriTuberContentLength.valueOf(values.first())
                             )
                         )
                     }

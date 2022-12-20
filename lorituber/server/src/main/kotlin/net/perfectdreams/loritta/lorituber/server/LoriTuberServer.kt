@@ -193,6 +193,8 @@ class LoriTuberServer(val pudding: Pudding) {
                                     is CancelTaskRequest -> processors.cancelTaskRequestProcessor.process(request, currentTick, lastUpdate)
 
                                     is CreatePendingVideoRequest -> processors.createPendingVideoRequestProcessor.process(request, currentTick, lastUpdate)
+
+                                    is GetPendingVideosByChannelRequest -> processors.getPendingVideosByChannelRequestProcessor.process(request, currentTick, lastUpdate)
                                 }
                             )
                         }
@@ -213,13 +215,19 @@ class LoriTuberServer(val pudding: Pudding) {
                                             LoriTuberPendingVideos.id eq task.pendingVideoId
                                         }.firstOrNull()
 
-                                        // Should we increment it?
                                         // Is energy depleted?
                                         // TODO: Hunger
                                         if (character[LoriTuberCharacters.energy] == 0.0) {
                                             // If yes, we will reset the current task
                                             LoriTuberCharacters.update({ LoriTuberCharacters.id eq character[LoriTuberCharacters.id] }) {
                                                 it[LoriTuberCharacters.currentTask] = null
+                                            }
+                                        } else {
+                                            // Increment the video progress
+                                            LoriTuberPendingVideos.update({ LoriTuberPendingVideos.id eq task.pendingVideoId }) {
+                                                with(SqlExpressionBuilder) {
+                                                    it[LoriTuberPendingVideos.percentage] = LoriTuberPendingVideos.percentage + 1.0
+                                                }
                                             }
                                         }
                                     }

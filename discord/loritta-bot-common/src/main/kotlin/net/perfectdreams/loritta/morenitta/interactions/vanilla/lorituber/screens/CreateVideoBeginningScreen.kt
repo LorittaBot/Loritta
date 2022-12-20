@@ -66,6 +66,7 @@ class CreateVideoBeginningScreen(
                     character,
                     channel.id,
                     null,
+                    null,
                     null
                 )
             )

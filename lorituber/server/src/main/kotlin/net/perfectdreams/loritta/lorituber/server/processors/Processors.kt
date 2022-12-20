@@ -10,4 +10,5 @@ class Processors {
     val cancelTaskRequestProcessor = CancelTaskRequestProcessor()
     val getCharacterStatusRequestProcessor = GetCharacterStatusRequestProcessor()
     val createPendingVideoRequestProcessor = CreatePendingVideoRequestProcessor()
+    val getPendingVideosByChannelRequestProcessor = GetPendingVideosByChannelRequestProcessor()
 }

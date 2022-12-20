@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.requests.GetChannelByIdRequest
+import net.perfectdreams.loritta.serializable.lorituber.requests.GetPendingVideosByChannelRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetChannelByIdResponse
+import net.perfectdreams.loritta.serializable.lorituber.responses.GetPendingVideosByChannelResponse
 
 class ViewChannelScreen(
     command: LoriTuberCommand,
@@ -37,23 +39,50 @@ class ViewChannelScreen(
             return
         }
 
-        val createVideoButton = loritta.interactivityManager.buttonForUser(
-            user,
-            ButtonStyle.PRIMARY,
-            "Criar vídeo",
-            {
-                emoji = Emoji.fromUnicode("\uD83C\uDFAC")
-            }
-        ) {
-            command.switchScreen(
-                CreateVideoBeginningScreen(
-                    command,
-                    user,
-                    it.deferEdit(),
-                    character,
-                    channelId
+        val pendingVideos =
+            sendLoriTuberRPCRequest<GetPendingVideosByChannelResponse>(GetPendingVideosByChannelRequest(channelId))
+                .pendingVideos
+
+        val createOrContinueVideoButton = if (pendingVideos.isNotEmpty()) {
+            val pendingVideo = pendingVideos.firstOrNull()
+
+            loritta.interactivityManager.buttonForUser(
+                user,
+                ButtonStyle.PRIMARY,
+                "Continuar vídeo",
+                {
+                    emoji = Emoji.fromUnicode("\uD83C\uDFAC")
+                }
+            ) {
+                command.switchScreen(
+                    CreateVideoBeginningScreen(
+                        command,
+                        user,
+                        it.deferEdit(),
+                        character,
+                        channelId
+                    )
                 )
-            )
+            }
+        } else {
+            loritta.interactivityManager.buttonForUser(
+                user,
+                ButtonStyle.PRIMARY,
+                "Criar vídeo",
+                {
+                    emoji = Emoji.fromUnicode("\uD83C\uDFAC")
+                }
+            ) {
+                command.switchScreen(
+                    CreateVideoBeginningScreen(
+                        command,
+                        user,
+                        it.deferEdit(),
+                        character,
+                        channelId
+                    )
+                )
+            }
         }
 
         val viewMotivesButton = loritta.interactivityManager.buttonForUser(
@@ -82,7 +111,7 @@ class ViewChannelScreen(
                     field("ayaya", "yay!!!")
                 }
 
-                actionRow(createVideoButton)
+                actionRow(createOrContinueVideoButton)
                 actionRow(viewMotivesButton)
             }
         ).setReplace(true).await()

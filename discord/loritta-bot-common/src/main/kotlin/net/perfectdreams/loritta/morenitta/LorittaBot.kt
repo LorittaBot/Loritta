@@ -99,6 +99,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.RateLimitChecker
@@ -760,6 +763,9 @@ class LorittaBot(
 
 		transaction {
 			createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
+			createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
+			createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
+			createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
 
 			// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
 			SchemaUtils.createMissingTablesAndColumns(

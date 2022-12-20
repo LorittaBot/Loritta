@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.serializable.lorituber
+package net.perfectdreams.loritta.common.lorituber
 
 enum class LoriTuberContentGenre {
     COMEDY,
