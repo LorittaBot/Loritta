@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.serializable.lorituber.responses
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberMail
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
@@ -138,6 +141,25 @@ sealed interface CreateChannelResponse : LoriTuberRPCResponse {
         override val currentTick: Long,
         override val lastUpdate: Long
     ) : CreateChannelResponse
+}
+
+@Serializable
+data class GetPendingVideosByChannelResponse(
+    override val currentTick: Long,
+    override val lastUpdate: Long,
+    val pendingVideos: List<PendingVideo>
+) : LoriTuberRPCResponse {
+    @Serializable
+    data class PendingVideo(
+        val contentGenre: LoriTuberContentGenre,
+        val contentType: LoriTuberContentType,
+        val contentLength: LoriTuberContentLength,
+        val scriptScore: Int,
+        val recordingScore: Int,
+        val editingScore: Int,
+        val thumbnailScore: Int,
+        val percentage: Double
+    )
 }
 
 // ===[ MISC ]===

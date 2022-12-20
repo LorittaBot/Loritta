@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.serializable.lorituber.requests
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberContentGenre
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
 
 @Serializable
@@ -34,7 +35,13 @@ class StartTaskRequest(val characterId: Long, val task: LoriTuberTask) : LoriTub
 class CancelTaskRequest(val characterId: Long) : LoriTuberRPCRequest()
 
 @Serializable
-class CreatePendingVideoRequest(val characterId: Long, val channelId: Long, val contentGenre: LoriTuberContentGenre, val contentType: LoriTuberContentType) : LoriTuberRPCRequest()
+class CreatePendingVideoRequest(
+    val characterId: Long,
+    val channelId: Long,
+    val contentGenre: LoriTuberContentGenre,
+    val contentType: LoriTuberContentType,
+    val contentLength: LoriTuberContentLength,
+) : LoriTuberRPCRequest()
 
 // ===[ CHANNELS ]===
 @Serializable
@@ -48,6 +55,9 @@ class CreateChannelRequest(
     val characterId: Long,
     val name: String
 ) : LoriTuberRPCRequest()
+
+@Serializable
+class GetPendingVideosByChannelRequest(val channelId: Long) : LoriTuberRPCRequest()
 
 // ===[ MISC ]===
 @Serializable
