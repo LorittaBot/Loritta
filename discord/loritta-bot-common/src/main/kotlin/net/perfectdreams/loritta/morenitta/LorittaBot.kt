@@ -1024,7 +1024,7 @@ class LorittaBot(
 
 	private fun getEtherealGambiBackgroundUrl(background: BackgroundVariation): String {
 		val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
-		return config.loritta.dreamStorageService.url.removeSuffix("/") + "/" + background.file + ".$extension"
+		return config.loritta.etherealGambiService.url.removeSuffix("/") + "/" + background.file + ".$extension"
 	}
 
 	/**

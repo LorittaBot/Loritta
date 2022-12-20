@@ -162,7 +162,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/loritta-morenitta"
+        image = "ghcr.io/lorittabot/loritta-morenitta:local-deploy"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
