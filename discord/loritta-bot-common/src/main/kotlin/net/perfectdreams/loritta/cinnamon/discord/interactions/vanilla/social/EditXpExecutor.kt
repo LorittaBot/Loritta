@@ -11,15 +11,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirst
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.update
-import java.math.BigDecimal
 
 class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -55,34 +50,18 @@ class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
 
         val userToBeEdited = args[options.user] ?: context.member
         val xpValue = args[options.value] ?: 0
-        val mode = args[options.mode]
 
         context.deferChannelMessage()
 
         val guildId = context.guildId
-        val filter = GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.userId eq userToBeEdited.id.toLong())
 
-        var localProfile = loritta.pudding.transaction { GuildProfiles.selectFirstOrNull { (filter) } }
         val userIsMember = (userToBeEdited.asMemberOrNull(guildId) != null)
+        val localConfig = loritta.getOrCreateServerConfig(guildId.toLong())
 
-        if (localProfile == null) {
-            loritta.pudding.transaction {
-                GuildProfiles.insert {
-                    it[isInGuild] = userIsMember
-                    it[userId] = userToBeEdited.id.toLong()
-                    it[GuildProfiles.guildId] = guildId.toLong()
-                    it[money] = BigDecimal(0)
-                    it[quickPunishment] = false
-                    it[xp] = 0
-                }
-            }
+        val localProfile = localConfig.getUserData(loritta, userToBeEdited.id.toLong(), userIsMember)
+        val oldUserXp = localProfile.xp
 
-            localProfile = loritta.pudding.transaction { GuildProfiles.selectFirst { (filter) } }
-        }
-
-        val oldUserXp = localProfile[GuildProfiles.xp]
-
-        var newXpValue = when (mode) {
+        var newXpValue = when (args[options.mode]) {
             "SET" -> { xpValue }
             "ADD" -> { oldUserXp+xpValue }
             "REMOVE" -> { oldUserXp-xpValue }
@@ -92,7 +71,7 @@ class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
         if (newXpValue < 0) { newXpValue = 0 }
 
         loritta.pudding.transaction {
-            GuildProfiles.update({ filter }) {
+            GuildProfiles.update({ GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.userId eq userToBeEdited.id.toLong()) }) {
                 it[xp] = newXpValue
             }
         }
