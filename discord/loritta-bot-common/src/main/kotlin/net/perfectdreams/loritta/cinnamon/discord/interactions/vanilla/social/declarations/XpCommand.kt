@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.d
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.ViewXpExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.EditXpExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.XpRankExecutor
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.locale.LanguageManager
@@ -12,6 +13,7 @@ class XpCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarat
     companion object {
         val XP_VIEW_I18N_PREFIX = I18nKeysData.Commands.Command.Xpview
         val XP_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Xprank
+        val XP_EDIT_I18N_PREFIX = I18nKeysData.Commands.Command.Xpedit
         val I18N_PREFIX = I18nKeysData.Commands.Command.Xp
     }
 
@@ -24,6 +26,10 @@ class XpCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarat
 
         subcommand(XP_RANK_I18N_PREFIX.Label, XP_RANK_I18N_PREFIX.Description) {
             executor = { XpRankExecutor(it) }
+        }
+
+        subcommand(XP_EDIT_I18N_PREFIX.Label, XP_EDIT_I18N_PREFIX.Description) {
+            executor = { EditXpExecutor(it) }
         }
     }
 }
