@@ -13,25 +13,25 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirst
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import net.perfectdreams.loritta.common.entities.LorittaEmote
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.update
+import java.math.BigDecimal
 
 class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
-        val user = optionalUser("user", XpCommand.XP_EDIT_I18N_PREFIX.Options.User.Text)
-
-        val value = optionalInteger("value", XpCommand.XP_EDIT_I18N_PREFIX.Options.Value.Text)
-
-        val mode = optionalString("mode", XpCommand.XP_EDIT_I18N_PREFIX.Options.Mode.Text) {
+        val mode = string("mode", XpCommand.XP_EDIT_I18N_PREFIX.Options.Mode.Text) {
             choice(XpCommand.XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Add, "ADD")
             choice(XpCommand.XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Remove, "REMOVE")
             choice(XpCommand.XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Set, "SET")
         }
+
+        val user = optionalUser("user", XpCommand.XP_EDIT_I18N_PREFIX.Options.User.Text)
+
+        val value = optionalInteger("value", XpCommand.XP_EDIT_I18N_PREFIX.Options.Value.Text)
     }
 
     override val options = Options()
@@ -43,9 +43,11 @@ class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
         if (Permission.ManageGuild !in context.member.getPermissions()) {
             context.failEphemerally {
                 styled(
-                    context.i18nContext.get(I18nKeysData.Commands.UserDoesntHavePermissionDiscord(
-                        context.i18nContext.get(I18nKeysData.Permissions.BanMembers)
-                    )),
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.UserDoesntHavePermissionDiscord(
+                            context.i18nContext.get(I18nKeysData.Permissions.BanMembers)
+                        )
+                    ),
                     Emotes.LoriZap
                 )
             }
@@ -53,15 +55,32 @@ class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
 
         val userToBeEdited = args[options.user] ?: context.member
         val xpValue = args[options.value] ?: 0
-        val mode = args[options.mode] ?: "SET"
+        val mode = args[options.mode]
 
         context.deferChannelMessage()
 
         val guildId = context.guildId
         val filter = GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.userId eq userToBeEdited.id.toLong())
 
-        val localProfile = loritta.pudding.transaction { GuildProfiles.selectFirstOrNull { (filter) } }
-        val oldUserXp = localProfile?.get(GuildProfiles.xp) ?: 0
+        var localProfile = loritta.pudding.transaction { GuildProfiles.selectFirstOrNull { (filter) } }
+        val userIsMember = (userToBeEdited.asMemberOrNull(guildId) != null)
+
+        if (localProfile == null) {
+            loritta.pudding.transaction {
+                GuildProfiles.insert {
+                    it[isInGuild] = userIsMember
+                    it[userId] = userToBeEdited.id.toLong()
+                    it[GuildProfiles.guildId] = guildId.toLong()
+                    it[money] = BigDecimal(0)
+                    it[quickPunishment] = false
+                    it[xp] = 0
+                }
+            }
+
+            localProfile = loritta.pudding.transaction { GuildProfiles.selectFirst { (filter) } }
+        }
+
+        val oldUserXp = localProfile[GuildProfiles.xp]
 
         var newXpValue = when (mode) {
             "SET" -> { xpValue }
@@ -74,7 +93,7 @@ class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
 
         loritta.pudding.transaction {
             GuildProfiles.update({ filter }) {
-                it[GuildProfiles.xp] = newXpValue
+                it[xp] = newXpValue
             }
         }
 
