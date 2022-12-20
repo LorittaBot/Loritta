@@ -4,21 +4,15 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroupEntries
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
 import pw.forst.exposed.insertOrUpdate
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -28,6 +22,8 @@ import java.util.*
  * Inserts and updates shop items data
  */
 object TrinketsStuff {
+    private val logger = KotlinLogging.logger {}
+
     // ===[ PROFILE GROUP UUIDS ]===
     /**
      * "Center Right Focus" Profile Group ID, background focus is in the center-right of the profile
@@ -68,6 +64,27 @@ object TrinketsStuff {
         runBlocking {
             pudding.transaction {
                 // ===[ PROFILE GROUPS ]===
+                // Validate if the profile designs exist
+                if (
+                    centerRightFocusDesigns.size != ProfileDesigns
+                        .select {
+                            ProfileDesigns.id inList centerRightFocusDesigns
+                        }.count().toInt()
+                ) {
+                    logger.warn { "There are missing profile designs the database related to the centerRightFocusDesigns! We are going to skip the trinkets update process..." }
+                    return@transaction
+                }
+
+                if (
+                    topFocusDesigns.size != ProfileDesigns
+                        .select {
+                            ProfileDesigns.id inList topFocusDesigns
+                        }.count().toInt()
+                ) {
+                    logger.warn { "There are missing profile designs the database related to the topFocusDesigns! We are going to skip the trinkets update process..." }
+                    return@transaction
+                }
+
                 ProfileDesignGroups.insertOrUpdate(ProfileDesignGroups.id) {
                     it[ProfileDesignGroups.id] = CENTER_RIGHT_FOCUS_DESIGN
                 }
