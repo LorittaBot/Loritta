@@ -765,7 +765,8 @@ class LorittaBot(
 			SchemaUtils.createMissingTablesAndColumns(
 				GatewayActivities,
 				UserSettings,
-				Backgrounds
+				Backgrounds,
+				BackgroundVariations
 			)
 		}
 
