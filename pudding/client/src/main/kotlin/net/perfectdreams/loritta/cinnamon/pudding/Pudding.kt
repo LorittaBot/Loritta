@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.components.ComponentType
@@ -295,6 +296,7 @@ class Pudding(
                     logger.warn { "SchemaVersion doesn't seem to exist, we will ignore the schema version check..." }
                 }
 
+                createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
                 createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
                 createOrUpdatePostgreSQLEnum(ComponentType.values())

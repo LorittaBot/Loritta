@@ -61,6 +61,7 @@ import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.GuildImpl
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
+import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
@@ -758,6 +759,8 @@ class LorittaBot(
 		logger.info("Iniciando PostgreSQL...")
 
 		transaction {
+			createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
+
 			// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
 			SchemaUtils.createMissingTablesAndColumns(
 				GatewayActivities,
