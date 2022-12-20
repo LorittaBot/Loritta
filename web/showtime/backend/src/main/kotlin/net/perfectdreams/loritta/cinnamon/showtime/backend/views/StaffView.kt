@@ -62,18 +62,16 @@ class StaffView(
                     socialNetworks.add(TwitterSocialNetwork("souarth"))
                     socialNetworks.add(LastFmSocialNetwork("souarth"))
                 }
-
-                user("Nightdavisao") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(272031079001620490)))
-                    socialNetworks.add(TwitterSocialNetwork("Nightdavisao"))
-                    socialNetworks.add(LastFmSocialNetwork("Nightdavisao"))
-                    socialNetworks.add(GitHubSocialNetwork("Nightdavisao"))
-                }
-
+ 
                 user("Stéphany") {
                     socialNetworks.add(DiscordSocialNetwork(Snowflake(400683515873591296)))
                     socialNetworks.add(TwitterSocialNetwork("dittom_"))
                     socialNetworks.add(GitHubSocialNetwork("dittom20"))
+                }
+                
+                user("Srta. Paum") {
+                    socialNetworks.add(DiscordSocialNetwork(Snowflake(197501878399926272)))
+                    socialNetworks.add(TwitterSocialNetwork("srtabread"))
                 }
 
                 user("DanielaGC_") {
@@ -98,10 +96,6 @@ class StaffView(
                     socialNetworks.add(LastFmSocialNetwork("PeterStark000"))
                 }
 
-                user("Kaike Carlos") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(123231508625489920)))
-                }
-
                 user("nathaan") {
                     socialNetworks.add(DiscordSocialNetwork(Snowflake(437731723350900739)))
                     socialNetworks.add(TwitterSocialNetwork("oRafa_e"))
@@ -111,13 +105,6 @@ class StaffView(
                     socialNetworks.add(DiscordSocialNetwork(Snowflake(197308318119755776)))
                     socialNetworks.add(TwitterSocialNetwork("JvGm45"))
                     socialNetworks.add(GitHubSocialNetwork("JvGm45"))
-                }
-                
-                user("victor.") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(236167700777271297)))
-                    socialNetworks.add(TwitterSocialNetwork("brviictoor"))
-                    socialNetworks.add(GitHubSocialNetwork("hechfx"))
-                    socialNetworks.add(LastFmSocialNetwork("brviictoor"))
                 }
             }
 
