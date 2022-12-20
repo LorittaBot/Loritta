@@ -932,7 +932,10 @@ object TrinketsStuff {
             addDefaultVariant("lori-dbz", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("arthCute", true, Rarity.UNCOMMON, LocalDate.of(2022, 12, 19)) {
-            addDefaultVariant("arthCute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("arth-cute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaTheDog", true, Rarity.EPIC, LocalDate.of(2022, 12, 20)) {
+            addDefaultVariant("loritta-the-dog", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 
