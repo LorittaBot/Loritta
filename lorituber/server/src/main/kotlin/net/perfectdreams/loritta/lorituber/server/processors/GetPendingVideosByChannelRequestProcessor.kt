@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.select
 class GetPendingVideosByChannelRequestProcessor : LoriTuberRpcProcessor {
     suspend fun process(request: GetPendingVideosByChannelRequest, currentTick: Long, lastUpdate: Long): GetPendingVideosByChannelResponse {
         val pendingVideos = LoriTuberPendingVideos.select {
-            LoriTuberPendingVideos.owner eq request.channelId
+            LoriTuberPendingVideos.channel eq request.channelId
         }.map {
             GetPendingVideosByChannelResponse.PendingVideo(
                 it[LoriTuberPendingVideos.contentGenre],
