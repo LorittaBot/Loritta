@@ -1,0 +1,16 @@
+label: "transfer"
+description: "Transfira o XP de usuário para outro no servidor!"
+tranferedXp: "Prontinho! O XP de {user} **({userOldXp, number})** foi transferido para {target}, que tinha **{targetOldXp,number}** de XP!"
+transferedXpWithAddition: "Prontinho! O Xp de {user} **({userOldXp, number})** foi transferido e somado com o Xp de {target}!"
+additionInfo: "Antes o Xp de {user} era de **{oldXp}** e agora é **{newXp}**"
+userHas0Xp: "O usuário que vai ter o XP transferido tem o valor de XP igual a zero... Então o que exatamente você quer transferir?"
+options:
+  user:
+    text: "O usuário ou a conta antiga que passará o Xp para o alvo ou conta nova."
+  target:
+    text: "O alvo que receberá o XP da conta antiga ou do usuário definido anteriormente"
+  mode:
+    text: "O modo que o comando deverá ser executado (Adicionar ou Sobrepor [Padrão])"
+    choice:
+      add: "Adicionar"
+      set: "Sobrepor"
