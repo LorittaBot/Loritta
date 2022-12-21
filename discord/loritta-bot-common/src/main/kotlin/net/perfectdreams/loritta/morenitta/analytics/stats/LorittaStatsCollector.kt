@@ -20,7 +20,7 @@ class LorittaStatsCollector(val m: LorittaBot) : RunnableCoroutine {
         try {
             logger.info { "Collecting stats data from Loritta..." }
             val guildCount = try {
-                m.lorittaShards.queryGuildCount()
+                m.lorittaShards.queryGuildCountThrowIfOffline()
             } catch (e: ClusterOfflineException) {
                 logger.warn(e) { "Cluster ${e.name} is offline! Skipping stats collection task..." }
                 return
