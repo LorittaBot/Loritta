@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.analytics.stats
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.ClusterNotReadyException
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 
 class LorittaStatsCollector(val m: LorittaBot) : RunnableCoroutine {
@@ -20,9 +21,12 @@ class LorittaStatsCollector(val m: LorittaBot) : RunnableCoroutine {
         try {
             logger.info { "Collecting stats data from Loritta..." }
             val guildCount = try {
-                m.lorittaShards.queryGuildCountThrowIfOffline()
+                m.lorittaShards.queryGuildCountOrThrowExceptionIfAnyClusterIsNotReady()
             } catch (e: ClusterOfflineException) {
                 logger.warn(e) { "Cluster ${e.name} is offline! Skipping stats collection task..." }
+                return
+            }  catch (e: ClusterNotReadyException) {
+                logger.warn(e) { "Cluster ${e.name} is not ready! Skipping stats collection task..." }
                 return
             }
 

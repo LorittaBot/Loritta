@@ -456,18 +456,6 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		return guildCount
 	}
 
-	suspend fun queryGuildCountThrowIfOffline(): Int {
-		var guildCount = 0
-
-		val results = loritta.lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
-		results.forEach {
-			val json = it.await()
-
-			guildCount += json["shards"].array.sumBy { it["guildCount"].int }
-		}
-		return guildCount
-	}
-
 	/**
 	 * Queries the current guild count but, if any of the clusters are not ready (offline or not CONNECTED), an exception will be thrown.
 	 *
