@@ -41,6 +41,7 @@ object DebugLog {
 				logger.info("Shard $shardId: ${state.value}")
 			}
 		}
+		logger.info("Active voice connections: ${loritta.voiceConnectionsManager.voiceConnections.size}")
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
