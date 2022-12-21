@@ -913,7 +913,7 @@ object TrinketsStuff {
         createBackground("ehMoleAnime", true, Rarity.EPIC, LocalDate.of(2022, 12, 19)) {
             addDefaultVariant("eh-mole-anime", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("Soritta", true, Rarity.EPIC, LocalDate.of(2022, 12, 19)) {
+        createBackground("soritta", true, Rarity.EPIC, LocalDate.of(2022, 12, 19)) {
             addDefaultVariant("soritta", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("happyCatClown", true, Rarity.RARE, LocalDate.of(2022, 12, 19)) {
