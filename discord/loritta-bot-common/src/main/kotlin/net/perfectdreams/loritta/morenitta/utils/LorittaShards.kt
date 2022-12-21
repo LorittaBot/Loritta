@@ -1,19 +1,10 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import com.github.salomonbrys.kotson.array
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -24,17 +15,17 @@ import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
-import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -461,6 +452,18 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 				guildCount += json["shards"].array.sumBy { it["guildCount"].int }
 			} catch (e: Exception) {}
+		}
+		return guildCount
+	}
+
+	suspend fun queryGuildCountThrowIfOffline(): Int {
+		var guildCount = 0
+
+		val results = loritta.lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
+		results.forEach {
+			val json = it.await()
+
+			guildCount += json["shards"].array.sumBy { it["guildCount"].int }
 		}
 		return guildCount
 	}

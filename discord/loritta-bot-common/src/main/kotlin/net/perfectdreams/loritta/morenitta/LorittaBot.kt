@@ -120,6 +120,7 @@ import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
@@ -1586,6 +1587,7 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRate(1.minutes, action = activityUpdater)
 		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
+		scheduleCoroutineAtFixedRateIfMainReplica(1.minutes, action = LorittaStatsCollector(this@LorittaBot))
 
 		val dailyTaxWarner = DailyTaxWarner(this)
 		val dailyTaxCollector = DailyTaxCollector(this)

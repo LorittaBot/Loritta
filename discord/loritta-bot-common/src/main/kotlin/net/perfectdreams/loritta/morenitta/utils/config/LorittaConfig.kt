@@ -34,6 +34,7 @@ data class LorittaConfig(
     val googleVision: GoogleVisionConfig,
     val googleRecaptcha: GoogleRecaptchaConfig,
     val turnstileCaptchas: TurnstileCaptchas,
+    val voteWebsites: VotingWebsites,
     val messageEncryption: MessageEncryptionConfig,
     val crowdin: CrowdinConfig,
     val twitter: TwitterConfig,
@@ -205,6 +206,24 @@ data class LorittaConfig(
     data class CloudflareTurnstileConfig(
         val siteKey: String,
         val secretKey: String
+    )
+
+    @Serializable
+    data class VotingWebsites(
+        val topgg: TopggConfig,
+        val discordBots: DiscordBotsConfig
+    )
+
+    @Serializable
+    data class TopggConfig(
+        val clientId: Long,
+        val token: String
+    )
+
+    @Serializable
+    data class DiscordBotsConfig(
+        val clientId: Long,
+        val token: String
     )
 
     @Serializable
