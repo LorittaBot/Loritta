@@ -642,6 +642,16 @@ class LorittaBot(
 				}
 				logger.info { "Disabled all components!" }
 
+				logger.info { "Disconnecting from all voice channels..." }
+				// TODO: You need to wait a bit until JDA fully shuts down the voice connection
+				runBlocking {
+					for ((guildId, voiceConnection) in voiceConnectionsManager.voiceConnections.toMap()) {
+						logger.info { "Shutting down voice connection @ $guildId" }
+						voiceConnectionsManager.shutdownVoiceConnection(guildId, voiceConnection)
+					}
+				}
+				logger.info { "Disconnected from all voice channels!" }
+
 				// This is used to validate if our cache was successfully written or not
 				val connectionVersion = UUID.randomUUID()
 

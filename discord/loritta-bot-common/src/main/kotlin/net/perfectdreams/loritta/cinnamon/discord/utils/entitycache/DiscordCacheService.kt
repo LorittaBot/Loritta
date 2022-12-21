@@ -14,7 +14,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
@@ -133,19 +135,18 @@ class DiscordCacheService(
     }
 
     /**
-     * Gets the [userId]'s voice channel ID on [guildId], if they are connected to a voice channel
+     * Gets the [userId]'s voice channel on [guildId], if they are connected to a voice channel
      *
      * @param guildId the guild's ID
      * @param userId  the user's ID
      * @return the voice channel ID, if they are connected to a voice channel
      */
-    suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
+    suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): VoiceChannel? {
         return loritta.lorittaShards.getGuildById(guildId.value.toLong())
             ?.getMemberById(userId.value.toLong())
             ?.voiceState
             ?.channel
-            ?.idLong
-            ?.let { Snowflake(it) }
+            ?.asVoiceChannel()
     }
 
     data class PermissionsResult(

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.so
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Permission
+import dev.kord.common.entity.Snowflake
 import io.ktor.client.plugins.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
@@ -18,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import java.util.*
@@ -67,23 +69,23 @@ class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: F
         // TODO: Reenable de defer after we remove the warning above
         // context.deferChannelMessage()
 
-        val userConnectedVoiceChannelId = loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
+        val userConnectedVoiceChannel = loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
             // Not in a voice channel
             content = "Você precisa estar conectado em um canal de voz para usar o Falatron!"
         }
 
         // Can we talk there?
-        if (!loritta.cache.lorittaHasPermission(context.guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
+        if (!userConnectedVoiceChannel.guild.selfMember.hasPermission(userConnectedVoiceChannel, net.dv8tion.jda.api.Permission.VOICE_CONNECT, net.dv8tion.jda.api.Permission.VOICE_SPEAK))
             context.fail {
                 // Looks like we can't...
-                content = "Desculpe, mas eu não tenho permissão para falar no canal <#${userConnectedVoiceChannelId}>!"
+                content = "Desculpe, mas eu não tenho permissão para falar no canal ${userConnectedVoiceChannel.asMention}>!"
             }
 
         // Are we already playing something in another channel already?
         val currentlyActiveVoiceConnection = loritta.voiceConnectionsManager.voiceConnections[guildId]
 
         if (currentlyActiveVoiceConnection != null) {
-            if (currentlyActiveVoiceConnection.isPlaying() && currentlyActiveVoiceConnection.channelId != userConnectedVoiceChannelId)
+            if (currentlyActiveVoiceConnection.isPlaying() && currentlyActiveVoiceConnection.channelId.toLong() != userConnectedVoiceChannel.idLong)
                 context.fail {
                     // We are already playing in another channel!
                     content = "Eu já estou tocando áudio em outro canal! <#${currentlyActiveVoiceConnection.channelId}>"
@@ -131,7 +133,7 @@ class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: F
 
         // Let's create a voice connection!
         val lorittaVoiceConnection = try {
-            loritta.voiceConnectionsManager.getOrCreateVoiceConnection(guildId, userConnectedVoiceChannelId)
+            loritta.voiceConnectionsManager.getOrCreateVoiceConnection(guildId, Snowflake(userConnectedVoiceChannel.idLong))
         } catch (e: Exception) {
             // Welp, something went wrong
             message.editMessage {
@@ -147,13 +149,13 @@ class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: F
         lorittaVoiceConnection.queue(
             LorittaVoiceConnection.AudioClipInfo(
                 opusFrames,
-                userConnectedVoiceChannelId
+                Snowflake(userConnectedVoiceChannel.idLong)
             )
         )
 
         message.editMessage {
             styled(
-                "Voz gerada com sucesso! Tocando em <#${userConnectedVoiceChannelId}>",
+                "Voz gerada com sucesso! Tocando em ${userConnectedVoiceChannel.asMention}",
                 Emotes.LoriHi
             )
 

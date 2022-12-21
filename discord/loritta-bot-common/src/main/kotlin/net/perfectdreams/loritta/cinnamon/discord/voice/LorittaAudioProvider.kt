@@ -1,27 +1,28 @@
 package net.perfectdreams.loritta.cinnamon.discord.voice
 
-import dev.kord.common.annotation.KordVoice
-import dev.kord.voice.AudioFrame
-import dev.kord.voice.AudioProvider
 import kotlinx.coroutines.channels.Channel
+import net.dv8tion.jda.api.audio.AudioSendHandler
+import java.nio.ByteBuffer
 
-@OptIn(KordVoice::class)
-class LorittaAudioProvider(private val audioClipProviderNotificationChannel: Channel<Unit>) : AudioProvider {
+class LorittaAudioProvider(private val audioClipProviderNotificationChannel: Channel<Unit>) : AudioSendHandler {
     companion object {
-        val SILENCE = AudioFrame(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
+        private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
     }
 
     var audioFramesInOpusFormatQueue = Channel<ByteArray>(Channel.UNLIMITED)
     var requestedNewAudioTracks = false
 
-    override suspend fun provide(): AudioFrame {
+    override fun isOpus() = true
+    override fun canProvide() = true
+
+    override fun provide20MsAudio(): ByteBuffer {
         val audioDataInOpusFormatTryReceive = audioFramesInOpusFormatQueue.tryReceive()
         if (audioDataInOpusFormatTryReceive.isFailure) {
             if (requestedNewAudioTracks) // We already tried requesting it, so now we will wait...
                 return SILENCE
 
             // isFailure == empty, then we need to request moar framez!! :3
-            audioClipProviderNotificationChannel.send(Unit) // Send a moar framez!! request...
+            audioClipProviderNotificationChannel.trySend(Unit) // Send a moar framez!! request...
             requestedNewAudioTracks = true
 
             // And then return SILENCE for now
@@ -34,7 +35,7 @@ class LorittaAudioProvider(private val audioClipProviderNotificationChannel: Cha
 
         requestedNewAudioTracks = false
 
-        return AudioFrame(audioDataInOpusFormatTryReceive.getOrNull()!!)
+        return ByteBuffer.wrap(audioDataInOpusFormatTryReceive.getOrNull()!!)
     }
 
     /**

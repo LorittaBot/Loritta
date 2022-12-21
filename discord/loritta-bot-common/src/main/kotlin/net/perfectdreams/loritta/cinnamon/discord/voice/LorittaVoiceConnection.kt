@@ -1,23 +1,21 @@
 package net.perfectdreams.loritta.cinnamon.discord.voice
 
-import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
-import dev.kord.gateway.Gateway
-import dev.kord.gateway.UpdateVoiceStatus
-import dev.kord.voice.VoiceConnection
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.managers.AudioManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import kotlin.time.Duration.Companion.minutes
 
-@OptIn(KordVoice::class)
 data class LorittaVoiceConnection(
-    private val gateway: Gateway,
-    private val guildId: Snowflake,
+    private val guild: Guild,
     var channelId: Snowflake, // Users can move Loritta to another channel
-    private val voiceConnection: VoiceConnection,
+    private val audioManager: AudioManager,
     private val audioProvider: LorittaAudioProvider,
     private val audioClipProviderNotificationChannel: Channel<Unit>
 ) {
@@ -38,20 +36,17 @@ data class LorittaVoiceConnection(
 
     suspend fun switchChannel(channelId: Snowflake) {
         if (this.channelId != channelId) {
-            gateway.send(
-                UpdateVoiceStatus(
-                    guildId = guildId,
-                    channelId = channelId,
-                    selfMute = false,
-                    selfDeaf = false
-                )
-            )
+            this.channelId = channelId
+            audioManager.openAudioConnection(guild.getVoiceChannelById(channelId.toLong()))
         }
     }
 
     suspend fun shutdown() {
-        voiceConnection.shutdown()
+        audioManager.closeAudioConnection()
         scope.cancel()
+        try {
+            audioClips.close()
+        } catch (_: ClosedReceiveChannelException) {} // Ignore if it is was already closed
     }
 
     fun launchAudioClipRequestsJob() = scope.launch {
@@ -65,7 +60,7 @@ data class LorittaVoiceConnection(
             detachMutex.withLock {
                 detachJob = scope.launch {
                     delay(5.minutes)
-                    logger.info { "Shutting down connection $voiceConnection due to inactivity... Bye!" }
+                    logger.info { "Shutting down connection ${audioManager} due to inactivity... Bye!" }
                     shutdown() // Technically the connection will be cleaned up from the voice connections map after the voice connection is shutdown...
                 }
             }
