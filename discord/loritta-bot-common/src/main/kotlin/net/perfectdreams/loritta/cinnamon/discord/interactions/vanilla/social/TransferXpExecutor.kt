@@ -53,6 +53,15 @@ class TransferXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lor
 
         context.deferChannelMessage()
 
+        if (userToBeEdited.id == targetToBeEdited.id) {
+            context.fail {
+                styled(
+                    context.i18nContext.get(XpCommand.XP_TRANSFER_I18N_PREFIX.UserIsTheSameAsTarget),
+                    Emotes.LoriFire
+                )
+            }
+        }
+
         val guildId = context.guildId
         val filter = GuildProfiles.guildId eq guildId.toLong()
 
