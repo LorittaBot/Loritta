@@ -1001,7 +1001,7 @@ object TrinketsStuff {
             addDefaultVariant("chuu-loona.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("caracalHamburgerCute", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
-            addDefaultVariant("caracel-hamburger-cute.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("caracal-hamburger-cute.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 
