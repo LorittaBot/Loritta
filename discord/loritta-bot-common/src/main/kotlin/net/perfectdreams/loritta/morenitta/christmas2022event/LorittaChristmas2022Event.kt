@@ -18,13 +18,13 @@ object LorittaChristmas2022Event {
     val eventRewards = listOf(
         EventReward.BadgeReward(100),
         EventReward.SonhosReward(250, 25_000),
-        EventReward.SonhosReward(500, 25_000),
-        EventReward.SonhosReward(750, 25_000),
-        EventReward.SonhosReward(1_000, 25_000),
-        EventReward.SonhosReward(1_250, 25_000),
-        EventReward.SonhosReward(1_500, 25_000),
-        EventReward.SonhosReward(1_750, 25_000),
-        EventReward.SonhosReward(2_000, 25_000),
+        EventReward.SonhosReward(500, 40_000),
+        EventReward.SonhosReward(750, 60_000),
+        EventReward.SonhosReward(1_000, 80_000),
+        EventReward.SonhosReward(1_250, 100_000),
+        EventReward.SonhosReward(1_500, 150_000),
+        EventReward.SonhosReward(1_750, 250_000),
+        EventReward.SonhosReward(2_000, 300_000),
         EventReward.PremiumKeyReward(2_500)
     )
 

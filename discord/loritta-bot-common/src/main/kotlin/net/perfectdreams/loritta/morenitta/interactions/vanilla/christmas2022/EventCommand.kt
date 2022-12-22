@@ -73,7 +73,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
 
                     styled(
-                        "Pelo o que eu vi, os presentes ${LorittaChristmas2022Event.emoji.asMention} estão espalhandos pelo chat, aparecendo como reações nas conversas.",
+                        "Pelo o que eu vi, os presentes ${LorittaChristmas2022Event.emoji.asMention} estão espalhados pelo chat, aparecendo como reações nas conversas.",
                         Emotes.LoriHm
                     )
 
