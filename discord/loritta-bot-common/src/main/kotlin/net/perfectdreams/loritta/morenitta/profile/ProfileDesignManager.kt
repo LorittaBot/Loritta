@@ -112,7 +112,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 		// registerBadge(CanecaBadge(m.config.quirky))
 		registerBadge(HalloweenBadge(loritta))
-		registerBadge(ChristmasBadge(loritta))
+		registerBadge(Christmas2019Badge(loritta))
+		registerBadge(Christmas2022Badge(loritta))
 		registerBadge(GabrielaBadge(loritta))
 		registerBadge(PantufaBadge(loritta))
 	}
@@ -321,7 +322,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
 				.sortedByDescending { it.priority }
 				.map {
-					readImage(File(LorittaBot.ASSETS, it.badgeFileName))
+					readImageFromResources("/badges/${it.badgeFileName}")
 				}
 		)
 

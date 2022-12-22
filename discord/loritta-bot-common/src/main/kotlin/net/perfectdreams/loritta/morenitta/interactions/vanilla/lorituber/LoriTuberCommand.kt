@@ -33,7 +33,7 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
     inner class LoriTuberExecutor : LorittaSlashCommandExecutor() {
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            val hook = context.deferChannelMessage()
+            val hook = context.deferChannelMessage(false)
 
             val character = sendLoriTuberRPCRequest<GetCharactersByOwnerResponse>(GetCharactersByOwnerRequest(context.user.idLong))
                 .characters

@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.select
 
-class GabrielaBadge(val loritta: LorittaBot) : Badge("badges/birthday2020_gabriela.png", 100) {
+class GabrielaBadge(val loritta: LorittaBot) : Badge("birthday2020_gabriela.png", 100) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		val playerResult = loritta.pudding.transaction {
 			Birthday2020Players.select { Birthday2020Players.user eq profile.id }

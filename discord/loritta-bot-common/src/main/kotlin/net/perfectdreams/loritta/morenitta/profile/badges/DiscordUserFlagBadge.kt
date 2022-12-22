@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 
 open class DiscordUserFlagBadge(val flag: UserFlag, badgeName: String) : Badge(badgeName, 50) {
 	class DiscordBraveryHouseBadge : DiscordUserFlagBadge(UserFlag.HouseBravery, "badges/discord_bravery.png")
-	class DiscordBrillanceHouseBadge : DiscordUserFlagBadge(UserFlag.HouseBrilliance, "badges/discord_brilliance.png")
+	class DiscordBrillanceHouseBadge : DiscordUserFlagBadge(UserFlag.HouseBrilliance, "badges/discord_brillance.png")
 	class DiscordBalanceHouseBadge : DiscordUserFlagBadge(UserFlag.HouseBalance, "badges/discord_balance.png")
 	class DiscordEarlySupporterBadge : DiscordUserFlagBadge(UserFlag.EarlySupporter,"badges/discord_early_supporter.png")
 	class DiscordPartnerBadge : DiscordUserFlagBadge(UserFlag.DiscordPartner,"badges/discord_partner.png")

@@ -24,7 +24,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
     inner class LorittaInfoExecutor : LorittaSlashCommandExecutor() {
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            context.deferChannelMessage()
+            context.deferChannelMessage(false)
 
             val since = Instant.now()
                 .minusSeconds(86400)

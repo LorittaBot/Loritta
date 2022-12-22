@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.christmas2022event.modules.DropChristmasStuffModule
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
@@ -55,10 +56,12 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	private val checkBoostStatusModule = CheckBoostStatusModule(loritta)
 	private val addReactionForHeathecliffModule = AddReactionForHeathecliffModule(loritta)
 	private val quirkyModule = QuirkyModule(loritta)
+	private val christmasStuffModule = DropChristmasStuffModule(loritta)
 
 	private val messageReceivedModules = mutableListOf(
 		automodModule,
 		inviteLinkModule,
+		christmasStuffModule,
 		experienceModule,
 		// afkModule,
 		bomDiaECiaModule,

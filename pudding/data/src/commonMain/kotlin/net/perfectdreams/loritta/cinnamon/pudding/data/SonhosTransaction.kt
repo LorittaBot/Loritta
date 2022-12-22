@@ -129,6 +129,15 @@ data class BotVoteSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class Christmas2022SonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val gifts: Int
+) : SonhosTransaction()
+
+@Serializable
 data class ShipEffectSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
