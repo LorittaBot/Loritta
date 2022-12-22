@@ -2,6 +2,7 @@ label: "transfer"
 description: "Transfira o XP de usuário para outro no servidor!"
 tranferedXp: "Prontinho! O XP de {user} **({userOldXp, number})** foi transferido para {target}, que tinha **{targetOldXp,number}** de XP!"
 transferedXpWithAddition: "Prontinho! O Xp de {user} **({userOldXp, number})** foi transferido e somado com o Xp de {target}!"
+userIsTheSameAsTarget: "Oxe! Por que você quer transferir XP de uma conta pra essa mesma conta? Tá querendo me bugar né...."
 additionInfo: "Antes o Xp de {user} era de **{oldXp}** e agora é **{newXp}**"
 userHas0Xp: "O usuário que vai ter o XP transferido tem o valor de XP igual a zero... Então o que exatamente você quer transferir?"
 options:
