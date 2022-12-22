@@ -31,6 +31,7 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val webhookSendSimple = commandMention("webhook send simple")
     val webhookSendRepost = commandMention("webhook send repost")
 
+    val eventJoin = commandMention("evento entrar")
     val eventStats = commandMention("evento stats")
 
     val profileView = commandMention("profile view")

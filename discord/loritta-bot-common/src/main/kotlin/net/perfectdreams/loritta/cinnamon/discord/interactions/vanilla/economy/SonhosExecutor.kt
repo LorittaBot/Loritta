@@ -54,6 +54,8 @@ class SonhosExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
                     ),
                     Emotes.LoriRich
                 )
+
+                styled("Quer sonhos? Então participe do Evento de Natal da Loritta! ${loritta.commandMentions.eventJoin}")
             }
 
             SonhosUtils.sendEphemeralMessageIfUserHaventGotDailyRewardToday(

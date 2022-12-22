@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
@@ -97,14 +98,14 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                     when (reward) {
                         is LorittaChristmas2022Event.EventReward.SonhosReward -> {
                             val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                it[SonhosTransactionsLog.user] = userId
-                                it[SonhosTransactionsLog.timestamp] = Instant.now()
+                                it[user] = userId
+                                it[timestamp] = Instant.now()
                             }
 
                             Christmas2022SonhosTransactionsLog.insert {
-                                it[Christmas2022SonhosTransactionsLog.timestampLog] = transactionLogId
-                                it[Christmas2022SonhosTransactionsLog.sonhos] = reward.sonhos
-                                it[Christmas2022SonhosTransactionsLog.gifts] = reward.requiredPoints
+                                it[timestampLog] = transactionLogId
+                                it[sonhos] = reward.sonhos
+                                it[gifts] = reward.requiredPoints
                             }
 
                             Profiles.update({ Profiles.id eq userId }) {
@@ -117,7 +118,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                             DonationKeys.insert {
                                 it[DonationKeys.userId] = event.userIdLong
                                 it[value] = 100.0
-                                it[expiresAt] = System.currentTimeMillis() + Constants.ONE_MONTH_IN_MILLISECONDS
+                                it[expiresAt] = System.currentTimeMillis() + (Constants.DONATION_ACTIVE_MILLIS * 3)
                                 it[metadata] = jsonObject("type" to "LorittaChristmas2022Event")
                             }
 
@@ -125,15 +126,30 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                                 this.createdAt = System.currentTimeMillis()
                                 this.discount = 0.0
                                 this.paidAt = System.currentTimeMillis()
-                                this.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
+                                this.expiresAt = System.currentTimeMillis() + (Constants.DONATION_ACTIVE_MILLIS * 3)
                                 this.userId = event.userIdLong
                                 this.gateway = PaymentGateway.OTHER
                                 this.reason = PaymentReason.DONATION
                                 this.money = 100.0.toBigDecimal()
                             }
                         }
-                        // noop
-                        is LorittaChristmas2022Event.EventReward.BadgeReward -> {}
+                        is LorittaChristmas2022Event.EventReward.ProfileDesignReward -> {
+                            val internalName = reward.profileName
+                            val alreadyHasTheBackground = BackgroundPayments.select { BackgroundPayments.userId eq userId and (BackgroundPayments.background eq internalName) }
+                                .count() != 0L
+
+                            if (!alreadyHasTheBackground) {
+                                BackgroundPayments.insert {
+                                    it[BackgroundPayments.userId] = lorittaProfile.id.value
+                                    it[cost] = 0
+                                    it[background] = internalName
+                                    it[boughtAt] = System.currentTimeMillis()
+                                }
+                            }
+                        }
+                        is LorittaChristmas2022Event.EventReward.BadgeReward -> {
+                            // noop
+                        }
                     }
                 }
             }

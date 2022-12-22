@@ -16,16 +16,28 @@ object LorittaChristmas2022Event {
     val emoji = Emoji.fromCustom("lori_gift", 653402818199158805L, false)
 
     val eventRewards = listOf(
-        EventReward.BadgeReward(100),
-        EventReward.SonhosReward(250, 25_000),
-        EventReward.SonhosReward(500, 40_000),
-        EventReward.SonhosReward(750, 60_000),
-        EventReward.SonhosReward(1_000, 80_000),
-        EventReward.SonhosReward(1_250, 100_000),
-        EventReward.SonhosReward(1_500, 150_000),
-        EventReward.SonhosReward(1_750, 250_000),
-        EventReward.SonhosReward(2_000, 300_000),
-        EventReward.PremiumKeyReward(2_500)
+        EventReward.BadgeReward(100, false),
+        EventReward.SonhosReward(250, false, 25_000),
+        EventReward.SonhosReward(500, false, 40_000),
+        EventReward.SonhosReward(750, false, 60_000),
+        EventReward.SonhosReward(1_000, false, 80_000),
+        EventReward.SonhosReward(1_250, false, 100_000),
+        EventReward.SonhosReward(1_500, false, 150_000),
+        EventReward.SonhosReward(1_750, false, 250_000),
+        EventReward.SonhosReward(2_000, false, 300_000),
+        EventReward.PremiumKeyReward(2_500, false),
+
+        // ===[ PRESTIGE ]===
+        EventReward.ProfileDesignReward(3_000, false, "christmas2019"),
+        EventReward.SonhosReward(3_250, true, 25_000),
+        EventReward.SonhosReward(3_500, true, 40_000),
+        EventReward.SonhosReward(3_750, true, 60_000),
+        EventReward.SonhosReward(4_000, true, 80_000),
+        EventReward.SonhosReward(4_250, true, 100_000),
+        EventReward.SonhosReward(4_500, true, 150_000),
+        EventReward.SonhosReward(4_750, true, 250_000),
+        EventReward.SonhosReward(5_000, true, 300_000),
+        EventReward.ProfileDesignReward(5_000, true, "lorittaChristmas2019"),
     )
 
     fun isEventActive(): Boolean {
@@ -33,9 +45,10 @@ object LorittaChristmas2022Event {
         return now.isAfter(startOfEvent) && now.isBefore(endOfEvent)
     }
 
-    sealed class EventReward(val requiredPoints: Int) {
-        class SonhosReward(requiredPoints: Int, val sonhos: Long) : EventReward(requiredPoints)
-        class BadgeReward(requiredPoints: Int) : EventReward(requiredPoints)
-        class PremiumKeyReward(requiredPoints: Int) : EventReward(requiredPoints)
+    sealed class EventReward(val requiredPoints: Int, val prestige: Boolean) {
+        class SonhosReward(requiredPoints: Int, prestige: Boolean, val sonhos: Long) : EventReward(requiredPoints, prestige)
+        class BadgeReward(requiredPoints: Int, prestige: Boolean) : EventReward(requiredPoints, prestige)
+        class PremiumKeyReward(requiredPoints: Int, prestige: Boolean) : EventReward(requiredPoints, prestige)
+        class ProfileDesignReward(requiredPoints: Int, prestige: Boolean, val profileName: String) : EventReward(requiredPoints, prestige)
     }
 }

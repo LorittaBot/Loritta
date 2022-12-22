@@ -93,7 +93,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
 
                     styled(
-                        "Boa caça ao tesouro!",
+                        "Boa caça ao tesou... Quer dizer, caça aos presentes!",
                         Emotes.LoriHeart
                     )
                 }
@@ -135,26 +135,63 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     when (reward) {
                         is LorittaChristmas2022Event.EventReward.BadgeReward -> {
                             styled(
-                                "**[${reward.requiredPoints} presentes]** Badge para o seu ${loritta.commandMentions.profileView}",
-                                prefix = if (collectedPoints >= reward.requiredPoints) Emotes.LoriYay else Emotes.LoriHm
+                                buildString {
+                                    append("**[${reward.requiredPoints} presentes]")
+                                    if (reward.prestige) {
+                                        append(" (Prestígio \uD83D\uDD25)")
+                                    }
+                                    append("** ")
+                                    append("Badge para o seu ${loritta.commandMentions.profileView}")
+                                },
+                                prefix = if (collectedPoints >= reward.requiredPoints) "✅" else "❌"
                             )
                         }
 
                         is LorittaChristmas2022Event.EventReward.SonhosReward -> {
                             styled(
-                                "**[${reward.requiredPoints} presentes]** ${reward.sonhos} sonhos",
-                                prefix = if (collectedPoints >= reward.requiredPoints) Emotes.LoriYay else Emotes.LoriHm
+                                buildString {
+                                    append("**[${reward.requiredPoints} presentes]")
+                                    if (reward.prestige) {
+                                        append(" (Prestígio \uD83D\uDD25)")
+                                    }
+                                    append("** ")
+                                    append("${reward.sonhos} sonhos")
+                                },
+                                prefix = if (collectedPoints >= reward.requiredPoints) "✅" else "❌"
                             )
                         }
 
                         is LorittaChristmas2022Event.EventReward.PremiumKeyReward -> {
                             styled(
-                                "**[${reward.requiredPoints} presentes]** Vantagens premium por um mês",
-                                prefix = if (collectedPoints >= reward.requiredPoints) Emotes.LoriYay else Emotes.LoriHm
+                                buildString {
+                                    append("**[${reward.requiredPoints} presentes]")
+                                    if (reward.prestige) {
+                                        append(" (Prestígio \uD83D\uDD25)")
+                                    }
+                                    append("** ")
+                                    append("Todas as vantagens premiums (R\$ 99,99) por três meses")
+                                },
+                                prefix = if (collectedPoints >= reward.requiredPoints) "✅" else "❌"
+                            )
+                        }
+
+                        is LorittaChristmas2022Event.EventReward.ProfileDesignReward -> {
+                            styled(
+                                buildString {
+                                    append("**[${reward.requiredPoints} presentes]")
+                                    if (reward.prestige) {
+                                        append(" (Prestígio \uD83D\uDD25)")
+                                    }
+                                    append("** ")
+                                    append("Design de Perfil ${context.locale["profileDesigns.${reward.profileName}.title"]}")
+                                },
+                                prefix = if (collectedPoints >= reward.requiredPoints) "✅" else "❌"
                             )
                         }
                     }
                 }
+
+                styled("*Você precisa de um servidor com membros participando do evento, para que você encontre mais presentes? Então entre na Comunidade da Loritta! https://discord.gg/lori *")
             }
         }
     }
