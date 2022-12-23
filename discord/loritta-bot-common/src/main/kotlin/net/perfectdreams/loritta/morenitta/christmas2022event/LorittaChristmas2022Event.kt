@@ -28,7 +28,7 @@ object LorittaChristmas2022Event {
         EventReward.PremiumKeyReward(2_500, false),
 
         // ===[ PRESTIGE ]===
-        EventReward.ProfileDesignReward(3_000, false, "christmas2019"),
+        EventReward.ProfileDesignReward(3_000, true, "christmas2019"),
         EventReward.SonhosReward(3_250, true, 25_000),
         EventReward.SonhosReward(3_500, true, 40_000),
         EventReward.SonhosReward(3_750, true, 60_000),
