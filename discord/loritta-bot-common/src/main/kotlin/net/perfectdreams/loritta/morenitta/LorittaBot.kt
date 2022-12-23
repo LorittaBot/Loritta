@@ -49,6 +49,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -125,6 +126,7 @@ import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
+import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
@@ -142,6 +144,7 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
@@ -152,10 +155,7 @@ import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesCli
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -1610,6 +1610,52 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.minutes, action = LorittaStatsCollector(this@LorittaBot))
+		// Christmas stuff
+		if (LorittaChristmas2022Event.isEventActive() && config.loritta.environment == EnvironmentType.PRODUCTION) {
+			scheduleCoroutineAtFixedRate(1.minutes) {
+				try {
+					if (!LorittaChristmas2022Event.isEventActive())
+						return@scheduleCoroutineAtFixedRate
+
+					val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+
+					if (guild != null) {
+						val role = guild.getRoleById(1055877016739663872L) ?: return@scheduleCoroutineAtFixedRate
+
+						val countColumn = CollectedChristmas2022Points.points.count()
+
+						val topUserIds = newSuspendedTransaction {
+							CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
+								.selectAll()
+								.groupBy(CollectedChristmas2022Points.user)
+								.orderBy(countColumn to SortOrder.DESC)
+								.limit(5, 0)
+								.map { it[CollectedChristmas2022Points.user].value }
+						}
+
+						val currentMembersWithRole = guild.getMembersWithRoles(role)
+
+						for (member in currentMembersWithRole) {
+							if (member.idLong !in topUserIds) {
+								// Bye
+								member.guild.removeRoleFromMember(UserSnowflake.fromId(member.idLong), role).await()
+							}
+						}
+
+						// Give the role for users that don't have the role yet
+						for (userId in topUserIds) {
+							val member = guild.getMemberById(userId) ?: continue
+
+							if (!member.roles.contains(role)) {
+								guild.addRoleToMember(UserSnowflake.fromId(userId), role).await()
+							}
+						}
+					}
+				} catch (e: Exception) {
+					logger.warn(e) { "Something went wrong while trying to update the top christmas roles!" }
+				}
+			}
+		}
 
 		val dailyTaxWarner = DailyTaxWarner(this)
 		val dailyTaxCollector = DailyTaxCollector(this)

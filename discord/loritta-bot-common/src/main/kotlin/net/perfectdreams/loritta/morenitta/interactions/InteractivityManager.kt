@@ -42,7 +42,7 @@ class InteractivityManager {
     fun buttonForUser(
         targetUser: User,
         style: ButtonStyle,
-        label: String,
+        label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {},
         callback: suspend (ComponentContext) -> (Unit)
     ) = buttonForUser(targetUser.idLong, style, label, builder, callback)
@@ -53,7 +53,7 @@ class InteractivityManager {
     fun buttonForUser(
         targetUserId: Long,
         style: ButtonStyle,
-        label: String,
+        label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {},
         callback: suspend (ComponentContext) -> (Unit)
     ) = button(
@@ -79,7 +79,7 @@ class InteractivityManager {
      */
     fun button(
         style: ButtonStyle,
-        label: String,
+        label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {},
         callback: suspend (ComponentContext) -> (Unit)
     ): Button {

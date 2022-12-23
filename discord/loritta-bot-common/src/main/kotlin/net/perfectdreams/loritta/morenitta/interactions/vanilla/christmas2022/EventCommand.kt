@@ -1,19 +1,34 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.christmas2022
 
+import dev.kord.common.entity.Snowflake
+import dev.kord.rest.Image
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.Timestamp
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.ExperienceUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.RankingGenerator
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
+import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
+import kotlin.math.ceil
 
 class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     private val I18N_PREFIX = I18nKeysData.Commands.Command.Christmas2022event
@@ -25,6 +40,10 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description) {
             executor = StatsEventExecutor()
+        }
+
+        subcommand(I18N_PREFIX.Rank.Label, I18N_PREFIX.Rank.Description) {
+            executor = StatsRankExecutor()
         }
     }
 
@@ -192,6 +211,110 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 }
 
                 styled("*Você precisa de um servidor com membros participando do evento, para que você encontre mais presentes? Então entre na Comunidade da Loritta! https://discord.gg/lori *")
+            }
+        }
+    }
+
+    inner class StatsRankExecutor : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val page = optionalLong("page", XpCommand.XP_RANK_I18N_PREFIX.Options.Page.Text) /* {
+                // range = RankingGenerator.VALID_RANKING_PAGES
+            } */
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            val page = (args[options.page]?.minus(1)) ?: 0
+
+            context.deferChannelMessage(false)
+
+            generateAndSendPage(context, page)
+        }
+
+        private suspend fun generateAndSendPage(context: InteractionContext, page: Long) {
+            context.reply(false) {
+                styled(
+                    context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
+                    Emotes.LoriReading
+                )
+
+                val countColumn = CollectedChristmas2022Points.points.count()
+
+                val (totalCount, profiles) = loritta.pudding.transaction {
+                    val totalCount = CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
+                        .selectAll()
+                        .groupBy(CollectedChristmas2022Points.user)
+                        .count()
+
+                    val profilesInTheQuery =
+                        CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
+                            .selectAll()
+                            .groupBy(CollectedChristmas2022Points.user)
+                            .orderBy(countColumn to SortOrder.DESC)
+                            .limit(5, page * 5)
+                            .toList()
+
+                    Pair(totalCount, profilesInTheQuery)
+                }
+
+                // Calculates the max page
+                val maxPage = ceil(totalCount / 5.0)
+                val maxPageZeroIndexed = maxPage - 1
+
+                files += FileUpload.fromData(
+                    RankingGenerator.generateRanking(
+                        loritta,
+                        page * 5,
+                        "Evento de Natal",
+                        null,
+                        profiles.map {
+                            val presentesCount = it[countColumn]
+
+                            RankingGenerator.UserRankInformation(
+                                Snowflake(it[CollectedChristmas2022Points.user].value),
+                                "$presentesCount presentes",
+                                null
+                            )
+                        }
+                    ) {
+                        null
+                    }.toByteArray(ImageFormatType.PNG).inputStream(),
+                    "rank.png"
+                )
+
+                actionRow(
+                    loritta.interactivityManager.buttonForUser(
+                        context.user,
+                        ButtonStyle.PRIMARY,
+                        builder = {
+                            loriEmoji = Emotes.ChevronLeft
+                            disabled = page !in RankingGenerator.VALID_RANKING_PAGES
+                        }
+                    ) {
+                        it.deferEdit()
+
+                        generateAndSendPage(
+                            it,
+                            page - 1
+                        )
+                    },
+                    loritta.interactivityManager.buttonForUser(
+                        context.user,
+                        ButtonStyle.PRIMARY,
+                        builder = {
+                            loriEmoji = Emotes.ChevronRight
+                            disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
+                        }
+                    ) {
+                        it.deferEdit()
+
+                        generateAndSendPage(
+                            it,
+                            page + 1
+                        )
+                    },
+                )
             }
         }
     }
