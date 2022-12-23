@@ -2,10 +2,15 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.christmas2022
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
+import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.editMessage
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.Timestamp
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageData
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
@@ -25,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas20
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
@@ -229,93 +235,107 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             context.deferChannelMessage(false)
 
-            generateAndSendPage(context, page)
+            context.reply(false) {
+                createRankMessage(context, page)()
+            }
         }
 
-        private suspend fun generateAndSendPage(context: InteractionContext, page: Long) {
-            context.reply(false) {
-                styled(
-                    context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
-                    Emotes.LoriReading
-                )
+        private suspend fun createRankMessage(context: InteractionContext, page: Long): suspend InlineMessage<*>.() -> (Unit) = {
+            styled(
+                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
+                Emotes.LoriReading
+            )
 
-                val countColumn = CollectedChristmas2022Points.points.count()
+            val countColumn = CollectedChristmas2022Points.points.count()
 
-                val (totalCount, profiles) = loritta.pudding.transaction {
-                    val totalCount = CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
+            val (totalCount, profiles) = loritta.pudding.transaction {
+                val totalCount = CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
+                    .selectAll()
+                    .groupBy(CollectedChristmas2022Points.user)
+                    .count()
+
+                val profilesInTheQuery =
+                    CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
                         .selectAll()
                         .groupBy(CollectedChristmas2022Points.user)
-                        .count()
+                        .orderBy(countColumn to SortOrder.DESC)
+                        .limit(5, page * 5)
+                        .toList()
 
-                    val profilesInTheQuery =
-                        CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
-                            .selectAll()
-                            .groupBy(CollectedChristmas2022Points.user)
-                            .orderBy(countColumn to SortOrder.DESC)
-                            .limit(5, page * 5)
-                            .toList()
-
-                    Pair(totalCount, profilesInTheQuery)
-                }
-
-                // Calculates the max page
-                val maxPage = ceil(totalCount / 5.0)
-                val maxPageZeroIndexed = maxPage - 1
-
-                files += FileUpload.fromData(
-                    RankingGenerator.generateRanking(
-                        loritta,
-                        page * 5,
-                        "Evento de Natal",
-                        null,
-                        profiles.map {
-                            val presentesCount = it[countColumn]
-
-                            RankingGenerator.UserRankInformation(
-                                Snowflake(it[CollectedChristmas2022Points.user].value),
-                                "$presentesCount presentes",
-                                null
-                            )
-                        }
-                    ) {
-                        null
-                    }.toByteArray(ImageFormatType.PNG).inputStream(),
-                    "rank.png"
-                )
-
-                actionRow(
-                    loritta.interactivityManager.buttonForUser(
-                        context.user,
-                        ButtonStyle.PRIMARY,
-                        builder = {
-                            loriEmoji = Emotes.ChevronLeft
-                            disabled = page !in RankingGenerator.VALID_RANKING_PAGES
-                        }
-                    ) {
-                        it.deferEdit()
-
-                        generateAndSendPage(
-                            it,
-                            page - 1
-                        )
-                    },
-                    loritta.interactivityManager.buttonForUser(
-                        context.user,
-                        ButtonStyle.PRIMARY,
-                        builder = {
-                            loriEmoji = Emotes.ChevronRight
-                            disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
-                        }
-                    ) {
-                        it.deferEdit()
-
-                        generateAndSendPage(
-                            it,
-                            page + 1
-                        )
-                    },
-                )
+                Pair(totalCount, profilesInTheQuery)
             }
+
+            // Calculates the max page
+            val maxPage = ceil(totalCount / 5.0)
+            val maxPageZeroIndexed = maxPage - 1
+
+            files += FileUpload.fromData(
+                RankingGenerator.generateRanking(
+                    loritta,
+                    page * 5,
+                    "Evento de Natal",
+                    null,
+                    profiles.map {
+                        val presentesCount = it[countColumn]
+
+                        RankingGenerator.UserRankInformation(
+                            Snowflake(it[CollectedChristmas2022Points.user].value),
+                            "$presentesCount presentes",
+                            null
+                        )
+                    }
+                ) {
+                    null
+                }.toByteArray(ImageFormatType.PNG).inputStream(),
+                "rank.png"
+            )
+
+            actionRow(
+                loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    ButtonStyle.PRIMARY,
+                    builder = {
+                        loriEmoji = Emotes.ChevronLeft
+                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES
+                    }
+                ) {
+                    it.deferEdit()
+                        .editOriginal(
+                            MessageEditData.fromCreateData(
+                                InlineMessage(MessageCreateBuilder())
+                                    .apply {
+                                        createRankMessage(
+                                            context,
+                                            page - 1
+                                        )()
+                                    }.build()
+                            )
+                        )
+                        .await()
+                },
+                loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    ButtonStyle.PRIMARY,
+                    builder = {
+                        loriEmoji = Emotes.ChevronRight
+                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
+                    }
+                ) {
+                    it.deferEdit()
+                        .editOriginal(
+                            MessageEditData.fromCreateData(
+                                InlineMessage(MessageCreateBuilder())
+                                    .apply {
+                                        createRankMessage(
+                                            context,
+                                            page + 1
+                                        )()
+                                    }.build()
+                            )
+                        )
+                        .await()
+                },
+            )
         }
     }
 }
