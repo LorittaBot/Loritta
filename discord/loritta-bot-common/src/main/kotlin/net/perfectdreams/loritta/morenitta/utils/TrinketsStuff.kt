@@ -937,6 +937,72 @@ object TrinketsStuff {
         createBackground("lorittaTheDog", true, Rarity.EPIC, LocalDate.of(2022, 12, 20)) {
             addDefaultVariant("loritta-the-dog", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("starrySpace", true, Rarity.UNCOMMON, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("starry-space", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("threeCuteCats", true, Rarity.UNCOMMON, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("three-cute-cats", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("astronautANewDay", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("astronaut-a-new-day", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaDollMicrophone", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("loritta-doll-microphone", ContentType.Image.JPEG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaDollWumpus", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("loritta-doll-wumpus", ContentType.Image.JPEG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bahiaBeachCahy", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("beach-bahia-cahy", ContentType.Image.JPEG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bahiaBeachJaparaMirim", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("beach-bahia-japara-mirim", ContentType.Image.JPEG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bahiaDuck", true, Rarity.UNCOMMON, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bahia-duck", ContentType.Image.JPEG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bahiaYardGrass", true, Rarity.UNCOMMON, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bahia-yard-grass", ContentType.Image.JPEG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bahiaYardLake", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bahia-yard-lake", ContentType.Image.JPEG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaPantufaJojo", true, Rarity.EPIC, LocalDate.of(2022, 12, 22), createdBy = arrayOf("sortrosphoresia")) {
+            addDefaultVariant("loritta-pantufa-jojo", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-pantufa-jojo-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaTearCode", true, Rarity.EPIC, LocalDate.of(2022, 12, 22), createdBy = arrayOf("sortrosphoresia")) {
+            addDefaultVariant("loritta-tear-code", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-tear-code-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("catLaptopCrayon", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("cat-laptop-crayon", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "cat-laptop-crayon-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bedroomNights", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bedroom-nights", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("jumpingRabbitCute", true, Rarity.UNCOMMON, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("jumping-rabbit-cute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bpLovesickGirls", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bp-lovesick-girls", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bpLovesickGirls", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bp-lovesick-girls", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bpDduDduDdu", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bp-ddu-ddu-ddu", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("bpShutDown", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("bp-shut-down", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("chuuLoona", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("chuu-loona", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("caracalHamburgerCute", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
+            addDefaultVariant("caracal-hamburger-cute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createBackground(
@@ -990,7 +1056,7 @@ object TrinketsStuff {
             }
         }
 
-        fun addProfileDesignGroupVariant(profileGroupId: UUID, file: String, preferredMediaType: ContentType, crop: Rectangle? = null) {
+        fun addProfileDesignGroupVariant(profileGroupId: UUID, file: String, preferredMediaType: ContentType, crop: Rectangle? = null, storageType: BackgroundStorageType = BackgroundStorageType.DREAM_STORAGE_SERVICE) {
             val firstResult = BackgroundVariations.selectFirstOrNull { BackgroundVariations.background eq backgroundInternalName and (BackgroundVariations.profileDesignGroup eq profileGroupId) }
             if (firstResult != null) {
                 BackgroundVariations.update({ BackgroundVariations.id eq firstResult[BackgroundVariations.id] }) {
@@ -998,6 +1064,7 @@ object TrinketsStuff {
                     it[BackgroundVariations.preferredMediaType] = preferredMediaType.toString()
                     if (crop != null)
                         it[BackgroundVariations.crop] = Json.encodeToString(crop)
+                    it[BackgroundVariations.storageType] = storageType
                 }
             } else {
                 BackgroundVariations.insert {
@@ -1007,6 +1074,7 @@ object TrinketsStuff {
                     it[BackgroundVariations.profileDesignGroup] = EntityID(profileGroupId, ProfileDesignGroups)
                     if (crop != null)
                         it[BackgroundVariations.crop] = Json.encodeToString(crop)
+                    it[BackgroundVariations.storageType] = storageType
                 }
             }
         }

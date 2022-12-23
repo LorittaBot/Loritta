@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.select
 
-class ChristmasBadge(val loritta: LorittaBot) : Badge("christmas2019_badge.png", 100) {
+class Christmas2019Badge(val loritta: LorittaBot) : Badge("christmas2019.png", 100) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return loritta.pudding.transaction {
 			CollectedChristmas2019Points.select {

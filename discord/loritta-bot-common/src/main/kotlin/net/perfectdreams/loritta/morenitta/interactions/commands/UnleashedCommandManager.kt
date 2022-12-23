@@ -32,6 +32,7 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.christmas2022.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
@@ -49,6 +50,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     init {
         // ===[ DISCORD ]===
         register(LorittaCommand())
+
+        // ===[ FUN ]===
+        register(EventCommand(loritta))
 
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)

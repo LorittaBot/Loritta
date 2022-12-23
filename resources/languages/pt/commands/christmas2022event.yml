@@ -1,0 +1,10 @@
+label: "evento"
+description: "Evento de Natal da Loritta 2022"
+
+join:
+  label: "entrar"
+  description: "Participa do Evento de Natal da Loritta"
+
+stats:
+  label: "stats"
+  description: "Suas estatísticas no Evento de Natal da Loritta"

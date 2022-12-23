@@ -31,7 +31,7 @@ abstract class InteractionContext(
     val user
         get() = event.user
 
-    suspend fun deferChannelMessage(): InteractionHook = event.deferReply().await()
+    suspend fun deferChannelMessage(ephemeral: Boolean): InteractionHook = event.deferReply().setEphemeral(ephemeral).await()
 
     suspend inline fun reply(ephemeral: Boolean, content: String) = reply(ephemeral) {
         this.content = content

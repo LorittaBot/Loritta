@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.tables.Profiles
@@ -12,6 +13,8 @@ import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import org.jetbrains.exposed.sql.select
 import java.math.BigDecimal
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
+import java.time.Instant
 
 class SonhosCommand(loritta: LorittaBot) : AbstractCommand(loritta, "sonhos", listOf("atm", "bal", "balance"), category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.sonhos.description")
@@ -43,98 +46,88 @@ class SonhosCommand(loritta: LorittaBot) : AbstractCommand(loritta, "sonhos", li
 		if (context.userHandle == retrieveDreamsFromUser) {
 			val userSonhos = lorittaProfile?.money ?: 0L
 
-			val youHaveReply = LorittaReply(
-                    context.locale[
-                            "commands.command.sonhos.youHaveSonhos",
-                            userSonhos,
-                            context.locale[
-                                    "commands.command.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
-                            ],
-                            if (userSonhos > 0) {
-                                val globalEconomyPosition = loritta.newSuspendedTransaction {
-                                    Profiles.select { Profiles.money greaterEq userSonhos }.count()
-                                }
+			val replies = mutableListOf(
+				LorittaReply(
+					context.locale[
+							"commands.command.sonhos.youHaveSonhos",
+							userSonhos,
+							context.locale[
+									"commands.command.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
+							],
+							if (userSonhos > 0) {
+								val globalEconomyPosition = loritta.newSuspendedTransaction {
+									Profiles.select { Profiles.money greaterEq userSonhos }.count()
+								}
 
-                                context.locale[
-                                        "commands.command.sonhos.currentRankPosition",
-                                        globalEconomyPosition,
-                                        context.locale[
-                                                "commands.command.sonhos.sonhosRankingCommand",
-                                                context.config.commandPrefix
-                                        ]
-                                ]
-                            } else {
-                                ""
-                            }
-                    ],
-                    Emotes.LORI_RICH
-            )
+								context.locale[
+										"commands.command.sonhos.currentRankPosition",
+										globalEconomyPosition,
+										context.locale[
+												"commands.command.sonhos.sonhosRankingCommand",
+												context.config.commandPrefix
+										]
+								]
+							} else {
+								""
+							}
+					],
+					Emotes.LORI_RICH
+				)
+			)
 
-			if (localEconomyEnabled && economyConfig != null) { // Sistema de ecnomia local está ativado!
-				val localProfile = context.config.getUserData(loritta, retrieveDreamsFromUser.idLong)
-				context.reply(
-						false,
-						youHaveReply,
-                        LorittaReply(
-                                locale["commands.command.sonhos.youHaveSonhos", localProfile.money, if (localProfile.money == BigDecimal.ONE) {
-                                    economyConfig.economyName
-                                } else {
-                                    economyConfig.economyNamePlural
-                                }],
-                                "\uD83D\uDCB5",
-                                mentionUser = false
-                        )
+			if (Instant.now().isBefore(LorittaChristmas2022Event.endOfEvent.toInstant())) {
+				replies += LorittaReply(
+					"Quer sonhos? Então participe do Evento de Natal da Loritta! ${loritta.commandMentions.eventJoin}",
+					mentionUser = false
 				)
-			} else {
-				context.reply(
-						youHaveReply
-				)
-				logger.info("Usuário ${retrieveDreamsFromUser.idLong} possui $userSonhos sonhos!")
 			}
+
+			context.reply(*replies.toTypedArray())
+			logger.info("Usuário ${retrieveDreamsFromUser.idLong} possui $userSonhos sonhos!")
 		} else {
 			val userSonhos = lorittaProfile?.money ?: 0L
 
 			val someoneHasReply = LorittaReply(
-                    context.locale[
-                            "commands.command.sonhos.userHasSonhos",
-                            retrieveDreamsFromUser.asMention,
-                            userSonhos,
-                            context.locale[
-                                    "commands.command.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
-                            ],
-                            if (userSonhos > 0) {
-                                val globalEconomyPosition = loritta.newSuspendedTransaction {
-                                    Profiles.select { Profiles.money greaterEq userSonhos }.count()
-                                }
-                                context.locale[
-                                        "commands.command.sonhos.userCurrentRankPosition",
-                                        retrieveDreamsFromUser.asMention,
-                                        globalEconomyPosition,
-                                        context.locale[
-                                                "commands.command.sonhos.sonhosRankingCommand",
-                                                context.config.commandPrefix
-                                        ]
-                                ]
-                            } else {
-                                ""
-                            }
-                    ],
-                    Emotes.LORI_RICH
-            )
+				context.locale[
+						"commands.command.sonhos.userHasSonhos",
+						retrieveDreamsFromUser.asMention,
+						userSonhos,
+						context.locale[
+								"commands.command.sonhos.sonhos.${if (userSonhos == 1L) "one" else "multiple"}"
+						],
+						if (userSonhos > 0) {
+							val globalEconomyPosition = loritta.newSuspendedTransaction {
+								Profiles.select { Profiles.money greaterEq userSonhos }.count()
+							}
+							context.locale[
+									"commands.command.sonhos.userCurrentRankPosition",
+									retrieveDreamsFromUser.asMention,
+									globalEconomyPosition,
+									context.locale[
+											"commands.command.sonhos.sonhosRankingCommand",
+											context.config.commandPrefix
+									]
+							]
+						} else {
+							""
+						}
+				],
+				Emotes.LORI_RICH
+			)
 
 			if (localEconomyEnabled && economyConfig != null) {
 				val localProfile = context.config.getUserData(loritta, retrieveDreamsFromUser.idLong)
 				context.reply(
-						false,
-						someoneHasReply,
-                        LorittaReply(
-                                locale["commands.command.sonhos.userHasSonhos", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
-                                    economyConfig.economyName
-                                } else {
-                                    economyConfig.economyNamePlural
-                                }],
-                                "\uD83D\uDCB5"
-                        )
+					false,
+					someoneHasReply,
+					LorittaReply(
+						locale["commands.command.sonhos.userHasSonhos", retrieveDreamsFromUser.asMention, localProfile.money, if (localProfile.money == BigDecimal.ONE) {
+							economyConfig.economyName
+						} else {
+							economyConfig.economyNamePlural
+						}],
+						"\uD83D\uDCB5"
+					)
 				)
 			} else {
 				context.reply(someoneHasReply)

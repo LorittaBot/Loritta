@@ -115,6 +115,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         if (TransactionType.SHIP_EFFECT in transactionTypeFilter)
             it.leftJoin(ShipEffectSonhosTransactionsLog)
         else it
+    }.let {
+        if (TransactionType.EVENTS in transactionTypeFilter)
+            it.leftJoin(Christmas2022SonhosTransactionsLog)
+        else it
     }
         .select {
             // Hacky!
@@ -136,6 +140,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.DIVINE_INTERVENTION -> cond.or(DivineInterventionSonhosTransactionsLog.id.isNotNull())
                     TransactionType.BOT_VOTE -> cond.or(BotVoteSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SHIP_EFFECT -> cond.or(ShipEffectSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.EVENTS -> cond.or(Christmas2022SonhosTransactionsLog.id.isNotNull())
                 }
             }
 

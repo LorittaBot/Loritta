@@ -941,3 +941,63 @@ backgrounds:
   lorittaTheDog:
     title: "Loritta The Dog"
     description: "Bem-vindo ao próximo nível."
+  starrySpace:
+    title: "Espaço Estrelado"
+    description: "Estrelas no espaço, em um lugar além da sua imaginação."
+  threeCuteCats:
+    title: "Três Gatinhos Fofos"
+    description: "Gatinhos fofinhos para aquecer o seu perfil e, é claro, a sua alma."
+  astronautANewDay:
+    title: "Um Novo Dia"
+    description: "Um novo dia começa na terra."
+  lorittaDollMicrophone:
+    title: "Loritta falando em um Microfone"
+    description: "Alô, testando, 123..."
+  lorittaDollWumpus:
+    title: "Loritta e Wumpus"
+    description: "Mais que amigos, friends."
+  bahiaBeachCahy:
+    title: "Barra do Cahy"
+    description: "A primeira praia do Brasil!"
+  bahiaBeachJaparaMirim:
+    title: "Japara Mirim"
+    description: "Uma praia na Bahia."
+  bahiaDuck:
+    title: "Pato da Bahia"
+    description: "Quack!"
+  bahiaYardGrass:
+    title: "Quintal"
+    description: "O quintal de uma casa na Bahia."
+  bahiaYardLake:
+    title: "Quintal com Lago"
+    description: "O quintal de uma casa na Bahia."
+  lorittaPantufaJojo:
+    title: "Loritta e Pantufa Estilo JoJo"
+    description: "Você começa a escutar Roundabout tocando no fundo."
+  lorittaTearCode:
+    title: "Loritta saindo do código"
+    description: "Ela deseja sair do mundo virtual e ser real!"
+  catLaptopCrayon:
+    title: "Gato mexendo no Laptop"
+    description: "Eu amo meu laptop, todos os meus amigos estão dentro dele."
+  bedroomNights:
+    title: "Noites no Quarto"
+    description: "Passam da meia-noite, e você ainda está acordado."
+  jumpingRabbitCute:
+    title: "Coelho Pulando"
+    description: "Para onde será que ele está indo?"
+  bpLovesickGirls:
+    title: "We are the lovesick girls"
+    description: "But why we still looking for love?"
+  bpDduDduDdu:
+    title: "BLACKPINK in your area"
+    description: "Hit you with that ddu-du ddu-du du."
+  bpShutDown:
+    title: "Shut Down"
+    description: "Keep talking, we shut you down."
+  chuuLoona:
+    title: "Chuu, que não é mais do Loona"
+    description: "Você já viu essa mulher? Agora está vendo."
+  caracalHamburgerCute:
+    title: "Caracal comendo um Hamburger"
+    description: "COMA COMA COMA!"

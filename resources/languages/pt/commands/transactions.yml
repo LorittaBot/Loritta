@@ -83,6 +83,10 @@ types:
     title: "Voto do bot"
     description: "Transações relacionadas a sites de votação de bots"
     topGg: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} após votar em mim no Top.gg"
+  events:
+    title: "Eventos"
+    description: "Transações relacionadas a eventos na Loritta"
+    christmas2022: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} após coletar {giftCount} presentes no Evento de Natal da Loritta 2022"
 options:
   user:
     text: "O usuário que você deseja ver as transações"

@@ -96,6 +96,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
+import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
+import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
@@ -121,6 +125,7 @@ import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
+import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
@@ -291,6 +296,8 @@ class LorittaBot(
 	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(this)
 	val boostGuildListener = BoostGuildListener(this)
 	val interactionsListener = InteractionsListener(this)
+	val christmasListener = ReactionListener(this)
+
 	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
@@ -469,7 +476,8 @@ class LorittaBot(
 				gatewayRelayerListener,
 				addReactionFurryAminoPtListener,
 				boostGuildListener,
-				interactionsListener
+				interactionsListener,
+				christmasListener
 			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
@@ -784,7 +792,11 @@ class LorittaBot(
 				UserSettings,
 				Backgrounds,
 				BackgroundVariations,
-				ConcurrentLoginBuckets
+				ConcurrentLoginBuckets,
+				Christmas2022Players,
+				Christmas2022Drops,
+				CollectedChristmas2022Points,
+				Christmas2022SonhosTransactionsLog
 			)
 		}
 

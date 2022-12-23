@@ -64,5 +64,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.BotVote.Title,
         I18nKeysData.Commands.Command.Transactions.Types.BotVote.Description,
         Emotes.LoriShining,
+    ),
+    EVENTS(
+        I18nKeysData.Commands.Command.Transactions.Types.Events.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Events.Description,
+        Emotes.LoriYay,
     )
 }

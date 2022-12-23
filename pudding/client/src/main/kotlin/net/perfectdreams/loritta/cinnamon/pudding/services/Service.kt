@@ -251,6 +251,14 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[BotVoteSonhosTransactionsLog.websiteSource],
             row[BotVoteSonhosTransactionsLog.sonhos]
         )
+    } else if (row.getOrNull(Christmas2022SonhosTransactionsLog.id) != null) {
+        Christmas2022SonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[Christmas2022SonhosTransactionsLog.sonhos],
+            row[Christmas2022SonhosTransactionsLog.gifts]
+        )
     } else {
         UnknownSonhosTransaction(
             row[SonhosTransactionsLog.id].value,
