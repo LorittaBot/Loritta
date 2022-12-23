@@ -986,22 +986,22 @@ object TrinketsStuff {
             addDefaultVariant("jumping-rabbit-cute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("bpLovesickGirls", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
-            addDefaultVariant("bp-lovesick-girls.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("bp-lovesick-girls", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("bpLovesickGirls", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
-            addDefaultVariant("bp-lovesick-girls.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("bp-lovesick-girls", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("bpDduDduDdu", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
-            addDefaultVariant("bp-ddu-ddu-ddu.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("bp-ddu-ddu-ddu", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("bpShutDown", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
-            addDefaultVariant("bp-shut-down.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("bp-shut-down", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("chuuLoona", true, Rarity.EPIC, LocalDate.of(2022, 12, 22)) {
-            addDefaultVariant("chuu-loona.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("chuu-loona", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("caracalHamburgerCute", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
-            addDefaultVariant("caracal-hamburger-cute.png", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addDefaultVariant("caracal-hamburger-cute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 
