@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.Timestamp
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageData
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
@@ -301,15 +302,13 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 ) {
                     it.deferEdit()
                         .editOriginal(
-                            MessageEditData.fromCreateData(
-                                InlineMessage(MessageCreateBuilder())
-                                    .apply {
-                                        createRankMessage(
-                                            context,
-                                            page - 1
-                                        )()
-                                    }.build()
-                            )
+                            InlineMessage(MessageEditBuilder())
+                                .apply {
+                                    createRankMessage(
+                                        context,
+                                        page - 1
+                                    )()
+                                }.build()
                         )
                         .await()
                 },
@@ -323,15 +322,13 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 ) {
                     it.deferEdit()
                         .editOriginal(
-                            MessageEditData.fromCreateData(
-                                InlineMessage(MessageCreateBuilder())
-                                    .apply {
-                                        createRankMessage(
-                                            context,
-                                            page + 1
-                                        )()
-                                    }.build()
-                            )
+                            InlineMessage(MessageEditBuilder())
+                                .apply {
+                                    createRankMessage(
+                                        context,
+                                        page + 1
+                                    )()
+                                }.build()
                         )
                         .await()
                 },
