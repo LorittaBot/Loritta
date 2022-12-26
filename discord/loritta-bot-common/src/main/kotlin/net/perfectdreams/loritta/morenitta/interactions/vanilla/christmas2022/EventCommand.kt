@@ -1,29 +1,19 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.christmas2022
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.rest.Image
 import dev.minn.jda.ktx.messages.InlineMessage
-import dev.minn.jda.ktx.messages.editMessage
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.TimeFormat
-import net.dv8tion.jda.api.utils.Timestamp
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
-import net.dv8tion.jda.api.utils.messages.MessageData
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
-import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.ExperienceUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.RankingGenerator
+import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -33,7 +23,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
 import kotlin.math.ceil
 
@@ -138,7 +127,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 }.count() != 0L
 
                 val count = CollectedChristmas2022Points.select {
-                    CollectedChristmas2022Points.user eq context.user.idLong
+                    CollectedChristmas2022Points.user eq context.user.idLong and (CollectedChristmas2022Points.valid eq true)
                 }.count()
 
                 Pair(joined, count)
@@ -251,13 +240,13 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val (totalCount, profiles) = loritta.pudding.transaction {
                 val totalCount = CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
-                    .selectAll()
+                    .select { CollectedChristmas2022Points.valid eq true }
                     .groupBy(CollectedChristmas2022Points.user)
                     .count()
 
                 val profilesInTheQuery =
                     CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
-                        .selectAll()
+                        .select { CollectedChristmas2022Points.valid eq true }
                         .groupBy(CollectedChristmas2022Points.user)
                         .orderBy(countColumn to SortOrder.DESC)
                         .limit(5, page * 5)
@@ -279,10 +268,9 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     profiles.map {
                         val presentesCount = it[countColumn]
 
-                        RankingGenerator.UserRankInformation(
-                            Snowflake(it[CollectedChristmas2022Points.user].value),
-                            "$presentesCount presentes",
-                            null
+                        RankingGenerator.UserRankInformationX(
+                            it[CollectedChristmas2022Points.user].value,
+                            "$presentesCount presentes"
                         )
                     }
                 ) {

@@ -8,10 +8,18 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedBirthday2020Po
 import net.perfectdreams.loritta.cinnamon.pudding.utils.BirthdayTeam
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.Badge
+import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.select
+import java.util.*
 
-class PantufaBadge(val loritta: LorittaBot) : Badge("birthday2020_pantufa.png", 100) {
+class PantufaBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
+	UUID.fromString("5196d860-e8a6-4781-a22f-6bfa26c0af7c"),
+	ProfileDesignManager.I18N_BADGES_PREFIX.Pantufa2020.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.Pantufa2020.Description,
+	"birthday2020_pantufa.png",
+	100
+) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		val playerResult = loritta.pudding.transaction {
 			Birthday2020Players.select { Birthday2020Players.user eq profile.id }

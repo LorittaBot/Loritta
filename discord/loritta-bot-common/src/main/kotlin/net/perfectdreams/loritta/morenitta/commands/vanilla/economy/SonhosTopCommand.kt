@@ -45,10 +45,11 @@ class SonhosTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 				JVMImage(
 					RankingGenerator.generateRanking(
 						loritta,
+						page * 5,
 						"Ranking Global",
 						null,
 						userData.map {
-							RankingGenerator.UserRankInformation(
+							RankingGenerator.UserRankInformationX(
 								it[Profiles.id].value,
 								"${it[Profiles.money]} sonhos"
 							)

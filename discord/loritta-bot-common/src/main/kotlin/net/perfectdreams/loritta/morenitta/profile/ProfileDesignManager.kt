@@ -19,9 +19,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.profile.badges.*
@@ -33,7 +31,6 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.gifs.GifSequenceWriter
 import net.perfectdreams.loritta.morenitta.profile.profiles.*
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -51,6 +48,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			Snowflake(769892417025212497), // Kuraminha's House
 			Snowflake(769030809159073795)  // Saddest of the Sads
 		)
+
+		val I18N_BADGES_PREFIX = I18nKeysData.Profiles.Badges
 	}
 
 	val designs = mutableListOf<ProfileCreator>()
@@ -103,7 +102,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(DiscordUserFlagBadge.DiscordHypesquadEventsBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordEarlySupporterBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordBraveryHouseBadge())
-		registerBadge(DiscordUserFlagBadge.DiscordBrillanceHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBrillianceHouseBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordBalanceHouseBadge())
 
 		registerBadge(DiscordNitroBadge(loritta))
@@ -116,6 +115,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(Christmas2022Badge(loritta))
 		registerBadge(GabrielaBadge(loritta))
 		registerBadge(PantufaBadge(loritta))
+		registerBadge(PremiumBadge(loritta))
+		registerBadge(SuperPremiumBadge(loritta))
 	}
 
 	suspend fun createProfile(
@@ -147,7 +148,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					.toSet()
 			}
 
-		val badges = getUserBadges(
+		val badges = getUserBadgesImages(
 			userToBeViewed,
 			userProfile,
 			mutualGuildsInAllClusters
@@ -285,7 +286,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
 	 * @return a list containing all the images of the user's badges
 	 */
-	suspend fun getUserBadges(
+	suspend fun getUserBadgesImages(
 		user: ProfileUserInfoData,
 		profile: Profile,
 		mutualGuilds: Set<Long>,
@@ -319,10 +320,9 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val badges = mutableListOf<BufferedImage>()
 
 		badges.addAll(
-			loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
-				.sortedByDescending { it.priority }
-				.map {
-					readImageFromResources("/badges/${it.badgeFileName}")
+			getUserBadges(user, profile, mutualGuilds)
+				.mapNotNull {
+					it.getImage()
 				}
 		)
 
@@ -330,48 +330,12 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		if (isPocketDreamsStaff) badges += ImageIO.read(File(LorittaBot.ASSETS + "pocketdreams_staff.png"))
 		if (isLoriSupport) badges += ImageIO.read(File(LorittaBot.ASSETS + "support.png"))
 		if (hasFanArt) badges += ImageIO.read(File(LorittaBot.ASSETS + "sticker_badge.png"))
-
-		val money = loritta.getActiveMoneyFromDonationsAsync(userId.toLong())
-
-		if (money != 0.0) {
-			badges += readImageFromResources("/badges/donator.png")
-
-			if (money >= 99.99) {
-				badges += readImageFromResources("/badges/super_donator.png")
-			}
-		}
-
 		if (isLorittaPartner) badges += ImageIO.read(File(LorittaBot.ASSETS + "lori_hype.png"))
 		if (isTranslator) badges += ImageIO.read(File(LorittaBot.ASSETS + "translator.png"))
 		if (isGitHubContributor) badges += ImageIO.read(File(LorittaBot.ASSETS + "github_contributor.png"))
 
 		if (userId.toLong() == 249508932861558785L || userId.toLong() == 336892460280315905L)
 			badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_sweater.png"))
-
-		val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-
-		loritta.newSuspendedTransaction {
-			val results = (net.perfectdreams.loritta.morenitta.tables.ServerConfigs innerJoin net.perfectdreams.loritta.morenitta.tables.DonationConfigs)
-				.select {
-					net.perfectdreams.loritta.morenitta.tables.DonationConfigs.customBadge eq true and (net.perfectdreams.loritta.morenitta.tables.ServerConfigs.id inList mutualGuilds)
-				}
-
-			val configs = ServerConfig.wrapRows(results)
-
-			for (config in configs) {
-				val donationKeysValue = config.getActiveDonationKeysValueNested()
-				val badgeFile = config.donationConfig?.customBadgeFile
-				val badgeMediaType = config.donationConfig?.customBadgePreferredMediaType
-				if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
-					val extension = MediaTypeUtils.convertContentTypeToExtension(badgeMediaType)
-					val badge = LorittaUtils.downloadImage(loritta, "${loritta.config.loritta.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(config.guildId, badgeFile).join()}.$extension", bypassSafety = true)
-
-					if (badge != null) {
-						badges += badge
-					}
-				}
-			}
-		}
 
 		if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))
 		if (userId == loritta.config.loritta.discord.applicationId) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
@@ -386,6 +350,58 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		if (hasUpvoted) badges += ImageIO.read(File(LorittaBot.ASSETS + "upvoted_badge.png"))
 
 		return badges
+	}
+
+	/**
+	 * Gets the user's badges, the user's mutual guilds will be retrieved
+	 *
+	 * @param userId                 the user
+	 * @param profile                the user's profile
+	 * @param mutualGuilds           the user's mutual guilds IDs
+	 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
+	 * @return a list containing all the images of the user's badges
+	 */
+	suspend fun getUserBadges(
+		user: ProfileUserInfoData,
+		profile: Profile,
+		mutualGuilds: Set<Long>,
+		failIfClusterIsOffline: Boolean = false
+	): List<Badge> {
+		val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
+
+		val guildBadges = mutableListOf<Badge.GuildBadge>()
+
+		loritta.newSuspendedTransaction {
+			val results = (net.perfectdreams.loritta.morenitta.tables.ServerConfigs innerJoin net.perfectdreams.loritta.morenitta.tables.DonationConfigs)
+				.select {
+					net.perfectdreams.loritta.morenitta.tables.DonationConfigs.customBadge eq true and (net.perfectdreams.loritta.morenitta.tables.ServerConfigs.id inList mutualGuilds)
+				}
+
+			val configs = ServerConfig.wrapRows(results)
+
+			for (config in configs) {
+				val donationKeysValue = config.getActiveDonationKeysValueNested()
+				val badgeFile = config.donationConfig?.customBadgeFile
+				val badgeMediaType = config.donationConfig?.customBadgePreferredMediaType
+				if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
+					guildBadges.add(
+						Badge.GuildBadge(
+							loritta,
+							config.guildId,
+							I18N_BADGES_PREFIX.Guild.Title,
+							I18N_BADGES_PREFIX.Guild.Description(config.guildId.toString()),
+							badgeFile,
+							badgeMediaType,
+							dssNamespace,
+							0
+						)
+					)
+				}
+			}
+		}
+
+		return guildBadges + loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
+			.sortedByDescending { it.priority }
 	}
 
 	/**

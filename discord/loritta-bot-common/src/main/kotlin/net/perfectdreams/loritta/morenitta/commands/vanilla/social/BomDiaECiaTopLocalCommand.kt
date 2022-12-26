@@ -63,10 +63,11 @@ class BomDiaECiaTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommandBase
                 JVMImage(
                     RankingGenerator.generateRanking(
                         loritta,
+                        page * 5,
                         guild.name,
                         guild.iconUrl,
                         userData.map {
-                            RankingGenerator.UserRankInformation(
+                            RankingGenerator.UserRankInformationX(
                                 it[userId],
                                 locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
                             )

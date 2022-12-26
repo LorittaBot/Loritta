@@ -1626,7 +1626,7 @@ class LorittaBot(
 
 						val topUserIds = newSuspendedTransaction {
 							CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
-								.selectAll()
+								.select { CollectedChristmas2022Points.valid eq true }
 								.groupBy(CollectedChristmas2022Points.user)
 								.orderBy(countColumn to SortOrder.DESC)
 								.limit(5, 0)

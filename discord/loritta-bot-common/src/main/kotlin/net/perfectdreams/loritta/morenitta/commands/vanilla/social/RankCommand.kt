@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
@@ -65,13 +66,13 @@ class RankCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rank", listOf
 		context.sendFile(
 			RankingGenerator.generateRanking(
 				loritta,
+				page * 5,
 				context.guild.name,
 				context.guild.iconUrl,
 				profiles.map {
-					RankingGenerator.UserRankInformation(
+					RankingGenerator.UserRankInformationX(
 						it.userId,
-						"XP total // " + it.xp,
-						"Nível " + it.getCurrentLevel().currentLevel
+						context.i18nContext.get(XpCommand.XP_RANK_I18N_PREFIX.TotalXpAndLevel(it.xp, it.getCurrentLevel().currentLevel))
 					)
 				}
 			) {

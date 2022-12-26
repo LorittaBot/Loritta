@@ -84,6 +84,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                     it[message] = dropData[Christmas2022Drops.id]
                     it[points] = 1
                     it[collectedAt] = Instant.now()
+                    it[valid] = true
                 }
 
                 // How many points do they now have?

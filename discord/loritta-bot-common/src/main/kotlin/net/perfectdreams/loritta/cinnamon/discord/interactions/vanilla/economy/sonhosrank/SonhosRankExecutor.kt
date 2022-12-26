@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank
 
 import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
 import dev.kord.rest.Image
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
@@ -17,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithHybridData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.RankingGenerator
+import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
@@ -83,8 +82,8 @@ class SonhosRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lor
                     context.i18nContext.get(SonhosCommand.SONHOS_RANK_I18N_PREFIX.GlobalSonhosRank),
                     null,
                     profiles.map {
-                        RankingGenerator.UserRankInformation(
-                            Snowflake(it[Profiles.id].value),
+                        RankingGenerator.UserRankInformationX(
+                            it[Profiles.id].value,
                             context.i18nContext.get(I18nKeysData.Commands.SonhosWithQuantity(it[Profiles.money]))
                         )
                     }
@@ -156,8 +155,8 @@ class SonhosRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lor
                     context.i18nContext.get(SonhosCommand.SONHOS_RANK_I18N_PREFIX.LocalSonhosRank),
                     guild.getIconUrl(Image.Format.PNG),
                     profiles.map {
-                        RankingGenerator.UserRankInformation(
-                            Snowflake(it[Profiles.id].value),
+                        RankingGenerator.UserRankInformationX(
+                            it[Profiles.id].value,
                             context.i18nContext.get(I18nKeysData.Commands.SonhosWithQuantity(it[Profiles.money]))
                         )
                     }
