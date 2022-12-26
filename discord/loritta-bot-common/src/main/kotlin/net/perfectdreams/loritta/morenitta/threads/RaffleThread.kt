@@ -83,18 +83,13 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 		runBlocking {
 			// Everything is done, change the Unique ID to force all pending requests to be stale
 			raffleRandomUniqueId = UUID.randomUUID()
-			
+
 			buyingOrGivingRewardsMutex.withLock {
 				if (userIds.isEmpty()) {
 					started = System.currentTimeMillis()
 					save()
 				} else {
-					var winner: Long? = null
-
-					if (winner == null)
-						winner = getRandomWinner()
-
-					val winnerId = winner
+					val winnerId = getRandomWinner()
 					lastWinnerId = winnerId
 
 					val currentActiveDonations = loritta.getActiveMoneyFromDonations(winnerId.toLong())
@@ -107,18 +102,37 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 					val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
 					logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos ($moneyWithoutTaxes without taxes; antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
+					val totalTicketsBoughtByTheUser = userIds.count { it == winnerId }
+					val totalTickets = userIds.size
+					val totalUsersInTheRaffle = userIds.map { it }.distinct().size
+
 					loritta.pudding.transaction {
 						lorittaProfile.addSonhosAndAddToTransactionLogNested(
 							money.toLong(),
 							SonhosPaymentReason.RAFFLE
 						)
+
+						userIds.clear()
+						started = System.currentTimeMillis()
+
+						val json = JsonObject()
+
+						json["started"] = started
+						json["lastWinnerId"] = lastWinnerId
+						json["lastWinnerPrize"] = lastWinnerPrize
+						json["userIds"] = LorittaBot.GSON.toJsonTree(userIds)
+
+						logger.info { "Salvando raffle.json..." }
+						logger.info { "Iniciou às: $started" }
+						logger.info { "Último vencedor: $lastWinnerId" }
+						logger.info { "Prémio do último vencedor: $lastWinnerPrize" }
+						logger.info { "Tickets: ${userIds.size}" }
+
+						MiscellaneousData.upsert(MiscellaneousData.id) {
+							it[MiscellaneousData.id] = DATA_KEY
+							it[MiscellaneousData.data] = json.toString()
+						}
 					}
-
-					val totalTicketsBoughtByTheUser = userIds.count { it == winnerId }
-					val totalTickets = userIds.size
-					val totalUsersInTheRaffle = userIds.map { it }.distinct().size
-
-					userIds.clear()
 
 					// TODO: Locales, maybe get the preferred user locale ID?
 					val locale = loritta.localeManager.getLocaleById("default")
@@ -156,8 +170,6 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 						} catch (e: Exception) {
 						}
 					}
-					started = System.currentTimeMillis()
-					save()
 				}
 			}
 		}
