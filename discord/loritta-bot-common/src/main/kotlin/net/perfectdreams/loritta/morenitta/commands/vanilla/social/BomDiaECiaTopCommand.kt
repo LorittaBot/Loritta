@@ -62,7 +62,7 @@ class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 						"Ranking Global",
 						null,
 						userData.map {
-							RankingGenerator.UserRankInformationX(
+							RankingGenerator.UserRankInformation(
 								it[userId],
 								locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
 							)

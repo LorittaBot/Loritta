@@ -60,7 +60,7 @@ class DiscordBotListTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommand
                         guild.name,
                         guild.iconUrl,
                         userData.map {
-                            RankingGenerator.UserRankInformationX(
+                            RankingGenerator.UserRankInformation(
                                 it[userId],
                                 locale["${LOCALE_PREFIX}.votes", it[userIdCount]]
                             )

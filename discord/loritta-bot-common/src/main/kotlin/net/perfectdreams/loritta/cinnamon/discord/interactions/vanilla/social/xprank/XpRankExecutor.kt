@@ -80,7 +80,7 @@ class XpRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
                         val xp = it[GuildProfiles.xp]
                         val level = ExperienceUtils.getCurrentLevelForXp(xp)
 
-                        RankingGenerator.UserRankInformationX(
+                        RankingGenerator.UserRankInformation(
                             it[GuildProfiles.userId],
                             context.i18nContext.get(XpCommand.XP_RANK_I18N_PREFIX.TotalXpAndLevel(xp, level))
                         )

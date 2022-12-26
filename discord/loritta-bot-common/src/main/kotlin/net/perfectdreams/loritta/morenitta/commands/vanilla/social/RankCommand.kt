@@ -70,7 +70,7 @@ class RankCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rank", listOf
 				context.guild.name,
 				context.guild.iconUrl,
 				profiles.map {
-					RankingGenerator.UserRankInformationX(
+					RankingGenerator.UserRankInformation(
 						it.userId,
 						context.i18nContext.get(XpCommand.XP_RANK_I18N_PREFIX.TotalXpAndLevel(it.xp, it.getCurrentLevel().currentLevel))
 					)

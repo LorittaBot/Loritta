@@ -75,7 +75,7 @@ class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 						"Ranking Global",
 						null,
 						userData.map {
-							RankingGenerator.UserRankInformationX(
+							RankingGenerator.UserRankInformation(
 								it[userId],
 								locale["$LOCALE_PREFIX.scratchcardtop.wonTickets", it[moneySum].toString(), it[ticketCount].toString()]
 							)

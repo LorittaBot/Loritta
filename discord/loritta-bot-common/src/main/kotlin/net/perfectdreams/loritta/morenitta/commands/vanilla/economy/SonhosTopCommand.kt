@@ -49,7 +49,7 @@ class SonhosTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 						"Ranking Global",
 						null,
 						userData.map {
-							RankingGenerator.UserRankInformationX(
+							RankingGenerator.UserRankInformation(
 								it[Profiles.id].value,
 								"${it[Profiles.money]} sonhos"
 							)

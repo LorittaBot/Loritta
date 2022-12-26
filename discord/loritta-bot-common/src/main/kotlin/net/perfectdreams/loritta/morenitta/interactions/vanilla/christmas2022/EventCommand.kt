@@ -268,7 +268,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     profiles.map {
                         val presentesCount = it[countColumn]
 
-                        RankingGenerator.UserRankInformationX(
+                        RankingGenerator.UserRankInformation(
                             it[CollectedChristmas2022Points.user].value,
                             "$presentesCount presentes"
                         )

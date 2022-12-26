@@ -102,12 +102,12 @@ class RepTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, l
 						null,
 						userData.map {
 							if (type == TopOrder.MOST_RECEIVED) {
-								RankingGenerator.UserRankInformationX(
+								RankingGenerator.UserRankInformation(
 									it[receivedBy],
 									locale["commands.command.topreputation.receivedReputations", it[receivedByCount]]
 								)
 							} else {
-								RankingGenerator.UserRankInformationX(
+								RankingGenerator.UserRankInformation(
 									it[givenBy],
 									locale["commands.command.topreputation.givenReputations", it[givenByCount]]
 								)

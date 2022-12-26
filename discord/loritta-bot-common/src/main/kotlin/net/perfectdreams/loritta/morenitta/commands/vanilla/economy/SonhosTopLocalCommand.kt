@@ -52,7 +52,7 @@ class SonhosTopLocalCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 						guild.name,
 						guild.iconUrl,
 						userData.map {
-							RankingGenerator.UserRankInformationX(
+							RankingGenerator.UserRankInformation(
 								it[Profiles.id].value,
 								"${it[Profiles.money]} sonhos"
 							)

@@ -82,7 +82,7 @@ class SonhosRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lor
                     context.i18nContext.get(SonhosCommand.SONHOS_RANK_I18N_PREFIX.GlobalSonhosRank),
                     null,
                     profiles.map {
-                        RankingGenerator.UserRankInformationX(
+                        RankingGenerator.UserRankInformation(
                             it[Profiles.id].value,
                             context.i18nContext.get(I18nKeysData.Commands.SonhosWithQuantity(it[Profiles.money]))
                         )
@@ -155,7 +155,7 @@ class SonhosRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lor
                     context.i18nContext.get(SonhosCommand.SONHOS_RANK_I18N_PREFIX.LocalSonhosRank),
                     guild.getIconUrl(Image.Format.PNG),
                     profiles.map {
-                        RankingGenerator.UserRankInformationX(
+                        RankingGenerator.UserRankInformation(
                             it[Profiles.id].value,
                             context.i18nContext.get(I18nKeysData.Commands.SonhosWithQuantity(it[Profiles.money]))
                         )

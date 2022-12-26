@@ -44,18 +44,7 @@ class MutedUsersTask(val loritta: LorittaBot) : Runnable {
 					continue
 				}
 
-				val member = if (mute.userId in MuteCommand.notInTheServerUserIds) null else runBlocking { guild.retrieveMemberOrNullById(mute.userId) }
-
-				if (member == null) {
-					MuteCommand.notInTheServerUserIds.add(mute.userId)
-					logger.debug { "Member ${mute.userId} has a mute status in $guild, but the member isn't there anymore!" }
-
-					deleteMuteIfNeeded(mute)
-					deleteMuteIfNeededMemberIsNotOnTheServer(mute)
-					continue
-				}
-
-				val jobId = "${guild.idLong}#${member.idLong}"
+				val jobId = "${guild.idLong}#${mute.userId}"
 
 				val previousJob = MuteCommand.roleRemovalJobs[jobId]
 
@@ -64,8 +53,8 @@ class MutedUsersTask(val loritta: LorittaBot) : Runnable {
 
 				logger.info { "Adicionado removal thread pelo MutedUsersThread ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
 
-				val localeId = guildLocales.getOrPut(mute.guildId, { loritta.getOrCreateServerConfig(mute.guildId).localeId })
-				MuteCommand.spawnRoleRemovalThread(loritta, guild, loritta.localeManager.getLocaleById(localeId), member.user, mute.expiresAt!!)
+				val localeId = guildLocales.getOrPut(mute.guildId) { loritta.getOrCreateServerConfig(mute.guildId).localeId }
+				MuteCommand.spawnRoleRemovalThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(localeId), mute.userId, mute.expiresAt!!)
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Erro ao verificar removal threads" }

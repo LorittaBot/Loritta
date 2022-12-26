@@ -24,7 +24,7 @@ object RankingGenerator {
 		currentPosition: Long,
 		title: String,
 		guildIconUrl: String?,
-		rankedUsers: List<UserRankInformationX>,
+		rankedUsers: List<UserRankInformation>,
 		onNullUser: (suspend (Long) -> (CachedUserInfo?))? = null
 	): BufferedImage {
 		val rankHeader = readImageFromResources("/rank/rank_header.png")
@@ -83,11 +83,6 @@ object RankingGenerator {
 
 					val badgeImage = randomBadgeTest.getImage()
 					if (badgeImage != null) {
-						val oldC = graphics.color
-						graphics.color = Color.RED
-						graphics.fillRect(288, currentY + 40, 24, 24)
-						graphics.color = oldC
-
 						graphics.drawImage(
 							badgeImage.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH).toBufferedImage(),
 							288,
@@ -162,7 +157,7 @@ object RankingGenerator {
 	 */
 	suspend fun isValidRankingPage(input: Long) = input in 1..100
 
-	data class UserRankInformationX(
+	data class UserRankInformation(
 		val userId: Long,
 		val subtitle: String? = null
 	)
