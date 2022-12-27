@@ -80,48 +80,46 @@ object RankingGenerator {
 
 				var renderedBadge = false
 
-				if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
-					val (profile, profileSettings, activeBadgeId) = loritta.newSuspendedTransaction {
-						val profile = loritta._getLorittaProfile(member.id)
-						val profileSettings = profile?.settings
-						val activeBadge = profileSettings?.activeBadge
-						Triple(profile, profileSettings, activeBadge)
-					}
+				val (profile, profileSettings, activeBadgeId) = loritta.newSuspendedTransaction {
+					val profile = loritta._getLorittaProfile(member.id)
+					val profileSettings = profile?.settings
+					val activeBadge = profileSettings?.activeBadge
+					Triple(profile, profileSettings, activeBadge)
+				}
 
-					if (profile != null && profileSettings != null) {
-						// We need to query the user's badge to check if they still have their badge, instead of equipping a badge that they may not have anymore
-						val badges = loritta.profileDesignManager.getUserBadges(
-							loritta.profileDesignManager.transformUserToProfileUserInfoData(member, profileSettings),
-							profile,
-							setOf()
+				if (profile != null && profileSettings != null) {
+					// We need to query the user's badge to check if they still have their badge, instead of equipping a badge that they may not have anymore
+					val badges = loritta.profileDesignManager.getUserBadges(
+						loritta.profileDesignManager.transformUserToProfileUserInfoData(member, profileSettings),
+						profile,
+						setOf()
+					)
+
+					val activeBadge = badges.firstOrNull { it.id == activeBadgeId }
+
+					if (activeBadge != null) {
+						val badgeImage = activeBadge.getImage()
+
+						if (badgeImage != null) {
+							graphics.drawImage(
+								badgeImage.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH).toBufferedImage(),
+								288,
+								currentY + 40,
+								null
+							)
+						}
+
+						// Show the user's ID in badge title
+						ImageUtils.drawString(
+							loritta,
+							graphics,
+							loritta.languageManager.defaultI18nContext.get(activeBadge.title) + " // ID: ${profile.userId}",
+							288 + 28,
+							currentY + 40 + 22,
+							ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
 						)
 
-						val activeBadge = badges.firstOrNull { it.id == activeBadgeId }
-
-						if (activeBadge != null) {
-							val badgeImage = activeBadge.getImage()
-
-							if (badgeImage != null) {
-								graphics.drawImage(
-									badgeImage.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH).toBufferedImage(),
-									288,
-									currentY + 40,
-									null
-								)
-							}
-
-							// Show the user's ID in badge title
-							ImageUtils.drawString(
-								loritta,
-								graphics,
-								loritta.languageManager.defaultI18nContext.get(activeBadge.title) + " // ID: ${profile.userId}",
-								288 + 28,
-								currentY + 40 + 22,
-								ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
-							)
-
-							renderedBadge = true
-						}
+						renderedBadge = true
 					}
 				}
 
