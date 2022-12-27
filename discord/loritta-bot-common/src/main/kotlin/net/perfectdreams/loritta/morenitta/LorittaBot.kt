@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
@@ -64,6 +65,8 @@ import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
+import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
@@ -371,6 +374,12 @@ class LorittaBot(
 
 	val fanArts: List<FanArt>
 		get() = fanArtArtists.flatMap { it.fanArts }
+
+	/**
+	 * Cached Gallery of Dreams Data response, used for fan art stuff
+	 */
+	var cachedGalleryOfDreamsDataResponse: GalleryOfDreamsDataResponse? = null
+
 	val profileDesignManager = ProfileDesignManager(this)
 
 	val isMainInstance = clusterId == 1
@@ -1601,6 +1610,24 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.minutes, action = LorittaStatsCollector(this@LorittaBot))
+		scheduleCoroutineAtFixedRate(1.minutes) {
+			try {
+				val response = http.get("https://fanarts.perfectdreams.net/api/v1/fan-arts")
+
+				if (response.status != HttpStatusCode.OK) {
+					logger.warn { "Gallery of Dreams' Get Fan Arts API response was ${response.status}!" }
+					return@scheduleCoroutineAtFixedRate
+				}
+
+				val payload = response.bodyAsText(Charsets.UTF_8)
+				val galleryOfDreamsDataResponse = Json.decodeFromString<GalleryOfDreamsDataResponse>(payload)
+
+				this.cachedGalleryOfDreamsDataResponse = galleryOfDreamsDataResponse
+			} catch (e: Exception) {
+				logger.warn(e) { "Failed to get illustrators' information from GalleryOfDreams!" }
+			}
+		}
+
 		// Christmas stuff
 		if (LorittaChristmas2022Event.isEventActive() && config.loritta.environment == EnvironmentType.PRODUCTION) {
 			scheduleCoroutineAtFixedRate(1.minutes) {

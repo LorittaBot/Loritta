@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.profile.badges
 
+import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.Badge
@@ -16,6 +18,12 @@ class ArtistBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	25
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
-		return loritta.fanArtArtists.any { it.socialNetworks?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.firstOrNull()?.id == user.id.toString() }
+		val galleryOfDreamsDataResponse = loritta.cachedGalleryOfDreamsDataResponse ?: return false
+		return galleryOfDreamsDataResponse.artists.any {
+			it.socialConnections
+				.filterIsInstance<DiscordSocialConnection>()
+				.firstOrNull()
+				?.id == user.id.toLong()
+		}
 	}
 }

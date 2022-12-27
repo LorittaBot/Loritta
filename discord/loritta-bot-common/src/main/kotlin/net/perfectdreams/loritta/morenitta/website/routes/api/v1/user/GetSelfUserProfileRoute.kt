@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.response.*
+import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.profiles.AnimatedProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.profiles.StaticProfileCreator
@@ -14,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.util.*
 import javax.imageio.ImageIO
 
 class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/profile") {
@@ -58,7 +60,7 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 			userIdentification.discriminator,
 			avatarUrl,
 			false,
-			UserFlags {} // TODO: Fix user flags, afaik they are provided in the UserIdentification
+			EnumSet.noneOf(UserFlag::class.java) // TODO: Fix user flags, afaik they are provided in the UserIdentification
 		)
 
 		val image = when (profileCreator) {

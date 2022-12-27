@@ -11,6 +11,7 @@ import dev.kord.core.entity.User
 import dev.kord.rest.Image
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.DateUtils
@@ -107,6 +108,9 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(DiscordUserFlagBadge.DiscordBraveryHouseBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordBrillianceHouseBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordBalanceHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordActiveDeveloperBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordModeratorProgramAlumniBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordStaffBadge())
 
 		registerBadge(DiscordNitroBadge(loritta))
 
@@ -253,7 +257,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		user.discriminator,
 		user.effectiveAvatarUrl,
 		user.isBot,
-		UserFlags(user.flagsRaw)
+		user.flags
 	)
 
 	fun transformUserToProfileUserInfoData(user: User) = ProfileUserInfoData(
@@ -266,7 +270,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				this.format = Image.Format.PNG
 			},
 		user.isBot,
-		user.publicFlags ?: UserFlags {}
+		UserFlag.getFlags(user.publicFlags?.code ?: 0)
 	)
 
 	fun transformUserToProfileUserInfoData(cachedUserInfo: CachedUserInfo, profileSettings: ProfileSettings) = ProfileUserInfoData(
@@ -275,7 +279,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		cachedUserInfo.discriminator,
 		cachedUserInfo.effectiveAvatarUrl,
 		false,
-		UserFlags(profileSettings.discordAccountFlags),
+		UserFlag.getFlags(profileSettings.discordAccountFlags),
 	)
 
 	fun transformGuildToProfileGuildInfoData(guild: net.dv8tion.jda.api.entities.Guild) = ProfileGuildInfoData(
@@ -318,7 +322,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(385579854336360449), failIfClusterIsOffline) }
 		val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(505144985591480333), failIfClusterIsOffline) }
 		val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.SPARKLYPOWER_GUILD_ID), Snowflake(332650495522897920), failIfClusterIsOffline) }
-		val hasFanArt = loritta.fanArtArtists.any { it.id == userId.toString() }
+		// val hasFanArt = loritta.fanArtArtists.any { it.id == userId.toString() }
 		val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(351473717194522647), failIfClusterIsOffline) }
 		val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(399301696892829706), failIfClusterIsOffline) }
 
@@ -342,7 +346,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		if (isLoriBodyguard) badges += ImageIO.read(File(LorittaBot.ASSETS + "supervisor.png"))
 		if (isPocketDreamsStaff) badges += ImageIO.read(File(LorittaBot.ASSETS + "pocketdreams_staff.png"))
 		if (isLoriSupport) badges += ImageIO.read(File(LorittaBot.ASSETS + "support.png"))
-		if (hasFanArt) badges += ImageIO.read(File(LorittaBot.ASSETS + "sticker_badge.png"))
+		// if (hasFanArt) badges += ImageIO.read(File(LorittaBot.ASSETS + "sticker_badge.png"))
 		if (isLorittaPartner) badges += ImageIO.read(File(LorittaBot.ASSETS + "lori_hype.png"))
 		if (isTranslator) badges += ImageIO.read(File(LorittaBot.ASSETS + "translator.png"))
 		if (isGitHubContributor) badges += ImageIO.read(File(LorittaBot.ASSETS + "github_contributor.png"))

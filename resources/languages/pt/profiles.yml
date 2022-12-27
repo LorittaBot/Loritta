@@ -57,6 +57,15 @@ profiles:
     discordHypesquadEvents:
       title: "Eventos de HypeSquad"
       description: "Insígnia do Discord para parceiros de eventos"
+    discordModeratorProgramAlumni:
+      title: "Ex-aluno do Programa de Moderadores"
+      description: "Insígnia do Discord para pessoas que eram moderadores certificados pelo Discord"
     discordVerifiedDeveloper:
       title: "Desenvolvedor de Bots Pioneiro"
       description: "Insígnia do Discord para pessoas que verificaram o seu bot"
+    discordActiveDeveloper:
+      title: "Desenvolvedor de Bots"
+      description: "Insígnia do Discord para pessoas que possuem um bot verificado no Discord que está ativo"
+    discordStaff:
+      title: "Equipe do Discord"
+      description: "Insígnia do Discord para pessoas que trabalham no Discord"
