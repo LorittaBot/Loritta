@@ -69,3 +69,6 @@ profiles:
     discordStaff:
       title: "Equipe do Discord"
       description: "Insígnia do Discord para pessoas que trabalham no Discord"
+    grassCutter:
+      title: "Talarico"
+      description: "Insígnia para quem conseguiu a conquista de Talarico na Loritta, eita!"
