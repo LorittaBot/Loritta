@@ -1,18 +1,18 @@
+---
 label: "petpet"
 description: "Aww, this image is so cute! Let's pat it!!"
-
 options:
   squish:
-    text: "How much squishiness you want in your pet?" # Pet here is "petting"
+    text: "How much squishiness you want in your pet?" #Pet here is "petting"
     choice:
       nothing: "Am I petting a rock?"
       kindaHardButABitSquishy: "Kinda hard... but it is a bit squishy!"
       normalSquishness: "Normal squishiness"
       verySquishy: "Very squishy"
       soMuchSquishy: "So much squishy"
-      patItSoTheyCanFeelIt: "Pat it so they can feel it" # This is a Simpsons's reference https://youtu.be/0GVVjd_exO8
+      patItSoTheyCanFeelIt: "Pat it so they can feel it" #This is a Simpsons's reference https://youtu.be/0GVVjd_exO8
   speed:
-    text: "How fast you want your pet?" # Pet here is "petting"
+    text: "How fast you want your pet?" #Pet here is "petting"
     choice:
       iLikeToTakeItSlow: "I like to take it slow"
       aNiceAndSmoothPet: "A nice and smooth pet"
