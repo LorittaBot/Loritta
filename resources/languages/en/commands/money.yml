@@ -1,3 +1,4 @@
+---
 label: "money"
 description: "Converts the value of a currency to another. Useful if you want to know how much a Discord Nitro costs in your currency!"
 result: "**{input,number,#.##} {fromCurrency} in {toCurrency}**: {result,number,#.##} {toCurrency}"
@@ -8,7 +9,6 @@ options:
   to: "The currency you want to be converted to"
   quantity: "The quantity you want to be converted, perfect if you want to know how much money you will spend for Discord Nitro!"
 currencies:
-  eur: "Euro (EUR)"
   usd: "United States dollar (USD)"
   brl: "Brazilian real (BRL)"
   jpy: "Japanese yen (JPY)"
