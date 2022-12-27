@@ -1,14 +1,7 @@
-label: "drake"
 description: "Creates a Drake meme, also known as \"Drakeposting\", with two images!"
-
 drake:
-  label: "drake"
   description: "Creates a Drakeposting meme with two images!"
-
 bolsonaro:
-  label: "bolsonaro"
   description: "Memes must be from Brazil origins, kay??"
-
 lori:
-  label: "lori"
   description: "Creates a Drakeposting meme, Loritta edition"
