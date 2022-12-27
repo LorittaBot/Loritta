@@ -72,3 +72,6 @@ profiles:
     grassCutter:
       title: "Talarico"
       description: "Insígnia para quem conseguiu a conquista de Talarico na Loritta, eita!"
+    sparklyMember:
+      title: "Fã da Pantufa"
+      description: "Insígnia para quem registrou a conta no SparklyPower, o servidor de Minecraft da Loritta"

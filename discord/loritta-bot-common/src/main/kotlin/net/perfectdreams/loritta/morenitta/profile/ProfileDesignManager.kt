@@ -126,6 +126,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(SuperPremiumBadge(loritta))
 		registerBadge(MarriedBadge(loritta))
 		registerBadge(GrassCutterBadge(loritta))
+		registerBadge(SparklyMemberBadge(loritta))
 	}
 
 	suspend fun createProfile(
@@ -310,7 +311,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		mutualGuilds: Set<Long>,
 		failIfClusterIsOffline: Boolean = false
 	): List<BufferedImage> {
-		val userId = user.id
+		val userId = user.id.toLong()
 
 		val hasUpvoted = loritta.newSuspendedTransaction {
 			net.perfectdreams.loritta.morenitta.tables.BotVotes.select {
@@ -318,14 +319,14 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			}.count() != 0L
 		}
 
-		val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(334734175531696128), failIfClusterIsOffline) }
-		val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(434512654292221952), failIfClusterIsOffline) }
-		val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(385579854336360449), failIfClusterIsOffline) }
-		val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(505144985591480333), failIfClusterIsOffline) }
-		val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.SPARKLYPOWER_GUILD_ID), Snowflake(332650495522897920), failIfClusterIsOffline) }
+		val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 334734175531696128, failIfClusterIsOffline) }
+		val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 434512654292221952, failIfClusterIsOffline) }
+		val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 385579854336360449, failIfClusterIsOffline) }
+		val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 505144985591480333, failIfClusterIsOffline) }
+		val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.SPARKLYPOWER_GUILD_ID, 332650495522897920, failIfClusterIsOffline) }
 		// val hasFanArt = loritta.fanArtArtists.any { it.id == userId.toString() }
-		val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(351473717194522647), failIfClusterIsOffline) }
-		val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(399301696892829706), failIfClusterIsOffline) }
+		val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 351473717194522647, failIfClusterIsOffline) }
+		val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 399301696892829706, failIfClusterIsOffline) }
 
 		val hasNotifyMeRole = hasNotifyMeRoleJob.await()
 		val isLorittaPartner = isLorittaPartnerJob.await()
@@ -356,7 +357,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_sweater.png"))
 
 		if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))
-		if (userId == loritta.config.loritta.discord.applicationId) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
+		if (userId == loritta.config.loritta.discord.applicationId.toLong()) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
 		if (user.isBot) badges += readImageFromResources("/badges/bot.png")
 		val marriage = loritta.newSuspendedTransaction { profile.marriage }
 		if (marriage != null) {
@@ -429,8 +430,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param roleId  the role ID
 	 * @return if the user has the role
 	 */
-	suspend fun hasRole(userId: Snowflake, guildId: Snowflake, roleId: Snowflake, failIfClusterIsOffline: Boolean = false): Boolean {
-		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId.toLong())
+	suspend fun hasRole(userId: Long, guildId: Long, roleId: Long, failIfClusterIsOffline: Boolean = false): Boolean {
+		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId)
 
 		val usersWithRolesPayload = try {
 			loritta.lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
