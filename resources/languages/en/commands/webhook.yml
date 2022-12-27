@@ -1,4 +1,3 @@
-label: "webhook"
 description: "Make your server more fancy by sending your custom messages via webhooks!"
 watchOutDontSendTheWebhookUrlToOtherUsers: "Watch out! Don't send the Webhook URL to other users! If someone else has your Webhook URL, they can send messages with it! So, if you end up sending the webhook URL to someone you don't trust, delete the webhook from your channel's \"Integrations\" tab, stay safe!!"
 messageId: "**Message ID:** `{messageId}`"
@@ -23,7 +22,6 @@ tooManyEmbedFields: "I know that must have been an amazing message... But that's
 invalidMessageUrl: "That doesn't look like a Message URL... Are you sure you copied and pasted it correctly?"
 invalidJsonMessage: "That doesn't look like a valid JSON message... Verify if you typed the JSON message correctly, check if there aren't any missing fields... and try again!"
 invalidJsonMessageNoCurlyBraces: "That doesn't look like a valid JSON message... It doesn't even has curly braces around it! Are you sure you want to send a JSON message? Maybe using {webhookSendSimpleCommandMention} or {webhookSendRepostCommandMention} would be better and easier for you!"
-
 options:
   webhookUrl:
     text: "The Webhook URL, you can get it in the channel's \"Integrations\" tab"
@@ -49,31 +47,25 @@ options:
     text: "The URL of the thumbnail in the embed"
   embedColor:
     text: "The color of the embed, can be in hexadecimal, RGB or decimal format"
-
 send:
   label: "send"
   simple:
     label: "simple"
     description: "Sends a message via a webhook"
   json:
-    label: "json"
     description: "Sends a message via a webhook, the message must be in JSON format!"
   repost:
     label: "repost"
     description: "Sends a message via a webhook, reposting the content of an already existing message"
-
   success: "Message successfully sent!"
-
 edit:
   label: "edit"
   simple:
     label: "simple"
     description: "Edits a message sent via a webhook"
   json:
-    label: "json"
     description: "Edits a message sent via a webhook, the message must be in JSON format!"
   repost:
     label: "repost"
     description: "Edits a message sent via a webhook, editing with the content of an already existing message"
-
   success: "Message successfully edited!"
