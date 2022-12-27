@@ -116,7 +116,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 		registerBadge(ArtistBadge(loritta))
 
-		// registerBadge(CanecaBadge(m.config.quirky))
+		registerBadge(MerchBuyerBadge(loritta))
 		registerBadge(HalloweenBadge(loritta))
 		registerBadge(Christmas2019Badge(loritta))
 		registerBadge(Christmas2022Badge(loritta))

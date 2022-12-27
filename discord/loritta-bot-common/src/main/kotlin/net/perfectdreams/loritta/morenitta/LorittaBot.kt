@@ -380,6 +380,11 @@ class LorittaBot(
 	 */
 	var cachedGalleryOfDreamsDataResponse: GalleryOfDreamsDataResponse? = null
 
+	/**
+	 * Cached Gabriela Helper Merch Buyer IDs response, used for badges
+	 */
+	var cachedGabrielaHelperMerchBuyerIdsResponse: List<Long>? = null
+
 	val profileDesignManager = ProfileDesignManager(this)
 
 	val isMainInstance = clusterId == 1
@@ -1610,8 +1615,11 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.minutes, action = LorittaStatsCollector(this@LorittaBot))
+
+		// Update Fan Arts
 		scheduleCoroutineAtFixedRate(1.minutes) {
 			try {
+				logger.info { "Updating Fan Arts..." }
 				val response = http.get("https://fanarts.perfectdreams.net/api/v1/fan-arts")
 
 				if (response.status != HttpStatusCode.OK) {
@@ -1625,6 +1633,25 @@ class LorittaBot(
 				this.cachedGalleryOfDreamsDataResponse = galleryOfDreamsDataResponse
 			} catch (e: Exception) {
 				logger.warn(e) { "Failed to get illustrators' information from GalleryOfDreams!" }
+			}
+		}
+
+		// Update Merch Buyers
+		scheduleCoroutineAtFixedRate(1.minutes) {
+			try {
+				logger.info { "Updating Merch Buyers..." }
+				val response = http.get("${config.loritta.gabrielaHelperService.url.removeSuffix("/")}/api/user-ids-that-have-purchased-something")
+
+				if (response.status != HttpStatusCode.OK) {
+					logger.warn { "Gabriela Helper' User IDs That Have Purchased Something API response was ${response.status}!" }
+					return@scheduleCoroutineAtFixedRate
+				}
+
+				val payload = response.bodyAsText(Charsets.UTF_8)
+
+				this.cachedGabrielaHelperMerchBuyerIdsResponse = Json.parseToJsonElement(payload).jsonArray.map { it.jsonPrimitive.long }
+			} catch (e: Exception) {
+				logger.warn(e) { "Failed to get merch buyer IDs from Gabriela Helper!" }
 			}
 		}
 
