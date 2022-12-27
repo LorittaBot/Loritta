@@ -1,3 +1,4 @@
+---
 label: "roll"
 description: "Rolls a, or multiple, dices and shows its result, perfect if you want to play Monopoly but lost all your dices."
 howManySides: "How many sides the dice I will roll have"
