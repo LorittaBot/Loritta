@@ -127,6 +127,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(MarriedBadge(loritta))
 		registerBadge(GrassCutterBadge(loritta))
 		registerBadge(SparklyMemberBadge(loritta))
+		registerBadge(LorittaStaffBadge(loritta))
 	}
 
 	suspend fun createProfile(
@@ -323,18 +324,11 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 434512654292221952, failIfClusterIsOffline) }
 		val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 385579854336360449, failIfClusterIsOffline) }
 		val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 505144985591480333, failIfClusterIsOffline) }
-		val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.SPARKLYPOWER_GUILD_ID, 332650495522897920, failIfClusterIsOffline) }
-		// val hasFanArt = loritta.fanArtArtists.any { it.id == userId.toString() }
-		val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 351473717194522647, failIfClusterIsOffline) }
-		val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 399301696892829706, failIfClusterIsOffline) }
 
 		val hasNotifyMeRole = hasNotifyMeRoleJob.await()
 		val isLorittaPartner = isLorittaPartnerJob.await()
 		val isTranslator = isTranslatorJob.await()
 		val isGitHubContributor = isGitHubContributorJob.await()
-		val isPocketDreamsStaff = isPocketDreamsStaffJob.await()
-		val isLoriBodyguard = isLoriBodyguardJob.await()
-		val isLoriSupport = isLoriSupportJob.await()
 
 		val badges = mutableListOf<BufferedImage>()
 
@@ -345,9 +339,6 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				}
 		)
 
-		if (isLoriBodyguard) badges += ImageIO.read(File(LorittaBot.ASSETS + "supervisor.png"))
-		if (isPocketDreamsStaff) badges += ImageIO.read(File(LorittaBot.ASSETS + "pocketdreams_staff.png"))
-		if (isLoriSupport) badges += ImageIO.read(File(LorittaBot.ASSETS + "support.png"))
 		// if (hasFanArt) badges += ImageIO.read(File(LorittaBot.ASSETS + "sticker_badge.png"))
 		if (isLorittaPartner) badges += ImageIO.read(File(LorittaBot.ASSETS + "lori_hype.png"))
 		if (isTranslator) badges += ImageIO.read(File(LorittaBot.ASSETS + "translator.png"))
