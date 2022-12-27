@@ -75,3 +75,6 @@ profiles:
     sparklyMember:
       title: "Fã da Pantufa"
       description: "Insígnia para quem registrou a conta no SparklyPower, o servidor de Minecraft da Loritta"
+    lorittaStaff:
+      title: "Equipe da Loritta"
+      description: "Insígnia para quem pessoas que estão na equipe da Loritta"
