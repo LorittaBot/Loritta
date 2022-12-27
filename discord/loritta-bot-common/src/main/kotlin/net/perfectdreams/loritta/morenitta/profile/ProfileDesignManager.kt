@@ -416,7 +416,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			}
 		}
 
-		return guildBadges + loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
+		return (guildBadges + loritta.profileDesignManager.badges)
+			.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
 			.sortedByDescending { it.priority }
 	}
 
