@@ -16,8 +16,10 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.getOrCreateUserProfile
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
@@ -35,6 +37,9 @@ import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.requests.CreateCharacterRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.CreateCharacterResponse
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import java.util.*
 
@@ -196,12 +201,25 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         private suspend fun createBadgeListMessage(context: InteractionContext): suspend InlineMessage<*>.() -> (Unit) {
             return {
+                // We need the mutual guilds to retrieve the user's guild badges.
+                // However, because bots can be in a LOT of guilds (causing GC pressure), so we will just return an empty array.
+                // Bots could also cause a lot of badges to be downloaded, because they are in a lot of guilds.
+                //
+                // After all, does it *really* matter that bots won't have any badges? ¯\_(ツ)_/¯
+                val mutualGuildsInAllClusters = if (context.user.isBot) // This should never happen!
+                    setOf()
+                else
+                    loritta.pudding.transaction {
+                        GuildProfiles.slice(GuildProfiles.guildId)
+                            .select { GuildProfiles.userId eq context.user.id.toLong() and (GuildProfiles.isInGuild eq true) }
+                            .map { it[GuildProfiles.guildId] }
+                            .toSet()
+                    }
+
                 val badges = loritta.profileDesignManager.getUserBadges(
                     loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
                     context.lorittaUser.profile,
-                    loritta.lorittaShards.getMutualGuilds(context.user)
-                        .map { it.idLong }
-                        .toSet()
+                    mutualGuildsInAllClusters
                 )
 
                 embed {
