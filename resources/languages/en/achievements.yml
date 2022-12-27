@@ -1,33 +1,30 @@
+---
 achievements:
   category:
     all:
       title: "All Achievements"
     ship:
-      title: "Ship"
-      description: "Love is in the air! ...and it can be competitive too! Achievements related to the `{command}` command" # This references the "/ship" description
+      description: "Love is in the air! ...and it can be competitive too! Achievements related to the `{command}` command" #This references the "/ship" description
     rate:
       title: "Rate"
-      description: "Because you need validation, and rewards, from someone else to be happy... Achievements related to the `{command}` command" # This references the "/rate" description
+      description: "Because you need validation, and rewards, from someone else to be happy... Achievements related to the `{command}` command" #This references the "/rate" description
     coinFlipBet:
       title: "Coin Flip Bet"
       description: "I never thought that flipping a coin was so much fun! Achievements related to the `{command}` command"
     broker:
       title: "Loritta's Stock Market Simulator"
-      description: "Make your sad feeling after losing sonhos go away with achievements! They won't bring your sonhos or your stock shares back, but they are sure nice to have! Achievements related to the `{command}` command" # This references the "/broker" description
+      description: "Make your sad feeling after losing sonhos go away with achievements! They won't bring your sonhos or your stock shares back, but they are sure nice to have! Achievements related to the `{command}` command" #This references the "/broker" description
     roleplay:
-      title: "Roleplay"
       description: "Kisses, slaps, hugs and cuddles are fun... but why not spice them up with a bit of achievements? Achievements related to the `{command}` command" #This references the Roleplay category description
     generic:
-      description: "Achievements related to the `{command}` command" # This is a generic description for achievements that do not have a custom description
+      description: "Achievements related to the `{command}` command" #This is a generic description for achievements that do not have a custom description
     miscellaneous:
       title: "Miscellaneous"
-      description: "Achievements that are still trying to figure out what category they should be in" # Used in the Miscellaneous Achievements category. It is a joke, like "trying to find their purpose in life"
-
-  achievementUnlocked: "Achievement Unlocked!" # Shown to the user when an achievement is unlocked
+      description: "Achievements that are still trying to figure out what category they should be in" #Used in the Miscellaneous Achievements category. It is a joke, like "trying to find their purpose in life"
+  achievementUnlocked: "Achievement Unlocked!" #Shown to the user when an achievement is unlocked
   viewYourAchievements: "Check out your achievements using {achievementsCommandMention}"
-
   achievement:
-    # ===[ SHIP ]===
+    #===[ SHIP ]===
     natural100Ship:
       title: "True Love"
       description: "Find a natural 100% ship"
@@ -35,7 +32,6 @@ achievements:
       title: "True Haters"
       description: "Find a natural 0% ship"
     natural69Ship:
-      title: "haha, nice"
       description: "Find a natural 34+35% ship"
     marriedShip:
       title: "Happy to be with You"
@@ -52,8 +48,7 @@ achievements:
     sabotagedLorittaFriendzone:
       title: "You can't sabotage *my* friendzone!"
       description: "Get friendzoned by Loritta after you tried sabotaging your relationship with her"
-
-    # ===[ RATE ]===
+    #===[ RATE ]===
     inflatedEgo:
       title: "Inflated Ego"
       description: "Rate Loritta as a Waifu or as a Husbando"
@@ -63,8 +58,7 @@ achievements:
     weirdo:
       title: "Are you... a weirdo?"
       description: "Rate... or well, try to, rate a child"
-
-    # ===[ COIN FLIP BET ]===
+    #===[ COIN FLIP BET ]===
     coinFlipBetProfessional:
       title: "Professional Coin Flipper"
       description: "Play 500 matches of coin flip bet in just 24 hours"
@@ -80,40 +74,31 @@ achievements:
     coinFlipBetBugSevenSequentialLosses:
       title: "Someone Bugged my Coin Flip!" #This references the users that are always complaining that the coin flip is bugged and that's why they are always losing
       description: "Lose a coin flip bet seven times in a row"
-
-    # ===[ BROKER ]===
+    #===[ BROKER ]===
     stonks:
-      title: "Stonks!"
       description: "Make a positive profit when selling a share"
     notStonks:
-      title: "Not Stonks"
       description: "Make a negative profit when selling a share"
-
-    # ===[ MISC ]===
+    #===[ MISC ]===
     isThatAnUndertaleReference:
       title: "Is that an Undertale reference???"
       description: "View your own avatar"
     onePlusOneCalculation:
       title: "I just wanted to be sure that I was right!"
       description: "Calculate the world's easiest calculation, juuuust to be sure that math didn't change overnight"
-
-    # ===[ ROLEPLAY ]===
+    #===[ ROLEPLAY ]===
     receivedFirstKiss:
       title: "My first kiss!"
       description: "Received your first kiss"
-
     gaveFirstKiss:
       title: "Stole a Kiss"
       description: "Gave your first kiss"
-
     triedKissingLoritta:
       title: "I'm not that needy, you know??"
       description: "Loritta rejected your kiss"
-
     triedHurtingLoritta:
       title: "Why did you try to hurt me??"
       description: "Tried slapping or attacking Loritta"
-
     grassCutter:
       title: "Grass Cutter"
       description: "Kissed someone that was married, whoops!"
