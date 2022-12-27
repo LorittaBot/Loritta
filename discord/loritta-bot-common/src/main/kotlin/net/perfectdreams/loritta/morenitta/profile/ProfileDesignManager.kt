@@ -125,6 +125,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(PremiumBadge(loritta))
 		registerBadge(SuperPremiumBadge(loritta))
 		registerBadge(MarriedBadge(loritta))
+		registerBadge(GrassCutterBadge(loritta))
 	}
 
 	suspend fun createProfile(
