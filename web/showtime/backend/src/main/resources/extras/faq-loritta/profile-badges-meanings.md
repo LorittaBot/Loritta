@@ -1,5 +1,5 @@
 title: "Badges de perfil e seus significados"
-authors: [ "mrpowergamerbr" ]
+authors: [ "mrpowergamerbr", "peterstark000" ]
 ---
 Para quem não sabe, badges são emblemas que aparecem no seu `+perfil`.
 
@@ -26,9 +26,10 @@ Badges que não estão aqui são de servidores parceiros meus ou de pessoas que 
 
 ## Lista de Badges de Eventos
 
-* <img src="https://twemoji.maxcdn.com/2/72x72/1f383.png" class="inline-emoji"> Badge exclusiva para participantes do evento de Halloween, que coletaram **400 doces (pontos)**.
-* <img src="https://cdn.discordapp.com/emojis/654123687670448137.png?v=1" class="inline-emoji"> Badge exclusiva para participantes do evento de Natal, que coletaram **400 presentes (pontos)**.
+* <img src="https://twemoji.maxcdn.com/2/72x72/1f383.png" class="inline-emoji"> Badge exclusiva para participantes do evento de Halloween 2019, que coletaram **400 doces (pontos)**.
+* <img src="https://cdn.discordapp.com/emojis/654123687670448137.png?v=1" class="inline-emoji"> Badge exclusiva para participantes do evento de Natal 2019, que coletaram **400 presentes (pontos)**.
 * <img src="https://cdn.discordapp.com/emojis/664849802793713686.png?v=1" class="inline-emoji"> & <img src="https://cdn.discordapp.com/emojis/664849802927800351.png?v=1" class="inline-emoji"> Badge exclusiva para participantes do evento de Aniversário de 3 Anos da Loritta, que coletaram **100 presentes (pontos)**. A badge pode ser Pantufa ou Gabi, dependendo do time que foi escolhido pelo usuário.
+* <img src="https://cdn.discordapp.com/attachments/358774895850815488/1055492445871276062/lori_natal.png" class="inline-emoji"> Badge exclusiva para participantes do evento de Natal 2022, que coletaram **100 presentes (pontos)**.
 
 ## Lista de Badges do Discord
 
