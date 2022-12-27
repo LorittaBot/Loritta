@@ -1,4 +1,3 @@
-label: "mememaker"
 description: "Add captions to a image, perfect if you want to make that amazing meme that you were dreaming of!"
 options:
   line1: "The text that will be shown on the top of the image"
