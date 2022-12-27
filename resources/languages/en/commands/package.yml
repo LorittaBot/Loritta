@@ -1,8 +1,8 @@
+---
 label: "package"
 invalidCorreiosTrackingId: "Invalid tracking ID! Correios' tracking IDs are in the following format: `{exampleId}`"
 objectNotFoundCorreios: "Object not found in Correios' package database! If it was recently posted, it may take a few hours or days until it is registered in Correios' package database!"
 packageUpdate: "Update about `{trackingId}`" #Update about InsertPackageIdHere, the trackingId is a package tracking ID
-
 track:
   label: "track"
   tooManyEventsFiltered: "There are so many package updates that I filtered to show only the latest {maxFilterCount,plural, =0 {# events} one {# event} other {# events}}!"
@@ -19,12 +19,10 @@ track:
   options:
     trackingId:
       text: "The tracking ID of the package you want to track"
-
 list:
   label: "list"
   description: "View all packages that you are following"
   youAreNotFollowingAnyPackage: "You are not following any packages! You can view a package's status and follow them with {packageTrackCommandMention}."
   followedPackages: "Followed Packages"
-
   youAreFollowingXPackages: "You are following {packageCount,plural, =0 {# packages} one {# package} other {# packages}}!"
   trackPackage: "Track Package"
