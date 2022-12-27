@@ -1,11 +1,12 @@
+---
 website:
   dashboard:
     shipEffects:
       title: "Edit Ship Percentages"
       description:
-      - "Changing the values set by the oracle of love is not easy, the oracle does not like it when people question the value given by the {shipCommand}, after all, the percentage is right! You want to distort the reality..."
-      - "But of course, a bit of sonhos can change the oracle's mind! With just {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}, you can convince the oracle that *maybe* they are wrong... But beware, the oracle will only accept your offering for one week, after one week, you must give your offering again!"
-      - "(Yes, I'm the love oracle)"
+        - "Changing the values set by the oracle of love is not easy, the oracle does not like it when people question the value given by the {shipCommand}, after all, the percentage is right! You want to distort the reality..."
+        - "But of course, a bit of sonhos can change the oracle's mind! With just {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}, you can convince the oracle that *maybe* they are wrong... But beware, the oracle will only accept your offering for one week, after one week, you must give your offering again!"
+        - "(Yes, I'm the love oracle)"
       bribe:
         title: "Bribe the Oracle"
         userThatWillReceiveTheEffect: "User that will receive the magic spell of your bribery"
