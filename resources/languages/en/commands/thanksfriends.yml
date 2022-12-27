@@ -11,7 +11,6 @@ slot:
   friends: "FRIENDS"
   of: "OF"
   all: "ALL TIME"
-
 options:
   user1:
     text: "The first user in the image, \"{text}\""
