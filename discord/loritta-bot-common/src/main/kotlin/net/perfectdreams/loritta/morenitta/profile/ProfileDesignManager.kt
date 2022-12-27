@@ -409,7 +409,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 							badgeFile,
 							badgeMediaType,
 							dssNamespace,
-							0
+							10
 						)
 					)
 				}
