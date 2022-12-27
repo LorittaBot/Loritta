@@ -20,7 +20,6 @@ slot:
   cranky:
     male: "THE CRANKY"
     female: "THE CRANKY"
-
 options:
   user1:
     text: "The first user in the image, \"{text}\""
