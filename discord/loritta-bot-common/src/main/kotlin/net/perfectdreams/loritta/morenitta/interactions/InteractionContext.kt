@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions
 
+import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.InlineMessage
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.components.ActionComponent
@@ -28,10 +30,22 @@ abstract class InteractionContext(
     val guildId
         get() = event.guild?.idLong
 
+    val guildOrNull: Guild?
+        get() = event.guild
+
+    val guild: Guild
+        get() = guildOrNull ?: error("This interaction was not sent in a guild!")
+
     val user
         get() = event.user
 
-    suspend fun deferChannelMessage(ephemeral: Boolean): InteractionHook = event.deferReply().setEphemeral(ephemeral).await()
+    var wasInitiallyDeferredEphemerally: Boolean? = null
+
+    suspend fun deferChannelMessage(ephemeral: Boolean): InteractionHook {
+        val hook = event.deferReply().setEphemeral(ephemeral).await()
+        wasInitiallyDeferredEphemerally = ephemeral
+        return hook
+    }
 
     suspend inline fun reply(ephemeral: Boolean, content: String) = reply(ephemeral) {
         this.content = content
@@ -40,70 +54,14 @@ abstract class InteractionContext(
     suspend inline fun reply(ephemeral: Boolean, builder: InlineMessage<MessageCreateData>.() -> Unit = {}) {
         val createdMessage = InlineMessage(MessageCreateBuilder()).apply(builder).build()
 
+        // We could actually disable the components when their state expires, however this is hard to track due to "@original" or ephemeral messages not having an ID associated with it
+        // So, if the message is edited, we don't know if we *can* disable the components when their state expires!
+
         if (event.isAcknowledged) {
             val message = event.hook.sendMessage(createdMessage).setEphemeral(ephemeral).await()
-            if (message.components.isEmpty())
-                return
-
-            loritta.interactivityManager.launch {
-                val components = message.components
-                for (componentLayout in components) {
-                    for (button in componentLayout.buttons) {
-                        val buttonId = button.id?.let { UUID.fromString(it) } ?: continue
-                        // Invalidate all button callbacks
-                        loritta.interactivityManager.buttonInteractionCallbacks.remove(buttonId)
-                    }
-                }
-
-                // Disable the components of the message EXCEPT if it is a link button
-                message.editMessageComponents(
-                    message.components
-                        .map {
-                            ActionRow.of(
-                                it.map { c ->
-                                    if (c is ActionComponent && (c is Button && c.style != ButtonStyle.LINK))
-                                        c.withDisabled(true)
-                                    else
-                                        c
-                                }
-                            )
-                        }
-                ).await()
-            }
         } else {
             event.reply(createdMessage).setEphemeral(ephemeral).await()
-            if (createdMessage.components.isEmpty())
-                return
-
-            loritta.interactivityManager.launch {
-                event.hook.retrieveOriginal()
-                    .await()
-                    .also { message ->
-                        val components = message.components
-                        for (componentLayout in components) {
-                            for (button in componentLayout.buttons) {
-                                val buttonId = button.id?.let { UUID.fromString(it) } ?: continue
-                                // Invalidate all button callbacks
-                                loritta.interactivityManager.buttonInteractionCallbacks.remove(buttonId)
-                            }
-                        }
-
-                        // Disable the components of the message EXCEPT if it is a link button
-                        event.hook.editOriginalComponents(
-                            message.components
-                                .map {
-                                    ActionRow.of(
-                                        it.map { c ->
-                                            if (c is ActionComponent && (c is Button && c.style != ButtonStyle.LINK))
-                                                c.withDisabled(true)
-                                            else
-                                                c
-                                        }
-                                    )
-                                }
-                        ).await()
-                    }
-            }
+            wasInitiallyDeferredEphemerally = ephemeral
         }
     }
 }

@@ -1,9 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -19,9 +18,10 @@ import net.perfectdreams.loritta.morenitta.interactions.components.ComponentCont
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 class InteractivityManager {
     companion object {
@@ -31,10 +31,22 @@ class InteractivityManager {
     }
 
     val scope = CoroutineScope(Dispatchers.Default)
-    var modalCallback: (suspend (ModalContext, ModalArguments) -> Unit)? = null
-    val buttonInteractionCallbacks = ConcurrentHashMap<UUID, suspend (ComponentContext) -> (Unit)>()
-    val selectMenuInteractionCallbacks = ConcurrentHashMap<UUID, suspend (ComponentContext, List<String>) -> (Unit)>()
-    val pendingInteractionRemovals = ConcurrentLinkedQueue<suspend CoroutineScope.() -> (Unit)>()
+
+    val buttonInteractionCallbacks = Caffeine
+        .newBuilder()
+        .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
+        .build<UUID, suspend (ComponentContext) -> (Unit)>()
+        .asMap()
+    val selectMenuInteractionCallbacks = Caffeine
+        .newBuilder()
+        .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
+        .build<UUID, suspend (ComponentContext, List<String>) -> (Unit)>()
+        .asMap()
+    val modalCallbacks = Caffeine
+        .newBuilder()
+        .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
+        .build<UUID, suspend (ModalContext, ModalArguments) -> (Unit)>()
+        .asMap()
 
     /**
      * Creates an interactive button
@@ -85,10 +97,42 @@ class InteractivityManager {
     ): Button {
         val buttonId = UUID.randomUUID()
         buttonInteractionCallbacks[buttonId] = callback
-        return Button.of(style, buttonId.toString(), label)
+        return Button.of(style, UnleashedComponentId(buttonId).toString(), label)
             .let {
                 JDAButtonBuilder(it).apply(builder).button
             }
+    }
+
+    /**
+     * Creates an interactive select menu
+     */
+    fun stringSelectMenuForUser(
+        targetUser: User,
+        builder: (StringSelectMenu.Builder).() -> (Unit) = {},
+        callback: suspend (ComponentContext, List<String>) -> (Unit)
+    ) = stringSelectMenuForUser(targetUser.idLong, builder, callback)
+
+    /**
+     * Creates an interactive select menu
+     */
+    fun stringSelectMenuForUser(
+        targetUserId: Long,
+        builder: (StringSelectMenu.Builder).() -> (Unit) = {},
+        callback: suspend (ComponentContext, List<String>) -> (Unit)
+    ) = stringSelectMenu(
+        builder
+    ) { context, strings ->
+        if (targetUserId != context.user.idLong) {
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.YouArentTheUserSingleUser("<@$targetUserId>")),
+                    Emotes.LoriRage
+                )
+            }
+            return@stringSelectMenu
+        }
+
+        callback.invoke(context, strings)
     }
 
     /**
@@ -100,23 +144,10 @@ class InteractivityManager {
     ): StringSelectMenu {
         val buttonId = UUID.randomUUID()
         selectMenuInteractionCallbacks[buttonId] = callback
-        return StringSelectMenu.create(buttonId.toString())
+        return StringSelectMenu.create(UnleashedComponentId(buttonId).toString())
             .apply(builder)
             .build()
     }
-
-    fun launch(block: suspend CoroutineScope.() -> Unit) = scope.launch(
-        Dispatchers.Default,
-        block = {
-            pendingInteractionRemovals.add(block)
-
-            delay(INTERACTION_INVALIDATION_DELAY)
-
-            pendingInteractionRemovals.remove(block)
-
-            block.invoke(this)
-        }
-    )
 
     class JDAButtonBuilder(internal var button: Button) {
         // https://youtrack.jetbrains.com/issue/KT-6519

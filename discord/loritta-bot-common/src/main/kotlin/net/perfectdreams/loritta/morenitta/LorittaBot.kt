@@ -641,15 +641,6 @@ class LorittaBot(
 					shard.removeEventListener(*shard.registeredListeners.toTypedArray())
 				}
 
-				logger.info { "Disabling all components..." }
-				interactivityManager.scope.cancel()
-				runBlocking {
-					for (block in interactivityManager.pendingInteractionRemovals) {
-						block.invoke(this)
-					}
-				}
-				logger.info { "Disabled all components!" }
-
 				logger.info { "Disconnecting from all voice channels..." }
 				// TODO: You need to wait a bit until JDA fully shuts down the voice connection
 				runBlocking {

@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordUserAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import java.awt.Color
 import java.awt.Graphics2D
@@ -73,35 +74,58 @@ object RankingGenerator {
 
 				graphics.font = oswaldRegular20
 
-				ImageUtils.drawString(loritta, graphics, "#${currentPosition + idx + 1} ${member.name}", 286, currentY + 37, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+				ImageUtils.drawString(loritta, graphics, "#${currentPosition + idx + 1} ${member.name}", 288, currentY + 37, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
 
 				graphics.font = badgeTitleFont
 
-				// TODO: Get user's badge
-				if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
-					val randomBadgeTest = loritta.profileDesignManager.badges.random()
+				var renderedBadge = false
 
-					val badgeImage = randomBadgeTest.getImage()
-					if (badgeImage != null) {
-						graphics.drawImage(
-							badgeImage.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH).toBufferedImage(),
-							288,
-							currentY + 40,
-							null
-						)
+				if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
+					val (profile, profileSettings, activeBadgeId) = loritta.newSuspendedTransaction {
+						val profile = loritta._getLorittaProfile(member.id)
+						val profileSettings = profile?.settings
+						val activeBadge = profileSettings?.activeBadge
+						Triple(profile, profileSettings, activeBadge)
 					}
 
-					// TODO: If no badge is equipped, only render the "ID" part
-					// Show the user's ID in badge title
-					ImageUtils.drawString(
-						loritta,
-						graphics,
-						loritta.languageManager.defaultI18nContext.get(randomBadgeTest.title) + " // ID: ${profile.userId}",
-						288 + 28,
-						currentY + 40 + 22,
-						ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
-					)
-				} else {
+					if (profile != null && profileSettings != null) {
+						// We need to query the user's badge to check if they still have their badge, instead of equipping a badge that they may not have anymore
+						val badges = loritta.profileDesignManager.getUserBadges(
+							loritta.profileDesignManager.transformUserToProfileUserInfoData(member, profileSettings),
+							profile,
+							setOf()
+						)
+
+						val activeBadge = badges.firstOrNull { it.id == activeBadgeId }
+
+						if (activeBadge != null) {
+							val badgeImage = activeBadge.getImage()
+
+							if (badgeImage != null) {
+								graphics.drawImage(
+									badgeImage.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH).toBufferedImage(),
+									288,
+									currentY + 40,
+									null
+								)
+							}
+
+							// Show the user's ID in badge title
+							ImageUtils.drawString(
+								loritta,
+								graphics,
+								loritta.languageManager.defaultI18nContext.get(activeBadge.title) + " // ID: ${profile.userId}",
+								288 + 28,
+								currentY + 40 + 22,
+								ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+							)
+
+							renderedBadge = true
+						}
+					}
+				}
+
+				if (!renderedBadge) {
 					// Show the user's ID in badge title
 					ImageUtils.drawString(
 						loritta,
@@ -115,7 +139,7 @@ object RankingGenerator {
 
 				if (profile.subtitle != null) {
 					graphics.font = profileSubtitleFont
-					ImageUtils.drawString(loritta, graphics, profile.subtitle, 286, currentY + 96, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+					ImageUtils.drawString(loritta, graphics, profile.subtitle, 288, currentY + 96, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
 				}
 
 				graphics.font = oswaldRegular10

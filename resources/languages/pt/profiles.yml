@@ -33,18 +33,21 @@ profiles:
     halloween2019:
       title: "Açúcarado"
       description: "Insígnia para pessoas que participaram do Evento de Halloween da Loritta 2019"
+    married:
+      title: "Casado"
+      description: "Insígnia para pessoas que estão casadas na Loritta"
     discordNitro:
       title: "Fã do Wumpus"
       description: "Insígnia do Discord para pessoas que possuem Discord Nitro"
     discordBravery:
       title: "Corajoso"
-      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Discord Bravery"
+      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Bravery"
     discordBrilliance:
       title: "Esplendido"
-      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Discord Brilliance"
+      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Brilliance"
     discordBalance:
       title: "Equilibrado"
-      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Discord Balance"
+      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Balance"
     discordEarlySupporter:
       title: "Fanático pelo Wumpus"
       description: "Insígnia do Discord para pessoas que compraram Nitro antes de Outubro 2018"
@@ -55,5 +58,5 @@ profiles:
       title: "Eventos de HypeSquad"
       description: "Insígnia do Discord para parceiros de eventos"
     discordVerifiedDeveloper:
-      title: "Desenvolvedor Pioneiro"
+      title: "Desenvolvedor de Bots Pioneiro"
       description: "Insígnia do Discord para pessoas que verificaram o seu bot"

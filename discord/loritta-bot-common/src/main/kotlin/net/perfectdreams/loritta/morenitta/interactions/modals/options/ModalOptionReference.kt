@@ -19,7 +19,12 @@ sealed class DiscordModalOptionReference<T>(
     abstract fun toJDA(): ActionComponent
 }
 
-class StringDiscordModalOptionReference<T>(label: String, val style: TextInputStyle, required: Boolean) : DiscordModalOptionReference<T>(label, required) {
+class StringDiscordModalOptionReference<T>(
+    label: String,
+    val style: TextInputStyle,
+    val value: String?,
+    required: Boolean
+) : DiscordModalOptionReference<T>(label, required) {
     override fun get(option: ModalMapping): T {
         return option.asString as T
     }
@@ -28,18 +33,20 @@ class StringDiscordModalOptionReference<T>(label: String, val style: TextInputSt
         name,
         label,
         style
-    ).build()
+    ).setValue(value).build()
 }
 
 // ===[ BUILDERS ]===
-fun modalString(label: String, style: TextInputStyle) = StringDiscordModalOptionReference<String>(
+fun modalString(label: String, style: TextInputStyle, value: String? = null) = StringDiscordModalOptionReference<String>(
     label,
     style,
+    value,
     true
 )
 
-fun optionalModalString(label: String, style: TextInputStyle) = StringDiscordModalOptionReference<String?>(
+fun optionalModalString(label: String, style: TextInputStyle, value: String? = null) = StringDiscordModalOptionReference<String?>(
     label,
     style,
+    value,
     false
 )

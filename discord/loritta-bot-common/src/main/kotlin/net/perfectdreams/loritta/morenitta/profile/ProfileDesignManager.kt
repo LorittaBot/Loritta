@@ -59,6 +59,9 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	val badges = mutableListOf<Badge>()
 
 	fun registerBadge(badge: Badge) {
+		if (badges.any { it.id == badge.id })
+			error("Badge with ID ${badge.id} already exists!")
+
 		badges.add(badge)
 	}
 
@@ -117,6 +120,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(PantufaBadge(loritta))
 		registerBadge(PremiumBadge(loritta))
 		registerBadge(SuperPremiumBadge(loritta))
+		registerBadge(MarriedBadge(loritta))
 	}
 
 	suspend fun createProfile(
@@ -265,6 +269,15 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		user.publicFlags ?: UserFlags {}
 	)
 
+	fun transformUserToProfileUserInfoData(cachedUserInfo: CachedUserInfo, profileSettings: ProfileSettings) = ProfileUserInfoData(
+		Snowflake(cachedUserInfo.id),
+		cachedUserInfo.name,
+		cachedUserInfo.discriminator,
+		cachedUserInfo.effectiveAvatarUrl,
+		false,
+		UserFlags(profileSettings.discordAccountFlags),
+	)
+
 	fun transformGuildToProfileGuildInfoData(guild: net.dv8tion.jda.api.entities.Guild) = ProfileGuildInfoData(
 		Snowflake(guild.idLong),
 		guild.name,
@@ -345,7 +358,6 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
 				badges += ImageIO.read(File(LorittaBot.ASSETS + "blob_snuggle.png"))
 			}
-			badges += ImageIO.read(File(LorittaBot.ASSETS + "ring.png"))
 		}
 		if (hasUpvoted) badges += ImageIO.read(File(LorittaBot.ASSETS + "upvoted_badge.png"))
 
