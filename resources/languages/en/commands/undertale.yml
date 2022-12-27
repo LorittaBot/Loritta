@@ -1,28 +1,17 @@
-label: "undertale"
 textbox:
   label: "textbox"
   description: "Create your own Undertale/DELTARUNE text box with your own custom text!"
   descriptionGame: "Create your own Undertale/DELTARUNE text box with your own custom text and portraits from Undertale/DELTARUNE!"
   descriptionCustom: "Create your own Undertale/DELTARUNE text box with your own custom text and image!"
-  labelGame: "game"
   labelCustom: "custom"
-
   options:
     text: "The text that will be in the text box"
-
-  type:
-    original: "Original" # The "original" dialog box used in Undertale. Black background and white outlines.
-    darkWorld: "Dark World" # The "Dark World" dialog box used in the Dark World segments in DELTARUNE. This should only be translated if DELTARUNE has a translation to the target language!
-
-  portraitWithName: "{portraitType} ({character})"
-
-  confirm: "Confirm" # Used in the "Confirm" button in the command, when clicking on it, all buttons/text are removed and only the generated dialog is kept
+  confirm: "Confirm" #Used in the "Confirm" button in the command, when clicking on it, all buttons/text are removed and only the generated dialog is kept
   customizeYourMessage: "Customize your text box! After you are pleased with the results, click the confirm button!"
-  dataIsMissing: "Whoops, looks like a cute little white dog absorbed your text box! Please use the command again if you want to create a new text box!" # Cute little white dog = Annoying Dog = Toby Fox
+  dataIsMissing: "Whoops, looks like a cute little white dog absorbed your text box! Please use the command again if you want to create a new text box!" #Cute little white dog = Annoying Dog = Toby Fox
   colored: "Colored"
   blackAndWhite: "Black and White"
   grayscale: "Grayscale"
-
   portraits:
     neutral: "Neutral"
     angry: "Angry"
@@ -55,16 +44,12 @@ textbox:
     wacky: "Wacky"
     weary: "Weary"
     blushing: "Blushing"
-    asgore: "Asgore" # Name, should not be translated!
-    asgoreCreepy: "Asgore Creepy" # Name, only the "Creepy" part should be translated!
-    toriel: "Toriel" # Name, should not be translated!
-    torielCreepy: "Toriel Creepy" # Name, only the "Creepy" part should be translated!
-    asriel: "Asriel" # Name, should not be translated!
-    asrielCrying: "Asriel Crying" # Name, only the "Crying" part should be translated!
+    asgoreCreepy: "Asgore Creepy" #Name, only the "Creepy" part should be translated!
+    torielCreepy: "Toriel Creepy" #Name, only the "Creepy" part should be translated!
+    asrielCrying: "Asriel Crying" #Name, only the "Crying" part should be translated!
     closedEyes: "Closed Eyes"
     crazy: "Crazy"
     evil: "Evil"
-    frisk: "Frisk" # Name, should not be translated!
     grin: "Grin"
     hurt: "Hurt"
     jaws: "Jaws"
@@ -107,7 +92,6 @@ textbox:
     happyStained: "Happy (Stained)"
     sadLookingDown: "Sad (Looking Down)"
     surprisedStained: "Surprised (Stained)"
-    uhhh: "Uhhh"
     sweatingLookingAway: "Sweating (Looking Away)"
     concerned: "Concerned"
     confident: "Confident"
@@ -159,16 +143,8 @@ textbox:
     suspiciousSmiling: "Suspicious (Smiling)"
     uhhhSmiling: "Uhhh (Smiling)"
     angryLookingAway: "Angry (Looking Away)"
-    bro: "Bro" # Used by "Queen" (DELTARUNE), should not be translated!
-    haha: "Haha" # Used by "Queen" (DELTARUNE), should not be translated!
-    hate: "Hate" # Used by "Queen" (DELTARUNE), should not be translated!
-    idk: "IDK" # Used by "Queen" (DELTARUNE), should not be translated!
-    lmao: "Lmao" # Used by "Queen" (DELTARUNE), should not be translated!
-    lying: "Lying" # Used by "Queen" (DELTARUNE), should not be translated!
-    nice: "Nice" # Used by "Queen" (DELTARUNE), should not be translated!
     questionMarks: "Question Marks"
     smilingLookingAway: "Smiling (Looking Away)"
-    'true': "True" # Used by "Queen" (DELTARUNE), should not be translated!
     handsome: "Handsome"
     happyTongueOut: "Happy (Tongue Out)"
     sadTongueOut: "Sad (Tongue Out)"
@@ -187,7 +163,6 @@ textbox:
     surprisedLookingAway: "Surprised (Looking Away)"
     anxiousLookingAway: "Anxious (Looking Away)"
     angryLookingAwaySweating: "Angry (Looking Away, Sweating)"
-    anime: "Anime" # Used by "Berdly" (DELTARUNE)
     ashamed: "Ashamed"
     chefKiss: "Chef Kiss"
     determined: "Determined"
@@ -198,54 +173,7 @@ textbox:
     reasoning: "Reasoning"
     snarky: "Snarky"
     blushingLookingDown: "Blushing (Looking Down)"
-
-  originalDialogBox:
-    name: "Original" # The Original Dialog Box from Undertale
-  darkWorldDialogBox:
-    name: "Dark World" # The dialog box used in the Dark World sections in DELTARUNE
   none:
-    name: "None" # This is used in the Universe select menu
-  undertale:
-    name: "UNDERTALE" # Name, should not be translated!
-  deltarune:
-    name: "DELTARUNE" # Name, should not be translated!
-  alphys:
-    name: "Alphys" # Name, should not be translated!
-  asgore:
-    name: "Asgore" # Name, should not be translated!
-  asriel:
-    name: "Asriel" # Name, should not be translated!
-  berdly:
-    name: "Berdly" # Name, should not be translated!
-  berdlyDarkWorld:
-    name: "Berdly (Dark World)" # Name, should not be translated!
-  flowey:
-    name: "Flowey" # Name, should not be translated!
-  lancer:
-    name: "Lancer" # Name, should not be translated!
-  noelle:
-    name: "Noelle" # Name, should not be translated!
-  sans:
-    name: "Sans" # Name, should not be translated!
-  susie:
-    name: "Susie" # Name, should not be translated!
-  papyrus:
-    name: "Papyrus" # Name, should not be translated!
-  queen:
-    name: "Queen" # Name, should not be translated!
-  ralsei:
-    name: "Ralsei" # Name, should not be translated!
+    name: "None" #This is used in the Universe select menu
   ralseiWithHat:
-    name: "Ralsei with Hat" # Name, only the "with Hat" part should be translated!
-  toriel:
-    name: "Toriel" # Name, should not be translated!
-  undyne:
-    name: "Undyne" # Name, should not be translated!
-  undyneTheUndying:
-    name: "Undyne the Undying" # Name, should not be translated!
-  mettaton:
-    name: "Mettaton" # Name, should not be translated!
-  mettatonEx:
-    name: "Mettaton EX" # Name, should not be translated!
-  mettatonNeo:
-    name: "Mettaton NEO" # Name, should not be translated!
+    name: "Ralsei with Hat" #Name, only the "with Hat" part should be translated!
