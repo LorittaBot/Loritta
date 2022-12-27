@@ -1,3 +1,4 @@
+---
 label: "sadreality"
 description: "Creates a sad reality with members of your server... Yeah, sadly we don't always win."
 notEnoughUsers: "There aren't enough users for me to make a sad reality, sorry..."
@@ -37,7 +38,6 @@ slot:
   you:
     male: "YOU"
     female: "YOU"
-
 options:
   user1:
     text: "The first user in the image, \"{text}\""
