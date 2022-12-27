@@ -199,7 +199,9 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 val badges = loritta.profileDesignManager.getUserBadges(
                     loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
                     context.lorittaUser.profile,
-                    setOf()
+                    loritta.lorittaShards.getMutualGuilds(context.user)
+                        .map { it.idLong }
+                        .toSet()
                 )
 
                 embed {

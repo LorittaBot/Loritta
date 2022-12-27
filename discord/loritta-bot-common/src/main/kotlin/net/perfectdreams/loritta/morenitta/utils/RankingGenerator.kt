@@ -92,7 +92,7 @@ object RankingGenerator {
 					val badges = loritta.profileDesignManager.getUserBadges(
 						loritta.profileDesignManager.transformUserToProfileUserInfoData(member, profileSettings),
 						userProfile,
-						setOf()
+						setOf() // We don't care about mutual guilds badges since users cannot equip guild badges anyway
 					)
 
 					val activeBadge = badges.firstOrNull { it.id == activeBadgeId }
