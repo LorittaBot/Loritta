@@ -39,7 +39,7 @@ class SponsorsView(loritta: LorittaBot, locale: BaseLocale, path: String) : Navb
         div(classes = "odd-wrapper wobbly-bg") {
             div(classes = "media") {
                 div(classes = "media-figure") {
-                    img(src = "https://loritta.website/assets/img/fanarts/Loritta_-_Heathecliff.png") {}
+                    img(src = "https://assets.perfectdreams.media/loritta/loritta-rich-heathecliff.png") {}
                 }
                 div(classes = "media-body") {
                     div {

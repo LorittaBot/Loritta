@@ -29,7 +29,7 @@ class Error404View(
                     div {
                         style = "text-align: center;"
 
-                        img(src = "https://loritta.website/assets/img/fanarts/l4.png") {
+                        img(src = "https://assets.perfectdreams.media/loritta/loritta-crying-heathecliff.png") {
                             width = "175"
                         }
 

@@ -344,7 +344,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		if (isTranslator) badges += ImageIO.read(File(LorittaBot.ASSETS + "translator.png"))
 		if (isGitHubContributor) badges += ImageIO.read(File(LorittaBot.ASSETS + "github_contributor.png"))
 
-		if (userId.toLong() == 249508932861558785L || userId.toLong() == 336892460280315905L)
+		if (userId == 249508932861558785L || userId == 336892460280315905L)
 			badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_sweater.png"))
 
 		if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))

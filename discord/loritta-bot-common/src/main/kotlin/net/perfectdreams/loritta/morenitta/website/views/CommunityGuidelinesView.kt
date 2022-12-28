@@ -33,7 +33,7 @@ class CommunityGuidelinesView(
         div(classes = "even-wrapper") {
             div(classes = "media") {
                 div(classes = "media-figure") {
-                    img(src = "https://loritta.website/assets/img/fanarts/l1.png") {}
+                    img(src = "https://assets.perfectdreams.media/loritta/loritta-hearts-heathecliff.png") {}
                 }
                 div(classes = "media-body") {
                     div {
@@ -94,14 +94,14 @@ class CommunityGuidelinesView(
                     }
                 }
                 div(classes = "media-figure") {
-                    img(src = "https://loritta.website/assets/img/fanarts/Loritta_Girando_-_Heathecliff.png") {}
+                    img(src = "https://assets.perfectdreams.media/loritta/loritta-spin-heathecliff.png") {}
                 }
             }
         }
         div(classes = "even-wrapper wobbly-bg") {
             div(classes = "media") {
                 div(classes = "media-figure") {
-                    img(src = "https://loritta.website/assets/img/fanarts/l6.png") {}
+                    img(src = "https://assets.perfectdreams.media/loritta/loritta-stop-heathecliff.png") {}
                 }
                 div(classes = "media-body") {
                     div {
@@ -221,7 +221,7 @@ class CommunityGuidelinesView(
                     }
                 }
                 div(classes = "media-figure") {
-                    img(src = "https://loritta.website/assets/img/fanarts/l4.png") {}
+                    img(src = "https://assets.perfectdreams.media/loritta/loritta-crying-heathecliff.png") {}
                 }
             }
         }

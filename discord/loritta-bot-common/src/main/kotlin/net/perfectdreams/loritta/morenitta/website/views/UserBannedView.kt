@@ -24,7 +24,7 @@ class UserBannedView(loritta: LorittaBot, locale: BaseLocale, path: String, val 
                     div {
                         style = "text-align: center;"
 
-                        img(src = "https://loritta.website/assets/img/fanarts/l6.png") {
+                        img(src = "https://assets.perfectdreams.media/loritta/loritta-stop-heathecliff.png") {
                             width = "175"
                         }
 
