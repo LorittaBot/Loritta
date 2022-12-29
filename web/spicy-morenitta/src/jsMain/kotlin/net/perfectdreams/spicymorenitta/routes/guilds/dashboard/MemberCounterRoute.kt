@@ -231,12 +231,15 @@ class MemberCounterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/g
 					println("#3")
 					println(elem.find(".counter-padding").`val`() as String)
 
+					val memberCounterConfig = object{}.asDynamic()
+					memberCounterConfig.topic = elem.find("#text-area-${textChannelId}").`val`() as String
+					memberCounterConfig.theme = elem.find(".counter-theme").`val`() as String
+					memberCounterConfig.padding = (elem.find(".counter-padding").`val`() as String).toInt()
+
 					val dyn = object{}.asDynamic()
 					dyn.id = textChannelId
-					val innerDyn = object{}.asDynamic()
-					innerDyn.topic = elem.find("#text-area-${textChannelId}").`val`() as String
-					innerDyn.theme = elem.find(".counter-theme").`val`() as String
-					innerDyn.padding = (elem.find(".counter-padding").`val`() as String).toInt()
+					dyn.memberCounterConfig = memberCounterConfig
+
 					entries.add(dyn)
 				}
 			}
