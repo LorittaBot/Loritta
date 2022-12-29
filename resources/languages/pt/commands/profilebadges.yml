@@ -1,0 +1,12 @@
+label: "insígnias"
+description: "Veja as suas insignias do seu perfil social"
+
+yourBadges: "Suas Insígnias"
+badgesDescription:
+  - "As insígnias são medalhas ou enfeites que são usadas usadas para demonstrar algo que você fez ou conseguiu."
+  - "Elas são legais pois elas permitem que você esbanje suas conquistas para outros usuários!"
+chooseABadge: "Escolha uma Insígnia"
+equipBadge: "Equipar Insígnia"
+unequipBadge: "Desequipar Insígnia"
+badgeEquipped: "Insígnia equipada! Ela irá aparecer em baixo do seu nome em comandos de rank."
+badgeUnequipped: "Insígnia desequipada!"

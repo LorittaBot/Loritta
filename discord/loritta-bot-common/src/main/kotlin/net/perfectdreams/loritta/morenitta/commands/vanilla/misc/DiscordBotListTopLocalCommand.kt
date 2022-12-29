@@ -56,6 +56,7 @@ class DiscordBotListTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommand
                 JVMImage(
                     RankingGenerator.generateRanking(
                         loritta,
+                        page * 5,
                         guild.name,
                         guild.iconUrl,
                         userData.map {

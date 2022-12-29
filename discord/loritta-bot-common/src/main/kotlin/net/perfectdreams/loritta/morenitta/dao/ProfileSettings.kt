@@ -18,4 +18,5 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var discordPremiumType by UserSettings.discordPremiumType
 	var language by UserSettings.language
 	var emojiFightEmoji by UserSettings.emojiFightEmoji
+	var activeBadge by UserSettings.activeBadge
 }

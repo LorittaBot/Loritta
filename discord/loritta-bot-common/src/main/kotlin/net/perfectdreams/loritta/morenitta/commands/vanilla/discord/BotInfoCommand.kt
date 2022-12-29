@@ -93,7 +93,7 @@ class BotInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "botinfo", 
 			locale.getList(
 				"commands.command.botinfo.honorableMentions",
 				numberOfUniqueDonators,
-				loritta.fanArtArtists.size,
+				loritta.cachedGalleryOfDreamsDataResponse?.artists?.size ?: 0,
 				context.userHandle.asMention,
 				Emotes.LORI_TEMMIE,
 				Emotes.LORI_OWO,

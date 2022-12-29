@@ -71,6 +71,7 @@ class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 				JVMImage(
 					RankingGenerator.generateRanking(
 						loritta,
+						page * 5,
 						"Ranking Global",
 						null,
 						userData.map {

@@ -58,6 +58,7 @@ class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 				JVMImage(
 					RankingGenerator.generateRanking(
 						loritta,
+						page * 5,
 						"Ranking Global",
 						null,
 						userData.map {

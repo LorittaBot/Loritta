@@ -113,7 +113,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             register(AfkCommand(languageManager))
             register(GenderCommand(languageManager))
-            register(ProfileCommand(languageManager))
             register(XpCommand(languageManager))
 
             // ===[ UNDERTALE ]===

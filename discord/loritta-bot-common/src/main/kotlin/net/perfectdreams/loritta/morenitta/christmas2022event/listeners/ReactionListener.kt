@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas20
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.Payments
+import net.perfectdreams.loritta.morenitta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.WebsiteVoteUtils
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
@@ -83,6 +84,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                     it[message] = dropData[Christmas2022Drops.id]
                     it[points] = 1
                     it[collectedAt] = Instant.now()
+                    it[valid] = true
                 }
 
                 // How many points do they now have?
@@ -135,14 +137,14 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                         }
                         is LorittaChristmas2022Event.EventReward.ProfileDesignReward -> {
                             val internalName = reward.profileName
-                            val alreadyHasTheBackground = BackgroundPayments.select { BackgroundPayments.userId eq userId and (BackgroundPayments.background eq internalName) }
+                            val alreadyHasTheBackground = ProfileDesignsPayments.select { ProfileDesignsPayments.userId eq userId and (ProfileDesignsPayments.profile eq internalName) }
                                 .count() != 0L
 
                             if (!alreadyHasTheBackground) {
-                                BackgroundPayments.insert {
-                                    it[BackgroundPayments.userId] = lorittaProfile.id.value
+                                ProfileDesignsPayments.insert {
+                                    it[ProfileDesignsPayments.userId] = lorittaProfile.id.value
                                     it[cost] = 0
-                                    it[background] = internalName
+                                    it[profile] = internalName
                                     it[boughtAt] = System.currentTimeMillis()
                                 }
                             }

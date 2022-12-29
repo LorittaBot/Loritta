@@ -9,10 +9,13 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import java.util.*
 
 /**
  * Context of the executed command
@@ -32,10 +35,11 @@ class ComponentContext(
         components: List<LayoutComponent>,
         callback: suspend (ModalContext, ModalArguments) -> (Unit)
     ) {
-        loritta.interactivityManager.modalCallback = callback
+        val unleashedComponentId = UnleashedComponentId(UUID.randomUUID())
+        loritta.interactivityManager.modalCallbacks[unleashedComponentId.uniqueId] = callback
 
         event.replyModal(
-            "owo",
+            unleashedComponentId.toString(),
             title,
             components
         ).await()

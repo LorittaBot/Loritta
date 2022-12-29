@@ -372,12 +372,12 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			// Fazer relay de unbans
-			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
+			if (event.guild.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
 				val relayTo = loritta.lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
 				relayTo?.unban(event.user)?.queue()
 			}
-			if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
+			if (event.guild.idLong == Constants.ENGLISH_SUPPORT_GUILD_ID) {
 				val relayTo = loritta.lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				relayTo?.unban(event.user)?.queue()

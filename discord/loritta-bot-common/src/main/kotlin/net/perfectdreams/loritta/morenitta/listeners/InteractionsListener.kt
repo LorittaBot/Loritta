@@ -15,12 +15,15 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.utils.data.DataObject
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
@@ -176,6 +179,13 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         GlobalScope.launch {
+            // Check if it is a InteraKTions Unleashed component
+            val componentId = try {
+                UnleashedComponentId(event.componentId)
+            } catch (e: IllegalArgumentException) {
+                return@launch
+            }
+
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
             var context: ComponentContext? = null
@@ -212,7 +222,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 } else {
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
-                val callbackId = loritta.interactivityManager.buttonInteractionCallbacks[UUID.fromString(event.componentId)]
+                val callbackId = loritta.interactivityManager.buttonInteractionCallbacks[componentId.uniqueId]
                 context = ComponentContext(
                     loritta,
                     serverConfig,
@@ -221,7 +231,19 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
-                callbackId?.invoke(context)
+
+                // We don't know about this callback! It probably has expired, so let's tell the user about it
+                if (callbackId == null) {
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
+                            Emotes.LoriSleeping
+                        )
+                    }
+                    return@launch
+                }
+
+                callbackId.invoke(context)
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()
@@ -231,6 +253,13 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onStringSelectInteraction(event: StringSelectInteractionEvent) {
         GlobalScope.launch {
+            // Check if it is a InteraKTions Unleashed component
+            val componentId = try {
+                UnleashedComponentId(event.componentId)
+            } catch (e: IllegalArgumentException) {
+                return@launch
+            }
+
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
             var context: ComponentContext? = null
@@ -267,7 +296,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 } else {
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
-                val callbackId = loritta.interactivityManager.selectMenuInteractionCallbacks[UUID.fromString(event.componentId)]
+
+                val callback = loritta.interactivityManager.selectMenuInteractionCallbacks[componentId.uniqueId]
                 context = ComponentContext(
                     loritta,
                     serverConfig,
@@ -276,7 +306,18 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
-                callbackId?.invoke(context, event.interaction.values)
+                // We don't know about this callback! It probably has expired, so let's tell the user about it
+                if (callback == null) {
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
+                            Emotes.LoriSleeping
+                        )
+                    }
+                    return@launch
+                }
+
+                callback.invoke(context, event.interaction.values)
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()
@@ -286,6 +327,13 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
         GlobalScope.launch {
+            // Check if it is a InteraKTions Unleashed modal
+            val modalId = try {
+                UnleashedComponentId(event.modalId)
+            } catch (e: IllegalArgumentException) {
+                return@launch
+            }
+
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
             var context: ModalContext? = null
@@ -322,7 +370,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 } else {
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
-                // val callbackId = loritta.componentManager.buttonInteractionCallbacks[UUID.fromString(event.componentId)]
+                val modalCallback = loritta.interactivityManager.modalCallbacks[modalId.uniqueId]
                 context = ModalContext(
                     loritta,
                     serverConfig,
@@ -331,7 +379,18 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
-                loritta.interactivityManager.modalCallback?.invoke(context, ModalArguments(event))
+                // We don't know about this callback! It probably has expired, so let's tell the user about it
+                if (modalCallback == null) {
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
+                            Emotes.LoriSleeping
+                        )
+                    }
+                    return@launch
+                }
+
+                modalCallback.invoke(context, ModalArguments(event))
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()

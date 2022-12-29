@@ -11,6 +11,7 @@ import dev.kord.core.entity.User
 import dev.kord.rest.Image
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.DateUtils
@@ -19,9 +20,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.profile.badges.*
@@ -33,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.gifs.GifSequenceWriter
 import net.perfectdreams.loritta.morenitta.profile.profiles.*
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -51,6 +49,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			Snowflake(769892417025212497), // Kuraminha's House
 			Snowflake(769030809159073795)  // Saddest of the Sads
 		)
+
+		val I18N_BADGES_PREFIX = I18nKeysData.Profiles.Badges
 	}
 
 	val designs = mutableListOf<ProfileCreator>()
@@ -60,6 +60,9 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	val badges = mutableListOf<Badge>()
 
 	fun registerBadge(badge: Badge) {
+		if (badges.any { it.id == badge.id })
+			error("Badge with ID ${badge.id} already exists!")
+
 		badges.add(badge)
 	}
 
@@ -103,19 +106,28 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(DiscordUserFlagBadge.DiscordHypesquadEventsBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordEarlySupporterBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordBraveryHouseBadge())
-		registerBadge(DiscordUserFlagBadge.DiscordBrillanceHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordBrillianceHouseBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordBalanceHouseBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordActiveDeveloperBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordModeratorProgramAlumniBadge())
+		registerBadge(DiscordUserFlagBadge.DiscordStaffBadge())
 
 		registerBadge(DiscordNitroBadge(loritta))
 
 		registerBadge(ArtistBadge(loritta))
 
-		// registerBadge(CanecaBadge(m.config.quirky))
+		registerBadge(MerchBuyerBadge(loritta))
 		registerBadge(HalloweenBadge(loritta))
 		registerBadge(Christmas2019Badge(loritta))
 		registerBadge(Christmas2022Badge(loritta))
 		registerBadge(GabrielaBadge(loritta))
 		registerBadge(PantufaBadge(loritta))
+		registerBadge(PremiumBadge(loritta))
+		registerBadge(SuperPremiumBadge(loritta))
+		registerBadge(MarriedBadge(loritta))
+		registerBadge(GrassCutterBadge(loritta))
+		registerBadge(SparklyMemberBadge(loritta))
+		registerBadge(LorittaStaffBadge(loritta))
 	}
 
 	suspend fun createProfile(
@@ -147,7 +159,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					.toSet()
 			}
 
-		val badges = getUserBadges(
+		val badges = getUserBadgesImages(
 			userToBeViewed,
 			userProfile,
 			mutualGuildsInAllClusters
@@ -248,7 +260,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		user.discriminator,
 		user.effectiveAvatarUrl,
 		user.isBot,
-		UserFlags(user.flagsRaw)
+		user.flags
 	)
 
 	fun transformUserToProfileUserInfoData(user: User) = ProfileUserInfoData(
@@ -261,7 +273,16 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				this.format = Image.Format.PNG
 			},
 		user.isBot,
-		user.publicFlags ?: UserFlags {}
+		UserFlag.getFlags(user.publicFlags?.code ?: 0)
+	)
+
+	fun transformUserToProfileUserInfoData(cachedUserInfo: CachedUserInfo, profileSettings: ProfileSettings) = ProfileUserInfoData(
+		Snowflake(cachedUserInfo.id),
+		cachedUserInfo.name,
+		cachedUserInfo.discriminator,
+		cachedUserInfo.effectiveAvatarUrl,
+		false,
+		UserFlag.getFlags(profileSettings.discordAccountFlags),
 	)
 
 	fun transformGuildToProfileGuildInfoData(guild: net.dv8tion.jda.api.entities.Guild) = ProfileGuildInfoData(
@@ -285,13 +306,13 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
 	 * @return a list containing all the images of the user's badges
 	 */
-	suspend fun getUserBadges(
+	suspend fun getUserBadgesImages(
 		user: ProfileUserInfoData,
 		profile: Profile,
 		mutualGuilds: Set<Long>,
 		failIfClusterIsOffline: Boolean = false
 	): List<BufferedImage> {
-		val userId = user.id
+		val userId = user.id.toLong()
 
 		val hasUpvoted = loritta.newSuspendedTransaction {
 			net.perfectdreams.loritta.morenitta.tables.BotVotes.select {
@@ -299,56 +320,65 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			}.count() != 0L
 		}
 
-		val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(334734175531696128), failIfClusterIsOffline) }
-		val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(434512654292221952), failIfClusterIsOffline) }
-		val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(385579854336360449), failIfClusterIsOffline) }
-		val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(505144985591480333), failIfClusterIsOffline) }
-		val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.SPARKLYPOWER_GUILD_ID), Snowflake(332650495522897920), failIfClusterIsOffline) }
-		val hasFanArt = loritta.fanArtArtists.any { it.id == userId.toString() }
-		val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(351473717194522647), failIfClusterIsOffline) }
-		val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Snowflake(Constants.PORTUGUESE_SUPPORT_GUILD_ID), Snowflake(399301696892829706), failIfClusterIsOffline) }
+		val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 334734175531696128, failIfClusterIsOffline) }
+		val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 434512654292221952, failIfClusterIsOffline) }
+		val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 385579854336360449, failIfClusterIsOffline) }
+		val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(userId, Constants.PORTUGUESE_SUPPORT_GUILD_ID, 505144985591480333, failIfClusterIsOffline) }
 
 		val hasNotifyMeRole = hasNotifyMeRoleJob.await()
 		val isLorittaPartner = isLorittaPartnerJob.await()
 		val isTranslator = isTranslatorJob.await()
 		val isGitHubContributor = isGitHubContributorJob.await()
-		val isPocketDreamsStaff = isPocketDreamsStaffJob.await()
-		val isLoriBodyguard = isLoriBodyguardJob.await()
-		val isLoriSupport = isLoriSupportJob.await()
 
 		val badges = mutableListOf<BufferedImage>()
 
 		badges.addAll(
-			loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
-				.sortedByDescending { it.priority }
-				.map {
-					readImageFromResources("/badges/${it.badgeFileName}")
+			getUserBadges(user, profile, mutualGuilds)
+				.mapNotNull {
+					it.getImage()
 				}
 		)
 
-		if (isLoriBodyguard) badges += ImageIO.read(File(LorittaBot.ASSETS + "supervisor.png"))
-		if (isPocketDreamsStaff) badges += ImageIO.read(File(LorittaBot.ASSETS + "pocketdreams_staff.png"))
-		if (isLoriSupport) badges += ImageIO.read(File(LorittaBot.ASSETS + "support.png"))
-		if (hasFanArt) badges += ImageIO.read(File(LorittaBot.ASSETS + "sticker_badge.png"))
-
-		val money = loritta.getActiveMoneyFromDonationsAsync(userId.toLong())
-
-		if (money != 0.0) {
-			badges += readImageFromResources("/badges/donator.png")
-
-			if (money >= 99.99) {
-				badges += readImageFromResources("/badges/super_donator.png")
-			}
-		}
-
+		// if (hasFanArt) badges += ImageIO.read(File(LorittaBot.ASSETS + "sticker_badge.png"))
 		if (isLorittaPartner) badges += ImageIO.read(File(LorittaBot.ASSETS + "lori_hype.png"))
 		if (isTranslator) badges += ImageIO.read(File(LorittaBot.ASSETS + "translator.png"))
 		if (isGitHubContributor) badges += ImageIO.read(File(LorittaBot.ASSETS + "github_contributor.png"))
 
-		if (userId.toLong() == 249508932861558785L || userId.toLong() == 336892460280315905L)
+		if (userId == 249508932861558785L || userId == 336892460280315905L)
 			badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_sweater.png"))
 
+		if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))
+		if (userId == loritta.config.loritta.discord.applicationId.toLong()) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
+		if (user.isBot) badges += readImageFromResources("/badges/bot.png")
+		val marriage = loritta.newSuspendedTransaction { profile.marriage }
+		if (marriage != null) {
+			if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
+				badges += ImageIO.read(File(LorittaBot.ASSETS + "blob_snuggle.png"))
+			}
+		}
+		if (hasUpvoted) badges += ImageIO.read(File(LorittaBot.ASSETS + "upvoted_badge.png"))
+
+		return badges
+	}
+
+	/**
+	 * Gets the user's badges, the user's mutual guilds will be retrieved
+	 *
+	 * @param userId                 the user
+	 * @param profile                the user's profile
+	 * @param mutualGuilds           the user's mutual guilds IDs
+	 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
+	 * @return a list containing all the images of the user's badges
+	 */
+	suspend fun getUserBadges(
+		user: ProfileUserInfoData,
+		profile: Profile,
+		mutualGuilds: Set<Long>,
+		failIfClusterIsOffline: Boolean = false
+	): List<Badge> {
 		val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
+
+		val guildBadges = mutableListOf<Badge.GuildBadge>()
 
 		loritta.newSuspendedTransaction {
 			val results = (net.perfectdreams.loritta.morenitta.tables.ServerConfigs innerJoin net.perfectdreams.loritta.morenitta.tables.DonationConfigs)
@@ -363,29 +393,25 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				val badgeFile = config.donationConfig?.customBadgeFile
 				val badgeMediaType = config.donationConfig?.customBadgePreferredMediaType
 				if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
-					val extension = MediaTypeUtils.convertContentTypeToExtension(badgeMediaType)
-					val badge = LorittaUtils.downloadImage(loritta, "${loritta.config.loritta.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(config.guildId, badgeFile).join()}.$extension", bypassSafety = true)
-
-					if (badge != null) {
-						badges += badge
-					}
+					guildBadges.add(
+						Badge.GuildBadge(
+							loritta,
+							config.guildId,
+							I18N_BADGES_PREFIX.Guild.Title,
+							I18N_BADGES_PREFIX.Guild.Description(config.guildId.toString()),
+							badgeFile,
+							badgeMediaType,
+							dssNamespace,
+							10
+						)
+					)
 				}
 			}
 		}
 
-		if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))
-		if (userId == loritta.config.loritta.discord.applicationId) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
-		if (user.isBot) badges += readImageFromResources("/badges/bot.png")
-		val marriage = loritta.newSuspendedTransaction { profile.marriage }
-		if (marriage != null) {
-			if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
-				badges += ImageIO.read(File(LorittaBot.ASSETS + "blob_snuggle.png"))
-			}
-			badges += ImageIO.read(File(LorittaBot.ASSETS + "ring.png"))
-		}
-		if (hasUpvoted) badges += ImageIO.read(File(LorittaBot.ASSETS + "upvoted_badge.png"))
-
-		return badges
+		return (guildBadges + loritta.profileDesignManager.badges)
+			.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
+			.sortedByDescending { it.priority }
 	}
 
 	/**
@@ -395,8 +421,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param roleId  the role ID
 	 * @return if the user has the role
 	 */
-	suspend fun hasRole(userId: Snowflake, guildId: Snowflake, roleId: Snowflake, failIfClusterIsOffline: Boolean = false): Boolean {
-		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId.toLong())
+	suspend fun hasRole(userId: Long, guildId: Long, roleId: Long, failIfClusterIsOffline: Boolean = false): Boolean {
+		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId)
 
 		val usersWithRolesPayload = try {
 			loritta.lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")

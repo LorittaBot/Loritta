@@ -107,6 +107,10 @@ dependencies {
     implementation("net.perfectdreams.randomroleplaypictures:client:1.0.1")
     implementation("org.gagravarr:vorbis-java-core:0.8")
 
+    // GalleryOfDreams client
+    implementation("net.perfectdreams.galleryofdreams:common:1.0.9")
+    implementation("net.perfectdreams.galleryofdreams:client:1.0.9")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")

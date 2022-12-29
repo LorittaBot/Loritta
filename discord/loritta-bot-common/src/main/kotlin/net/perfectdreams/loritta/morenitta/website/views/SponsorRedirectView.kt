@@ -40,7 +40,7 @@ body { background-color: #29a6fe; }
                 }
 
                 div(classes = "redirect-center") {
-                    img(src = "https://loritta.website/assets/img/fanarts/Loritta_9_-_Allouette.png") {
+                    img(src = "https://assets.perfectdreams.media/loritta/loritta-style-allouette.png") {
                         width = "384"
                         height = "384"
                     }

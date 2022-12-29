@@ -1,44 +1,31 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import com.google.common.collect.Sets
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.dao.Mute
-import net.perfectdreams.loritta.morenitta.tables.Mutes
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.exceptions.HierarchyException
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.dao.Mute
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.tables.Mutes
+import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.*
 
 class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
@@ -452,20 +439,8 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 				return
 			}
 
-			val currentMember = if (userId in notInTheServerUserIds) null else runBlocking { currentGuild.retrieveMemberOrNullById(userId) }
-
-			if (currentMember == null) {
-				logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
-				notInTheServerUserIds.add(userId)
-				return
-			}
-
-			if (mutedRole == null || !currentMember.roles.contains(mutedRole)) {
-				if (mutedRole == null) {
-					logger.info("Removendo status de silenciado de $userId na guild $guildId - Motivo: Cargo não existe mais!")
-				} else {
-					logger.info("Removendo status de silenciado de $userId na guild $guildId - Motivo: Usuário não possui mais o cargo!")
-				}
+			if (mutedRole == null) {
+				logger.info("Removendo status de silenciado de $userId na guild $guildId - Motivo: Cargo não existe mais!")
 
 				// Se não existe, então quer dizer que o cargo foi deletado e isto deve ser ignorado!
 				runBlocking {
@@ -493,6 +468,22 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					}
 
 					val settings = AdminUtils.retrieveModerationInfo(loritta, loritta.getOrCreateServerConfig(guildId))
+
+					val currentMember = if (userId in notInTheServerUserIds) null else runBlocking { currentGuild.retrieveMemberOrNullById(userId) }
+
+					if (currentMember == null) {
+						logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
+						notInTheServerUserIds.add(userId)
+
+						runBlocking {
+							loritta.pudding.transaction {
+								Mutes.deleteWhere {
+									(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
+								}
+							}
+						}
+						return@launch
+					}
 
 					UnmuteCommand.unmute(
 						loritta,

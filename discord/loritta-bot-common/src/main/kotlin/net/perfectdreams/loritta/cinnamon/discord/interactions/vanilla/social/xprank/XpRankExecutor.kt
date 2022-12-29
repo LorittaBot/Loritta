@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank
 
 import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
 import dev.kord.rest.Image
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
@@ -24,6 +22,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -82,9 +81,8 @@ class XpRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
                         val level = ExperienceUtils.getCurrentLevelForXp(xp)
 
                         RankingGenerator.UserRankInformation(
-                            Snowflake(it[GuildProfiles.userId]),
-                            context.i18nContext.get(XpCommand.XP_RANK_I18N_PREFIX.TotalXp(xp)),
-                            context.i18nContext.get(XpCommand.XP_RANK_I18N_PREFIX.Level(level))
+                            it[GuildProfiles.userId],
+                            context.i18nContext.get(XpCommand.XP_RANK_I18N_PREFIX.TotalXpAndLevel(xp, level))
                         )
                     }
                 ) {

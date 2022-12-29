@@ -17,7 +17,9 @@ class DebugWebServer {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
         // 3003 = 30/03, Loritta's birthday!
-        val server = embeddedServer(Netty, 3003) {
+        // The port is 13003 because Windows seems to reserve port 3003 for other purposes
+        // Reserved ports can be checked with "netsh interface ipv4 show excludedportrange protocol=tcp"
+        val server = embeddedServer(Netty, 13003) {
             routing {
                 get("/coroutines") {
                     val os = ByteArrayOutputStream()

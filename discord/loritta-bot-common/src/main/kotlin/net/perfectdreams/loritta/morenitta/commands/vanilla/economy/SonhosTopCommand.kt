@@ -45,6 +45,7 @@ class SonhosTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 				JVMImage(
 					RankingGenerator.generateRanking(
 						loritta,
+						page * 5,
 						"Ranking Global",
 						null,
 						userData.map {

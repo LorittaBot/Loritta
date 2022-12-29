@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
+import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.loritta.common.utils.Gender
 import org.jetbrains.exposed.dao.id.LongIdTable
 
@@ -13,4 +14,6 @@ object UserSettings : LongIdTable() {
     val discordPremiumType = integer("discord_premium_type").nullable()
     val language = text("language").nullable()
     val emojiFightEmoji = text("emoji_fight_emoji").nullable()
+    val activeBadge = uuid("active_badge").nullable()
+    val badgesSettings = jsonb("badges_settings").nullable()
 }

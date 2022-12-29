@@ -2,3 +2,79 @@ profiles:
   aboutMe: "Sobre Mim"
   marriedWith: "Casado com"
   defaultAboutMe: "A Loritta é a minha amiga! Você sabia que você pode alterar este texto usando \"/profile aboutme\"? :3"
+  badges:
+    guild:
+      title: "Insígnia de Servidor"
+      description: "Insígnia para membros do servidor {serverName}"
+    premium:
+      title: "Pagador de Aluguel"
+      description: "Insígnia para membros premium"
+    superPremium:
+      title: "Magnata"
+      description: "Insígnia para membros que possuem o plano premium mais alto"
+    artist:
+      title: "Artista"
+      description: "Insígnia para artistas que fizeram uma fan art para a Loritta"
+    merchBuyer:
+      title: "Fashionista"
+      description: "Insígnia para pessoas que compraram merchandising da Loritta"
+    christmas2019:
+      title: "Natalino"
+      description: "Insígnia para pessoas que participam do Evento de Natal da Loritta 2019"
+    christmas2022:
+      title: "Natalino"
+      description: "Insígnia para pessoas que participam do Evento de Natal da Loritta 2022"
+    gabriela2020:
+      title: "Team Gabriela"
+      description: "Insígnia para pessoas que participaram do time da Gabriela no Evento de Aniversário da Loritta 2020"
+    pantufa2020:
+      title: "Team Pantufa"
+      description: "Insígnia para pessoas que participaram do time da Pantufa no Evento de Aniversário da Loritta 2020"
+    halloween2019:
+      title: "Açúcarado"
+      description: "Insígnia para pessoas que participaram do Evento de Halloween da Loritta 2019"
+    married:
+      title: "Casado"
+      description: "Insígnia para pessoas que estão casadas na Loritta"
+    discordNitro:
+      title: "Fã do Wumpus"
+      description: "Insígnia do Discord para pessoas que possuem Discord Nitro"
+    discordBravery:
+      title: "Corajoso"
+      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Bravery"
+    discordBrilliance:
+      title: "Esplendido"
+      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Brilliance"
+    discordBalance:
+      title: "Equilibrado"
+      description: "Insígnia do Discord para pessoas da equipe do HypeSquad Balance"
+    discordEarlySupporter:
+      title: "Fanático pelo Wumpus"
+      description: "Insígnia do Discord para pessoas que compraram Nitro antes de Outubro 2018"
+    discordPartner:
+      title: "Parceiro do Discord"
+      description: "Insígnia do Discord para pessoas parceiras"
+    discordHypesquadEvents:
+      title: "Eventos de HypeSquad"
+      description: "Insígnia do Discord para parceiros de eventos"
+    discordModeratorProgramAlumni:
+      title: "Ex-aluno do Programa de Moderadores"
+      description: "Insígnia do Discord para pessoas que eram moderadores certificados pelo Discord"
+    discordVerifiedDeveloper:
+      title: "Desenvolvedor de Bots Pioneiro"
+      description: "Insígnia do Discord para pessoas que verificaram o seu bot"
+    discordActiveDeveloper:
+      title: "Desenvolvedor de Bots"
+      description: "Insígnia do Discord para pessoas que possuem um bot verificado no Discord que está ativo"
+    discordStaff:
+      title: "Equipe do Discord"
+      description: "Insígnia do Discord para pessoas que trabalham no Discord"
+    grassCutter:
+      title: "Talarico"
+      description: "Insígnia para quem conseguiu a conquista de Talarico na Loritta, eita!"
+    sparklyMember:
+      title: "Fã da Pantufa"
+      description: "Insígnia para quem registrou a conta no SparklyPower, o servidor de Minecraft da Loritta"
+    lorittaStaff:
+      title: "Equipe da Loritta"
+      description: "Insígnia para pessoas que estão na equipe da Loritta"

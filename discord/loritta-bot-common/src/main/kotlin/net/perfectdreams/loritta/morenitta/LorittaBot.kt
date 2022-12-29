@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
@@ -49,6 +50,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -63,6 +65,8 @@ import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
+import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
@@ -125,6 +129,7 @@ import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
+import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
@@ -142,6 +147,7 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
@@ -152,10 +158,7 @@ import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesCli
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -371,6 +374,17 @@ class LorittaBot(
 
 	val fanArts: List<FanArt>
 		get() = fanArtArtists.flatMap { it.fanArts }
+
+	/**
+	 * Cached Gallery of Dreams Data response, used for fan art stuff
+	 */
+	var cachedGalleryOfDreamsDataResponse: GalleryOfDreamsDataResponse? = null
+
+	/**
+	 * Cached Gabriela Helper Merch Buyer IDs response, used for badges
+	 */
+	var cachedGabrielaHelperMerchBuyerIdsResponse: List<Long>? = null
+
 	val profileDesignManager = ProfileDesignManager(this)
 
 	val isMainInstance = clusterId == 1
@@ -640,15 +654,6 @@ class LorittaBot(
 				shardManager.shards.forEach { shard ->
 					shard.removeEventListener(*shard.registeredListeners.toTypedArray())
 				}
-
-				logger.info { "Disabling all components..." }
-				interactivityManager.scope.cancel()
-				runBlocking {
-					for (block in interactivityManager.pendingInteractionRemovals) {
-						block.invoke(this)
-					}
-				}
-				logger.info { "Disabled all components!" }
 
 				logger.info { "Disconnecting from all voice channels..." }
 				// TODO: You need to wait a bit until JDA fully shuts down the voice connection
@@ -1610,6 +1615,92 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(1.minutes, action = LorittaStatsCollector(this@LorittaBot))
+
+		// Update Fan Arts
+		scheduleCoroutineAtFixedRate(1.minutes) {
+			try {
+				logger.info { "Updating Fan Arts..." }
+				val response = http.get("https://fanarts.perfectdreams.net/api/v1/fan-arts")
+
+				if (response.status != HttpStatusCode.OK) {
+					logger.warn { "Gallery of Dreams' Get Fan Arts API response was ${response.status}!" }
+					return@scheduleCoroutineAtFixedRate
+				}
+
+				val payload = response.bodyAsText(Charsets.UTF_8)
+				val galleryOfDreamsDataResponse = Json.decodeFromString<GalleryOfDreamsDataResponse>(payload)
+
+				this.cachedGalleryOfDreamsDataResponse = galleryOfDreamsDataResponse
+			} catch (e: Exception) {
+				logger.warn(e) { "Failed to get illustrators' information from GalleryOfDreams!" }
+			}
+		}
+
+		// Update Merch Buyers
+		scheduleCoroutineAtFixedRate(1.minutes) {
+			try {
+				logger.info { "Updating Merch Buyers..." }
+				val response = http.get("${config.loritta.gabrielaHelperService.url.removeSuffix("/")}/api/user-ids-that-have-purchased-something")
+
+				if (response.status != HttpStatusCode.OK) {
+					logger.warn { "Gabriela Helper' User IDs That Have Purchased Something API response was ${response.status}!" }
+					return@scheduleCoroutineAtFixedRate
+				}
+
+				val payload = response.bodyAsText(Charsets.UTF_8)
+
+				this.cachedGabrielaHelperMerchBuyerIdsResponse = Json.parseToJsonElement(payload).jsonArray.map { it.jsonPrimitive.long }
+			} catch (e: Exception) {
+				logger.warn(e) { "Failed to get merch buyer IDs from Gabriela Helper!" }
+			}
+		}
+
+		// Christmas stuff
+		if (LorittaChristmas2022Event.isEventActive() && config.loritta.environment == EnvironmentType.PRODUCTION) {
+			scheduleCoroutineAtFixedRate(1.minutes) {
+				try {
+					if (!LorittaChristmas2022Event.isEventActive())
+						return@scheduleCoroutineAtFixedRate
+
+					val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+
+					if (guild != null) {
+						val role = guild.getRoleById(1055877016739663872L) ?: return@scheduleCoroutineAtFixedRate
+
+						val countColumn = CollectedChristmas2022Points.points.count()
+
+						val topUserIds = newSuspendedTransaction {
+							CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
+								.select { CollectedChristmas2022Points.valid eq true }
+								.groupBy(CollectedChristmas2022Points.user)
+								.orderBy(countColumn to SortOrder.DESC)
+								.limit(5, 0)
+								.map { it[CollectedChristmas2022Points.user].value }
+						}
+
+						val currentMembersWithRole = guild.getMembersWithRoles(role)
+
+						for (member in currentMembersWithRole) {
+							if (member.idLong !in topUserIds) {
+								// Bye
+								member.guild.removeRoleFromMember(UserSnowflake.fromId(member.idLong), role).await()
+							}
+						}
+
+						// Give the role for users that don't have the role yet
+						for (userId in topUserIds) {
+							val member = guild.getMemberById(userId) ?: continue
+
+							if (!member.roles.contains(role)) {
+								guild.addRoleToMember(UserSnowflake.fromId(userId), role).await()
+							}
+						}
+					}
+				} catch (e: Exception) {
+					logger.warn(e) { "Something went wrong while trying to update the top christmas roles!" }
+				}
+			}
+		}
 
 		val dailyTaxWarner = DailyTaxWarner(this)
 		val dailyTaxCollector = DailyTaxCollector(this)

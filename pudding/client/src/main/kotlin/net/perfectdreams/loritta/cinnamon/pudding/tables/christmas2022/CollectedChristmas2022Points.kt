@@ -8,4 +8,5 @@ object CollectedChristmas2022Points : LongIdTable() {
     val message = reference("message", Christmas2022Drops).index()
     val points = integer("points")
     val collectedAt = timestampWithTimeZone("collected_at")
+    val valid = bool("valid").default(true)
 }

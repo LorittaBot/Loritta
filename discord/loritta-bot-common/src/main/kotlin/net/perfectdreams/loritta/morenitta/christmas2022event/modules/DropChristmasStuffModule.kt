@@ -13,10 +13,12 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.modules.MessageReceivedModule
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 class DropChristmasStuffModule(val m: LorittaBot) : MessageReceivedModule {
@@ -60,7 +62,14 @@ class DropChristmasStuffModule(val m: LorittaBot) : MessageReceivedModule {
         val lastDrop = lastDropsAt.getOrDefault(id, 0L)
         val lastDropDiff = date - lastDrop
 
-        val randomNumber = LorittaBot.RANDOM.nextInt(0, 1500)
+        val today = LocalDateTime.now(Constants.LORITTA_TIMEZONE)
+
+        val randomNumber = when (today.dayOfMonth) {
+            25 -> LorittaBot.RANDOM.nextInt(0, 750)
+            24 -> LorittaBot.RANDOM.nextInt(0, 1000)
+            23 -> LorittaBot.RANDOM.nextInt(0, 1250)
+            else -> LorittaBot.RANDOM.nextInt(0, 1500)
+        }
 
         if (randomNumber in 0..chance && event.message.contentStripped.hashCode() != lorittaProfile.lastMessageSentHash && event.message.contentRaw.length >= 5) {
             if (5_000 >= lastDropDiff)

@@ -163,12 +163,12 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 				if (whitelisted.contains(inviteId))
 					continue
 
-				if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_MANAGE))
+				if (inviteBlockerConfig.deleteMessage && guild.selfMember.hasPermission(message.guildChannel, Permission.MESSAGE_MANAGE))
 					message.delete().queue()
 
 				val warnMessage = inviteBlockerConfig.warnMessage
 
-				if (inviteBlockerConfig.tellUser && !warnMessage.isNullOrEmpty() && message.textChannel.canTalk()) {
+				if (inviteBlockerConfig.tellUser && !warnMessage.isNullOrEmpty() && message.guildChannel.canTalk()) {
 					if (event.member != null && event.member.hasPermission(Permission.MANAGE_SERVER)) {
 						// Se a pessoa tiver permissão para ativar a permissão de convites, faça que a Loritta recomende que ative a permissão
 						val topRole = event.member.roles.sortedByDescending { it.position }.firstOrNull { !it.isPublicRole }
@@ -221,7 +221,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 								}
 							}
 
-							message.textChannel.sendMessageAsync(
+							message.guildChannel.sendMessageAsync(
 								MessageCreate {
 									mentions {}
 
@@ -244,7 +244,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild, message.channel), guild)
 							?: return true
 
-					message.textChannel.sendMessage(toBeSent).queue()
+					message.guildChannel.sendMessage(toBeSent).queue()
 				}
 
 				return true

@@ -63,6 +63,7 @@ class BomDiaECiaTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommandBase
                 JVMImage(
                     RankingGenerator.generateRanking(
                         loritta,
+                        page * 5,
                         guild.name,
                         guild.iconUrl,
                         userData.map {

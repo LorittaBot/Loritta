@@ -54,6 +54,7 @@ class DiscordBotListTopCommand(loritta: LorittaBot): DiscordAbstractCommandBase(
                 JVMImage(
                     RankingGenerator.generateRanking(
                         loritta,
+                        page * 5,
                         "Ranking Global",
                         null,
                         userData.map {
