@@ -52,7 +52,7 @@ class EmojiFightEmojiCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 				}
 
 				reply("Emoji personalizado removido!")
-				return
+				return@executesDiscord
 			}
 
 			val discordEmoji = (this.message as DiscordMessage).handle.mentions.customEmojis.firstOrNull()
