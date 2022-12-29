@@ -44,6 +44,16 @@ class EmojiFightEmojiCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 				return@executesDiscord
 			}
 
+			if (this.args.isEmpty()) {
+				loritta.newSuspendedTransaction {
+					loritta.getOrCreateLorittaProfile(this@executesDiscord.user.idLong)
+						.settings
+						.emojiFightEmoji = null
+				}
+
+				reply("Emoji personalizado removido!")
+			}
+
 			val discordEmoji = (this.message as DiscordMessage).handle.mentions.customEmojis.firstOrNull()
 
 			val newEmoji = if (discordEmoji != null) {
