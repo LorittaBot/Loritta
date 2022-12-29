@@ -78,3 +78,6 @@ profiles:
     lorittaStaff:
       title: "Equipe da Loritta"
       description: "Insígnia para pessoas que estão na equipe da Loritta"
+    sparklyStaff:
+      title: "Equipe do SparklyPower"
+      description: "Insígnia para pessoas que estão na equipe do SparklyPower"
