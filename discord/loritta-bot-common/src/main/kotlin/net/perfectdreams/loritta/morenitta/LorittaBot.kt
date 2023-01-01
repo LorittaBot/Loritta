@@ -1572,27 +1572,29 @@ class LorittaBot(
 	 * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay]
 	 */
 	private fun scheduleCoroutineAtFixedRate(
+		taskName: String,
 		period: Duration,
 		initialDelay: Duration = Duration.ZERO,
 		action: RunnableCoroutine
 	) {
 		logger.info { "Scheduling ${action::class.simpleName} to be ran every $period with a $initialDelay initial delay" }
-		scheduleCoroutineAtFixedRate(tasksScope, period, initialDelay, action)
+		scheduleCoroutineAtFixedRate(taskName, tasksScope, period, initialDelay, action)
 	}
 
 	/**
 	 * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay] if this [isMainReplica]
 	 */
 	private fun scheduleCoroutineAtFixedRateIfMainReplica(
+		taskName: String,
 		period: Duration,
 		initialDelay: Duration = Duration.ZERO,
 		action: RunnableCoroutine
 	) {
 		if (isMainInstance)
-			scheduleCoroutineAtFixedRate(period, initialDelay, action)
+			scheduleCoroutineAtFixedRate(taskName, period, initialDelay, action)
 	}
 
-	private fun scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(time: LocalTime, action: RunnableCoroutine) {
+	private fun scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(taskName: String, time: LocalTime, action: RunnableCoroutine) {
 		val now = Instant.now()
 		val today = LocalDate.now(ZoneOffset.UTC)
 		val todayAtTime = LocalDateTime.of(today, time)
@@ -1604,6 +1606,7 @@ class LorittaBot(
 		val diff = gonnaBeScheduledAtTime.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
 
 		scheduleCoroutineAtFixedRateIfMainReplica(
+			taskName,
 			1.days,
 			diff.milliseconds,
 			action
@@ -1611,13 +1614,13 @@ class LorittaBot(
 	}
 
 	private fun startTasks() {
-		scheduleCoroutineAtFixedRate(1.minutes, action = activityUpdater)
-		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
-		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
-		scheduleCoroutineAtFixedRateIfMainReplica(1.minutes, action = LorittaStatsCollector(this@LorittaBot))
+		scheduleCoroutineAtFixedRate(ActivityUpdater::class.simpleName!!, 1.minutes, action = activityUpdater)
+		scheduleCoroutineAtFixedRateIfMainReplica(CorreiosPackageInfoUpdater::class.simpleName!!, 15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
+		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
+		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
 
 		// Update Fan Arts
-		scheduleCoroutineAtFixedRate(1.minutes) {
+		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {
 			try {
 				logger.info { "Updating Fan Arts..." }
 				val response = http.get("https://fanarts.perfectdreams.net/api/v1/fan-arts")
@@ -1637,7 +1640,7 @@ class LorittaBot(
 		}
 
 		// Update Merch Buyers
-		scheduleCoroutineAtFixedRate(1.minutes) {
+		scheduleCoroutineAtFixedRate("GabrielaHelperMerchBuyersUpdater", 1.minutes) {
 			try {
 				logger.info { "Updating Merch Buyers..." }
 				val response = http.get("${config.loritta.gabrielaHelperService.url.removeSuffix("/")}/api/user-ids-that-have-purchased-something")
@@ -1655,76 +1658,33 @@ class LorittaBot(
 			}
 		}
 
-		// Christmas stuff
-		if (LorittaChristmas2022Event.isEventActive() && config.loritta.environment == EnvironmentType.PRODUCTION) {
-			scheduleCoroutineAtFixedRate(1.minutes) {
-				try {
-					if (!LorittaChristmas2022Event.isEventActive())
-						return@scheduleCoroutineAtFixedRate
-
-					val guild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-					if (guild != null) {
-						val role = guild.getRoleById(1055877016739663872L) ?: return@scheduleCoroutineAtFixedRate
-
-						val countColumn = CollectedChristmas2022Points.points.count()
-
-						val topUserIds = newSuspendedTransaction {
-							CollectedChristmas2022Points.slice(CollectedChristmas2022Points.user, countColumn)
-								.select { CollectedChristmas2022Points.valid eq true }
-								.groupBy(CollectedChristmas2022Points.user)
-								.orderBy(countColumn to SortOrder.DESC)
-								.limit(5, 0)
-								.map { it[CollectedChristmas2022Points.user].value }
-						}
-
-						val currentMembersWithRole = guild.getMembersWithRoles(role)
-
-						for (member in currentMembersWithRole) {
-							if (member.idLong !in topUserIds) {
-								// Bye
-								member.guild.removeRoleFromMember(UserSnowflake.fromId(member.idLong), role).await()
-							}
-						}
-
-						// Give the role for users that don't have the role yet
-						for (userId in topUserIds) {
-							val member = guild.getMemberById(userId) ?: continue
-
-							if (!member.roles.contains(role)) {
-								guild.addRoleToMember(UserSnowflake.fromId(userId), role).await()
-							}
-						}
-					}
-				} catch (e: Exception) {
-					logger.warn(e) { "Something went wrong while trying to update the top christmas roles!" }
-				}
-			}
-		}
-
 		val dailyTaxWarner = DailyTaxWarner(this)
 		val dailyTaxCollector = DailyTaxCollector(this)
 
 		// 12 hours before
 		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxWarner::class.simpleName!!,
 			LocalTime.of(12, 0),
 			dailyTaxWarner
 		)
 
 		// 4 hours before
 		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxWarner::class.simpleName!!,
 			LocalTime.of(20, 0),
 			dailyTaxWarner
 		)
 
 		// 1 hour before
 		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxWarner::class.simpleName!!,
 			LocalTime.of(23, 0),
 			dailyTaxWarner
 		)
 
 		// at midnight + notify about the user about taxes
 		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			DailyTaxCollector::class.simpleName!!,
 			LocalTime.MIDNIGHT,
 			dailyTaxCollector
 		)

@@ -3,12 +3,15 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import mu.KotlinLogging
 import kotlin.time.Duration
 
 /**
  * Schedules [action] to be executed on [scope] every [period] with a [initialDelay]
  */
-fun scheduleCoroutineAtFixedRate(scope: CoroutineScope, period: Duration, initialDelay: Duration = Duration.ZERO, action: RunnableCoroutine) {
+fun scheduleCoroutineAtFixedRate(taskName: String, scope: CoroutineScope, period: Duration, initialDelay: Duration = Duration.ZERO, action: RunnableCoroutine) {
+    val logger = KotlinLogging.logger(taskName)
+
     scope.launch {
         delay(initialDelay)
 
@@ -16,10 +19,18 @@ fun scheduleCoroutineAtFixedRate(scope: CoroutineScope, period: Duration, initia
 
         while (true) {
             launch {
+                logger.info { "Preparing to run task - Is mutex locked? ${mutex.isLocked}" }
                 mutex.withLock {
-                    action.run()
+                    logger.info { "Running task..." }
+                    try {
+                        action.run()
+                    } catch (e: Throwable) {
+                        logger.warn(e) { "Uncaught error when running the task!" }
+                    }
+                    logger.info { "Task has finished running!" }
                 }
             }
+            logger.info { "Waiting $period to execute next task..." }
             delay(period)
         }
     }
