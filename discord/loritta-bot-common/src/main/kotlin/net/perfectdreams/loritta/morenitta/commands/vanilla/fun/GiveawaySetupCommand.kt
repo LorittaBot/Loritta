@@ -318,7 +318,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                             return@onResponseByAuthor
                         }
 
-                        if (context.discordMessage.member?.canInteract(role) == false) {
+                        if (context.discordMessage.member?.hasPermission(Permission.MANAGE_ROLES) == false || context.discordMessage.member?.canInteract(role) == false) {
                             context.reply(
                                     LorittaReply(
                                             locale["commands.command.giveaway.giveawayCantYouInteractWithRole", "`${role.name}`"],
