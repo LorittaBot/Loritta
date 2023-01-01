@@ -222,58 +222,68 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     mutualGuildsInAllClusters
                 )
 
-                embed {
-                    title = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.YourBadges)
-                    description = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgesDescription).joinToString("\n\n")
-                    color = LorittaColors.LorittaAqua.rgb
-                }
+                if (badges.isEmpty()) {
+                    styled(
+                        context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.YouDontHaveAnyBadges),
+                        Emotes.LoriSob
+                    )
+                } else {
+                    embed {
+                        title = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.YourBadges)
+                        description =
+                            context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgesDescription).joinToString("\n\n")
+                        color = LorittaColors.LorittaAqua.rgb
+                    }
 
-                actionRow(
-                    loritta.interactivityManager.stringSelectMenuForUser(
-                        context.user,
-                        {
-                            placeholder = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.ChooseABadge)
+                    actionRow(
+                        loritta.interactivityManager.stringSelectMenuForUser(
+                            context.user,
+                            {
+                                placeholder = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.ChooseABadge)
 
-                            for (badge in badges.take(25)) {
-                                addOption(
-                                    context.i18nContext.get(badge.title),
-                                    badge.id.toString(),
-                                    context.i18nContext.get(badge.description).shortenWithEllipsis(100)
+                                for (badge in badges.take(25)) {
+                                    addOption(
+                                        context.i18nContext.get(badge.title),
+                                        badge.id.toString(),
+                                        context.i18nContext.get(badge.description).shortenWithEllipsis(100)
+                                    )
+                                }
+                            }
+                        ) { componentContext, strings ->
+                            val badgeIdAsString = strings.first()
+                            val badge = badges.first { it.id == UUID.fromString(badgeIdAsString) }
+
+                            componentContext.deferEdit()
+                                .editOriginal(
+                                    MessageEdit {
+                                        createBadgeViewMessage(context, badge)()
+                                    }
                                 )
+                                .setReplace(true)
+                                .await()
+                        }
+                    )
+
+                    actionRow(
+                        loritta.interactivityManager.buttonForUser(
+                            context.user,
+                            ButtonStyle.PRIMARY,
+                            context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.UnequipBadge)
+                        ) {
+                            loritta.newSuspendedTransaction {
+                                UserSettings
+                                    .innerJoin(Profiles)
+                                    .update({ Profiles.id eq context.user.idLong }) {
+                                        it[UserSettings.activeBadge] = null
+                                    }
+                            }
+
+                            it.reply(true) {
+                                content = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgeUnequipped)
                             }
                         }
-                    ) { componentContext, strings ->
-                        val badgeIdAsString = strings.first()
-                        val badge = badges.first { it.id == UUID.fromString(badgeIdAsString) }
-
-                        componentContext.deferEdit()
-                            .editOriginal(
-                                MessageEdit {
-                                    createBadgeViewMessage(context, badge)()
-                                }
-                            )
-                            .setReplace(true)
-                            .await()
-                    }
-                )
-
-                actionRow(
-                    loritta.interactivityManager.buttonForUser(
-                        context.user,
-                        ButtonStyle.PRIMARY,
-                        context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.UnequipBadge)
-                    ) {
-                        loritta.newSuspendedTransaction {
-                            UserSettings
-                                .innerJoin(Profiles)
-                                .update({ Profiles.id eq context.user.idLong }) {
-                                    it[UserSettings.activeBadge] = null
-                                }
-                        }
-
-                        it.reply(true) { content = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgeUnequipped) }
-                    }
-                )
+                    )
+                }
             }
         }
 
