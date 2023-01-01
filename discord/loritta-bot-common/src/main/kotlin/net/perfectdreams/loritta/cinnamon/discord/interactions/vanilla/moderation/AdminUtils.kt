@@ -301,16 +301,8 @@ object AdminUtils {
         return interactionChecks
     }
 
-    suspend fun checkAndRetrieveAllValidUsersFromString(context: ApplicationCommandContext, usersAsString: String): List<UserQueryResult> {
-        val users = retrieveAllValidUsersFromString(context, usersAsString)
-
-        if (users.isEmpty())
-            context.failEphemerally {
-                content = "No users found!"
-            }
-
-        return users
-    }
+    suspend fun checkAndRetrieveAllValidUsersFromString(context: ApplicationCommandContext, usersAsString: String)
+            = retrieveAllValidUsersFromString(context, usersAsString)
 
     suspend fun retrieveAllValidUsersFromString(context: ApplicationCommandContext, usersAsString: String): List<UserQueryResult> {
         val users = mutableListOf<UserQueryResult>()
