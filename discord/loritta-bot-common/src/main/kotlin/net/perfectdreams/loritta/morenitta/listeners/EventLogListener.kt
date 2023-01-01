@@ -173,6 +173,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
+		if (!event.isFromGuild)
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
