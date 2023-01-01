@@ -1,10 +1,10 @@
 label: "sonic"
 knuxthrow:
-  label: "knuxthrow"
+  label: "knux-throw"
   description: "Don't touch the Master Emerald! Make Knuckles throw something very far away!"
 
 maniatitlecard:
-  label: "maniatitlecard"
+  label: "mania-title-card"
   description: "Make your own custom zone title card in Sonic Mania's style!"
 
   options:
@@ -12,5 +12,5 @@ maniatitlecard:
     line2: "The second line that will be on the title card"
 
 studiopolistv:
-  label: "studiopolistv"
+  label: "studiopolis-tv"
   description: "I wonder what wonderful and interesting thing Dr. Eggman is broadcasting in his Egg TV channel"
