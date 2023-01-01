@@ -1,6 +1,7 @@
 label: "insígnias"
 description: "Veja as suas insignias do seu perfil social"
 
+youDontHaveAnyBadges: "Você não possui nenhuma insígnia no seu perfil social da Loritta!"
 yourBadges: "Suas Insígnias"
 badgesDescription:
   - "As insígnias são medalhas ou enfeites que são usadas usadas para demonstrar algo que você fez ou conseguiu."
