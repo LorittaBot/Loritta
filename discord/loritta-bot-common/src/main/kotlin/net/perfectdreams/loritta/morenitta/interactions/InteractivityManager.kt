@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions
 import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -30,7 +31,7 @@ class InteractivityManager {
         val INTERACTION_INVALIDATION_DELAY = 5.minutes
     }
 
-    val scope = CoroutineScope(Dispatchers.Default)
+    val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     val buttonInteractionCallbacks = Caffeine
         .newBuilder()

@@ -518,11 +518,11 @@ class LorittaBot(
 	val prometheusPushClient = PrometheusPushClient("loritta-morenitta", config.loritta.prometheusPush.url)
 	val voiceConnectionsManager = LorittaVoiceConnectionManager(this)
 
-	val scope = CoroutineScope(Dispatchers.Default)
+	val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	val analyticHandlers = mutableListOf<EventAnalyticsTask.AnalyticHandler>()
 	val cinnamonTasks = CinnamonTasks(this)
-	val tasksScope = CoroutineScope(Dispatchers.Default)
+	val tasksScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	private val starboardModule = StarboardModule(this)
 	private val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)

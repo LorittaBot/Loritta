@@ -27,7 +27,7 @@ class PromPushClient internal constructor(
 
     private val textFormat = CustomTextFormat(job, instance)
     private val http = HttpClient(CIO)
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     internal fun start() {
         coroutineScope.launch {

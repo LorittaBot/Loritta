@@ -3,11 +3,8 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.falatron
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
@@ -16,7 +13,7 @@ import kotlin.time.Duration.Companion.minutes
 class FalatronModelsManager {
     val http = HttpClient {}
     val models = MutableStateFlow<List<FalatronModel>>(emptyList())
-    val scope = CoroutineScope(Dispatchers.IO)
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     fun startUpdater() {
         scope.launch {
