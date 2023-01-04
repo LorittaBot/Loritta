@@ -71,6 +71,7 @@ dependencies {
     implementation("io.ktor:ktor-websockets:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-apache:${Versions.KTOR}")
+    implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-sessions:${Versions.KTOR}")

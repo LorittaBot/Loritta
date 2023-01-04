@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.correios
 
 import io.ktor.client.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.content.*
@@ -27,7 +28,23 @@ class CorreiosClient : Closeable {
         private const val USER_AGENT = "Dart/2.18 (dart:io)"
     }
 
-    val http = HttpClient {
+    // 03/01/2023: Changed the client from Apache to CIO because Apache is throwing this weird error after a while
+    // 00:09:58.279 [DefaultDispatcher-worker-30] WARN  n.p.l.c.d.u.c.CorreiosPackageInfoUpdater - Something went wrong while updating packages information!
+    // kotlinx.coroutines.JobCancellationException: Parent job is Cancelled
+    // Caused by: java.net.SocketException: Connection reset
+    //        at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394)
+    //        at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426)
+    //        at org.apache.http.nio.reactor.ssl.SSLIOSession.receiveEncryptedData(SSLIOSession.java:484)
+    //        at org.apache.http.nio.reactor.ssl.SSLIOSession.isAppInputReady(SSLIOSession.java:546)
+    //        at org.apache.http.impl.nio.reactor.AbstractIODispatch.inputReady(AbstractIODispatch.java:120)
+    //        at org.apache.http.impl.nio.reactor.BaseIOReactor.readable(BaseIOReactor.java:162)
+    //        at org.apache.http.impl.nio.reactor.AbstractIOReactor.processEvent(AbstractIOReactor.java:337)
+    //        at org.apache.http.impl.nio.reactor.AbstractIOReactor.processEvents(AbstractIOReactor.java:315)
+    //        at org.apache.http.impl.nio.reactor.AbstractIOReactor.execute(AbstractIOReactor.java:276)
+    //        at org.apache.http.impl.nio.reactor.BaseIOReactor.execute(BaseIOReactor.java:104)
+    //        at org.apache.http.impl.nio.reactor.AbstractMultiworkerIOReactor$Worker.run(AbstractMultiworkerIOReactor.java:591)
+    //        at java.base/java.lang.Thread.run(Thread.java:833)
+    val http = HttpClient(CIO) {
         expectSuccess = false
     }
 
