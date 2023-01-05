@@ -149,7 +149,9 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 
 				if (randomKey == null) {
 					log.info("Shard ${node.shardInfo.shardId} (login pool: $bucketId) can't login! Another cluster is logging in that shard, delaying login...")
-					if (delay > 0) sleep(delay)
+					// We don't want to sleep for "delay" because the login lock may be released sooner, while the default 5s delay is only applicable for successful logins
+					// So let's wait for 250ms instead
+					sleep(250)
 					appendSession(node)
 					continue
 				}
