@@ -73,14 +73,14 @@ abstract class InteractionContext(
         }
     }
 
-    suspend inline fun chunkedReply(ephemeral: Boolean, builder: InlineMessage<MessageCreateData>.() -> Unit = {}) {
+    suspend inline fun chunkedReply(ephemeral: Boolean, builder: ChunkedMessageBuilder.() -> Unit = {}) {
         // Chunked replies are replies that are chunked into multiple messages, depending on the length of the content
-        val createdMessage = InlineMessage(MessageCreateBuilder()).apply(builder)
+        val createdMessage = ChunkedMessageBuilder().apply(builder)
 
         val currentContent = StringBuilder()
         val messages = mutableListOf<InlineMessage<MessageCreateData>.() -> Unit>()
 
-        for (line in createdMessage.content!!.lines()) {
+        for (line in createdMessage.content.lines()) {
             if (currentContent.length + line.length + 1 > 2000) {
                 messages.add {
                     this.content = currentContent.toString()
