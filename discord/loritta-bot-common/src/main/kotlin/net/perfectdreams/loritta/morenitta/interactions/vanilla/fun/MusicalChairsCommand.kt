@@ -515,7 +515,6 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         if (100 >= participatingMembers.size) {
                             for (member in participatingMembers) {
                                 appendLine(member.key.asMention)
-                                appendLine()
                             }
                         } else {
                             appendLine("*${i18nContext.get(I18N_PREFIX.TooManyParticipantesHidingList)}*")
