@@ -14,6 +14,7 @@ sitInTheChairWithYourButt: "Sentar de Bunda na Cadeira"
 youAreNotParticipatingInThisGame: "Você não está participando do jogo! Para participar, você precisa estar conectado no {voiceChannel}. Caso você esteja, você será incluido na próxima partida!"
 userWonTheGame: "{user} é o vitorioso de sentar de bunda na cadeira!"
 everyoneLostTheGame: "Wow, todos vocês perderam... que triste. Agora arrumem as cadeiras aí."
+availableChairs: "**Cadeiras Disponíveis:** {chairCount,number}"
 
 states:
   didntWaitUntilSongStopped: "{user} foi desqualificado pois apertou antes da hora!"

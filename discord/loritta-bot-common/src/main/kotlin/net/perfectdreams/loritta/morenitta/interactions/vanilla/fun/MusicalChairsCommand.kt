@@ -605,57 +605,56 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             }
         }
     }
-}
 
-class MusicalChairsAudioProvider(val queue: LinkedBlockingQueue<ByteArray>) : AudioSendHandler {
-    companion object {
-        private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
-    }
-
-    override fun isOpus() = true
-    override fun canProvide() = true
-
-    override fun provide20MsAudio(): ByteBuffer {
-        val packet = queue.poll() ?: return SILENCE
-
-        return ByteBuffer.wrap(packet)
-    }
-}
-
-class MusicalChairsSoundEffectAudioProvider(val queue: LinkedBlockingQueue<ByteArray>, val endChannel: Channel<Unit>) : AudioSendHandler {
-    companion object {
-        private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
-    }
-
-    override fun isOpus() = true
-    override fun canProvide() = true
-    var hasNotified = false
-
-    override fun provide20MsAudio(): ByteBuffer {
-        val packet = queue.poll()
-        if (packet == null) {
-            if (!hasNotified) {
-                hasNotified = true
-                endChannel.trySend(Unit)
-            }
-            return SILENCE
+    class MusicalChairsAudioProvider(val queue: LinkedBlockingQueue<ByteArray>) : AudioSendHandler {
+        companion object {
+            private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
         }
 
-        return ByteBuffer.wrap(packet)
+        override fun isOpus() = true
+        override fun canProvide() = true
+
+        override fun provide20MsAudio(): ByteBuffer {
+            val packet = queue.poll() ?: return SILENCE
+
+            return ByteBuffer.wrap(packet)
+        }
     }
-}
 
-sealed class MusicalChairsState {
-    object Waiting : MusicalChairsState()
-    class Sit(val time: Instant) : MusicalChairsState()
-    class SatOnLap(val time: Instant) : MusicalChairsState()
-    object DidntWaitUntilSongStopped : MusicalChairsState()
-    object TookTooLongToSit : MusicalChairsState()
-}
+    class MusicalChairsSoundEffectAudioProvider(val queue: LinkedBlockingQueue<ByteArray>, val endChannel: Channel<Unit>) : AudioSendHandler {
+        companion object {
+            private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
+        }
 
-class MusicalChairSong(
-    val name: String,
-    val source: String?,
-    val frames: List<ByteArray>
-)
+        override fun isOpus() = true
+        override fun canProvide() = true
+        var hasNotified = false
+
+        override fun provide20MsAudio(): ByteBuffer {
+            val packet = queue.poll()
+            if (packet == null) {
+                if (!hasNotified) {
+                    hasNotified = true
+                    endChannel.trySend(Unit)
+                }
+                return SILENCE
+            }
+
+            return ByteBuffer.wrap(packet)
+        }
+    }
+
+    sealed class MusicalChairsState {
+        object Waiting : MusicalChairsState()
+        class Sit(val time: Instant) : MusicalChairsState()
+        class SatOnLap(val time: Instant) : MusicalChairsState()
+        object DidntWaitUntilSongStopped : MusicalChairsState()
+        object TookTooLongToSit : MusicalChairsState()
+    }
+
+    class MusicalChairSong(
+        val name: String,
+        val source: String?,
+        val frames: List<ByteArray>
+    )
 }
