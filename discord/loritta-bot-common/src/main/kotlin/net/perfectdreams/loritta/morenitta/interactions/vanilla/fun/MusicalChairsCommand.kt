@@ -309,7 +309,11 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                 return
             }
 
-            val time = LorittaBot.RANDOM.nextInt(7_500, 20_000)
+            val time = if (10 >= startingMembers.size) {
+                LorittaBot.RANDOM.nextInt(7_000, 20_000)
+            } else {
+                LorittaBot.RANDOM.nextInt(3_000, 12_000)
+            }
 
             val lengthOfSongSlice = time / 20
             val songFrames = song.frames
@@ -517,6 +521,17 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                 }
             }
 
+            val subtractChairs = when {
+                10 >= participatingMembers.size -> 1
+                15 >= participatingMembers.size -> 2
+                20 >= participatingMembers.size -> 3
+                25 >= participatingMembers.size -> 4
+                30 >= participatingMembers.size -> 5
+                else -> 10
+            }
+
+            val availableChairs = participatingMembers.entries.size - subtractChairs
+
             context.reply(false) {
                 embed {
                     author(song.name, song.source)
@@ -535,6 +550,8 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         } else {
                             appendLine("*${i18nContext.get(I18N_PREFIX.TooManyParticipantesHidingList)}*")
                         }
+                        appendLine()
+                        append(i18nContext.get(I18N_PREFIX.AvailableChairs(availableChairs)))
                     }
                     footer(i18nContext.get(I18N_PREFIX.DjArthTheRat), "https://assets.perfectdreams.media/loritta/dj-arth.png")
                     color = LorittaColors.LorittaAqua.rgb
@@ -573,9 +590,9 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                                 return@button
                             }
 
-                            val availableChairs = (participatingMembers.entries.size - 1) - participatingMembers.entries.count { it.value is MusicalChairsState.Sit }
+                            val currentlyAvailableChairs = availableChairs - participatingMembers.entries.count { it.value is MusicalChairsState.Sit }
 
-                            participatingMembers[member] = if (availableChairs == 0) {
+                            participatingMembers[member] = if (currentlyAvailableChairs == 0) {
                                 MusicalChairsState.SatOnLap(Instant.now())
                             } else {
                                 MusicalChairsState.Sit(Instant.now())
@@ -588,56 +605,57 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             }
         }
     }
+}
 
-    class MusicalChairsAudioProvider(val queue: LinkedBlockingQueue<ByteArray>) : AudioSendHandler {
-        companion object {
-            private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
-        }
-
-        override fun isOpus() = true
-        override fun canProvide() = true
-
-        override fun provide20MsAudio(): ByteBuffer {
-            val packet = queue.poll() ?: return SILENCE
-
-            return ByteBuffer.wrap(packet)
-        }
+class MusicalChairsAudioProvider(val queue: LinkedBlockingQueue<ByteArray>) : AudioSendHandler {
+    companion object {
+        private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
     }
 
-    class MusicalChairsSoundEffectAudioProvider(val queue: LinkedBlockingQueue<ByteArray>, val endChannel: Channel<Unit>) : AudioSendHandler {
-        companion object {
-            private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
-        }
+    override fun isOpus() = true
+    override fun canProvide() = true
 
-        override fun isOpus() = true
-        override fun canProvide() = true
-        var hasNotified = false
+    override fun provide20MsAudio(): ByteBuffer {
+        val packet = queue.poll() ?: return SILENCE
 
-        override fun provide20MsAudio(): ByteBuffer {
-            val packet = queue.poll()
-            if (packet == null) {
-                if (!hasNotified) {
-                    hasNotified = true
-                    endChannel.trySend(Unit)
-                }
-                return SILENCE
+        return ByteBuffer.wrap(packet)
+    }
+}
+
+class MusicalChairsSoundEffectAudioProvider(val queue: LinkedBlockingQueue<ByteArray>, val endChannel: Channel<Unit>) : AudioSendHandler {
+    companion object {
+        private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
+    }
+
+    override fun isOpus() = true
+    override fun canProvide() = true
+    var hasNotified = false
+
+    override fun provide20MsAudio(): ByteBuffer {
+        val packet = queue.poll()
+        if (packet == null) {
+            if (!hasNotified) {
+                hasNotified = true
+                endChannel.trySend(Unit)
             }
-
-            return ByteBuffer.wrap(packet)
+            return SILENCE
         }
-    }
 
-    sealed class MusicalChairsState {
-        object Waiting : MusicalChairsState()
-        class Sit(val time: Instant) : MusicalChairsState()
-        class SatOnLap(val time: Instant) : MusicalChairsState()
-        object DidntWaitUntilSongStopped : MusicalChairsState()
-        object TookTooLongToSit : MusicalChairsState()
+        return ByteBuffer.wrap(packet)
     }
+}
 
-    class MusicalChairSong(
-        val name: String,
-        val source: String?,
-        val frames: List<ByteArray>
-    )
+sealed class MusicalChairsState {
+    object Waiting : MusicalChairsState()
+    class Sit(val time: Instant) : MusicalChairsState()
+    class SatOnLap(val time: Instant) : MusicalChairsState()
+    object DidntWaitUntilSongStopped : MusicalChairsState()
+    object TookTooLongToSit : MusicalChairsState()
+}
+
+class MusicalChairSong(
+    val name: String,
+    val source: String?,
+    val frames: List<ByteArray>
+)
 }
