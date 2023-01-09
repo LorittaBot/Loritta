@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.sendBlocking
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -13,7 +11,8 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.audio.AudioSendHandler
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -29,6 +28,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -238,7 +238,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             val guild = context.guild
 
             val voiceState = context.member.voiceState
-            val voiceChannel = voiceState?.channel as? VoiceChannel
+            val voiceChannel = voiceState?.channel as? AudioChannel
             if (voiceState == null || voiceChannel == null) {
                 context.reply(false) {
                     styled(
@@ -288,7 +288,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             context: InteractionContext,
             i18nContext: I18nContext,
             guild: Guild,
-            voiceChannel: VoiceChannel,
+            audioChannel: AudioChannel,
             startingMembers: List<Member>,
             newGame: Boolean,
             timeOffset: Int,
@@ -297,7 +297,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             round: Int
         ) {
             val audioManager = guild.audioManager
-            if (!newGame && (!audioManager.isConnected || audioManager.connectedChannel?.idLong != voiceChannel.idLong)) {
+            if (!newGame && (!audioManager.isConnected || audioManager.connectedChannel?.idLong != audioChannel.idLong)) {
                 musicalChairsSessions.remove(context.guildId)
 
                 context.reply(false) {
@@ -322,7 +322,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                     context,
                     i18nContext,
                     guild,
-                    voiceChannel,
+                    audioChannel,
                     startingMembers,
                     false,
                     0,
@@ -337,7 +337,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
 
             val musicQueue = LinkedBlockingQueue(songFrames)
 
-            guild.audioManager.openAudioConnection(voiceChannel)
+            guild.audioManager.openAudioConnection(audioChannel)
 
             suspend fun playSoundEffectAndWait(frames: List<ByteArray>) {
                 // Create a channel that indicates when the sfx has finished playing
@@ -349,6 +349,22 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             }
 
             if (newGame) {
+                if (audioChannel is StageChannel) {
+                    // Wait until Loritta is ACTUALLY connected to the channel
+                    var tries = 0
+                    while (audioManager.connectedChannel != audioChannel) {
+                        if (tries == 10)
+                            break
+
+                        delay(250)
+                        tries++
+                    }
+
+                    // If tries != 10, then Loritta is connected to the channel (yay)
+                    if (tries != 10)
+                        audioChannel.requestToSpeak().await()
+                }
+
                 musicalChairsSessions.add(context.guildId)
 
                 // New game! Let's play the intro!!
@@ -474,7 +490,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         context,
                         i18nContext,
                         guild,
-                        voiceChannel,
+                        audioChannel,
                         membersToContinue,
                         false,
                         time + timeOffset,
@@ -508,7 +524,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                     title = i18nContext.get(I18N_PREFIX.Title(round))
 
                     description = buildString {
-                        appendLine(i18nContext.get(I18N_PREFIX.PayAttentionToTheMusicTutorial(voiceChannel.asMention)))
+                        appendLine(i18nContext.get(I18N_PREFIX.PayAttentionToTheMusicTutorial(audioChannel.asMention)))
                         appendLine()
                         appendLine("**${i18nContext.get(I18N_PREFIX.Participants(participatingMembers.size))}**")
                         // We aren't going to display anything if there is more than 100 members in the voice channel, to avoid a big embed + embed size limit
@@ -537,7 +553,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         if (context.event.member !in participatingMembers) {
                             context.reply(true) {
                                 styled(
-                                    i18nContext.get(I18N_PREFIX.YouAreNotParticipatingInThisGame(voiceChannel.asMention)),
+                                    i18nContext.get(I18N_PREFIX.YouAreNotParticipatingInThisGame(audioChannel.asMention)),
                                     Emotes.LoriSob
                                 )
                             }
