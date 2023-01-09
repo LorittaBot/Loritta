@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 import dev.minn.jda.ktx.interactions.commands.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -18,9 +19,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
@@ -79,6 +82,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         loritta.launchMessageJob(event) {
+            var rootDeclaration: SlashCommandDeclaration? = null
             var slashDeclaration: SlashCommandDeclaration? = null
 
             for (declaration in manager.slashCommands) {
@@ -90,12 +94,14 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     if (subcommandGroupLabel == null && subcommandLabel == null) {
                         // Already found it, yay!
                         slashDeclaration = declaration
+                        rootDeclaration = declaration
                     } else {
                         // Check root subcommands
                         if (subcommandLabel != null) {
                             if (subcommandGroupLabel == null) {
                                 // "/name subcommand"
                                 slashDeclaration = declaration.subcommands.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel }
+                                rootDeclaration = declaration
                                 break
                             } else {
                                 // "/name subcommandGroup subcommand"
@@ -104,6 +110,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                                     ?.firstOrNull {
                                         manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel
                                     }
+                                rootDeclaration = declaration
                                 break
                             }
                         }
@@ -114,14 +121,21 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
             // We should throw an error here
             // But we won't because we still use Discord InteraKTions
-            if (slashDeclaration == null)
+            if (rootDeclaration == null || slashDeclaration == null)
                 return@launchMessageJob
 
             val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
 
+            val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
+            val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
+            val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
+                .labels(rootDeclarationClazzName, executorClazzName)
+                .startTimer()
+
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
             var context: ApplicationCommandContext? = null
+            var stacktrace: String? = null
 
             try {
                 val guild = event.guild
@@ -173,7 +187,23 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()
+
+                stacktrace = e.stackTraceToString()
             }
+
+            loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(
+                event.user.idLong,
+                event.guild?.idLong,
+                event.channel.idLong,
+                Clock.System.now(),
+                ApplicationCommandType.CHAT_INPUT,
+                rootDeclarationClazzName,
+                executorClazzName,
+                buildJsonObject {},
+                stacktrace == null,
+                timer.observeDuration(),
+                stacktrace
+            )
         }
     }
 
