@@ -1,15 +1,10 @@
 package net.perfectdreams.loritta.morenitta.interactions
 
-import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.interactions.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -18,7 +13,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import java.util.*
 
 abstract class InteractionContext(
     val loritta: LorittaBot,
@@ -82,8 +76,10 @@ abstract class InteractionContext(
 
         for (line in createdMessage.content.lines()) {
             if (currentContent.length + line.length + 1 > 2000) {
+                // Because this is a callback and that is invoked later, we need to do this at this way
+                val currentContentAsString = currentContent.toString()
                 messages.add {
-                    this.content = currentContent.toString()
+                    this.content = currentContentAsString
                 }
                 currentContent.clear()
             }
@@ -92,8 +88,9 @@ abstract class InteractionContext(
         }
 
         if (currentContent.isNotEmpty()) {
+            val currentContentAsString = currentContent.toString()
             messages.add {
-                this.content = currentContent.toString()
+                this.content = currentContentAsString
             }
         }
 

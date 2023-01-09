@@ -311,6 +311,8 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
 
             val time = if (10 >= startingMembers.size) {
                 LorittaBot.RANDOM.nextInt(7_000, 20_000)
+            } else if (20 >= startingMembers.size) {
+                LorittaBot.RANDOM.nextInt(5_000, 15_000)
             } else {
                 LorittaBot.RANDOM.nextInt(3_000, 12_000)
             }
