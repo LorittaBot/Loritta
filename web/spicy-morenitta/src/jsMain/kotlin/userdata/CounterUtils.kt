@@ -51,7 +51,7 @@ object CounterUtils {
 					} else {
 						// Não é um emote... então é o que?
 						// Bem, provavelmente é os emotes padrões do twitter
-						imageSource = "https://twemoji.maxcdn.com/72x72/30-20e3.png"
+						imageSource = "https://abs.twimg.com/emoji/v2/72x72/30-20e3.png"
 					}
 
 					img(src = imageSource) {
@@ -79,16 +79,16 @@ object CounterUtils {
 					// Não é um emote... então é o que?
 					// Bem, provavelmente é os emotes padrões do twitter
 					imageSource = when (char.toString().toInt()) {
-						0 -> "https://twemoji.maxcdn.com/72x72/30-20e3.png"
-						1 -> "https://twemoji.maxcdn.com/72x72/31-20e3.png"
-						2 -> "https://twemoji.maxcdn.com/72x72/32-20e3.png"
-						3 -> "https://twemoji.maxcdn.com/72x72/33-20e3.png"
-						4 -> "https://twemoji.maxcdn.com/72x72/34-20e3.png"
-						5 -> "https://twemoji.maxcdn.com/72x72/35-20e3.png"
-						6 -> "https://twemoji.maxcdn.com/72x72/36-20e3.png"
-						7 -> "https://twemoji.maxcdn.com/72x72/37-20e3.png"
-						8 -> "https://twemoji.maxcdn.com/72x72/38-20e3.png"
-						9 -> "https://twemoji.maxcdn.com/72x72/39-20e3.png"
+						0 -> "https://abs.twimg.com/emoji/v2/72x72/30-20e3.png"
+						1 -> "https://abs.twimg.com/emoji/v2/72x72/31-20e3.png"
+						2 -> "https://abs.twimg.com/emoji/v2/72x72/32-20e3.png"
+						3 -> "https://abs.twimg.com/emoji/v2/72x72/33-20e3.png"
+						4 -> "https://abs.twimg.com/emoji/v2/72x72/34-20e3.png"
+						5 -> "https://abs.twimg.com/emoji/v2/72x72/35-20e3.png"
+						6 -> "https://abs.twimg.com/emoji/v2/72x72/36-20e3.png"
+						7 -> "https://abs.twimg.com/emoji/v2/72x72/37-20e3.png"
+						8 -> "https://abs.twimg.com/emoji/v2/72x72/38-20e3.png"
+						9 -> "https://abs.twimg.com/emoji/v2/72x72/39-20e3.png"
 						else -> throw RuntimeException("Value is invalid!")
 					}
 				}
