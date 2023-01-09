@@ -215,6 +215,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
         defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)
+        isGuildOnly = true
 
         executor = MusicalChairsExecutor()
     }
