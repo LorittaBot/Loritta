@@ -537,7 +537,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         if (context.event.member !in participatingMembers) {
                             context.reply(true) {
                                 styled(
-                                    i18nContext.get(context.i18nContext.get(I18N_PREFIX.YouAreNotParticipatingInThisGame(voiceChannel.asMention))),
+                                    i18nContext.get(I18N_PREFIX.YouAreNotParticipatingInThisGame(voiceChannel.asMention)),
                                     Emotes.LoriSob
                                 )
                             }
