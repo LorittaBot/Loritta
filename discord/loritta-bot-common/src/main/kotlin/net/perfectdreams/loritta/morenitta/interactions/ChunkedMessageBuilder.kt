@@ -7,10 +7,10 @@ class ChunkedMessageBuilder {
     var content = ""
 
     fun styled(content: String, prefix: String) {
-        this.content += createStyledContent(content, prefix)
+        this.content += (createStyledContent(content, prefix) + "\n")
     }
 
     fun styled(content: String, prefix: Emote) {
-        this.content += createStyledContent(content, prefix.asMention)
+        this.content += (createStyledContent(content, prefix.asMention) + "\n")
     }
 }
