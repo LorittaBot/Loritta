@@ -68,7 +68,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 			if (isUnicodeEmoji) {
 				val value = ImageUtils.getTwitterEmojiUrlId(arg0)
 				try {
-					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
+					if (HttpRequest.get("https://abs.twimg.com/emoji/v2/72x72/$value.png").code() != 200) {
 						context.reply(
                                 LorittaReply(
                                         context.locale["commands.command.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
@@ -77,7 +77,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 						)
 						return
 					}
-					val emojiImage = LorittaUtils.downloadImage(loritta, "https://twemoji.maxcdn.com/2/72x72/$value.png")
+					val emojiImage = LorittaUtils.downloadImage(loritta, "https://abs.twimg.com/emoji/v2/72x72/$value.png")
 					context.sendFile(emojiImage!!, "emoji.png", " ")
 				} catch (e: Exception) {
 					e.printStackTrace()

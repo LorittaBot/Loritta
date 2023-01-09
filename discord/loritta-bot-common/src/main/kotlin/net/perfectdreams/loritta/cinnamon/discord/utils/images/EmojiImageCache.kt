@@ -37,7 +37,7 @@ class EmojiImageCache {
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun getTwitterEmoji(codePoints: List<Int>): BufferedImage? {
         val hexCodePointsJoinedAsString = codePoints.toList().joinToString("-") { Integer.toHexString(it) }
-        val imageUrl = "https://twemoji.maxcdn.com/2/72x72/${hexCodePointsJoinedAsString}.png"
+        val imageUrl = "https://abs.twimg.com/emoji/v2/72x72/${hexCodePointsJoinedAsString}.png"
 
         try {
             if (twitterEmojis.containsKey(imageUrl))

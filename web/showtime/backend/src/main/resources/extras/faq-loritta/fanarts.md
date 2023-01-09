@@ -19,13 +19,13 @@ Então ao enviar a sua fan art, você ganha de brinde um cargo! Yay!
 ### Mas atenção!
 Dependendo de como você faz a sua fanart, é bom seguir algumas dicas, para entregar uma fanart digna de recompensas!
 
-#### <img src="https://cdn.discordapp.com/emojis/528266482795151371.png?v=1" class="inline-emoji"><img src="https://twemoji.maxcdn.com/2/72x72/1f4f1.png" class="inline-emoji"> Dicas para Artes Digitais <img src="https://cdn.discordapp.com/emojis/528266482795151371.png?v=1" class="inline-emoji"><img src="https://twemoji.maxcdn.com/2/72x72/1f4f1.png" class="inline-emoji">
+#### <img src="https://cdn.discordapp.com/emojis/528266482795151371.png?v=1" class="inline-emoji"><img src="https://abs.twimg.com/emoji/v2/72x72/1f4f1.png" class="inline-emoji"> Dicas para Artes Digitais <img src="https://cdn.discordapp.com/emojis/528266482795151371.png?v=1" class="inline-emoji"><img src="https://abs.twimg.com/emoji/v2/72x72/1f4f1.png" class="inline-emoji">
 * O desenho deverá estar em png! Jamais use jpg para desenhos digitais, jpg foi feito para fotos e perde a qualidade em desenhos digitais!
 * Se o seu desenho não tem um "fundo" personalizado (ou seja, tem fundo branco/transparente), corte a imagem para ficar apenas o desenho!
 Exemplos de Artes Digitais:
 ![Desenho de Its_Gabi](https://loritta.website/assets/img/fanarts/Loritta_-_Its_Gabi.png)
 
-#### <img src="https://twemoji.maxcdn.com/2/72x72/1f4f7.png" class="inline-emoji"> Dicas para Artes no Papel<img src="https://twemoji.maxcdn.com/2/72x72/1f4f7.png" class="inline-emoji">
+#### <img src="https://abs.twimg.com/emoji/v2/72x72/1f4f7.png" class="inline-emoji"> Dicas para Artes no Papel<img src="https://abs.twimg.com/emoji/v2/72x72/1f4f7.png" class="inline-emoji">
 * Utilize jpg para economizar espaço!
 * A foto do desenho deverá ser decente, ou seja: Com iluminação boa, focado corretamente e rotacionado na posição correta; Quanto mais claro e fácil de ser visualizado, melhor!
 Exemplos de Artes no Papel:

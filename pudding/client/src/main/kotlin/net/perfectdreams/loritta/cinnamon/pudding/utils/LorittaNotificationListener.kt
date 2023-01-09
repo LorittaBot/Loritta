@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.utils
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -11,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNoti
 
 class LorittaNotificationListener(hikariDataSource: HikariDataSource, val name: String = "Loritta PostgreSQL Notification Listener") {
     val notifications = MutableSharedFlow<LorittaNotification>()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     val postgreSQLNotificationListener = PostgreSQLNotificationListener(
         hikariDataSource,

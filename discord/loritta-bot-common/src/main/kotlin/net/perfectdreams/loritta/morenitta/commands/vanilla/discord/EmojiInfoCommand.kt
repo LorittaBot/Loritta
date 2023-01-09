@@ -72,7 +72,7 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 				val codePoints = arg0.codePoints().toList().map { LorittaUtils.toUnicode(it).substring(2) }
 
 				val value = codePoints.joinToString(separator = "-")
-				val emojiUrl = "https://twemoji.maxcdn.com/2/72x72/$value.png"
+				val emojiUrl = "https://abs.twimg.com/emoji/v2/72x72/$value.png"
 
 				val embed = EmbedBuilder()
 				embed.setColor(Constants.DISCORD_BLURPLE)

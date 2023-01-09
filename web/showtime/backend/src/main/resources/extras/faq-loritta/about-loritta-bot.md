@@ -16,7 +16,7 @@ O prefixo padrão da Loritta é +, mas você pode alterar ele no [painel de admi
 Para definir a linguagem na qual a Loritta fala no seu servidor você pode utilizar o comando `+linguagem`.  
 * <img src="https://cdn.discordapp.com/emojis/726845783344939028.png?v=1" class="inline-emoji"> **Dica da Loritta Morenitta**: Se você tem uma preferência ou afinidade com alguma linguagem em específico, você pode definir uma língua na qual a Loritta sempre irá utilizar com você mandando `linguagem` no privado da <span class="discord-mention">@Loritta</span>.
 * <img src="https://cdn.discordapp.com/emojis/640158506049077280.png?v=1" class="inline-emoji"> A tradução da Loritta é feita manualmente, e por isso algumas linguagens podem demorar para serem traduzidas completamente. Se você tiver interesse, ajude-nós a [traduzir a Loritta](https://loritta.crowdin.com/) e ganhe algumas exclusividades sendo tradutor!
-* <img src="https://twemoji.maxcdn.com/2/72x72/1f30e.png" class="inline-emoji"> Saiba mais informações na nossa outra página sobre [Tradução](/extras/faq-loritta/translate)! 
+* <img src="https://abs.twimg.com/emoji/v2/72x72/1f30e.png" class="inline-emoji"> Saiba mais informações na nossa outra página sobre [Tradução](/extras/faq-loritta/translate)! 
 
 ## Como posso configurar/personalizar a Loritta?
 Você pode configurar ela no [painel de administração](/dashboard)!

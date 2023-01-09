@@ -36,7 +36,7 @@ class EmojiInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
                     String.format("\\u%04x", it).substring(2)
                 }
 
-                val unicodeEmojiUrl = "https://twemoji.maxcdn.com/2/72x72/${
+                val unicodeEmojiUrl = "https://abs.twimg.com/emoji/v2/72x72/${
                     codePoints.joinToString("-")
                 }.png"
 

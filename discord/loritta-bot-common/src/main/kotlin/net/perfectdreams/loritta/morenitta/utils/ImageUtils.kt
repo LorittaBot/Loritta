@@ -68,7 +68,7 @@ object ImageUtils {
 
 	fun getTwitterEmoji(loritta: LorittaBot, text: String, index: Int): BufferedImage? {
 		try {
-			val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(index - 1)).substring(2) + ".png"
+			val imageUrl = "https://abs.twimg.com/emoji/v2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(index - 1)).substring(2) + ".png"
 			try {
 				if (emotes.containsKey(imageUrl))
 					return emotes[imageUrl]?.getOrNull()

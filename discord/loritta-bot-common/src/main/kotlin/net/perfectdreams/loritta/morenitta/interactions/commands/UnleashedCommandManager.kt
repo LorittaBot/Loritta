@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.christmas2022.Ev
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.GamerSaferCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
@@ -52,6 +53,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     init {
         // ===[ DISCORD ]===
         register(LorittaCommand())
+
+        // ===[ MODERATION ]===
+        if (loritta.config.loritta.environment == EnvironmentType.CANARY)
+            register(GamerSaferCommand(loritta))
 
         // ===[ FUN ]===
         register(EventCommand(loritta))

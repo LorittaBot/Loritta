@@ -320,7 +320,7 @@ class CommandContext(
 			try {
 				var unicodeEmoji = LorittaUtils.toUnicode(this.rawArgs[argument].codePointAt(0)) // Vamos usar codepoints porque emojis
 				unicodeEmoji = unicodeEmoji.substring(2) // Remover coisas desnecessárias
-				val toBeDownloaded = "https://twemoji.maxcdn.com/2/72x72/$unicodeEmoji.png"
+				val toBeDownloaded = "https://abs.twimg.com/emoji/v2/72x72/$unicodeEmoji.png"
 				if (HttpRequest.get(toBeDownloaded).code() == 200) {
 					return toBeDownloaded
 				}

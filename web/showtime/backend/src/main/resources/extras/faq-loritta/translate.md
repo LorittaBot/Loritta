@@ -13,7 +13,7 @@ Traduzir algo para várias linguagens é complicado, afinal, o trabalho é feito
 
 Você irá ganhar:
 * Um cargo exclusivo nos servidor da Loritta!
-* Uma badge exclusiva no +perfil da Lori! <img src="https://twemoji.maxcdn.com/2/72x72/1f30e.png" class="inline-emoji">
+* Uma badge exclusiva no +perfil da Lori! <img src="https://abs.twimg.com/emoji/v2/72x72/1f30e.png" class="inline-emoji">
 * Seu nome irá aparecer na +linguagem!
 * E talvez no futuro terá mais coisas! <img src="https://cdn.discordapp.com/emojis/626942886432473098.png?v=1" class="inline-emoji">
 

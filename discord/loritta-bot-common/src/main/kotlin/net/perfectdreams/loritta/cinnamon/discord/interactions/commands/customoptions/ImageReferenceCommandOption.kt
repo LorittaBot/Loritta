@@ -57,7 +57,7 @@ value class ImageReferenceIntermediaryData(val value: String) {
             // If not, we are going to handle it as if it were a Unicode emoji
             val emoteId = value.codePoints().toList()
                 .joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
-            URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+            URLImageReference("https://abs.twimg.com/emoji/v2/72x72/$emoteId.png")
         }
     }
 }
