@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.LanguageManager
@@ -18,6 +19,8 @@ class SlashCommandDeclarationBuilder(
     val category: CommandCategory
 ) {
     var executor: LorittaSlashCommandExecutor? = null
+    var defaultMemberPermissions: DefaultMemberPermissions? = null
+    var isGuildOnly = false
     val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<SlashCommandGroupDeclarationBuilder>()
 
@@ -46,6 +49,8 @@ class SlashCommandDeclarationBuilder(
             name,
             description,
             category,
+            defaultMemberPermissions,
+            isGuildOnly,
             executor,
             subcommands.map { it.build(languageManager) },
             subcommandGroups.map { it.build(languageManager) }

@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.christmas2022.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
@@ -54,6 +55,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ FUN ]===
         register(EventCommand(loritta))
+        register(MusicalChairsCommand(loritta))
 
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))
@@ -71,6 +73,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
      */
     fun convertDeclarationToJDA(declaration: SlashCommandDeclaration): SlashCommandData {
         return Commands.slash(slashCommandDefaultI18nContext.get(declaration.name), buildDescription(slashCommandDefaultI18nContext, declaration.description, declaration.category)).apply {
+            if (declaration.defaultMemberPermissions != null)
+                this.defaultPermissions = declaration.defaultMemberPermissions
+            this.isGuildOnly = declaration.isGuildOnly
+
             forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
                 setNameLocalization(discordLocale, i18nContext.get(declaration.name))
                 setDescriptionLocalization(discordLocale, buildDescription(i18nContext, declaration.description, declaration.category))
@@ -261,7 +267,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required
-                            )
+                            ).apply {
+                                for (choice in interaKTionsOption.choices) {
+                                    choice(choice.name, choice.value)
+                                }
+                            }
                         )
                     }
 

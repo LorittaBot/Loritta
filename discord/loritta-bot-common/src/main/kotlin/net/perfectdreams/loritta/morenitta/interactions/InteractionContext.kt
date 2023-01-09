@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.components.ActionComponent
@@ -39,6 +40,13 @@ abstract class InteractionContext(
     val user
         get() = event.user
 
+    val memberOrNull: Member?
+        get() = event.member
+
+    val member: Member
+        get() = memberOrNull ?: error("This interaction was not sent in a guild!")
+
+
     var wasInitiallyDeferredEphemerally: Boolean? = null
 
     suspend fun deferChannelMessage(ephemeral: Boolean): InteractionHook {
@@ -62,6 +70,36 @@ abstract class InteractionContext(
         } else {
             event.reply(createdMessage).setEphemeral(ephemeral).await()
             wasInitiallyDeferredEphemerally = ephemeral
+        }
+    }
+
+    suspend inline fun chunkedReply(ephemeral: Boolean, builder: InlineMessage<MessageCreateData>.() -> Unit = {}) {
+        // Chunked replies are replies that are chunked into multiple messages, depending on the length of the content
+        val createdMessage = InlineMessage(MessageCreateBuilder()).apply(builder)
+
+        val currentContent = StringBuilder()
+        val messages = mutableListOf<InlineMessage<MessageCreateData>.() -> Unit>()
+
+        for (line in createdMessage.content!!.lines()) {
+            if (currentContent.length + line.length + 1 > 2000) {
+                messages.add {
+                    this.content = currentContent.toString()
+                }
+                currentContent.clear()
+            }
+            currentContent.append(line)
+            currentContent.append("\n")
+        }
+
+        if (currentContent.isNotEmpty()) {
+            messages.add {
+                this.content = currentContent.toString()
+            }
+        }
+
+        // TODO: Append anything else (components, files, etc) to the last message
+        for (message in messages) {
+            reply(ephemeral, message)
         }
     }
 }

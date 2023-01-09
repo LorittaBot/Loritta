@@ -140,6 +140,32 @@ class SoundboardBoardExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
                     PlayAudioClipButtonExecutor,
                     loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
+                            SoundboardAudio.ELE_GOSTA,
+                        )
+                    )
+                ) {
+                    label = "Ele Gosta"
+                }
+            }
+
+            actionRow {
+                interactiveButton(
+                    ButtonStyle.Primary,
+                    PlayAudioClipButtonExecutor,
+                    loritta.encodeDataForComponentOrStoreInDatabase(
+                        PlayAudioClipData(
+                            SoundboardAudio.XIII,
+                        )
+                    )
+                ) {
+                    label = "Xíiii"
+                }
+
+                interactiveButton(
+                    ButtonStyle.Primary,
+                    PlayAudioClipButtonExecutor,
+                    loritta.encodeDataForComponentOrStoreInDatabase(
+                        PlayAudioClipData(
                             SoundboardAudio.NICELY_DONE_CHEER,
                         )
                     )

@@ -652,6 +652,10 @@ class LorittaBot(
 
 				// Remove all event listeners to make Loritta not process new events while restarting
 				shardManager.shards.forEach { shard ->
+					shard.audioManagers.forEach {
+						it.closeAudioConnection()
+					}
+
 					shard.removeEventListener(*shard.registeredListeners.toTypedArray())
 				}
 

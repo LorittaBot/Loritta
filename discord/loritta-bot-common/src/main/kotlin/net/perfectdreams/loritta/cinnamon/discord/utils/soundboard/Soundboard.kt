@@ -8,6 +8,8 @@ class Soundboard {
     private val rapaiz = loadAndExtract("rapaiz.ogg")
     private val chavesRisadas = loadAndExtract("chaves_risadas.ogg")
     private val danceCatDance = loadAndExtract("dance_cat_dance.ogg")
+    private val eleGosta = loadAndExtract("ele_gosta.ogg")
+    private val xiii = loadAndExtract("xiii.ogg")
     private val esseEOMeuPatraoHehe = loadAndExtract("esse_e_o_meu_patrao_hehe.ogg")
     private val irra = loadAndExtract("irra.ogg")
     private val ratinho = loadAndExtract("ratinho.ogg")
@@ -26,6 +28,8 @@ class Soundboard {
         SoundboardAudio.UEPA -> uepa
         SoundboardAudio.UI -> ui
         SoundboardAudio.NICELY_DONE_CHEER -> nicelyDoneCheer
+        SoundboardAudio.ELE_GOSTA -> eleGosta
+        SoundboardAudio.XIII -> xiii
     }
 
     /**

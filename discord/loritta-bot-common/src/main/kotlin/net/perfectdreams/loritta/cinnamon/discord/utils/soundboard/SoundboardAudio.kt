@@ -10,5 +10,7 @@ enum class SoundboardAudio {
     RATINHO,
     UEPA,
     UI,
-    NICELY_DONE_CHEER
+    NICELY_DONE_CHEER,
+    ELE_GOSTA,
+    XIII
 }
