@@ -435,7 +435,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         }
 
                         if (tookTooLongToSit.isNotEmpty()) {
-                            val joinedMembers = I18N_PREFIX.States.TookTooLongToSit(tookTooLongToSit.keys.joinToString(", ") { it.asMention })
+                            val joinedMembers = tookTooLongToSit.keys.joinToString(", ") { it.asMention }
                             if (tookTooLongToSit.size == 1) {
                                 styled(
                                     i18nContext.get(I18N_PREFIX.States.TookTooLongToSit(joinedMembers)),
