@@ -126,6 +126,12 @@ val sass = tasks.register<SassTask>("sass-style-scss") {
     this.outputSass.set(file("$buildDir/sass/style-scss"))
 }
 
+val sassLegacy = tasks.register<SassTask>("sass-legacy-style-scss") {
+    this.inputSass.set(file("src/main/sass-legacy/style.scss"))
+    this.inputSassFolder.set(file("src/main/sass-legacy/"))
+    this.outputSass.set(file("$buildDir/sass/style-legacy-scss"))
+}
+
 tasks.test {
     useJUnitPlatform()
 }
@@ -137,6 +143,7 @@ tasks {
         // We need to wait until the JS build finishes and the SASS files are generated
         dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
+        dependsOn(sassLegacy)
 
         // Copy the output from the frontend task to the backend resources
         from(jsBrowserProductionWebpack.destinationDirectory) {
@@ -146,6 +153,9 @@ tasks {
         // Same thing with the SASS output
         from(sass) {
             into("static/v2/assets/css/")
+        }
+        from(sassLegacy) {
+            into("static/assets/css/")
         }
     }
 }

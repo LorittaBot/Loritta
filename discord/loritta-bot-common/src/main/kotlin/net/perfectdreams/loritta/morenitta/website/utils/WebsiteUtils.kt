@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.morenitta.website.OptimizeAssets
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
 import io.ktor.http.*
@@ -27,18 +26,20 @@ import kotlinx.html.title
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.ConfigTransformer
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.text.MessageFormat
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import kotlin.io.path.inputStream
 
 object WebsiteUtils {
 	val variablesKey = AttributeKey<MutableMap<String, Any?>>("variables")
@@ -163,7 +164,6 @@ object WebsiteUtils {
 			"epochMillis" to System.currentTimeMillis(),
 			"path" to req.path(),
 			"clientId" to loritta.config.loritta.discord.applicationId.toString(),
-			"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
 			"environment" to loritta.config.loritta.environment
 		)
 
@@ -223,6 +223,7 @@ object WebsiteUtils {
 			variables["legacy_asset_hash_${asset.split("/").last().split(".").first()}"] = WebsiteAssetsHashes.getLegacyAssetHash(asset)
 		}
 
+		variables["legacy_asset_hash_style"] = DigestUtils.md5Hex(LorittaWebsite::class.getPathFromResources("/static/assets/css/style.css")!!.inputStream())
 		variables["asset_hash_app"] = LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()
 	}
 

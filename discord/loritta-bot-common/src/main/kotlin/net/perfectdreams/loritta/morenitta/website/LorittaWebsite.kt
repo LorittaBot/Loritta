@@ -112,8 +112,6 @@ class LorittaWebsite(
 	}
 
 	init {
-		OptimizeAssets.optimizeCss()
-
 		// The website code expects the website URL with a trailing slash at the end
 		WEBSITE_URL = "${websiteUrl.removeSuffix("/")}/"
 		FOLDER = frontendFolder
@@ -287,6 +285,10 @@ class LorittaWebsite(
 				static {
 					staticRootFolder = File("${config.websiteFolder}/static/")
 					files(".")
+				}
+
+				static("/assets/css/") {
+					resources("static/assets/css/")
 				}
 
 				static("/v2/assets/css/") {

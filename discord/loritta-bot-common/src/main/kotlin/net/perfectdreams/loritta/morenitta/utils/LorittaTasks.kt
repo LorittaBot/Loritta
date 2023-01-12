@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.InternalAnalyticSender
 import net.perfectdreams.loritta.morenitta.utils.eventlog.DeleteOldStoredMessagesTask
 import net.perfectdreams.loritta.morenitta.utils.networkbans.ApplyBansTask
-import net.perfectdreams.loritta.morenitta.website.OptimizeAssetsTask
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -21,7 +20,6 @@ class LorittaTasks(val loritta: LorittaBot) {
 		DAILY_TAX_TASK = DailyTaxTask(loritta)
 
 		scheduleWithFixedDelay(SponsorsSyncTask(loritta), 0L, 1L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(InternalAnalyticSender(loritta), 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
