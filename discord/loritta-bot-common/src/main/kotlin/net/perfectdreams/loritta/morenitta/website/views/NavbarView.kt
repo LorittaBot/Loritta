@@ -28,8 +28,8 @@ abstract class NavbarView(
     locale,
     path
 ) {
-    var hasNavbar: Boolean = true
-    var hasFooter: Boolean = true
+    open val hasNavbar = true
+    open val hasFooter = true
 
     override fun HTML.generateBody() {
         val base = "/${locale.path}"
