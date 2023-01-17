@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class ConfigureAutoroleRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/autorole") {
@@ -40,7 +41,15 @@ class ConfigureAutoroleRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 		} ?: listOf()
 		variables["currentAutoroles"] = validEnabledRoles.joinToString(separator = ";")
 
-		call.respondHtml(evaluate("autorole.html", variables))
+		call.respondHtml(
+			LegacyPebbleRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate("autorole.html", variables)
+			).generateHtml()
+		)
 	}
 
 	/**

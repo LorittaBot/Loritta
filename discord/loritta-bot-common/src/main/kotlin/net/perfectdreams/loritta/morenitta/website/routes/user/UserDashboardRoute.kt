@@ -10,6 +10,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleProfileDashboardRawHtmlView
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class UserDashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard") {
@@ -30,6 +32,15 @@ class UserDashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRou
 		)
 		variables["saveType"] = "main"
 
-		call.respondHtml(evaluate("profile_dashboard.html", variables))
+		call.respondHtml(
+			LegacyPebbleProfileDashboardRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate("main.html", variables),
+				"ship_effects"
+			).generateHtml()
+		)
 	}
 }

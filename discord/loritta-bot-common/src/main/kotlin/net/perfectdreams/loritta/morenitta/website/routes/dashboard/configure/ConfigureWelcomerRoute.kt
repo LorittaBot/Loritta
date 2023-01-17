@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import kotlin.collections.set
 
@@ -40,7 +41,15 @@ class ConfigureWelcomerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 				)
 		)
 
-		call.respondHtml(evaluate("welcomer.html", variables))
+		call.respondHtml(
+			LegacyPebbleRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate("welcomer.html", variables)
+			).generateHtml()
+		)
 	}
 
 	/**

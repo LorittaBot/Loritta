@@ -1,12 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard
 
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
-import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
-import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
-import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
-import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.*
@@ -16,6 +10,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleProfileDashboardRawHtmlView
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
@@ -58,7 +54,14 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 		variables["saveType"] = "main"
 
 		call.respondHtml(
-				evaluate("dashboard.html", variables)
+			LegacyPebbleProfileDashboardRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate("dashboard.html", variables),
+				"main"
+			).generateHtml()
 		)
 	}
 }

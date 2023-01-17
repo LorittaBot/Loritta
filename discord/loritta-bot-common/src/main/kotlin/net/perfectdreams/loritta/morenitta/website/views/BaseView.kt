@@ -25,6 +25,8 @@ abstract class BaseView(
         val websiteUrl = LorittaWebsite.INSTANCE.config.websiteUrl
     }
 
+    open val useOldStyleCss = false
+
     fun generateHtml(): String {
         val supportUrl = "https://loritta.website/support"
         val firefoxUrl = "https://www.mozilla.org/firefox"
@@ -78,7 +80,23 @@ window.addEventListener('load', function () {
                 }
                 meta(name = "viewport", content = "width=device-width, initial-scale=1")
 
-                styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${assetHashFromResources("v2/assets/css/style.css")}")
+                if (useOldStyleCss) {
+                    styleLink(
+                        "${LorittaWebsite.INSTANCE.config.websiteUrl}/assets/css/style.css?hash=${
+                            assetHashFromResources(
+                                "assets/css/style.css"
+                            )
+                        }"
+                    )
+                } else {
+                    styleLink(
+                        "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${
+                            assetHashFromResources(
+                                "v2/assets/css/style.css"
+                            )
+                        }"
+                    )
+                }
 
                 styleLink("https://use.fontawesome.com/releases/v6.2.0/css/all.css")
 

@@ -8,6 +8,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleProfileDashboardRawHtmlView
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class AllBackgroundsListRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/all-backgrounds") {
@@ -16,6 +18,15 @@ class AllBackgroundsListRoute(loritta: LorittaBot) : RequiresDiscordLoginLocaliz
 
 		variables["saveType"] = "background_list_debug"
 
-		call.respondHtml(evaluate("profile_dashboard_backgrounds_list.html", variables))
+		call.respondHtml(
+			LegacyPebbleProfileDashboardRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate("profile_dashboard_backgrounds_list.html", variables),
+				"background_list_debug"
+			).generateHtml()
+		)
 	}
 }

@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/invite-blocker") {
@@ -36,7 +37,15 @@ class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocali
 				)
 		)
 
-		call.respondHtml(evaluate("invite_blocker.html", variables))
+		call.respondHtml(
+			LegacyPebbleRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate("invite_blocker.html", variables)
+			).generateHtml()
+		)
 	}
 
 	/**

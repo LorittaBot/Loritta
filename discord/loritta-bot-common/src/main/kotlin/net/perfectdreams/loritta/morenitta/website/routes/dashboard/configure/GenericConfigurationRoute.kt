@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 open class GenericConfigurationRoute(loritta: LorittaBot, path: String, val type: String, val file: String) : RequiresGuildAuthLocalizedRoute(loritta, path) {
@@ -31,6 +32,14 @@ open class GenericConfigurationRoute(loritta: LorittaBot, path: String, val type
 			)
 		}
 
-		call.respondHtml(evaluate(file, variables))
+		call.respondHtml(
+			LegacyPebbleRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate(file, variables)
+			).generateHtml()
+		)
 	}
 }

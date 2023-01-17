@@ -13,6 +13,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLo
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleProfileDashboardRawHtmlView
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 
@@ -55,6 +57,15 @@ class ShipEffectsRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute
 				WebsiteUtils.getProfileAsJson(lorittaProfile)
 		)
 
-		call.respondHtml(evaluate("profile_dashboard_ship_effects.html", variables))
+		call.respondHtml(
+			LegacyPebbleProfileDashboardRawHtmlView(
+				loritta,
+				locale,
+				getPathWithoutLocale(call),
+				"Painel de Controle",
+				evaluate("profile_dashboard_ship_effects.html", variables),
+				"ship_effects"
+			).generateHtml()
+		)
 	}
 }
