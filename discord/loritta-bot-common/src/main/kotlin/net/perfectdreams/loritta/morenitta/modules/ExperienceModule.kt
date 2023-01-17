@@ -72,7 +72,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 		val lastMessageSentAt = lorittaProfile?.lastMessageSentAt ?: 0L
 		val currentLastMessageSentHash = lorittaProfile?.lastMessageSentHash ?: 0L
 		var lastMessageSentHash: Int? = null
-		val retrievedProfile by lazy { lorittaProfile ?: loritta.getOrCreateLorittaProfile(event.author.idLong) }
+		val retrievedProfile = lorittaProfile ?: loritta.getOrCreateLorittaProfile(event.author.idLong)
 
 		// Do not give XP if the message contains a code block
 		// Users would be able to gain a lot of experience by hidding text in the ```languageCodeHere section
@@ -96,7 +96,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 					var globalGainedXp = gainedXp
 
-					val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(event.author.idLong)
+					val donatorPaid = loritta.getActiveMoneyFromDonations(event.author.idLong)
 					if (donatorPaid != 0.0) {
 						val plan = ServerPremiumPlans.getPlanFromValue(donatorPaid)
 						globalGainedXp = (globalGainedXp * plan.globalXpMultiplier).toInt()

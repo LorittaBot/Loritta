@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import com.google.common.collect.Sets
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -130,7 +131,7 @@ open class LorittaUser(val loritta: LorittaBot, val user: User, val permissions:
 
 	val asMention: String
 		get() = getAsMention(false)
-	val profile by lazy { _profile ?: loritta.getOrCreateLorittaProfile(user.idLong) }
+	val profile by lazy { _profile ?: runBlocking { loritta.getOrCreateLorittaProfile(user.idLong) } }
 
 	fun getAsMention(addSpace: Boolean): String {
 		return user.asMention + (if (addSpace) " " else "")

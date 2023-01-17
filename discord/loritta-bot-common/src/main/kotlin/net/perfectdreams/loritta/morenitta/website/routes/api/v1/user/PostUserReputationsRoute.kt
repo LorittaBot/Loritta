@@ -194,7 +194,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 			giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-			val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
+			val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
 			var randomChance = UserPremiumPlans.getPlanFromValue(donatorPaid).loriReputationRetribution
 
 			if (chance(randomChance)) { // Lori é fofis e retribuiu reputações :eu_te_moido:

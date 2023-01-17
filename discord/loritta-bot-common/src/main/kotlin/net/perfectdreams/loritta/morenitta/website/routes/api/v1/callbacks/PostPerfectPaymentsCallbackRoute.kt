@@ -240,7 +240,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 					}
 
 					// TODO: Why not have a getOrCreateLorittaProfileAsync smh
-					val profile = loritta.getLorittaProfileAsync(internalPayment.userId) ?: loritta.getOrCreateLorittaProfile(internalPayment.userId)
+					val profile = loritta.getLorittaProfile(internalPayment.userId) ?: loritta.getOrCreateLorittaProfile(internalPayment.userId)
 
 					loritta.newSuspendedTransaction {
 						profile.addSonhosAndAddToTransactionLogNested(

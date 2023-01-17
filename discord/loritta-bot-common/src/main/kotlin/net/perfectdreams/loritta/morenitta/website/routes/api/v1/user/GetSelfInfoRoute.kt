@@ -102,7 +102,7 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 					)
 				)
 
-			val profile by lazy { loritta.getOrCreateLorittaProfile(userIdentification.id) }
+			val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 			var profileDataWrapper: ProfileSectionsResponse.ProfileDataWrapper? = null
 			var donationsWrapper: ProfileSectionsResponse.DonationsWrapper? = null
 			var settingsWrapper: ProfileSectionsResponse.SettingsWrapper? = null
@@ -118,7 +118,7 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 
 			if ("donations" in sections) {
 				donationsWrapper = ProfileSectionsResponse.DonationsWrapper(
-					loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
+					loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
 				)
 			}
 

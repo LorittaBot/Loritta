@@ -786,26 +786,28 @@ class LorittaBot(
 	fun initPostgreSql() {
 		logger.info("Iniciando PostgreSQL...")
 
-		transaction {
-			createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
-			createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
-			createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
-			createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
+        runBlocking {
+            transaction {
+                createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
+                createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
+                createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
+                createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
 
-			// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
-			SchemaUtils.createMissingTablesAndColumns(
-				GatewayActivities,
-				UserSettings,
-				Backgrounds,
-				BackgroundVariations,
-				ConcurrentLoginBuckets,
-				Christmas2022Players,
-				Christmas2022Drops,
-				CollectedChristmas2022Points,
-				Christmas2022SonhosTransactionsLog,
-				DailyRewardSonhosTransactionsLog
-			)
-		}
+                // TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
+                SchemaUtils.createMissingTablesAndColumns(
+                    GatewayActivities,
+                    UserSettings,
+                    Backgrounds,
+                    BackgroundVariations,
+                    ConcurrentLoginBuckets,
+                    Christmas2022Players,
+                    Christmas2022Drops,
+                    CollectedChristmas2022Points,
+                    Christmas2022SonhosTransactionsLog,
+                    DailyRewardSonhosTransactionsLog
+                )
+            }
+        }
 
 		// Hidden behind a env flag, because FOR SOME REASON Exposed thinks that it is a good idea to
 		// "ALTER TABLE serverconfigs ALTER COLUMN prefix TYPE TEXT, ALTER COLUMN prefix SET DEFAULT '+'"
@@ -1006,7 +1008,7 @@ class LorittaBot(
 
 		if (background.id == Background.CUSTOM_BACKGROUND_ID) {
 			// Custom background
-			val donationValue = this.getActiveMoneyFromDonationsAsync(userId)
+			val donationValue = this.getActiveMoneyFromDonations(userId)
 			val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
 			if (plan.customBackground) {
@@ -1179,16 +1181,14 @@ class LorittaBot(
 		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
 	}
 
-	fun <T> transaction(statement: Transaction.() -> T) = runBlocking {
-		pudding.transaction {
-			statement.invoke(this)
-		}
-	}
+	suspend fun <T> transaction(statement: suspend Transaction.() -> T) = pudding.transaction {
+        statement.invoke(this)
+    }
 
-	suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: Transaction.() -> T): T
+	suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: suspend Transaction.() -> T): T
 			= pudding.transaction(repetitions, transactionIsolation, statement)
 
-	suspend fun <T> suspendedTransactionAsync(statement: Transaction.() -> T) = GlobalScope.async(coroutineDispatcher) {
+	suspend fun <T> suspendedTransactionAsync(statement: suspend Transaction.() -> T) = GlobalScope.async(coroutineDispatcher) {
 		newSuspendedTransaction(statement = statement)
 	}
 
@@ -1207,28 +1207,13 @@ class LorittaBot(
 	 * @param guildId the guild's ID
 	 * @return        the server configuration
 	 */
-	fun getOrCreateServerConfig(guildId: Long, loadFromCache: Boolean = false): ServerConfig {
+	suspend fun getOrCreateServerConfig(guildId: Long, loadFromCache: Boolean = false): ServerConfig {
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
-		return runBlocking {
-			pudding.transaction {
-				_getOrCreateServerConfig(guildId)
-			}
-		}
-	}
-
-	/**
-	 * Loads the server configuration of a guild in a coroutine
-	 *
-	 * @param guildId the guild's ID
-	 * @return        the server configuration
-	 */
-	suspend fun getOrCreateServerConfigAsync(guildId: Long, loadFromCache: Boolean = false): ServerConfig {
-		if (loadFromCache)
-			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
-
-		return pudding.transaction { _getOrCreateServerConfig(guildId) }
+		return pudding.transaction {
+            _getOrCreateServerConfig(guildId)
+        }
 	}
 
 	/**
@@ -1241,7 +1226,7 @@ class LorittaBot(
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return GlobalScope.async(coroutineDispatcher) { it } }
 
-		return GlobalScope.async { pudding.transaction { _getOrCreateServerConfig(guildId) } }
+		return GlobalScope.async { getOrCreateServerConfig(guildId) }
 	}
 
 	private fun _getOrCreateServerConfig(guildId: Long): ServerConfig {
@@ -1250,9 +1235,7 @@ class LorittaBot(
 		return result
 	}
 
-	fun getLorittaProfile(userId: String): Profile? {
-		return getLorittaProfile(userId.toLong())
-	}
+	suspend fun getLorittaProfile(userId: String) = getLorittaProfile(userId.toLong())
 
 	/**
 	 * Loads the profile of an user
@@ -1260,15 +1243,7 @@ class LorittaBot(
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	fun getLorittaProfile(userId: Long) = runBlocking { pudding.transaction { _getLorittaProfile(userId) } }
-
-	/**
-	 * Loads the profile of an user in a coroutine
-	 *
-	 * @param userId the user's ID
-	 * @return       the user profile
-	 */
-	suspend fun getLorittaProfileAsync(userId: Long) = pudding.transaction { _getLorittaProfile(userId) }
+	suspend fun getLorittaProfile(userId: Long) = pudding.transaction { _getLorittaProfile(userId) }
 
 	/**
 	 * Loads the profile of an user deferred
@@ -1276,15 +1251,13 @@ class LorittaBot(
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	suspend fun getLorittaProfileDeferred(userId: Long) = GlobalScope.async { pudding.transaction { _getLorittaProfile(userId) } }
+	suspend fun getLorittaProfileDeferred(userId: Long) = GlobalScope.async { getLorittaProfile(userId) }
 
 	fun _getLorittaProfile(userId: Long) = Profile.findById(userId)
 
-	fun getOrCreateLorittaProfile(userId: String): Profile {
-		return getOrCreateLorittaProfile(userId.toLong())
-	}
+	suspend fun getOrCreateLorittaProfile(userId: String) = getOrCreateLorittaProfile(userId.toLong())
 
-	fun getOrCreateLorittaProfile(userId: Long): Profile {
+	suspend fun getOrCreateLorittaProfile(userId: Long): Profile {
 		val sqlProfile = transaction { Profile.findById(userId) }
 		if (sqlProfile != null)
 			return sqlProfile
@@ -1307,12 +1280,8 @@ class LorittaBot(
 		}
 	}
 
-	fun getActiveMoneyFromDonations(userId: Long): Double {
+	suspend fun getActiveMoneyFromDonations(userId: Long): Double {
 		return transaction { _getActiveMoneyFromDonations(userId) }
-	}
-
-	suspend fun getActiveMoneyFromDonationsAsync(userId: Long): Double {
-		return newSuspendedTransaction { _getActiveMoneyFromDonations(userId) }
 	}
 
 	fun _getActiveMoneyFromDonations(userId: Long): Double {

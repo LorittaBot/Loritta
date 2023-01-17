@@ -125,7 +125,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         else -> 1.1
                                     }
 
-                                    val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
+                                    val donatorPaid = loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())
                                     val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
                                     multiplier += plan.dailyMultiplier

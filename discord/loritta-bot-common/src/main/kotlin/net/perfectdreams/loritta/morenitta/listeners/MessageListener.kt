@@ -91,7 +91,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		loritta.launchMessageJob(event) {
 			try {
 				if (event.isFromType(ChannelType.PRIVATE)) {
-					val serverConfig = loritta.getOrCreateServerConfigAsync(-1, true)
+					val serverConfig = loritta.getOrCreateServerConfig(-1, true)
 					val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
 					val lorittaUser = LorittaUser(loritta, event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
 					val currentLocale = loritta.newSuspendedTransaction {

@@ -39,7 +39,7 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
 		for (mention in event.message.mentions.members) {
-			val lorittaProfile = loritta.getLorittaProfileAsync(mention.user.idLong)
+			val lorittaProfile = loritta.getLorittaProfile(mention.user.idLong)
 
 			if (lorittaProfile != null && lorittaProfile.isAfk) {
 				var reason = lorittaProfile.afkReason

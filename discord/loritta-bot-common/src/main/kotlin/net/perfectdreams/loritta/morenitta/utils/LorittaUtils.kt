@@ -154,7 +154,7 @@ object LorittaUtils {
 	 * @return if the owner of the guild is banned
 	 */
 	suspend fun isGuildOwnerBanned(loritta: LorittaBot, executorProfile: Profile?, guild: Guild): Boolean {
-		val ownerProfile = if (guild.ownerIdLong == executorProfile?.id?.value) executorProfile else loritta.getLorittaProfileAsync(guild.ownerIdLong)
+		val ownerProfile = if (guild.ownerIdLong == executorProfile?.id?.value) executorProfile else loritta.getLorittaProfile(guild.ownerIdLong)
 		return ownerProfile != null && isGuildOwnerBanned(loritta, guild, ownerProfile)
 	}
 
