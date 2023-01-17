@@ -10,8 +10,12 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.toJavaInstant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
@@ -32,7 +36,9 @@ import net.perfectdreams.loritta.serializable.responses.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
@@ -267,6 +273,25 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             it[Dailies.ip] = ip
                                             it[Dailies.email] = email
                                             it[Dailies.userAgent] = call.request.userAgent()
+                                        }
+
+                                        val dailyId = Dailies.insertAndGetId {
+                                            it[Dailies.receivedById] = id
+                                            it[Dailies.receivedAt] = receivedDailyAt
+                                            it[Dailies.ip] = ip
+                                            it[Dailies.email] = email
+                                            it[Dailies.userAgent] = call.request.userAgent()
+                                        }
+
+                                        val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+                                            it[SonhosTransactionsLog.user] = id
+                                            it[SonhosTransactionsLog.timestamp] = Instant.ofEpochMilli(receivedDailyAt)
+                                        }
+
+                                        DailyRewardSonhosTransactionsLog.insert {
+                                            it[DailyRewardSonhosTransactionsLog.timestampLog] = timestampLogId
+                                            it[DailyRewardSonhosTransactionsLog.daily] = dailyId
+                                            it[DailyRewardSonhosTransactionsLog.quantity] = dailyPayout.toLong()
                                         }
 
                                         lorittaProfile.addSonhosAndAddToTransactionLogNested(

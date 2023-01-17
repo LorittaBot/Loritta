@@ -31,6 +31,10 @@ types:
     description: "Transações relacionadas a transferências de sonhos para outros usuários"
     sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para `{receiverTag}` (`{receiverId}`)"
     received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de `{giverTag}` (`{giverId}`)"
+  dailyReward:
+    title: "Prêmio Diário"
+    description: "Transações relacionadas ao prêmio diário da Loritta"
+    received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no prêmio diário"
   homeBroker:
     title: "Simulador do Mercado de Ações da Loritta"
     description: "Transações relacionadas ao Simulador do Mercado de Ações da Loritta"

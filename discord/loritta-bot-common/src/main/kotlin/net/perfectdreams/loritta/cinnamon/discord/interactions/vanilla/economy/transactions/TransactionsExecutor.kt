@@ -209,6 +209,9 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                         // ===[ PAYMENTS ]===
                         is PaymentSonhosTransaction -> PaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
+                        // ===[ PAYMENTS ]===
+                        is DailyRewardSonhosTransaction -> DailyRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
                         // ===[ BROKER ]===
                         is BrokerSonhosTransaction -> BrokerSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 

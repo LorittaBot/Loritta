@@ -50,7 +50,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -65,7 +64,6 @@ import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
-import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
@@ -104,6 +102,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
@@ -129,7 +128,6 @@ import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
-import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
@@ -147,7 +145,6 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
@@ -805,7 +802,8 @@ class LorittaBot(
 				Christmas2022Players,
 				Christmas2022Drops,
 				CollectedChristmas2022Points,
-				Christmas2022SonhosTransactionsLog
+				Christmas2022SonhosTransactionsLog,
+				DailyRewardSonhosTransactionsLog
 			)
 		}
 
