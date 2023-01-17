@@ -15,6 +15,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.Payment.Description,
         Emotes.Star
     ),
+    DAILY_REWARD(
+        I18nKeysData.Commands.Command.Transactions.Types.DailyReward.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.DailyReward.Description,
+        Emotes.Sparkles
+    ),
     COINFLIP_BET(
         I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBet.Title,
         I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBet.Description,
