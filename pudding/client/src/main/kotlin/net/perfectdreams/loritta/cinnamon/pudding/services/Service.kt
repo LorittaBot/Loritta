@@ -162,6 +162,13 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             UserId(row[PaymentSonhosTransactionResults.receivedBy].value),
             row[PaymentSonhosTransactionResults.sonhos],
         )
+    } else if (row.getOrNull(DailyRewardSonhosTransactionsLog.id) != null) {
+        DailyRewardSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[DailyRewardSonhosTransactionsLog.quantity]
+        )
     } else if (row.getOrNull(BrokerSonhosTransactionsLog.id) != null) {
         BrokerSonhosTransaction(
             row[SonhosTransactionsLog.id].value,
