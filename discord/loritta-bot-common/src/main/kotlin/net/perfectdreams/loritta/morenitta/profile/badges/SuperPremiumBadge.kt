@@ -17,6 +17,6 @@ class SuperPremiumBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	250
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
-		return loritta.getActiveMoneyFromDonationsAsync(user.id.toLong()) >= 99.0
+		return loritta.getActiveMoneyFromDonations(user.id.toLong()) >= 99.0
 	}
 }

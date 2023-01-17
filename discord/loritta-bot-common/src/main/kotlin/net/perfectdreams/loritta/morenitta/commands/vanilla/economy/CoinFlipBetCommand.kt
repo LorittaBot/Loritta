@@ -71,8 +71,8 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			if (invitedUser == user)
 				fail(locale["commands.command.flipcoinbet.cantBetSelf"], Constants.ERROR)
 
-			val selfActiveDonations = loritta.getActiveMoneyFromDonationsAsync(discordMessage.author.idLong)
-			val otherActiveDonations = loritta.getActiveMoneyFromDonationsAsync(invitedUser.idLong)
+			val selfActiveDonations = loritta.getActiveMoneyFromDonations(discordMessage.author.idLong)
+			val otherActiveDonations = loritta.getActiveMoneyFromDonations(invitedUser.idLong)
 
 			val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 			val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)

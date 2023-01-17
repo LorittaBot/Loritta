@@ -58,7 +58,7 @@ class ServerInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, id.toLong())
 		val ownerId = guild["ownerId"].string
 		val owner = loritta.lorittaShards.retrieveUserInfoById(ownerId.toLong())
-		val ownerProfile = loritta.getLorittaProfileAsync(ownerId.toLong())
+		val ownerProfile = loritta.getLorittaProfile(ownerId.toLong())
 		val ownerGender = loritta.newSuspendedTransaction { ownerProfile?.settings?.gender ?: Gender.UNKNOWN }
 		val textChannelCount = guild["count"]["textChannels"].int
 		val voiceChannelCount = guild["count"]["voiceChannels"].int

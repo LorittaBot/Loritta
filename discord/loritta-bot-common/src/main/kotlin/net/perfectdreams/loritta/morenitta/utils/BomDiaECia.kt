@@ -298,7 +298,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 
 			if (textChannel != null && textChannel.canTalk() && textChannel.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
 				if (it.value.users.size >= 5 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
-					val serverConfig = loritta.getOrCreateServerConfig(textChannel.guild.idLong)
+					val serverConfig = runBlocking { loritta.getOrCreateServerConfig(textChannel.guild.idLong) }
 					val miscellaneousConfig = runBlocking { serverConfig.getCachedOrRetreiveFromDatabase<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig) }
 
 					val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false

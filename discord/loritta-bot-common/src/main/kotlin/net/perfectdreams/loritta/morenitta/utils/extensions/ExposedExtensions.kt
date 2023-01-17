@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.Entity
  *
  * @see [Entity.refresh]
  */
-fun Entity<*>.refreshInTransaction(loritta: LorittaBot, flush: Boolean = false) = loritta.transaction { this@refreshInTransaction.refresh(flush) }
+suspend fun Entity<*>.refreshInTransaction(loritta: LorittaBot, flush: Boolean = false) = loritta.transaction { this@refreshInTransaction.refresh(flush) }
 
 /**
  * Refreshes the current entity within a deferred transaction

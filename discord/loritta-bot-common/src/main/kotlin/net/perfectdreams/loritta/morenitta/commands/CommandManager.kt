@@ -285,7 +285,7 @@ class CommandManager(val loritta: LorittaBot) {
 
 				// Cooldown
 				var commandCooldown = command.cooldown
-				val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
+				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
 

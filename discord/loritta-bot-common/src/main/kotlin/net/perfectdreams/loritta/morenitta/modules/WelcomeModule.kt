@@ -34,7 +34,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val serverConfig = loritta.getOrCreateServerConfig(k1)
+						val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
 						val welcomerConfig = runBlocking {
 							loritta.pudding.transaction {
 								serverConfig.welcomerConfig
@@ -84,7 +84,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 					if (v1.size > 20) {
 						logger.info("Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val serverConfig = loritta.getOrCreateServerConfig(k1)
+						val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
 						val welcomerConfig = runBlocking {
 							loritta.pudding.transaction {
 								serverConfig.welcomerConfig

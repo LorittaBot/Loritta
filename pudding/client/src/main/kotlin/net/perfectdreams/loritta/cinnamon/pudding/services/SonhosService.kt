@@ -76,6 +76,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             it.leftJoin(PaymentSonhosTransactionsLog.leftJoin(PaymentSonhosTransactionResults))
         else it
     }.let {
+        if (TransactionType.DAILY_REWARD in transactionTypeFilter)
+            it.leftJoin(DailyRewardSonhosTransactionsLog.leftJoin(Dailies))
+        else it
+    }.let {
         if (TransactionType.HOME_BROKER in transactionTypeFilter)
             it.leftJoin(BrokerSonhosTransactionsLog)
         else it
@@ -130,6 +134,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             for (type in transactionTypeFilter) {
                 cond = when (type) {
                     TransactionType.PAYMENT -> cond.or(PaymentSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.DAILY_REWARD -> cond.or(DailyRewardSonhosTransactionsLog.id.isNotNull())
                     TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET -> cond.or(CoinFlipBetSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())
