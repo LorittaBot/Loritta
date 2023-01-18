@@ -6,6 +6,7 @@ import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.io.File
 import java.io.PrintStream
 import java.lang.management.ManagementFactory
@@ -42,6 +43,7 @@ object DebugLog {
 			}
 		}
 		logger.info("Active voice connections: ${loritta.voiceConnectionsManager.voiceConnections.size}")
+		logger.info("TemmieDiscordAuth mutexes instances: ${TemmieDiscordAuth.accessTokenMutexes.size}")
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
