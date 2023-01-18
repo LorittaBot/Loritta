@@ -96,8 +96,7 @@ class SelectGuildProfileDashboardView(
 
                             a(
                                 classes = "discord-server-button loritta-blue",
-                                href = "/${locale.path}/guild/${guild.id}/configure",
-                                target = "_blank"
+                                href = "/${locale.path}/guild/${guild.id}/configure"
                             ) {
                                 +i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.Entry.ManageServer)
                             }
