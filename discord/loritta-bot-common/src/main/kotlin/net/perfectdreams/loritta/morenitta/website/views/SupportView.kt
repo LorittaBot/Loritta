@@ -2,15 +2,18 @@ package net.perfectdreams.loritta.morenitta.website.views
 
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
 
 class SupportView(
     loritta: LorittaBot,
+    i18nContext: I18nContext,
     locale: BaseLocale,
     path: String
 ) : NavbarView(
     loritta,
+    i18nContext,
     locale,
     path
 ) {

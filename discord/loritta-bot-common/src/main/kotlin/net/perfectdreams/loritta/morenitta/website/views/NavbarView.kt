@@ -17,14 +17,17 @@ import kotlinx.html.p
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 abstract class NavbarView(
     val loritta: LorittaBot,
+    i18nContext: I18nContext,
     locale: BaseLocale,
     path: String
 ) : BaseView(
+    i18nContext,
     locale,
     path
 ) {

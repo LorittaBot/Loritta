@@ -68,7 +68,6 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.Co
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureWelcomerRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureYouTubeRoute
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
-import net.perfectdreams.loritta.morenitta.website.routes.user.UserDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.AllBackgroundsListRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.AvailableBundlesRoute
@@ -118,7 +117,6 @@ object DefaultRoutes {
 		UserReputationRoute(loritta),
 
 		// Profiles
-		UserDashboardRoute(loritta),
 		ProfileListRoute(loritta),
 		ShipEffectsRoute(loritta),
 		AvailableBundlesRoute(loritta),

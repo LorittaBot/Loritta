@@ -11,14 +11,17 @@ import kotlinx.html.p
 import kotlinx.html.strong
 import kotlinx.html.style
 import kotlinx.html.ul
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class CommunityGuidelinesView(
     loritta: LorittaBot,
+    i18nContext: I18nContext,
     locale: BaseLocale,
     path: String
 ) : NavbarView(
     loritta,
+    i18nContext,
     locale,
     path
 ) {

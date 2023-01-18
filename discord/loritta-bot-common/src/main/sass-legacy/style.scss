@@ -12,6 +12,7 @@
 @import '_fonts';
 @import '_headings';
 @import '_daily-shop';
+@import 'components/discord-invite-wrapper';
 
 .discord-style {
 	@import 'discord-style-v2';
@@ -1355,4 +1356,22 @@ details.fancy-details[open] summary {
 			flex-shrink: 0;
 		}
 	}
+}
+
+#no-server-found {
+    text-align: center;
+}
+
+#choose-your-server {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+
+    @media screen and (max-width: 1024px) {
+        grid-template-columns: 1fr;
+    }
+
+    .discord-invite-wrapper {
+        width: auto;
+    }
 }

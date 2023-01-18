@@ -14,6 +14,7 @@ import io.ktor.server.response.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
@@ -26,9 +27,9 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		private val logger = KotlinLogging.logger {}
 	}
 
-	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig)
+	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig)
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		var start = System.currentTimeMillis()
 		val guildId = call.parameters["guildId"] ?: return
 
@@ -82,6 +83,6 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		logger.info { "Legacy Vars Creation: ${System.currentTimeMillis() - start}" }
 		variables["guild"] = jdaGuild
 
-		return onGuildAuthenticatedRequest(call, locale, discordAuth, userIdentification, jdaGuild, serverConfig)
+		return onGuildAuthenticatedRequest(call, locale, i18nContext, discordAuth, userIdentification, jdaGuild, serverConfig)
 	}
 }

@@ -6,15 +6,18 @@ import kotlinx.html.h1
 import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.style
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class Error404View(
     loritta: LorittaBot,
+    i18nContext: I18nContext,
     locale: BaseLocale,
     path: String
 ) : NavbarView(
     loritta,
+    i18nContext,
     locale,
     path
 ) {

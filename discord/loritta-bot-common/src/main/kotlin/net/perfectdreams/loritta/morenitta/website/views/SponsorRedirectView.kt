@@ -9,9 +9,10 @@ import kotlinx.html.img
 import kotlinx.html.meta
 import kotlinx.html.style
 import kotlinx.html.unsafe
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
 
-class SponsorRedirectView(locale: BaseLocale, path: String, val sponsor: Sponsor) : BaseView(locale, path) {
+class SponsorRedirectView(i18nContext: I18nContext, locale: BaseLocale, path: String, val sponsor: Sponsor) : BaseView(i18nContext, locale, path) {
     override fun getTitle() = "Patrocinadores"
 
     override fun HTML.generateBody() {

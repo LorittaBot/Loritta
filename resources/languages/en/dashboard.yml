@@ -4,6 +4,14 @@ website:
     localePathId: "en" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
     loading: "Loading..."
     frequentlyAskedQuestions: "Frequently Asked Questions"
+
+    serverEntry:
+      owner: "Dono"
+      administrator: "Administrador"
+      manager: "Gerenciador"
+      member: "Membro"
+      manageServer: "Configurar Servidor"
+
     modal:
       close: "Close"
     purchaseVariants:

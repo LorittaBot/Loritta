@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.morenitta.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
@@ -17,20 +18,20 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 
 class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/{userId}/rep") {
-	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale) {
+	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
-			createReputationPage(call, locale, null, null)
+			createReputationPage(call, i18nContext, locale, null, null)
 			return
 		}
 
-		super.onUnauthenticatedRequest(call, locale)
+		super.onUnauthenticatedRequest(call, locale, i18nContext)
 	}
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		createReputationPage(call, locale, discordAuth, userIdentification)
+	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+		createReputationPage(call, i18nContext, locale, discordAuth, userIdentification)
 	}
 
-	suspend fun createReputationPage(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth?, userIdentification: LorittaJsonWebSession.UserIdentification?) {
+	suspend fun createReputationPage(call: ApplicationCall, i18nContext: I18nContext, locale: BaseLocale, discordAuth: TemmieDiscordAuth?, userIdentification: LorittaJsonWebSession.UserIdentification?) {
 		loritta as LorittaBot
 		val userId = call.parameters["userId"] ?: return
 
@@ -61,6 +62,7 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 		call.respondHtml(
 			UserReputationView(
 				loritta,
+				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
 				userIdentification,

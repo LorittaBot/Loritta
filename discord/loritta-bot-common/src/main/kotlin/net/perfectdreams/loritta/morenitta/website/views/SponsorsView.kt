@@ -11,10 +11,11 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.html.ul
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateSponsorNoWrap
 
-class SponsorsView(loritta: LorittaBot, locale: BaseLocale, path: String) : NavbarView(loritta, locale, path) {
+class SponsorsView(loritta: LorittaBot, i18nContext: I18nContext, locale: BaseLocale, path: String) : NavbarView(loritta, i18nContext, locale, path) {
     override fun getTitle() = "Patrocinadores"
 
     override fun DIV.generateContent() {

@@ -14,6 +14,7 @@ import io.ktor.server.sessions.*
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
@@ -38,9 +39,9 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 		private val logger = KotlinLogging.logger {}
 	}
 
-	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification)
+	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification)
 
-	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		loritta as LorittaBot
 
 		if (call.request.path().endsWith("/dashboard")) {
@@ -302,7 +303,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 		logger.info { "Time to get User Identification: ${System.currentTimeMillis() - start}" }
 
 		if (discordAuth == null || userIdentification == null) {
-			onUnauthenticatedRequest(call, locale)
+			onUnauthenticatedRequest(call, locale, i18nContext)
 			return
 		}
 
@@ -312,6 +313,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 			call.respondHtml(
 				UserBannedView(
 					loritta,
+					i18nContext,
 					locale,
 					getPathWithoutLocale(call),
 					profile,
@@ -321,10 +323,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 			return
 		}
 
-		onAuthenticatedRequest(call, locale, discordAuth, userIdentification)
+		onAuthenticatedRequest(call, locale, i18nContext, discordAuth, userIdentification)
 	}
 
-	open suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale) {
+	open suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		// redirect to authentication owo
 		val state = JsonObject()
 		state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()

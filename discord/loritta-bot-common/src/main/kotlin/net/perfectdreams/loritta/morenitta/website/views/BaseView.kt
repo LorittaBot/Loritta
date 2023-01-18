@@ -12,11 +12,13 @@ import kotlinx.html.stream.appendHTML
 import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.unsafe
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteAssetsHashes
 
 abstract class BaseView(
+    val i18nContext: I18nContext,
     val locale: BaseLocale,
     val path: String
 ) {

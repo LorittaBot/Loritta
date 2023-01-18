@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Role
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
@@ -19,7 +20,7 @@ import java.util.*
 import kotlin.collections.set
 
 class ConfigurePermissionsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/permissions") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
+	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as LorittaBot
 
 		val variables = call.legacyVariables(loritta, locale)
@@ -44,6 +45,7 @@ class ConfigurePermissionsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalize
 		call.respondHtml(
 			LegacyPebbleRawHtmlView(
 				loritta,
+				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
 				"Painel de Controle",

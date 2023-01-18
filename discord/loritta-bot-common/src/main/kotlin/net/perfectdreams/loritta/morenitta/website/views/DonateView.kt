@@ -3,18 +3,21 @@ package net.perfectdreams.loritta.morenitta.website.views
 import com.google.gson.JsonArray
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 
 class DonateView(
     loritta: LorittaBot,
+    i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
     val userIdentification: LorittaJsonWebSession.UserIdentification?,
     val keys: JsonArray
 ) : NavbarView(
     loritta,
+    i18nContext,
     locale,
     path
 ) {

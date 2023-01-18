@@ -276,7 +276,9 @@ class TemmieDiscordAuth(val clientId: String,
 			@SerializedName("owner")
 			val owner: Boolean,
 			@SerializedName("permissions")
-			val permissions: Int
+			val permissions: Int,
+			@SerializedName("features")
+			val features: List<String>
 	)
 
 	class Connection constructor(

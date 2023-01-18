@@ -5,6 +5,19 @@ website:
     localePathId: "pt" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
     loading: "Carregando..."
     frequentlyAskedQuestions: "Perguntas Frequentes"
+
+    chooseAServer:
+      noServerFound: "Nenhum servidor encontrado!"
+      tryLoggingIn:
+        - "Você não é dono ou você não tem permissão de administrador ou de gerenciar o servidor em algum servidor na sua conta!"
+        - "Antes de falar \"mas eu tenho sim seu bot lixo!!11!\" tente verificar se você está na conta correta pelo Discord de navegador!"
+      entry:
+        owner: "Dono"
+        administrator: "Administrador"
+        manager: "Gerenciador"
+        member: "Membro"
+        manageServer: "Configurar"
+
     modal:
       close: "Fechar"
     purchaseVariants:

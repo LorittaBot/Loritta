@@ -6,12 +6,14 @@ import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 
 class UserReputationView(
     val loritta: LorittaBot,
+    i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
     val userIdentification: LorittaJsonWebSession.UserIdentification?,
@@ -22,8 +24,9 @@ class UserReputationView(
     val channelId: Long?,
     val backgroundUrl: String
 ) : BaseView(
-        locale,
-        path
+    i18nContext,
+    locale,
+    path
 ) {
     override fun getTitle() = "Reputações para ${user?.name}"
 
@@ -265,7 +268,7 @@ class UserReputationView(
                                         redirectUrl += "?guild=$guildId&channel=$channelId"
 
                                     val state = jsonObject(
-                                            "redirectUrl" to redirectUrl
+                                        "redirectUrl" to redirectUrl
                                     )
 
                                     a(classes = "button-discord button-discord-info pure-button g-recaptcha reputation-button", href = (loritta.config.loritta.discord.authorizationUrl + "&state=${java.util.Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")) {

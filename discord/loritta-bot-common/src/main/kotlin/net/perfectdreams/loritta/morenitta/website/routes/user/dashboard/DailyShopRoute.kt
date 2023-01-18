@@ -7,6 +7,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
@@ -17,7 +18,7 @@ import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/daily-shop") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "daily_shop"
@@ -25,6 +26,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 		call.respondHtml(
 			LegacyPebbleProfileDashboardRawHtmlView(
 				loritta,
+				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
 				"Painel de Controle",
@@ -34,7 +36,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 		)
 	}
 
-	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale) {
+	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
 			call.respondHtml(
 					createHTML().html {
@@ -61,6 +63,6 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 					}
 			)
 		}
-		return super.onUnauthenticatedRequest(call, locale)
+		return super.onUnauthenticatedRequest(call, locale, i18nContext)
 	}
 }

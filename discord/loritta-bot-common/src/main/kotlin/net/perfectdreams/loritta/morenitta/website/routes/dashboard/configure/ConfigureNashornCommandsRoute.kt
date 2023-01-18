@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
@@ -19,7 +20,7 @@ import org.jetbrains.exposed.sql.select
 import kotlin.collections.set
 
 class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/nashorn") {
-    override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
+    override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
         loritta as LorittaBot
 
         val nashornCommands = loritta.newSuspendedTransaction {
@@ -47,6 +48,7 @@ class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
         call.respondHtml(
             LegacyPebbleRawHtmlView(
                 loritta,
+                i18nContext,
                 locale,
                 getPathWithoutLocale(call),
                 "Painel de Controle",

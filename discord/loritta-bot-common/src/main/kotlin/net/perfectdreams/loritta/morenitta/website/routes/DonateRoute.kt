@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import io.ktor.server.application.ApplicationCall
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
@@ -15,7 +16,7 @@ import org.jetbrains.exposed.sql.and
 class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 	override val isMainClusterOnlyRoute = true
 
-	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		val userIdentification = call.lorittaSession.getUserIdentification(loritta, call)
 
 		val keys = jsonArray()
@@ -42,6 +43,7 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 		call.respondHtml(
 			DonateView(
 				loritta,
+				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
 				userIdentification,
