@@ -18,16 +18,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import java.util.concurrent.ConcurrentHashMap
 
-class TemmieDiscordAuth(val clientId: String,
-						val clientSecret: String,
-						val authCode: String?,
-						val redirectUri: String,
-						val scope: List<String>,
-						var accessToken: String? = null,
-						var refreshToken: String? = null,
-						var expiresIn: Long? = null,
-						var generatedAt: Long? = null
+class TemmieDiscordAuth(
+	val clientId: String,
+	val clientSecret: String,
+	val authCode: String?,
+	val redirectUri: String,
+	val scope: List<String>,
+	var accessToken: String? = null,
+	var refreshToken: String? = null,
+	var expiresIn: Long? = null,
+	var generatedAt: Long? = null
 ) {
 	companion object {
 		private const val PREFIX = "https://discordapp.com/api"
@@ -41,9 +43,16 @@ class TemmieDiscordAuth(val clientId: String,
 		val http = HttpClient {
 			this.expectSuccess = false
 		}
-	}
 
-	private val mutex = Mutex()
+		val unknownTokenMutexKey = "unknown_token".hashCode()
+
+		// TODO: This is *very* hacky and bad, and leaks int/mutex instances
+		/**
+		 * Stores mutexes per access token, each endpoint is rate limited based on the access token, and because multiple TemmieDiscordAuth instances can
+		 * exist with the same token, we need to store it on a globally accessible map.
+		 */
+		val accessTokenMutexes = ConcurrentHashMap<Int, Mutex>()
+	}
 
 	suspend fun doTokenExchange(): JsonObject {
 		logger.info { "doTokenExchange()" }
@@ -93,13 +102,15 @@ class TemmieDiscordAuth(val clientId: String,
 		}
 
 		doStuff(false) {
-			val httpResponse = checkIfRequestWasValid(
-					http.post {
-						url(TOKEN_BASE_URL)
-						userAgent(USER_AGENT)
+			accessTokenMutexes.remove(accessToken ?: unknownTokenMutexKey)
 
-						setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
-					}
+			val httpResponse = checkIfRequestWasValid(
+				http.post {
+					url(TOKEN_BASE_URL)
+					userAgent(USER_AGENT)
+
+					setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
+				}
 			)
 
 			val result = httpResponse.bodyAsText()
@@ -121,11 +132,11 @@ class TemmieDiscordAuth(val clientId: String,
 		logger.info { "getUserIdentification()" }
 		return doStuff {
 			val httpResponse = checkIfRequestWasValid(
-					http.get {
-						url(USER_IDENTIFICATION_URL)
-						userAgent(USER_AGENT)
-						header("Authorization", "Bearer $accessToken")
-					}
+				http.get {
+					url(USER_IDENTIFICATION_URL)
+					userAgent(USER_AGENT)
+					header("Authorization", "Bearer $accessToken")
+				}
 			)
 
 			val result = httpResponse.bodyAsText()
@@ -142,11 +153,11 @@ class TemmieDiscordAuth(val clientId: String,
 		logger.info { "getUserGuilds()" }
 		return doStuff {
 			val httpResponse = checkIfRequestWasValid(
-					http.get {
-						url(USER_GUILDS_URL)
-						userAgent(USER_AGENT)
-						header("Authorization", "Bearer $accessToken")
-					}
+				http.get {
+					url(USER_GUILDS_URL)
+					userAgent(USER_AGENT)
+					header("Authorization", "Bearer $accessToken")
+				}
 			)
 
 			val result = httpResponse.bodyAsText()
@@ -163,11 +174,11 @@ class TemmieDiscordAuth(val clientId: String,
 		logger.info { "getUserConnections()" }
 		return doStuff {
 			val httpResponse = checkIfRequestWasValid(
-					http.get {
-						url(CONNECTIONS_URL)
-						userAgent(USER_AGENT)
-						header("Authorization", "Bearer $accessToken")
-					}
+				http.get {
+					url(CONNECTIONS_URL)
+					userAgent(USER_AGENT)
+					header("Authorization", "Bearer $accessToken")
+				}
 			)
 
 			val result = httpResponse.bodyAsText()
@@ -194,7 +205,10 @@ class TemmieDiscordAuth(val clientId: String,
 	}
 
 	private suspend fun <T> doStuff(checkForRefresh: Boolean = true, callback: suspend () -> (T)): T {
-		logger.info { "doStuff(...) mutex locked? ${mutex.isLocked}" }
+		val mutexToken = accessToken ?: unknownTokenMutexKey
+		val mutex = accessTokenMutexes.getOrPut(mutexToken.hashCode()) { Mutex() }
+
+		logger.info { "doStuff(...) mutex locked? ${mutex.isLocked}; mutex token: $mutexToken" }
 		return try {
 			if (checkForRefresh)
 				refreshTokenIfNeeded()
@@ -203,10 +217,10 @@ class TemmieDiscordAuth(val clientId: String,
 				callback.invoke()
 			}
 		} catch (e: RateLimitedException) {
-			logger.info { "rate limited exception! locked? ${mutex.isLocked}" }
+			logger.info { "rate limited exception! locked? ${mutex.isLocked}; mutex token: $mutexToken" }
 			return doStuff(checkForRefresh, callback)
 		} catch (e: NeedsRefreshException) {
-			logger.info { "refresh exception!" }
+			logger.info { "refresh exception! locked? ${mutex.isLocked}; mutex token: $mutexToken" }
 			refreshToken()
 			doStuff(checkForRefresh, callback)
 		}
@@ -252,60 +266,60 @@ class TemmieDiscordAuth(val clientId: String,
 	class TokenExchangeException(message: String) : RuntimeException(message)
 
 	class UserIdentification constructor(
-			@SerializedName("id")
-			val id: String,
-			@SerializedName("username")
-			val username: String,
-			@SerializedName("discriminator")
-			val discriminator: String,
-			@SerializedName("avatar")
-			val avatar: String?,
-			@SerializedName("bot")
-			val bot: Boolean?,
-			@SerializedName("mfa_enabled")
-			val mfaEnabled: Boolean?,
-			@SerializedName("locale")
-			val locale: String?,
-			@SerializedName("verified")
-			val verified: Boolean,
-			@SerializedName("email")
-			val email: String?,
-			@SerializedName("flags")
-			val flags: Int?,
-			@SerializedName("premium_type")
-			val premiumType: Int?
+		@SerializedName("id")
+		val id: String,
+		@SerializedName("username")
+		val username: String,
+		@SerializedName("discriminator")
+		val discriminator: String,
+		@SerializedName("avatar")
+		val avatar: String?,
+		@SerializedName("bot")
+		val bot: Boolean?,
+		@SerializedName("mfa_enabled")
+		val mfaEnabled: Boolean?,
+		@SerializedName("locale")
+		val locale: String?,
+		@SerializedName("verified")
+		val verified: Boolean,
+		@SerializedName("email")
+		val email: String?,
+		@SerializedName("flags")
+		val flags: Int?,
+		@SerializedName("premium_type")
+		val premiumType: Int?
 	)
 
 	class Guild constructor(
-			@SerializedName("id")
-			val id: String,
-			@SerializedName("name")
-			val name: String,
-			@SerializedName("icon")
-			val icon: String?,
-			@SerializedName("owner")
-			val owner: Boolean,
-			@SerializedName("permissions")
-			val permissions: Int,
-			@SerializedName("features")
-			val features: List<String>
+		@SerializedName("id")
+		val id: String,
+		@SerializedName("name")
+		val name: String,
+		@SerializedName("icon")
+		val icon: String?,
+		@SerializedName("owner")
+		val owner: Boolean,
+		@SerializedName("permissions")
+		val permissions: Int,
+		@SerializedName("features")
+		val features: List<String>
 	)
 
 	class Connection constructor(
-			@SerializedName("id")
-			val id: String,
-			@SerializedName("name")
-			val name: String,
-			@SerializedName("type")
-			val type: String,
-			@SerializedName("verified")
-			val verified: Boolean,
-			@SerializedName("friend_sync")
-			val friendSync: Boolean,
-			@SerializedName("show_activity")
-			val showActivity: Boolean,
-			@SerializedName("visibility")
-			val visibility: Int
+		@SerializedName("id")
+		val id: String,
+		@SerializedName("name")
+		val name: String,
+		@SerializedName("type")
+		val type: String,
+		@SerializedName("verified")
+		val verified: Boolean,
+		@SerializedName("friend_sync")
+		val friendSync: Boolean,
+		@SerializedName("show_activity")
+		val showActivity: Boolean,
+		@SerializedName("visibility")
+		val visibility: Int
 	)
 
 	private class RateLimitedException : RuntimeException()
