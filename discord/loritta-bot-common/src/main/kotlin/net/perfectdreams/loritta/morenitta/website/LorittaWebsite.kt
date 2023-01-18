@@ -187,6 +187,7 @@ class LorittaWebsite(
 					call.respondHtml(
 						Error404View(
 							loritta,
+							loritta.languageManager.defaultI18nContext,
 							loritta.localeManager.locales["default"]!!, // TODO: Localization
 							call.request.path().split("/").drop(2).joinToString("/"),
 						).generateHtml()
