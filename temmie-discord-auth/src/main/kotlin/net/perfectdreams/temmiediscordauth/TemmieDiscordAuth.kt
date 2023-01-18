@@ -93,7 +93,7 @@ class TemmieDiscordAuth(val clientId: String,
 		}
 
 		doStuff(false) {
-			val result = checkIfRequestWasValid(
+			val httpResponse = checkIfRequestWasValid(
 					http.post {
 						url(TOKEN_BASE_URL)
 						userAgent(USER_AGENT)
@@ -102,6 +102,7 @@ class TemmieDiscordAuth(val clientId: String,
 					}
 			)
 
+			val result = httpResponse.bodyAsText()
 			logger.info { result }
 
 			val tree = JsonParser.parseString(result).asJsonObject
@@ -110,7 +111,7 @@ class TemmieDiscordAuth(val clientId: String,
 				throw TokenExchangeException("Error while exchanging token: ${tree["error"].asString}")
 
 			val resultAsJson = JsonParser.parseString(result)
-			checkForRateLimit(resultAsJson)
+			checkForRateLimit(httpResponse, resultAsJson)
 
 			readTokenPayload(resultAsJson.obj)
 		}
@@ -119,7 +120,7 @@ class TemmieDiscordAuth(val clientId: String,
 	suspend fun getUserIdentification(): UserIdentification {
 		logger.info { "getUserIdentification()" }
 		return doStuff {
-			val result = checkIfRequestWasValid(
+			val httpResponse = checkIfRequestWasValid(
 					http.get {
 						url(USER_IDENTIFICATION_URL)
 						userAgent(USER_AGENT)
@@ -127,10 +128,11 @@ class TemmieDiscordAuth(val clientId: String,
 					}
 			)
 
+			val result = httpResponse.bodyAsText()
 			logger.info { result }
 
 			val resultAsJson = JsonParser.parseString(result)
-			checkForRateLimit(resultAsJson)
+			checkForRateLimit(httpResponse, resultAsJson)
 
 			return@doStuff gson.fromJson<UserIdentification>(resultAsJson)
 		}
@@ -139,7 +141,7 @@ class TemmieDiscordAuth(val clientId: String,
 	suspend fun getUserGuilds(): List<Guild> {
 		logger.info { "getUserGuilds()" }
 		return doStuff {
-			val result = checkIfRequestWasValid(
+			val httpResponse = checkIfRequestWasValid(
 					http.get {
 						url(USER_GUILDS_URL)
 						userAgent(USER_AGENT)
@@ -147,10 +149,11 @@ class TemmieDiscordAuth(val clientId: String,
 					}
 			)
 
+			val result = httpResponse.bodyAsText()
 			logger.info { result }
 
 			val resultAsJson = JsonParser.parseString(result)
-			checkForRateLimit(resultAsJson)
+			checkForRateLimit(httpResponse, resultAsJson)
 
 			return@doStuff gson.fromJson<List<Guild>>(result)
 		}
@@ -159,7 +162,7 @@ class TemmieDiscordAuth(val clientId: String,
 	suspend fun getUserConnections(): List<Connection> {
 		logger.info { "getUserConnections()" }
 		return doStuff {
-			val result = checkIfRequestWasValid(
+			val httpResponse = checkIfRequestWasValid(
 					http.get {
 						url(CONNECTIONS_URL)
 						userAgent(USER_AGENT)
@@ -167,10 +170,11 @@ class TemmieDiscordAuth(val clientId: String,
 					}
 			)
 
+			val result = httpResponse.bodyAsText()
 			logger.info { result }
 
 			val resultAsJson = JsonParser.parseString(result)
-			checkForRateLimit(resultAsJson)
+			checkForRateLimit(httpResponse, resultAsJson)
 
 			return@doStuff gson.fromJson<List<Connection>>(result)
 		}
@@ -215,12 +219,18 @@ class TemmieDiscordAuth(val clientId: String,
 		generatedAt = System.currentTimeMillis()
 	}
 
-	private suspend fun checkForRateLimit(element: JsonElement): Boolean {
+	private suspend fun checkForRateLimit(response: HttpResponse, element: JsonElement): Boolean {
 		if (element.isJsonObject) {
 			val asObject = element.obj
-			if (asObject.has("retry_after")) {
-				val retryAfter = asObject["retry_after"].long
+			val retryAfterHeader = response.headers["Retry-After"]
 
+			val retryAfter = if (retryAfterHeader != null) {
+				retryAfterHeader.toLong()
+			} else if (asObject.has("retry_after")) {
+				asObject["retry_after"].long
+			} else null
+
+			if (retryAfter != null) {
 				logger.info { "Got rate limited, oof! Retry After: $retryAfter" }
 				// oof, ratelimited!
 				delay(retryAfter)
@@ -231,11 +241,11 @@ class TemmieDiscordAuth(val clientId: String,
 		return false
 	}
 
-	private suspend fun checkIfRequestWasValid(response: HttpResponse): String {
+	private suspend fun checkIfRequestWasValid(response: HttpResponse): HttpResponse {
 		if (response.status.value == 401)
 			throw TokenUnauthorizedException(response.status)
 
-		return response.bodyAsText()
+		return response
 	}
 
 	class TokenUnauthorizedException(status: HttpStatusCode) : RuntimeException()
