@@ -93,25 +93,25 @@ abstract class ProfileDashboardView(
                     id = "right-sidebar-contents"
 
                     generateRightSidebarContents()
-                }
-
-                hr {}
-
-                div {
-                    id = "sidebar-ad"
 
                     div {
-                        style = "position: relative; width: 100%; max-width: 100%;"
+                        id = "sidebar-ad"
 
-                        ins(classes = "adsbygoogle") {
-                            style = "display:block; position: absolute; width: inherit; max-width: 100%;"
-                            attributes["data-ad-client"] = "ca-pub-9989170954243288"
-                            attributes["data-ad-slot"] = "3177212938"
-                            attributes["data-ad-format"] = "auto"
-                            attributes["data-full-width-responsive"] = "true"
+                        div {
+                            style = "position: relative; width: 100%; max-width: 100%;"
+
+                            ins(classes = "adsbygoogle") {
+                                style = "display:block; position: absolute; width: inherit; max-width: 100%;"
+                                attributes["data-ad-client"] = "ca-pub-9989170954243288"
+                                attributes["data-ad-slot"] = "3177212938"
+                                attributes["data-ad-format"] = "auto"
+                                attributes["data-full-width-responsive"] = "true"
+                            }
                         }
                     }
                 }
+
+                hr {}
             }
         }
     }
