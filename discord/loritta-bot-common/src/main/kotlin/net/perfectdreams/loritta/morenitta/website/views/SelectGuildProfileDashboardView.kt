@@ -7,6 +7,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
+import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -15,12 +16,14 @@ class SelectGuildProfileDashboardView(
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
+    legacyBaseLocale: LegacyBaseLocale,
     private val userGuilds: List<TemmieDiscordAuth.Guild>
 ) : ProfileDashboardView(
     loritta,
     i18nContext,
     locale,
     path,
+    legacyBaseLocale,
     "main"
 ) {
     override fun getTitle() = "Painel de Controle"

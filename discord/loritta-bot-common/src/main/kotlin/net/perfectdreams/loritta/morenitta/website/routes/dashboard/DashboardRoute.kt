@@ -61,6 +61,7 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				guilds,
 			).generateHtml()
 		)
