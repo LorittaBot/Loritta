@@ -26,6 +26,7 @@ class ProfileListRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("profile_dashboard_backgrounds_list.html", variables),
 				"profile_designs_list"

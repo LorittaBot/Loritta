@@ -44,6 +44,7 @@ class ConfigureCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("configure_commands.html", variables)
 			).generateHtml()

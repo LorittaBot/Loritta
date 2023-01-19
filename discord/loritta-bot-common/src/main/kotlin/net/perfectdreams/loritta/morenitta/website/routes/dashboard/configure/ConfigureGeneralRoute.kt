@@ -26,6 +26,7 @@ class ConfigureGeneralRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRou
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("configure_server.html", variables)
 			).generateHtml()

@@ -44,6 +44,7 @@ class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocali
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("invite_blocker.html", variables)
 			).generateHtml()

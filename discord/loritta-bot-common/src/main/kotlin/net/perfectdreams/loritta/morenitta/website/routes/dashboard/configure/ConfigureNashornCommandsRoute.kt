@@ -51,6 +51,7 @@ class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
                 i18nContext,
                 locale,
                 getPathWithoutLocale(call),
+                loritta.getLegacyLocaleById(locale.id),
                 "Painel de Controle",
                 evaluate("configure_nashorn.html", variables)
             ).generateHtml()

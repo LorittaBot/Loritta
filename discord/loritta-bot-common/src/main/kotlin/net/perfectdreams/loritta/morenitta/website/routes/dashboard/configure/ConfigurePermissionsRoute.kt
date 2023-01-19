@@ -48,6 +48,7 @@ class ConfigurePermissionsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalize
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("permissions.html", variables)
 			).generateHtml()

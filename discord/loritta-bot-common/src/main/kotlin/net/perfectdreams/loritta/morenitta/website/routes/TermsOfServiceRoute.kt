@@ -20,6 +20,7 @@ class TermsOfServiceRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/priva
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Termos de Serviço",
 				evaluate("terms_of_service.html", variables)
 			).generateHtml()

@@ -46,6 +46,7 @@ class ConfigureEventLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("event_log.html", variables)
 			).generateHtml()

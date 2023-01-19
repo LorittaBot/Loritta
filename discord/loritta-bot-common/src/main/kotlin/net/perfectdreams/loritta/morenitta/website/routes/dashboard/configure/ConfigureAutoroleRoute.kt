@@ -48,6 +48,7 @@ class ConfigureAutoroleRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("autorole.html", variables)
 			).generateHtml()

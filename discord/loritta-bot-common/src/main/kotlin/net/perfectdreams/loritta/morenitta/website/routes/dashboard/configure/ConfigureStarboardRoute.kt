@@ -40,6 +40,7 @@ class ConfigureStarboardRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedR
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("starboard.html", variables)
 			).generateHtml()

@@ -29,6 +29,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("profile_dashboard_daily_shop.html", variables),
 				"daily_shop"

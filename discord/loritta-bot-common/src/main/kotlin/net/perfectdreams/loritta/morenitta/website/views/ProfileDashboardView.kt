@@ -4,12 +4,14 @@ import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 
 abstract class ProfileDashboardView(
     loritta: LorittaBot,
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
+    private val legacyBaseLocale: LegacyBaseLocale,
     private val selectedType: String,
 ) : NavbarView(
     loritta,
@@ -21,6 +23,11 @@ abstract class ProfileDashboardView(
     override val useOldStyleCss = true
 
     override fun DIV.generateContent() {
+        div(classes = "totallyHidden") {
+            id = "locale-json"
+            + LorittaBot.GSON.toJson(legacyBaseLocale.strings)
+        }
+
         div {
             id = "server-configuration"
 

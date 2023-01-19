@@ -39,6 +39,7 @@ open class GenericConfigurationRoute(loritta: LorittaBot, path: String, val type
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate(file, variables)
 			).generateHtml()

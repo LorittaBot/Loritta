@@ -64,6 +64,7 @@ class ShipEffectsRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("profile_dashboard_ship_effects.html", variables),
 				"ship_effects"

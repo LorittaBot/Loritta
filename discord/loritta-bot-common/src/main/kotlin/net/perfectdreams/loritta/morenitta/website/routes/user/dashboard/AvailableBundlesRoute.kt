@@ -24,6 +24,7 @@ class AvailableBundlesRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalized
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("profile_dashboard_bundles.html", variables),
 				"bundles"

@@ -40,6 +40,7 @@ class ConfigureModerationRoute(loritta: LorittaBot) : RequiresGuildAuthLocalized
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("configure_moderation.html", variables)
 			).generateHtml()

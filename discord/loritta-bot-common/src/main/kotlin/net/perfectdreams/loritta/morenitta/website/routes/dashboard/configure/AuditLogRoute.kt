@@ -26,6 +26,7 @@ class AuditLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(lorit
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
+				loritta.getLegacyLocaleById(locale.id),
 				"Painel de Controle",
 				evaluate("configure_audit_log.html", variables)
 			).generateHtml()
