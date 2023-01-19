@@ -116,6 +116,7 @@ abstract class ProfileDashboardView(
                 id = "that-wasnt-very-cash-money-of-you"
 
                 ins(classes = "adsbygoogle") {
+                    style = "display:block; position: absolute; width: inherit; max-width: 100%;"
                     attributes["data-ad-client"] = "ca-pub-9989170954243288"
                     attributes["data-ad-slot"] = "3177212938"
                     attributes["data-ad-format"] = "auto"
