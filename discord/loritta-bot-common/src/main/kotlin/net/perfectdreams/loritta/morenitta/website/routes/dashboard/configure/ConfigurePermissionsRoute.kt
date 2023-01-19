@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleGuildDashboardRawHtmlView
 import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.*
@@ -43,14 +44,16 @@ class ConfigurePermissionsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalize
 		variables["roleConfigs"] = roleConfig
 
 		call.respondHtml(
-			LegacyPebbleRawHtmlView(
+			LegacyPebbleGuildDashboardRawHtmlView(
 				loritta,
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
 				loritta.getLegacyLocaleById(locale.id),
+				guild,
 				"Painel de Controle",
-				evaluate("permissions.html", variables)
+				evaluate("permissions.html", variables),
+				"permissions"
 			).generateHtml()
 		)
 	}

@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleGuildDashboardRawHtmlView
 import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -21,14 +22,16 @@ class AuditLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(lorit
 		variables["saveType"] = "audit_log"
 
 		call.respondHtml(
-			LegacyPebbleRawHtmlView(
+			LegacyPebbleGuildDashboardRawHtmlView(
 				loritta,
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),
 				loritta.getLegacyLocaleById(locale.id),
+				guild,
 				"Painel de Controle",
-				evaluate("configure_audit_log.html", variables)
+				evaluate("configure_audit_log.html", variables),
+				"audit_log"
 			).generateHtml()
 		)
 	}

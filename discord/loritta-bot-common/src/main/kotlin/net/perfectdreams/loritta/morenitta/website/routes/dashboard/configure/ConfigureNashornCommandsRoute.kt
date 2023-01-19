@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleGuildDashboardRawHtmlView
 import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleRawHtmlView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
@@ -46,14 +47,16 @@ class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
         variables["commands"] = feeds.toString()
 
         call.respondHtml(
-            LegacyPebbleRawHtmlView(
+            LegacyPebbleGuildDashboardRawHtmlView(
                 loritta,
                 i18nContext,
                 locale,
                 getPathWithoutLocale(call),
                 loritta.getLegacyLocaleById(locale.id),
+                guild,
                 "Painel de Controle",
-                evaluate("configure_nashorn.html", variables)
+                evaluate("configure_nashorn.html", variables),
+                "nashorn_commands"
             ).generateHtml()
         )
     }

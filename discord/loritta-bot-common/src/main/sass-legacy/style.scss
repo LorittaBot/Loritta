@@ -14,6 +14,15 @@
 @import '_daily-shop';
 @import 'components/discord-invite-wrapper';
 
+@mixin bp($point) {
+    @if $point == 'small' {
+        @media (min-width: 360px) { @content; }
+    }
+    @if $point == 'medium' {
+      @media (min-width: 1280px) { @content; }
+    }
+}
+
 .discord-style {
 	@import 'discord-style-v2';
 }
@@ -739,14 +748,91 @@ border-radius: 3px;
 	height: calc(100vh - 46px);
 }
 
-#left-sidebar {
+nav#left-sidebar {
 	width: 30%;
-	background: linear-gradient(-90deg, #ebebeb 55%, #43b1ff00), url("/v2/assets/img/website_bg.png"), linear-gradient(-90deg, #ebebeb 100%, #ebebeb);
+	background: #29a6fe linear-gradient(#29a6fe 0%, #0064ff 100%) repeat scroll 0% 0%;
 	overflow: auto;
 	height: 100%;
 	flex-shrink: 1;
 	box-shadow: 0px 0px 20px #0000003b;
 	z-index: 3;
+	will-change: transform, box-shadow;
+	min-width: 350px;
+	max-width: 360px;
+    scrollbar-width: thin;
+    scrollbar-color: #00c3ff #004ec8;
+    color: white;
+    box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px;
+
+	#left-sidebar-contents {
+        padding-left: 1em;
+        padding-right: 1em;
+    	flex: 0 0 auto;
+
+        .category {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 18px;
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            padding-left: 0.5em;
+        }
+
+    	.divider {
+    	    width: 100%;
+            border: 1px solid #ffffff57;
+            height: 0;
+        }
+
+        .server-name {
+            margin-left: 0.5em;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 16px;
+            text-transform: uppercase;
+            color: #b9bbbe;
+                padding: 6px 10px;
+                padding-top: 0;
+                    overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: Lato,Helvetica Neue,Helvetica,Arial,sans-serif;
+        }
+
+        .entry {
+            display: flex;
+            transition-duration: 0.2s;
+            align-items: center;
+            gap: 0.5em;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            margin-top: 0.1em;
+            margin-bottom: 0.1em;
+            padding-left: 0.5em;
+            padding-right: 0.5em;
+            font-size: 16px;
+            opacity: 0.8;
+            color: white;
+            border-radius: 7px;
+        }
+
+        .entry:hover {
+            opacity: 1;
+        }
+
+        .selected-entry {
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    }
 }
 
 #right-sidebar {
@@ -795,62 +881,6 @@ body.dark {
 	color: #72767d;
 }
 
-#left-sidebar-contents {
-	margin-left: 40%;
-	padding-top: 30px;
-	flex: 0 0 auto;
-	margin-right: 4%;
-}
-
-.discord-scroller .server-name {
-	font-size: 12px;
-    font-weight: 800;
-    line-height: 16px;
-    text-transform: uppercase;
-	color: #b9bbbe;
-	    padding: 6px 10px;
-		padding-top: 0;
-		    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-	font-family: Lato,Helvetica Neue,Helvetica,Arial,sans-serif;
-}
-
-.discord-scroller .item {
-    padding: 6px 10px;
-	margin-bottom: 2px;
-    padding-bottom: 6px;
-    padding-top: 6px;
-    color: #fff;
-	font-family: Lato,Helvetica Neue,Helvetica,Arial,sans-serif;
-    border-radius: 3px;
-    font-size: 16px;
-    line-height: 20px;
-	font-weight: 600;
-	color: #72767d;
-}
-
-.discord-scroller .item:hover {
-    background-color: rgba(79,84,92,.1);
-    color: #4f545c;
-}
-	
-.discord-scroller .selected-item:hover {
-	background-color: #0092f9;
-	transition: 0.3s;
-	color: #fff;
-}
-
-.discord-scroller a {
-	text-decoration: none;
-}
-
-.discord-scroller .selected-item {
-	background-color: #29a6fe;
-	transition: 0.3s;
-	color: #fff !important;
-}
-
 #right-sidebar-contents {
 	padding-left: 4%;
 	padding-right: 4%;
@@ -859,12 +889,20 @@ body.dark {
 	width: calc(100% - 150px);
 }
 
-.sidebar-ad {
-	flex: 0 0 150px;
-	// background-color: red;
-	display: flex;
-	text-align: center;
-	height: auto;
+aside#that-wasnt-very-cash-money-of-you {
+    width: 160px;
+    max-width: 160px;
+    min-width: 160px;
+    background: rgba(0, 0, 0, 0);
+    // background-color: rgba(200, 200, 200, 255);
+    align-items: center;
+    display: none;
+    height: 100%;
+    overflow: hidden;
+
+    @include bp('medium') {
+        display: flex;
+    }
 }
 
 @media screen and (max-width: 600px) {
@@ -873,11 +911,13 @@ body.dark {
 		height: 100%;
 	}
 
-  #left-sidebar {
-	  width: 100%;
-	  margin-left: 0%; margin-right: 0%;
-	  position: initial;
-  }
+    nav#left-sidebar {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        margin-left: 0%; margin-right: 0%;
+        position: initial;
+    }
   
   #right-sidebar {
 	  width: 100%;

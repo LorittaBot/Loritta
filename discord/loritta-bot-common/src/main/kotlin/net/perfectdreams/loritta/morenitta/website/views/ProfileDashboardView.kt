@@ -31,7 +31,7 @@ abstract class ProfileDashboardView(
         div {
             id = "server-configuration"
 
-            div {
+            nav {
                 id = "left-sidebar"
 
                 div(classes = "discord-scroller") {
@@ -42,9 +42,9 @@ abstract class ProfileDashboardView(
                             if (enableLinkPreload)
                                 attributes["data-enable-link-preload"] = "true"
 
-                            div(classes = "item") {
+                            div(classes = "entry") {
                                 if (selectedType == type)
-                                    classes = classes + "selected-item"
+                                    classes = classes + "selected-entry"
 
                                 i(classes = icon) {
                                     attributes["aria-hidden"] = "true"
@@ -56,16 +56,27 @@ abstract class ProfileDashboardView(
                         }
                     }
 
-                    div(classes = "server-name") {
+                    a(classes = "entry") {
+                        style = "font-family: Pacifico;font-size: 3em;text-align: center;display: block;line-height: 1;margin: 0;"
+
+                        + "Loritta"
+                    }
+
+                    hr(classes = "divider") {}
+
+                    appendEntry("/dashboard", true, locale["website.dashboard.profile.sectionNames.yourServers"], "fa fa-cogs", "main")
+
+                    hr(classes = "divider") {}
+                    div(classes = "category") {
                         + "Configurações do Usuário"
                     }
 
-                    appendEntry("/dashboard", true, locale["website.dashboard.profile.sectionNames.yourServers"], "fa fa-cogs", "main")
                     appendEntry("/user/@me/dashboard/profiles", true, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", "profile_list")
                     appendEntry("/user/@me/dashboard/backgrounds", true, "Backgrounds", "far fa-images", "background_list")
                     appendEntry("/user/@me/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", "ship_effects")
 
-                    div(classes = "server-name") {
+                    hr(classes = "divider") {}
+                    div(classes = "category") {
                         + "Miscelânea"
                     }
 
@@ -74,14 +85,12 @@ abstract class ProfileDashboardView(
                     appendEntry("/user/@me/dashboard/bundles", false, locale["website.dashboard.profile.sectionNames.sonhosShop"], "fas fa-shopping-cart", "bundles")
                     appendEntry("/guidelines", false, locale["website.guidelines.communityGuidelines"], "fas fa-asterisk", "guidelines")
 
-                    hr {}
+                    hr(classes = "divider") {}
 
                     a {
                         id = "logout-button"
 
-                        div(classes = "item") {
-                            style = "color: rgb(240, 71, 71);"
-
+                        div(classes = "entry") {
                             i(classes = "fas fa-sign-out-alt") {
                                 attributes["aria-hidden"] = "true"
                             }
@@ -100,25 +109,23 @@ abstract class ProfileDashboardView(
                     id = "right-sidebar-contents"
 
                     generateRightSidebarContents()
+                }
+            }
 
-                    div {
-                        id = "sidebar-ad"
+            aside {
+                id = "that-wasnt-very-cash-money-of-you"
 
-                        div {
-                            style = "position: relative; width: 100%; max-width: 100%;"
+                div {
+                    style = "position: relative; width: 100%; max-width: 100%;"
 
-                            ins(classes = "adsbygoogle") {
-                                style = "display:block; position: absolute; width: inherit; max-width: 100%;"
-                                attributes["data-ad-client"] = "ca-pub-9989170954243288"
-                                attributes["data-ad-slot"] = "3177212938"
-                                attributes["data-ad-format"] = "auto"
-                                attributes["data-full-width-responsive"] = "true"
-                            }
-                        }
+                    ins(classes = "adsbygoogle") {
+                        style = "display:block; position: absolute; width: inherit; max-width: 100%;"
+                        attributes["data-ad-client"] = "ca-pub-9989170954243288"
+                        attributes["data-ad-slot"] = "3177212938"
+                        attributes["data-ad-format"] = "auto"
+                        attributes["data-full-width-responsive"] = "true"
                     }
                 }
-
-                hr {}
             }
         }
     }
