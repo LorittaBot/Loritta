@@ -101,6 +101,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
@@ -131,6 +134,7 @@ import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.GamerSaferCommand
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
@@ -145,6 +149,7 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferRoleCheckerUpdater
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
@@ -167,6 +172,7 @@ import java.security.SecureRandom
 import java.sql.Connection
 import java.time.*
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -405,6 +411,8 @@ class LorittaBot(
 	val welcomeModule = WelcomeModule(this)
 	val ecbManager = ECBManager()
 	val activityUpdater = ActivityUpdater(this)
+
+	val gamerSaferWaitingForCallbacks = ConcurrentHashMap<Long, Channel<Unit>>()
 
 	private val debugWebServer = DebugWebServer()
 
@@ -804,7 +812,10 @@ class LorittaBot(
                     Christmas2022Drops,
                     CollectedChristmas2022Points,
                     Christmas2022SonhosTransactionsLog,
-                    DailyRewardSonhosTransactionsLog
+                    DailyRewardSonhosTransactionsLog,
+					GamerSaferRequiresVerificationRoles,
+					GamerSaferRequiresVerificationUsers,
+					GamerSaferSuccessfulVerifications
                 )
             }
         }
@@ -1589,6 +1600,7 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(CorreiosPackageInfoUpdater::class.simpleName!!, 15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
+		scheduleCoroutineAtFixedRate(GamerSaferRoleCheckerUpdater::class.simpleName!!, 1.minutes, action = GamerSaferRoleCheckerUpdater(this))
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {

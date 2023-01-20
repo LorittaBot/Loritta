@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.AdsTxtRoute
 import net.perfectdreams.loritta.morenitta.website.routes.CommunityGuidelinesRoute
@@ -9,11 +10,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.FanArtsArtistRoute
 import net.perfectdreams.loritta.morenitta.website.routes.FanArtsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.SponsorsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.TermsOfServiceRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.CreateWebhookRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.GetPubSubHubbubCallbackRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.PostDiscordBotsCallbackRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.PostPerfectPaymentsCallbackRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.PostPubSubHubbubCallbackRoute
+import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetBundlesRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetDailyShopRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostBundlesRoute
@@ -131,6 +128,7 @@ object DefaultRoutes {
 		PostPubSubHubbubCallbackRoute(loritta),
 		PostPerfectPaymentsCallbackRoute(loritta),
 		CreateWebhookRoute(loritta),
+		PostGamerSaferCallbackRoute(loritta),
 
 		// Economy
 		PostTransferBalanceExternalRoute(loritta),
