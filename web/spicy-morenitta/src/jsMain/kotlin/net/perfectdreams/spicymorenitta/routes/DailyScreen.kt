@@ -3,15 +3,19 @@ package net.perfectdreams.spicymorenitta.routes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.browser.localStorage
 import kotlinx.browser.window
 import kotlinx.coroutines.*
+import kotlinx.uuid.UUID
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardStatusRequest
 import net.perfectdreams.loritta.serializable.responses.*
 import net.perfectdreams.spicymorenitta.utils.State
 import net.perfectdreams.spicymorenitta.utils.loriUrl
 import org.w3c.dom.Audio
+import org.w3c.dom.set
 import org.w3c.dom.url.URLSearchParams
+import kotlin.js.Date
 
 sealed class DailyScreen(internal val route: DailyRoute) {
     internal val m = route.m
@@ -69,12 +73,30 @@ sealed class DailyScreen(internal val route: DailyRoute) {
             val searchParams = URLSearchParams(window.location.search)
             val guild = searchParams.get("guild")
 
+            val storedClientId = localStorage.getItem("clientId")
+            val clientId = if (storedClientId != null)
+                storedClientId
+            else {
+                val newClientId = UUID()
+                val newClientIdAsString = newClientId.toString()
+                localStorage.setItem("clientId", newClientId.toString())
+                newClientIdAsString
+            }
+
             val response = m.sendRPCRequest<GetDailyRewardResponse>(
                 GetDailyRewardRequest(
                     captchaToken,
                     questionId,
                     questionResponse,
-                    guild?.toLongOrNull()
+                    guild?.toLongOrNull(),
+                    GetDailyRewardRequest.Fingerprint(
+                        window.screen.width,
+                        window.screen.height,
+                        window.screen.availWidth,
+                        window.screen.availHeight,
+                        Date().getTimezoneOffset(),
+                        clientId
+                    )
                 )
             )
 

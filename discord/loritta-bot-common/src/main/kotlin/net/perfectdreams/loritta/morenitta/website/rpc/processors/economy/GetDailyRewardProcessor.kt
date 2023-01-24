@@ -13,6 +13,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.toJavaInstant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BrowserFingerprints
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
@@ -39,6 +40,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
@@ -267,6 +269,17 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                     logger.trace { "multipliedBy = $multipliedBy" }
 
                                     loritta.newSuspendedTransaction {
+                                        val fingerprint = BrowserFingerprints.insertAndGetId {
+                                            it[BrowserFingerprints.width] = request.fingerprint.width
+                                            it[BrowserFingerprints.height] = request.fingerprint.height
+                                            it[BrowserFingerprints.availWidth] = request.fingerprint.availWidth
+                                            it[BrowserFingerprints.availHeight] = request.fingerprint.availHeight
+                                            it[BrowserFingerprints.timezoneOffset] = request.fingerprint.timezoneOffset
+                                            it[BrowserFingerprints.contentLanguage] = call.request.header("Content-Language")
+                                            it[BrowserFingerprints.accept] = call.request.accept()
+                                            it[BrowserFingerprints.clientId] = UUID.fromString(request.fingerprint.clientId)
+                                        }
+
                                         Dailies.insert {
                                             it[Dailies.receivedById] = id
                                             it[Dailies.receivedAt] = receivedDailyAt

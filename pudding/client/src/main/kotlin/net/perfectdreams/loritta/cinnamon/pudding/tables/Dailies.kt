@@ -9,4 +9,5 @@ object Dailies : LongIdTable() {
     val email = text("email").index()
     val userAgent = text("user_agent")
         .nullable()
+    val browserFingerprints = optReference("browser_fingerprints", BrowserFingerprints)
 }

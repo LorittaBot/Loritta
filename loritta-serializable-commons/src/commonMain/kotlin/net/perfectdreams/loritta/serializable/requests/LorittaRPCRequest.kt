@@ -14,4 +14,15 @@ class GetDailyRewardRequest(
     val questionId: String,
     val answer: Boolean,
     val dailyMultiplierGuildIdPriority: Long?,
-) : LorittaRPCRequest()
+    val fingerprint: Fingerprint
+) : LorittaRPCRequest() {
+    @Serializable
+    data class Fingerprint(
+        val width: Int,
+        val height: Int,
+        val availWidth: Int,
+        val availHeight: Int,
+        val timezoneOffset: Int,
+        val clientId: String
+    )
+}

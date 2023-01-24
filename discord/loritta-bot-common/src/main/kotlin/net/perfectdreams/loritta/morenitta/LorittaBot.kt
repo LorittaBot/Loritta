@@ -803,6 +803,7 @@ class LorittaBot(
 
                 // TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
                 SchemaUtils.createMissingTablesAndColumns(
+					Dailies,
                     GatewayActivities,
                     UserSettings,
                     Backgrounds,
@@ -815,7 +816,8 @@ class LorittaBot(
                     DailyRewardSonhosTransactionsLog,
 					GamerSaferRequiresVerificationRoles,
 					GamerSaferRequiresVerificationUsers,
-					GamerSaferSuccessfulVerifications
+					GamerSaferSuccessfulVerifications,
+					BrowserFingerprints
                 )
             }
         }
