@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestions
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.DonationConfigs
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
@@ -269,7 +269,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                     logger.trace { "multipliedBy = $multipliedBy" }
 
                                     loritta.newSuspendedTransaction {
-                                        val fingerprint = BrowserFingerprints.insertAndGetId {
+                                        val fingerprintId = BrowserFingerprints.insertAndGetId {
                                             it[BrowserFingerprints.width] = request.fingerprint.width
                                             it[BrowserFingerprints.height] = request.fingerprint.height
                                             it[BrowserFingerprints.availWidth] = request.fingerprint.availWidth
@@ -280,20 +280,13 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             it[BrowserFingerprints.clientId] = UUID.fromString(request.fingerprint.clientId)
                                         }
 
-                                        Dailies.insert {
-                                            it[Dailies.receivedById] = id
-                                            it[Dailies.receivedAt] = receivedDailyAt
-                                            it[Dailies.ip] = ip
-                                            it[Dailies.email] = email
-                                            it[Dailies.userAgent] = call.request.userAgent()
-                                        }
-
                                         val dailyId = Dailies.insertAndGetId {
                                             it[Dailies.receivedById] = id
                                             it[Dailies.receivedAt] = receivedDailyAt
                                             it[Dailies.ip] = ip
                                             it[Dailies.email] = email
                                             it[Dailies.userAgent] = call.request.userAgent()
+                                            it[Dailies.browserFingerprints] = fingerprintId
                                         }
 
                                         val timestampLogId = SonhosTransactionsLog.insertAndGetId {

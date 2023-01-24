@@ -803,7 +803,7 @@ class LorittaBot(
 
                 // TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
                 SchemaUtils.createMissingTablesAndColumns(
-					Dailies,
+					net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies,
                     GatewayActivities,
                     UserSettings,
                     Backgrounds,
