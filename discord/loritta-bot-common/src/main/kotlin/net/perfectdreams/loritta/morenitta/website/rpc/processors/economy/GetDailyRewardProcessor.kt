@@ -275,7 +275,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             it[BrowserFingerprints.availWidth] = request.fingerprint.availWidth
                                             it[BrowserFingerprints.availHeight] = request.fingerprint.availHeight
                                             it[BrowserFingerprints.timezoneOffset] = request.fingerprint.timezoneOffset
-                                            it[BrowserFingerprints.contentLanguage] = call.request.header("Content-Language")
+                                            it[BrowserFingerprints.contentLanguage] = call.request.acceptLanguage()
                                             it[BrowserFingerprints.accept] = call.request.accept()
                                             it[BrowserFingerprints.clientId] = UUID.fromString(request.fingerprint.clientId)
                                         }
