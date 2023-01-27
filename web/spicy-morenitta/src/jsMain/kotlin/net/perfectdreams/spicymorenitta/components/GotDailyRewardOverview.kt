@@ -181,75 +181,77 @@ fun GotDailyRewardOverview(
             }
         }
 
-        val sponsoredBy = screen.response.sponsoredBy
-        if (sponsoredBy != null) {
-            H1 {
-                Text("Você ganhou x2 mais sonhos, graças ao...")
-            }
-
-            val iconId = sponsoredBy.sponsoredByGuild.iconId
-
-            if (iconId != null) {
-                val guildIconUrl =
-                    "https://cdn.discordapp.com/icons/${sponsoredBy.sponsoredByGuild.id}/$iconId" +
-                            if (iconId.startsWith("a_"))
-                                ".gif"
-                            else
-                                ".png"
-
-                Img(src = guildIconUrl) {
-                    attr("width", "128")
-                    attr("height", "128")
-                    attr("style", "border-radius: 99999px")
+        Div {
+            val sponsoredBy = screen.response.sponsoredBy
+            if (sponsoredBy != null) {
+                H1 {
+                    Text("Você ganhou x2 mais sonhos, graças ao...")
                 }
-            }
 
-            H2 {
-                Text(sponsoredBy.sponsoredByGuild.name)
+                val iconId = sponsoredBy.sponsoredByGuild.iconId
+
+                if (iconId != null) {
+                    val guildIconUrl =
+                        "https://cdn.discordapp.com/icons/${sponsoredBy.sponsoredByGuild.id}/$iconId" +
+                                if (iconId.startsWith("a_"))
+                                    ".gif"
+                                else
+                                    ".png"
+
+                    Img(src = guildIconUrl) {
+                        attr("width", "128")
+                        attr("height", "128")
+                        attr("style", "border-radius: 99999px")
+                    }
+                }
+
+                H2 {
+                    Text(sponsoredBy.sponsoredByGuild.name)
+                }
+
+                P {
+                    Text("Você iria ganhar ${sponsoredBy.originalPayout}, mas graças ao patrocínio do ${sponsoredBy.sponsoredByGuild.name} você ganhou ${screen.response.dailyPayoutWithoutAnyBonus} sonhos!")
+                }
+
+                val sponsoredUser = sponsoredBy.sponsoredByUser
+                if (sponsoredUser != null) {
+                    P {
+                        Text("Agradeça ${sponsoredUser.name}#${sponsoredUser.discriminator} por ter feito você ganhar ${screen.response.dailyPayoutWithoutAnyBonus - sponsoredBy.originalPayout} mais sonhos que o normal!")
+                    }
+                }
             }
 
             P {
-                Text("Você iria ganhar ${sponsoredBy.originalPayout}, mas graças ao patrocínio do ${sponsoredBy.sponsoredByGuild.name} você ganhou ${screen.response.dailyPayoutWithoutAnyBonus} sonhos!")
+                Text("Agora você possui ${screen.response.currentBalance} sonhos, que tal gastar seus sonhos jogando no SparklyPower, o servidor de Minecraft da Loritta? (mc.sparklypower.net)")
             }
 
-            val sponsoredUser = sponsoredBy.sponsoredByUser
-            if (sponsoredUser != null) {
-                P {
-                    Text("Agradeça ${sponsoredUser.name}#${sponsoredUser.discriminator} por ter feito você ganhar ${screen.response.dailyPayoutWithoutAnyBonus - sponsoredBy.originalPayout} mais sonhos que o normal!")
-                }
-            }
-        }
+            if (screen.response.failedGuilds.isNotEmpty()) {
+                for (failedGuild in screen.response.failedGuilds) {
+                    P {
+                        Text("Você poderia ganhar x${failedGuild.multiplier} sonhos ")
+                        when (failedGuild.type) {
+                            DailyGuildMissingRequirement.REQUIRES_MORE_TIME -> {
+                                Text("após ficar por mais de 15 dias em ")
+                            }
 
-        P {
-            Text("Agora você possui ${screen.response.currentBalance} sonhos, que tal gastar seus sonhos jogando no SparklyPower, o servidor de Minecraft da Loritta? (mc.sparklypower.net)")
-        }
-
-        if (screen.response.failedGuilds.isNotEmpty()) {
-            for (failedGuild in screen.response.failedGuilds) {
-                P {
-                    Text("Você poderia ganhar x${failedGuild.multiplier} sonhos ")
-                    when (failedGuild.type) {
-                        DailyGuildMissingRequirement.REQUIRES_MORE_TIME -> {
-                            Text("após ficar por mais de 15 dias em ")
+                            DailyGuildMissingRequirement.REQUIRES_MORE_XP -> {
+                                Text("se você conseguir ser mais ativo ao ponto de ter 500 XP em ")
+                            }
                         }
 
-                        DailyGuildMissingRequirement.REQUIRES_MORE_XP -> {
-                            Text("se você conseguir ser mais ativo ao ponto de ter 500 XP em ")
-                        }
+                        Text(failedGuild.guild.name)
+                        Text("!")
                     }
-
-                    Text(failedGuild.guild.name)
-                    Text("!")
                 }
             }
-        }
 
-        Img(src = "https://assets.perfectdreams.media/loritta/loritta-happy.gif", attrs = {
-            classes("come-back-image")
-        })
+            Img(src = "https://assets.perfectdreams.media/loritta/loritta-happy.gif", attrs = {
+                classes("come-back-image")
+            })
 
-        P {
-            Text("Volte sempre!")
+            P {
+                Text("Volte sempre!")
+            }
         }
     }
 }
