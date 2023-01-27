@@ -1,4 +1,21 @@
 .daily-overview {
+    display: flex;
+    gap: 1em;
+    flex-direction: column;
+
+    .daily-reward-question-result {
+        .status {
+            font-size: 1.5em;
+        }
+
+        margin-bottom: 1em;
+    }
+
+    .come-back-image {
+        height: 192px;
+        margin: auto;
+    }
+
     .sonhos-reward-wrapper {
         display: flex;
         justify-content: center;
@@ -36,6 +53,12 @@
             border: 1px;
             border: 2px solid rgba(0,0,0,.05);
             border-radius: 7px;
+            padding: 0.25em;
+
+            @media screen and (orientation: portrait) {
+                padding: 0em;
+                font-size: 1.5em;
+            }
         }
 
         .daily-question-buttons {

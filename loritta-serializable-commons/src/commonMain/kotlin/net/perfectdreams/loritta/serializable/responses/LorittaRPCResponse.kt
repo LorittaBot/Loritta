@@ -55,9 +55,10 @@ sealed interface GetDailyRewardResponse : LorittaRPCResponse {
         val receivedDailyAt: Long,
         val dailyPayoutWithoutAnyBonus: Int,
         val dailyPayoutBonuses: List<DailyPayoutBonus>,
+        val question: DailyRewardQuestion?,
         val currentBalance: Long,
         val sponsoredBy: SonhosSponsor?,
-        val failedGuilds: List<FailedGuild>
+        val failedGuilds: List<FailedGuild>,
     ) : GetDailyRewardResponse {
         @Serializable
         data class FailedGuild(

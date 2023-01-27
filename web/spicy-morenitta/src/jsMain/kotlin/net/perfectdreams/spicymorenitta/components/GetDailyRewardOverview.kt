@@ -70,42 +70,25 @@ fun GetDailyRewardOverview(
                                         classes("daily-question-buttons")
                                     }
                                 ) {
-                                    Button(
-                                        attrs = {
-                                            classes("button", "primary")
-                                            val captchaToken = screen.captchaToken
+                                    for ((index, choice) in response.question.choices.withIndex()) {
+                                        Button(
+                                            attrs = {
+                                                classes("button", "primary")
+                                                val captchaToken = screen.captchaToken
 
-                                            if (screen.executingRequest || captchaToken == null)
-                                                disabled()
-                                            else {
-                                                onClick {
-                                                    screen.launch {
-                                                        screen.sendDailyRewardRequest(captchaToken, response.question.id, true)
+                                                if (screen.executingRequest || captchaToken == null)
+                                                    disabled()
+                                                else {
+                                                    onClick {
+                                                        screen.launch {
+                                                            screen.sendDailyRewardRequest(captchaToken, response.question.id, index)
+                                                        }
                                                     }
                                                 }
                                             }
+                                        ) {
+                                            Text(i18nContext.get(choice.text))
                                         }
-                                    ) {
-                                        Text("Sim")
-                                    }
-
-                                    Button(
-                                        attrs = {
-                                            classes("button", "primary")
-                                            val captchaToken = screen.captchaToken
-
-                                            if (screen.executingRequest || captchaToken == null)
-                                                disabled()
-                                            else {
-                                                onClick {
-                                                    screen.launch {
-                                                        screen.sendDailyRewardRequest(captchaToken, response.question.id, false)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ) {
-                                        Text("Não")
                                     }
                                 }
                             }

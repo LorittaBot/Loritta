@@ -12,7 +12,7 @@ object GetDailyRewardStatusRequest : LorittaRPCRequest()
 class GetDailyRewardRequest(
     val captchaToken: String,
     val questionId: String,
-    val answer: Boolean,
+    val answerIndex: Int,
     val dailyMultiplierGuildIdPriority: Long?,
     val fingerprint: Fingerprint
 ) : LorittaRPCRequest() {

@@ -35,7 +35,7 @@ class GetDailyRewardStatusProcessor(val m: LorittaWebsite) : LorittaRpcProcessor
                                 GetDailyRewardStatusResponse.Success(
                                     m.loritta.config.loritta.turnstileCaptchas.dailyReward.siteKey,
                                     payoutResult.sameIpDailyAt != 0,
-                                    todaysRandomQuestion.question
+                                    todaysRandomQuestion
                                 )
                             }
                         }

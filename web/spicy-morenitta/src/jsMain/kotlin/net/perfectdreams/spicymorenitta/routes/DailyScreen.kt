@@ -68,7 +68,7 @@ sealed class DailyScreen(internal val route: DailyRoute) {
             }
         }
 
-        suspend fun sendDailyRewardRequest(captchaToken: String, questionId: String, questionResponse: Boolean) {
+        suspend fun sendDailyRewardRequest(captchaToken: String, questionId: String, answerIndex: Int) {
             executingRequest = true
             val searchParams = URLSearchParams(window.location.search)
             val guild = searchParams.get("guild")
@@ -87,7 +87,7 @@ sealed class DailyScreen(internal val route: DailyRoute) {
                 GetDailyRewardRequest(
                     captchaToken,
                     questionId,
-                    questionResponse,
+                    answerIndex,
                     guild?.toLongOrNull(),
                     GetDailyRewardRequest.Fingerprint(
                         window.screen.width,

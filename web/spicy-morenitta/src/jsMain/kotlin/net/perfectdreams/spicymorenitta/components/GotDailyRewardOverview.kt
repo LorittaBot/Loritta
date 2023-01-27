@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.html.*
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.serializable.responses.GetDailyRewardResponse
+import net.perfectdreams.spicymorenitta.i18nContext
 import net.perfectdreams.spicymorenitta.routes.DailyScreen
 import org.jetbrains.compose.web.attributes.ATarget
 import org.jetbrains.compose.web.attributes.target
@@ -23,11 +24,32 @@ fun GotDailyRewardOverview(
             classes("daily-overview")
         }
     ) {
-        Div {
-            if (screen.response.dailyPayoutBonuses.filterIsInstance<GetDailyRewardResponse.Success.DailyPayoutBonus.DailyQuestionBonus>().isNotEmpty()) {
-                Text("Parabéns, você acertou! Hoje você ganhou...")
-            } else {
-                Text("Que pena, você errou! Hoje você ganhou...")
+        val question = screen.response.question
+        val hasCorrectAnswer = screen.response.dailyPayoutBonuses.filterIsInstance<GetDailyRewardResponse.Success.DailyPayoutBonus.DailyQuestionBonus>().isNotEmpty()
+
+        Div(attrs = {
+            classes("daily-reward-question-result")
+        }) {
+            Div(attrs = {
+                classes("status")
+            }) {
+                if (hasCorrectAnswer) {
+                    Text("Parabéns, você acertou! Hoje você ganhou...")
+                } else {
+                    Text("Que pena, você errou...")
+                }
+            }
+
+            if (question != null && !hasCorrectAnswer) {
+                Div {
+                    Text(i18nContext.get(question.incorrectExplanation))
+                }
+
+                Div(attrs = {
+                    classes("status")
+                }) {
+                    Text("Hoje você ganhou...")
+                }
             }
         }
 
@@ -222,7 +244,9 @@ fun GotDailyRewardOverview(
             }
         }
 
-        // TODO: Image here
+        Img(src = "https://assets.perfectdreams.media/loritta/loritta-happy.gif", attrs = {
+            classes("come-back-image")
+        })
 
         P {
             Text("Volte sempre!")

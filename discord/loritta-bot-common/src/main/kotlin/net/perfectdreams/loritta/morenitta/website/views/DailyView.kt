@@ -1,19 +1,10 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
+import kotlinx.html.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.DIV
-import kotlinx.html.a
-import kotlinx.html.b
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.i
-import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.script
-import kotlinx.html.style
-import kotlinx.html.unsafe
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxUtils
+import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdGenerator
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.adWrapper
@@ -163,85 +154,6 @@ class DailyView(
                 }
             }
 
-            /* div(classes = "media") {
-                div(classes = "media-body") {
-                    h1 {
-                        + "Prêmio Diário"
-                    }
-
-                    div {
-                        id = "daily-prewrapper"
-
-                        div {
-                            id = "daily-wrapper"
-
-                            div(classes = "scene") {
-                                div(classes = "cube") {
-                                    div(classes = "cube__face cube__face--front") {
-                                        style = "width: 100%; height: 100%;"
-
-                                        img(src = "/assets/img/daily/present_side.png") {}
-                                    }
-                                    div(classes = "cube__face cube__face--back") {
-                                        style = "width: 100%; height: 100%;"
-
-                                        img(src = "/assets/img/daily/present_side.png") {}
-                                    }
-                                    div(classes = "cube__face cube__face--right") {
-                                        style = "width: 100%; height: 100%;"
-
-                                        img(src = "/assets/img/daily/present_side.png") {}
-                                    }
-                                    div(classes = "cube__face cube__face--left") {
-                                        style = "width: 100%; height: 100%;"
-
-                                        img(src = "/assets/img/daily/present_side.png") {}
-                                    }
-                                    div(classes = "cube__face cube__face--top") {
-                                        style = "width: 100%; height: 100%;"
-
-                                        img(src = "/assets/img/daily/present_top.png") {}
-                                    }
-                                    div(classes = "cube__face cube__face--lace1") {
-                                        style = "width: 100%; height: 25%"
-
-                                        img(src = "/assets/img/daily/present_lace.png") {}
-                                    }
-                                    div(classes = "cube__face cube__face--lace2") {
-                                        style = "width: 100%; height: 25%"
-
-                                        img(src = "/assets/img/daily/present_lace.png") {}
-                                    }
-                                }
-                            }
-
-                            p {
-                                + "Pegue o seu prêmio diário para conseguir sonhos!"
-                            }
-
-                            div {
-                                id = "daily-captcha"
-                                style = "display: inline-block;"
-                            }
-
-                            div {
-                                div(classes = "button-discord pure-button daily-reward-button button-discord-disabled") {
-                                    style = "font-size: 1.25em; transition: 0.3s;"
-
-                                    i(classes = "fas fa-gift") {}
-
-                                    + " Pegar Prêmio"
-                                }
-                            }
-                        }
-
-                        div(classes = "daily-notification flavourText") {
-                            style = "color: #f04747;"
-                        }
-                    }
-                }
-            } */
-
             adWrapper {
                 generateNitroPayAdOrSponsor(
                     loritta,
@@ -258,43 +170,85 @@ class DailyView(
             }
 
             generateNitroPayVideoAd("daily-bottom3-video")
-        }
 
-        div(classes = "even-wrapper wobbly-bg") {
             div(classes = "media") {
                 div(classes = "media-body") {
+                    style = "text-align: left;"
+
                     h1 {
-                        + "Mas... o que são sonhos?"
+                        + "Perguntas Frequentes"
                     }
 
-                    p {
-                        + "Sonhos são a moeda que você pode utilizar na Loritta. Você pode usar sonhos para apostar na Lorifa, comprar novos designs para o perfil, casar, comprar raspadinhas e muito mais!"
-                    }
-                    p {
-                        + "Para apostar na rifa, use `+rifa`!"
-                    }
-                    p {
-                        + "Você pode casar com a pessoa que você tanto ama com `+casar`!"
-                    }
-                    p {
-                        + "Envie sonhos para seus amigos e amigas com `+pay`!"
-                    }
-                    p {
-                        + "Você pode comprar novos designs para o seu perfil no `+profile shop`!"
-                    }
-                }
-                div(classes = "media-figure") {
-                    img(src = "https://loritta.website/assets/img/loritta_money_discord.png") {}
-                }
-            }
-        }
+                    div {
+                        style = "display: flex; gap: 1em; flex-direction: column; padding-bottom: 2em;"
 
-        script {
-            unsafe {
-                raw("""
-    function recaptchaCallback(response) {
-        this['spicy-morenitta'].net.perfectdreams.spicymorenitta.routes.DailyRoute.Companion.recaptchaCallback(response)
-    }""")
+                        fun DIV.fancyDetails(title: String, builder: DIV.() -> Unit) {
+                            details(classes = "fancy-details") {
+                                style = "line-height: 1.2; position: relative;"
+
+                                summary {
+                                    div {
+                                        style = "display: flex;align-items: center;"
+                                        div {
+                                            style = "flex-grow: 1; align-items: center;"
+
+                                            +title
+                                        }
+                                    }
+
+                                    div(classes = "chevron-icon") {
+                                        unsafe {
+                                            raw("""<svg viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="currentColor"></path></svg>""")
+                                        }
+                                    }
+                                }
+
+                                div(classes = "details-content") {
+                                    builder.invoke(this)
+                                }
+                            }
+                        }
+
+                        fancyDetails("Como consigo sonhos?") {
+                            ul {
+                                li { +"Pegando o Daily, nessa página" }
+                                li { +"Ligando para o Bom Dia & Cia" }
+                                li { +"Recebendo +pay de outros usuários" }
+                                li { +"Ganhando rifas, no +lorifa" }
+                                li { +"Apostando no +raspadinhas" }
+                                li { +"Trocando por Garticos, moeda do GarticBot" }
+                                li { +"Transferindo do SparklyPower (Servidor de Minecraft da DreamLand)" }
+                                li { +"Votando na Loritta no top.gg (+dbl)" }
+                                li { +"Ganhando apostas de +emojifight, +coinflip bet ou +guessnumber" }
+                                li { +"Lucrando em ações no +corretora" }
+                                li { +"E muito mais!" }
+                            }
+                        }
+
+                        fancyDetails("Como gasto sonhos?") {
+                            ul {
+                                li { +"Você pode se casar com o +marry" }
+                                li { +"Fazer ligações no Bom Dia & Cia" }
+                                li { +"Apostando na rifa da Loritta, +lorifa" }
+                                li { +"Fazendo doações com o +pay" }
+                                li { +"Comprando layouts e backgrounds na loja diária" }
+                                li { +"Mudando a % do seu ship com alguém" }
+                                li { +"Transferindo para o SparklyPower (Servidor de Minecraft da DreamLand)" }
+                                li { +"Perdendo qualquer aposta em +emojifight, +coinflip bet e etc." }
+                            }
+                        }
+
+                        fancyDetails("Taxas de Inatividade") {
+                            ul {
+                                for (threshold in DailyTaxThresholds.THRESHOLDS) {
+                                    li {
+                                        + "Se você possui mais de ${threshold.minimumSonhosForTrigger} sonhos, você irá perder ${threshold.tax * 100}% dos seus sonhos após ficar ${threshold.maxDayThreshold} dias sem pegar a recompensa diária"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

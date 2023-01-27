@@ -245,9 +245,9 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
 
                                     val dailyPayoutWithoutAnyBonuses = dailyPayout
                                     val bonuses = mutableListOf<GetDailyRewardResponse.Success.DailyPayoutBonus>()
-                                    val question = DailyRewardQuestions.all.firstOrNull { it.question.id == request.questionId }
+                                    val question = DailyRewardQuestions.all.firstOrNull { it.id == request.questionId }
 
-                                    if (question?.correctAnswer == request.answer) {
+                                    if (question?.choices?.get(request.answerIndex)?.correctAnswer == true) {
                                         bonuses.add(
                                             GetDailyRewardResponse.Success.DailyPayoutBonus.DailyQuestionBonus(1_000)
                                         )
@@ -313,6 +313,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         receivedDailyAt,
                                         dailyPayoutWithoutAnyBonuses,
                                         bonuses,
+                                        question,
                                         lorittaProfile.money,
                                         sponsoredByData,
                                         failedDailyServersInfo
