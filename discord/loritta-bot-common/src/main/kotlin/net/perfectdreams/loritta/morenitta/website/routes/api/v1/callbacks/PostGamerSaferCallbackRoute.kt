@@ -4,13 +4,18 @@ import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.UserSnowflake
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuildMembers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.gamersafer.GuildInviteEvent
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -26,10 +31,23 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 
 	override suspend fun onRequest(call: ApplicationCall) {
 		logger.info { "Received GamerSafer callback!" }
+		val guildId = call.parameters["guildId"]!!
+		val userId = call.parameters["userId"]!!
 		val token = call.parameters["token"]
+		logger.info { "query params: ${call.request.queryParameters.entries()}" }
 		logger.info { "Token: $token" }
 
-		if (token != "abc") {
+		val event = Json.decodeFromString<GuildInviteEvent>(call.receiveText())
+
+		loritta.transaction {
+			GamerSaferGuildMembers.insert {
+				it[GamerSaferGuildMembers.guild] = guildId.toLong()
+				it[GamerSaferGuildMembers.discordUser] = userId.toLong()
+				it[GamerSaferGuildMembers.gamerSaferUser] = event.payload.guildMemberId
+			}
+		}
+
+		/* if (token != "abc") {
 			call.respondJson("{}", HttpStatusCode.Unauthorized)
 			return
 		}
@@ -73,7 +91,7 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 		}
 
 		loritta.gamerSaferWaitingForCallbacks[verifyId]?.send(Unit)
-		loritta.gamerSaferWaitingForCallbacks.remove(verifyId)
+		loritta.gamerSaferWaitingForCallbacks.remove(verifyId)  */
 
 		call.respondText("{}")
 	}

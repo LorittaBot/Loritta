@@ -11,13 +11,14 @@ import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuildMembers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.select
 import java.util.*
 import javax.crypto.Mac
@@ -31,88 +32,74 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
         subcommand(I18N_PREFIX.Verify.Label, I18N_PREFIX.Verify.Description) {
-            executor = GamerSaferVerifyExecutor()
+            executor = GamerSaferJoinExecutor()
         }
     }
 
-    inner class GamerSaferVerifyExecutor : LorittaSlashCommandExecutor() {
+    inner class GamerSaferJoinExecutor : LorittaSlashCommandExecutor() {
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             val guildId = context.guildId!! // This command cannot be used in DMs anyway
 
-            val requiresVerificationUserData = loritta.transaction {
-                GamerSaferRequiresVerificationUsers.select {
-                    GamerSaferRequiresVerificationUsers.guild eq guildId and (GamerSaferRequiresVerificationUsers.user eq context.user.idLong)
-                }.firstOrNull()
-            }
+            // TODO: Check if the member has any matching roles that requires joining the GS guild
 
-            if (requiresVerificationUserData == null) {
-                context.reply(true) {
-                    styled("Você não precisa verificar algo!")
+            // Check if the user has already joined the GamerSafer guild
+            val mjs = loritta.transaction {
+                if (GamerSaferGuildMembers.select { GamerSaferGuildMembers.guild eq guildId and (GamerSaferGuildMembers.discordUser eq context.user.idLong) }.count() == 0L) {
+                    // Didn't join the guild yet
+                    GamerSaferGuildMemberJoinStatus.DIDNT_JOIN_THE_GUILD_YET
+                } else {
+                    // Has joined the guild
+                    GamerSaferGuildMemberJoinStatus.HAS_JOINED_THE_GUILD
                 }
-                return
             }
-
-            val verifyId = requiresVerificationUserData[GamerSaferRequiresVerificationUsers.id].value
 
             val provider = loritta.config.loritta.gamerSafer.provider
-
             val jws = createJWTToken(buildJsonObject { put("alg", "HS256") }.toString(),"$provider|${context.guildId}")
 
-            val response = loritta.http.post("${loritta.config.loritta.gamerSafer.endpointUrl}/guilds") {
-                bearerAuth(jws)
+            when (mjs) {
+                GamerSaferGuildMemberJoinStatus.HAS_JOINED_THE_GUILD -> context.reply(true) {
+                    content = "Você já entrou na guild da GamerSafer!"
+                }
+                GamerSaferGuildMemberJoinStatus.DIDNT_JOIN_THE_GUILD_YET -> {
+                    // If the user haven't joined the GamerSafer guild yet, send a message to them about it
+                    val response2 = loritta.http.post("${loritta.config.loritta.gamerSafer.endpointUrl}/guilds/invite") {
+                        bearerAuth(jws)
 
-                setBody(
-                    TextContent(
-                        buildJsonObject {
-                            put("provider", provider)
-                            put("providerId", context.guildId!!.toString())
-                            put("name", context.guild.name)
-                        }.toString(),
-                        ContentType.Application.Json
-                    )
-                )
-            }
+                        setBody(
+                            TextContent(
+                                buildJsonObject {
+                                    put("provider", provider)
+                                    put("providerId", context.guildId!!.toString())
+                                    put("providerLinkBack", "TODO/api/v1/callbacks/gamersafer?userId=${context.user.idLong}&guildId=$guildId")
+                                }.toString(),
+                                ContentType.Application.Json
+                            )
+                        )
+                    }
 
-            println("Status Code: ${response.status}")
-            println("Payload: ${response.bodyAsText()}")
+                    println("Status Code: ${response2.status}")
+                    val bodyAsText = response2.bodyAsText()
+                    println("Payload: ${bodyAsText}")
 
-            val response2 = loritta.http.post("${loritta.config.loritta.gamerSafer.endpointUrl}/guilds/invite") {
-                bearerAuth(jws)
+                    val qrCodeAsByteArray = Json.parseToJsonElement(bodyAsText).jsonObject["qrCode"]!!.jsonPrimitive.content.substringAfter("base64,")
 
-                setBody(
-                    TextContent(
-                        buildJsonObject {
-                            put("provider", provider)
-                            put("providerId", context.guildId!!.toString())
-                            put("providerLinkBack", "TODO?token=abc&verifyId=${requiresVerificationUserData[GamerSaferRequiresVerificationUsers.id]}")
-                        }.toString(),
-                        ContentType.Application.Json
-                    )
-                )
-            }
+                    val base64QrCode = Base64.getDecoder().decode(qrCodeAsByteArray.toByteArray(Charsets.UTF_8))
 
-            println("Status Code: ${response2.status}")
-            val bodyAsText = response2.bodyAsText()
-            println("Payload: ${bodyAsText}")
+                    context.reply(true) {
+                        styled(
+                            "Accesse o QR code no app da GamerSafer para entrar na guilda!",
+                            Emotes.LoriHi
+                        )
 
-            val qrCodeAsByteArray = Json.parseToJsonElement(bodyAsText).jsonObject["qrCode"]!!.jsonPrimitive.content.substringAfter("base64,")
-
-            val base64QrCode = Base64.getDecoder().decode(qrCodeAsByteArray.toByteArray(Charsets.UTF_8))
-
-            context.reply(true) {
-                styled(
-                    "Verificação do cargo <@&${requiresVerificationUserData[GamerSaferRequiresVerificationUsers.role]}>",
-                    Emotes.LoriHi
-                )
-                content = "Verificação do cargo <@&${requiresVerificationUserData[GamerSaferRequiresVerificationUsers.role]}>"
-
-                this.files += FileUpload.fromData(base64QrCode, "qr_code.png")
+                        this.files += FileUpload.fromData(base64QrCode, "qr_code.png")
+                    }
+                }
             }
 
             // Wait until we receive the verification callback
-            val ch = Channel<Unit>()
+            /* val ch = Channel<Unit>()
             loritta.gamerSaferWaitingForCallbacks[requiresVerificationUserData[GamerSaferRequiresVerificationUsers.id].value] = ch
 
             try {
@@ -128,7 +115,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 }
             } catch (e: TimeoutCancellationException) {
                 loritta.gamerSaferWaitingForCallbacks.remove(verifyId)
-            }
+            } */
         }
     }
 
@@ -154,5 +141,10 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         val doneFinalAsBase64 = base64WithoutPadding.encodeToString(doneFinal)
 
         return "$headerAsBase64.$dataAsBase64.$doneFinalAsBase64"
+    }
+
+    enum class GamerSaferGuildMemberJoinStatus {
+        HAS_JOINED_THE_GUILD,
+        DIDNT_JOIN_THE_GUILD_YET
     }
 }
