@@ -264,7 +264,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             if (musicalChairsSessions.contains(guild.idLong)) {
                 context.reply(false) {
                     styled(
-                        content = context.i18nContext.get(I18N_PREFIX.YouNeedAtLeastTwoPeopleToStart),
+                        content = context.i18nContext.get(I18N_PREFIX.YouNeedToWaitTheGameToFinishToStartANewGame),
                         prefix = Emotes.Error
                     )
                 }
