@@ -7,6 +7,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withTimeout
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -17,6 +18,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferAdditionalData
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.select
@@ -72,7 +74,17 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                                 buildJsonObject {
                                     put("provider", provider)
                                     put("providerId", context.guildId!!.toString())
-                                    put("providerLinkBack", "TODO/api/v1/callbacks/gamersafer?userId=${context.user.idLong}&guildId=$guildId")
+                                    put("internalId",
+                                        Base64.getEncoder().encodeToString(
+                                            Json.encodeToString(
+                                                GamerSaferAdditionalData(
+                                                    context.user.idLong,
+                                                    "a"
+                                                )
+                                            ).toByteArray(Charsets.UTF_8)
+                                        )
+                                    )
+                                    put("providerLinkBack", "TODO")
                                 }.toString(),
                                 ContentType.Application.Json
                             )

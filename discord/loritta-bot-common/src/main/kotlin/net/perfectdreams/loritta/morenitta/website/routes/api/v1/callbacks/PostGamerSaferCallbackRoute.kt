@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.G
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferAdditionalData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GuildInviteEvent
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
@@ -23,6 +24,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
+import java.util.*
 
 class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/gamersafer") {
 	companion object {
@@ -31,18 +33,14 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 
 	override suspend fun onRequest(call: ApplicationCall) {
 		logger.info { "Received GamerSafer callback!" }
-		val guildId = call.parameters["guildId"]!!
-		val userId = call.parameters["userId"]!!
-		val token = call.parameters["token"]
-		logger.info { "query params: ${call.request.queryParameters.entries()}" }
-		logger.info { "Token: $token" }
-
-		val event = Json.decodeFromString<GuildInviteEvent>(call.receiveText())
+		val event = Json.decodeFromString<GuildInviteEvent>(call.receiveText().also { logger.info { it } })
+		val (providerId, guildId, additionalDataAsJsonBase64) = event.payload.internalId.split("|||")
+		val additionalData = Json.decodeFromString<GamerSaferAdditionalData>(Base64.getDecoder().decode(additionalDataAsJsonBase64.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
 
 		loritta.transaction {
 			GamerSaferGuildMembers.insert {
 				it[GamerSaferGuildMembers.guild] = guildId.toLong()
-				it[GamerSaferGuildMembers.discordUser] = userId.toLong()
+				it[GamerSaferGuildMembers.discordUser] = additionalData.userId
 				it[GamerSaferGuildMembers.gamerSaferUser] = event.payload.guildMemberId
 			}
 		}
