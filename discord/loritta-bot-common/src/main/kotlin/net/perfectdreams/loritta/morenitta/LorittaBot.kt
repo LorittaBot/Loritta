@@ -50,9 +50,11 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.managers.AudioManager
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
@@ -135,7 +137,7 @@ import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.GamerSaferCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
@@ -1307,6 +1309,49 @@ class LorittaBot(
 		}.sumByDouble {
 			// This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
 			ceil(it.money.toDouble())
+		}
+	}
+
+	/**
+	 * Suspends until Loritta is connected to the specified audio channel
+	 *
+	 * @return if Loritta successfully connected to the voice channel
+	 */
+	suspend fun openAudioChannelAndAwaitConnection(audioManager: AudioManager, audioChannel: AudioChannel, timeout: Duration = 5.seconds): Boolean {
+		// Already connected! Quickly fail then...
+		if (audioManager.isConnected && audioManager.connectedChannel?.idLong == audioChannel.idLong)
+			return true
+
+		audioManager.openAudioConnection(audioChannel)
+
+		val endChannel = Channel<Boolean>()
+
+		// While we could use GuildVoiceUpdateEvent to track this, it seems that audioManager.connectedChannel is updated in a later stage, after GuildVoiceUpdateEvent has been triggered
+		// So for now we use this polling mechanism
+		val audioChannelCheckJob = GlobalScope.async {
+			while (true) {
+				val invalidChannel = !audioManager.isConnected || audioManager.connectedChannel?.idLong != audioChannel.idLong
+
+				if (!invalidChannel) {
+					// If it is the channel, send true to the channel
+					// This will cause the code to exit the "withTimeout" block!
+					endChannel.send(true)
+					return@async
+				}
+
+				delay(250)
+			}
+		}
+
+		return try {
+			withTimeout(timeout) {
+				endChannel.receive()
+			}
+			audioChannelCheckJob.cancel()
+			true
+		} catch (e: TimeoutCancellationException) {
+			audioChannelCheckJob.cancel()
+			false
 		}
 	}
 

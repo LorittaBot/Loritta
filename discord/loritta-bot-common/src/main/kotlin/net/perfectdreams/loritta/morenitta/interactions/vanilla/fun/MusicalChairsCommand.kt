@@ -1,10 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -17,6 +14,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.managers.AudioManager
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.SoundboardAudio
@@ -257,7 +255,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             }
 
             val validParticipants = voiceChannel.members.filter { !it.user.isBot }
-            if (1 >= validParticipants.size) {
+            if (false && 1 >= validParticipants.size) {
                 context.reply(false) {
                     styled(
                         content = context.i18nContext.get(I18N_PREFIX.YouNeedAtLeastTwoPeopleToStart),
@@ -368,39 +366,30 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
 
                 val musicQueue = LinkedBlockingQueue(songFrames)
 
-                guild.audioManager.openAudioConnection(audioChannel)
+                val successfullyConnected = loritta.openAudioChannelAndAwaitConnection(audioManager, audioChannel)
 
-                suspend fun playSoundEffectAndWait(frames: List<ByteArray>) {
-                    // Create a channel that indicates when the sfx has finished playing
-                    val endChannel = Channel<Unit>()
-                    // Change the sending handler
-                    audioManager.sendingHandler =
-                        MusicalChairsSoundEffectAudioProvider(LinkedBlockingQueue(frames), endChannel)
-                    // Wait until the sound effect has been played
-                    endChannel.receive()
+                // Failed to connect! End the game here...
+                if (!successfullyConnected) {
+                    context.reply(false) {
+                        styled(
+                            content = context.i18nContext.get(I18N_PREFIX.FailedToConnectToTheVoiceChannel),
+                            prefix = Emotes.Error
+                        )
+                    }
+                    return
                 }
 
                 if (newGame) {
+                    // Is this a stage channel?
                     if (audioChannel is StageChannel) {
-                        // Wait until Loritta is ACTUALLY connected to the channel
-                        var tries = 0
-                        while (audioManager.connectedChannel != audioChannel) {
-                            if (tries == 10)
-                                break
-
-                            delay(250)
-                            tries++
-                        }
-
-                        // If tries != 10, then Loritta is connected to the channel (yay)
-                        if (tries != 10)
-                            audioChannel.requestToSpeak().await()
+                        // If yes, we will request to speak in the stage channel!
+                        audioChannel.requestToSpeak().await()
                     }
 
                     musicalChairsSessions.add(context.guildId)
 
                     // New game! Let's play the intro!!
-                    playSoundEffectAndWait(musicalChairsIntro)
+                    playSoundEffectAndWait(audioManager, audioChannel, musicalChairsIntro)
                 }
 
                 audioManager.sendingHandler = MusicalChairsAudioProvider(musicQueue)
@@ -485,7 +474,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                                     Emotes.LoriYay
                                 )
                             }
-                            playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.ESSE_E_O_MEU_PATRAO_HEHE))
+                            playSoundEffectAndWait(audioManager, audioChannel, loritta.soundboard.getAudioClip(SoundboardAudio.ESSE_E_O_MEU_PATRAO_HEHE))
 
                             musicalChairsSessions.remove(context.guildId)
                             audioManager.closeAudioConnection()
@@ -499,7 +488,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                                     Emotes.LoriHmpf
                                 )
                             }
-                            playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.XIII))
+                            playSoundEffectAndWait(audioManager, audioChannel, loritta.soundboard.getAudioClip(SoundboardAudio.XIII))
 
                             musicalChairsSessions.remove(context.guildId)
                             audioManager.closeAudioConnection()
@@ -509,7 +498,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         // We will continue!
                         if (membersToContinue.size == 2) {
                             // Only two left? Let's play dança gatinho dança!
-                            playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.DANCE_CAT_DANCE))
+                            playSoundEffectAndWait(audioManager, audioChannel, loritta.soundboard.getAudioClip(SoundboardAudio.DANCE_CAT_DANCE))
                         } else {
                             // If not, let's play a random sfx
                             val randomVictorySfx = listOf(
@@ -520,7 +509,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                                 loritta.soundboard.getAudioClip(SoundboardAudio.ELE_GOSTA),
                             )
 
-                            playSoundEffectAndWait(randomVictorySfx.random())
+                            playSoundEffectAndWait(audioManager, audioChannel, randomVictorySfx.random())
                         }
 
                         startMusicalChairs(
@@ -671,9 +660,37 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
         }
     }
 
+    suspend fun playSoundEffectAndWait(audioManager: AudioManager, audioChannel: AudioChannel, frames: List<ByteArray>): Boolean {
+        // Create a channel that indicates when the sfx has finished playing
+        val endChannel = Channel<SoundEffectFinishedState>()
+        // Change the sending handler
+        audioManager.sendingHandler = MusicalChairsSoundEffectAudioProvider(LinkedBlockingQueue(frames), endChannel)
+
+        val audioChannelCheckJob = GlobalScope.async {
+            while (true) {
+                val invalidChannel = !audioManager.isConnected || audioManager.connectedChannel?.idLong != audioChannel.idLong
+
+                if (invalidChannel) {
+                    endChannel.send(SoundEffectFinishedState.INVALID_CHANNEL)
+                    return@async
+                }
+
+                delay(250)
+            }
+        }
+
+        // Wait until the sound effect has been played
+        val state = endChannel.receive()
+        audioChannelCheckJob.cancel()
+        return when (state) {
+            SoundEffectFinishedState.SUCCESS -> true
+            SoundEffectFinishedState.INVALID_CHANNEL -> false
+        }
+    }
+
     class MusicalChairsAudioProvider(val queue: LinkedBlockingQueue<ByteArray>) : AudioSendHandler {
         companion object {
-            private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
+            private val SILENCE = ByteBuffer.wrap(byteArrayOf())
         }
 
         override fun isOpus() = true
@@ -686,9 +703,9 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
         }
     }
 
-    class MusicalChairsSoundEffectAudioProvider(val queue: LinkedBlockingQueue<ByteArray>, val endChannel: Channel<Unit>) : AudioSendHandler {
+    class MusicalChairsSoundEffectAudioProvider(val queue: LinkedBlockingQueue<ByteArray>, val endChannel: Channel<SoundEffectFinishedState>) : AudioSendHandler {
         companion object {
-            private val SILENCE = ByteBuffer.wrap(byteArrayOf()) // While Kord does have a "SILENCE", it shows the "Speaking" indicator
+            private val SILENCE = ByteBuffer.wrap(byteArrayOf())
         }
 
         override fun isOpus() = true
@@ -700,7 +717,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             if (packet == null) {
                 if (!hasNotified) {
                     hasNotified = true
-                    endChannel.trySend(Unit)
+                    endChannel.trySend(SoundEffectFinishedState.SUCCESS)
                 }
                 return SILENCE
             }
@@ -722,4 +739,9 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
         val source: String?,
         val frames: List<ByteArray>
     )
+
+    enum class SoundEffectFinishedState {
+        SUCCESS,
+        INVALID_CHANNEL
+    }
 }
