@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.audio.AudioSendHandler
 import net.dv8tion.jda.api.entities.Guild
@@ -29,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.localized
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -36,6 +38,10 @@ import java.util.concurrent.LinkedBlockingQueue
 import kotlin.io.path.readBytes
 
 class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     private val I18N_PREFIX = I18nKeysData.Commands.Command.Musicalchairs
     private val songs = listOf(
         MusicalChairSong(
@@ -271,6 +277,21 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                 return
             }
 
+            if (!guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)) {
+                context.reply(false) {
+                    styled(
+                        content = context.i18nContext.get(
+                            I18nKeysData.Commands.LoriDoesntHavePermissionDiscord(
+                                listOf(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)
+                                    .joinToString(", ") { "`${it.localized(context.locale)}`" }
+                            )
+                        ),
+                        prefix = Emotes.Error
+                    )
+                }
+                return
+            }
+
             startMusicalChairs(
                 context,
                 context.i18nContext,
@@ -297,316 +318,355 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             mutex: Mutex,
             round: Int
         ) {
-            val audioManager = guild.audioManager
-            if (!newGame && (!audioManager.isConnected || audioManager.connectedChannel?.idLong != audioChannel.idLong)) {
-                musicalChairsSessions.remove(context.guildId)
+            try {
+                val audioManager = guild.audioManager
+                if (!newGame && (!audioManager.isConnected || audioManager.connectedChannel?.idLong != audioChannel.idLong)) {
+                    musicalChairsSessions.remove(context.guildId)
 
-                context.reply(false) {
-                    styled(
-                        i18nContext.get(I18N_PREFIX.CancellingTheGameBecauseNotConnectedToChannel),
-                        Emotes.LoriSob
-                    )
-                }
-                return
-            }
-
-            val time = if (10 >= startingMembers.size) {
-                LorittaBot.RANDOM.nextInt(7_000, 20_000)
-            } else if (15 >= startingMembers.size) {
-                LorittaBot.RANDOM.nextInt(7_000, 15_000)
-            } else if (20 >= startingMembers.size) {
-                LorittaBot.RANDOM.nextInt(5_000, 15_000)
-            } else {
-                LorittaBot.RANDOM.nextInt(3_000, 12_000)
-            }
-
-            val lengthOfSongSlice = time / 20
-            val songFrames = song.frames
-                .drop(timeOffset / 20)
-                .take(lengthOfSongSlice)
-
-            if (songFrames.size != lengthOfSongSlice) {
-                // If the lengthOfSongSlice is different than what we want, then it means that the song would "end" by itself, so let's switch to a new song!
-                return startMusicalChairs(
-                    context,
-                    i18nContext,
-                    guild,
-                    audioChannel,
-                    startingMembers,
-                    false,
-                    0,
-                    // Select a random song that ISN'T the current song
-                    songs.toMutableList().apply {
-                        this.remove(song)
-                    }.random(),
-                    mutex,
-                    round + 1
-                )
-            }
-
-            val musicQueue = LinkedBlockingQueue(songFrames)
-
-            guild.audioManager.openAudioConnection(audioChannel)
-
-            suspend fun playSoundEffectAndWait(frames: List<ByteArray>) {
-                // Create a channel that indicates when the sfx has finished playing
-                val endChannel = Channel<Unit>()
-                // Change the sending handler
-                audioManager.sendingHandler = MusicalChairsSoundEffectAudioProvider(LinkedBlockingQueue(frames), endChannel)
-                // Wait until the sound effect has been played
-                endChannel.receive()
-            }
-
-            if (newGame) {
-                if (audioChannel is StageChannel) {
-                    // Wait until Loritta is ACTUALLY connected to the channel
-                    var tries = 0
-                    while (audioManager.connectedChannel != audioChannel) {
-                        if (tries == 10)
-                            break
-
-                        delay(250)
-                        tries++
-                    }
-
-                    // If tries != 10, then Loritta is connected to the channel (yay)
-                    if (tries != 10)
-                        audioChannel.requestToSpeak().await()
-                }
-
-                musicalChairsSessions.add(context.guildId)
-
-                // New game! Let's play the intro!!
-                playSoundEffectAndWait(musicalChairsIntro)
-            }
-
-            audioManager.sendingHandler = MusicalChairsAudioProvider(musicQueue)
-
-            val participatingMembers = startingMembers
-                .associateWith { MusicalChairsState.Waiting }
-                .toMutableMap() as MutableMap<Member, MusicalChairsState>
-
-            var restarted = false
-
-            suspend fun handleFinish(eventTimeoutJob: Job, endedDueToTimeout: Boolean) {
-                val canRestart = participatingMembers.values.none { it is MusicalChairsState.Waiting }
-
-                if (canRestart && !restarted) {
-                    restarted = true
-                    if (!endedDueToTimeout)
-                        eventTimeoutJob.cancel()
-
-                    val membersToContinue = participatingMembers.entries.filter { it.value is MusicalChairsState.Sit }.map { it.key }
-
-                    context.chunkedReply(false) {
-                        // TODO: Maybe we could figure out a way to not need those casts?
-                        val sittingMembers = participatingMembers.filterValues { it is MusicalChairsState.Sit } as Map<Member, MusicalChairsState.Sit>
-                        val satOnLapMembers = participatingMembers.filterValues { it is MusicalChairsState.SatOnLap } as Map<Member, MusicalChairsState.SatOnLap>
-                        val didntWaitUntilSongStoppedMembers = participatingMembers.filterValues { it is MusicalChairsState.DidntWaitUntilSongStopped } as Map<Member, MusicalChairsState.DidntWaitUntilSongStopped>
-                        val tookTooLongToSit = participatingMembers.filterValues { it is MusicalChairsState.TookTooLongToSit } as Map<Member, MusicalChairsState.TookTooLongToSit>
-
-                        for ((member, _) in didntWaitUntilSongStoppedMembers) {
-                            styled(
-                                i18nContext.get(I18N_PREFIX.States.DidntWaitUntilSongStopped(member.asMention)),
-                                Emotes.LoriBonk
-                            )
-                        }
-
-                        val sittingMembersSortedByTime = sittingMembers.entries.sortedBy { it.value.time }
-                        for ((member, _) in sittingMembersSortedByTime) {
-                            val isFirst = sittingMembersSortedByTime.indexOfFirst { it.key == member } == 0
-
-                            styled(
-                                buildString {
-                                    if (isFirst)
-                                        append(i18nContext.get(I18N_PREFIX.States.SitFirst(member.asMention)))
-                                    else
-                                        append(i18nContext.get(I18N_PREFIX.States.Sit(member.asMention)))
-                                },
-                                "\uD83E\uDE91"
-                            )
-                        }
-
-                        for ((member, _) in satOnLapMembers) {
-                            styled(
-                                i18nContext.get(I18N_PREFIX.States.SatOnLap(member.asMention)),
-                                Emotes.LoriFlushed
-                            )
-                        }
-
-                        if (tookTooLongToSit.isNotEmpty()) {
-                            val joinedMembers = tookTooLongToSit.keys.joinToString(", ") { it.asMention }
-                            if (tookTooLongToSit.size == 1) {
-                                styled(
-                                    i18nContext.get(I18N_PREFIX.States.TookTooLongToSit(joinedMembers)),
-                                    Emotes.LoriSleeping
-                                )
-                            } else {
-                                styled(
-                                    i18nContext.get(I18N_PREFIX.States.TookTooLongToSitMultiple(joinedMembers)),
-                                    Emotes.LoriSleeping
-                                )
-                            }
-                        }
-                    }
-
-                    if (membersToContinue.size == 1) {
-                        context.reply(false) {
-                            styled(
-                                i18nContext.get(I18N_PREFIX.UserWonTheGame(membersToContinue.first().asMention)),
-                                Emotes.LoriYay
-                            )
-                        }
-                        playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.ESSE_E_O_MEU_PATRAO_HEHE))
-
-                        musicalChairsSessions.remove(context.guildId)
-                        audioManager.closeAudioConnection()
-                        return
-                    }
-
-                    if (membersToContinue.isEmpty()) {
-                        context.reply(false) {
-                            styled(
-                                i18nContext.get(I18N_PREFIX.EveryoneLostTheGame),
-                                Emotes.LoriHmpf
-                            )
-                        }
-                        playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.XIII))
-
-                        musicalChairsSessions.remove(context.guildId)
-                        audioManager.closeAudioConnection()
-                        return
-                    }
-
-                    // We will continue!
-                    if (membersToContinue.size == 2) {
-                        // Only two left? Let's play dança gatinho dança!
-                        playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.DANCE_CAT_DANCE))
-                    } else {
-                        // If not, let's play a random sfx
-                        val randomVictorySfx = listOf(
-                            loritta.soundboard.getAudioClip(SoundboardAudio.IRRA),
-                            loritta.soundboard.getAudioClip(SoundboardAudio.RAPAIZ),
-                            loritta.soundboard.getAudioClip(SoundboardAudio.UI),
-                            loritta.soundboard.getAudioClip(SoundboardAudio.UEPA),
-                            loritta.soundboard.getAudioClip(SoundboardAudio.ELE_GOSTA),
+                    context.reply(false) {
+                        styled(
+                            i18nContext.get(I18N_PREFIX.CancellingTheGameBecauseNotConnectedToChannel),
+                            Emotes.LoriSob
                         )
-
-                        playSoundEffectAndWait(randomVictorySfx.random())
                     }
+                    return
+                }
 
-                    startMusicalChairs(
+                val time = if (10 >= startingMembers.size) {
+                    LorittaBot.RANDOM.nextInt(7_000, 20_000)
+                } else if (15 >= startingMembers.size) {
+                    LorittaBot.RANDOM.nextInt(7_000, 15_000)
+                } else if (20 >= startingMembers.size) {
+                    LorittaBot.RANDOM.nextInt(5_000, 15_000)
+                } else {
+                    LorittaBot.RANDOM.nextInt(3_000, 12_000)
+                }
+
+                val lengthOfSongSlice = time / 20
+                val songFrames = song.frames
+                    .drop(timeOffset / 20)
+                    .take(lengthOfSongSlice)
+
+                if (songFrames.size != lengthOfSongSlice) {
+                    // If the lengthOfSongSlice is different than what we want, then it means that the song would "end" by itself, so let's switch to a new song!
+                    return startMusicalChairs(
                         context,
                         i18nContext,
                         guild,
                         audioChannel,
-                        membersToContinue,
+                        startingMembers,
                         false,
-                        time + timeOffset,
-                        song,
+                        0,
+                        // Select a random song that ISN'T the current song
+                        songs.toMutableList().apply {
+                            this.remove(song)
+                        }.random(),
                         mutex,
                         round + 1
                     )
                 }
-            }
 
-            var eventTimeoutJob: Job? = null
+                val musicQueue = LinkedBlockingQueue(songFrames)
 
-            eventTimeoutJob = GlobalScope.launch {
-                delay(time + 3_000L)
+                guild.audioManager.openAudioConnection(audioChannel)
 
-                mutex.withLock {
-                    val didntSitYetMembers = participatingMembers.entries.filter { it.value is MusicalChairsState.Waiting }
-
-                    for ((didntSitYetMember, _) in didntSitYetMembers) {
-                        participatingMembers[didntSitYetMember] = MusicalChairsState.TookTooLongToSit
-                    }
-
-                    handleFinish(eventTimeoutJob!!, true)
-                }
-            }
-
-            val subtractChairs = when {
-                10 >= participatingMembers.size -> 1
-                15 >= participatingMembers.size -> 2
-                20 >= participatingMembers.size -> 3
-                25 >= participatingMembers.size -> 4
-                30 >= participatingMembers.size -> 5
-                else -> 10
-            }
-
-            val availableChairs = participatingMembers.entries.size - subtractChairs
-
-            context.reply(false) {
-                embed {
-                    author(song.name, song.source)
-
-                    title = i18nContext.get(I18N_PREFIX.Title(round))
-
-                    description = buildString {
-                        appendLine(i18nContext.get(I18N_PREFIX.PayAttentionToTheMusicTutorial(audioChannel.asMention)))
-                        appendLine()
-                        appendLine("**${i18nContext.get(I18N_PREFIX.Participants(participatingMembers.size))}**")
-                        // We aren't going to display anything if there is more than 100 members in the voice channel, to avoid a big embed + embed size limit
-                        if (100 >= participatingMembers.size) {
-                            for (member in participatingMembers) {
-                                appendLine(member.key.asMention)
-                            }
-                        } else {
-                            appendLine("*${i18nContext.get(I18N_PREFIX.TooManyParticipantesHidingList)}*")
-                        }
-                        appendLine()
-                        append(i18nContext.get(I18N_PREFIX.AvailableChairs(availableChairs)))
-                    }
-                    footer(i18nContext.get(I18N_PREFIX.DjArthTheRat), "https://assets.perfectdreams.media/loritta/dj-arth.png")
-                    color = LorittaColors.LorittaAqua.rgb
+                suspend fun playSoundEffectAndWait(frames: List<ByteArray>) {
+                    // Create a channel that indicates when the sfx has finished playing
+                    val endChannel = Channel<Unit>()
+                    // Change the sending handler
+                    audioManager.sendingHandler =
+                        MusicalChairsSoundEffectAudioProvider(LinkedBlockingQueue(frames), endChannel)
+                    // Wait until the sound effect has been played
+                    endChannel.receive()
                 }
 
-                actionRow(
-                    loritta.interactivityManager.button(
-                        ButtonStyle.PRIMARY,
-                        i18nContext.get(I18N_PREFIX.SitInTheChairWithYourButt),
-                        {
-                            emoji = Emoji.fromUnicode("\uD83E\uDE91")
-                        }
-                    ) { context ->
-                        val member = context.event.member!!
+                if (newGame) {
+                    if (audioChannel is StageChannel) {
+                        // Wait until Loritta is ACTUALLY connected to the channel
+                        var tries = 0
+                        while (audioManager.connectedChannel != audioChannel) {
+                            if (tries == 10)
+                                break
 
-                        if (context.event.member !in participatingMembers) {
-                            context.reply(true) {
+                            delay(250)
+                            tries++
+                        }
+
+                        // If tries != 10, then Loritta is connected to the channel (yay)
+                        if (tries != 10)
+                            audioChannel.requestToSpeak().await()
+                    }
+
+                    musicalChairsSessions.add(context.guildId)
+
+                    // New game! Let's play the intro!!
+                    playSoundEffectAndWait(musicalChairsIntro)
+                }
+
+                audioManager.sendingHandler = MusicalChairsAudioProvider(musicQueue)
+
+                val participatingMembers = startingMembers
+                    .associateWith { MusicalChairsState.Waiting }
+                    .toMutableMap() as MutableMap<Member, MusicalChairsState>
+
+                var restarted = false
+
+                suspend fun handleFinish(eventTimeoutJob: Job, endedDueToTimeout: Boolean) {
+                    val canRestart = participatingMembers.values.none { it is MusicalChairsState.Waiting }
+
+                    if (canRestart && !restarted) {
+                        restarted = true
+                        if (!endedDueToTimeout)
+                            eventTimeoutJob.cancel()
+
+                        val membersToContinue =
+                            participatingMembers.entries.filter { it.value is MusicalChairsState.Sit }.map { it.key }
+
+                        context.chunkedReply(false) {
+                            // TODO: Maybe we could figure out a way to not need those casts?
+                            val sittingMembers =
+                                participatingMembers.filterValues { it is MusicalChairsState.Sit } as Map<Member, MusicalChairsState.Sit>
+                            val satOnLapMembers =
+                                participatingMembers.filterValues { it is MusicalChairsState.SatOnLap } as Map<Member, MusicalChairsState.SatOnLap>
+                            val didntWaitUntilSongStoppedMembers =
+                                participatingMembers.filterValues { it is MusicalChairsState.DidntWaitUntilSongStopped } as Map<Member, MusicalChairsState.DidntWaitUntilSongStopped>
+                            val tookTooLongToSit =
+                                participatingMembers.filterValues { it is MusicalChairsState.TookTooLongToSit } as Map<Member, MusicalChairsState.TookTooLongToSit>
+
+                            for ((member, _) in didntWaitUntilSongStoppedMembers) {
                                 styled(
-                                    i18nContext.get(I18N_PREFIX.YouAreNotParticipatingInThisGame(audioChannel.asMention)),
-                                    Emotes.LoriSob
+                                    i18nContext.get(I18N_PREFIX.States.DidntWaitUntilSongStopped(member.asMention)),
+                                    Emotes.LoriBonk
                                 )
                             }
-                            return@button
-                        }
 
-                        // We are going to defer edit but we aren't going to actually edit the message, heh
-                        context.deferEdit()
+                            val sittingMembersSortedByTime = sittingMembers.entries.sortedBy { it.value.time }
+                            for ((member, _) in sittingMembersSortedByTime) {
+                                val isFirst = sittingMembersSortedByTime.indexOfFirst { it.key == member } == 0
 
-                        mutex.withLock {
-                            // Don't process further buttons if the user isn't waiting
-                            if (participatingMembers[member] !is MusicalChairsState.Waiting)
-                                return@button
-
-                            if (musicQueue.isNotEmpty()) {
-                                participatingMembers[member] = MusicalChairsState.DidntWaitUntilSongStopped
-                                return@button
+                                styled(
+                                    buildString {
+                                        if (isFirst)
+                                            append(i18nContext.get(I18N_PREFIX.States.SitFirst(member.asMention)))
+                                        else
+                                            append(i18nContext.get(I18N_PREFIX.States.Sit(member.asMention)))
+                                    },
+                                    "\uD83E\uDE91"
+                                )
                             }
 
-                            val currentlyAvailableChairs = availableChairs - participatingMembers.entries.count { it.value is MusicalChairsState.Sit }
-
-                            participatingMembers[member] = if (currentlyAvailableChairs == 0) {
-                                MusicalChairsState.SatOnLap(Instant.now())
-                            } else {
-                                MusicalChairsState.Sit(Instant.now())
+                            for ((member, _) in satOnLapMembers) {
+                                styled(
+                                    i18nContext.get(I18N_PREFIX.States.SatOnLap(member.asMention)),
+                                    Emotes.LoriFlushed
+                                )
                             }
 
-                            handleFinish(eventTimeoutJob, false)
+                            if (tookTooLongToSit.isNotEmpty()) {
+                                val joinedMembers = tookTooLongToSit.keys.joinToString(", ") { it.asMention }
+                                if (tookTooLongToSit.size == 1) {
+                                    styled(
+                                        i18nContext.get(I18N_PREFIX.States.TookTooLongToSit(joinedMembers)),
+                                        Emotes.LoriSleeping
+                                    )
+                                } else {
+                                    styled(
+                                        i18nContext.get(I18N_PREFIX.States.TookTooLongToSitMultiple(joinedMembers)),
+                                        Emotes.LoriSleeping
+                                    )
+                                }
+                            }
                         }
+
+                        if (membersToContinue.size == 1) {
+                            context.reply(false) {
+                                styled(
+                                    i18nContext.get(I18N_PREFIX.UserWonTheGame(membersToContinue.first().asMention)),
+                                    Emotes.LoriYay
+                                )
+                            }
+                            playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.ESSE_E_O_MEU_PATRAO_HEHE))
+
+                            musicalChairsSessions.remove(context.guildId)
+                            audioManager.closeAudioConnection()
+                            return
+                        }
+
+                        if (membersToContinue.isEmpty()) {
+                            context.reply(false) {
+                                styled(
+                                    i18nContext.get(I18N_PREFIX.EveryoneLostTheGame),
+                                    Emotes.LoriHmpf
+                                )
+                            }
+                            playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.XIII))
+
+                            musicalChairsSessions.remove(context.guildId)
+                            audioManager.closeAudioConnection()
+                            return
+                        }
+
+                        // We will continue!
+                        if (membersToContinue.size == 2) {
+                            // Only two left? Let's play dança gatinho dança!
+                            playSoundEffectAndWait(loritta.soundboard.getAudioClip(SoundboardAudio.DANCE_CAT_DANCE))
+                        } else {
+                            // If not, let's play a random sfx
+                            val randomVictorySfx = listOf(
+                                loritta.soundboard.getAudioClip(SoundboardAudio.IRRA),
+                                loritta.soundboard.getAudioClip(SoundboardAudio.RAPAIZ),
+                                loritta.soundboard.getAudioClip(SoundboardAudio.UI),
+                                loritta.soundboard.getAudioClip(SoundboardAudio.UEPA),
+                                loritta.soundboard.getAudioClip(SoundboardAudio.ELE_GOSTA),
+                            )
+
+                            playSoundEffectAndWait(randomVictorySfx.random())
+                        }
+
+                        startMusicalChairs(
+                            context,
+                            i18nContext,
+                            guild,
+                            audioChannel,
+                            membersToContinue,
+                            false,
+                            time + timeOffset,
+                            song,
+                            mutex,
+                            round + 1
+                        )
                     }
-                )
+                }
+
+                var eventTimeoutJob: Job? = null
+
+                eventTimeoutJob = GlobalScope.launch {
+                    delay(time + 3_000L)
+
+                    mutex.withLock {
+                        val didntSitYetMembers =
+                            participatingMembers.entries.filter { it.value is MusicalChairsState.Waiting }
+
+                        for ((didntSitYetMember, _) in didntSitYetMembers) {
+                            participatingMembers[didntSitYetMember] = MusicalChairsState.TookTooLongToSit
+                        }
+
+                        handleFinish(eventTimeoutJob!!, true)
+                    }
+                }
+
+                val subtractChairs = when {
+                    10 >= participatingMembers.size -> 1
+                    15 >= participatingMembers.size -> 2
+                    20 >= participatingMembers.size -> 3
+                    25 >= participatingMembers.size -> 4
+                    30 >= participatingMembers.size -> 5
+                    else -> 10
+                }
+
+                val availableChairs = participatingMembers.entries.size - subtractChairs
+
+                context.reply(false) {
+                    embed {
+                        author(song.name, song.source)
+
+                        title = i18nContext.get(I18N_PREFIX.Title(round))
+
+                        description = buildString {
+                            appendLine(i18nContext.get(I18N_PREFIX.PayAttentionToTheMusicTutorial(audioChannel.asMention)))
+                            appendLine()
+                            appendLine("**${i18nContext.get(I18N_PREFIX.Participants(participatingMembers.size))}**")
+                            // We aren't going to display anything if there is more than 100 members in the voice channel, to avoid a big embed + embed size limit
+                            if (100 >= participatingMembers.size) {
+                                for (member in participatingMembers) {
+                                    appendLine(member.key.asMention)
+                                }
+                            } else {
+                                appendLine("*${i18nContext.get(I18N_PREFIX.TooManyParticipantesHidingList)}*")
+                            }
+                            appendLine()
+                            append(i18nContext.get(I18N_PREFIX.AvailableChairs(availableChairs)))
+                        }
+                        footer(
+                            i18nContext.get(I18N_PREFIX.DjArthTheRat),
+                            "https://assets.perfectdreams.media/loritta/dj-arth.png"
+                        )
+                        color = LorittaColors.LorittaAqua.rgb
+                    }
+
+                    actionRow(
+                        loritta.interactivityManager.button(
+                            ButtonStyle.PRIMARY,
+                            i18nContext.get(I18N_PREFIX.SitInTheChairWithYourButt),
+                            {
+                                emoji = Emoji.fromUnicode("\uD83E\uDE91")
+                            }
+                        ) { context ->
+                            try {
+                                val member = context.event.member!!
+
+                                if (context.event.member !in participatingMembers) {
+                                    context.reply(true) {
+                                        styled(
+                                            i18nContext.get(I18N_PREFIX.YouAreNotParticipatingInThisGame(audioChannel.asMention)),
+                                            Emotes.LoriSob
+                                        )
+                                    }
+                                    return@button
+                                }
+
+                                // We are going to defer edit but we aren't going to actually edit the message, heh
+                                context.deferEdit()
+
+                                mutex.withLock {
+                                    // Don't process further buttons if the user isn't waiting
+                                    if (participatingMembers[member] !is MusicalChairsState.Waiting)
+                                        return@button
+
+                                    if (musicQueue.isNotEmpty()) {
+                                        participatingMembers[member] = MusicalChairsState.DidntWaitUntilSongStopped
+                                        return@button
+                                    }
+
+                                    val currentlyAvailableChairs =
+                                        availableChairs - participatingMembers.entries.count { it.value is MusicalChairsState.Sit }
+
+                                    participatingMembers[member] = if (currentlyAvailableChairs == 0) {
+                                        MusicalChairsState.SatOnLap(Instant.now())
+                                    } else {
+                                        MusicalChairsState.Sit(Instant.now())
+                                    }
+
+                                    handleFinish(eventTimeoutJob, false)
+                                }
+                            } catch (e: Exception) {
+                                logger.warn(e) { "Something went wrong in the Musical Chairs event in ${guild.idLong}" }
+
+                                // If something goes wrong, let's remove the current session to avoid new sessions not being able to be initiated
+                                musicalChairsSessions.remove(guild.idLong)
+
+                                context.reply(false) {
+                                    styled(
+                                        content = context.i18nContext.get(I18N_PREFIX.SomethingWentWrong),
+                                        prefix = Emotes.LoriSob
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong in the Musical Chairs event in ${guild.idLong}" }
+
+                // If something goes wrong, let's remove the current session to avoid new sessions not being able to be initiated
+                musicalChairsSessions.remove(guild.idLong)
+
+                context.reply(false) {
+                    styled(
+                        content = context.i18nContext.get(I18N_PREFIX.SomethingWentWrong),
+                        prefix = Emotes.LoriSob
+                    )
+                }
             }
         }
     }

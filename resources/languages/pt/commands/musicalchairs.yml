@@ -15,6 +15,7 @@ youAreNotParticipatingInThisGame: "Você não está participando do jogo! Para p
 userWonTheGame: "{user} é o vitorioso de sentar de bunda na cadeira!"
 everyoneLostTheGame: "Wow, todos vocês perderam... que triste. Agora arrumem as cadeiras aí."
 availableChairs: "**Cadeiras Disponíveis:** {chairCount,number}"
+somethingWentWrong: "Algo inesperado deu errado no evento, então o evento foi cancelado..."
 
 states:
   didntWaitUntilSongStopped: "{user} foi desqualificado pois apertou antes da hora!"
