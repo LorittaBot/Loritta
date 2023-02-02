@@ -33,7 +33,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
 
     // Discord
-    implementation("com.github.LorittaBot:DeviousJDA:efeb3bef4d")
+    implementation("com.github.LorittaBot:DeviousJDA:c86f083dca")
     implementation("com.github.MinnDevelopment:jda-ktx:0.10.0-beta.1")
     implementation("club.minnced:discord-webhooks:0.5.7")
 
