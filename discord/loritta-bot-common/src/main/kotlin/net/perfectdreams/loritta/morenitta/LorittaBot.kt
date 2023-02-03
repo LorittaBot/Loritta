@@ -534,7 +534,6 @@ class LorittaBot(
 
 	private val starboardModule = StarboardModule(this)
 	private val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
-	private val bomDiaECiaModule = BomDiaECiaModule(this)
 	private val debugGatewayModule = DebugGatewayModule(this)
 	private val owoGatewayModule = OwOGatewayModule(this)
 	private val afkModule = AFKModule(this)
