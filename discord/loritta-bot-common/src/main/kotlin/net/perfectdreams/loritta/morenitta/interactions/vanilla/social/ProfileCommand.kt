@@ -65,7 +65,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     inner class ProfileViewExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
-            val user = optionalUser("user", ABOUT_ME_I18N_PREFIX.Options.Aboutme.Text)
+            val user = optionalUser("user", PROFILE_VIEW_I18N_PREFIX.Options.User.Text)
         }
 
         override val options = Options()
