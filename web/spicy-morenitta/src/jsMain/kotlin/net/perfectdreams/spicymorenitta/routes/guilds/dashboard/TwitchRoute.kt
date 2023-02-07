@@ -274,7 +274,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 
 							input(classes = "twitch-account") {
 								if (accountInfo != null) {
-									value = "https://www.twitch.com/channel/${accountInfo.login}"
+									value = "https://www.twitch.com/${accountInfo.login}"
 								}
 								placeholder = "https://www.twitch.tv/alanzoka"
 							}
