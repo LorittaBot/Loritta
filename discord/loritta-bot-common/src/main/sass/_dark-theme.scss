@@ -39,4 +39,12 @@ body {
             }
         }
     }
+
+    details.fancy-details > summary {
+        background-color: #26272b;
+    }
+
+    details.fancy-details {
+        background-color: #202225;
+    }
 }
