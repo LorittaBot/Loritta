@@ -118,7 +118,7 @@ object Constants {
 
 	// ===[ COLORS ]===
 	val DISCORD_BLURPLE = Color(114, 137, 218)
-	val LORITTA_AQUA = Color(26, 160, 254)
+	val LORITTA_AQUA = Color(41, 166, 254)
 	val ROBLOX_RED = Color(226, 35, 26)
 	val IMAGE_FALLBACK by lazy { ImageIO.read(File(LorittaBot.ASSETS, "avatar0.png")) }
 	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
