@@ -1,0 +1,6 @@
+notification:
+  topgg:
+    title: "Vote na Loritta no top.gg!"
+    description:
+      - "Ei, já se passaram 12 horas desde o seu último voto no top.gg! {loriLurk}"
+      - "Você pode votar a cada 12 horas, e votando você ajuda a Loritta a crescer e, é claro, você ganha recompensas! {loriHeart}"

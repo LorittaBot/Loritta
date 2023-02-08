@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotesUserAvailableNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BotVoteSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -50,10 +51,18 @@ object WebsiteVoteUtils {
 			TOP_GG_USER_VOTED_AT.put(userId, System.currentTimeMillis())
 
 			loritta.newSuspendedTransaction {
-				BotVote.new {
+				val botVote = BotVote.new {
 					this.userId = userId
 					this.websiteSource = websiteSource
 					this.votedAt = System.currentTimeMillis()
+				}
+
+				// TODO: If a different server list is added for voting purposes, this should be updated to match their vote delay!
+				BotVotesUserAvailableNotifications.insert {
+					it[BotVotesUserAvailableNotifications.userId] = botVote.userId
+					it[BotVotesUserAvailableNotifications.botVote] = botVote.id
+					it[BotVotesUserAvailableNotifications.notifyAt] = Instant.now().plusSeconds(43_200) // You can vote every 12 hours on top.gg
+					it[BotVotesUserAvailableNotifications.notified] = false
 				}
 
 				Profiles.update({ Profiles.id eq userId }) {

@@ -821,6 +821,7 @@ class LorittaBot(
 					GamerSaferSuccessfulVerifications,
 					GamerSaferGuildMembers,
 					BrowserFingerprints,
+					BotVotesUserAvailableNotifications
                 )
             }
         }
@@ -1649,6 +1650,7 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
 		scheduleCoroutineAtFixedRate(GamerSaferRoleCheckerUpdater::class.simpleName!!, 1.minutes, action = GamerSaferRoleCheckerUpdater(this))
+		scheduleCoroutineAtFixedRate(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {
