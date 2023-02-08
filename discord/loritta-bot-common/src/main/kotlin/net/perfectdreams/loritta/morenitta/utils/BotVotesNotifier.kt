@@ -32,7 +32,7 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
                 val userId = userToBeNotifiedData[BotVotesUserAvailableNotifications.userId]
 
                 try {
-                    val user = m.lorittaShards.getUserById(userId)
+                    val user = m.lorittaShards.retrieveUserById(userId)
 
                     if (user != null) {
                         logger.info { "Notifying user ${user.idLong} about top.gg vote..." }
