@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import dev.minn.jda.ktx.interactions.commands.*
+import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -16,6 +17,7 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
@@ -100,12 +102,15 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                         if (subcommandLabel != null) {
                             if (subcommandGroupLabel == null) {
                                 // "/name subcommand"
-                                slashDeclaration = declaration.subcommands.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel }
+                                slashDeclaration =
+                                    declaration.subcommands.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel }
                                 rootDeclaration = declaration
                                 break
                             } else {
                                 // "/name subcommandGroup subcommand"
-                                slashDeclaration = declaration.subcommandGroups.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandGroupLabel }
+                                slashDeclaration = declaration.subcommandGroups.firstOrNull {
+                                    manager.slashCommandDefaultI18nContext.get(it.name) == subcommandGroupLabel
+                                }
                                     ?.subcommands
                                     ?.firstOrNull {
                                         manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel
@@ -184,6 +189,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     context,
                     args
                 )
+            } catch (e: CommandException) {
+                context?.reply(false, e.builder)
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()

@@ -23,3 +23,17 @@ suspend fun <R> GabrielaImageServerClient.handleExceptions(context: InteractionC
     }
     // TODO: More exception handling
 }
+
+suspend fun <R> GabrielaImageServerClient.handleExceptions(context: net.perfectdreams.loritta.morenitta.interactions.InteractionContext, block: suspend net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient.() -> (R)): R {
+    return try {
+        block.invoke(this)
+    } catch (e: Exception) { // This is called if the image wasn't found
+        when (e) {
+            is ImageNotFoundException -> context.fail(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            is UntrustedURLException -> context.fail(context.i18nContext.get(I18nKeysData.Commands.ImageUrlIsUntrusted), Emotes.LoriSob)
+            is ImageTooLargeException, is StreamExceedsLimitException, is ContentLengthTooLargeException -> context.fail(context.i18nContext.get(I18nKeysData.Commands.SentImageIsTooLarge), Emotes.LoriSob)
+            else -> throw e // Propagate it
+        }
+    }
+    // TODO: More exception handling
+}

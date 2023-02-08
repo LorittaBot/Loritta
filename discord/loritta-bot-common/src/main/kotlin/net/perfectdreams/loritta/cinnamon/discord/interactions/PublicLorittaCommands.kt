@@ -43,7 +43,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // ===[ FUN ]===
             register(CoinFlipCommand(languageManager))
             register(RateCommand(languageManager))
-            register(ShipCommand(languageManager))
             register(CancelledCommand(languageManager))
             register(SummonCommand(languageManager))
             register(VieirinhaCommand(languageManager))
