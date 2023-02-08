@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.rest.Image
 import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.FileUpload
@@ -10,7 +8,6 @@ import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
-import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
@@ -69,12 +66,12 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             var isShipWithTheSelfUser = false
 
             when (result1) {
-                is ShipCommand.StringResult -> {
+                is StringResult -> {
                     user1Id = result1.string.hashCode().toLong()
                     user1Name = result1.string
                     user1AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
                 }
-                is ShipCommand.UserResult -> {
+                is UserResult -> {
                     if (result1.user.id == context.user.id)
                         isShipWithTheSelfUser = true
 
@@ -90,12 +87,12 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             when (result2) {
-                is ShipCommand.StringResult -> {
+                is StringResult -> {
                     user2Id = result2.string.hashCode().toLong()
                     user2Name = result2.string
                     user2AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
                 }
-                is ShipCommand.UserResult -> {
+                is UserResult -> {
                     if (result2.user.id == context.user.id)
                         isShipWithTheSelfUser = true
 
@@ -137,10 +134,10 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 // Easter Egg: Shipping you/someone with Loritta
                 val shipEffects = mutableListOf<PuddingShipEffect>()
 
-                if (result1 is ShipCommand.UserResult)
+                if (result1 is UserResult)
                     shipEffects += context.loritta.pudding.shipEffects.getShipEffectsForUser(UserId(user1Id))
 
-                if (result2 is ShipCommand.UserResult)
+                if (result2 is UserResult)
                     shipEffects += context.loritta.pudding.shipEffects.getShipEffectsForUser(UserId(user2Id))
 
                 // TODO: Add RPC call to only get valid (non expired) ship effects
@@ -158,7 +155,7 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 value = (seed % 51).absoluteValue.toInt()
                 isNatural = false // Not a natural ship
-            } else if (result1 is ShipCommand.UserResult && result2 is ShipCommand.UserResult) {
+            } else if (result1 is UserResult && result2 is UserResult) {
                 // We will only check for manipulated values if both users are a UserResult
                 // Because we don't need to spend requests by checking if an StringResult has a marriage
                 val user1Marriage = context.loritta.pudding.marriages.getMarriageByUser(UserId(user1Id))
