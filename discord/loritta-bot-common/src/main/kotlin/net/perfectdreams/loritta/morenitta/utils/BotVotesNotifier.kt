@@ -24,7 +24,7 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
         m.transaction {
             // Get all users that needs to be notified
             val usersToBeNotifiedData = BotVotesUserAvailableNotifications.select {
-                BotVotesUserAvailableNotifications.notified eq false and (BotVotesUserAvailableNotifications.notifyAt greaterEq now)
+                BotVotesUserAvailableNotifications.notified eq false and (BotVotesUserAvailableNotifications.notifyAt lessEq now)
             }.toList()
 
             // Notify them!
