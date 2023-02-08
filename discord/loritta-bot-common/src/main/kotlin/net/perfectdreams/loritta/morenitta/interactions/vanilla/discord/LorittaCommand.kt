@@ -30,7 +30,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 .minusSeconds(86400)
                 .toKotlinInstant()
 
-            val guildCount = context.loritta.lorittaShards.getGuildCount()
+            val guildCount = context.loritta.lorittaShards.queryGuildCount()
             val executedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getExecutedApplicationCommands(since)
             val uniqueUsersExecutedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getUniqueUsersExecutedApplicationCommands(since)
 
