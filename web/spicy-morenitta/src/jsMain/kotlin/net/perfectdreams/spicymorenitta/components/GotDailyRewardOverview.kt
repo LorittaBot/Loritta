@@ -185,7 +185,7 @@ fun GotDailyRewardOverview(
             val sponsoredBy = screen.response.sponsoredBy
             if (sponsoredBy != null) {
                 H1 {
-                    Text("Você ganhou x2 mais sonhos, graças ao...")
+                    Text("Você ganhou ${sponsoredBy.sonhosMultipliedBy}x mais sonhos, graças ao...")
                 }
 
                 val iconId = sponsoredBy.sponsoredByGuild.iconId
