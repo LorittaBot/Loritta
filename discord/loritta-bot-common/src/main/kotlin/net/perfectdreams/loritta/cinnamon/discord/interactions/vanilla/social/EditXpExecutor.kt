@@ -40,7 +40,7 @@ class EditXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
                 styled(
                     context.i18nContext.get(
                         I18nKeysData.Commands.UserDoesntHavePermissionDiscord(
-                            context.i18nContext.get(I18nKeysData.Permissions.BanMembers)
+                            context.i18nContext.get(I18nKeysData.Permissions.ManageGuild)
                         )
                     ),
                     Emotes.LoriZap
