@@ -1,6 +1,10 @@
 label: "gamersafer"
 description: "GamerSafer"
 
+join:
+  label: "entrar"
+  description: "Entra na guild da GamerSafer do servidor"
+
 verify:
   label: "verificar"
   description: "Verificar a sua pessoa com a GamerSafer"

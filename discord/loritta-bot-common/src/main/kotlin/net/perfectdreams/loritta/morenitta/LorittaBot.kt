@@ -103,10 +103,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationRoles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
@@ -142,6 +139,14 @@ import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
+import net.perfectdreams.loritta.morenitta.tables.DonationConfigs
+import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ExperienceRoleRates
+import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.InviteBlockerConfigs
+import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MiscellaneousConfigs
+import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationConfigs
+import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
+import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByExperience
+import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.StarboardConfigs
 import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
 import net.perfectdreams.loritta.morenitta.utils.TrinketsStuff
@@ -818,6 +823,7 @@ class LorittaBot(
                     DailyRewardSonhosTransactionsLog,
 					GamerSaferRequiresVerificationRoles,
 					GamerSaferRequiresVerificationUsers,
+					GamerSaferUserRoles,
 					GamerSaferSuccessfulVerifications,
 					GamerSaferGuildMembers,
 					BrowserFingerprints,
