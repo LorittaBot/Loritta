@@ -46,7 +46,7 @@ class PostSonhosBundlesRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLog
 
                 val paymentUrl = m.perfectPaymentsClient.createPayment(
                     userIdentification.id.toLong(),
-                    "$sonhos sonhos - $whoDonated",
+                    "$sonhos sonhos - $whoDonated (${userIdentification.id})",
                     (grana * 100).toLong(),
                     (grana * 100).toLong(),
                     PaymentReason.SONHOS_BUNDLE,
@@ -96,7 +96,7 @@ class PostSonhosBundlesRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLog
 
                     val paymentUrl = m.perfectPaymentsClient.createPayment(
                         userIdentification.id.toLong(),
-                        "$sonhos sonhos - $whoDonated",
+                        "$sonhos sonhos - $whoDonated (${userIdentification.id})",
                         (grana * 100).toLong(),
                         (grana * 100).toLong(),
                         PaymentReason.SONHOS_BUNDLE,

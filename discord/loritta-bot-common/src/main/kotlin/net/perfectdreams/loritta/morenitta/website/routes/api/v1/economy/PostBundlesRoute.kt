@@ -54,7 +54,7 @@ class PostBundlesRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lorit
 			val paymentUrl = loritta.perfectPaymentsClient.createPayment(
 					loritta,
 					userIdentification.id.toLong(),
-					"$sonhos sonhos - $whoDonated",
+					"$sonhos sonhos - $whoDonated (${userIdentification.id})",
 					(grana * 100).toLong(),
 					(grana * 100).toLong(),
 					PaymentReason.SONHOS_BUNDLE,
