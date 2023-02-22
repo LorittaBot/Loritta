@@ -187,7 +187,8 @@ a:hover {
 .media-figure {
   margin-right: 1em;
   width: 25%;
-
+  text-align: center;
+  
   @media screen and (max-width: $min-image-stacked-width) {
     width: 50%;
     order: 1;
