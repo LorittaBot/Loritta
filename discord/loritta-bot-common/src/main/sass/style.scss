@@ -124,6 +124,17 @@ body {
   background-image: linear-gradient(-90deg, #43b1ff00, var(--background-wrapper-primary) 15%, var(--background-wrapper-primary) 85%, #43b1ff00), url("/v2/assets/img/website_bg.png");
 }
 
+// Add padding to the last even/odd wrapper of the content div
+#content {
+    .even-wrapper:last-child {
+        padding-bottom: 2em;
+    }
+
+    .odd-wrapper:last-child {
+        padding-bottom: 2em;
+    }
+}
+
 .even-wrapper {
   background-color: var(--background-wrapper-secondary);
 
