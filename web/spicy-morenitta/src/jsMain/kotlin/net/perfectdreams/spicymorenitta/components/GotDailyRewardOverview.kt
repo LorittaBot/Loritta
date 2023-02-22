@@ -139,7 +139,12 @@ fun GotDailyRewardOverview(
             }
         }
 
+        Div {
+            Text("Siga a Loritta nas Redes Sociais!")
+        }
+
         Div(
+
             attrs = {
                 attr("style", "display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5em;")
             }
@@ -147,37 +152,33 @@ fun GotDailyRewardOverview(
             A(href = "https://twitter.com/LorittaBot", attrs = {
                 classes("button", "primary")
                 target(ATarget.Blank)
+                attr("style", "justify-content: center; align-items: center; display: flex;")
             }) {
                 I(attrs = { classes("fab", "fa-twitter") })
-
-                Text(" Siga no Twitter")
             }
 
             A(href = "https://www.youtube.com/c/Loritta", attrs = {
                 classes("button", "red")
                 target(ATarget.Blank)
+                attr("style", "justify-content: center; align-items: center; display: flex;")
             }) {
                 I(attrs = { classes("fab", "fa-youtube") })
-
-                Text(" Inscreva-se no YouTube")
             }
 
             A(href = "https://www.instagram.com/lorittabot/", attrs = {
                 classes("button", "pink")
                 target(ATarget.Blank)
+                attr("style", "justify-content: center; align-items: center; display: flex;")
             }) {
                 I(attrs = { classes("fab", "fa-instagram") })
-
-                Text(" Siga no Instagram")
             }
 
             A(href = "https://tiktok.com/@lorittamorenittabot", attrs = {
                 classes("button", "purple")
                 target(ATarget.Blank)
+                attr("style", "justify-content: center; align-items: center; display: flex;")
             }) {
                 I(attrs = { classes("fab", "fa-tiktok") })
-
-                Text(" Siga no TikTok")
             }
         }
 

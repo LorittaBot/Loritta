@@ -5,11 +5,14 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxUtils
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
+import net.perfectdreams.loritta.i18n.I18nKeys
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdGenerator
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.adWrapper
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayVideoAd
+import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 
 class DailyView(
     loritta: LorittaBot,
@@ -121,27 +124,54 @@ class DailyView(
 
             div(classes = "media") {
                 div(classes = "media-body") {
-                    p {
+                    div(classes = "daily-attention") {
                         style = "color: #f04747;"
-                        b {
-                            + "Atenção: "
-                        }
-                        + "Compra e venda de sonhos com terceiros não são responsabilidade da equipe da Loritta! Se você for roubado (scamming), nós não iremos recuperar seus sonhos e se você reclamar com a equipe da Loritta você será banido, pois resolver problemas de roubos fora da Loritta não é nosso trabalho. Se você comprar/vender sonhos ou outros produtos com valores monetários (por exemplo: Discord Nitro) com terceiros, você e o seu comprador/vendedor correm risco de serem banidos caso sejam denunciados para a equipe. Muitos \"vendedores\" usam cartões clonados para vender tais produtos, logo você está correndo risco de estar cometendo um ato ilegal ao comprar com terceiros. Dar sonhos como recompensa por entrarem em um servidor também é proibido e é contra os termos de uso do Discord."
-                        + " "
-                        + "Leia mais sobre as regras da Loritta "
-                        a(href = "/guidelines") {
-                            + "clicando aqui"
-                        }
-                        + "."
-                    }
 
-                    p {
-                        style = "color: #f04747;"
-                        + "Se você deseja comprar sonhos de uma forma segura que ainda por cima ajuda a Loritta ficar online, visite a nossa loja de sonhos "
-                        a(href = "/user/@me/dashboard/bundles") {
-                            + "clicando aqui"
+                        p {
+                            div(classes = "daily-attention-title") {
+                                +i18nContext.get(I18nKeysData.Daily.Attention.Title)
+                            }
+                            div {
+                                +i18nContext.get(I18nKeysData.Daily.Attention.BuyingAndSellingIsWrong)
+                            }
+                            div {
+                                i {
+                                    +i18nContext.get(I18nKeysData.Daily.Attention.IllegalStuff)
+                                }
+                            }
                         }
-                        + "!"
+
+                        p {
+                            +i18nContext.get(I18nKeysData.Daily.Attention.DontUseVpnsAndProxies)
+                        }
+
+                        p {
+                            WebsiteUtils.buildAsHtml(
+                                i18nContext.language.textBundle.strings[I18nKeys.Daily.Attention.ReadOurRules.key]!!,
+                                {
+                                    a(href = "/guidelines") {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.Rules)
+                                    }
+                                },
+                                {
+                                    +it
+                                }
+                            )
+                        }
+
+                        p {
+                            WebsiteUtils.buildAsHtml(
+                                i18nContext.language.textBundle.strings[I18nKeys.Daily.Attention.BuySonhos.key]!!,
+                                {
+                                    a(href = "/user/@me/dashboard/bundles") {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.ClickHere)
+                                    }
+                                },
+                                {
+                                    +it
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -175,8 +205,12 @@ class DailyView(
                 div(classes = "media-body") {
                     style = "text-align: left;"
 
-                    h1 {
-                        + "Perguntas Frequentes"
+                    div(classes = "title-with-emoji") {
+                        img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-zap.png", classes = "emoji-title")
+
+                        h2 {
+                            + "Perguntas Frequentes"
+                        }
                     }
 
                     div {

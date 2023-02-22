@@ -188,7 +188,7 @@ a:hover {
   margin-right: 1em;
   width: 25%;
   text-align: center;
-  
+
   @media screen and (max-width: $min-image-stacked-width) {
     width: 50%;
     order: 1;
@@ -230,10 +230,33 @@ h4 {
   font-size: 1.125em;
 } */
 
+h1 {
+    font-family: Pacifico, Lato, sans-serif;
+    font-size: 4em;
+    font-weight: normal;
+}
+
+h2 {
+    font-size: 2.5em;
+    font-weight: 800;
+}
+
 .inline-emoji {
   height: 1.3em;
   position: relative;
   top: 0.3em;
+}
+
+.title-with-emoji {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+
+    .emoji-title {
+        height: 100px;
+    }
 }
 
 @keyframes icon-middle {

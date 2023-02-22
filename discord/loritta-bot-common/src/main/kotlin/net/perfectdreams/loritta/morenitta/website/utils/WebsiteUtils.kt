@@ -274,4 +274,35 @@ object WebsiteUtils {
 
 		return guildJson
 	}
+
+	fun buildAsHtml(originalString: String, onControlChar: (String) -> (Unit), onStringBuild: (String) -> (Unit)) {
+		var isControl = false
+
+		val genericStringBuilder = StringBuilder()
+		val controlStringBuilder = StringBuilder()
+
+		for (ch in originalString) {
+			if (isControl) {
+				if (ch == '}') {
+					onControlChar.invoke(controlStringBuilder.toString())
+					isControl = false
+					continue
+				}
+
+				controlStringBuilder.append(ch)
+				continue
+			}
+
+			if (ch == '{') {
+				onStringBuild.invoke(genericStringBuilder.toString())
+				genericStringBuilder.clear()
+				isControl = true
+				continue
+			}
+
+			genericStringBuilder.append(ch)
+		}
+
+		onStringBuild.invoke(genericStringBuilder.toString())
+	}
 }

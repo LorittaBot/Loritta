@@ -1,4 +1,13 @@
 daily:
+  attention:
+    title: "Atenção!"
+    buyingAndSellingIsWrong: "A compra/venda de sonhos com terceiros e a troca de produtos de valor monetário, como Discord Nitro, é proibida e você será banido de usar a Loritta caso comercialize algo assim."
+    illegalStuff: "Muitos vendedores desse ramo usam cartões clonados, não colabore com o crime de lavagem de dinheiro desses irresponsáveis!"
+    dontUseVpnsAndProxies: "Não use VPN/proxies para pegar seu daily, também é proibido usar mais de uma conta para isso."
+    readOurRules: "Leia as nossas {rulesLink} para evitar problemas!"
+    rules: "regras"
+    buySonhos: "Se você deseja comprar sonhos de uma forma segura que ainda por cima ajuda a Loritta ficar online, visite a nossa loja de sonhos {clickHere}!"
+    clickHere: "clicando aqui"
   questions:
     loriCute:
       title: "A Loritta é fofa?"
