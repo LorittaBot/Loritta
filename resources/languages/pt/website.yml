@@ -56,3 +56,30 @@ website:
         - "Deseja fazer uma parceria comercial com Loritta"
         - "Qualquer outra coisa que não se encaixa em nosso servidor de suporte"
       businessContactTip: "Se você acha que o e-mail é muito \"formal\", então não se preocupe, nós também achamos. Se você preferir, você também pode entrar em contato conosco através do nosso servidor de suporte, mesmo que seja relacionado a negócios!"
+  guidelines:
+    intro:
+      title: "Diretrizes da Loritta"
+      description:
+        - "O sonho da Loritta é transformar o mundo em um lugar melhor, divertindo e ajudando as pessoas pelo caminho."
+        - "Para que ela consiga realizar seu sonho, existem as diretrizes. Apenas as pessoas que desejam que ela consiga atingir seus objetivos, podem se divertir com ela."
+        - "Aqui estão as regras de uso da Loritta, mas lembre-se que você pode ser banido por algo que não está aqui, então tenha bom senso!"
+    whatYouCantDo:
+      title: "Ações que não serão toleradas"
+      entries:
+        - "Não respeitar as diretrizes do Discord."
+        - "Utilizar conteúdo NSFW em funções e comandos da Loritta ou trocar sonhos por produtos relacionados."
+        - "Tentar obter vantagens burlando algumas restrições impostas pela Loritta, como criar contas para pegar o daily ou usar outra pessoa para isso."
+        - "Vender, alugar ou trocar sonhos por dinheiro real, ou algum produto que tem valor monetário real, é PROIBIDO. Caso ofereçam, reporte para a Equipe da Loritta, pois não iremos proteger você de roubos e golpes. Você será banido por comercializar, junto com o vendedor. A regra inclui anunciar a venda ou a procura dos produtos, não anuncie brincando! Não temos como saber se você realmente está. Exemplos do que não pode ser comercializado: Discord Nitro, contas, gift card, dinheiro real, cash em jogos, scripts e etc. Tudo que tenha valor monetário real!"
+        - "Tentar evadir ou bular punições não será tolerado. Evadir o seu ban (criar outra conta para usar a Loritta) fará com que você não seja mais desbanido."
+        - "Tentar atacar, prejudicar ou derrubar a Loritta ou qualquer posse da DreamLand."
+        - "Plagiar a Loritta. Tudo bem se inspirar, mas fazer tudo igual não dá."
+        - "Pedir reembolso ao comprar algo na DreamLand. Entre em contato com o suporte antes de tomar uma decisão precipitada e evite ser banido!"
+        - "É proibido fazer servidores e eventos com sistema de “reward” usando sonhos. Por exemplo, dar uma quantia de sonhos para cada quantidade de convites, ou qualquer coisa similar a isso."
+        - "Acobertar a evasão de ban (usuário banido que criou outra conta para usar a Loritta) faz com que você seja banido junto com o meliante. Bem como não denunciar e ser conivente com quebras de regra."
+        - "Tentar se passar pela Loritta ou alguém da Equipe, bem como espalhar mentiras sobre quaisquer acontecimentos que podem ter relação, vulgo “fake news”. Isso inclui usar fanarts e o nome dela no Discord, bem como criar bots com o mesmo nome e avatar. Não excluíndo aquele que alegar ter relação oficial com a Loritta ou a Equipe."
+        - "Ofender, xingar ou sexualizar a Loritta. A regra inclui o ódio gratuito, mesmo que disfarçado de crítica, xingamentos pesados como “puta”, “vagabunda” e relacionados. O usuário que fizer isso e for denunciado, será punido caso tenha sido em local público. Mesmo que ela seja um bot, muitas pessoas trabalham para que ela seja o que é hoje, tais ações desrespeitam isso e por isso você irá perder o privilégio de usá-la."
+        - "Tentar enganar, ameaçar ou prejudicar qualquer usuário da Loritta dentro da comunidade, durante a sua experiência de uso."
+    ifYouAreBanned:
+      title: "Você foi banido de usar a Loritta?"
+      description: "Se você está lendo as diretrizes da Loritta pois você foi banido, veja como fazer um apelo de ban para você ter a chance de ser desbanido {clickHere}!"
+      clickHere: "clicando aqui"

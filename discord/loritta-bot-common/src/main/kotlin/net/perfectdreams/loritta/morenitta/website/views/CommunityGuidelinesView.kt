@@ -1,17 +1,10 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
+import kotlinx.html.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.DIV
-import kotlinx.html.a
-import kotlinx.html.div
-import kotlinx.html.h2
-import kotlinx.html.img
-import kotlinx.html.li
-import kotlinx.html.p
-import kotlinx.html.strong
-import kotlinx.html.style
-import kotlinx.html.ul
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.i18n.I18nKeys
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class CommunityGuidelinesView(
@@ -28,15 +21,10 @@ class CommunityGuidelinesView(
     override fun getTitle() = locale["website.guidelines.communityGuidelines"]
 
     override fun DIV.generateContent() {
-        val otherGuidelines = mapOf(
-            "Discord" to "https://discordapp.com/guidelines",
-            "Twitter" to "https://help.twitter.com/en/rules-and-policies/twitter-rules",
-            "Amino" to "https://support.aminoapps.com/hc/en-us/articles/360022679554-Community-Guidelines"
-        )
-        div(classes = "even-wrapper") {
+        div(classes = "odd-wrapper") {
             div(classes = "media") {
                 div(classes = "media-figure") {
-                    img(src = "https://assets.perfectdreams.media/loritta/loritta-hearts-heathecliff.png") {}
+                    img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-hi.png") {}
                 }
                 div(classes = "media-body") {
                     div {
@@ -44,68 +32,22 @@ class CommunityGuidelinesView(
 
                         div {
                             style = "text-align: center;"
-                            h2 {
-                                + locale["website.guidelines.intro.title"]
+                            h1 {
+                                + i18nContext.get(I18nKeysData.Website.Guidelines.Intro.Title)
                             }
                         }
 
-                        for (str in locale.getList("website.guidelines.intro.description")) {
+                        for (str in i18nContext.get(I18nKeysData.Website.Guidelines.Intro.Description)) {
                             p {
                                 + str
                             }
                         }
                     }
-                }
-            }
-        }
-        div(classes = "odd-wrapper wobbly-bg") {
-            div(classes = "media") {
-                div(classes = "media-body") {
-                    div {
-                        style = "text-align: left;"
-
-                        div {
-                            style = "text-align: center;"
-                            h2 {
-                                + locale["website.guidelines.whatYouCanDo.title"]
-                            }
-                        }
-
-                        for (str in locale.getList("website.guidelines.whatYouCanDo.description")) {
-                            ul {
-                                li {
-                                    + str.replace(" %platforms%", "")
-                                }
-
-                                if (str.endsWith("%platforms%")) {
-                                    ul {
-                                        for ((platform, link) in otherGuidelines) {
-                                            li {
-                                                strong {
-                                                    + "${platform}: "
-                                                }
-
-                                                a(href = link) {
-                                                    + link
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                div(classes = "media-figure") {
-                    img(src = "https://assets.perfectdreams.media/loritta/loritta-spin-heathecliff.png") {}
                 }
             }
         }
         div(classes = "even-wrapper wobbly-bg") {
             div(classes = "media") {
-                div(classes = "media-figure") {
-                    img(src = "https://assets.perfectdreams.media/loritta/loritta-stop-heathecliff.png") {}
-                }
                 div(classes = "media-body") {
                     div {
                         style = "text-align: left;"
@@ -113,120 +55,89 @@ class CommunityGuidelinesView(
                         div {
                             style = "text-align: center;"
                             h2 {
-                                + locale["website.guidelines.prohibited.title"]
+                                + i18nContext.get(I18nKeysData.Website.Guidelines.WhatYouCantDo.Title)
                             }
-                        }
-
-                        for (str in locale.getList("website.guidelines.prohibited.description")) {
-                            ul {
-                                li {
-                                    + str.replace(" %platforms%", "")
-                                        .replace(" %disrespect%", "")
-                                        .replace(" %breaking%", "")
-                                        .replace(" %beyourself%", "")
-                                }
-
-                                if (str.endsWith("%platforms%")) {
-                                    ul {
-                                        for (str in locale.getList("website.guidelines.prohibited.onPlatformBreak")) {
-                                            li {
-                                                + str
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (str.endsWith("%disrespect%")) {
-                                    ul {
-                                        for (str in locale.getList("website.guidelines.prohibited.disrespect")) {
-                                            li {
-                                                + str
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (str.endsWith("%breaking%")) {
-                                    ul {
-                                        for (str in locale.getList("website.guidelines.prohibited.breaking")) {
-                                            li {
-                                                + str
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (str.endsWith("%beyourself%")) {
-                                    ul {
-                                        for (str in locale.getList("website.guidelines.prohibited.beYourself")) {
-                                            li {
-                                                + str.replace(" %fanarts%", "").replace(" %notjoke%", "")
-                                            }
-
-                                            if (str.endsWith("%fanarts%")) {
-                                                ul {
-                                                    for (str in locale.getList("website.guidelines.prohibited.useFanArts")) {
-                                                        li {
-                                                            + str
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            if (str.endsWith("%notjoke%")) {
-                                                ul {
-                                                    for (str in locale.getList("website.guidelines.prohibited.notJoke")) {
-                                                        li {
-                                                            + str
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        div(classes = "odd-wrapper wobbly-bg") {
-            div(classes = "media") {
-                div(classes = "media-body") {
-                    div {
-                        style = "text-align: left;"
-
-                        div {
-                            style = "text-align: center;"
-                            h2 {
-                                + locale["website.guidelines.whatWillHappenIf.title"]
-                            }
-                        }
-
-                        p {
-                            + locale["website.guidelines.whatWillHappenIf.ifYouBreak"]
                         }
 
                         ul {
-                            for (str in locale.getList("website.guidelines.whatWillHappenIf.punishments")) {
+                            for (str in i18nContext.get(I18nKeysData.Website.Guidelines.WhatYouCantDo.Entries)) {
                                 li {
                                     + str
                                 }
                             }
                         }
-
-                        for (str in locale.getList("website.guidelines.whatWillHappenIf.description")) {
-                            p {
-                                + str
-                            }
-                        }
                     }
                 }
+
                 div(classes = "media-figure") {
-                    img(src = "https://assets.perfectdreams.media/loritta/loritta-crying-heathecliff.png") {}
+                    img(src = "https://assets.perfectdreams.media/loritta/loritta-police-sortros.png") {}
                 }
             }
         }
+        div(classes = "odd-wrapper wobbly-bg") {
+            div(classes = "media") {
+                div(classes = "media-figure") {
+                    img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-sob.png") {}
+                }
+
+                div(classes = "media-body") {
+                    div {
+                        style = "text-align: left;"
+
+                        div {
+                            style = "text-align: center;"
+                            h2 {
+                                + i18nContext.get(I18nKeysData.Website.Guidelines.IfYouAreBanned.Title)
+                            }
+                        }
+
+                        p {
+                            buildAsHtml(
+                                i18nContext.language.textBundle.strings[I18nKeys.Website.Guidelines.IfYouAreBanned.Description.key]!!,
+                                {
+                                    a(href = "/extras/faq-loritta/loritta-ban-appeal") {
+                                        + i18nContext.get(I18nKeysData.Website.Guidelines.IfYouAreBanned.ClickHere)
+                                    }
+                                },
+                                {
+                                    + it
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun buildAsHtml(originalString: String, onControlChar: (String) -> (Unit), onStringBuild: (String) -> (Unit)) {
+        var isControl = false
+
+        val genericStringBuilder = StringBuilder()
+        val controlStringBuilder = StringBuilder()
+
+        for (ch in originalString) {
+            if (isControl) {
+                if (ch == '}') {
+                    onControlChar.invoke(controlStringBuilder.toString())
+                    isControl = false
+                    continue
+                }
+
+                controlStringBuilder.append(ch)
+                continue
+            }
+
+            if (ch == '{') {
+                onStringBuild.invoke(genericStringBuilder.toString())
+                genericStringBuilder.clear()
+                isControl = true
+                continue
+            }
+
+            genericStringBuilder.append(ch)
+        }
+
+        onStringBuild.invoke(genericStringBuilder.toString())
     }
 }
