@@ -5,7 +5,6 @@ import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.LocaleManager

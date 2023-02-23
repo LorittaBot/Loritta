@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle", listOf("rifa", "raffle", "lorifa"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
@@ -124,10 +124,12 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 						Constants.ERROR
 					),
 					LorittaReply(
-						GACampaigns.sonhosBundlesUpsellDiscordMessage(
-							"https://loritta.website/", // Hardcoded, woo
-							"loraffle-legacy",
-							"buy-tickets-not-enough-sonhos"
+						context.i18nContext.get(
+							GACampaigns.sonhosBundlesUpsellDiscordMessage(
+								"https://loritta.website/", // Hardcoded, woo
+								"loraffle-legacy",
+								"buy-tickets-not-enough-sonhos"
+							)
 						),
 						prefix = Emotes.LORI_RICH.asMention,
 						mentionUser = false

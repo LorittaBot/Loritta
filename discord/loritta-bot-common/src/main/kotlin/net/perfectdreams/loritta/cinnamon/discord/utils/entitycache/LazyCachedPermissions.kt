@@ -2,11 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.entitycache
 
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
-import dev.kord.common.entity.Snowflake
-import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.CinnamonMetrics
 
 /**
  * Lazy and Cached permission checks

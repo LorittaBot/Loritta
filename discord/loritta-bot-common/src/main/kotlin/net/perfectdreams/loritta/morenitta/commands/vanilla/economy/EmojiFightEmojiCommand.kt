@@ -1,20 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.morenitta.utils.AccountUtils
-import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordMessage
-import net.perfectdreams.loritta.morenitta.utils.GACampaigns
-import net.perfectdreams.loritta.morenitta.utils.GenericReplies
-import net.perfectdreams.loritta.morenitta.utils.NumberUtils
-import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 
 class EmojiFightEmojiCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 	m,

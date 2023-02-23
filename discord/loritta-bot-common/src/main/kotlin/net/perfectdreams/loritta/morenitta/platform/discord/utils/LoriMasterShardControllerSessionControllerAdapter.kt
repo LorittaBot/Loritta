@@ -1,12 +1,6 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.utils
 
 import com.neovisionaries.ws.client.OpeningHandshakeException
-import io.ktor.client.request.delete
-import io.ktor.client.request.put
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.userAgent
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
@@ -15,9 +9,6 @@ import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ConcurrentLoginBuckets
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
-import net.perfectdreams.loritta.morenitta.utils.NetAddressUtils
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
@@ -207,11 +198,5 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 		init {
 			super.setUncaughtExceptionHandler { thread: Thread?, exception: Throwable? -> handleFailure(thread, exception) }
 		}
-	}
-
-	enum class ControllerResponseType {
-		OK,
-		CONFLICT,
-		OFFLINE
 	}
 }

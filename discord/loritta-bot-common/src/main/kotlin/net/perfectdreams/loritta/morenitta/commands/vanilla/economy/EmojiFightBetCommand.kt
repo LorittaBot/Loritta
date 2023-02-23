@@ -8,15 +8,15 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 
 class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
-		m,
-		listOf("emojifight bet", "rinhadeemoji bet", "emotefight bet"),
-		net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
+	m,
+	listOf("emojifight bet", "rinhadeemoji bet", "emotefight bet"),
+	net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
 		localizedDescription("commands.command.emojifightbet.description")
@@ -40,12 +40,12 @@ class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			// If it is not null, we convert it to a Long (if it is a invalid number, it will be null)
 			// Then, in the ".also" block, we check if it is null and, if it is, we show that the user provided a invalid number!
 			val totalEarnings = (args.getOrNull(0) ?: explainAndExit())
-					.let { NumberUtils.convertShortenedNumberToLong(it) }
-					.let {
-						if (it == null)
-							GenericReplies.invalidNumber(this, args[0])
-						it
-					}
+				.let { NumberUtils.convertShortenedNumberToLong(it) }
+				.let {
+					if (it == null)
+						GenericReplies.invalidNumber(this, args[0])
+					it
+				}
 
 			if (0 >= totalEarnings)
 				fail(locale["commands.command.flipcoinbet.zeroMoney"], Constants.ERROR)
@@ -60,10 +60,12 @@ class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 					}
 
 					this.append {
-						message = GACampaigns.sonhosBundlesUpsellDiscordMessage(
-							"https://loritta.website/", // Hardcoded, woo
-							"bet-coinflip-legacy",
-							"bet-not-enough-sonhos"
+						message = i18nContext.get(
+							GACampaigns.sonhosBundlesUpsellDiscordMessage(
+								"https://loritta.website/", // Hardcoded, woo
+								"bet-coinflip-legacy",
+								"bet-not-enough-sonhos"
+							)
 						)
 						prefix = Emotes.LORI_RICH.asMention
 						mentionUser = false
@@ -74,7 +76,7 @@ class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
 			// Only allow users to participate in a emoji fight bet if the user got their daily reward today
 			AccountUtils.getUserTodayDailyReward(loritta, lorittaUser.profile)
-					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
+				?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
 
 			// Self user check
 			run {
@@ -92,13 +94,13 @@ class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
 			val maxPlayersInEvent = (
 					(this.args.getOrNull(1) ?.toIntOrNull() ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
-							.coerceIn(2, EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+						.coerceIn(2, EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
 					)
 
 			val emojiFight = EmojiFight(
-					this,
-					totalEarnings,
-					maxPlayersInEvent
+				this,
+				totalEarnings,
+				maxPlayersInEvent
 			)
 
 			emojiFight.start()

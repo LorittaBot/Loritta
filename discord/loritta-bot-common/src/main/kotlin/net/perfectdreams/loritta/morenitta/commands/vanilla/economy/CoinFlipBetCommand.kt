@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.CaraCoroaCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -23,7 +22,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
@@ -127,10 +126,12 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 					}
 
 					this.append {
-						message = GACampaigns.sonhosBundlesUpsellDiscordMessage(
-							"https://loritta.website/", // Hardcoded, woo
-							"bet-coinflip-legacy",
-							"bet-not-enough-sonhos"
+						message = i18nContext.get(
+							GACampaigns.sonhosBundlesUpsellDiscordMessage(
+								"https://loritta.website/", // Hardcoded, woo
+								"bet-coinflip-legacy",
+								"bet-not-enough-sonhos"
+							)
 						)
 						prefix = Emotes.LORI_RICH.asMention
 						mentionUser = false

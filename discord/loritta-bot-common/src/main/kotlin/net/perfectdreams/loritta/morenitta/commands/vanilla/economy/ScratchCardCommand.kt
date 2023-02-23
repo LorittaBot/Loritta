@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
 class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("scratchcard", "raspadinha"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
-				.asMap()
+			.asMap()
 		private const val LORITTA_COMBO = 100_000
 		private const val PANTUFA_COMBO = 10_000
 		private const val GABI_COMBO = 1_000
@@ -73,62 +73,62 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 					Raspadinhas.slice(Raspadinhas.receivedById, earnings).select {
 						Raspadinhas.receivedById eq context.user.idLong
 					}.groupBy(Raspadinhas.receivedById)
-							.firstOrNull()
+						.firstOrNull()
 				}
 
 				context.reply(
-						LorittaReply(
-								"**Raspadinha da Loritta**",
-								"<:loritta:331179879582269451>"
-						),
-						LorittaReply(
-								"Ganhe prêmios comprando um ticket para raspar!",
-								"<:starstruck:540988091117076481>",
-								mentionUser = false
-						),
-						LorittaReply(
-								"Ao comprar, raspe clicando nos spoilers e veja os emojis que aparecem!",
-								"\uD83C\uDFAB",
-								mentionUser = false
-						),
-						LorittaReply(
-								"Se tiver alguma combinação na horizontal, vertical ou na diagional, você pode ganhar prêmios!",
-								"\uD83D\uDC65",
-								mentionUser = false
-						),
-						LorittaReply(
-								"**Combinação de <:loritta:664849802961485894>:** $LORITTA_COMBO sonhos",
-								mentionUser = false
-						),
-						LorittaReply(
-								"**Combinação de <:pantufa:664849802793713686>:** $PANTUFA_COMBO sonhos",
-								mentionUser = false
-						),
-						LorittaReply(
-								"**Combinação de <:gabriela:664849802927800351>:** $GABI_COMBO sonhos",
-								mentionUser = false
-						),
-						LorittaReply(
-								"**Combinação de <:dokyo:664849803397562369>:** $DOKYO_COMBO sonhos",
-								mentionUser = false
-						),
-						LorittaReply(
-								"**Combinação de <:gessy:664849803334909952>:** $GESSY_COMBO sonhos",
-								mentionUser = false
-						),
-						LorittaReply(
-								"**Combinação de <:tobias_nosa:450476856303419432>:** $TOBIAS_COMBO sonhos",
-								mentionUser = false
-						),
-						LorittaReply(
-								"Você já comprou **${raspadinhaCount} raspadinhas** e, com elas, você ganhou **${raspadinhaEarnings?.get(earnings) ?: 0} sonhos**",
-								mentionUser = false
-						),
-						LorittaReply(
-								"Compre uma raspadinha da Loritta por **150 sonhos** usando `${context.serverConfig.commandPrefix}raspadinha comprar`!",
-								prefix = "\uD83D\uDCB5",
-								mentionUser = false
-						)
+					LorittaReply(
+						"**Raspadinha da Loritta**",
+						"<:loritta:331179879582269451>"
+					),
+					LorittaReply(
+						"Ganhe prêmios comprando um ticket para raspar!",
+						"<:starstruck:540988091117076481>",
+						mentionUser = false
+					),
+					LorittaReply(
+						"Ao comprar, raspe clicando nos spoilers e veja os emojis que aparecem!",
+						"\uD83C\uDFAB",
+						mentionUser = false
+					),
+					LorittaReply(
+						"Se tiver alguma combinação na horizontal, vertical ou na diagional, você pode ganhar prêmios!",
+						"\uD83D\uDC65",
+						mentionUser = false
+					),
+					LorittaReply(
+						"**Combinação de <:loritta:664849802961485894>:** $LORITTA_COMBO sonhos",
+						mentionUser = false
+					),
+					LorittaReply(
+						"**Combinação de <:pantufa:664849802793713686>:** $PANTUFA_COMBO sonhos",
+						mentionUser = false
+					),
+					LorittaReply(
+						"**Combinação de <:gabriela:664849802927800351>:** $GABI_COMBO sonhos",
+						mentionUser = false
+					),
+					LorittaReply(
+						"**Combinação de <:dokyo:664849803397562369>:** $DOKYO_COMBO sonhos",
+						mentionUser = false
+					),
+					LorittaReply(
+						"**Combinação de <:gessy:664849803334909952>:** $GESSY_COMBO sonhos",
+						mentionUser = false
+					),
+					LorittaReply(
+						"**Combinação de <:tobias_nosa:450476856303419432>:** $TOBIAS_COMBO sonhos",
+						mentionUser = false
+					),
+					LorittaReply(
+						"Você já comprou **${raspadinhaCount} raspadinhas** e, com elas, você ganhou **${raspadinhaEarnings?.get(earnings) ?: 0} sonhos**",
+						mentionUser = false
+					),
+					LorittaReply(
+						"Compre uma raspadinha da Loritta por **150 sonhos** usando `${context.serverConfig.commandPrefix}raspadinha comprar`!",
+						prefix = "\uD83D\uDCB5",
+						mentionUser = false
+					)
 				)
 			}
 		}
@@ -145,10 +145,12 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 					}
 
 					this.append {
-						this.message = GACampaigns.sonhosBundlesUpsellDiscordMessage(
-							"https://loritta.website/", // Hardcoded, woo
-							"scratch-card-legacy",
-							"bet-not-enough-sonhos"
+						this.message = context.i18nContext.get(
+							GACampaigns.sonhosBundlesUpsellDiscordMessage(
+								"https://loritta.website/", // Hardcoded, woo
+								"scratch-card-legacy",
+								"bet-not-enough-sonhos"
+							)
 						)
 						prefix = Emotes.LORI_RICH.asMention
 						mentionUser = false
@@ -209,10 +211,10 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 					it[receivedById] = context.user.idLong
 					it[receivedAt] = System.currentTimeMillis()
 					it[pattern] = array.joinToString(
-							"\n",
-							transform = {
-								it.joinToString("")
-							})
+						"\n",
+						transform = {
+							it.joinToString("")
+						})
 					it[scratched] = false
 				}
 			}
@@ -269,30 +271,30 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 
 			if (raspadinha == null) {
 				context.reply(
-						LorittaReply(
-								"Essa raspadinha não existe!",
-								Constants.ERROR
-						)
+					LorittaReply(
+						"Essa raspadinha não existe!",
+						Constants.ERROR
+					)
 				)
 				return@withLock
 			}
 
 			if (raspadinha[Raspadinhas.receivedById] != context.user.idLong) {
 				context.reply(
-						LorittaReply(
-								"Nossa, não sabia que você era assim... tentando roubar os prêmios de outras raspadinhas que não foi você que comprou...",
-								Constants.ERROR
-						)
+					LorittaReply(
+						"Nossa, não sabia que você era assim... tentando roubar os prêmios de outras raspadinhas que não foi você que comprou...",
+						Constants.ERROR
+					)
 				)
 				return@withLock
 			}
 
 			if (raspadinha[Raspadinhas.scratched]) {
 				context.reply(
-						LorittaReply(
-								"Você já recebeu o prêmio desta raspadinha!",
-								Constants.ERROR
-						)
+					LorittaReply(
+						"Você já recebeu o prêmio desta raspadinha!",
+						Constants.ERROR
+					)
 				)
 				return@withLock
 			}
@@ -363,9 +365,9 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 				}
 
 				context.reply(
-						LorittaReply(
-								"Qual parte de *não resgate um prêmio se você não ganhou* você não entendeu? Só por fazer perder o meu tempo, você perdeu 1000 sonhos. ${Emotes.LORI_SHRUG}"
-						)
+					LorittaReply(
+						"Qual parte de *não resgate um prêmio se você não ganhou* você não entendeu? Só por fazer perder o meu tempo, você perdeu 1000 sonhos. ${Emotes.LORI_SHRUG}"
+					)
 				)
 			} else {
 				logger.info { "User ${context.user.idLong} won $prize sonhos in the raspadinha! Combos: Lori: $loriCombos; Pantufa: $pantufaCombos; Gabi: $gabiCombos; Dokyo: $dokyoCombos; Gessy: $gessyCombos; Tobias: $tobiasCombos" }
@@ -373,10 +375,10 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 					profile.addSonhosNested(prize.toLong())
 				}
 				context.reply(
-						LorittaReply(
-								"Parabéns, você ganhou **$prize sonhos** na sua raspadinha!",
-								Emotes.LORI_PAT
-						)
+					LorittaReply(
+						"Parabéns, você ganhou **$prize sonhos** na sua raspadinha!",
+						Emotes.LORI_PAT
+					)
 				)
 			}
 		}

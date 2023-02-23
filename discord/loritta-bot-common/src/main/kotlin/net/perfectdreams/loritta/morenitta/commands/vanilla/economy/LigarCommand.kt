@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
@@ -47,10 +47,12 @@ class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", cate
 							Constants.ERROR
 						),
 						LorittaReply(
-							GACampaigns.sonhosBundlesUpsellDiscordMessage(
-								"https://loritta.website/", // Hardcoded, woo
-								"call-legacy",
-								"yudi-is-sad-cuz-cant-call-him"
+							context.i18nContext.get(
+								GACampaigns.sonhosBundlesUpsellDiscordMessage(
+									"https://loritta.website/", // Hardcoded, woo
+									"call-legacy",
+									"yudi-is-sad-cuz-cant-call-him"
+								)
 							),
 							prefix = Emotes.LORI_RICH.asMention
 						)
