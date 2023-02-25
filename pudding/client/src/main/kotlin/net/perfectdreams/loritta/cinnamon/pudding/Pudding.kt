@@ -160,7 +160,7 @@ class Pudding(
     val notifications = NotificationsService(this)
 
     // Used to avoid having a lot of threads being created on the "dispatcher" just to be blocked waiting for a connection, causing thread starvation and an OOM kill
-    private val semaphore = Semaphore(permits)
+    val semaphore = Semaphore(permits)
     val random = SecureRandom()
 
     /**
