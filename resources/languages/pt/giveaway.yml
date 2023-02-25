@@ -1,0 +1,22 @@
+giveaway:
+  useButtonToEnter: "Use {buttonEmoji} para participar!"
+  needsToHaveAllRoles: "Precisa ter todos estes cargos para participar: {roles}"
+  needsToHaveAnyRoles: "Precisa ter algum destes cargos para participar: {roles}"
+  cantHaveAllRoles: "Não pode participar se tiver todos estes cargos: {roles}"
+  cantHaveAnyRoles: "Não pode participar se tiver algum destes cargos: {roles}"
+  endsAt: "Acabará em"
+  requirements: "Requisitos"
+  participate: "Participar ({participantsCount})"
+
+  joinGiveaway:
+    unknownGiveaway: "Sorteio desconhecido!"
+    giveawayHasAlreadyEnded: "O sorteio já acabou!"
+    youAreAlreadyParticipating: "Você já está participando do sorteio!"
+    missingRolesAnd: "Você não tem permissão para participar deste sorteio! Para participar, você precisa ter os seguintes cargos: {roles}"
+    missingRolesOr: "Você não tem permissão para participar deste sorteio! Para participar, você precisa ter pelo ou menos um dos seguintes cargos: {roles}"
+    blockedRolesAnd: "Você não tem permissão para participar deste sorteio! Para participar, você não pode ter os seguintes cargos: {roles}"
+    blockedRolesOr: "Você não tem permissão para participar deste sorteio! Para participar, você não pode ter qualquer um dos seguintes cargos: {roles}"
+    youAreNowParticipating: "Você agora está participando do sorteio, boa sorte!"
+
+  giveawayParticipants:
+    allDone: "Prontinho, aqui está a lista de todos os membros que estão participando do sorteio!"

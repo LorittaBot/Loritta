@@ -1,0 +1,33 @@
+setup:
+  letsSetupYourGiveawayStep:
+    letsSetupYourGiveaway: "Vamos configurar o seu sorteio!"
+    startSetup: "Iniciar Configuração"
+    giveawayName: "Nome"
+    giveawayNamePlaceholder: "Felicidade Eterna"
+    giveawayDescription: "Descrição"
+    giveawayDescriptionPlaceholder: "Uma pessoa sortuda irá ganhar felicidade eterna! ...e várias Lorittinhas de pelúcia como presente"
+    giveawayEmbedImage: "Link da Imagem na Embed"
+    giveawayEmbedThumbnail: "Link da Miniatura na Embed"
+    giveawayEmbedColor: "Cor da Embed (Hexadecimal ou R, G, B)"
+    giveawayInfo: "Informações sobre o Sorteio"
+
+  doYouWantToAllowSpecificRolesToParticipateStep:
+    doYouWantToAllowSpecificRolesToParticipate: "Se desejar, você pode configurar quais membros poderão participar do sorteio!"
+    currentlyAllMembersCanParticipate: "Atualmente todos os membros do seu servidor podem participar"
+    chooseWhatRolesCanParticipate: "Escolher quais cargos poderão participar"
+    chooseWhatRolesCannotParticipate: "Escolher quais cargos não poderão participar"
+    whatRolesCanParticipate: "Quais cargos poderão participar do sorteio?"
+    whatRolesCannotParticipate: "Quais cargos não poderão participar do sorteio?"
+    okayTheFollowingRolesWillBeUsed: "Okay! Os seguintes cargos serão usados: {roles}"
+    toEnterTheGiveawayShouldItHaveOneOrAllRoles: "Para entrar no sorteio, a pessoa precisa ter qualquer um dos cargos, ou ela precisa ter todos eles?"
+    toEnterTheGiveawayShouldItNotHaveOneOrAllRoles: "Para entrar no sorteio, a pessoa não pode ter qualquer um dos cargos, ou ela não pode ter todos eles?"
+    shouldHaveAllRoles: "Precisa ter todos os cargos"
+    shouldHaveAnyRole: "Precisa ter qualquer um dos cargos"
+    cantHaveAllRoles: "Não pode ter todos os cargos"
+    cantHaveAnyRole: "Não pode ter qualquer um dos cargos"
+
+  giveawayWinningRoles:
+    giveRolesToWinner: "Dar cargo para os vencedores"
+    dontGiveRolesToWinner: "Não dar cargo para os vencedores"
+
+  cancelConfiguration: "Cancelar Configuração"

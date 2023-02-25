@@ -140,6 +140,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.tables.DonationConfigs
+import net.perfectdreams.loritta.morenitta.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.InviteBlockerConfigs
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MiscellaneousConfigs
@@ -311,6 +312,7 @@ class LorittaBot(
 	val boostGuildListener = BoostGuildListener(this)
 	val interactionsListener = InteractionsListener(this)
 	val christmasListener = ReactionListener(this)
+	val giveawayInteractionsListener = GiveawayInteractionsListener(this)
 
 	var builder: DefaultShardManagerBuilder
 
@@ -504,7 +506,8 @@ class LorittaBot(
 				addReactionFurryAminoPtListener,
 				boostGuildListener,
 				interactionsListener,
-				christmasListener
+				christmasListener,
+				giveawayInteractionsListener
 			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
@@ -827,7 +830,9 @@ class LorittaBot(
 					GamerSaferSuccessfulVerifications,
 					GamerSaferGuildMembers,
 					BrowserFingerprints,
-					BotVotesUserAvailableNotifications
+					BotVotesUserAvailableNotifications,
+					Giveaways,
+					GiveawayParticipants
                 )
             }
         }
