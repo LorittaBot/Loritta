@@ -10,6 +10,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -18,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import org.jetbrains.exposed.sql.*
@@ -132,6 +134,76 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                         styled(
                                             i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreAlreadyParticipating),
                                             Emotes.LoriSob
+                                        )
+
+                                        actionRow(
+                                            m.interactivityManager.buttonForUser(event.user, ButtonStyle.DANGER, i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.LeaveGiveaway), { loriEmoji = Emotes.LoriBear }) {
+                                                val deferredReply = it.event.deferReply(true).await()
+
+                                                m.giveawayManager.giveawayMutexes.getOrPut(dbId) { Mutex() }
+                                                    .withLock {
+                                                        // First we will try to make the user leave the giveaway
+                                                        val leftGiveaway = m.transaction {
+                                                            // Shouldn't ever be null here (unless if it is was deleted somewhere else)
+                                                            val giveaway = Giveaways.select { Giveaways.id eq dbId }
+                                                                .first()
+
+                                                            // Delete the user's entry...
+                                                            GiveawayParticipants.deleteWhere {
+                                                                GiveawayParticipants.userId eq event.user.idLong and (GiveawayParticipants.giveawayId eq dbId)
+                                                            }
+
+                                                            // Get all participants...
+                                                            val participants = GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
+                                                                    .count()
+
+                                                            // Parse the allowed roles into JSON objects
+                                                            val allowedRoles = giveaway[Giveaways.allowedRoles]?.let {
+                                                                Json.decodeFromString<GiveawayRoles>(it)
+                                                            }
+                                                            val deniedRoles = giveaway[Giveaways.deniedRoles]?.let {
+                                                                Json.decodeFromString<GiveawayRoles>(it)
+                                                            }
+
+                                                            // And that's a wrap!
+                                                            LeftGiveaway(giveaway, participants, allowedRoles, deniedRoles)
+                                                        }
+
+                                                        // Update the giveaway message to indicate that the user left
+                                                        guild.getGuildMessageChannelById(leftGiveaway.giveaway[Giveaways.textChannelId])
+                                                            ?.editMessageById(
+                                                                leftGiveaway.giveaway[Giveaways.messageId],
+                                                                MessageEditData.fromCreateData(
+                                                                    m.giveawayManager.createGiveawayMessage(
+                                                                        m.languageManager.getI18nContextByLegacyLocaleId(leftGiveaway.giveaway[Giveaways.locale]),
+                                                                        leftGiveaway.giveaway[Giveaways.reason],
+                                                                        leftGiveaway.giveaway[Giveaways.description],
+                                                                        leftGiveaway.giveaway[Giveaways.reaction],
+                                                                        leftGiveaway.giveaway[Giveaways.imageUrl],
+                                                                        leftGiveaway.giveaway[Giveaways.thumbnailUrl],
+                                                                        leftGiveaway.giveaway[Giveaways.color]?.let { Color.decode(it) },
+                                                                        leftGiveaway.giveaway[Giveaways.finishAt],
+                                                                        event.guild!!,
+                                                                        leftGiveaway.giveaway[Giveaways.customMessage],
+                                                                        leftGiveaway.giveaway[Giveaways.id].value,
+                                                                        leftGiveaway.participants,
+                                                                        leftGiveaway.allowedRoles,
+                                                                        leftGiveaway.deniedRoles
+                                                                    )
+                                                                )
+                                                            )
+                                                            ?.await()
+                                                    }
+
+                                                // Tell the user that they left the giveaway
+                                                deferredReply.editOriginal(
+                                                    MessageEdit {
+                                                        styled(
+                                                            i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouLeftTheGiveaway),
+                                                            Emotes.LoriSob
+                                                        )
+                                                    }).await()
+                                            }
                                         )
                                     })
                                     .setEphemeral(true)
@@ -271,4 +343,6 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
         class BlockedRoles(val deniedRoles: GiveawayRoles) : GiveawayState()
         class Success(val giveaway: ResultRow, val participants: Long, val allowedRoles: GiveawayRoles?, val deniedRoles: GiveawayRoles?) : GiveawayState()
     }
+
+    class LeftGiveaway(val giveaway: ResultRow, val participants: Long, val allowedRoles: GiveawayRoles?, val deniedRoles: GiveawayRoles?)
 }

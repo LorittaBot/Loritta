@@ -12,6 +12,8 @@ giveaway:
     unknownGiveaway: "Sorteio desconhecido!"
     giveawayHasAlreadyEnded: "O sorteio já acabou!"
     youAreAlreadyParticipating: "Você já está participando do sorteio!"
+    leaveGiveaway: "Sair do Sorteio"
+    youLeftTheGiveaway: "Você saiu do sorteio... Se você mudar de ideia e quiser voltar, basta clicar no botão de participar novamente!"
     missingRolesAnd: "Você não tem permissão para participar deste sorteio! Para participar, você precisa ter os seguintes cargos: {roles}"
     missingRolesOr: "Você não tem permissão para participar deste sorteio! Para participar, você precisa ter pelo ou menos um dos seguintes cargos: {roles}"
     blockedRolesAnd: "Você não tem permissão para participar deste sorteio! Para participar, você não pode ter os seguintes cargos: {roles}"
