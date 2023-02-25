@@ -293,7 +293,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         return GiveawayCombo(guild, channel, message)
     }
 
-    private fun getGiveawayGuild(giveaway: Giveaway, shouldCancel: Boolean): Guild? {
+    private suspend fun getGiveawayGuild(giveaway: Giveaway, shouldCancel: Boolean): Guild? {
         val guild = loritta.lorittaShards.getGuildById(giveaway.guildId) ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
 
@@ -306,7 +306,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         return guild
     }
 
-    private fun getGiveawayGuildMessageChannel(giveaway: Giveaway, guild: Guild, shouldCancel: Boolean): GuildMessageChannel? {
+    private suspend fun getGiveawayGuildMessageChannel(giveaway: Giveaway, guild: Guild, shouldCancel: Boolean): GuildMessageChannel? {
         val channel = guild.getGuildMessageChannelById(giveaway.textChannelId) ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
 
@@ -319,7 +319,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         return channel
     }
 
-    fun createGiveawayJob(giveaway: Giveaway) {
+    suspend fun createGiveawayJob(giveaway: Giveaway) {
         logger.info { "Creating giveaway ${giveaway.id.value} job..." }
 
         // Vamos tentar pegar e ver se a guild ou o canal de texto existem
@@ -369,7 +369,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         }
     }
 
-    fun cancelGiveaway(giveaway: Giveaway, deleteFromDatabase: Boolean, forceDelete: Boolean = false) {
+    suspend fun cancelGiveaway(giveaway: Giveaway, deleteFromDatabase: Boolean, forceDelete: Boolean = false) {
         logger.info { "Canceling giveaway ${giveaway.id.value}, deleteFromDatabase = $deleteFromDatabase, forceDelete = $forceDelete"}
 
         giveawayTasks[giveaway.id.value]?.cancel()
@@ -379,10 +379,8 @@ class GiveawayManager(val loritta: LorittaBot) {
         if (deleteFromDatabase || forceDelete) {
             if (forceDelete || System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= giveaway.finishAt) { // Já se passaram uma semana?
                 logger.info { "Deleting giveaway ${giveaway.id.value} from database, one week of failures so the server maybe doesn't exist anymore"}
-                runBlocking {
-                    loritta.pudding.transaction {
-                        giveaway.delete()
-                    }
+                loritta.transaction {
+                    giveaway.delete()
                 }
             }
         }
