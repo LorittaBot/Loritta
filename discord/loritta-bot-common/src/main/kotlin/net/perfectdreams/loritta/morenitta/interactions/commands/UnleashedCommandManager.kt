@@ -37,6 +37,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaC
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.ShipCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.GamerSaferCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
@@ -58,6 +59,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ MODERATION ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
             register(GamerSaferCommand(loritta))
+        register(BanInfoCommand(loritta))
 
         // ===[ FUN ]===
         register(EventCommand(loritta))

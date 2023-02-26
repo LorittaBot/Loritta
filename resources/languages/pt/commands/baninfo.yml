@@ -1,0 +1,9 @@
+label: "baninfo"
+description: "Mostra as informações do banimento de um meliante"
+
+unbanUser: "Desbanir Usuário"
+ifYouWantToUnbanThisUser: "Se você deseja desbanir este usuário, aperte no {emoji}!"
+
+options:
+  user:
+    text: "O meliante que você deseja ver as informações do ban dele"
