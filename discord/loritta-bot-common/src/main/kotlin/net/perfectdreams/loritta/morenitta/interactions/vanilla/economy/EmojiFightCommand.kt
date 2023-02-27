@@ -76,6 +76,14 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             // Sonhos check if the user provided sonhos' amount
             if (totalEarnings != null) {
+                if (0 >= totalEarnings)
+                    context.fail(true) {
+                        styled(
+                            context.locale["commands.command.flipcoinbet.zeroMoney"],
+                            Constants.ERROR
+                        )
+                    }
+
                 if (totalEarnings > selfUserProfile.money) {
                     context.fail(true) {
                         this.styled(
