@@ -270,7 +270,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required
-                            )
+                            ).apply {
+                                if (interaKTionsOption.requiredRange != null) {
+                                    setRequiredRange(interaKTionsOption.requiredRange.first, interaKTionsOption.requiredRange.last)
+                                }
+                            }
                         )
                     }
 

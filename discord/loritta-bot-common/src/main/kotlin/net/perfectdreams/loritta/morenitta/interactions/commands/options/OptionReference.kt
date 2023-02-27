@@ -36,7 +36,7 @@ class LongDiscordOptionReference<T>(
     name: String,
     description: StringI18nData,
     required: Boolean,
-    requiredRange: LongRange?
+    val requiredRange: LongRange?
 ) : DiscordOptionReference<T>(name, description, required) {
     override fun get(option: OptionMapping): T {
         return option.asLong as T
