@@ -19,8 +19,8 @@ emoji:
     emoji:
       text: "O novo emoji que você irá usar nas rinhas de emoji"
 
-joinTheEmojiFight: "Participar da Rinha"
-startTheEmojiFight: "Iniciar a Rinha"
+joinTheEmojiFight: "Participar"
+startTheEmojiFight: "Iniciar"
 
 joinState:
   successState:
