@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
@@ -98,7 +99,7 @@ class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 					)
 
 			val emojiFight = EmojiFight(
-				this,
+				CommandContextCompat.LegacyDiscordCommandContextCompat(this),
 				totalEarnings,
 				maxPlayersInEvent
 			)

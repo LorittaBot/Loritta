@@ -17,10 +17,10 @@ open class ApplicationCommandOptions {
         .apply(builder)
         .also { registeredOptions.add(it) }
 
-    fun long(name: String, description: StringI18nData) = LongDiscordOptionReference<Long>(name, description, true)
+    fun long(name: String, description: StringI18nData, requiredRange: LongRange? = null) = LongDiscordOptionReference<Long>(name, description, true, requiredRange)
         .also { registeredOptions.add(it) }
 
-    fun optionalLong(name: String, description: StringI18nData) = LongDiscordOptionReference<Long?>(name, description, false)
+    fun optionalLong(name: String, description: StringI18nData, requiredRange: LongRange? = null) = LongDiscordOptionReference<Long?>(name, description, false, requiredRange)
         .also { registeredOptions.add(it) }
 
     fun user(name: String, description: StringI18nData) = UserDiscordOptionReference<UserAndMember>(name, description, true)

@@ -1,0 +1,40 @@
+label: "emojifight"
+description: "Faça uma rinha de emojis com os seus amigos, o emoji mais forte ganha a rinha!"
+
+joinTheEmojiFight: "Participar da Rinha"
+startTheEmojiFight: "Iniciar a Rinha"
+
+joinState:
+  successState:
+    success1: "Você está participando da rinha com o seu habilidoso {emoji}, boa sorte para você e o seu bichano!"
+    success2: "Você está participando da rinha com o seu charmoso {emoji}, boa sorte para você e o seu bichano!"
+    success3: "Você está participando da rinha com o seu lindo {emoji}, boa sorte para você e o seu bichano!"
+    success4: "Você está participando da rinha com o seu adorável {emoji}, boa sorte para você e o seu bichano!"
+    success5: "Você está participando da rinha com o seu maravilhoso {emoji}, boa sorte para você e o seu bichano!"
+    success6: "Você está participando da rinha com o seu espetacular {emoji}, boa sorte para você e o seu bichano!"
+    success7: "Você está participando da rinha com o seu magnífico {emoji}, boa sorte para você e o seu bichano!"
+    success8: "Você está participando da rinha com o seu majestoso {emoji}, boa sorte para você e o seu bichano!"
+    success9: "Você está participando da rinha com o seu fascinante {emoji}, boa sorte para você e o seu bichano!"
+    success10: "Você está participando da rinha com o seu fantástico {emoji}, boa sorte para você e o seu bichano!"
+    success11: "Você está participando da rinha com o seu extraordinário {emoji}, boa sorte para você e o seu bichano!"
+    success12: "Você está participando da rinha com o seu sensacional {emoji}, boa sorte para você e o seu bichano!"
+    success13: "Você está participando da rinha com o seu incrível {emoji}, boa sorte para você e o seu bichano!"
+    success14: "Você está participando da rinha com o seu carismático {emoji}, boa sorte para você e o seu bichano!"
+    success15: "Você está participando da rinha com o seu gracioso {emoji}, boa sorte para você e o seu bichano!"
+    success16: "Você está participando da rinha com o seu divertido {emoji}, boa sorte para você e o seu bichano!"
+    success17: "Você está participando da rinha com o seu corajoso {emoji}, boa sorte para você e o seu bichano!"
+    success18: "Você está participando da rinha com o seu brilhante {emoji}, boa sorte para você e o seu bichano!"
+    success19: "Você está participando da rinha com o seu elegante {emoji}, boa sorte para você e o seu bichano!"
+    success20: "Você está participando da rinha com o seu simpático {emoji}, boa sorte para você e o seu bichano!"
+  youAreAlreadyParticipating: "Você já está participando desta rinha, espere ela iniciar para ver se você e o seu bichano irão sair vitoriosos nela!"
+  tooManyPlayers: "Já tem muitas pessoas participando desta rinha!"
+  notEnoughMoney: "Você não tem sonhos suficientes!"
+  eventFinished: "A rinha já acabou. Seu bichano, que estava com fome de dar um sopapo, agora está deprimido..."
+  didntGetDailyReward: "Parece que você não pegou a sua recompensa diária hoje, você só pode participar nas rinhas de emoji depois de pegar a sua recompensa diária. Que tal pegar agora? {dailyCommand}"
+  accountTooNew: "Calma lá né, a sua conta é nova demais! Para você participar de rinhas de emojis, você precisa esperar {days} dias para começar a participar."
+
+options:
+  maxPlayers:
+    text: "A quantidade máxima de participantes na rinha"
+  sonhos:
+    text: "A quantidade de sonhos que você deseja apostar"

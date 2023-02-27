@@ -190,7 +190,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     args
                 )
             } catch (e: CommandException) {
-                context?.reply(false, e.builder)
+                context?.reply(e.ephemeral, e.builder)
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()

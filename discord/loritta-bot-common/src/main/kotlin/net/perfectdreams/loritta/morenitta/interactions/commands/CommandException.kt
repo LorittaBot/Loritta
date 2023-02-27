@@ -10,4 +10,4 @@ import net.perfectdreams.discordinteraktions.common.builder.message.create.Inter
  *
  * Implementations should catch this exception and send the [builder], logging the error is not required.
  */
-class CommandException(val builder: InlineMessage<*>.() -> (Unit)) : RuntimeException()
+class CommandException(val ephemeral: Boolean, val builder: InlineMessage<*>.() -> (Unit)) : RuntimeException()

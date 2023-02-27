@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -30,7 +31,7 @@ interface CommandContextCompat {
     val channel: MessageChannel
     val loritta: LorittaBot
 
-    suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit = {})
+    suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit = {}): InteractionMessage
 
     class InteractionsCommandContextCompat(val context: ApplicationCommandContext) : CommandContextCompat {
         override val user: User
@@ -54,8 +55,8 @@ interface CommandContextCompat {
         override val loritta: LorittaBot
             get() = context.loritta
 
-        override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit) {
-            context.reply(
+        override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
+            return context.reply(
                 ephemeral
             ) {
                 // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
@@ -86,13 +87,14 @@ interface CommandContextCompat {
         override val loritta: LorittaBot
             get() = context.loritta
 
-        override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit) {
+        override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
             val inlineBuilder = MessageCreate {
                 // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
                 builder()
             }
 
-            context.sendMessage(inlineBuilder)
+            // This isn't a real follow-up interaction message, but we do have the message data, so that's why we are using it
+            return InteractionMessage.FollowUpInteractionMessage(context.sendMessage(inlineBuilder))
         }
     }
 
@@ -118,13 +120,14 @@ interface CommandContextCompat {
         override val loritta: LorittaBot
             get() = context.loritta
 
-        override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit) {
+        override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
             val inlineBuilder = MessageCreate {
                 // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
                 builder()
             }
 
-            context.sendMessage(inlineBuilder)
+            // This isn't a real follow-up interaction message, but we do have the message data, so that's why we are using it
+            return InteractionMessage.FollowUpInteractionMessage(context.sendMessage(inlineBuilder))
         }
     }
 }

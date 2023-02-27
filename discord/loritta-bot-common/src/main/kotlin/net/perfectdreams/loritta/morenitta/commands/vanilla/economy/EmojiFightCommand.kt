@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 
 class EmojiFightCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
@@ -31,7 +32,7 @@ class EmojiFightCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			)
 
 			val emojiFight = EmojiFight(
-					this,
+					CommandContextCompat.LegacyDiscordCommandContextCompat(this),
 					null,
 					maxPlayersInEvent
 			)

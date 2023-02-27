@@ -29,9 +29,9 @@ suspend fun <R> GabrielaImageServerClient.handleExceptions(context: net.perfectd
         block.invoke(this)
     } catch (e: Exception) { // This is called if the image wasn't found
         when (e) {
-            is ImageNotFoundException -> context.fail(context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
-            is UntrustedURLException -> context.fail(context.i18nContext.get(I18nKeysData.Commands.ImageUrlIsUntrusted), Emotes.LoriSob)
-            is ImageTooLargeException, is StreamExceedsLimitException, is ContentLengthTooLargeException -> context.fail(context.i18nContext.get(I18nKeysData.Commands.SentImageIsTooLarge), Emotes.LoriSob)
+            is ImageNotFoundException -> context.fail(false, context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
+            is UntrustedURLException -> context.fail(false, context.i18nContext.get(I18nKeysData.Commands.ImageUrlIsUntrusted), Emotes.LoriSob)
+            is ImageTooLargeException, is StreamExceedsLimitException, is ContentLengthTooLargeException -> context.fail(false, context.i18nContext.get(I18nKeysData.Commands.SentImageIsTooLarge), Emotes.LoriSob)
             else -> throw e // Propagate it
         }
     }

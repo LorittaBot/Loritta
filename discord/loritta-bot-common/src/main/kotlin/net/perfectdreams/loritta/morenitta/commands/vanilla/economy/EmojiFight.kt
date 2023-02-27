@@ -1,11 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,29 +9,39 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.EmojiFightSonhosTransactionsLog
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
 
 /**
  * Creates a Emoji Fight
  */
 class EmojiFight(
-    private val context: DiscordCommandContext,
+    private val context: CommandContextCompat,
     private val entryPrice: Long?, // null = only for fun emoji fight
     private val maxPlayers: Int = DEFAULT_MAX_PLAYER_COUNT
 ) {
@@ -57,15 +61,174 @@ class EmojiFight(
         if (entryPrice != null) {
             val tax = (entryPrice * (1.0 - UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
 
-            if (tax == 0L)
-                context.fail(context.locale["commands.command.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
+            if (tax == 0L) {
+                context.reply(false) {
+                    styled(
+                        context.locale["commands.command.flipcoinbet.youNeedToBetMore"],
+                        Constants.ERROR
+                    )
+                }
+            }
         }
 
-        addToFightEvent(context.user)
+        val state = addToFightEvent(context.user)
 
         val baseEmbed = getEventEmbed()
 
-        val message = context.sendMessageEmbeds(baseEmbed)
+        // We update the event message after the event is finished because we hold a lock for 3s, and sometimes we want to update the message after the event has finished
+        // but sometimes the event may finish during that 3s cooldown! That's why there is a boolean to bypass the lock
+        val participateInTheEventButtonInteraction = context.loritta.interactivityManager.button(
+            ButtonStyle.PRIMARY,
+            context.i18nContext.get(I18N_PREFIX.JoinTheEmojiFight),
+            { emoji = Emoji.fromUnicode("\uD83D\uDC14") }
+        ) { context ->
+            val reactedUser = context.user
+
+            when (val state = addToFightEvent(reactedUser)) {
+                EmojiFightJoinState.AccountTooNew -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.JoinState.AccountTooNew(14)),
+                            CinnamonEmotes.LoriSob
+                        )
+                    }
+                }
+
+                EmojiFightJoinState.DidntGetDailyReward -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.JoinState.DidntGetDailyReward(loritta.commandMentions.daily)),
+                            CinnamonEmotes.LoriSob
+                        )
+                    }
+                }
+
+                EmojiFightJoinState.EventFinished -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.JoinState.EventFinished),
+                            CinnamonEmotes.LoriSob
+                        )
+                    }
+                }
+
+                is EmojiFightJoinState.NotEnoughMoney -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SonhosUtils.insufficientSonhos(state.money, state.howMuch)),
+                            CinnamonEmotes.LoriSob
+                        )
+
+                        this.appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
+                            loritta,
+                            context.i18nContext,
+                            UserId(context.user.idLong),
+                            "pay",
+                            "transfer-not-enough-sonhos"
+                        )
+                    }
+                }
+
+                EmojiFightJoinState.TooManyPlayers -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.JoinState.TooManyPlayers),
+                            CinnamonEmotes.LoriSob
+                        )
+                    }
+                }
+
+                EmojiFightJoinState.UserIsBot -> {
+                    context.reply(true) {
+                        content = "Você é um bot! ...E eu acho que isso jamais deve acontecer!"
+                    }
+
+                }
+
+                EmojiFightJoinState.YouAreAlreadyParticipating -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.JoinState.YouAreAlreadyParticipating),
+                            CinnamonEmotes.LoriSob
+                        )
+                    }
+                }
+
+                is EmojiFightJoinState.Success -> {
+                    val randomJoinMessages = listOf(
+                        I18N_PREFIX.JoinState.SuccessState.Success1(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success2(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success3(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success4(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success5(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success6(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success7(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success8(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success9(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success10(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success11(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success12(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success13(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success14(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success15(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success16(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success17(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success18(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success19(state.emoji),
+                        I18N_PREFIX.JoinState.SuccessState.Success20(state.emoji),
+                    )
+
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(randomJoinMessages.random()),
+                            CinnamonEmotes.LoriHi
+                        )
+                    }
+
+                    updateEventMessage(context.event.message)
+
+                    finishingEventMutex.withLock {
+                        if (!eventFinished && participatingUsers.size >= maxPlayers) {
+                            finishEvent()
+                            updateEventMessage(context.event.message, true)
+                        }
+                    }
+                }
+            }
+        }
+
+        val endTheEventButtonInteraction = context.loritta.interactivityManager.buttonForUser(
+            context.user,
+            ButtonStyle.PRIMARY,
+            context.i18nContext.get(I18N_PREFIX.StartTheEmojiFight),
+            { emoji = Emoji.fromUnicode("✅") }
+        ) { context ->
+            if (eventFinished) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.JoinState.EventFinished),
+                        CinnamonEmotes.LoriSob
+                    )
+                }
+                return@buttonForUser
+            }
+
+            // Defer the edit
+            context.deferEdit()
+
+            finishingEventMutex.withLock {
+                if (!eventFinished) {
+                    finishEvent()
+                    updateEventMessage(context.event.message, true)
+                }
+            }
+        }
+
+        val message = context.reply(false) {
+            embeds += baseEmbed
+
+            actionRow(participateInTheEventButtonInteraction, endTheEventButtonInteraction)
+        }.retrieveOriginal()
 
         GlobalScope.launch(loritta.coroutineDispatcher) {
             updatingMessageMutex.withLock {
@@ -80,52 +243,11 @@ class EmojiFight(
             delay(60_000) // Automatically finishes the event after 60s
             finishingEventMutex.withLock {
                 if (!eventFinished) {
-                    message.removeAllFunctions(loritta)
                     finishEvent()
                     updateEventMessage(message, true)
                 }
             }
         }
-
-        // We update the event message after the event is finished because we hold a lock for 3s, and sometimes we want to update the message after the event has finished
-        // but sometimes the event may finish during that 3s cooldown! That's why there is a boolean to bypass the lock
-        message.onReactionAdd(context) {
-            val reactedUser = it.user ?: return@onReactionAdd
-
-            if (it.emoji.name == "\uD83D\uDC14" && !participatingUsers.containsKey(reactedUser)) {
-                if (addToFightEvent(reactedUser)) {
-                    updateEventMessage(message)
-
-                    finishingEventMutex.withLock {
-                        if (!eventFinished && participatingUsers.size >= maxPlayers) {
-                            message.removeAllFunctions(loritta)
-
-                            finishEvent()
-                            updateEventMessage(message, true)
-                        }
-                    }
-                }
-            }
-        }
-
-        message.onReactionAddByAuthor(context) {
-            if (it.emoji.name == "✅") {
-                finishingEventMutex.withLock {
-                    if (!eventFinished) {
-                        message.removeAllFunctions(loritta)
-
-                        finishEvent()
-                        updateEventMessage(message, true)
-                    }
-                }
-            }
-        }
-
-        message.addReaction("✅")
-            .queue()
-
-        message.addReaction("\uD83D\uDC14")
-            .queue()
     }
 
     private fun getEventEmbed(): MessageEmbed {
@@ -148,7 +270,7 @@ class EmojiFight(
                         .getList(
                             "commands.command.emojifight.fightDescription",
                             Emotes.LORI_PAT,
-                            context.serverConfig.commandPrefix,
+                            context.config.commandPrefix,
                             "\uD83D\uDC14",
                             context.user.asMention,
                             "✅",
@@ -172,7 +294,9 @@ class EmojiFight(
         val shouldUpdateAgain = updatingMessageMutex.withLock {
             val onStartCount = participatingUsers.size
 
-            message.editMessageEmbeds(getEventEmbed()).await()
+            message.editMessageEmbeds(getEventEmbed())
+                .setReplace(false) // We don't want to replace the buttons, only the embed!
+                .await()
 
             val onEndCount = participatingUsers.size
 
@@ -186,35 +310,38 @@ class EmojiFight(
     /**
      * Returns "true" if the user was added to the event, "false" if not.
      */
-    private suspend fun addToFightEvent(user: User): Boolean {
+    private suspend fun addToFightEvent(user: User): EmojiFightJoinState {
         addingUserToEventMutex.withLock {
             // Event is already finished (probably the user clicked to enter while the mutex was locked)
             // So, just ignore the request!
             if (eventFinished)
-                return false
+                return EmojiFightJoinState.EventFinished
 
             if (user.isBot)
-                return false
+                return EmojiFightJoinState.UserIsBot
 
             // If there is already way too much users here, just ignore the add request
             if (participatingUsers.size >= maxPlayers)
-                return false
+                return EmojiFightJoinState.TooManyPlayers
+
+            if (participatingUsers.containsKey(user))
+                return EmojiFightJoinState.YouAreAlreadyParticipating
 
             if (entryPrice != null) {
-                val profile = loritta.getLorittaProfile(user.idLong) ?: return false
+                val profile = loritta.getLorittaProfile(user.idLong) ?: return EmojiFightJoinState.NotEnoughMoney(0, entryPrice)
 
                 if (entryPrice > profile.money || profile.getBannedState(loritta) != null)
-                    return false
+                    return EmojiFightJoinState.NotEnoughMoney(profile.money, entryPrice)
 
                 // If the user didn't get daily today, they can't participate in the event
                 if (AccountUtils.getUserTodayDailyReward(loritta, profile) == null)
-                    return false
+                    return EmojiFightJoinState.DidntGetDailyReward
 
                 val epochMillis = user.timeCreated.toEpochSecond() * 1000
 
                 // Don't allow users to bet if they are recent accounts
                 if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) // 14 dias
-                    return false
+                    return EmojiFightJoinState.AccountTooNew
             }
 
             val randomEmoji = loritta.newSuspendedTransaction {
@@ -231,7 +358,7 @@ class EmojiFight(
             }
 
             participatingUsers[user] = randomEmoji
-            return true
+            return EmojiFightJoinState.Success(randomEmoji)
         }
     }
 
@@ -364,10 +491,12 @@ class EmojiFight(
 
         val (winner, losers, realPrize, taxedRealPrize) = result ?: run {
             // Needs to use "reply" because if we use "fail", the exception is triggered on the onReactionAddByAuthor
-            context.reply(
-                context.locale["commands.command.emojifight.needsMorePlayers"],
-                Emotes.LORI_CRYING
-            )
+            context.reply(false) {
+                styled(
+                    context.locale["commands.command.emojifight.needsMorePlayers"],
+                    Emotes.LORI_CRYING.asMention
+                )
+            }
             return
         }
 
@@ -380,31 +509,33 @@ class EmojiFight(
             else
                 "commands.command.emojifightbet.wonBetTaxed"
 
-            context.reply(
-                context.locale[
-                        localeKey,
-                        winner.value,
-                        winner.key.asMention,
-                        taxedRealPrize,
-                        tax,
-                        losers.size,
-                        entryPrice,
-                        context.user.asMention
-                ],
-                Emotes.LORI_RICH,
-                mentionUser = false
-            )
+            context.reply(false) {
+                styled(
+                    context.locale[
+                            localeKey,
+                            winner.value,
+                            winner.key.asMention,
+                            taxedRealPrize,
+                            tax,
+                            losers.size,
+                            entryPrice,
+                            context.user.asMention
+                    ],
+                    Emotes.LORI_RICH.asMention,
+                )
+            }
         } else {
-            context.reply(
-                context.locale[
-                        "commands.command.emojifight.wonBet",
-                        winner.value,
-                        winner.key.asMention,
-                        context.user.asMention
-                ],
-                Emotes.LORI_SMILE,
-                mentionUser = false
-            )
+            context.reply(false) {
+                styled(
+                    context.locale[
+                            "commands.command.emojifight.wonBet",
+                            winner.value,
+                            winner.key.asMention,
+                            context.user.asMention
+                    ],
+                    Emotes.LORI_SMILE.asMention
+                )
+            }
         }
     }
 
@@ -415,8 +546,20 @@ class EmojiFight(
         val taxedPrize: Long
     )
 
+    sealed class EmojiFightJoinState {
+        object EventFinished : EmojiFightJoinState()
+        object UserIsBot : EmojiFightJoinState()
+        object TooManyPlayers : EmojiFightJoinState()
+        class NotEnoughMoney(val money: Long, val howMuch: Long) : EmojiFightJoinState()
+        object DidntGetDailyReward : EmojiFightJoinState()
+        object AccountTooNew : EmojiFightJoinState()
+        object YouAreAlreadyParticipating : EmojiFightJoinState()
+        class Success(val emoji: String) : EmojiFightJoinState()
+    }
+
     companion object {
         val DEFAULT_MAX_PLAYER_COUNT = 30
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Emojifight
 
         val emojis = mutableListOf(
             "🙈",
