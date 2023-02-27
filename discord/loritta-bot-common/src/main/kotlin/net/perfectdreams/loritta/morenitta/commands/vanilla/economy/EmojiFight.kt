@@ -68,6 +68,7 @@ class EmojiFight(
                         Constants.ERROR
                     )
                 }
+                return
             }
         }
 
