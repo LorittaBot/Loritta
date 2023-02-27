@@ -559,7 +559,7 @@ class EmojiFight(
     }
 
     companion object {
-        val DEFAULT_MAX_PLAYER_COUNT = 30
+        const val DEFAULT_MAX_PLAYER_COUNT = 50
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Emojifight
 
         val emojis = mutableListOf(
