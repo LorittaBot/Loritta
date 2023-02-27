@@ -109,7 +109,6 @@ sealed class DailyScreen(internal val route: DailyRoute) {
                 }
                 is DailyPayoutError.AlreadyGotTheDailyRewardSameAccount -> TODO()
                 is DailyPayoutError.AlreadyGotTheDailyRewardSameIp -> TODO()
-                is DailyPayoutError.AlreadyGotTheDailyRewardSameIpRequiresMFA -> TODO()
                 is UserVerificationError.BlockedEmail -> TODO()
                 is UserVerificationError.BlockedIp -> TODO()
                 is UserVerificationError.DiscordAccountNotVerified -> TODO()
