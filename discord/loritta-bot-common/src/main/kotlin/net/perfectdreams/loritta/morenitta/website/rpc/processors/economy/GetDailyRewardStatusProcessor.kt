@@ -27,7 +27,6 @@ class GetDailyRewardStatusProcessor(val m: LorittaWebsite) : LorittaRpcProcessor
                         return when (val payoutResult = DailyAccountSafetyUtils.checkIfUserCanPayout(m.loritta, userIdentification, ip)) {
                             is DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameAccount -> DailyPayoutError.AlreadyGotTheDailyRewardSameAccount()
                             is DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIp -> DailyPayoutError.AlreadyGotTheDailyRewardSameIp()
-                            DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIpRequiresMFA -> DailyPayoutError.AlreadyGotTheDailyRewardSameIpRequiresMFA()
                             is DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.Success -> {
                                 // TODO: The question should be based on today, not random
                                 val todaysRandomQuestion = DailyRewardQuestions.all.random()

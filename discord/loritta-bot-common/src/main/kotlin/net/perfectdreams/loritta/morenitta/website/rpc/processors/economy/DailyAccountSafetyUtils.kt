@@ -75,12 +75,6 @@ object DailyAccountSafetyUtils {
         }
 
         if (sameIpDailyAt.isNotEmpty()) {
-            // Já pegaram daily no mesmo IP, mas não ativaram 2FA, vamos pedir para o usuário...
-            if (userIdentification.mfaEnabled == false) {
-                logger.warn { "User ${userIdentification.id} requires 2FA enabled because they have multiple accounts in the same email, but they didn't enable it yet! Asking them to turn it on..." }
-                return AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIpRequiresMFA
-            }
-
             // Se o IP for IPv4 e tiver mais de uma conta no IP ou se for IPv6 e já tiver qualquer daily na conta
             if (sameIpDailyAt.size >= 3 || ip.contains(":")) {
                 return AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIp(
@@ -117,7 +111,6 @@ object DailyAccountSafetyUtils {
     sealed class AccountDailyPayoutCheckResult {
         class Success(val sameIpDailyAt: Int) : AccountDailyPayoutCheckResult()
         class AlreadyGotTheDailyRewardSameAccount(val tomorrowAtMidnight: Long) : AccountDailyPayoutCheckResult()
-        object AlreadyGotTheDailyRewardSameIpRequiresMFA : AccountDailyPayoutCheckResult()
         class AlreadyGotTheDailyRewardSameIp(val tomorrowAtMidnight: Long, val detectedIp: String) : AccountDailyPayoutCheckResult()
     }
 

@@ -100,7 +100,6 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                             return when (val payoutResult = DailyAccountSafetyUtils.checkIfUserCanPayout(m.loritta, userIdentification, ip)) {
                                 is DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameAccount -> DailyPayoutError.AlreadyGotTheDailyRewardSameAccount()
                                 is DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIp -> DailyPayoutError.AlreadyGotTheDailyRewardSameIp()
-                                DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.AlreadyGotTheDailyRewardSameIpRequiresMFA -> DailyPayoutError.AlreadyGotTheDailyRewardSameIpRequiresMFA()
                                 is DailyAccountSafetyUtils.AccountDailyPayoutCheckResult.Success -> {
                                     val email = userIdentification.email
 

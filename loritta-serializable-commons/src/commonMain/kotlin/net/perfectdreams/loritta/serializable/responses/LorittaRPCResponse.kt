@@ -14,9 +14,6 @@ sealed interface DailyPayoutError {
 
     @Serializable
     class AlreadyGotTheDailyRewardSameIp : DailyPayoutError, GetDailyRewardStatusResponse, GetDailyRewardResponse
-
-    @Serializable
-    class AlreadyGotTheDailyRewardSameIpRequiresMFA : DailyPayoutError, GetDailyRewardStatusResponse, GetDailyRewardResponse
 }
 
 sealed interface DiscordAccountError {
