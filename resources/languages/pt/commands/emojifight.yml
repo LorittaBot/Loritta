@@ -1,6 +1,24 @@
 label: "emojifight"
 description: "Faça uma rinha de emojis com os seus amigos, o emoji mais forte ganha a rinha!"
 
+start:
+  label: "iniciar"
+  description: "Inicia uma rinha de emoji com os seus amigos, o emoji mais forte ganha a rinha!"
+
+  options:
+    maxPlayers:
+      text: "A quantidade máxima de participantes na rinha"
+    sonhos:
+      text: "A quantidade de sonhos que você deseja apostar"
+
+emoji:
+  label: "emoji"
+  description: "Altera o seu emoji na rinha de emoji"
+
+  options:
+    emoji:
+      text: "O novo emoji que você irá usar nas rinhas de emoji"
+
 joinTheEmojiFight: "Participar da Rinha"
 startTheEmojiFight: "Iniciar a Rinha"
 
@@ -32,9 +50,3 @@ joinState:
   eventFinished: "A rinha já acabou. Seu bichano, que estava com fome de dar um sopapo, agora está deprimido..."
   didntGetDailyReward: "Parece que você não pegou a sua recompensa diária hoje, você só pode participar nas rinhas de emoji depois de pegar a sua recompensa diária. Que tal pegar agora? {dailyCommand}"
   accountTooNew: "Calma lá né, a sua conta é nova demais! Para você participar de rinhas de emojis, você precisa esperar {days} dias para começar a participar."
-
-options:
-  maxPlayers:
-    text: "A quantidade máxima de participantes na rinha"
-  sonhos:
-    text: "A quantidade de sonhos que você deseja apostar"
