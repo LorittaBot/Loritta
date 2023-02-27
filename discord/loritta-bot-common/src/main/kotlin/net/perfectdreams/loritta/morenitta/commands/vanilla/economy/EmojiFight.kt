@@ -435,6 +435,7 @@ class EmojiFight(
                         it[EmojiFightMatchmakingResults.tax] = tax
                         it[EmojiFightMatchmakingResults.taxPercentage] = taxPercentage
                     }
+                    it[EmojiFightMatchmakingResults.match] = emojiFightMatch
                 }
 
                 winnerProfile.addSonhosNested(realAfterTaxesPrize)
@@ -484,6 +485,7 @@ class EmojiFight(
                     it[EmojiFightMatchmakingResults.entryPriceAfterTax] = 0
                     it[EmojiFightMatchmakingResults.tax] = null
                     it[EmojiFightMatchmakingResults.taxPercentage] = null
+                    it[EmojiFightMatchmakingResults.match] = emojiFightMatch
                 }
 
                 DbResponse(winner, losers, 0, 0)

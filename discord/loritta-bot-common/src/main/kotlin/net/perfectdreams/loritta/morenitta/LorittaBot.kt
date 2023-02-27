@@ -832,7 +832,9 @@ class LorittaBot(
 					BrowserFingerprints,
 					BotVotesUserAvailableNotifications,
 					Giveaways,
-					GiveawayParticipants
+					GiveawayParticipants,
+					EmojiFightMatches,
+					EmojiFightMatchmakingResults
                 )
             }
         }

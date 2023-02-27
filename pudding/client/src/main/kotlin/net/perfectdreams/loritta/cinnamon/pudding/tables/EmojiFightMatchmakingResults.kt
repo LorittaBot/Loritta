@@ -8,4 +8,5 @@ object EmojiFightMatchmakingResults : LongIdTable() {
     val entryPriceAfterTax = long("entry_price_after_tax")
     val tax = long("tax").nullable()
     val taxPercentage = double("tax_percentage").nullable()
+    val match = optReference("match", EmojiFightMatches)
 }
