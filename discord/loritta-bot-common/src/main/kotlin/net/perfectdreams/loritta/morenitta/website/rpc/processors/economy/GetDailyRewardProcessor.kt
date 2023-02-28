@@ -74,10 +74,10 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
 
                 val jsonParser = JsonParser.parseString(body).obj
 
-                val success = jsonParser["success"].bool
+                val success = jsonParser["success"].nullBool
 
-                if (!success) {
-                    logger.warn { "User ${cachedUserIdentification.id} failed reCAPTCHA, error codes: ${jsonParser["error-codes"].array.joinToString(", ")}" }
+                if (success == null || !success) {
+                    logger.warn { "User ${cachedUserIdentification.id} failed reCAPTCHA! Body: $jsonParser" }
                     return GetDailyRewardResponse.InvalidCaptchaToken()
                 }
 
