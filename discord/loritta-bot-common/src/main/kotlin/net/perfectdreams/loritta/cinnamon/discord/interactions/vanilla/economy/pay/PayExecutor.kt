@@ -48,6 +48,9 @@ class PayExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        if (SonhosUtils.checkIfEconomyIsDisabled(context))
+            return
+
         context.deferChannelMessage()
 
         val users = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.user])

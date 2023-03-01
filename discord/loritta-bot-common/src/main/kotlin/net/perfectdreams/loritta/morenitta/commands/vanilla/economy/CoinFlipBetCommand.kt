@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -63,6 +64,9 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 		executesDiscord {
 			if (2 > args.size)
 				this.explainAndExit()
+
+			if (SonhosUtils.checkIfEconomyIsDisabled(this))
+				return@executesDiscord
 
 			val _user = validate(user(0))
 			val invitedUser = _user.toJDA()

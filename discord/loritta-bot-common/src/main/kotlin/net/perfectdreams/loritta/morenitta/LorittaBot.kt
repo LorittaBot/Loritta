@@ -834,7 +834,8 @@ class LorittaBot(
 					Giveaways,
 					GiveawayParticipants,
 					EmojiFightMatches,
-					EmojiFightMatchmakingResults
+					EmojiFightMatchmakingResults,
+					EconomyState
                 )
             }
         }

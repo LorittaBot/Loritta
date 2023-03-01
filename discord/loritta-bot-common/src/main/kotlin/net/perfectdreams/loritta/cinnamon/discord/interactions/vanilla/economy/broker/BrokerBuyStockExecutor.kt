@@ -30,6 +30,9 @@ class BrokerBuyStockExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor
     override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        if (SonhosUtils.checkIfEconomyIsDisabled(context))
+            return
+
         context.deferChannelMessageEphemerally()
 
         val tickerId = args[options.ticker].uppercase()

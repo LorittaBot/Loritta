@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
@@ -28,6 +29,9 @@ class BrokerSellStockExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
     override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        if (SonhosUtils.checkIfEconomyIsDisabled(context))
+            return
+
         context.deferChannelMessageEphemerally()
 
         val tickerId = args[options.ticker].uppercase()

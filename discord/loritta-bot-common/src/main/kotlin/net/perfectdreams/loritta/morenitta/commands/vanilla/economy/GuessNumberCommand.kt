@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.commands.ArgumentType
@@ -32,6 +33,9 @@ class GuessNumberCommand(plugin: LorittaBot) : DiscordAbstractCommandBase(
         }
 
         executesDiscord {
+            if (SonhosUtils.checkIfEconomyIsDisabled(this))
+                return@executesDiscord
+
             // Gets the first argument
             // If the argument is null (we just show the command explanation and exit)
             // If it is not null, we convert it to a Integer (if it is a invalid number, it will be null)

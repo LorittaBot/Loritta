@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -39,6 +40,9 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.size >= 2) {
+			if (SonhosUtils.checkIfEconomyIsDisabled(context))
+				return
+
 			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "sonhos pay")
 
 			var economySource = "global"

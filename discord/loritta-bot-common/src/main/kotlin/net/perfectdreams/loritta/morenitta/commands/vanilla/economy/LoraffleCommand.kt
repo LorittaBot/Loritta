@@ -8,6 +8,7 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.threads.RaffleThread
@@ -33,6 +34,9 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 	override fun getExamplesKey() = LocaleKeyData("commands.command.raffle.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		if (SonhosUtils.checkIfEconomyIsDisabled(context))
+			return
+
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "clear" && loritta.isOwner(context.userHandle.id)) {

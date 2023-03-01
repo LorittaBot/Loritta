@@ -16,10 +16,19 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContex
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
+import org.jetbrains.exposed.sql.select
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.*
 
 object SonhosUtils {
+    val DISABLED_ECONOMY_ID = UUID.fromString("3da6d95b-edb4-4ae9-aa56-4b13e91f3844")
+
     val HANGLOOSE_EMOTES = listOf(
         Emotes.LoriHanglooseRight,
         Emotes.GabrielaHanglooseRight,
@@ -145,5 +154,43 @@ object SonhosUtils {
         quantity >= 100_000 -> Emotes.Sonhos3
         quantity >= 10_000 -> Emotes.Sonhos2
         else -> Emotes.Sonhos1
+    }
+
+    suspend fun isEconomyDisabled(loritta: LorittaBot): Boolean {
+        return loritta.transaction {
+            EconomyState.select {
+                EconomyState.id eq DISABLED_ECONOMY_ID
+            }.count() == 1L
+        }
+    }
+
+    suspend fun checkIfEconomyIsDisabled(context: CommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.LegacyMessageCommandContextCompat(context))
+    suspend fun checkIfEconomyIsDisabled(context: DiscordCommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.LegacyDiscordCommandContextCompat(context))
+    suspend fun checkIfEconomyIsDisabled(context: ApplicationCommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.InteractionsCommandContextCompat(context))
+
+    suspend fun checkIfEconomyIsDisabled(context: CommandContextCompat): Boolean {
+        if (isEconomyDisabled(context.loritta)) {
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.EconomyIsDisabled),
+                    Emotes.LoriSob
+                )
+            }
+            return true
+        }
+        return false
+    }
+
+    suspend fun checkIfEconomyIsDisabled(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext): Boolean {
+        if (isEconomyDisabled(context.loritta)) {
+            context.sendEphemeralMessage {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.EconomyIsDisabled),
+                    Emotes.LoriSob
+                )
+            }
+            return true
+        }
+        return false
     }
 }

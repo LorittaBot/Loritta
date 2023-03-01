@@ -13,6 +13,7 @@ import mu.KotlinLogging
 
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -56,6 +57,9 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 		canUseInPrivateChannel = false
 
 		executesDiscord {
+			if (SonhosUtils.checkIfEconomyIsDisabled(this))
+				return@executesDiscord
+
 			val context = this
 
 			if (context.args.firstOrNull() == "ganhar" || context.args.firstOrNull() == "win" || context.args.firstOrNull() == "claim") {
