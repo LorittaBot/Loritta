@@ -49,6 +49,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     var giveawayTasks = ConcurrentHashMap<Long, Job>()
     private val logger = KotlinLogging.logger {}
     val giveawayMutexes = ConcurrentHashMap<Long, Mutex>()
+    val giveawayMessageUpdateJobs = ConcurrentHashMap<Long, Job>()
 
     fun getReactionMention(reaction: String): String {
         if (reaction.startsWith("discord:"))

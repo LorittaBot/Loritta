@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,6 +26,7 @@ import net.perfectdreams.loritta.serializable.GiveawayRoles
 import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.time.Instant
+import kotlin.time.Duration.Companion.seconds
 
 class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -170,29 +172,43 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                                         }
 
                                                         // Update the giveaway message to indicate that the user left
-                                                        guild.getGuildMessageChannelById(leftGiveaway.giveaway[Giveaways.textChannelId])
-                                                            ?.editMessageById(
-                                                                leftGiveaway.giveaway[Giveaways.messageId],
-                                                                MessageEditData.fromCreateData(
-                                                                    m.giveawayManager.createGiveawayMessage(
-                                                                        m.languageManager.getI18nContextByLegacyLocaleId(leftGiveaway.giveaway[Giveaways.locale]),
-                                                                        leftGiveaway.giveaway[Giveaways.reason],
-                                                                        leftGiveaway.giveaway[Giveaways.description],
-                                                                        leftGiveaway.giveaway[Giveaways.reaction],
-                                                                        leftGiveaway.giveaway[Giveaways.imageUrl],
-                                                                        leftGiveaway.giveaway[Giveaways.thumbnailUrl],
-                                                                        leftGiveaway.giveaway[Giveaways.color]?.let { Color.decode(it) },
-                                                                        leftGiveaway.giveaway[Giveaways.finishAt],
-                                                                        event.guild!!,
-                                                                        leftGiveaway.giveaway[Giveaways.customMessage],
-                                                                        leftGiveaway.giveaway[Giveaways.id].value,
-                                                                        leftGiveaway.participants,
-                                                                        leftGiveaway.allowedRoles,
-                                                                        leftGiveaway.deniedRoles
+                                                        m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
+                                                        m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
+                                                            // We have a 7s delay before *really* updating the message
+                                                            delay(7.seconds)
+
+                                                            guild.getGuildMessageChannelById(leftGiveaway.giveaway[Giveaways.textChannelId])
+                                                                ?.editMessageById(
+                                                                    leftGiveaway.giveaway[Giveaways.messageId],
+                                                                    MessageEditData.fromCreateData(
+                                                                        m.giveawayManager.createGiveawayMessage(
+                                                                            m.languageManager.getI18nContextByLegacyLocaleId(
+                                                                                leftGiveaway.giveaway[Giveaways.locale]
+                                                                            ),
+                                                                            leftGiveaway.giveaway[Giveaways.reason],
+                                                                            leftGiveaway.giveaway[Giveaways.description],
+                                                                            leftGiveaway.giveaway[Giveaways.reaction],
+                                                                            leftGiveaway.giveaway[Giveaways.imageUrl],
+                                                                            leftGiveaway.giveaway[Giveaways.thumbnailUrl],
+                                                                            leftGiveaway.giveaway[Giveaways.color]?.let {
+                                                                                Color.decode(
+                                                                                    it
+                                                                                )
+                                                                            },
+                                                                            leftGiveaway.giveaway[Giveaways.finishAt],
+                                                                            event.guild!!,
+                                                                            leftGiveaway.giveaway[Giveaways.customMessage],
+                                                                            leftGiveaway.giveaway[Giveaways.id].value,
+                                                                            leftGiveaway.participants,
+                                                                            leftGiveaway.allowedRoles,
+                                                                            leftGiveaway.deniedRoles
+                                                                        )
                                                                     )
                                                                 )
-                                                            )
-                                                            ?.await()
+                                                                ?.await()
+
+                                                            m.giveawayManager.giveawayMessageUpdateJobs.remove(dbId)
+                                                        }
                                                     }
 
                                                 // Tell the user that they left the giveaway
@@ -271,26 +287,34 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                     .setEphemeral(true)
                                     .await()
 
-                                deferredEdit.editOriginal(
-                                    MessageEditData.fromCreateData(
-                                        m.giveawayManager.createGiveawayMessage(
-                                            m.languageManager.getI18nContextByLegacyLocaleId(giveaway[Giveaways.locale]),
-                                            giveaway[Giveaways.reason],
-                                            giveaway[Giveaways.description],
-                                            giveaway[Giveaways.reaction],
-                                            giveaway[Giveaways.imageUrl],
-                                            giveaway[Giveaways.thumbnailUrl],
-                                            giveaway[Giveaways.color]?.let { Color.decode(it) },
-                                            giveaway[Giveaways.finishAt],
-                                            event.guild!!,
-                                            giveaway[Giveaways.customMessage],
-                                            giveaway[Giveaways.id].value,
-                                            state.participants,
-                                            state.allowedRoles,
-                                            state.deniedRoles
+                                m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
+                                m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
+                                    // We have a 7s delay before *really* updating the message
+                                    delay(7.seconds)
+
+                                    deferredEdit.editOriginal(
+                                        MessageEditData.fromCreateData(
+                                            m.giveawayManager.createGiveawayMessage(
+                                                m.languageManager.getI18nContextByLegacyLocaleId(giveaway[Giveaways.locale]),
+                                                giveaway[Giveaways.reason],
+                                                giveaway[Giveaways.description],
+                                                giveaway[Giveaways.reaction],
+                                                giveaway[Giveaways.imageUrl],
+                                                giveaway[Giveaways.thumbnailUrl],
+                                                giveaway[Giveaways.color]?.let { Color.decode(it) },
+                                                giveaway[Giveaways.finishAt],
+                                                event.guild!!,
+                                                giveaway[Giveaways.customMessage],
+                                                giveaway[Giveaways.id].value,
+                                                state.participants,
+                                                state.allowedRoles,
+                                                state.deniedRoles
+                                            )
                                         )
-                                    )
-                                ).await()
+                                    ).await()
+
+                                    m.giveawayManager.giveawayMessageUpdateJobs.remove(dbId)
+                                }
                             }
                         }
                     }
