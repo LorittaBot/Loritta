@@ -174,8 +174,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                                         // Update the giveaway message to indicate that the user left
                                                         m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
                                                         m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
-                                                            // We have a 7s delay before *really* updating the message
-                                                            delay(7.seconds)
+                                                            // We have a 5s delay before *really* updating the message
+                                                            delay(5.seconds)
 
                                                             guild.getGuildMessageChannelById(leftGiveaway.giveaway[Giveaways.textChannelId])
                                                                 ?.editMessageById(
@@ -289,8 +289,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                                 m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
                                 m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
-                                    // We have a 7s delay before *really* updating the message
-                                    delay(7.seconds)
+                                    // We have a 5s delay before *really* updating the message
+                                    delay(5.seconds)
 
                                     deferredEdit.editOriginal(
                                         MessageEditData.fromCreateData(
