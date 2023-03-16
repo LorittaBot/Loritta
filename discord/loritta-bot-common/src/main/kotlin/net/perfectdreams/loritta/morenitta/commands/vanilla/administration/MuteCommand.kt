@@ -410,7 +410,6 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					loritta.transaction {
 						// Update and refresh
 						mute.userTimedOutUntil = Instant.now().plus(userWasTimedOutForDuration)
-						mute.refresh()
 					}
 				}
 			}
