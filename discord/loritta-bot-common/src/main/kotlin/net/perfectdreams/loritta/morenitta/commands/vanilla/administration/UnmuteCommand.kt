@@ -141,7 +141,15 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 
 			// And now remove the "Muted" role if needed!
 			val member = runBlocking { guild.retrieveMemberOrNull(user) }
-			member?.removeTimeout()?.queue()
+			// Get the legacy "Muted" role if it exists
+			val mutedRole = MuteCommand.getMutedRole(loritta, guild, locale)
+
+			if (member != null) {
+				member.removeTimeout().queue()
+
+				if (mutedRole != null)
+					guild.removeRoleFromMember(member, mutedRole).queue()
+			}
 		}
 	}
 }

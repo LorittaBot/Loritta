@@ -286,6 +286,8 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			return true
 		}
 
+		fun getMutedRole(loritta: LorittaBot, guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["$LOCALE_PREFIX.mute.roleName"], false).getOrNull(0)
+
 		fun spawnTimeOutUpdaterThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, user: User, mute: Mute) = spawnTimeOutUpdaterThread(loritta, guild.idLong, locale, user.idLong, mute)
 
 		fun spawnTimeOutUpdaterThread(
@@ -408,7 +410,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					currentMember.timeoutFor(userWasTimedOutForDuration).await()
 
 					loritta.transaction {
-						// Update and refresh
+						// Update the timed out time
 						mute.userTimedOutUntil = Instant.now().plus(userWasTimedOutForDuration)
 					}
 				}
