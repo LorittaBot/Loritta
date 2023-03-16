@@ -45,6 +45,7 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.WarnActi
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import okio.Buffer
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
@@ -59,17 +60,17 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		private const val MEMBER_COUNTER_COOLDOWN = 300_000L // 5 minutes in ms
 
 		val memberCounterLastUpdate = Caffeine.newBuilder()
-				.expireAfterWrite(15L, TimeUnit.MINUTES)
-				.build<Long, Long>()
-				.asMap()
+			.expireAfterWrite(15L, TimeUnit.MINUTES)
+			.build<Long, Long>()
+			.asMap()
 
 		/**
 		 * Stores the member counter executing update mutexes, used when a topic update is being executed.
 		 */
 		val memberCounterExecutingUpdatesMutexes = Caffeine.newBuilder()
-				.expireAfterWrite(15L, TimeUnit.MINUTES)
-				.build<Long, Mutex>()
-				.asMap()
+			.expireAfterWrite(15L, TimeUnit.MINUTES)
+			.build<Long, Mutex>()
+			.asMap()
 
 		private val logger = KotlinLogging.logger {}
 		private val requestLogger = LoggerFactory.getLogger("requests")
@@ -401,14 +402,9 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				logger.trace { "Does ${event.member} in guild ${event.guild} has a mute status? $mute" }
 
 				if (mute != null) {
-					logger.debug { "${event.member} in guild ${event.guild} has a mute! Readding roles and recreating role removal task!" }
+					logger.debug { "${event.member} in guild ${event.guild} has a mute! Recreating timeout updater task!" }
 					val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-					val muteRole = MuteCommand.getMutedRole(loritta, event.guild, loritta.localeManager.getLocaleById(serverConfig.localeId)) ?: return@launch
-
-					event.guild.addRoleToMember(event.member, muteRole).await()
-
-					if (mute.isTemporary)
-						MuteCommand.spawnRoleRemovalThread(loritta, event.guild, locale, event.user, mute.expiresAt!!)
+					MuteCommand.spawnTimeOutUpdaterThread(loritta, event.guild, locale, event.user, mute)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
@@ -520,7 +516,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			for (mute in mutes) {
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-				MuteCommand.spawnRoleRemovalThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), mute.userId, mute.expiresAt!!)
+				MuteCommand.spawnTimeOutUpdaterThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), mute.userId, mute)
 			}
 
 			val allActiveGiveaways = loritta.newSuspendedTransaction {

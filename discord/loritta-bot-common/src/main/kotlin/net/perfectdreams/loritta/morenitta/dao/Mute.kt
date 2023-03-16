@@ -15,4 +15,5 @@ class Mute(id: EntityID<Long>) : LongEntity(id) {
 	var receivedAt by Mutes.receivedAt
 	var isTemporary by Mutes.isTemporary
 	var expiresAt by Mutes.expiresAt
+	var userTimedOutUntil by Mutes.userTimedOutUntil
 }

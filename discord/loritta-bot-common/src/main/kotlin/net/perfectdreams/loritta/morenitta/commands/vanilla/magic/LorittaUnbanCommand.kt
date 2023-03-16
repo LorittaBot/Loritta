@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.deleteWhere
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class LorittaUnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lorittaunban", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {

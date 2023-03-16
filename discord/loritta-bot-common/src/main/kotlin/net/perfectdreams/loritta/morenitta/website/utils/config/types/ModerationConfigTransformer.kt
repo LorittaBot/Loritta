@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WarnAction
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select

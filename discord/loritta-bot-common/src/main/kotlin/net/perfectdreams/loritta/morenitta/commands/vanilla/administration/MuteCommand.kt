@@ -6,9 +6,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.exceptions.HierarchyException
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -21,11 +19,12 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import java.awt.Color
+import java.time.Duration
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 
 class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
@@ -226,115 +225,22 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 				}
 			}
 
-			// Vamos pegar se a nossa role existe
-			val mutedRoleName = context.locale["$LOCALE_PREFIX.mute.roleName"]
-			val mutedRoles = context.guild.getRolesByName(mutedRoleName, false)
-			val mutedRole: Role?
-			if (mutedRoles.isEmpty()) {
-				// Se não existe, vamos criar ela!
-				mutedRole = context.guild.createRole()
-					.setName(mutedRoleName)
-					.setColor(Color.BLACK)
-					.await()
-			} else {
-				// Se existe, vamos carregar a atual
-				mutedRole = mutedRoles[0]
-			}
-
-			val couldntEditChannels = mutableListOf<GuildChannel>()
-
-			// E agora vamos pegar todos os canais de texto do servidor
-			run {
-				var processedRequests = 0
-				for (textChannel in context.guild.textChannels) {
-					try {
-						if (context.guild.selfMember.hasPermission(
-								textChannel,
-								Permission.MESSAGE_SEND,
-								Permission.MANAGE_CHANNEL,
-								Permission.MANAGE_PERMISSIONS
-							)
-						) {
-							val permissionOverride = textChannel.getPermissionOverride(mutedRole)
-							if (permissionOverride == null) { // Se é null...
-								textChannel.permissionContainer.upsertPermissionOverride(mutedRole)
-									.deny(Permission.MESSAGE_SEND) // kk eae men, daora ficar mutado né
-									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
-								processedRequests++
-							} else {
-								if (!permissionOverride.denied.contains(Permission.MESSAGE_SEND)) {
-									permissionOverride.manager
-										.deny(Permission.MESSAGE_SEND) // kk eae men, daora ficar mutado né
-										.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
-									processedRequests++
-								}
-							}
-						} else {
-							couldntEditChannels.add(textChannel)
-						}
-					} catch (e: Exception) {
-						logger.warn(e) { "Something went wrong while trying to change ${textChannel}'s permissions" }
-						couldntEditChannels.add(textChannel)
-					}
-				}
-			}
-
-			// E agora os canais de voz
-			run {
-				var processedRequests = 0
-				for (voiceChannel in context.guild.voiceChannels) {
-					try {
-						if (context.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_SPEAK, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
-							val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
-							if (permissionOverride == null) { // Se é null...
-								voiceChannel.permissionContainer.upsertPermissionOverride(mutedRole)
-									.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
-								processedRequests++
-							} else {
-								if (!permissionOverride.denied.contains(Permission.VOICE_SPEAK)) {
-									permissionOverride.manager
-										.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-										.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
-									processedRequests++
-								}
-							}
-						} else {
-							couldntEditChannels.add(voiceChannel)
-						}
-					} catch (e: Exception) {
-						logger.warn(e) { "Something went wrong while trying to change ${voiceChannel}'s permissions" }
-						couldntEditChannels.add(voiceChannel)
-					}
-				}
-			}
-
-			// E... finalmente... iremos dar (ou remover) a role para o carinha
-			if (!context.guild.isMember(member.user)) {
-				context.reply(
-					LorittaReply(
-						context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-						Emotes.LORI_HM
-					)
-				)
-				return false
-			}
-
-			if (couldntEditChannels.isNotEmpty()) {
-				context.reply(
-					LorittaReply(
-						context.locale["commands.command.mute.couldntEditChannel", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
-						Constants.ERROR
-					)
-				)
-			}
-
 			try {
-				val addRole = context.guild.addRoleToMember(member, mutedRole)
+				// When adding a timeout, we can't set the timeout to *exactly* the expiration time
+				// So we will play around a bit with it
+				val userWasTimedOutForDuration = if (delay != null) {
+					val howMuchTimeTheUserWillBeTimedOut = Duration.ofMillis(delay)
 
-				addRole.await()
+					// Discord allows you to timeout someone for max 28 days, so we will coerce it for at most 28 days
+					howMuchTimeTheUserWillBeTimedOut.coerceAtMost(Duration.ofDays(28))
+				} else {
+					Duration.ofDays(28)
+				}
 
-				context.loritta.pudding.transaction {
+				member.timeoutFor(userWasTimedOutForDuration).await()
+				val userTimedOutUntil = Instant.now().plus(userWasTimedOutForDuration)
+
+				val mute = context.loritta.pudding.transaction {
 					Mutes.deleteWhere {
 						(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq member.user.idLong)
 					}
@@ -345,6 +251,8 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						punishedById = context.userHandle.idLong
 						receivedAt = System.currentTimeMillis()
 						content = reason
+						// We will store for how long the user was timed out for, so Loritta can automatically update the timeout time when the timeout expires
+						this.userTimedOutUntil = userTimedOutUntil
 
 						if (time != null) {
 							isTemporary = true
@@ -355,15 +263,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					}
 				}
 
-				if (delay != null) {
-					// Ao enviar um role change, iremos esperar alguns segundos para ver se o mute foi realmente "aplicado"
-					for (x in 0..9) {
-						if (member.roles.contains(mutedRole))
-							break
-						delay(250)
-					}
-					spawnRoleRemovalThread(context.loritta, context.guild, context.locale, user, time!!)
-				}
+				spawnTimeOutUpdaterThread(context.loritta, context.guild, context.locale, user, mute)
 			} catch (e: HierarchyException) {
 				val reply = buildString {
 					this.append(context.locale[AdminUtils.ROLE_TOO_LOW_KEY])
@@ -386,13 +286,17 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			return true
 		}
 
-		fun getMutedRole(loritta: LorittaBot, guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["$LOCALE_PREFIX.mute.roleName"], false).getOrNull(0)
+		fun spawnTimeOutUpdaterThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, user: User, mute: Mute) = spawnTimeOutUpdaterThread(loritta, guild.idLong, locale, user.idLong, mute)
 
-		fun spawnRoleRemovalThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(loritta, guild.idLong, locale, user.idLong, expiresAt)
-
-		fun spawnRoleRemovalThread(loritta: LorittaBot, guildId: Long, locale: BaseLocale, userId: Long, expiresAt: Long) {
+		fun spawnTimeOutUpdaterThread(
+			loritta: LorittaBot,
+			guildId: Long,
+			locale: BaseLocale,
+			userId: Long,
+			mute: Mute
+		) {
 			val jobId = "$guildId#$userId"
-			logger.info("Criando role removal thread para usuário $userId na guild $guildId!")
+			logger.info("Criando timeout updater thread para usuário $userId na guild $guildId!")
 
 			val previousJob = roleRemovalJobs[jobId]
 			if (previousJob != null) {
@@ -408,11 +312,9 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 				return
 			}
 
-			// Vamos pegar se a nossa role existe
-			val mutedRole = getMutedRole(loritta, currentGuild, locale)
-
-			if (System.currentTimeMillis() > expiresAt) {
-				logger.info("Removendo cargo silenciado de $userId na guild ${guildId} - Motivo: Já expirou!")
+			val muteExpiresAt = mute.expiresAt
+			if (muteExpiresAt != null && System.currentTimeMillis() > muteExpiresAt) {
+				logger.info("Removendo cargo silenciado de $userId na guild $guildId - Motivo: Já expirou!")
 
 				val guild = loritta.lorittaShards.getGuildById(guildId.toString())
 
@@ -421,9 +323,6 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					return
 				}
 
-				// Maybe the user is not in the guild, but we want to remove the mute anyway, just get the member (or null)
-				val member = runBlocking { guild.retrieveMemberOrNullById(userId) }
-
 				runBlocking {
 					loritta.pudding.transaction {
 						Mutes.deleteWhere {
@@ -432,44 +331,29 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					}
 				}
 
-				if (mutedRole != null && member != null) {
-					val removeRole = guild.removeRoleFromMember(member, mutedRole)
-					removeRole.queue()
-				}
+				// We don't need to do anything here, Discord already handles the timeout time for us
 				return
 			}
 
-			if (mutedRole == null) {
-				logger.info("Removendo status de silenciado de $userId na guild $guildId - Motivo: Cargo não existe mais!")
+			roleRemovalJobs["$guildId#$userId"] = GlobalScope.launch(loritta.coroutineDispatcher) {
+				logger.info("Criado timeout updater thread de $userId na guild $guildId, irá expirar em ${mute.expiresAt}, time out irá expirar em ${mute.userTimedOutUntil}")
 
-				// Se não existe, então quer dizer que o cargo foi deletado e isto deve ser ignorado!
-				runBlocking {
-					loritta.pudding.transaction {
-						Mutes.deleteWhere {
-							(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
-						}
-					}
-				}
-			} else {
-				roleRemovalJobs["$guildId#$userId"] = GlobalScope.launch(loritta.coroutineDispatcher) {
-					logger.info("Criado role removal thread de $userId na guild $guildId, irá expirar em $expiresAt")
-					val delay = expiresAt - System.currentTimeMillis()
-					delay(delay)
-					roleRemovalJobs.remove(jobId)
-					if (!this.isActive) {
-						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas pelo visto esta task já tinha sido cancelada, whoops!!")
-						return@launch
-					}
+				// Wait until the timeout expires...
+				while (true) {
+					val timeOutExpirationDelay = (mute.userTimedOutUntil?.toEpochMilli() ?: 0L) - System.currentTimeMillis()
+					delay(timeOutExpirationDelay)
 
 					val guild = loritta.lorittaShards.getGuildById(guildId)
 					if (guild == null) {
-						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas a guild não existe mais!")
+						logger.warn("Então... era para atualizar o timeout de $userId na guild $guildId, mas a guild não existe mais!")
 						return@launch
 					}
 
 					val settings = AdminUtils.retrieveModerationInfo(loritta, loritta.getOrCreateServerConfig(guildId))
 
-					val currentMember = if (userId in notInTheServerUserIds) null else runBlocking { currentGuild.retrieveMemberOrNullById(userId) }
+					val currentMember = if (userId in notInTheServerUserIds) null else runBlocking {
+						currentGuild.retrieveMemberOrNullById(userId)
+					}
 
 					if (currentMember == null) {
 						logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
@@ -485,16 +369,49 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						return@launch
 					}
 
-					UnmuteCommand.unmute(
-						loritta,
-						settings,
-						guild,
-						guild.selfMember.user,
-						locale,
-						currentMember.user,
-						locale["commands.command.unmute.automaticallyExpired", "<:lori_owo:417813932380520448>"],
-						false
-					)
+					// Update the timeout if needed
+					val muteExpiresAt = mute.expiresAt
+					if (muteExpiresAt != null && System.currentTimeMillis() >= muteExpiresAt) {
+						// Mute has already expired!
+						logger.info { "$userId mute in $guildId expired, removing their mute..." }
+
+						roleRemovalJobs.remove(jobId)
+						if (!this.isActive) {
+							logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas pelo visto esta task já tinha sido cancelada, whoops!!")
+							return@launch
+						}
+
+						UnmuteCommand.unmute(
+							loritta,
+							settings,
+							guild,
+							guild.selfMember.user,
+							locale,
+							currentMember.user,
+							locale["commands.command.unmute.automaticallyExpired", "<:lori_owo:417813932380520448>"],
+							false
+						)
+						return@launch
+					}
+
+					val userWasTimedOutForDuration = if (muteExpiresAt != null) {
+						val howMuchTimeTheUserWillBeTimedOut =
+							Duration.ofMillis(muteExpiresAt - System.currentTimeMillis())
+
+						// Discord allows you to timeout someone for max 28 days, so we will coerce it for at most 28 days
+						howMuchTimeTheUserWillBeTimedOut.coerceAtMost(Duration.ofDays(28))
+					} else {
+						Duration.ofDays(28)
+					}
+
+					logger.info { "Updating $currentMember timeout..." }
+					currentMember.timeoutFor(userWasTimedOutForDuration).await()
+
+					loritta.transaction {
+						// Update and refresh
+						mute.userTimedOutUntil = Instant.now().plus(userWasTimedOutForDuration)
+						mute.refresh()
+					}
 				}
 			}
 		}

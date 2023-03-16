@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.tables
 
+import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object Mutes : LongIdTable() {
@@ -10,4 +11,5 @@ object Mutes : LongIdTable() {
 	val receivedAt = long("received_at")
 	val isTemporary = bool("temporary")
 	val expiresAt = long("expires_at").nullable()
+	var userTimedOutUntil = timestampWithTimeZone("user_timed_out_until").nullable()
 }

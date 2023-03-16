@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.LevelAnn
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.morenitta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.morenitta.utils.levels.RoleGiveType
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select

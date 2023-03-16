@@ -4,8 +4,6 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.Permission
@@ -19,8 +17,8 @@ import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
-import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", listOf("desmutar", "desilenciar", "desilenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unmute.description")
@@ -143,12 +141,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 
 			// And now remove the "Muted" role if needed!
 			val member = runBlocking { guild.retrieveMemberOrNull(user) }
-
-			if (member != null) {
-				val mutedRoles = MuteCommand.getMutedRole(loritta, guild, locale)
-				if (mutedRoles != null)
-					guild.removeRoleFromMember(member, mutedRoles).queue()
-			}
+			member?.removeTimeout()?.queue()
 		}
 	}
 }

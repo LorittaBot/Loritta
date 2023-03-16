@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChann
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.awt.Color
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds

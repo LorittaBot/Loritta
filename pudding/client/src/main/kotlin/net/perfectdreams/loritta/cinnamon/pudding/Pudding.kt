@@ -135,7 +135,7 @@ class Pudding(
             Database.connect(
                 dataSource,
                 databaseConfig = DatabaseConfig {
-                    defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+                    defaultRepetitionAttempts = 5
                     defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
                 }
             )

@@ -34,6 +34,7 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {

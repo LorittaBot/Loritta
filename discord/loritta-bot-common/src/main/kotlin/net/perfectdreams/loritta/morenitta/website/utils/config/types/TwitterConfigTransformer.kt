@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedTwitterAccounts
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select

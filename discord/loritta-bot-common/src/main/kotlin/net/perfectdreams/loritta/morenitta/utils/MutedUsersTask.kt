@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.tables.Mutes
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -54,7 +53,7 @@ class MutedUsersTask(val loritta: LorittaBot) : Runnable {
 				logger.info { "Adicionado removal thread pelo MutedUsersThread ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
 
 				val localeId = guildLocales.getOrPut(mute.guildId) { runBlocking { loritta.getOrCreateServerConfig(mute.guildId).localeId } }
-				MuteCommand.spawnRoleRemovalThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(localeId), mute.userId, mute.expiresAt!!)
+				MuteCommand.spawnTimeOutUpdaterThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(localeId), mute.userId, mute)
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Erro ao verificar removal threads" }

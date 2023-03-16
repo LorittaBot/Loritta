@@ -14,7 +14,7 @@ dependencyResolutionManagement {
             val kotlinXSerialization = version("kotlinx-serialization", "1.4.0-RC")
             val ktor = version("ktor", "2.0.3")
             val jib = version("jib", "3.2.1")
-            val exposed = version("exposed", "0.38.2")
+            val exposed = version("exposed", "0.41.1")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
             val logback = version("logback", "1.4.1")
             val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
