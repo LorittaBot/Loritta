@@ -18,8 +18,6 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/invite-blocker") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-
 		val inviteBlockerConfig = loritta.newSuspendedTransaction {
 			serverConfig.inviteBlockerConfig
 		}

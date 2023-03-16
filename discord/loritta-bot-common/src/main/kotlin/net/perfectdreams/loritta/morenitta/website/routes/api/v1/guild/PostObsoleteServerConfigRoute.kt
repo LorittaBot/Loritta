@@ -29,7 +29,6 @@ import org.jetbrains.exposed.sql.insert
 
 class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val receivedPayload = payload.obj
 		val type = receivedPayload["type"].string

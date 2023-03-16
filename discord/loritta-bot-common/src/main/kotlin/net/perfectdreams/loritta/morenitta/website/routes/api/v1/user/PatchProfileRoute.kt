@@ -51,7 +51,6 @@ import javax.imageio.ImageIO
 
 class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		loritta as LorittaBot
 		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 

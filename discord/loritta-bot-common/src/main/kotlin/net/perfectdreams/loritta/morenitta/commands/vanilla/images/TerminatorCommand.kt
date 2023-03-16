@@ -29,9 +29,6 @@ class TerminatorCommand(m: LorittaBot) : ImageAbstractCommandBase(
 		executes {
 			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "terminatoranime")
 
-			// TODO: Multiplatform
-			loritta as LorittaBot
-
 			val args = args.joinToString(" ")
 			val split = args.split("|")
 

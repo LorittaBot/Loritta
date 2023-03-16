@@ -18,8 +18,6 @@ import kotlin.collections.set
 
 class ConfigureModerationRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/moderation") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-
 		val moderationConfig = loritta.newSuspendedTransaction {
 			serverConfig.moderationConfig
 		}

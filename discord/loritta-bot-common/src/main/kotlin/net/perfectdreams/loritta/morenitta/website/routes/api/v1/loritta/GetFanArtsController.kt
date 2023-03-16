@@ -14,8 +14,6 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
 class GetFanArtsController(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/fan-arts") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as LorittaBot
-
 		val query = call.parameters["query"]
 		val filter = call.parameters["filter"]?.split(",")
 

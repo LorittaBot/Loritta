@@ -47,7 +47,6 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as LorittaBot
 		val response = withContext(Dispatchers.IO) {
 			call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
 		}

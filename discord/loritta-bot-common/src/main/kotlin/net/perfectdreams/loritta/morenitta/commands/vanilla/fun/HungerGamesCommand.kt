@@ -19,8 +19,6 @@ class HungerGamesCommand(m: LorittaBot) : DiscordAbstractCommandBase(m, listOf("
     private val WEBSITE_URL = "https://brantsteele.net"
 
     override fun command() = create {
-        loritta as LorittaBot
-
         localizedDescription("$LOCALE_PREFIX.description")
         localizedExamples("$LOCALE_PREFIX.examples")
 

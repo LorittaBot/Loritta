@@ -37,7 +37,6 @@ class PostTransferBalanceRoute(loritta: LorittaBot) : RequiresAPIAuthenticationR
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		loritta as LorittaBot
 		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val giverId = json["giverId"].long
 		val receiverId = json["receiverId"].long

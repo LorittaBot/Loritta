@@ -36,7 +36,6 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as LorittaBot
 		val sections = call.parameters["sections"]?.split(",")?.toSet()
 
 		println("Get Self Info Route")

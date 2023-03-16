@@ -17,8 +17,6 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class ConfigureEventLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/event-log") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-
 		val eventLogConfig = loritta.newSuspendedTransaction {
 			serverConfig.eventLogConfig
 		}

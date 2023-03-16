@@ -32,7 +32,6 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 	}
 
 	suspend fun createReputationPage(call: ApplicationCall, i18nContext: I18nContext, locale: BaseLocale, discordAuth: TemmieDiscordAuth?, userIdentification: LorittaJsonWebSession.UserIdentification?) {
-		loritta as LorittaBot
 		val userId = call.parameters["userId"] ?: return
 
 		val user = loritta.lorittaShards.retrieveUserById(userId)!!

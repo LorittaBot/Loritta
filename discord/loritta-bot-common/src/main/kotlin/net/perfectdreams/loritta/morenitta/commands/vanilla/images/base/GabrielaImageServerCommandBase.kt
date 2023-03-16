@@ -104,7 +104,7 @@ abstract class GabrielaImageServerCommandBase(
  */
 suspend fun CommandContext.imageData(argument: Int): JsonObject? {
     val url = imageUrl(argument, 0)
-    val castedLoritta = (loritta as LorittaBot)
+    val castedLoritta = loritta
 
     if (url != null && castedLoritta.connectionManager.isTrusted(url))
         return buildJsonObject {

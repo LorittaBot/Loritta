@@ -18,8 +18,6 @@ import kotlin.collections.set
 
 class ConfigureWelcomerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/welcomer") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-
 		val welcomerConfig = loritta.newSuspendedTransaction {
 			serverConfig.welcomerConfig
 		}

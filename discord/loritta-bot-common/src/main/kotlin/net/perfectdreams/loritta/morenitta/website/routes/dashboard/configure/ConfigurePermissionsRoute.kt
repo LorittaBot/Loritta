@@ -22,8 +22,6 @@ import kotlin.collections.set
 
 class ConfigurePermissionsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/permissions") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-
 		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "permissions"

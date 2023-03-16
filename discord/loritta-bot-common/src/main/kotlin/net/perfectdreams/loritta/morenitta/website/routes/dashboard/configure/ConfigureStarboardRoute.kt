@@ -18,8 +18,6 @@ import kotlin.collections.set
 
 class ConfigureStarboardRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/starboard") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-
 		val starboardConfig = loritta.newSuspendedTransaction {
 			serverConfig.starboardConfig
 		}

@@ -109,7 +109,6 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 	private val jobs = ConcurrentHashMap<Long, Job>()
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as LorittaBot
 		val sellerTokenHeader = call.request.header("Authorization")
 
 		if (sellerTokenHeader == null || loritta.config.loritta.perfectPayments.notificationToken != sellerTokenHeader) {

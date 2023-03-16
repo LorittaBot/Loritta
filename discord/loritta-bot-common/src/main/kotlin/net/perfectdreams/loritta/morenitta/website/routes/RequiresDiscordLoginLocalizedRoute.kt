@@ -42,8 +42,6 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification)
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
-		loritta as LorittaBot
-
 		if (call.request.path().endsWith("/dashboard")) {
 			val hostHeader = call.request.hostFromHeader()
 			val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()

@@ -22,8 +22,6 @@ import kotlin.collections.set
 
 class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/nashorn") {
     override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-        loritta as LorittaBot
-
         val nashornCommands = loritta.newSuspendedTransaction {
             CustomGuildCommands.select {
                 CustomGuildCommands.guild eq serverConfig.id.value
