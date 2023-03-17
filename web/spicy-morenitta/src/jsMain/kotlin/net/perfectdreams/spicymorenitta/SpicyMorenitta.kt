@@ -52,22 +52,7 @@ import net.perfectdreams.spicymorenitta.routes.DonateRoute
 import net.perfectdreams.spicymorenitta.routes.HomeRoute
 import net.perfectdreams.spicymorenitta.routes.ReputationRoute
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.AuditLogRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.AutoroleConfigRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.BadgeRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.CustomCommandsRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.DailyMultiplierRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.FortniteConfigRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.GeneralConfigRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.LevelUpRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.MemberCounterRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.MiscellaneousConfigRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.ModerationConfigRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.PremiumKeyRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.TwitchRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.TwitterRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.WelcomerConfigRoute
-import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.YouTubeRoute
+import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.AvailableBundlesDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.BackgroundsListDashboardRoute
@@ -138,7 +123,8 @@ class SpicyMorenitta : Logging {
 		MemberCounterRoute(this),
 		ModerationConfigRoute(this),
 		WelcomerConfigRoute(this),
-		CustomCommandsRoute(this)
+		CustomCommandsRoute(this),
+		GamerSaferVerifyRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(

@@ -42,28 +42,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostSearch
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostUserReputationsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.youtube.GetChannelInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.AuditLogRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureAutoroleRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureCommandsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureCustomBadgeRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureCustomCommandsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureDailyMultiplierRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureEconomyRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureEventLogRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureGeneralRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureInviteBlockerRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureLevelUpRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureMemberCounterRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureMiscellaneousRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureModerationRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureNashornCommandsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigurePermissionsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigurePremiumKeyRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureStarboardRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureTrackedTwitterAccountsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureTwitchRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureWelcomerRoute
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureYouTubeRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.AllBackgroundsListRoute
@@ -109,6 +88,7 @@ object DefaultRoutes {
 		ConfigureYouTubeRoute(loritta),
 		ConfigureNashornCommandsRoute(loritta),
 		ConfigureCustomCommandsRoute(loritta),
+		ConfigureGamerSaferVerifyRoute(loritta),
 
 		// Reps
 		UserReputationRoute(loritta),
