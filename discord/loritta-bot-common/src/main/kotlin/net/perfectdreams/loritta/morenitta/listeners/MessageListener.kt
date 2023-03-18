@@ -71,7 +71,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	)
 
 	private val messageEditedModules = mutableListOf(
-		// inviteLinkModule,
+		inviteLinkModule,
 		automodModule
 	)
 
