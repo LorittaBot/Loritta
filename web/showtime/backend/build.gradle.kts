@@ -100,15 +100,5 @@ tasks {
         from(sass) {
             into("static/v3/assets/css/")
         }
-
-        // Same thing with the images
-        from(File(buildDir, "images")) {
-            into("")
-        }
-
-        // Same thing with the generated-resources output
-        from(File(buildDir, "generated-resources")) {
-            into("")
-        }
     }
 }
