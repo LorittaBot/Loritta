@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.h1
@@ -12,8 +11,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.DiscordInviteWrapper.lorittaCommunityServerInvite
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.DiscordInviteWrapper.lorittaSupportServerInvite
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromEtherealGambi
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.innerContent
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 class SupportView(
     showtimeBackend: ShowtimeBackend,
@@ -35,8 +35,10 @@ class SupportView(
             div(classes = "odd-wrapper") {
                 div(classes = "media") {
                     div(classes = "media-figure") {
-                        imgSrcSetFromResources(
-                            "${versionPrefix}/assets/img/support/lori_support.png",
+                        imgSrcSetFromEtherealGambi(
+                            showtimeBackend,
+                            showtimeBackend.images.lorittaSupport,
+                            "png",
                             "(max-width: 800px) 50vw, 15vw"
                         )
                     }

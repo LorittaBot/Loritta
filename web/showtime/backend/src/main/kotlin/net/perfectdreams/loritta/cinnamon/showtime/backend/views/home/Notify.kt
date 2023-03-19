@@ -1,21 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views.home
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.html.DIV
-import kotlinx.html.classes
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.p
-import kotlinx.html.style
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdGenerator
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.adWrapper
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.generateNitroPayAd
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResources
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.mediaWithContentWrapper
-import net.perfectdreams.loritta.cinnamon.showtime.backend.views.BaseView
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import kotlinx.html.*
+import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.*
 
-fun DIV.notify(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
+fun DIV.notify(m: ShowtimeBackend, svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "$sectionClassName wobbly-bg") {
         style = "text-align: center;"
 
@@ -30,12 +20,16 @@ fun DIV.notify(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassN
             {
                 div {
                     style = "position: relative;"
-                    imgSrcSetFromResources(
-                        "${BaseView.versionPrefix}/assets/img/home/lori_notification.png",
+                    imgSrcSetFromEtherealGambi(
+                        m,
+                        m.images.lorittaNotification,
+                        "png",
                         "(max-width: 800px) 50vw, 15vw"
                     )
-                    imgSrcSetFromResources(
-                        "${BaseView.versionPrefix}/assets/img/home/lori_notification_video.png",
+                    imgSrcSetFromEtherealGambi(
+                        m,
+                        m.images.lorittaNotificationVideo,
+                        "png",
                         "(max-width: 800px) 50vw, 15vw"
                     ) {
                         classes = setOf("icon-middle")

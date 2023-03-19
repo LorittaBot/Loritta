@@ -1,10 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.utils.commands
 
-import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.EtherealGambiImages
 
-@Serializable
-class AdditionalCommandInfoConfig(
+data class AdditionalCommandInfoConfig(
         val name: String,
-        val imageUrls: List<String>? = null,
-        val videoUrls: List<String>? = null
+        val imageInfo: EtherealGambiImages.PreloadedImageInfo? = null,
+        // For images that aren't supported by EtherealGambi
+        val imageUrl: String? = null,
+        val videoUrl: String? = null
 )

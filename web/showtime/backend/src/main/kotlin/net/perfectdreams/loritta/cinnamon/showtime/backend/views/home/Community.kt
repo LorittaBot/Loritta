@@ -1,20 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views.home
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdGenerator
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.adWrapper
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.generateNitroPayAd
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResources
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.mediaWithContentWrapper
+import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.*
 import net.perfectdreams.loritta.cinnamon.showtime.backend.views.BaseView
 
-fun DIV.community(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
+fun DIV.community(m: ShowtimeBackend, svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "$sectionClassName wobbly-bg") {
         style = "text-align: center;"
 
@@ -31,8 +27,10 @@ fun DIV.community(svgIconManager: SVGIconManager, locale: BaseLocale, sectionCla
         mediaWithContentWrapper(
             isImageOnTheRightSide,
             {
-                imgSrcSetFromResources(
-                    "${BaseView.versionPrefix}/assets/img/home/lori_community.png",
+                imgSrcSetFromEtherealGambi(
+                    m,
+                    m.images.lorittaCommunity,
+                    "png",
                     "(max-width: 800px) 50vw, 15vw"
                 )
             },

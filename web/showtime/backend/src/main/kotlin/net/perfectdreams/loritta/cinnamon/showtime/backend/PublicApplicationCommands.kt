@@ -1,60 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationBuilder
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.discord.interactions.PublicLorittaCommands
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ArtExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BobBurningPaperExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BolsoDrakeExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BolsoFrameExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.Bolsonaro2Executor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BolsonaroExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BriggsCoverExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BuckShirtExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.CanellaDvdExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.CepoDeMadeiraExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ChicoAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.CortesFlowExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.DrakeExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.DrawnMaskAtendenteExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.DrawnMaskSignExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.DrawnMaskWordExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.EdnaldoBandeiraExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.EdnaldoTvExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.GessyAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.GetOverHereExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.InvertColorsExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.KnuxThrowExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.LoriAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.LoriSignExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ManiaTitleCardExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.MonicaAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.NichijouYuukoPaperExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.PassingPaperExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.PepeDreamExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.PetPetExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.RipTvExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.RomeroBrittoExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.SAMExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.StudiopolisTvExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.SustoExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.TerminatorAnimeExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ToBeContinuedExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.TrumpExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.WolverineFrameExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.AttackOnHeartExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.CarlyAaahExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.ChavesCocieloExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.ChavesOpeningExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.GigaChadExecutor
-import kotlin.reflect.KClass
 
 class PublicApplicationCommands(languageManager: LanguageManager) {
-    val cinnamonCommands = PublicLorittaCommands(languageManager).commands()
+    val flattenedDataDeclarations = listOf<InteractionCommand>()
+
+    /* val cinnamonCommands = PublicLorittaCommands(languageManager).commands()
     val dataDeclarations = cinnamonCommands.map { convertToData(it.declaration()) }
 
     val flattenedDataDeclarations = dataDeclarations.flatMap { flattenData(it) }
@@ -345,7 +299,7 @@ class PublicApplicationCommands(languageManager: LanguageManager) {
         }
 
         return flattenedData
-    }
+    }  */
 
     @Serializable
     data class InteractionCommand(

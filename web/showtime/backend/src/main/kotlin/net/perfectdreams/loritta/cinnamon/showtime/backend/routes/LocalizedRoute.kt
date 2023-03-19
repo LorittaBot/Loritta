@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.routes
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import net.perfectdreams.i18nhelper.core.I18nContext

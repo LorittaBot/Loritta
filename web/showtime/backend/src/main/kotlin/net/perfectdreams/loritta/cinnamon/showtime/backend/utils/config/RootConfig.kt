@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.showtime.backend.utils.config
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.utils.config.LorittaConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.PuddingConfig
 
 @Serializable
 data class RootConfig(
@@ -10,4 +9,12 @@ data class RootConfig(
     val discord: LorittaDiscordConfig,
     val etherealGambi: EtherealGambiConfig,
     val pudding: PuddingConfig
-)
+) {
+    @Serializable
+    data class PuddingConfig(
+        val database: String,
+        val address: String,
+        val username: String,
+        val password: String
+    )
+}

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.FlowOrInteractiveContent
 import kotlinx.html.HTMLTag
 import kotlinx.html.HtmlBlockTag
@@ -27,19 +27,13 @@ import kotlinx.html.video
 import kotlinx.html.visit
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.CommandInfo
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.ImageUtils
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdGenerator
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdSize
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.WebsiteAssetsHashManager
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.*
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.commands.AdditionalCommandInfoConfig
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.generateNitroPayAd
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.locale.formatAsHtml
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.serializable.CommandInfo
 import java.awt.Color
 import java.time.LocalDate
 import java.time.ZoneId
@@ -152,7 +146,7 @@ class LegacyCommandsView(
     override fun HtmlBlockTag.rightSidebarContents() {
         fun generateAllCommandsInfo(
             visible: Boolean,
-            imagePath: String,
+            imageInfo: EtherealGambiImages.PreloadedImageInfo,
             sizes: String
         ) {
             val categoryName = "ALL"
@@ -170,8 +164,12 @@ class LegacyCommandsView(
                             "display: flex;\n" +
                             "align-items: center; justify-content: center;"
 
-                    imgSrcSetFromResources(imagePath, sizes) {
-                        // Lazy load the images, because *for some reason* it loads all images even tho the div is display none.
+                    imgSrcSetFromEtherealGambi(
+                        showtimeBackend,
+                        imageInfo,
+                        "png",
+                        sizes
+                    ) {
                         attributes["loading"] = "lazy"
                         style = "max-height: 100%; max-width: 100%;"
                     }
@@ -206,7 +204,7 @@ class LegacyCommandsView(
         fun generateCategoryInfo(
             category: CommandCategory?,
             visible: Boolean,
-            imagePath: String,
+            imageInfo: EtherealGambiImages.PreloadedImageInfo,
             sizes: String
         ) {
             val categoryName = category?.name ?: "ALL"
@@ -224,7 +222,12 @@ class LegacyCommandsView(
                             "display: flex;\n" +
                             "align-items: center; justify-content: center;"
 
-                    imgSrcSetFromResources(imagePath, sizes) {
+                    imgSrcSetFromEtherealGambi(
+                        showtimeBackend,
+                        imageInfo,
+                        "png",
+                        sizes
+                    ) {
                         // Lazy load the images, because *for some reason* it loads all images even tho the div is display none.
                         attributes["loading"] = "lazy"
                         style = "max-height: 100%; max-width: 100%;"
@@ -249,119 +252,119 @@ class LegacyCommandsView(
 
         generateAllCommandsInfo(
             filterByCategory == null,
-            "${versionPrefix}/assets/img/support/lori_support.png",
+            showtimeBackend.images.lorittaSupport,
             "(max-width: 800px) 50vw, 15vw"
         )
 
         generateCategoryInfo(
             CommandCategory.IMAGES,
             filterByCategory == CommandCategory.IMAGES,
-            "/v3/assets/img/categories/images.png",
+            showtimeBackend.images.lorittaImages,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.FUN,
             filterByCategory == CommandCategory.FUN,
-            "/v3/assets/img/categories/fun.png",
+            showtimeBackend.images.lorittaFun,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.MODERATION,
             filterByCategory == CommandCategory.MODERATION,
-            "/v3/assets/img/categories/moderation.png",
+            showtimeBackend.images.lorittaModeration,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.SOCIAL,
             filterByCategory == CommandCategory.SOCIAL,
-            "/v3/assets/img/categories/social.png",
+            showtimeBackend.images.lorittaSocial,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.DISCORD,
             filterByCategory == CommandCategory.DISCORD,
-            "/v3/assets/img/categories/loritta_wumpus.png",
+            showtimeBackend.images.lorittaWumpus,
             "(max-width: 1366px) 250px",
         )
 
         generateCategoryInfo(
             CommandCategory.UTILS,
             filterByCategory == CommandCategory.UTILS,
-            "/v3/assets/img/categories/utilities.png",
+            showtimeBackend.images.lorittaUtilities,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.MISC,
             filterByCategory == CommandCategory.MISC,
-            "/v3/assets/img/categories/miscellaneous.png",
+            showtimeBackend.images.lorittaMiscellaneous,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
-            CommandCategory.ACTION,
-            filterByCategory == CommandCategory.ACTION,
-            "/v3/assets/img/categories/hug.png",
+            CommandCategory.ROLEPLAY,
+            filterByCategory == CommandCategory.ROLEPLAY,
+            showtimeBackend.images.lorittaHug,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.UNDERTALE,
             filterByCategory == CommandCategory.UNDERTALE,
-            "/v3/assets/img/categories/lori_sans.png",
+            showtimeBackend.images.lorittaSans,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.POKEMON,
             filterByCategory == CommandCategory.POKEMON,
-            "/v3/assets/img/categories/lori_pikachu.png",
+            showtimeBackend.images.lorittaPikachu,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.ECONOMY,
             filterByCategory == CommandCategory.ECONOMY,
-            "/v3/assets/img/categories/money.png",
+            showtimeBackend.images.lorittaRichHeathecliff,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.FORTNITE,
             filterByCategory == CommandCategory.FORTNITE,
-            "/v3/assets/img/categories/loritta_fortnite.png",
+            showtimeBackend.images.lorittaFortnite,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.VIDEOS,
             filterByCategory == CommandCategory.VIDEOS,
-            "/v3/assets/img/categories/videos.png",
+            showtimeBackend.images.lorittaVideos,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.ANIME,
             filterByCategory == CommandCategory.ANIME,
-            "/v3/assets/img/categories/anime.png",
+            showtimeBackend.images.lorittaAnime,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.MINECRAFT,
             filterByCategory == CommandCategory.MINECRAFT,
-            "/v3/assets/img/categories/minecraft.png",
+            showtimeBackend.images.lorittaMinecraft,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.ROBLOX,
             filterByCategory == CommandCategory.ROBLOX,
-            "/v3/assets/img/categories/roblox.png",
+            showtimeBackend.images.robloxLogo,
             "(max-width: 1366px) 250px"
         )
 
@@ -509,45 +512,57 @@ class LegacyCommandsView(
 
                         if (additionalInfo != null) {
                             // Add additional images, if present
-                            if (additionalInfo.imageUrls != null && additionalInfo.imageUrls.isNotEmpty()) {
-                                for (imageUrl in additionalInfo.imageUrls) {
-                                    val imageInfo = ImageUtils.getImageAttributes(imageUrl)
+                            if (additionalInfo.imageInfo != null) {
+                                val imagePreloadInfo = additionalInfo.imageInfo
 
-                                    img(src = imageInfo.path.removePrefix("static"), classes = "thumbnail") {
-                                        // So, this is hard...
-                                        // Because we are "floating" the image, content jumping is inevitable... (because the height is set to 0)
-                                        // So we need to set a fixed width AND height, oof!
-                                        // So we calculate it during build time and use it here, yay!
-                                        // But anyway, this sucks...
-                                        width = "250"
+                                img(src = (showtimeBackend.etherealGambiClient.baseUrl + imagePreloadInfo.path + "." + additionalInfo.imageInfo.imageInfo.imageInfo.fileType.extension), classes = "thumbnail") {
+                                    // So, this is hard...
+                                    // Because we are "floating" the image, content jumping is inevitable... (because the height is set to 0)
+                                    // So we need to set a fixed width AND height, oof!
+                                    // So we calculate it during build time and use it here, yay!
+                                    // But anyway, this sucks...
+                                    width = "250"
 
-                                        // Lazy load the images, because *for some reason* it loads all images even tho the details tag is closed.
-                                        attributes["loading"] = "lazy"
+                                    // Lazy load the images, because *for some reason* it loads all images even tho the details tag is closed.
+                                    attributes["loading"] = "lazy"
 
-                                        // The aspect-ratio is used to avoid content reflow
-                                        style = "aspect-ratio: ${imageInfo.width} / ${imageInfo.height};"
-                                    }
+                                    // The aspect-ratio is used to avoid content reflow
+                                    style = "aspect-ratio: ${imagePreloadInfo.imageInfo.imageInfo.width} / ${imagePreloadInfo.imageInfo.imageInfo.height};"
+                                }
+                            }
+
+                            if (additionalInfo.imageUrl != null) {
+                                img(src = (showtimeBackend.etherealGambiClient.baseUrl + additionalInfo.imageUrl), classes = "thumbnail") {
+                                    // So, this is hard...
+                                    // Because we are "floating" the image, content jumping is inevitable... (because the height is set to 0)
+                                    // So we need to set a fixed width AND height, oof!
+                                    // So we calculate it during build time and use it here, yay!
+                                    // But anyway, this sucks...
+                                    width = "250"
+
+                                    // Lazy load the images, because *for some reason* it loads all images even tho the details tag is closed.
+                                    attributes["loading"] = "lazy"
+
+                                    // We don't have the aspect-ratio here so we just pretend that we don't need to avoid content reflow shhhh
                                 }
                             }
 
                             // Add additional videos, if present
-                            if (additionalInfo.videoUrls != null && additionalInfo.videoUrls.isNotEmpty()) {
-                                for (videoUrl in additionalInfo.videoUrls) {
-                                    video(classes = "thumbnail") {
-                                        // For videos, we need to use the "preload" attribute to force the video to *not* preload
-                                        // The video will only start loading after the user clicks the video
-                                        attributes["preload"] = "none"
+                            if (additionalInfo.videoUrl != null) {
+                                video(classes = "thumbnail") {
+                                    // For videos, we need to use the "preload" attribute to force the video to *not* preload
+                                    // The video will only start loading after the user clicks the video
+                                    attributes["preload"] = "none"
 
-                                        // The aspect-ratio is used to avoid content reflow
-                                        style = "aspect-ratio: 16 / 9;"
+                                    // The aspect-ratio is used to avoid content reflow
+                                    style = "aspect-ratio: 16 / 9;"
 
-                                        width = "250"
-                                        controls = true
+                                    width = "250"
+                                    controls = true
 
-                                        source {
-                                            src = videoUrl
-                                            type = "video/mp4"
-                                        }
+                                    source {
+                                        src = showtimeBackend.etherealGambiClient.baseUrl + additionalInfo.videoUrl
+                                        type = "video/mp4"
                                     }
                                 }
                             }
@@ -653,7 +668,7 @@ class LegacyCommandsView(
         CommandCategory.MODERATION -> Color(240, 71, 71)
         // Roblox Logo Color
         CommandCategory.ROBLOX -> Color(226, 35, 26)
-        CommandCategory.ACTION -> Color(243, 118, 166)
+        CommandCategory.ROLEPLAY -> Color(243, 118, 166)
         CommandCategory.UTILS -> Color(113, 147, 188)
         // Grass Block
         CommandCategory.MINECRAFT -> Color(124, 87, 58)

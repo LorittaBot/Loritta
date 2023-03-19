@@ -14,22 +14,28 @@ import net.perfectdreams.etherealgambi.data.ScaleDownToWidthImageVariantPreset
 import net.perfectdreams.etherealgambi.data.api.responses.ImageVariantsResponse
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
 
-fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Unit = {}) {
-    val imageInfo = ImageUtils.optimizedImagesInfoWithVariants.firstOrNull { it.path.removePrefix("static") == path }
+fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromEtherealGambi(m: ShowtimeBackend, preloadedImageInfo: EtherealGambiImages.PreloadedImageInfo, extension: String, sizes: String, block: IMG.() -> Unit = {}) {
+    val variantInfo = preloadedImageInfo.imageInfo
 
-    if (imageInfo != null) {
-        imgSrcSet(
-            imageInfo.path.removePrefix("static"),
-            sizes,
-            (
-                    imageInfo.variations!!.map {
-                        "${it.path.removePrefix("static")} ${it.width}w"
-                    } + "${imageInfo.path.removePrefix("static")} ${imageInfo.width}w"
-                    ).joinToString(", "),
-            block
-        )
-    } else error("Missing ImageInfo for \"$path\"!")
+    val defaultVariant = variantInfo.variants.first { it.preset is DefaultImageVariantPreset }
+    val scaleDownVariants = variantInfo.variants.filter { it.preset is ScaleDownToWidthImageVariantPreset }
+
+    val imageUrls = (
+            scaleDownVariants.map {
+                "${m.etherealGambiClient.baseUrl}/${it.urlWithoutExtension}.$extension ${(it.preset as ScaleDownToWidthImageVariantPreset).width}w"
+            } + "${m.etherealGambiClient.baseUrl}/${defaultVariant.urlWithoutExtension}.$extension ${variantInfo.imageInfo.width}w"
+            ).joinToString(", ")
+
+    imgSrcSet(
+        "${m.etherealGambiClient.baseUrl}/${defaultVariant.urlWithoutExtension.removePrefix("/")}.$extension",
+        sizes,
+        imageUrls
+    ) {
+        block()
+        style += "aspect-ratio: ${variantInfo.imageInfo.width}/${variantInfo.imageInfo.height}"
+    }
 }
+
 
 fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromEtherealGambi(m: ShowtimeBackend, variantInfo: ImageVariantsResponse, extension: String, sizes: String, block: IMG.() -> Unit = {}) {
     val defaultVariant = variantInfo.variants.first { it.preset is DefaultImageVariantPreset }
@@ -48,14 +54,6 @@ fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromEtherealGambi(m: ShowtimeBac
     ) {
         block()
         style += "aspect-ratio: ${variantInfo.imageInfo.width}/${variantInfo.imageInfo.height}"
-    }
-}
-
-fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(path: String, sizes: String, block: IMG.() -> Unit = {}) {
-    try {
-        imgSrcSetFromResources(path, sizes, block)
-    } catch (e: Exception) {
-        img(src = path, block = block)
     }
 }
 

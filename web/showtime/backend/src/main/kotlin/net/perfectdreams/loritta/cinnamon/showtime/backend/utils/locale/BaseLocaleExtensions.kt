@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.utils.locale
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 fun BaseLocale.formatLocaleKeyAsHtml(localeKey: String, onControlChar: (Int) -> (Unit), onStringBuild: (String) -> (Unit))
         = formatAsHtml(this[localeKey], onControlChar, onStringBuild)

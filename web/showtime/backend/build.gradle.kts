@@ -10,8 +10,9 @@ version = "1.0-SNAPSHOT"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":common"))
+    implementation(project(":loritta-serializable-commons"))
     implementation(project(":web:showtime:web-common"))
-    implementation(project(":discord:loritta-bot-common"))
+    implementation(project(":pudding:client"))
 
     // Logging Stuff
     implementation(libs.logback.classic)
@@ -75,30 +76,6 @@ jib {
 
 val jsBrowserProductionWebpack = tasks.getByPath(":web:showtime:showtime-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
-// Optimize image assets
-val optimizeImageAssets = tasks.register<ImageOptimizerTask>("optimizeImageAssets") {
-    sourceImagesDirectory.set(file("src/main/images"))
-    outputImagesDirectory.set(file("$buildDir/images"))
-    outputImagesInfoFile.set(file("$buildDir/generated-resources/images-info.json"))
-
-    // Unused for now
-    imagesOptimizationSettings.set(listOf())
-}
-
-// Annotates images width, height and file size on a JSON file, used for the commands view to avoid content shifting when loading images
-// TODO: I wanted to annotate the images in the "$buildDir/build/resources/main", but I wasn't able to do it... Maybe there's a way?
-val annotateOptimizedImageAttributes = tasks.register<AnnotateImageAttributesTask>("annotateOptimizedImageAttributes") {
-    sourceImagesDirectory.set(file("src/main/images"))
-    outputImagesInfoFile.set(file("$buildDir/generated-resources/optimized-images-attributes.json"))
-
-    dependsOn(optimizeImageAssets)
-}
-
-val annotateBundledImageAttributes = tasks.register<AnnotateImageAttributesTask>("annotateBundledImageAttributes") {
-    sourceImagesDirectory.set(file("src/main/resources"))
-    outputImagesInfoFile.set(file("$buildDir/generated-resources/bundled-images-attributes.json"))
-}
-
 val sass = tasks.register<SassTask>("sass-style-scss") {
     this.inputSass.set(file("src/main/sass/style.scss"))
     this.inputSassFolder.set(file("src/main/sass/"))
@@ -113,9 +90,6 @@ tasks {
         // We need to wait until the JS build finishes and the SASS files are generated
         dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
-        dependsOn(optimizeImageAssets)
-        dependsOn(annotateOptimizedImageAttributes)
-        dependsOn(annotateBundledImageAttributes)
 
         // Copy the output from the frontend task to the backend resources
         from(jsBrowserProductionWebpack.destinationDirectory) {

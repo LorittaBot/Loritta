@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.routes
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import io.ktor.server.application.*
 import io.ktor.server.html.*
 import net.perfectdreams.dokyo.RoutePath
@@ -19,7 +19,7 @@ class StaffRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Route
 
                 if (discordSocialNetwork != null) {
                     val cachedUserInfo = showtime.pudding.users.getCachedUserInfoById(
-                        UserId(discordSocialNetwork.userId.value.toLong())
+                        UserId(discordSocialNetwork.userId)
                     )
 
                     val avatarId = cachedUserInfo?.avatarId
@@ -36,7 +36,7 @@ class StaffRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Route
                     .firstOrNull()
 
                 if (discordSocialNetwork != null) {
-                    val profileSettings = showtime.pudding.users.getUserProfile(UserId(discordSocialNetwork.userId.value.toLong()))
+                    val profileSettings = showtime.pudding.users.getUserProfile(UserId(discordSocialNetwork.userId))
                         ?.getProfileSettings()
 
                     if (profileSettings != null)

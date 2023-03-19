@@ -1,22 +1,24 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views.home
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromEtherealGambi
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.mediaWithContentWrapper
-import net.perfectdreams.loritta.cinnamon.showtime.backend.views.BaseView
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
-fun DIV.chitChat(locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
+fun DIV.chitChat(m: ShowtimeBackend, locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "$sectionClassName wobbly-bg") {
         mediaWithContentWrapper(
             isImageOnTheRightSide,
             {
-                imgSrcSetFromResources(
-                    "${BaseView.versionPrefix}/assets/img/home/lori_prize.png",
+                imgSrcSetFromEtherealGambi(
+                    m,
+                    m.images.lorittaPrize,
+                    "png",
                     "(max-width: 800px) 50vw, 15vw"
                 )
             },

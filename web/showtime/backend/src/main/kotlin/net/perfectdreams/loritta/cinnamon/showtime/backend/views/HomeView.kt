@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.a
 import kotlinx.html.classes
@@ -15,11 +15,7 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdGenerator
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.adWrapper
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.generateNitroPayAd
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResources
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.innerContent
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.*
 import net.perfectdreams.loritta.cinnamon.showtime.backend.views.home.chitChat
 import net.perfectdreams.loritta.cinnamon.showtime.backend.views.home.community
 import net.perfectdreams.loritta.cinnamon.showtime.backend.views.home.customization
@@ -55,34 +51,38 @@ class HomeView(
                 HomeElements.lorittaSelfie.apply(this)
 
                 // Ordem: Do primeiro (a base) para o último
-                imgSrcSetFromResources(
-                    "${versionPrefix}/assets/img/loritta/loritta_v2.png",
+                imgSrcSetFromEtherealGambi(
+                    showtimeBackend,
+                    showtimeBackend.images.lorittaJumbotron,
+                    "png",
                     "(max-width: 1366px) 570px"
                 )
-                imgSrcSetFromResources(
-                    "${versionPrefix}/assets/img/loritta/loritta_v2_dark.png",
+                imgSrcSetFromEtherealGambi(
+                    showtimeBackend,
+                    showtimeBackend.images.lorittaJumbotronDark,
+                    "png",
                     "(max-width: 1366px) 570px"
                 ) {
                     classes = classes + "dark-sweater-pose"
                 }
-                imgSrcSetFromResources(
-                    "${versionPrefix}/assets/img/loritta/loritta_v2_blink.png",
+                imgSrcSetFromEtherealGambi(
+                    showtimeBackend,
+                    showtimeBackend.images.lorittaJumbotronBlink,
+                    "png",
                     "(max-width: 1366px) 570px"
                 ) {
                     HomeElements.blinkingPose.apply(this)
                     classes = classes + "blinking-pose"
                 }
-                imgSrcSetFromResources(
-                    "${versionPrefix}/assets/img/loritta/loritta_v2_blush.png",
+                imgSrcSetFromEtherealGambi(
+                    showtimeBackend,
+                    showtimeBackend.images.lorittaJumbotronBlush,
+                    "png",
                     "(max-width: 1366px) 570px"
                 ) {
                     HomeElements.blushingPose.apply(this)
                     classes = classes + "blushing-pose"
                 }
-                // img(src = "${websiteUrl}/v2/assets/img/loritta_v2.png") {}
-                // img(src = "${websiteUrl}/v2/assets/img/loritta_v2_dark.png", classes = "dark-sweater-pose") {}
-                // img(src = "${websiteUrl}/v2/assets/img/loritta_v2_blink.png", classes = "blinking-pose") {}
-                // img(src = "${websiteUrl}/v2/assets/img/loritta_v2_blush.png", classes = "blushing-pose") {}
             }
 
             div(classes = "right-side-text") {
@@ -176,8 +176,10 @@ class HomeView(
                         }
                     }
                     div(classes = "media-figure") {
-                        imgSrcSetFromResources(
-                            "${versionPrefix}/assets/img/home/lori_gabi.png",
+                        imgSrcSetFromEtherealGambi(
+                            showtimeBackend,
+                            showtimeBackend.images.lorittaGabi,
+                            "png",
                             "(max-width: 800px) 50vw, 15vw"
                         )
                     }
@@ -191,14 +193,14 @@ class HomeView(
                 return original
             }
 
-            trust(locale, getOddOrEvenClassName(sectionId++))
-            funnyCommands(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-            chitChat(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            trust(showtimeBackend, locale, getOddOrEvenClassName(sectionId++))
+            funnyCommands(showtimeBackend, iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            chitChat(showtimeBackend, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
             // music(locale, websiteUrl)
             moderation(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-            notify(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            notify(showtimeBackend, iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
             customization(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-            community(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            community(showtimeBackend, iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
             muchMore(locale, getOddOrEvenClassName(sectionId++))
             makeItAwesome(showtimeBackend, locale, getOddOrEvenClassName(sectionId++))
             // Disabled for now because our YourKit license is expired because I need to ask to renew it

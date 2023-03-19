@@ -1,28 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import dev.kord.common.entity.Snowflake
-import kotlinx.html.DIV
-import kotlinx.html.a
-import kotlinx.html.br
-import kotlinx.html.classes
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.h2
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.style
-import kotlinx.html.title
+import kotlinx.html.*
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.WebEmotes
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromEtherealGambi
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.innerContent
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class StaffView(
     showtimeBackend: ShowtimeBackend,
@@ -30,8 +17,8 @@ class StaffView(
     locale: BaseLocale,
     i18nContext: I18nContext,
     path: String,
-    val discordAvatars: Map<Snowflake, String>,
-    val aboutMe: Map<Snowflake, String?>
+    val discordAvatars: Map<Long, String>,
+    val aboutMe: Map<Long, String?>
 ) : NavbarView(
     showtimeBackend,
     websiteTheme,
@@ -40,13 +27,15 @@ class StaffView(
     path
 ) {
     companion object {
+        private val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
+
         /**
          * List of staff groups and staff members that should be shown in the list
          */
         val staffList = staffList {
             group(I18nKeysData.Website.Staff.LorittaCreator.Title, null) {
                 user("MrPowerGamerBR") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(123170274651668480)))
+                    socialNetworks.add(DiscordSocialNetwork(123170274651668480))
                     socialNetworks.add(TwitterSocialNetwork("MrPowerGamerBR"))
                     socialNetworks.add(LastFmSocialNetwork("MrPowerGamerBR"))
                     socialNetworks.add(GitHubSocialNetwork("MrPowerGamerBR"))
@@ -58,37 +47,37 @@ class StaffView(
 
             group(I18nKeysData.Website.Staff.LorittaBodyguard.Title, I18nKeysData.Website.Staff.LorittaBodyguard.Description) {
                 user("Arth") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(351760430991147010)))
+                    socialNetworks.add(DiscordSocialNetwork(351760430991147010))
                     socialNetworks.add(TwitterSocialNetwork("souarth"))
                     socialNetworks.add(LastFmSocialNetwork("souarth"))
                 }
  
                 user("Stéphany") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(400683515873591296)))
+                    socialNetworks.add(DiscordSocialNetwork(400683515873591296))
                     socialNetworks.add(TwitterSocialNetwork("dittom_"))
                     socialNetworks.add(GitHubSocialNetwork("dittom20"))
                 }
                 
                 user("Srta. Paum") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(197501878399926272)))
+                    socialNetworks.add(DiscordSocialNetwork(197501878399926272))
                     socialNetworks.add(TwitterSocialNetwork("srtabread"))
                 }
 
                 user("DanielaGC_") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(395788326835322882)))
+                    socialNetworks.add(DiscordSocialNetwork(395788326835322882))
                     socialNetworks.add(TwitterSocialNetwork("DanielaGC_0"))
                     socialNetworks.add(LastFmSocialNetwork("DanielaGC_0"))
                     socialNetworks.add(GitHubSocialNetwork("DanielaGC"))
                 }
 
                 user("joaoesteves10") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(214486492909666305)))
+                    socialNetworks.add(DiscordSocialNetwork(214486492909666305))
                     socialNetworks.add(TwitterSocialNetwork("joaoesteves10a5"))
                     socialNetworks.add(GitHubSocialNetwork("joaoesteves10"))
                 }
 
                 user("PeterStark000") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(361977144445763585)))
+                    socialNetworks.add(DiscordSocialNetwork(361977144445763585))
                     socialNetworks.add(GitHubSocialNetwork("PeterStark000"))
                     socialNetworks.add(TwitterSocialNetwork("PeterStark000"))
                     socialNetworks.add(YouTubeSocialNetwork("UCcTTEVAyQ_xnfopzewr-5MA"))
@@ -97,12 +86,12 @@ class StaffView(
                 }
 
                 user("nathaan") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(437731723350900739)))
+                    socialNetworks.add(DiscordSocialNetwork(437731723350900739))
                     socialNetworks.add(TwitterSocialNetwork("oRafa_e"))
                 }
                 
                 user("JvGm45") {
-                    socialNetworks.add(DiscordSocialNetwork(Snowflake(197308318119755776)))
+                    socialNetworks.add(DiscordSocialNetwork(197308318119755776))
                     socialNetworks.add(TwitterSocialNetwork("JvGm45"))
                     socialNetworks.add(GitHubSocialNetwork("JvGm45"))
                 }
@@ -115,7 +104,7 @@ class StaffView(
 
         sealed class StaffSocialNetwork
         class DiscordSocialNetwork(
-            val userId: Snowflake
+            val userId: Long
         ) : StaffSocialNetwork()
         class TwitterSocialNetwork(
             val handle: String
@@ -337,7 +326,7 @@ class StaffView(
                                                         // - String
                                                         // - Discord Emote
                                                         val sections = mutableListOf<AboutMeSection>()
-                                                        val matches = DiscordRegexes.DiscordEmote.findAll(aboutMe).toList()
+                                                        val matches = DiscordEmote.findAll(aboutMe).toList()
                                                         var firstMatchedCharacterIndex = 0
                                                         var lastMatchedCharacterIndex = 0
 
@@ -347,7 +336,7 @@ class StaffView(
                                                             val emoteName = match.groupValues[2]
                                                             val emoteId = match.groupValues[3]
                                                             // TODO: Fix this! Because we migrated the emotes to Ethereal, this won't work correctly anymore
-                                                            if (false && WebEmotes.emotes.contains(emoteName)) {
+                                                            if (showtimeBackend.webEmotes.emotes.contains(emoteName)) {
                                                                 sections.add(AboutMeLorittaWebsiteEmote(emoteName))
                                                             } else {
                                                                 sections.add(AboutMeDiscordEmote(emoteId, animated))
@@ -368,8 +357,12 @@ class StaffView(
                                                         for (section in sections) {
                                                             when (section) {
                                                                 is AboutMeLorittaWebsiteEmote -> {
-                                                                    imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(
-                                                                        "/v3/assets/img/emotes/${WebEmotes.emotes[section.emoteFile]}",
+                                                                    val etherealGambiEmote = showtimeBackend.webEmotes.emotes[section.emoteFile]!!
+
+                                                                    imgSrcSetFromEtherealGambi(
+                                                                        showtimeBackend,
+                                                                        etherealGambiEmote,
+                                                                        "png",
                                                                         "1.5em"
                                                                     ) {
                                                                         classes = setOf("inline-emoji")

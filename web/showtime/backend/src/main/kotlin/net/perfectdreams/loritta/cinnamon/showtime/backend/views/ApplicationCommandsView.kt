@@ -1,38 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.views
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.html.FlowOrInteractiveContent
-import kotlinx.html.HTMLTag
-import kotlinx.html.HtmlBlockTag
-import kotlinx.html.TagConsumer
-import kotlinx.html.a
-import kotlinx.html.button
-import kotlinx.html.classes
-import kotlinx.html.details
-import kotlinx.html.div
-import kotlinx.html.fieldSet
-import kotlinx.html.hr
-import kotlinx.html.img
-import kotlinx.html.input
-import kotlinx.html.legend
-import kotlinx.html.p
-import kotlinx.html.source
-import kotlinx.html.style
-import kotlinx.html.summary
-import kotlinx.html.unsafe
-import kotlinx.html.video
-import kotlinx.html.visit
+import kotlinx.html.*
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.showtime.backend.PublicApplicationCommands
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.ImageUtils
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdGenerator
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdSize
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.generateNitroPayAd
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.*
+import net.perfectdreams.loritta.serializable.SlashCommandInfo
 import java.awt.Color
 import java.time.LocalDate
 import java.time.ZoneId
@@ -43,7 +19,7 @@ class ApplicationCommandsView(
     locale: BaseLocale,
     i18nContext: I18nContext,
     path: String,
-    val commands: List<net.perfectdreams.loritta.cinnamon.showtime.backend.PublicApplicationCommands.InteractionCommand>,
+    val commands: List<SlashCommandInfo>,
     val filterByCategory: CommandCategory? = null
 ) : SidebarsView(
     showtimeBackend,
@@ -144,7 +120,7 @@ class ApplicationCommandsView(
     override fun HtmlBlockTag.rightSidebarContents() {
         fun generateAllCommandsInfo(
             visible: Boolean,
-            imagePath: String,
+            imageInfo: EtherealGambiImages.PreloadedImageInfo,
             sizes: String
         ) {
             val categoryName = "ALL"
@@ -162,8 +138,12 @@ class ApplicationCommandsView(
                             "display: flex;\n" +
                             "align-items: center; justify-content: center;"
 
-                    imgSrcSetFromResources(imagePath, sizes) {
-                        // Lazy load the images, because *for some reason* it loads all images even tho the div is display none.
+                    imgSrcSetFromEtherealGambi(
+                        showtimeBackend,
+                        imageInfo,
+                        "png",
+                        sizes
+                    ) {
                         attributes["loading"] = "lazy"
                         style = "max-height: 100%; max-width: 100%;"
                     }
@@ -182,7 +162,7 @@ class ApplicationCommandsView(
         fun generateCategoryInfo(
             category: CommandCategory,
             visible: Boolean,
-            imagePath: String,
+            imageInfo: EtherealGambiImages.PreloadedImageInfo,
             sizes: String
         ) {
             val categoryName = category.name
@@ -200,7 +180,12 @@ class ApplicationCommandsView(
                             "display: flex;\n" +
                             "align-items: center; justify-content: center;"
 
-                    imgSrcSetFromResources(imagePath, sizes) {
+                    imgSrcSetFromEtherealGambi(
+                        showtimeBackend,
+                        imageInfo,
+                        "png",
+                        sizes
+                    ) {
                         // Lazy load the images, because *for some reason* it loads all images even tho the div is display none.
                         attributes["loading"] = "lazy"
                         style = "max-height: 100%; max-width: 100%;"
@@ -219,119 +204,119 @@ class ApplicationCommandsView(
 
         generateAllCommandsInfo(
             filterByCategory == null,
-            "${versionPrefix}/assets/img/support/lori_support.png",
+            showtimeBackend.images.lorittaSupport,
             "(max-width: 800px) 50vw, 15vw"
         )
 
         generateCategoryInfo(
             CommandCategory.IMAGES,
             filterByCategory == CommandCategory.IMAGES,
-            "/v3/assets/img/categories/images.png",
+            showtimeBackend.images.lorittaImages,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.FUN,
             filterByCategory == CommandCategory.FUN,
-            "/v3/assets/img/categories/fun.png",
+            showtimeBackend.images.lorittaFun,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.MODERATION,
             filterByCategory == CommandCategory.MODERATION,
-            "/v3/assets/img/categories/moderation.png",
+            showtimeBackend.images.lorittaModeration,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.SOCIAL,
             filterByCategory == CommandCategory.SOCIAL,
-            "/v3/assets/img/categories/social.png",
+            showtimeBackend.images.lorittaSocial,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.DISCORD,
             filterByCategory == CommandCategory.DISCORD,
-            "/v3/assets/img/categories/loritta_wumpus.png",
+            showtimeBackend.images.lorittaWumpus,
             "(max-width: 1366px) 250px",
         )
 
         generateCategoryInfo(
             CommandCategory.UTILS,
             filterByCategory == CommandCategory.UTILS,
-            "/v3/assets/img/categories/utilities.png",
+            showtimeBackend.images.lorittaUtilities,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.MISC,
             filterByCategory == CommandCategory.MISC,
-            "/v3/assets/img/categories/miscellaneous.png",
+            showtimeBackend.images.lorittaMiscellaneous,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.ROLEPLAY,
             filterByCategory == CommandCategory.ROLEPLAY,
-            "/v3/assets/img/categories/hug.png",
+            showtimeBackend.images.lorittaHug,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.UNDERTALE,
             filterByCategory == CommandCategory.UNDERTALE,
-            "/v3/assets/img/categories/lori_sans.png",
+            showtimeBackend.images.lorittaSans,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.POKEMON,
             filterByCategory == CommandCategory.POKEMON,
-            "/v3/assets/img/categories/lori_pikachu.png",
+            showtimeBackend.images.lorittaPikachu,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.ECONOMY,
             filterByCategory == CommandCategory.ECONOMY,
-            "/v3/assets/img/categories/money.png",
+            showtimeBackend.images.lorittaRichHeathecliff,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.FORTNITE,
             filterByCategory == CommandCategory.FORTNITE,
-            "/v3/assets/img/categories/loritta_fortnite.png",
+            showtimeBackend.images.lorittaFortnite,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.VIDEOS,
             filterByCategory == CommandCategory.VIDEOS,
-            "/v3/assets/img/categories/videos.png",
+            showtimeBackend.images.lorittaVideos,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.ANIME,
             filterByCategory == CommandCategory.ANIME,
-            "/v3/assets/img/categories/anime.png",
+            showtimeBackend.images.lorittaAnime,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.MINECRAFT,
             filterByCategory == CommandCategory.MINECRAFT,
-            "/v3/assets/img/categories/minecraft.png",
+            showtimeBackend.images.lorittaMinecraft,
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
             CommandCategory.ROBLOX,
             filterByCategory == CommandCategory.ROBLOX,
-            "/v3/assets/img/categories/roblox.png",
+            showtimeBackend.images.robloxLogo,
             "(max-width: 1366px) 250px"
         )
 
@@ -413,174 +398,189 @@ class ApplicationCommandsView(
         // We change the first compare by to negative because we want it in a descending order (most commands in category -> less commands)
         for (command in publicCommands.sortedWith(compareBy({
             -(commands.groupBy { it.category }[it.category]?.size ?: 0)
-        }, net.perfectdreams.loritta.cinnamon.showtime.backend.PublicApplicationCommands.InteractionCommand::category))) { // TODO: Fix sorting commands alphabetically
+        }, SlashCommandInfo::category))) { // TODO: Fix sorting commands alphabetically
             val commandDescriptionKey = command.description
             // TODO: Fix this
             // val commandExamplesKey = command.examples
-            val commandLabel = command.label
+            val commandLabel = command.name
 
             // Additional command info (like images)
-            val additionalInfo = showtimeBackend.publicApplicationCommands.additionalCommandsInfo[command.executor]
+            // val additionalInfo = showtimeBackend.publicApplicationCommands.additionalCommandsInfo[command.executor]
 
             val color = getCategoryColor(command.category)
 
-            commandEntry {
-                attributes["data-command-name"] = command.executor ?: "UnknownCommand"
-                attributes["data-command-category"] = command.category.name
+            fun appendCommandEntry(commandPrefix: FlowOrInteractiveContent.() -> (Unit), info: SlashCommandInfo) {
+                commandEntry {
+                    attributes["data-command-name"] = command.executorClazz ?: "UnknownCommand"
+                    attributes["data-command-category"] = command.category.name
 
-                style = if (filterByCategory == null || filterByCategory == command.category)
-                    "display: block;"
-                else
-                    "display: none;"
+                    style = if (filterByCategory == null || filterByCategory == command.category)
+                        "display: block;"
+                    else
+                        "display: none;"
 
-                details(classes = "fancy-details") {
-                    style = "line-height: 1.2; position: relative;"
+                    details(classes = "fancy-details") {
+                        style = "line-height: 1.2; position: relative;"
 
-                    summary {
-                        commandCategoryTag {
-                            style = "background-color: rgb(${color.red}, ${color.green}, ${color.blue});"
-                            +(i18nContext.get(command.category.localizedName))
-                        }
-
-                        div {
-                            style = "display: flex;align-items: center;"
+                        summary {
+                            commandCategoryTag {
+                                style = "background-color: rgb(${color.red}, ${color.green}, ${color.blue});"
+                                +(i18nContext.get(command.category.localizedName))
+                            }
 
                             div {
-                                style = "flex-grow: 1; align-items: center;"
-                                div {
-                                    style = "display: flex;"
+                                style = "display: flex;align-items: center;"
 
-                                    commandLabel {
-                                        style =
-                                            "font-size: 1.5em; font-weight: bold; box-shadow: inset 0 0px 0 white, inset 0 -1px 0 rgb(${color.red}, ${color.green}, ${color.blue});"
-                                        +"/"
-                                        +(command.label.joinToString(" ") { i18nContext.get(it) })
+                                div {
+                                    style = "flex-grow: 1; align-items: center;"
+                                    div {
+                                        style = "display: flex;"
+
+                                        commandLabel {
+                                            style =
+                                                "font-size: 1.5em; font-weight: bold; box-shadow: inset 0 0px 0 white, inset 0 -1px 0 rgb(${color.red}, ${color.green}, ${color.blue});"
+                                            +"/"
+                                            commandPrefix.invoke(this)
+                                            +(i18nContext.get(command.name))
+                                        }
+                                    }
+
+                                    commandDescription {
+                                        style = "word-wrap: anywhere;"
+                                        +i18nContext.get(commandDescriptionKey)
                                     }
                                 }
 
-                                commandDescription {
-                                    style = "word-wrap: anywhere;"
-                                    +i18nContext.get(commandDescriptionKey)
+                                div(classes = "chevron-icon") {
+                                    style = "font-size: 1.5em"
+                                    iconManager.chevronDown.apply(this)
                                 }
-                            }
-
-                            div(classes = "chevron-icon") {
-                                style = "font-size: 1.5em"
-                                iconManager.chevronDown.apply(this)
                             }
                         }
-                    }
 
-                    div(classes = "details-content") {
-                        style = "line-height: 1.4;"
+                        div(classes = "details-content") {
+                            style = "line-height: 1.4;"
 
-                        // TODO: Fix this
-                        if (additionalInfo != null) {
-                            // Add additional images, if present
-                            if (additionalInfo.imageUrls != null && additionalInfo.imageUrls.isNotEmpty()) {
-                                for (imageUrl in additionalInfo.imageUrls) {
-                                    val imageInfo = ImageUtils.getImageAttributes(imageUrl)
+                            // TODO: Fix this
+                            /* if (additionalInfo != null) {
+                                // Add additional images, if present
+                                if (additionalInfo.imageUrls != null && additionalInfo.imageUrls.isNotEmpty()) {
+                                    for (imageUrl in additionalInfo.imageUrls) {
+                                        val imageInfo = ImageUtils.getImageAttributes(imageUrl)
 
-                                    img(src = imageInfo.path.removePrefix("static"), classes = "thumbnail") {
-                                        // So, this is hard...
-                                        // Because we are "floating" the image, content jumping is inevitable... (because the height is set to 0)
-                                        // So we need to set a fixed width AND height, oof!
-                                        // So we calculate it during build time and use it here, yay!
-                                        // But anyway, this sucks...
-                                        width = "250"
+                                        img(src = imageInfo.path.removePrefix("static"), classes = "thumbnail") {
+                                            // So, this is hard...
+                                            // Because we are "floating" the image, content jumping is inevitable... (because the height is set to 0)
+                                            // So we need to set a fixed width AND height, oof!
+                                            // So we calculate it during build time and use it here, yay!
+                                            // But anyway, this sucks...
+                                            width = "250"
 
-                                        // Lazy load the images, because *for some reason* it loads all images even tho the details tag is closed.
-                                        attributes["loading"] = "lazy"
+                                            // Lazy load the images, because *for some reason* it loads all images even tho the details tag is closed.
+                                            attributes["loading"] = "lazy"
 
-                                        // The aspect-ratio is used to avoid content reflow
-                                        style = "aspect-ratio: ${imageInfo.width} / ${imageInfo.height};"
-                                    }
-                                }
-                            }
-
-                            // Add additional videos, if present
-                            if (additionalInfo.videoUrls != null && additionalInfo.videoUrls.isNotEmpty()) {
-                                for (videoUrl in additionalInfo.videoUrls) {
-                                    video(classes = "thumbnail") {
-                                        // For videos, we need to use the "preload" attribute to force the video to *not* preload
-                                        // The video will only start loading after the user clicks the video
-                                        attributes["preload"] = "none"
-
-                                        // The aspect-ratio is used to avoid content reflow
-                                        style = "aspect-ratio: 16 / 9;"
-
-                                        width = "250"
-                                        controls = true
-
-                                        source {
-                                            src = videoUrl
-                                            type = "video/mp4"
+                                            // The aspect-ratio is used to avoid content reflow
+                                            style = "aspect-ratio: ${imageInfo.width} / ${imageInfo.height};"
                                         }
                                     }
                                 }
-                            }
-                        }
 
-                        // TODO: Fix this
-                        /* if (command.aliases.isNotEmpty()) {
-                            div {
-                                b {
-                                    style = "color: rgb(${color.red}, ${color.green}, ${color.blue});"
-                                    +"Sinônimos: "
-                                }
+                                // Add additional videos, if present
+                                if (additionalInfo.videoUrls != null && additionalInfo.videoUrls.isNotEmpty()) {
+                                    for (videoUrl in additionalInfo.videoUrls) {
+                                        video(classes = "thumbnail") {
+                                            // For videos, we need to use the "preload" attribute to force the video to *not* preload
+                                            // The video will only start loading after the user clicks the video
+                                            attributes["preload"] = "none"
 
-                                for ((index, a) in command.aliases.withIndex()) {
-                                    if (index != 0) {
-                                        +", "
-                                    }
+                                            // The aspect-ratio is used to avoid content reflow
+                                            style = "aspect-ratio: 16 / 9;"
 
-                                    code {
-                                        +a
-                                    }
-                                }
-                            }
+                                            width = "250"
+                                            controls = true
 
-                            hr {}
-                        }
-
-                        if (commandExamplesKey != null) {
-                            div {
-                                b {
-                                    style = "color: rgb(${color.red}, ${color.green}, ${color.blue});"
-                                    +"Exemplos: "
-                                }
-
-                                val examples = locale.getList(commandExamplesKey)
-
-                                for (example in examples) {
-                                    val split = example.split("|-|")
-                                        .map { it.trim() }
-
-                                    div {
-                                        style = "padding-bottom: 8px;"
-                                        if (split.size == 2) {
-                                            // If the command has a extended description
-                                            // "12 |-| Gira um dado de 12 lados"
-                                            // A extended description can also contain "nothing", but contains a extended description
-                                            // "|-| Gira um dado de 6 lados"
-                                            val (commandExample, explanation) = split
-
-                                            div {
-                                                span {
-                                                    style = "color: rgb(${color.red}, ${color.green}, ${color.blue});"
-
-                                                    iconManager.smallDiamond.apply(this)
-                                                }
-
-                                                +" "
-
-                                                b {
-                                                    +explanation
-                                                }
+                                            source {
+                                                src = videoUrl
+                                                type = "video/mp4"
                                             }
+                                        }
+                                    }
+                                }
+                            } */
 
-                                            div {
-                                                code {
+                            // TODO: Fix this
+                            /* if (command.aliases.isNotEmpty()) {
+                                div {
+                                    b {
+                                        style = "color: rgb(${color.red}, ${color.green}, ${color.blue});"
+                                        +"Sinônimos: "
+                                    }
+
+                                    for ((index, a) in command.aliases.withIndex()) {
+                                        if (index != 0) {
+                                            +", "
+                                        }
+
+                                        code {
+                                            +a
+                                        }
+                                    }
+                                }
+
+                                hr {}
+                            }
+
+                            if (commandExamplesKey != null) {
+                                div {
+                                    b {
+                                        style = "color: rgb(${color.red}, ${color.green}, ${color.blue});"
+                                        +"Exemplos: "
+                                    }
+
+                                    val examples = locale.getList(commandExamplesKey)
+
+                                    for (example in examples) {
+                                        val split = example.split("|-|")
+                                            .map { it.trim() }
+
+                                        div {
+                                            style = "padding-bottom: 8px;"
+                                            if (split.size == 2) {
+                                                // If the command has a extended description
+                                                // "12 |-| Gira um dado de 12 lados"
+                                                // A extended description can also contain "nothing", but contains a extended description
+                                                // "|-| Gira um dado de 6 lados"
+                                                val (commandExample, explanation) = split
+
+                                                div {
+                                                    span {
+                                                        style = "color: rgb(${color.red}, ${color.green}, ${color.blue});"
+
+                                                        iconManager.smallDiamond.apply(this)
+                                                    }
+
+                                                    +" "
+
+                                                    b {
+                                                        +explanation
+                                                    }
+                                                }
+
+                                                div {
+                                                    code {
+                                                        +commandLabel
+
+                                                        +" "
+
+                                                        +commandExample
+                                                    }
+                                                }
+                                                // examples.add("\uD83D\uDD39 **$explanation**")
+                                                // examples.add("`" + commandLabelWithPrefix + "`" + (if (commandExample.isEmpty()) "" else "**` $commandExample`**"))
+                                            } else {
+                                                val commandExample = split[0]
+
+                                                div {
                                                     +commandLabel
 
                                                     +" "
@@ -588,23 +588,38 @@ class ApplicationCommandsView(
                                                     +commandExample
                                                 }
                                             }
-                                            // examples.add("\uD83D\uDD39 **$explanation**")
-                                            // examples.add("`" + commandLabelWithPrefix + "`" + (if (commandExample.isEmpty()) "" else "**` $commandExample`**"))
-                                        } else {
-                                            val commandExample = split[0]
-
-                                            div {
-                                                +commandLabel
-
-                                                +" "
-
-                                                +commandExample
-                                            }
                                         }
                                     }
                                 }
-                            }
-                        } */
+                            } */
+                        }
+                    }
+                }
+            }
+
+            // Append root command if it has an executor
+            if (command.executorClazz != null) {
+                appendCommandEntry({}, command)
+            }
+
+            for (subcommand in command.subcommands) {
+                if (subcommand.executorClazz != null) {
+                    appendCommandEntry({
+                        + i18nContext.get(command.name)
+                        + " "
+                    }, subcommand)
+                }
+            }
+
+            for (group in command.subcommandGroups) {
+                for (subcommand in group.subcommands) {
+                    if (subcommand.executorClazz != null) {
+                        appendCommandEntry({
+                            +i18nContext.get(command.name)
+                            +" "
+                            +i18nContext.get(group.name)
+                            +" "
+                        }, subcommand)
                     }
                 }
             }

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend
 
-import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension
 import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.html.HtmlRenderer
@@ -27,21 +27,16 @@ import mu.KotlinLogging
 import net.perfectdreams.etherealgambi.client.EtherealGambiClient
 import net.perfectdreams.etherealgambi.data.api.responses.ImageVariantsResponse
 import net.perfectdreams.loritta.api.utils.format
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordOAuth2AuthorizationURL
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.cinnamon.showtime.backend.content.ContentBase
 import net.perfectdreams.loritta.cinnamon.showtime.backend.content.MultilanguageContent
 import net.perfectdreams.loritta.cinnamon.showtime.backend.routes.LocalizedRoute
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.HttpRedirectException
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.LastFmTracker
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.ResourcesUtils
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.ShowtimeBackendTasks
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.WebsiteAssetsHashManager
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.*
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.redirect
+import net.perfectdreams.loritta.serializable.ApplicationCommandInfo
+import net.perfectdreams.loritta.serializable.CommandInfo
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.nio.file.Files
@@ -52,7 +47,10 @@ import java.util.concurrent.ConcurrentHashMap
 class ShowtimeBackend(
     val rootConfig: RootConfig,
     val languageManager: LanguageManager,
-    val pudding: Pudding
+    val pudding: Pudding,
+    val etherealGambiClient: EtherealGambiClient,
+    val images: EtherealGambiImages,
+    val commands: Commands
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -73,8 +71,9 @@ class ShowtimeBackend(
     val renderer = HtmlRenderer.builder(options).build()
     val svgIconManager = SVGIconManager(this)
     val hashManager = WebsiteAssetsHashManager(this)
-    val publicApplicationCommands =
-        net.perfectdreams.loritta.cinnamon.showtime.backend.PublicApplicationCommands(languageManager)
+    val publicApplicationCommands = PublicApplicationCommands(languageManager)
+    val legacyLorittaCommands = LegacyLorittaCommands(this)
+    val webEmotes = WebEmotes(images)
 
     val addBotUrl = DiscordOAuth2AuthorizationURL {
         append("client_id", rootConfig.discord.applicationId.toString())
@@ -93,13 +92,12 @@ class ShowtimeBackend(
     )
 
     var lastFmStaffData: Map<String, LastFmTracker.LastFmUserInfo>? = null
-    val etherealGambiClient = EtherealGambiClient(rootConfig.etherealGambi.url)
     val cachedImageInformations = ConcurrentHashMap<String, ImageVariantsResponse>()
 
     fun start() {
         ShowtimeBackendTasks(this).start()
 
-        val routes = net.perfectdreams.loritta.cinnamon.showtime.backend.DefaultRoutes.defaultRoutes(this)
+        val routes = DefaultRoutes.defaultRoutes(this)
 
         val server = embeddedServer(Netty, port = 8080) {
             // Enables gzip and deflate compression
@@ -264,11 +262,14 @@ class ShowtimeBackend(
      * @see BaseLocale
      */
     fun loadLocale(id: String, localeFolder: Path, defaultLocale: BaseLocale?): BaseLocale {
-        val locale = BaseLocale(id)
+        val localeStrings = mutableMapOf<String, String?>()
+        val localeLists = mutableMapOf<String, List<String>?>()
+        val locale = BaseLocale(id, localeStrings, localeLists)
+
         if (defaultLocale != null) {
             // Colocar todos os valores padrões
-            locale.localeStringEntries.putAll(defaultLocale.localeStringEntries)
-            locale.localeListEntries.putAll(defaultLocale.localeListEntries)
+            localeStrings.putAll(defaultLocale.localeStringEntries)
+            localeLists.putAll(defaultLocale.localeListEntries)
         }
 
         // Does exactly what the variable says: Only matches single quotes (') that do not have a slash (\) preceding it
@@ -291,7 +292,7 @@ class ShowtimeBackend(
                             )
                         } else {
                             if (value is List<*>) {
-                                locale.localeListEntries[keyPrefix.invoke(it) + prefix + key] = try {
+                                localeLists[keyPrefix.invoke(it) + prefix + key] = try {
                                     (value as List<String>).map {
                                         it.replace(
                                             singleQuotesWithoutSlashPrecedingItRegex,
@@ -305,7 +306,7 @@ class ShowtimeBackend(
                                     (value as List<String>)
                                 }
                             } else if (value is String) {
-                                locale.localeStringEntries[keyPrefix.invoke(it) + prefix + key] = value.replace(
+                                localeStrings[keyPrefix.invoke(it) + prefix + key] = value.replace(
                                     singleQuotesWithoutSlashPrecedingItRegex,
                                     "''"
                                 ) // Escape single quotes

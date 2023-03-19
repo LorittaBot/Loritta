@@ -1,17 +1,27 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend
 
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.locale.LorittaLanguageManager
+import net.perfectdreams.etherealgambi.client.EtherealGambiClient
+import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.EtherealGambiImages
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.config.RootConfig
+import net.perfectdreams.loritta.serializable.ApplicationCommandInfo
+import net.perfectdreams.loritta.serializable.CommandInfo
 import java.util.*
 
 object ShowtimeBackendLauncher {
     private val logger = KotlinLogging.logger {}
 
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String>) = runBlocking {
         // https://github.com/JetBrains/Exposed/issues/1356
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
@@ -30,7 +40,25 @@ object ShowtimeBackendLauncher {
 
         logger.info { "Started Pudding client!" }
 
-        val showtime = ShowtimeBackend(rootConfig, languageManager, services)
+        logger.info { "Loading image informations from EtherealGambi..." }
+        val etherealGambiClient = EtherealGambiClient(rootConfig.etherealGambi.url)
+        val etherealGambiImages = EtherealGambiImages(etherealGambiClient)
+        etherealGambiImages.loadImagesInfo()
+
+
+        logger.info { "Loading commands from Loritta..." }
+        val http = HttpClient {}
+        val commands = Commands(rootConfig.loritta.website, http)
+        commands.start()
+
+        val showtime = ShowtimeBackend(
+            rootConfig,
+            languageManager,
+            services,
+            etherealGambiClient,
+            etherealGambiImages,
+            commands
+        )
         showtime.start()
     }
 }
