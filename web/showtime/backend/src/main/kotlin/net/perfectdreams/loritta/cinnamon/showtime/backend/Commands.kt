@@ -36,6 +36,7 @@ class Commands(val websiteUrl: String, val http: HttpClient) {
             logger.warn(e) { "Failed to query Loritta commands! Retrying in 5s..." }
             delay(5.seconds)
             start()
+            return
         }
 
         logger.info { "Successfully queried Loritta commands!" }
