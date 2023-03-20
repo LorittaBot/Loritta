@@ -69,7 +69,7 @@ include(":web:embed-editor:embed-renderer")
 // ===[ SHOWTIME ]===
 include(":web:showtime:web-common")
 // TODO: Disabled for now because it depends on Cinnamon stuff that isn't present yet on loritta-bot
-// include(":web:showtime:backend")
+include(":web:showtime:backend")
 include(":web:showtime:showtime-frontend")
 
 // ===[ DASHBOARD ]===
