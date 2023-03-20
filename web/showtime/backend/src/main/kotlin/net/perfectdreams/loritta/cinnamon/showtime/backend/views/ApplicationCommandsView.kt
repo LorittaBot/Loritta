@@ -399,17 +399,17 @@ class ApplicationCommandsView(
         for (command in publicCommands.sortedWith(compareBy({
             -(commands.groupBy { it.category }[it.category]?.size ?: 0)
         }, SlashCommandInfo::category))) { // TODO: Fix sorting commands alphabetically
-            val commandDescriptionKey = command.description
-            // TODO: Fix this
-            // val commandExamplesKey = command.examples
-            val commandLabel = command.name
+            fun appendCommandEntry(commandPrefix: FlowOrInteractiveContent.() -> (Unit), command: SlashCommandInfo) {
+                val commandDescriptionKey = command.description
+                // TODO: Fix this
+                // val commandExamplesKey = command.examples
+                val commandLabel = command.name
 
-            // Additional command info (like images)
-            // val additionalInfo = showtimeBackend.publicApplicationCommands.additionalCommandsInfo[command.executor]
+                // Additional command info (like images)
+                // val additionalInfo = showtimeBackend.publicApplicationCommands.additionalCommandsInfo[command.executor]
 
-            val color = getCategoryColor(command.category)
-
-            fun appendCommandEntry(commandPrefix: FlowOrInteractiveContent.() -> (Unit), info: SlashCommandInfo) {
+                val color = getCategoryColor(command.category)
+                
                 commandEntry {
                     attributes["data-command-name"] = command.executorClazz ?: "UnknownCommand"
                     attributes["data-command-category"] = command.category.name
