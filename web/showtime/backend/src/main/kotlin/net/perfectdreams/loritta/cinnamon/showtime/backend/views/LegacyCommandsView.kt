@@ -54,14 +54,9 @@ class LegacyCommandsView(
     i18nContext,
     path
 ) {
-    companion object {
-        // We don't want to show commands in the "MAGIC" category
-        private val PUBLIC_CATEGORIES = CommandCategory.values().filterNot { it == CommandCategory.MAGIC }
-    }
-
     override val sidebarAdId = "commands"
 
-    val publicCommands = commands.filter { it.category in PUBLIC_CATEGORIES }
+    val publicCommands = commands.filter { it.category in ApplicationCommandsView.PUBLIC_CATEGORIES }
 
     override fun getTitle() = locale["modules.sectionNames.commands"]
 
@@ -120,7 +115,7 @@ class LegacyCommandsView(
             }
         }
 
-        for (category in PUBLIC_CATEGORIES.sortedByDescending { category -> commands.count { it.category == category } }) {
+        for (category in ApplicationCommandsView.PUBLIC_CATEGORIES.sortedByDescending { category -> commands.count { it.category == category } }) {
             val commandsInThisCategory = commands.count { it.category == category }
 
             // Register a redirect, the frontend will cancel this event if JS is enabled and filter the entries manually

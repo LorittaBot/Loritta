@@ -30,7 +30,13 @@ class ApplicationCommandsView(
 ) {
     companion object {
         // We don't want to show commands in the "MAGIC" category
-        private val PUBLIC_CATEGORIES = CommandCategory.values().filterNot { it == CommandCategory.MAGIC }
+        val HIDDEN_CATEGORIES = setOf(
+            CommandCategory.MAGIC,
+            CommandCategory.FORTNITE,
+            CommandCategory.ANIME
+        )
+
+        val PUBLIC_CATEGORIES = CommandCategory.values().filter { it !in HIDDEN_CATEGORIES }
     }
 
     override val sidebarAdId = "commands"
