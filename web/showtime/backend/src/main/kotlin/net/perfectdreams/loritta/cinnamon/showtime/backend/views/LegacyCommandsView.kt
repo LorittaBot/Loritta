@@ -127,7 +127,7 @@ class LegacyCommandsView(
                     attributes["data-command-category"] = category.name
 
                     div {
-                        +category.getLocalizedName(locale)
+                        +category.getLocalizedName(i18nContext)
                     }
 
                     div {
@@ -231,7 +231,7 @@ class LegacyCommandsView(
 
                 div(classes = "media-body") {
                     if (category != null) {
-                        for (entry in category.getLocalizedDescription(locale)) {
+                        for (entry in category.getLocalizedDescription(i18nContext)) {
                             p {
                                 +entry
                             }
