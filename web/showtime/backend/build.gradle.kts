@@ -47,15 +47,6 @@ dependencies {
 }
 
 jib {
-    extraDirectories {
-        paths {
-            path {
-                setFrom("../../../content")
-                into = "/content"
-            }
-        }
-    }
-
     container {
         ports = listOf("8080")
     }
