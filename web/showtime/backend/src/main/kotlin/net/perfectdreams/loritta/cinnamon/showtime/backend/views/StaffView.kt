@@ -95,6 +95,10 @@ class StaffView(
                     socialNetworks.add(TwitterSocialNetwork("JvGm45"))
                     socialNetworks.add(GitHubSocialNetwork("JvGm45"))
                 }
+
+                user("José") {
+                    socialNetworks.add(DiscordSocialNetwork(472085605623529496L))
+                }
             }
 
             group(I18nKeysData.Website.Staff.LorittaSupport.Title, I18nKeysData.Website.Staff.LorittaSupport.Description) {
