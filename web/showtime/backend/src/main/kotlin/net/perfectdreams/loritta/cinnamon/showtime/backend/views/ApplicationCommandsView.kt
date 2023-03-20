@@ -286,23 +286,9 @@ class ApplicationCommandsView(
         )
 
         generateCategoryInfo(
-            CommandCategory.FORTNITE,
-            filterByCategory == CommandCategory.FORTNITE,
-            showtimeBackend.images.lorittaFortnite,
-            "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
             CommandCategory.VIDEOS,
             filterByCategory == CommandCategory.VIDEOS,
             showtimeBackend.images.lorittaVideos,
-            "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-            CommandCategory.ANIME,
-            filterByCategory == CommandCategory.ANIME,
-            showtimeBackend.images.lorittaAnime,
             "(max-width: 1366px) 250px"
         )
 
@@ -409,7 +395,7 @@ class ApplicationCommandsView(
                 // val additionalInfo = showtimeBackend.publicApplicationCommands.additionalCommandsInfo[command.executor]
 
                 val color = getCategoryColor(command.category)
-                
+
                 commandEntry {
                     attributes["data-command-name"] = command.executorClazz ?: "UnknownCommand"
                     attributes["data-command-category"] = command.category.name

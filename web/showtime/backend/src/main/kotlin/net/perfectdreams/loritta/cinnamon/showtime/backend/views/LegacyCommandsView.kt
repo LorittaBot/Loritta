@@ -334,23 +334,9 @@ class LegacyCommandsView(
         )
 
         generateCategoryInfo(
-            CommandCategory.FORTNITE,
-            filterByCategory == CommandCategory.FORTNITE,
-            showtimeBackend.images.lorittaFortnite,
-            "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
             CommandCategory.VIDEOS,
             filterByCategory == CommandCategory.VIDEOS,
             showtimeBackend.images.lorittaVideos,
-            "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-            CommandCategory.ANIME,
-            filterByCategory == CommandCategory.ANIME,
-            showtimeBackend.images.lorittaAnime,
             "(max-width: 1366px) 250px"
         )
 
