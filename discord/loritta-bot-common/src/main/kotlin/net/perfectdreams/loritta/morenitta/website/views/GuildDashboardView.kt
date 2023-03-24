@@ -91,7 +91,7 @@ abstract class GuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", "event_log")
                     appendEntry("/guild/${guild.id}/configure/youtube", true, "YouTube", "fab fa-youtube", "youtube")
                     appendEntry("/guild/${guild.id}/configure/twitch", true,"Twitch", "fab fa-twitch", "livestream")
-                    appendEntry("/guild/${guild.id}/configure/twitter", true, "Twitter", "fab fa-twitter", "twitter")
+                    // appendEntry("/guild/${guild.id}/configure/twitter", true, "Twitter", "fab fa-twitter", "twitter")
 
                     hr(classes = "divider") {}
 
