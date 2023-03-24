@@ -12,4 +12,5 @@ object Mutes : LongIdTable() {
 	val isTemporary = bool("temporary")
 	val expiresAt = long("expires_at").nullable()
 	var userTimedOutUntil = timestampWithTimeZone("user_timed_out_until").nullable()
+		.index()
 }
