@@ -2,6 +2,9 @@ package net.perfectdreams.loritta.morenitta.youtube
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.gson
 import kotlinx.coroutines.CoroutineStart
@@ -86,21 +89,24 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 				GlobalScope.async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
 						// Vamos criar!
-						val code = HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-							.form(
-								mapOf(
-									"hub.callback" to "${loritta.config.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
-									"hub.lease_seconds" to "",
-									"hub.mode" to "subscribe",
-									"hub.secret" to loritta.config.loritta.webhookSecret,
-									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-									"hub.verify" to "async",
-									"hub.verify_token" to loritta.config.loritta.webhookSecret
+						val response = loritta.http.post("https://pubsubhubbub.appspot.com/subscribe") {
+							setBody(
+								FormDataContent(
+									Parameters.build {
+										append("hub.callback", "${loritta.config.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo")
+										append("hub.lease_seconds", "")
+										append("hub.mode", "subscribe")
+										append("hub.secret", loritta.config.loritta.webhookSecret)
+										append("hub.topic", "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId")
+										append("hub.verify", "async")
+										append("hub.verify_token", loritta.config.loritta.webhookSecret)
+									}
 								)
 							)
-							.code()
-
-						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
+						}
+						val code = response.status
+						
+						if (code != HttpStatusCode.NoContent && code != HttpStatusCode.Accepted) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
 							logger.error { "Something went wrong while creating ${channelId}'s webhook! Status Code: ${code}" }
 							return@async null
 						}
