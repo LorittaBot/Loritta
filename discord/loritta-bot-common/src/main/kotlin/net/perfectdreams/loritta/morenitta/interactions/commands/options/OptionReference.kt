@@ -20,16 +20,24 @@ sealed class DiscordOptionReference<T>(
 class StringDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean) : DiscordOptionReference<T>(name, description, required) {
     val choices = mutableListOf<Choice>()
 
-    fun choice(name: String, value: String) = choices.add(Choice(name, value))
+    fun choice(name: String, value: String) = choices.add(Choice.RawChoice(name, value))
+    fun choice(name: StringI18nData, value: String) = choices.add(Choice.LocalizedChoice(name, value))
 
     override fun get(option: OptionMapping): T {
         return option.asString as T
     }
 
-    data class Choice(
-        val name: String,
-        val value: String
-    )
+    sealed class Choice {
+        class LocalizedChoice(
+            val name: StringI18nData,
+            val value: String
+        ) : Choice()
+
+        class RawChoice(
+            val name: String,
+            val value: String
+        ) : Choice()
+    }
 }
 
 class LongDiscordOptionReference<T>(

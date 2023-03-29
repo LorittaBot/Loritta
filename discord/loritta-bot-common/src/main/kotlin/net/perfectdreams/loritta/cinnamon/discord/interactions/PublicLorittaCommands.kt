@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.d
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.DashboardCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
@@ -47,7 +46,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(SummonCommand(languageManager))
             register(VieirinhaCommand(languageManager))
             register(RollCommand(languageManager))
-            register(MinecraftCommand(languageManager))
             register(TextTransformCommand(languageManager))
             register(JankenponCommand(languageManager))
             register(HungerGamesCommand(languageManager))

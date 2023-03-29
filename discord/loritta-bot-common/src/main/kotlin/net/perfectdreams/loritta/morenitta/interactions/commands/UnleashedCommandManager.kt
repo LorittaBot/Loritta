@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.interactions.DiscordLocale
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
@@ -38,6 +39,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFig
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.ShipCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.GamerSaferCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
@@ -72,10 +74,13 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ ECONOMY ]===
         register(EmojiFightCommand(loritta))
-        
+
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
             register(LoriTuberCommand(loritta))
+
+        // ===[ MINECRAFT ]===
+        register(MinecraftCommand(loritta))
 
         // ===[ UTILS ]===
         register(AnagramCommand())
@@ -286,7 +291,20 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 interaKTionsOption.required
                             ).apply {
                                 for (choice in interaKTionsOption.choices) {
-                                    choice(choice.name, choice.value)
+                                    when (choice) {
+                                        is StringDiscordOptionReference.Choice.LocalizedChoice -> {
+                                            addChoices(
+                                                Command.Choice(
+                                                    slashCommandDefaultI18nContext.get(choice.name), choice.value
+                                                ).apply {
+                                                    forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                                                        setNameLocalization(discordLocale, i18nContext.get(choice.name))
+                                                    }
+                                                }
+                                            )
+                                        }
+                                        is StringDiscordOptionReference.Choice.RawChoice -> choice(choice.name, choice.value)
+                                    }
                                 }
                             }
                         )

@@ -276,7 +276,6 @@ class LorittaBot(
 			}
 		}
 	)
-	val mojangApi = MinecraftMojangAPI()
 	val correiosClient = CorreiosClient()
 	val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(config.loritta.randomRoleplayPictures.url)
 	val falatronModelsManager = FalatronModelsManager().also {

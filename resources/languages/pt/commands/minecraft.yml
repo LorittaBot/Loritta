@@ -41,3 +41,8 @@ sweatshirt:
         mixWavyWithStitches: "Misto (Onda com Pontos)" #Stitches = Sewing Stitches, the sweatshirt is a light and dark sweatshirt stitched together
         mixVertical: "Misto (Vertical)"
         mixVerticalWithStitches: "Misto (Vertical com Pontos)" #Stitches = Sewing Stitches, the sweatshirt is a light and dark sweatshirt stitched together
+sparklypower:
+  label: "sparklypower"
+  description: "Informações sobre o SparklyPower, o servidor de Minecraft da Loritta"
+  response1: "SparklyPower é um servidor de Minecraft Survival que oferece uma experiência única com recursos inovadores que irão te surpreender! Desde 2014 trazendo funcionalidades revolucionárias que jamais foram vistas em outros servidores e, é claro, com o mesmo nível de qualidade da Loritta."
+  response2: "Entre em nosso servidor no Discord para saber mais: {inviteLink}"

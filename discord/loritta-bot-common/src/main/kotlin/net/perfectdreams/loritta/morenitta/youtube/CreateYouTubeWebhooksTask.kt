@@ -105,7 +105,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 							)
 						}
 						val code = response.status
-						
+
 						if (code != HttpStatusCode.NoContent && code != HttpStatusCode.Accepted) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
 							logger.error { "Something went wrong while creating ${channelId}'s webhook! Status Code: ${code}" }
 							return@async null
