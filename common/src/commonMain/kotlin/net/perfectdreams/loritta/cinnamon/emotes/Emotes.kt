@@ -69,8 +69,8 @@ object Emotes {
     val GabrielaHanglooseRight = DiscordEmote(982764945236176919L, "gabi_hangloose", false)
     val PantufaHanglooseRight = DiscordEmote(1008059742356250759L, "pantufa_hangloose_right", false)
     val PowerHanglooseRight = DiscordEmote(1008059744717635624L, "power_hangloose_right", false)
-    val PantufaGaming =
-        DiscordEmote(853048446922784819L, "pantufa_gaming", false)
+    val PantufaGaming = DiscordEmote(853048446922784819L, "pantufa_gaming", false)
+    val PantufaPickaxe = DiscordEmote(997671670468853770L, "pantufa_pickaxe", true)
     val Sonhos1 = DiscordEmote(1018949422404616325L, "sonhos_f27ffabb", false)
     val Sonhos2 = DiscordEmote(1018949420886278256L, "sonhos_45b3b35d", false)
     val Sonhos3 = DiscordEmote(1018949418608762951L, "sonhos_5bcd4860", false)
