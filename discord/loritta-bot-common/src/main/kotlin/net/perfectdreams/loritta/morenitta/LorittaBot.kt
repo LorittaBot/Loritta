@@ -110,6 +110,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Pl
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Easter2023SonhosTransactionsLog
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
@@ -857,7 +858,8 @@ class LorittaBot(
 					Easter2023Drops,
 					Easter2023Players,
 					CollectedEaster2023Eggs,
-					CreatedEaster2023Baskets
+					CreatedEaster2023Baskets,
+					Easter2023SonhosTransactionsLog
                 )
             }
         }
