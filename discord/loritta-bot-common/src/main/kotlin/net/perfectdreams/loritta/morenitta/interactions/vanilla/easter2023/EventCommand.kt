@@ -472,12 +472,14 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val (totalCount, profiles) = loritta.pudding.transaction {
                 val totalCount = CreatedEaster2023Baskets
+                    .slice(CreatedEaster2023Baskets.user)
                     .selectAll()
                     .groupBy(CreatedEaster2023Baskets.user)
                     .count()
 
                 val profilesInTheQuery =
                     CreatedEaster2023Baskets
+                        .slice(CreatedEaster2023Baskets.user, countColumn)
                         .selectAll()
                         .groupBy(CreatedEaster2023Baskets.user)
                         .orderBy(countColumn to SortOrder.DESC)
