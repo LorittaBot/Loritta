@@ -53,7 +53,10 @@ class DropEaster2023StuffModule(val m: LorittaBot) : MessageReceivedModule {
 
         val diff = date - millis
 
-        val chance = 200
+        val chance = 100
+
+        if (0 >= chance)
+            return false
 
         val id = event.channel.idLong
 
@@ -65,12 +68,12 @@ class DropEaster2023StuffModule(val m: LorittaBot) : MessageReceivedModule {
         val randomNumber = LorittaBot.RANDOM.nextInt(0, 1_000)
 
         if (randomNumber in 0..chance && event.message.contentStripped.hashCode() != lorittaProfile.lastMessageSentHash && event.message.contentRaw.length >= 5) {
-            if (1_000 >= lastDropDiff)
+            if (5_000 >= lastDropDiff)
                 return false
 
             val userDropTime = lastDropsByUserAt.getOrDefault(event.author.idLong, 0L)
 
-            if (5_000 >= date - userDropTime)
+            if (30_000 >= date - userDropTime)
                 return false
 
             m.newSuspendedTransaction {
