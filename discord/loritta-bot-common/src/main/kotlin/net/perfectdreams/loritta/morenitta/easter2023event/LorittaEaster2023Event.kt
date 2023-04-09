@@ -10,7 +10,7 @@ import java.time.ZoneId
 import kotlin.random.Random
 
 object LorittaEaster2023Event {
-    const val GUILD_MEMBER_COUNT_THRESHOLD = 0 // 1_000L
+    const val GUILD_MEMBER_COUNT_THRESHOLD = 1_000L
     val startOfEvent = LocalDateTime.of(2023, 4, 9, 0, 0, 0)
         .atZone(Constants.LORITTA_TIMEZONE)
     val endOfEvent = LocalDateTime.of(2022, 4, 15, 23, 59)
