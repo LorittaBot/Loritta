@@ -67,7 +67,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
-            if (false && !LorittaEaster2023Event.isEventActive()) {
+            if (!LorittaEaster2023Event.isEventActive()) {
                 context.reply(true) {
                     styled(
                         "Infelizmente o evento já acabou...",

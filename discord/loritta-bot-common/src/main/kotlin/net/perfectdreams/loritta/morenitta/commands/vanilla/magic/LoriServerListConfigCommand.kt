@@ -237,7 +237,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				)
 				return
 			}
-			
+
 			if (arg0 == "guild_ban" && arg1 != null) {
 				val guildId = arg1.toLong()
 
