@@ -161,7 +161,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             context.reply(true) {
-                styled("Você criou **$collectedPoints cestas ${LorittaEaster2023Event.basketEmoji.name}**!")
+                styled("Você criou **$collectedPoints cestas ${LorittaEaster2023Event.basketEmoji.name}**! Crie cestas com os ovos coletados em ${loritta.commandMentions.eventInventory}")
 
                 styled("O evento irá acabar às ${TimeFormat.DATE_TIME_LONG.format(LorittaEaster2023Event.endOfEvent)}!")
                 styled("Lembre-se que cestas apenas aparecem em servidores que possuem mais de mil membros!")
@@ -412,7 +412,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context.reply(true) {
                 embed {
                     description = buildString {
-                        appendLine("Atualmente você possui ${basketCount} cestas!")
+                        appendLine("Atualmente você possui $basketCount cestas! Veja as suas recompensas em ${loritta.commandMentions.eventStats}.")
                         appendLine()
                         appendLine("**Ovos no seu inventário:**")
                         appendLine("${LorittaEaster2023Event.eggRed.asMention} ${eggCounts[EasterEggColor.RED] ?: 0}x")
