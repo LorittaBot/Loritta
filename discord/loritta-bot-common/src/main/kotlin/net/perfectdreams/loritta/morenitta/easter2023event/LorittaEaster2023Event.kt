@@ -29,16 +29,17 @@ object LorittaEaster2023Event {
     val easterEggColors = EasterEggColor.values()
 
     val eventRewards = listOf(
-        EventReward.BadgeReward(100, false),
-        EventReward.SonhosReward(250, false, 25_000),
-        EventReward.SonhosReward(500, false, 40_000),
-        EventReward.SonhosReward(750, false, 60_000),
-        EventReward.SonhosReward(1_000, false, 80_000),
-        EventReward.SonhosReward(1_250, false, 100_000),
-        EventReward.SonhosReward(1_500, false, 150_000),
-        EventReward.SonhosReward(1_750, false, 250_000),
-        EventReward.SonhosReward(2_000, false, 300_000),
-        EventReward.PremiumKeyReward(2_500, false)
+        EventReward.BadgeReward(35, false),
+        EventReward.SonhosReward(85, false, 25_000),
+        EventReward.SonhosReward(160, false, 40_000),
+        EventReward.SonhosReward(250, false, 60_000),
+        EventReward.SonhosReward(330, false, 80_000),
+        EventReward.SonhosReward(420, false, 100_000),
+        EventReward.SonhosReward(500, false, 150_000),
+        EventReward.SonhosReward(580, false, 250_000),
+        EventReward.SonhosReward(660, false, 300_000),
+        EventReward.SonhosReward(800, false, 500_000),
+        EventReward.PremiumKeyReward(1_000, false)
     )
 
     fun isEventActive(): Boolean {
