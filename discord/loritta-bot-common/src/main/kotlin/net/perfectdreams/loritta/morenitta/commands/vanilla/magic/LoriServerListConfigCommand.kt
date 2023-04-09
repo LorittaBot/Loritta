@@ -136,66 +136,6 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				return
 			}
 
-			if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
-				val user = context.getUserAt(2)!!
-				loritta.pudding.transaction {
-					Profiles.update({ Profiles.id eq user.idLong }) {
-						with(SqlExpressionBuilder) {
-							it.update(money, money + arg1.toLong())
-						}
-					}
-
-					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-						it[SonhosTransactionsLog.user] = user.idLong
-						it[SonhosTransactionsLog.timestamp] = Instant.now()
-					}
-
-					DivineInterventionSonhosTransactionsLog.insert {
-						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
-						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
-						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.ADDED_SONHOS
-						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
-					}
-				}
-
-				context.reply(
-                        LorittaReply(
-                                "Sonhos de ${user.asMention} foram editados com sucesso!"
-                        )
-				)
-				return
-			}
-
-			if (arg0 == "remove_dreams" && arg1 != null && arg2 != null) {
-				val user = context.getUserAt(2)!!
-				loritta.pudding.transaction {
-					Profiles.update({ Profiles.id eq user.idLong }) {
-						with(SqlExpressionBuilder) {
-							it.update(money, money - arg1.toLong())
-						}
-					}
-
-					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-						it[SonhosTransactionsLog.user] = user.idLong
-						it[SonhosTransactionsLog.timestamp] = Instant.now()
-					}
-
-					DivineInterventionSonhosTransactionsLog.insert {
-						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
-						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
-						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.REMOVED_SONHOS
-						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
-					}
-				}
-
-				context.reply(
-                        LorittaReply(
-                                "Sonhos de ${user.asMention} foram editados com sucesso!"
-                        )
-				)
-				return
-			}
-
 			if (arg0 == "generate_payment" && arg1 != null && arg2 != null) {
 				loritta.pudding.transaction {
 					Payment.new {
@@ -238,6 +178,66 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
 		if (context.loritta.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+			if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
+				val user = context.getUserAt(2)!!
+				loritta.pudding.transaction {
+					Profiles.update({ Profiles.id eq user.idLong }) {
+						with(SqlExpressionBuilder) {
+							it.update(money, money + arg1.toLong())
+						}
+					}
+
+					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+						it[SonhosTransactionsLog.user] = user.idLong
+						it[SonhosTransactionsLog.timestamp] = Instant.now()
+					}
+
+					DivineInterventionSonhosTransactionsLog.insert {
+						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
+						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
+						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.ADDED_SONHOS
+						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
+					}
+				}
+
+				context.reply(
+					LorittaReply(
+						"Sonhos de ${user.asMention} foram editados com sucesso!"
+					)
+				)
+				return
+			}
+
+			if (arg0 == "remove_dreams" && arg1 != null && arg2 != null) {
+				val user = context.getUserAt(2)!!
+				loritta.pudding.transaction {
+					Profiles.update({ Profiles.id eq user.idLong }) {
+						with(SqlExpressionBuilder) {
+							it.update(money, money - arg1.toLong())
+						}
+					}
+
+					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+						it[SonhosTransactionsLog.user] = user.idLong
+						it[SonhosTransactionsLog.timestamp] = Instant.now()
+					}
+
+					DivineInterventionSonhosTransactionsLog.insert {
+						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
+						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
+						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.REMOVED_SONHOS
+						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
+					}
+				}
+
+				context.reply(
+					LorittaReply(
+						"Sonhos de ${user.asMention} foram editados com sucesso!"
+					)
+				)
+				return
+			}
+			
 			if (arg0 == "guild_ban" && arg1 != null) {
 				val guildId = arg1.toLong()
 
