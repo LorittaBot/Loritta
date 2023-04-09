@@ -417,7 +417,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                         color = LorittaColors.LorittaAqua.rgb
 
-                        image = "https://assets.perfectdreams.media/loritta/bom-dia-e-cia/loritta-easter-2023.png"
+                        image = "https://assets.perfectdreams.media/loritta/loritta-easter-2023.png"
                     }
                 }
 
