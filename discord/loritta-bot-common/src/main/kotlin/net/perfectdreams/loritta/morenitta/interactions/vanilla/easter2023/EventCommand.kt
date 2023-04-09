@@ -108,7 +108,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
 
                     styled(
-                        "Os ovos de páscoa ${LorittaEaster2023Event.eggEmojis.joinToString("") { it.name }} estão espalhados pelo chat, aparecendo como reações nas conversas.",
+                        "Os ovos de páscoa ${LorittaEaster2023Event.eggEmojis.joinToString("") { it.asMention }} estão espalhados pelo chat, aparecendo como reações nas conversas.",
                         Emotes.LoriHm
                     )
 
