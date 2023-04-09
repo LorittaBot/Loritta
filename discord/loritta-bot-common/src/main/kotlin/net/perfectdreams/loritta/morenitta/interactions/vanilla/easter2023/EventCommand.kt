@@ -237,7 +237,11 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val eggColorCount = Easter2023Drops.eggColor.count()
 
-            val (eggCounts, basketCount) = loritta.newSuspendedTransaction {
+            val (joined, eggCounts, basketCount) = loritta.newSuspendedTransaction {
+                val joined = Easter2023Players.select {
+                    Easter2023Players.id eq context.user.idLong
+                }.count() != 0L
+
                 val eggCounts = CollectedEaster2023Eggs.innerJoin(Easter2023Drops)
                     .slice(Easter2023Drops.eggColor, eggColorCount)
                     .select {
@@ -250,7 +254,14 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     CreatedEaster2023Baskets.user eq context.user.idLong
                 }.count()
 
-                Pair(eggCounts, basketCount)
+                Triple(joined, eggCounts, basketCount)
+            }
+
+            if (!joined) {
+                context.reply(true) {
+                    styled("Você precisa entrar no evento antes de poder ver as suas estatísticas!")
+                }
+                return
             }
 
             val activeBasket = LorittaEaster2023Event.getUserCurrentActiveBasket(context.user.idLong, basketCount)
