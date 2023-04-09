@@ -120,6 +120,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(HalloweenBadge(loritta))
 		registerBadge(Christmas2019Badge(loritta))
 		registerBadge(Christmas2022Badge(loritta))
+		registerBadge(Easter2023Badge(loritta))
 		registerBadge(GabrielaBadge(loritta))
 		registerBadge(PantufaBadge(loritta))
 		registerBadge(PremiumBadge(loritta))
