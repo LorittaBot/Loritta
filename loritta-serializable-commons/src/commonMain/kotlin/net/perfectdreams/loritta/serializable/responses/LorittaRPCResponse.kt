@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.serializable.responses
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestion
+import net.perfectdreams.loritta.serializable.GamerSaferVerificationRole
 
 @Serializable
 sealed interface LorittaRPCResponse
@@ -18,10 +19,20 @@ sealed interface DailyPayoutError {
 
 sealed interface DiscordAccountError {
     @Serializable
-    class InvalidDiscordAuthorization : DiscordAccountError, GetDailyRewardStatusResponse, GetDailyRewardResponse
+    class InvalidDiscordAuthorization :
+        DiscordAccountError,
+        GetDailyRewardStatusResponse,
+        GetDailyRewardResponse,
+        GetGamerSaferVerifyConfigResponse,
+        PostGamerSaferVerifyConfigResponse
 
     @Serializable
-    class UserIsLorittaBanned : DiscordAccountError, GetDailyRewardStatusResponse, GetDailyRewardResponse
+    class UserIsLorittaBanned :
+        DiscordAccountError,
+        GetDailyRewardStatusResponse,
+        GetDailyRewardResponse,
+        GetGamerSaferVerifyConfigResponse,
+        PostGamerSaferVerifyConfigResponse
 }
 
 sealed interface UserVerificationError {
@@ -98,5 +109,44 @@ sealed interface GetDailyRewardResponse : LorittaRPCResponse {
         val name: String,
         val discriminator: String,
         val effectiveAvatarUrl: String
+    )
+}
+
+@Serializable
+sealed interface GetGamerSaferVerifyConfigResponse : LorittaRPCResponse {
+    @Serializable
+    class Success(
+        val roles: List<Role>,
+        val verificationRoles: List<GamerSaferVerificationRole>
+    ) : GetGamerSaferVerifyConfigResponse
+
+    @Serializable
+    class Unauthorized : GetGamerSaferVerifyConfigResponse
+
+    @Serializable
+    class UnknownGuild : GetGamerSaferVerifyConfigResponse
+
+    @Serializable
+    data class Role(
+        val name: String,
+        val id: Long
+    )
+}
+
+@Serializable
+sealed interface PostGamerSaferVerifyConfigResponse : LorittaRPCResponse {
+    @Serializable
+    class Success() : PostGamerSaferVerifyConfigResponse
+
+    @Serializable
+    class Unauthorized : PostGamerSaferVerifyConfigResponse
+
+    @Serializable
+    class UnknownGuild : PostGamerSaferVerifyConfigResponse
+
+    @Serializable
+    data class Role(
+        val name: String,
+        val id: Long
     )
 }

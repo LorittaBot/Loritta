@@ -12,9 +12,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
-import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
-import net.perfectdreams.loritta.serializable.requests.GetDailyRewardStatusRequest
-import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
+import net.perfectdreams.loritta.serializable.requests.*
 import net.perfectdreams.loritta.serializable.responses.GetDailyRewardStatusResponse
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -31,6 +29,12 @@ class PostLorittaRpcRoute(val m: LorittaWebsite) : BaseRoute("/api/v1/loritta/rp
             }
             is GetDailyRewardRequest -> {
                 m.processors.getDailyRewardProcessor.process(call, request)
+            }
+            is GetGamerSaferVerifyConfigRequest -> {
+                m.processors.getGamerSaferVerifyConfigProcessor.process(call, request)
+            }
+            is PostGamerSaferVerifyConfigRequest -> {
+                m.processors.postGamerSaferVerifyConfigProcessor.process(call, request)
             }
         }
 

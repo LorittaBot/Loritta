@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.getUserProfile
-import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
 import java.time.Instant
 
 class SonhosExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
@@ -56,9 +55,6 @@ class SonhosExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
                     ),
                     Emotes.LoriRich
                 )
-
-                if (Instant.now().isBefore(LorittaChristmas2022Event.endOfEvent.toInstant()))
-                    styled("Quer sonhos? Então participe do Evento de Natal da Loritta! ${loritta.commandMentions.eventJoin}")
             }
 
             SonhosUtils.sendEphemeralMessageIfUserHaventGotDailyRewardToday(

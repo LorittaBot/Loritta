@@ -13,6 +13,7 @@
 @import '_headings';
 @import '_daily-shop';
 @import 'components/discord-invite-wrapper';
+@import 'components/_select-menu';
 
 @mixin bp($point) {
     @if $point == 'small' {

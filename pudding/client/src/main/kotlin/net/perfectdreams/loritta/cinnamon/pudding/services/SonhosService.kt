@@ -145,7 +145,9 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.DIVINE_INTERVENTION -> cond.or(DivineInterventionSonhosTransactionsLog.id.isNotNull())
                     TransactionType.BOT_VOTE -> cond.or(BotVoteSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SHIP_EFFECT -> cond.or(ShipEffectSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.EVENTS -> cond.or(Christmas2022SonhosTransactionsLog.id.isNotNull())
+                    TransactionType.EVENTS -> cond
+                        .or(Christmas2022SonhosTransactionsLog.id.isNotNull())
+                        .or(Easter2023SonhosTransactionsLog.id.isNotNull())
                 }
             }
 

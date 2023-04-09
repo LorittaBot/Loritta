@@ -245,6 +245,9 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                         // ===[ CHRISTMAS 2022 ]===
                         is Christmas2022SonhosTransaction -> Christmas2022SonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
+                        // ===[ EASTER 2023 ]===
+                        is Easter2023SonhosTransaction -> Easter2023SonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
                     }

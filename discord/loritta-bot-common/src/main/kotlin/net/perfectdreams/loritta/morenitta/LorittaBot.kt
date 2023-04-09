@@ -103,6 +103,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CollectedEaster2023Eggs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CreatedEaster2023Baskets
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
@@ -129,10 +133,12 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.dao.*
+import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
@@ -311,6 +317,7 @@ class LorittaBot(
 	val boostGuildListener = BoostGuildListener(this)
 	val interactionsListener = InteractionsListener(this)
 	val christmasListener = ReactionListener(this)
+	val easter2023Listener = Easter2023ReactionListener(this)
 	val giveawayInteractionsListener = GiveawayInteractionsListener(this)
 
 	var builder: DefaultShardManagerBuilder
@@ -506,7 +513,8 @@ class LorittaBot(
 				boostGuildListener,
 				interactionsListener,
 				christmasListener,
-				giveawayInteractionsListener
+				giveawayInteractionsListener,
+				easter2023Listener
 			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(
@@ -809,6 +817,7 @@ class LorittaBot(
                 createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
                 createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
                 createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
+				createOrUpdatePostgreSQLEnum(EasterEggColor.values())
 
                 // TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
                 SchemaUtils.createMissingTablesAndColumns(
@@ -835,7 +844,11 @@ class LorittaBot(
 					EmojiFightMatches,
 					EmojiFightMatchmakingResults,
 					EconomyState,
-					Mutes
+					Mutes,
+					Easter2023Drops,
+					Easter2023Players,
+					CollectedEaster2023Eggs,
+					CreatedEaster2023Baskets
                 )
             }
         }

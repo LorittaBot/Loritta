@@ -35,6 +35,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleCon
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.christmas2022event.modules.DropChristmasStuffModule
+import net.perfectdreams.loritta.morenitta.easter2023event.modules.DropEaster2023StuffModule
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
@@ -57,17 +58,19 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	private val addReactionForHeathecliffModule = AddReactionForHeathecliffModule(loritta)
 	private val quirkyModule = QuirkyModule(loritta)
 	private val christmasStuffModule = DropChristmasStuffModule(loritta)
+	private val dropEaster2023StuffModule = DropEaster2023StuffModule(loritta)
 
 	private val messageReceivedModules = mutableListOf(
 		automodModule,
 		inviteLinkModule,
 		christmasStuffModule,
+		dropEaster2023StuffModule,
 		experienceModule,
 		// afkModule,
 		bomDiaECiaModule,
 		checkBoostStatusModule,
 		addReactionForHeathecliffModule,
-		quirkyModule
+		quirkyModule,
 	)
 
 	private val messageEditedModules = mutableListOf(

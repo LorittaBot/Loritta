@@ -146,6 +146,15 @@ data class Christmas2022SonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class Easter2023SonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val baskets: Int
+) : SonhosTransaction()
+
+@Serializable
 data class ShipEffectSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
