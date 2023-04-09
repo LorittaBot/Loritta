@@ -710,96 +710,105 @@ class LorittaBot(
 				}
 
 				measureTime {
-					shardManager.shards.forEach { shard ->
-						measureTime {
-							val jdaImpl = shard as JDAImpl
-							val sessionId = jdaImpl.client.sessionId
-							val resumeUrl = jdaImpl.client.resumeUrl
-							val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
+					// Limit the shard saving stuff to 4 jobs in parallel
+					val dispatcher = Dispatchers.IO.limitedParallelism(4)
 
-							// Only get connected shards, invalidate everything else
-							if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
-								logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
-								// Not connected, shut down and invalidate our cached data
-								shard.shutdownNow(1000) // We don't care about persisting our gateway session
-								File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
-							} else {
-								logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
+					val shardJobs = shardManager.shards.map { shard ->
+						GlobalScope.async(dispatcher) {
+							measureTime {
+								val jdaImpl = shard as JDAImpl
+								val sessionId = jdaImpl.client.sessionId
+								val resumeUrl = jdaImpl.client.resumeUrl
+								val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
 
-								// Connected, store to the cache
-								// Using close code 1012 does not invalidate your gateway session!
-								shard.shutdownNow(1012)
+								// Only get connected shards, invalidate everything else
+								if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
+									logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
+									// Not connected, shut down and invalidate our cached data
+									shard.shutdownNow(1000) // We don't care about persisting our gateway session
+									File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
+								} else {
+									logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
 
-								val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
+									// Connected, store to the cache
+									// Using close code 1012 does not invalidate your gateway session!
+									shard.shutdownNow(1012)
 
-								// Delete the current cached data for this shard
-								shardCacheFolder.deleteRecursively()
+									val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
 
-								// Create the shard cache folder
-								shardCacheFolder.mkdirs()
+									// Delete the current cached data for this shard
+									shardCacheFolder.deleteRecursively()
 
-								val guildsCacheFile = File(shardCacheFolder, "guilds.json")
-								val sessionCacheFile = File(shardCacheFolder, "session.json")
-								val versionFile = File(shardCacheFolder, "version")
+									// Create the shard cache folder
+									shardCacheFolder.mkdirs()
 
-								val guildIdsForReadyEvent =
-									jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
+									val guildsCacheFile = File(shardCacheFolder, "guilds.json")
+									val sessionCacheFile = File(shardCacheFolder, "session.json")
+									val versionFile = File(shardCacheFolder, "version")
 
-								val guildCount = jdaImpl.guildsView.size()
+									val guildIdsForReadyEvent =
+										jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
 
-								logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
+									val guildCount = jdaImpl.guildsView.size()
 
-								val byteArrayChannel = Channel<ByteArray>()
+									logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
 
-								val fileOutputStreamJob = GlobalScope.launch(Dispatchers.IO) {
-									FileOutputStream(guildsCacheFile).use {
-										for (byteArray in byteArrayChannel) {
-											it.write(byteArray)
-											it.write(newLineUtf8)
+									val byteArrayChannel = Channel<ByteArray>()
+
+									val fileOutputStreamJob = GlobalScope.launch(Dispatchers.IO) {
+										FileOutputStream(guildsCacheFile).use {
+											for (byteArray in byteArrayChannel) {
+												it.write(byteArray)
+												it.write(newLineUtf8)
+											}
 										}
 									}
-								}
 
-								val jobs = jdaImpl.guildsView.map { guild ->
-									GlobalScope.launch(Dispatchers.IO) {
-										guild as GuildImpl
+									val jobs = jdaImpl.guildsView.map { guild ->
+										GlobalScope.launch(Dispatchers.IO) {
+											guild as GuildImpl
 
-										// We want to minimize resizes of the backed stream, to make it go zooooom
-										// So what I did was calculating the 75th percentile of the guild data, and used it as the size
-										val baos = ByteArrayOutputStream(16_384)
-										Json.encodeToStream(DeviousConverter.toJson(guild), baos)
+											// We want to minimize resizes of the backed stream, to make it go zooooom
+											// So what I did was calculating the 75th percentile of the guild data, and used it as the size
+											val baos = ByteArrayOutputStream(16_384)
+											Json.encodeToStream(DeviousConverter.toJson(guild), baos)
 
-										// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
-										guild.invalidate()
+											// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
+											guild.invalidate()
 
-										byteArrayChannel.send(baos.toByteArray())
+											byteArrayChannel.send(baos.toByteArray())
+										}
 									}
-								}
 
-								runBlocking { jobs.joinAll() }
-								// Already sent all data to the channel, cancel the channel!
-								byteArrayChannel.cancel()
-								runBlocking {
-									fileOutputStreamJob.join()
-								}
+									runBlocking { jobs.joinAll() }
+									// Already sent all data to the channel, cancel the channel!
+									byteArrayChannel.cancel()
+									runBlocking {
+										fileOutputStreamJob.join()
+									}
 
-								logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
-								sessionCacheFile
-									.writeText(
-										Json.encodeToString(
-											GatewaySessionData(
-												sessionId,
-												resumeUrl,
-												jdaImpl.responseTotal,
-												guildIdsForReadyEvent
+									logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
+									sessionCacheFile
+										.writeText(
+											Json.encodeToString(
+												GatewaySessionData(
+													sessionId,
+													resumeUrl,
+													jdaImpl.responseTotal,
+													guildIdsForReadyEvent
+												)
 											)
 										)
-									)
 
-								// Only write after everything has been successfully written
-								versionFile.writeText(connectionVersion.toString())
-							}
-						}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff!" } }
+									// Only write after everything has been successfully written
+									versionFile.writeText(connectionVersion.toString())
+								}
+							}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff!" } }
+						}
+					}
+
+					runBlocking {
+						shardJobs.awaitAll()
 					}
 				}.also { logger.info { "Took $it to persist all shards cache!!" } }
 			}
