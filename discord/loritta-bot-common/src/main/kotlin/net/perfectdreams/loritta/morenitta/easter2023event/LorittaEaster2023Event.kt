@@ -13,7 +13,7 @@ object LorittaEaster2023Event {
     const val GUILD_MEMBER_COUNT_THRESHOLD = 1_000L
     val startOfEvent = LocalDateTime.of(2023, 4, 9, 0, 0, 0)
         .atZone(Constants.LORITTA_TIMEZONE)
-    val endOfEvent = LocalDateTime.of(2022, 4, 15, 23, 59)
+    val endOfEvent = LocalDateTime.of(2023, 4, 15, 23, 59)
         .atZone(Constants.LORITTA_TIMEZONE)
     val eggBlue = Emoji.fromCustom("egg_blue", 1094336273742835832L, false)
     val eggGreen = Emoji.fromCustom("egg_green", 1094336274959183922L, false)
