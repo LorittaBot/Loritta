@@ -24,6 +24,9 @@ profiles:
     christmas2022:
       title: "Natalino"
       description: "Insígnia para pessoas que participam do Evento de Natal da Loritta 2022"
+    easter2023:
+      title: "Saltitante"
+      description: "Insígnia para pessoas que participaram do Evento de Páscoa da Loritta 2023"
     gabriela2020:
       title: "Team Gabriela"
       description: "Insígnia para pessoas que participaram do time da Gabriela no Evento de Aniversário da Loritta 2020"
