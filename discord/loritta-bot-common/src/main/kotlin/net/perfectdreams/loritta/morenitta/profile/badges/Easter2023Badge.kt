@@ -22,7 +22,7 @@ class Easter2023Badge(val loritta: LorittaBot) : Badge.LorittaBadge(
 		return loritta.pudding.transaction {
 			CreatedEaster2023Baskets.select {
 				CreatedEaster2023Baskets.user eq profile.id
-			}.count() >= 100
+			}.count() >= 10
 		}
 	}
 }

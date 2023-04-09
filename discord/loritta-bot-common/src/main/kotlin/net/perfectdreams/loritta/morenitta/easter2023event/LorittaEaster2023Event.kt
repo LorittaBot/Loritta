@@ -29,16 +29,26 @@ object LorittaEaster2023Event {
     val easterEggColors = EasterEggColor.values()
 
     val eventRewards = listOf(
-        EventReward.BadgeReward(35, false),
-        EventReward.SonhosReward(85, false, 25_000),
-        EventReward.SonhosReward(160, false, 40_000),
-        EventReward.SonhosReward(250, false, 60_000),
-        EventReward.SonhosReward(330, false, 80_000),
-        EventReward.SonhosReward(420, false, 100_000),
-        EventReward.SonhosReward(500, false, 150_000),
-        EventReward.SonhosReward(580, false, 250_000),
-        EventReward.SonhosReward(660, false, 300_000),
-        EventReward.SonhosReward(800, false, 500_000),
+        EventReward.BadgeReward(10, false),
+        EventReward.SonhosReward(50, false, 11000),
+        EventReward.SonhosReward(100, false, 22000),
+        EventReward.SonhosReward(150, false, 33000),
+        EventReward.SonhosReward(200, false, 44000),
+        EventReward.SonhosReward(250, false, 55000),
+        EventReward.SonhosReward(300, false, 66000),
+        EventReward.SonhosReward(350, false, 77000),
+        EventReward.SonhosReward(400, false, 88000),
+        EventReward.SonhosReward(450, false, 99000),
+        EventReward.SonhosReward(500, false, 110000),
+        EventReward.SonhosReward(550, false, 121000),
+        EventReward.SonhosReward(600, false, 132000),
+        EventReward.SonhosReward(650, false, 143000),
+        EventReward.SonhosReward(700, false, 154000),
+        EventReward.SonhosReward(750, false, 165000),
+        EventReward.SonhosReward(800, false, 176000),
+        EventReward.SonhosReward(850, false, 187000),
+        EventReward.SonhosReward(900, false, 198000),
+        EventReward.SonhosReward(950, false, 209000),
         EventReward.PremiumKeyReward(1_000, false)
     )
 
