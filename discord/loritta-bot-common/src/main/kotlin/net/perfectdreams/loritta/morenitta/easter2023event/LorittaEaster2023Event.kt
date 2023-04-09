@@ -43,7 +43,6 @@ object LorittaEaster2023Event {
     )
 
     fun isEventActive(): Boolean {
-        return true
         val now = Instant.now().atZone(ZoneId.of("America/Sao_Paulo"))
         return now.isAfter(startOfEvent) && now.isBefore(endOfEvent)
     }
