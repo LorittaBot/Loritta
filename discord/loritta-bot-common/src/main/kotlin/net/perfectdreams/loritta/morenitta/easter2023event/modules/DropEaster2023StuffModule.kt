@@ -68,7 +68,7 @@ class DropEaster2023StuffModule(val m: LorittaBot) : MessageReceivedModule {
         val randomNumber = LorittaBot.RANDOM.nextInt(0, 1_000)
 
         if (randomNumber in 0..chance && event.message.contentStripped.hashCode() != lorittaProfile.lastMessageSentHash && event.message.contentRaw.length >= 5) {
-            if (5_000 >= lastDropDiff)
+            if (1_000 >= lastDropDiff)
                 return false
 
             val userDropTime = lastDropsByUserAt.getOrDefault(event.author.idLong, 0L)
