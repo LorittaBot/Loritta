@@ -122,6 +122,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
     }.let {
         if (TransactionType.EVENTS in transactionTypeFilter)
             it.leftJoin(Christmas2022SonhosTransactionsLog)
+                .leftJoin(Easter2023SonhosTransactionsLog)
         else it
     }
         .select {
