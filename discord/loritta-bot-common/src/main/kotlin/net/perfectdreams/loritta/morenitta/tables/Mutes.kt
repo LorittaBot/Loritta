@@ -9,7 +9,7 @@ object Mutes : LongIdTable() {
 	val punishedById = long("punished_by")
 	val content = text("content").nullable()
 	val receivedAt = long("received_at")
-	val isTemporary = bool("temporary")
+	val isTemporary = bool("temporary").index()
 	val expiresAt = long("expires_at").nullable()
 	var userTimedOutUntil = timestampWithTimeZone("user_timed_out_until").nullable()
 		.index()
