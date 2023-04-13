@@ -51,12 +51,7 @@ class DropEaster2023StuffModule(val m: LorittaBot) : MessageReceivedModule {
 
         val millis = event.member!!.timeJoined.toInstant().toEpochMilli()
 
-        val diff = date - millis
-
-        val chance = 100
-
-        if (0 >= chance)
-            return false
+        val chance = 350
 
         val id = event.channel.idLong
 
@@ -73,7 +68,7 @@ class DropEaster2023StuffModule(val m: LorittaBot) : MessageReceivedModule {
 
             val userDropTime = lastDropsByUserAt.getOrDefault(event.author.idLong, 0L)
 
-            if (30_000 >= date - userDropTime)
+            if (10_000 >= date - userDropTime)
                 return false
 
             m.newSuspendedTransaction {
