@@ -469,68 +469,70 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			if (guildIds.isEmpty())
 				return@launch
 
-			logger.info { "Querying configs of ${guildIds.size} guilds to start the setup process" }
+			logger.info { "Querying configs of ${guildIds.size} guilds to start the setup process for shard ${event.jda.shardInfo.shardId}" }
 
 			// Everything is good? Great! Let's prepare all guilds then!
-			val serverConfigs = loritta.newSuspendedTransaction {
+			val (serverConfigs, guildMutes, allGuildActiveGiveaways) = loritta.newSuspendedTransaction {
 				// Workaround to avoid "PreparedStatement can have at most 65,535 parameters" issue
 				// This also should never happen since every shard can have a max of 2500 guilds, but who knows right
-				guildIds.chunked(65_535).flatMap {
+				val serverConfigs = guildIds.chunked(65_535).flatMap {
 					ServerConfig.find {
 						ServerConfigs.id inList it
 					}.toList()
 				}
-			}
 
-			logger.info { "Preparing ${guildIds.size} guilds with ${serverConfigs.size} server configs" }
+				logger.info { "Preparing ${guildIds.size} guilds with ${serverConfigs.size} server configs for shard ${event.jda.shardInfo.shardId}" }
 
-			// And after getting all serverConfigs, we now can set up the guild!
-			val allJobs = mutableListOf<Deferred<Unit>>()
-
-			for (serverConfig in serverConfigs) {
-				val guild = event.jda.getGuildById(serverConfig.id.value)
-
-				if (guild != null)
-					allJobs.add(setupGuild(guild, serverConfig))
-			}
-
-			allJobs.forEach {
-				try {
-					it.await()
-				} catch (e: Exception) {
-					logger.warn(e) { "Exception while preparing guild!" }
+				// The reason we chunk it in multiple queries is due to this issue:
+				// https://github.com/LorittaBot/Loritta/issues/2343
+				// https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
+				// Technically all shards have at most ~2500 guilds, but who knows what the future holds, right?
+				val guildMutes = guildIds.chunked(32_767).flatMap {
+					Mute.find {
+						(Mutes.isTemporary eq true) and (Mutes.guildId inList it)
+					}.toMutableList()
 				}
+
+				// We also chunk this too
+				val allGuildActiveGiveaways = guildIds.chunked(32_767).flatMap {
+					Giveaway.find {
+						(Giveaways.guildId inList it) and (Giveaways.finished eq false)
+					}.toMutableList()
+				}
+
+				Triple(serverConfigs, guildMutes, allGuildActiveGiveaways)
 			}
 
-			logger.info { "Done! ${guildIds.size} guilds with ${serverConfigs.size} server configs were set up! Let's roll!! Took ${Clock.System.now() - start}ms" }
-		}
-	}
+			// The reason we process it outside of the previous transaction is to avoid any nested transaction calls causing a deadlock
+			for (mute in guildMutes) {
+				val guild = event.jda.getGuildById(mute.guildId)
 
-	private suspend fun setupGuild(guild: Guild, serverConfig: ServerConfig): Deferred<Unit> {
-		return GlobalScope.async(loritta.coroutineDispatcher) {
-			val mutes = loritta.newSuspendedTransaction {
-				Mute.find {
-					(Mutes.isTemporary eq true) and (Mutes.guildId eq guild.idLong)
-				}.toMutableList()
-			}
+				if (guild == null) {
+					logger.warn { "Guild ${mute.guildId} does not exist on shard ${event.jda.shardInfo.shardId}, skipping mute task setup..." }
+					continue
+				}
 
-			for (mute in mutes) {
+				val serverConfig = serverConfigs.firstOrNull { it.guildId == mute.guildId }
+				if (serverConfig == null) {
+					logger.warn { "Guild ${mute.guildId} does not have a server configuration on shard ${event.jda.shardInfo.shardId}, skipping mute task setup..." }
+					continue
+				}
+
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
 				MuteCommand.spawnTimeOutUpdaterThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), mute.userId, mute)
 			}
 
-			val allActiveGiveaways = loritta.newSuspendedTransaction {
-				Giveaway.find { (Giveaways.guildId eq guild.idLong) and (Giveaways.finished eq false) }.toMutableList()
-			}
 
-			allActiveGiveaways.forEach {
+			allGuildActiveGiveaways.forEach {
 				try {
 					if (loritta.giveawayManager.giveawayTasks[it.id.value] == null)
 						loritta.giveawayManager.createGiveawayJob(it)
 				} catch (e: Exception) {
-					logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${guild.idLong}" }
+					logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${it.guildId} for shard ${event.jda.shardInfo.shardId}" }
 				}
 			}
+
+			logger.info { "Done! ${guildIds.size} guilds were set up for shard ${event.jda.shardInfo.shardId}! Let's roll!! Took ${Clock.System.now() - start}ms" }
 		}
 	}
 }
