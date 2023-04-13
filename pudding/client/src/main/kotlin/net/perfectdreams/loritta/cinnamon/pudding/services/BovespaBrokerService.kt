@@ -223,7 +223,8 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
             // The reason we batch the stocks in multiple queries is due to this issue:
             // https://github.com/LorittaBot/Loritta/issues/2343
             // https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
-            stocksThatWillBeSold.chunked(32767).forEachIndexed { index, chunkedStocks ->
+            // Since PostgreSQL JDBC 42.3.7, the max parameter size is 65_535 parameters. This issue only affects "inList" queries!
+            stocksThatWillBeSold.chunked(65_535).forEachIndexed { index, chunkedStocks ->
                 BoughtStocks.deleteWhere {
                     BoughtStocks.id inList chunkedStocks.map { it[BoughtStocks.id] }
                 }

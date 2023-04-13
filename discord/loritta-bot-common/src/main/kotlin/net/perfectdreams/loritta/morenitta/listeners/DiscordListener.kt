@@ -473,8 +473,10 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			// Everything is good? Great! Let's prepare all guilds then!
 			val (serverConfigs, guildMutes, allGuildActiveGiveaways) = loritta.newSuspendedTransaction {
-				// Workaround to avoid "PreparedStatement can have at most 65,535 parameters" issue
-				// This also should never happen since every shard can have a max of 2500 guilds, but who knows right
+				// The reason we chunk the query in multiple queries is due to this issue:
+				// https://github.com/LorittaBot/Loritta/issues/2343
+				// https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
+				// Since PostgreSQL JDBC 42.3.7, the max parameter size is 65_535 parameters. This issue only affects "inList" queries!
 				val serverConfigs = guildIds.chunked(65_535).flatMap {
 					ServerConfig.find {
 						ServerConfigs.id inList it
@@ -483,21 +485,18 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 				logger.info { "Preparing ${guildIds.size} guilds with ${serverConfigs.size} server configs for shard ${event.jda.shardInfo.shardId}" }
 
-				// The reason we chunk it in multiple queries is due to this issue:
-				// https://github.com/LorittaBot/Loritta/issues/2343
-				// https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
-				// Technically all shards have at most ~2500 guilds, but who knows what the future holds, right?
-				val guildMutes = guildIds.chunked(32_767).flatMap {
+				// We also chunk this too
+				val guildMutes = guildIds.chunked(65_535).flatMap {
 					Mute.find {
 						(Mutes.isTemporary eq true) and (Mutes.guildId inList it)
-					}.toMutableList()
+					}.toList()
 				}
 
-				// We also chunk this too
-				val allGuildActiveGiveaways = guildIds.chunked(32_767).flatMap {
+				// We also chunk this too²
+				val allGuildActiveGiveaways = guildIds.chunked(65_535).flatMap {
 					Giveaway.find {
 						(Giveaways.guildId inList it) and (Giveaways.finished eq false)
-					}.toMutableList()
+					}.toList()
 				}
 
 				Triple(serverConfigs, guildMutes, allGuildActiveGiveaways)
