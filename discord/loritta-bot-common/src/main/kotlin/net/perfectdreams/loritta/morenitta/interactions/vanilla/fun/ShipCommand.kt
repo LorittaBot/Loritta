@@ -5,7 +5,9 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.gabrielaimageserver.data.ShipRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
+import net.perfectdreams.gabrielaimageserver.exceptions.*
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -16,6 +18,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
@@ -26,34 +29,9 @@ import kotlin.random.Random
 class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val inputConverter = ShipDiscordMentionInputConverter()
-    }
-    
-    private val I18N_PREFIX = I18nKeysData.Commands.Command.Ship
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Ship
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
-        executor = ShipExecutor()
-    }
-
-    inner class ShipExecutor : LorittaSlashCommandExecutor() {
-        inner class Options : ApplicationCommandOptions() {
-            val user1 = string("user1", I18N_PREFIX.Options.User1)
-            val user2 = optionalString("user2", I18N_PREFIX.Options.User2)
-        }
-
-        override val options = Options()
-
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            context.deferChannelMessage(false)
-
-            val user1 = args[options.user1]
-            val user2 = args[options.user2]
-
-            // We need to pass thru our input converter to convert user mentions into a user object, or keep it as a string
-            val result1 = inputConverter.convert(context, user1)
-            val result2 = if (user2 != null)
-                inputConverter.convert(context, user2)
-            else UserResult(context.user) // If the user2 is not present, we will use the user itself in the ship
-
+        suspend fun executeCompat(context: CommandContextCompat, result1: ConverterResult, result2: ConverterResult) {
             val user1Id: Long
             val user2Id: Long
             val user1Name: String
@@ -130,7 +108,7 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 value = 100
                 isLoveYourself = true
                 isNatural = false // Not a natural ship
-            } else if (user1Id == loritta.config.loritta.discord.applicationId.value.toLong() || user2Id == loritta.config.loritta.discord.applicationId.value.toLong()) {
+            } else if (user1Id == context.loritta.config.loritta.discord.applicationId.value.toLong() || user2Id == context.loritta.config.loritta.discord.applicationId.value.toLong()) {
                 // Easter Egg: Shipping you/someone with Loritta
                 val shipEffects = mutableListOf<PuddingShipEffect>()
 
@@ -243,14 +221,37 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 name1 + name2
             }
 
-            val result = loritta.gabrielaImageServerClient.handleExceptions(context) {
-                loritta.gabrielaImageServerClient.images.ship(
+            val result = try {
+                context.loritta.gabrielaImageServerClient.images.ship(
                     ShipRequest(
                         URLImageData(user1AvatarUrl),
                         URLImageData(user2AvatarUrl),
                         value
                     )
                 )
+            } catch (e: Exception) { // This is called if the image wasn't found
+                when (e) {
+                    is ImageNotFoundException -> context.reply(false) {
+                        styled(
+                            context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound),
+                            Emotes.LoriSob
+                        )
+                    }
+                    is UntrustedURLException -> context.reply(false) {
+                        styled(
+                            context.i18nContext.get(I18nKeysData.Commands.ImageUrlIsUntrusted),
+                            Emotes.LoriSob
+                        )
+                    }
+                    is ImageTooLargeException, is StreamExceedsLimitException, is ContentLengthTooLargeException -> context.reply(false) {
+                        styled(
+                            context.i18nContext.get(I18nKeysData.Commands.SentImageIsTooLarge),
+                            Emotes.LoriSob
+                        )
+                    }
+                    else -> throw e // Propagate it
+                }
+                return
             }
 
             context.reply(false) {
@@ -278,6 +279,33 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 context.giveAchievementAndNotify(AchievementType.FRIENDZONED_BY_LORITTA)
             if (isLorittaWithShipEffects && isShipWithTheSelfUser)
                 context.giveAchievementAndNotify(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
+        }
+    }
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+        executor = ShipExecutor()
+    }
+
+    inner class ShipExecutor : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val user1 = string("user1", I18N_PREFIX.Options.User1)
+            val user2 = optionalString("user2", I18N_PREFIX.Options.User2)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val user1 = args[options.user1]
+            val user2 = args[options.user2]
+
+            // We need to pass thru our input converter to convert user mentions into a user object, or keep it as a string
+            val result1 = inputConverter.convert(context, user1)
+            val result2 = if (user2 != null)
+                inputConverter.convert(context, user2)
+            else UserResult(context.user) // If the user2 is not present, we will use the user itself in the ship
+
+            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context), result1, result2)
         }
     }
 

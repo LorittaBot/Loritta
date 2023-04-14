@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.BarebonesInteract
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 
@@ -91,6 +92,47 @@ object AchievementUtils {
     suspend fun giveAchievementToUserAndNotifyThem(
         loritta: LorittaBot,
         context: InteractionContext,
+        i18nContext: I18nContext,
+        userId: UserSnowflake,
+        type: AchievementType,
+        achievedAt: Instant = Clock.System.now()
+    ) {
+        val profile = loritta.pudding.users.getOrCreateUserProfile(UserId(userId.idLong))
+        val wasAchievementGiven = profile.giveAchievement(
+            type,
+            achievedAt
+        )
+
+        if (wasAchievementGiven)
+            context.reply(true) {
+                styled(
+                    content = "**${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
+                    prefix = Emotes.Sparkles
+                )
+
+                styled(
+                    "**${i18nContext.get(type.title)}:** ${i18nContext.get(type.description)}",
+                    prefix = type.category.emote
+                )
+
+                styled(
+                    i18nContext.get(I18nKeysData.Achievements.ViewYourAchievements(loritta.commandMentions.achievements)),
+                    prefix = Emotes.LoriWow
+                )
+            }
+    }
+
+    /**
+     * Gives an achievement to the [user] if they don't have it yet.
+     *
+     * If the user receives an achievement, they will receive an ephemeral message talking about the new achievement.
+     *
+     * @param type       what achievement should be given
+     * @param achievedAt when the achievement was achieved, default is now
+     */
+    suspend fun giveAchievementToUserAndNotifyThem(
+        loritta: LorittaBot,
+        context: CommandContextCompat,
         i18nContext: I18nContext,
         userId: UserSnowflake,
         type: AchievementType,
