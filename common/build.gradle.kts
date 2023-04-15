@@ -77,7 +77,7 @@ kotlin {
         withJava()
     }
 
-    js(BOTH) {
+    js(IR) {
         // Declares that we want to compile for the browser and for nodejs
         browser()
         nodejs()

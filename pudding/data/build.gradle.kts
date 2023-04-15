@@ -14,7 +14,7 @@ kotlin {
         withJava()
     }
 
-    js(BOTH) { // We compile for both because Loritta Legacy also uses this module
+    js(IR) {
         // Declares that we want to compile for the browser and for nodejs
         browser()
         nodejs()
