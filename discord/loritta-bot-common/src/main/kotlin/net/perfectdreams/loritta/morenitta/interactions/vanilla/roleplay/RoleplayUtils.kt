@@ -252,6 +252,8 @@ object RoleplayUtils {
                             loriEmoji = roleplayActionAttributes.embedEmoji
                         }
                     ) { context ->
+                        context.invalidateComponentCallback()
+
                         context.deferChannelMessage(false)
 
                         // Retribute
