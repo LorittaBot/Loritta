@@ -10,7 +10,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
@@ -204,6 +206,214 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 event.channel.idLong,
                 Clock.System.now(),
                 ApplicationCommandType.CHAT_INPUT,
+                rootDeclarationClazzName,
+                executorClazzName,
+                buildJsonObject {},
+                stacktrace == null,
+                timer.observeDuration(),
+                stacktrace
+            )
+        }
+    }
+
+    override fun onUserContextInteraction(event: UserContextInteractionEvent) {
+        loritta.launchMessageJob(event) {
+            var rootDeclaration: UserCommandDeclaration? = null
+            var slashDeclaration: UserCommandDeclaration? = null
+
+            for (declaration in manager.userCommands) {
+                val rootLabel = event.name
+
+                if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
+                    slashDeclaration = declaration
+                    rootDeclaration = declaration
+                    break
+                }
+            }
+
+            // We should throw an error here
+            // But we won't because we still use Discord InteraKTions
+            if (rootDeclaration == null || slashDeclaration == null)
+                return@launchMessageJob
+
+            val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
+
+            val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
+            val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
+            val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
+                .labels(rootDeclarationClazzName, executorClazzName)
+                .startTimer()
+
+            // These variables are used in the catch { ... } block, to make our lives easier
+            var i18nContext: I18nContext? = null
+            var context: ApplicationCommandContext? = null
+            var stacktrace: String? = null
+
+            try {
+                val guild = event.guild
+                val member = event.member
+
+                val serverConfigJob = if (guild != null)
+                    loritta.getOrCreateServerConfigDeferred(guild.idLong, true)
+                else
+                    loritta.getOrCreateServerConfigDeferred(-1, true)
+
+                val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.user.idLong)
+
+                val serverConfig = serverConfigJob.await()
+                val lorittaProfile = lorittaProfileJob.await()
+
+                val currentLocale = loritta.newSuspendedTransaction {
+                    (lorittaProfile?.settings?.language ?: serverConfig.localeId)
+                }
+
+                val locale = loritta.localeManager.getLocaleById(currentLocale)
+                i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+                val lorittaUser = if (guild != null && member != null) {
+                    // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+                    val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
+                    val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
+                        member,
+                        rolesLorittaPermissions
+                    )
+                    GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
+                } else {
+                    LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
+                }
+
+                context = ApplicationCommandContext(
+                    loritta,
+                    serverConfig,
+                    lorittaUser,
+                    locale,
+                    i18nContext,
+                    event
+                )
+
+                executor.execute(
+                    context,
+                    event.target
+                )
+            } catch (e: CommandException) {
+                context?.reply(e.ephemeral, e.builder)
+            } catch (e: Exception) {
+                // TODO: Proper catch and throw
+                e.printStackTrace()
+
+                stacktrace = e.stackTraceToString()
+            }
+
+            loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(
+                event.user.idLong,
+                event.guild?.idLong,
+                event.channel?.idLong!!, // TODO: The channel can be null! This should be fixed
+                Clock.System.now(),
+                ApplicationCommandType.USER,
+                rootDeclarationClazzName,
+                executorClazzName,
+                buildJsonObject {},
+                stacktrace == null,
+                timer.observeDuration(),
+                stacktrace
+            )
+        }
+    }
+
+    override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
+        loritta.launchMessageJob(event) {
+            var rootDeclaration: MessageCommandDeclaration? = null
+            var slashDeclaration: MessageCommandDeclaration? = null
+
+            for (declaration in manager.messageCommands) {
+                val rootLabel = event.name
+
+                if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
+                    slashDeclaration = declaration
+                    rootDeclaration = declaration
+                    break
+                }
+            }
+
+            // We should throw an error here
+            // But we won't because we still use Discord InteraKTions
+            if (rootDeclaration == null || slashDeclaration == null)
+                return@launchMessageJob
+
+            val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
+
+            val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
+            val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
+            val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
+                .labels(rootDeclarationClazzName, executorClazzName)
+                .startTimer()
+
+            // These variables are used in the catch { ... } block, to make our lives easier
+            var i18nContext: I18nContext? = null
+            var context: ApplicationCommandContext? = null
+            var stacktrace: String? = null
+
+            try {
+                val guild = event.guild
+                val member = event.member
+
+                val serverConfigJob = if (guild != null)
+                    loritta.getOrCreateServerConfigDeferred(guild.idLong, true)
+                else
+                    loritta.getOrCreateServerConfigDeferred(-1, true)
+
+                val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.user.idLong)
+
+                val serverConfig = serverConfigJob.await()
+                val lorittaProfile = lorittaProfileJob.await()
+
+                val currentLocale = loritta.newSuspendedTransaction {
+                    (lorittaProfile?.settings?.language ?: serverConfig.localeId)
+                }
+
+                val locale = loritta.localeManager.getLocaleById(currentLocale)
+                i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+                val lorittaUser = if (guild != null && member != null) {
+                    // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+                    val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
+                    val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
+                        member,
+                        rolesLorittaPermissions
+                    )
+                    GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
+                } else {
+                    LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
+                }
+
+                context = ApplicationCommandContext(
+                    loritta,
+                    serverConfig,
+                    lorittaUser,
+                    locale,
+                    i18nContext,
+                    event
+                )
+
+                executor.execute(
+                    context,
+                    event.target
+                )
+            } catch (e: CommandException) {
+                context?.reply(e.ephemeral, e.builder)
+            } catch (e: Exception) {
+                // TODO: Proper catch and throw
+                e.printStackTrace()
+
+                stacktrace = e.stackTraceToString()
+            }
+
+            loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(
+                event.user.idLong,
+                event.guild?.idLong,
+                event.channel?.idLong!!, // TODO: The channel can be null! This should be fixed
+                Clock.System.now(),
+                ApplicationCommandType.MESSAGE,
                 rootDeclarationClazzName,
                 executorClazzName,
                 buildJsonObject {},
@@ -436,7 +646,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
     }
 
     private fun updateCommands(guildId: Long, action: (List<CommandData>) -> (List<Command>)): List<DiscordCommand> {
-        val applicationCommands = manager.slashCommands.map { manager.convertDeclarationToJDA(it) } + loritta.interactionsManager.interaKTions.manager.applicationCommandsDeclarations.map { manager.convertInteraKTionsDeclarationToJDA(it) }
+        val applicationCommands = manager.slashCommands.map { manager.convertDeclarationToJDA(it) } + loritta.interactionsManager.interaKTions.manager.applicationCommandsDeclarations.map { manager.convertInteraKTionsDeclarationToJDA(it) } + manager.userCommands.map { manager.convertDeclarationToJDA(it) } + manager.messageCommands.map { manager.convertDeclarationToJDA(it) }
         val applicationCommandsHash = applicationCommands.sumOf { it.toData().toString().hashCode() }
 
         var registeredCommands: List<DiscordCommand>? = null

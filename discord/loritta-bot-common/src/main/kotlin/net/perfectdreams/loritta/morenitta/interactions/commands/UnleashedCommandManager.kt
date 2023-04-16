@@ -15,9 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
@@ -48,11 +46,21 @@ import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
     val slashCommands = mutableListOf<SlashCommandDeclaration>()
+    val userCommands = mutableListOf<UserCommandDeclaration>()
+    val messageCommands = mutableListOf<MessageCommandDeclaration>()
     // Application Commands have their label/descriptions in English
     val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
 
     fun register(declaration: SlashCommandDeclarationWrapper) {
-        slashCommands += declaration.command().build(languageManager)
+        slashCommands += declaration.command().build()
+    }
+
+    fun register(declaration: UserCommandDeclarationWrapper) {
+        userCommands += declaration.command().build()
+    }
+
+    fun register(declaration: MessageCommandDeclarationWrapper) {
+        messageCommands += declaration.command().build()
     }
 
     init {
@@ -155,13 +163,43 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     }
 
     /**
+     * Converts a InteraKTions Unleashed [declaration] to JDA
+     */
+    fun convertDeclarationToJDA(declaration: UserCommandDeclaration): CommandData {
+        return Commands.user(slashCommandDefaultI18nContext.get(declaration.name)).apply {
+            if (declaration.defaultMemberPermissions != null)
+                this.defaultPermissions = declaration.defaultMemberPermissions
+            this.isGuildOnly = declaration.isGuildOnly
+
+            forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                setNameLocalization(discordLocale, i18nContext.get(declaration.name))
+            }
+        }
+    }
+
+    /**
+     * Converts a InteraKTions Unleashed [declaration] to JDA
+     */
+    fun convertDeclarationToJDA(declaration: MessageCommandDeclaration): CommandData {
+        return Commands.message(slashCommandDefaultI18nContext.get(declaration.name)).apply {
+            if (declaration.defaultMemberPermissions != null)
+                this.defaultPermissions = declaration.defaultMemberPermissions
+            this.isGuildOnly = declaration.isGuildOnly
+
+            forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
+                setNameLocalization(discordLocale, i18nContext.get(declaration.name))
+            }
+        }
+    }
+
+    /**
      * Converts a Discord InteraKTions [declaration] to JDA
      *
      * This is provided for backwards compatibility!
      */
     fun convertInteraKTionsDeclarationToJDA(declaration: ApplicationCommandDeclaration): CommandData {
         when (declaration) {
-            is UserCommandDeclaration -> {
+            is net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration -> {
                 return Commands.user(declaration.name).apply {
                     declaration.nameLocalizations?.mapKeysToJDALocales()
                         ?.also { setNameLocalizations(it) }
@@ -174,7 +212,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 }
             }
 
-            is MessageCommandDeclaration -> {
+            is net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration -> {
                 return Commands.message(declaration.name).apply {
                     declaration.nameLocalizations?.mapKeysToJDALocales()
                         ?.also { setNameLocalizations(it) }

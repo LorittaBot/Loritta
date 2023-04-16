@@ -5,11 +5,9 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
@@ -20,7 +18,6 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 
 /**
  * A command context that provides compatibility with slash commands and message commands, for ease of migration while maintaining both commands.
@@ -33,7 +30,7 @@ interface CommandContextCompat {
     val guild: Guild
     val locale: BaseLocale
     val i18nContext: I18nContext
-    val channel: MessageChannel
+    val messageChannel: MessageChannel
     val loritta: LorittaBot
 
     suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit = {}): InteractionMessage
@@ -55,8 +52,8 @@ interface CommandContextCompat {
         override val i18nContext: I18nContext
             get() = context.i18nContext
 
-        override val channel: MessageChannel
-            get() = context.event.channel
+        override val messageChannel: MessageChannel
+            get() = (context.event.channel as? MessageChannel) ?: error("Command wasn't used in a message channel!")
 
         override val loritta: LorittaBot
             get() = context.loritta
@@ -98,7 +95,7 @@ interface CommandContextCompat {
         override val i18nContext: I18nContext
             get() = context.i18nContext
 
-        override val channel: MessageChannel
+        override val messageChannel: MessageChannel
             get() = context.discordMessage.channel
 
         override val loritta: LorittaBot
@@ -142,7 +139,7 @@ interface CommandContextCompat {
         override val i18nContext: I18nContext
             get() = context.i18nContext
 
-        override val channel: MessageChannel
+        override val messageChannel: MessageChannel
             get() = context.message.channel
 
         override val loritta: LorittaBot

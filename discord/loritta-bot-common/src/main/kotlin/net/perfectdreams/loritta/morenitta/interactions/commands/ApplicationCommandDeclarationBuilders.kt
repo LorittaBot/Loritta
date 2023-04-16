@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
+import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.common.locale.LanguageManager
 
 // ===[ SLASH COMMANDS ]===
 fun slashCommand(name: StringI18nData, description: StringI18nData, category: CommandCategory, block: SlashCommandDeclarationBuilder.() -> (Unit)) = SlashCommandDeclarationBuilder(
@@ -44,7 +44,7 @@ class SlashCommandDeclarationBuilder(
         )
     }
 
-    fun build(languageManager: LanguageManager): SlashCommandDeclaration {
+    fun build(): SlashCommandDeclaration {
         return SlashCommandDeclaration(
             name,
             description,
@@ -52,8 +52,8 @@ class SlashCommandDeclarationBuilder(
             defaultMemberPermissions,
             isGuildOnly,
             executor,
-            subcommands.map { it.build(languageManager) },
-            subcommandGroups.map { it.build(languageManager) }
+            subcommands.map { it.build() },
+            subcommandGroups.map { it.build() }
         )
     }
 }
@@ -75,12 +75,58 @@ class SlashCommandGroupDeclarationBuilder(
         ).apply(block)
     }
 
-    fun build(languageManager: LanguageManager): SlashCommandGroupDeclaration {
+    fun build(): SlashCommandGroupDeclaration {
         return SlashCommandGroupDeclaration(
             name,
             description,
             category,
-            subcommands.map { it.build(languageManager) }
+            subcommands.map { it.build() }
+        )
+    }
+}
+
+// ===[ USER COMMANDS ]===
+fun userCommand(name: StringI18nData, category: CommandCategory, executor: LorittaUserCommandExecutor) = UserCommandDeclarationBuilder(name, category, executor)
+
+@InteraKTionsUnleashedDsl
+class UserCommandDeclarationBuilder(
+    val name: StringI18nData,
+    val category: CommandCategory,
+    val executor: LorittaUserCommandExecutor
+) {
+    var defaultMemberPermissions: DefaultMemberPermissions? = null
+    var isGuildOnly = false
+
+    fun build(): UserCommandDeclaration {
+        return UserCommandDeclaration(
+            name,
+            category,
+            defaultMemberPermissions,
+            isGuildOnly,
+            executor
+        )
+    }
+}
+
+// ===[ MESSAGE COMMANDS ]===
+fun messageCommand(name: StringI18nData, category: CommandCategory, executor: LorittaMessageCommandExecutor) = MessageCommandDeclarationBuilder(name, category, executor)
+
+@InteraKTionsUnleashedDsl
+class MessageCommandDeclarationBuilder(
+    val name: StringI18nData,
+    val category: CommandCategory,
+    val executor: LorittaMessageCommandExecutor
+) {
+    var defaultMemberPermissions: DefaultMemberPermissions? = null
+    var isGuildOnly = false
+
+    fun build(): MessageCommandDeclaration {
+        return MessageCommandDeclaration(
+            name,
+            category,
+            defaultMemberPermissions,
+            isGuildOnly,
+            executor
         )
     }
 }

@@ -21,3 +21,19 @@ data class SlashCommandGroupDeclaration(
     val category: CommandCategory,
     val subcommands: List<SlashCommandDeclaration>
 )
+
+data class UserCommandDeclaration(
+    val name: StringI18nData,
+    val category: CommandCategory,
+    val defaultMemberPermissions: DefaultMemberPermissions?,
+    var isGuildOnly: Boolean,
+    val executor: LorittaUserCommandExecutor?
+)
+
+data class MessageCommandDeclaration(
+    val name: StringI18nData,
+    val category: CommandCategory,
+    val defaultMemberPermissions: DefaultMemberPermissions?,
+    var isGuildOnly: Boolean,
+    val executor: LorittaMessageCommandExecutor?
+)
