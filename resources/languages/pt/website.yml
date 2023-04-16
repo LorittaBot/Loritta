@@ -80,6 +80,6 @@ website:
         - "Ofender, xingar ou sexualizar a Loritta. A regra inclui o ódio gratuito, mesmo que disfarçado de crítica, xingamentos pesados como “puta”, “vagabunda” e relacionados. O usuário que fizer isso e for denunciado, será punido caso tenha sido em local público. Mesmo que ela seja um bot, muitas pessoas trabalham para que ela seja o que é hoje, tais ações desrespeitam isso e por isso você irá perder o privilégio de usá-la."
         - "Tentar enganar, ameaçar ou prejudicar qualquer usuário da Loritta dentro da comunidade, durante a sua experiência de uso."
     ifYouAreBanned:
-      title: "Você foi banido de usar a Loritta?"
+      title: "Informações para usuários que foram banidos de usarem a Loritta"
       description: "Se você está lendo as diretrizes da Loritta pois você foi banido, veja como fazer um apelo de ban para você ter a chance de ser desbanido {clickHere}!"
       clickHere: "clicando aqui"
