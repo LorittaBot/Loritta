@@ -81,6 +81,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerDesign(NostalgiaProfileCreator.NostalgiaPinkProfileCreator(loritta))
 		registerDesign(NostalgiaProfileCreator.NostalgiaOrangeProfileCreator(loritta))
 		registerDesign(NostalgiaProfileCreator.NostalgiaYellowProfileCreator(loritta))
+		registerDesign(NostalgiaProfileCreator.NostalgiaEaster2023ProfileCreator(loritta))
 		registerDesign(DebugProfileCreator(loritta))
 		registerDesign(DefaultProfileCreator(loritta))
 		registerDesign(MSNProfileCreator(loritta))

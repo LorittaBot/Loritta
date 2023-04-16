@@ -33,6 +33,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 	class NostalgiaPinkProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultPink", "pink")
 	class NostalgiaYellowProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultYellow", "yellow")
 	class NostalgiaOrangeProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultOrange", "orange")
+	class NostalgiaEaster2023ProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultEaster2023", "easter2023")
 
 	override suspend fun create(
         sender: ProfileUserInfoData,

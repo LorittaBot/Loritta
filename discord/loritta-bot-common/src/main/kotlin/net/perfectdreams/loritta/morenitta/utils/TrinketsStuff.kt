@@ -45,7 +45,8 @@ object TrinketsStuff {
         "defaultPink",
         "defaultYellow",
         "defaultOrange",
-        "defaultDark"
+        "defaultDark",
+        "defaultEaster2023"
     )
 
     val topFocusDesigns = listOf(
@@ -1004,6 +1005,9 @@ object TrinketsStuff {
         }
         createBackground("caracalHamburgerCute", true, Rarity.RARE, LocalDate.of(2022, 12, 22)) {
             addDefaultVariant("caracal-hamburger-cute", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("easter2023Loritta", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15), availableToBuyViaSonhos = false) {
+            addDefaultVariant("easter2023-loritta", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 
