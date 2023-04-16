@@ -45,7 +45,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(CancelledCommand(languageManager))
             register(SummonCommand(languageManager))
             register(VieirinhaCommand(languageManager))
-            register(RollCommand(languageManager))
             register(TextTransformCommand(languageManager))
             register(JankenponCommand(languageManager))
             register(HungerGamesCommand(languageManager))

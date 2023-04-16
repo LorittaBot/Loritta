@@ -35,6 +35,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.Event
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFightCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.RollCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.ShipCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
@@ -76,6 +77,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(EventCommand(loritta))
         register(MusicalChairsCommand(loritta))
         register(ShipCommand(loritta))
+        register(RollCommand(loritta))
 
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))
