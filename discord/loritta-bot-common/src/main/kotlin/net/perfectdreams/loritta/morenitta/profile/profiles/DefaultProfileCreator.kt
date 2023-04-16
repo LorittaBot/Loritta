@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
@@ -42,8 +43,8 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
         aboutMe: String,
         allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile_wrapper_v4.png"))
-		val profileWrapperOverlay = readImage(File(LorittaBot.ASSETS, "profile_wrapper_v4_overlay.png"))
+		val profileWrapper = readImageFromResources("/profile/modern/profile_wrapper_blurple.png")
+		val profileWrapperOverlay = readImageFromResources("/profile/modern/profile_wrapper_blurple_overlay.png")
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
@@ -128,7 +129,7 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 			drawSection(graphics, latoBlack20, latoBold20, locale["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
 
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/modern/marry.png"))
+			val marrySection = readImageFromResources("/profile/modern/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			drawSection(graphics, latoBlack20, latoBold20, locale["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)

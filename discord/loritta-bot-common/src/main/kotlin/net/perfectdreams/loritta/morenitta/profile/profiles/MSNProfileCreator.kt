@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
@@ -29,7 +30,7 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 		aboutMe: String,
 		allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/msn/profile_wrapper.png"))
+		val profileWrapper = readImageFromResources("/profile/msn/profile_wrapper.png")
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -79,7 +80,7 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
-			val gameIcon = readImage(File(LorittaBot.ASSETS, "profile/msn/game_icon.png"))
+			val gameIcon = readImageFromResources("/profile/msn/game_icon.png")
 			graphics.drawImage(gameIcon, 0, 5, null)
 			graphics.font = msnFont24
 			graphics.color = Color(51, 51, 51)
@@ -147,7 +148,7 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 
 			if (index % 14 == 13) {
 				// Aumentar chat box
-				val extendedChatBox = readImage(File(LorittaBot.ASSETS, "profile/msn/extended_chat_box.png"))
+				val extendedChatBox = readImageFromResources("/profile/msn/extended_chat_box.png")
 				graphics.drawImage(extendedChatBox, 266, y - 38, null)
 				x = 272
 				y -= 32

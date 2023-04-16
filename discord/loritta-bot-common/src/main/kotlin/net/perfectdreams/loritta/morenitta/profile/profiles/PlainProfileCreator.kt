@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
@@ -36,7 +37,7 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
         aboutMe: String,
         allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
+		val profileWrapper = readImageFromResources("/profile/plain/profile_wrapper_$folderName.png")
 
 		val latoBold = loritta.graphicsFonts.latoBold
 		val latoBlack = loritta.graphicsFonts.latoBlack
@@ -53,7 +54,7 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/plain/marry.png"))
+			val marrySection = readImageFromResources("/profile/plain/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			graphics.color = Color.WHITE

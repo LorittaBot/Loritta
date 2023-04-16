@@ -1,20 +1,20 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
 import dev.kord.common.entity.Snowflake
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
-import java.awt.*
+import net.perfectdreams.loritta.morenitta.utils.*
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Image
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
 
 class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "cowboy") {
 	override suspend fun create(
@@ -29,7 +29,7 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
         aboutMe: String,
         allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/cowboy/profile_wrapper.png"))
+		val profileWrapper = readImageFromResources("/profile/cowboy/profile_wrapper.png")
 
 		val latoBold = loritta.graphicsFonts.latoBold
 		val latoBlack = loritta.graphicsFonts.latoBlack
@@ -46,7 +46,7 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
 		drawAvatar(avatar, graphics)
 
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/cowboy/marry.png"))
+			val marrySection = readImageFromResources("/profile/cowboy/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			val latoBold16 = latoBold.deriveFont(16f)

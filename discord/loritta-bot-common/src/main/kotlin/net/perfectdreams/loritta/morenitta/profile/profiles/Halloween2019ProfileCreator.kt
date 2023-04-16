@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
@@ -45,7 +46,7 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 				.deriveFont(42F)
 
 		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
-		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/halloween_2019/marry.png"))
+		val marrySection = readImageFromResources("/profile/halloween_2019/marry.png")
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
@@ -76,7 +77,7 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 		val resizedBadges = badges.map { it.getScaledInstance(35, 35, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
 		for (i in 0..29) {
-			val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/halloween_2019/frames/halloween_2019_${i.toString().padStart(6, '0')}.png"))
+			val profileWrapper = readImageFromResources("/profile/halloween_2019/frames/halloween_2019_${i.toString().padStart(6, '0')}.png")
 
 			val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 			val graphics = base.graphics.enableFontAntiAliasing()

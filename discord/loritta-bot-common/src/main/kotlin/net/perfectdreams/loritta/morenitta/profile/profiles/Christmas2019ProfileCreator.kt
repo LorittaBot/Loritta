@@ -1,32 +1,21 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.ImageUtils
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.drawText
-import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
-import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
+import net.perfectdreams.loritta.morenitta.utils.*
 import java.awt.Color
-import java.awt.Font
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
 
 class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "christmas2019") {
 	override suspend fun create(
@@ -54,7 +43,7 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 				.deriveFont(42F)
 
 		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
-		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/marry.png"))
+		val marrySection = readImageFromResources("/profile/christmas_2019/marry.png")
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
@@ -84,7 +73,7 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 
 		val resizedBadges = badges.map { it.getScaledInstance(30, 30, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/perfil_padoru.png"))
+		val profileWrapper = readImageFromResources("/profile/christmas_2019/perfil_padoru.png")
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()

@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
@@ -29,7 +30,7 @@ class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
         aboutMe: String,
         allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/next_gen/profile_wrapper.png"))
+		val profileWrapper = readImageFromResources("/profile/next_gen/profile_wrapper.png")
 
 		val latoBold = loritta.graphicsFonts.latoBold
 		val latoBlack = loritta.graphicsFonts.latoBlack

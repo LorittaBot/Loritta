@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.morenitta.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
@@ -47,7 +48,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
         aboutMe: String,
         allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))
+		val profileWrapper = readImageFromResources("/profile/nostalgia/profile_wrapper_$folderName.png")
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -149,7 +150,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 				marriage.user1
 			}.toString()
 
-			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/nostalgia/marry.png"))
+			val marrySection = readImageFromResources("/profile/nostalgia/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
 			val marriedWith = loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
 

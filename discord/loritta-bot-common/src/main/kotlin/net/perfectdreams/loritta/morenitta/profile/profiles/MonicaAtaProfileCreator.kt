@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
@@ -29,7 +30,7 @@ class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
         aboutMe: String,
         allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/profile_wrapper.png"))
+		val profileWrapper = readImageFromResources("/profile/monica_ata/profile_wrapper.png")
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -101,7 +102,7 @@ class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 		ImageUtils.drawCenteredString(graphics, "${reputations} reps", Rectangle(552, 440, 228, 54), graphics.font)
 
 		if (badges.isNotEmpty()) {
-			val badgesBackground = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/badges.png"))
+			val badgesBackground = readImageFromResources("/profile/monica_ata/badges.png")
 			graphics.drawImage(badgesBackground, 0, 0, null)
 
 			var x = 196
@@ -112,7 +113,7 @@ class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 		}
 
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/marry.png"))
+			val marrySection = readImageFromResources("/profile/monica_ata/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(21f)
