@@ -18,6 +18,7 @@ import java.awt.Color
 object RoleplayUtils {
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayCommand.I18N_PREFIX.Hug.Options.User.Text,
+        RoleplayCommand.I18N_PREFIX.Hug.ButtonLabel,
         RandomRoleplayPicturesClient::hug,
         I18nKeysData.Commands.Command.Roleplay.Hug::Response,
         Color(255, 141, 230),
@@ -26,6 +27,7 @@ object RoleplayUtils {
 
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayCommand.I18N_PREFIX.Headpat.Options.User.Text,
+        RoleplayCommand.I18N_PREFIX.Headpat.ButtonLabel,
         RandomRoleplayPicturesClient::headPat,
         I18nKeysData.Commands.Command.Roleplay.Headpat::Response,
         Color(156, 39, 176),
@@ -34,6 +36,7 @@ object RoleplayUtils {
 
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayCommand.I18N_PREFIX.Highfive.Options.User.Text,
+        RoleplayCommand.I18N_PREFIX.Highfive.ButtonLabel,
         RandomRoleplayPicturesClient::highFive,
         I18nKeysData.Commands.Command.Roleplay.Highfive::Response,
         Color(165, 255, 76),
@@ -42,6 +45,7 @@ object RoleplayUtils {
 
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayCommand.I18N_PREFIX.Slap.Options.User.Text,
+        RoleplayCommand.I18N_PREFIX.Slap.ButtonLabel,
         RandomRoleplayPicturesClient::slap,
         I18nKeysData.Commands.Command.Roleplay.Slap::Response,
         Color(244, 67, 54),
@@ -50,6 +54,7 @@ object RoleplayUtils {
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayCommand.I18N_PREFIX.Attack.Options.User.Text,
+        RoleplayCommand.I18N_PREFIX.Attack.ButtonLabel,
         RandomRoleplayPicturesClient::attack,
         I18nKeysData.Commands.Command.Roleplay.Attack::Response,
         Color(244, 67, 54),
@@ -58,6 +63,7 @@ object RoleplayUtils {
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayCommand.I18N_PREFIX.Dance.Options.User.Text,
+        RoleplayCommand.I18N_PREFIX.Dance.ButtonLabel,
         RandomRoleplayPicturesClient::dance,
         I18nKeysData.Commands.Command.Roleplay.Dance::Response,
         Color(255, 152, 0),
@@ -66,6 +72,7 @@ object RoleplayUtils {
 
     val KISS_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayCommand.I18N_PREFIX.Kiss.Options.User.Text,
+        RoleplayCommand.I18N_PREFIX.Kiss.ButtonLabel,
         RandomRoleplayPicturesClient::kiss,
         I18nKeysData.Commands.Command.Roleplay.Kiss::Response,
         Color(233, 30, 99),
@@ -77,6 +84,16 @@ object RoleplayUtils {
         HEAD_PAT_ATTRIBUTES,
         HIGH_FIVE_ATTRIBUTES,
         DANCE_ATTRIBUTES
+    )
+
+    val ALL_ATTRIBUTES = listOf(
+        HUG_ATTRIBUTES,
+        HEAD_PAT_ATTRIBUTES,
+        HIGH_FIVE_ATTRIBUTES,
+        SLAP_ATTRIBUTES,
+        ATTACK_ATTRIBUTES,
+        DANCE_ATTRIBUTES,
+        KISS_ATTRIBUTES
     )
 
     suspend fun handleRoleplayMessage(

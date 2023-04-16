@@ -97,7 +97,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(AnagramCommand())
 
         // ===[ ROLEPLAY ]===
-        register(RoleplayCommand(loritta))
+        register(RoleplayCommand.RoleplaySlashCommand(loritta))
+        register(RoleplayCommand.RoleplayUserCommand(loritta))
     }
 
     /**

@@ -9,6 +9,7 @@ import java.awt.Color
 
 data class RoleplayActionAttributes(
     val userI18nDescription: StringI18nData,
+    val buttonLabel: StringI18nData,
     val actionBlock: suspend RandomRoleplayPicturesClient.(Gender, Gender) -> PictureResponse,
     val embedResponse: (String, String) -> StringI18nData,
     val embedColor: Color,

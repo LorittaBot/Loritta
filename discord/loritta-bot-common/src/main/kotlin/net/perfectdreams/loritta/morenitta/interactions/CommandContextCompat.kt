@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 
 /**
@@ -33,9 +34,13 @@ interface CommandContextCompat {
     val messageChannel: MessageChannel
     val loritta: LorittaBot
 
+    suspend fun deferChannelMessage(ephemeral: Boolean)
     suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit = {}): InteractionMessage
     suspend fun giveAchievementAndNotify(achievementType: AchievementType, achievedAt: Instant = Clock.System.now())
 
+    /**
+     * Compatibility layer for Loritta's InteraKTions Unleashed command contexts
+     */
     class InteractionsCommandContextCompat(val context: ApplicationCommandContext) : CommandContextCompat {
         override val user: User
             get() = context.user
@@ -58,6 +63,10 @@ interface CommandContextCompat {
         override val loritta: LorittaBot
             get() = context.loritta
 
+        override suspend fun deferChannelMessage(ephemeral: Boolean) {
+            context.deferChannelMessage(ephemeral)
+        }
+
         override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
             return context.reply(
                 ephemeral
@@ -79,6 +88,59 @@ interface CommandContextCompat {
         }
     }
 
+    /**
+     * Compatibility layer for Loritta's InteraKTions Unleashed component contexts
+     */
+    class ComponentContextCompat(val context: ComponentContext) : CommandContextCompat {
+        override val user: User
+            get() = context.user
+
+        override val guild: Guild
+            get() = context.guild
+
+        override val config: ServerConfig
+            get() = context.config
+
+        override val locale: BaseLocale
+            get() = context.locale
+
+        override val i18nContext: I18nContext
+            get() = context.i18nContext
+
+        override val messageChannel: MessageChannel
+            get() = (context.event.channel as? MessageChannel) ?: error("Command wasn't used in a message channel!")
+
+        override val loritta: LorittaBot
+            get() = context.loritta
+
+        override suspend fun deferChannelMessage(ephemeral: Boolean) {
+            context.deferChannelMessage(ephemeral)
+        }
+
+        override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
+            return context.reply(
+                ephemeral
+            ) {
+                // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
+                builder()
+            }
+        }
+
+        override suspend fun giveAchievementAndNotify(achievementType: AchievementType, achievedAt: Instant) {
+            AchievementUtils.giveAchievementToUserAndNotifyThem(
+                context.loritta,
+                this,
+                context.i18nContext,
+                UserSnowflake.fromId(user.idLong),
+                achievementType,
+                achievedAt
+            )
+        }
+    }
+
+    /**
+     * Compatibility layer for Loritta's Discord Command Framework command contexts
+     */
     class LegacyDiscordCommandContextCompat(val context: DiscordCommandContext) : CommandContextCompat {
         override val user: User
             get() = context.user
@@ -100,6 +162,10 @@ interface CommandContextCompat {
 
         override val loritta: LorittaBot
             get() = context.loritta
+
+        override suspend fun deferChannelMessage(ephemeral: Boolean) {
+            // noop
+        }
 
         override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
             val inlineBuilder = MessageCreate {
@@ -123,6 +189,9 @@ interface CommandContextCompat {
         }
     }
 
+    /**
+     * Compatibility layer for Loritta's legacy command framework command contexts
+     */
     class LegacyMessageCommandContextCompat(val context: CommandContext) : CommandContextCompat {
         override val user: User
             get() = context.userHandle
@@ -144,6 +213,10 @@ interface CommandContextCompat {
 
         override val loritta: LorittaBot
             get() = context.loritta
+
+        override suspend fun deferChannelMessage(ephemeral: Boolean) {
+            // noop
+        }
 
         override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
             val inlineBuilder = MessageCreate {
