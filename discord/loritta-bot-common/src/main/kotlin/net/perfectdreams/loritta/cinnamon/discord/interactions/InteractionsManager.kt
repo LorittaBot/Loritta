@@ -24,8 +24,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.t
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.PlayAudioClipButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanButtonExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.retribute.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
@@ -111,16 +109,6 @@ class InteractionsManager(
         register(ChangeDialogBoxTypeButtonClickExecutor(loritta, loritta.gabrielaImageServerClient))
         register(ConfirmDialogBoxButtonClickExecutor(loritta, loritta.gabrielaImageServerClient))
         register(ChangeColorPortraitTypeButtonClickExecutor(loritta, loritta.gabrielaImageServerClient))
-
-        // ===[ ROLEPLAY ]===
-        register(RetributeHugButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
-        register(RetributeHeadPatButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
-        register(RetributeHighFiveButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
-        register(RetributeSlapButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
-        register(RetributeAttackButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
-        register(RetributeDanceButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
-        register(RetributeKissButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
-        register(SourcePictureExecutor(loritta))
 
         // ===[ ROBLOX ]===
 

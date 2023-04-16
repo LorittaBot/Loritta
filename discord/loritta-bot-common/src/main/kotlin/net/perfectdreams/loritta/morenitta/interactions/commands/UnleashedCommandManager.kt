@@ -41,6 +41,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTu
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.GamerSaferCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
@@ -94,6 +95,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ UTILS ]===
         register(AnagramCommand())
+
+        // ===[ ROLEPLAY ]===
+        register(RoleplayCommand(loritta))
     }
 
     /**

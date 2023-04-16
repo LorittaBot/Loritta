@@ -105,6 +105,25 @@ class InteractivityManager {
     }
 
     /**
+     * Creates an disabled button
+     */
+    fun disabledButton(
+        style: ButtonStyle,
+        label: String = "",
+        builder: (JDAButtonBuilder).() -> (Unit) = {}
+    ): Button {
+        val buttonId = UUID.randomUUID()
+        return Button.of(style, "disabled:$buttonId", label)
+            .let {
+                JDAButtonBuilder(it).apply(builder)
+                    .apply {
+                        disabled = true
+                    }
+                    .button
+            }
+    }
+
+    /**
      * Creates an interactive select menu
      */
     fun stringSelectMenuForUser(

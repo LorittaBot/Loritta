@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.DashboardCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.declarations.RoleplayCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.declarations.UndertaleCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
@@ -113,9 +112,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ UNDERTALE ]===
             register(UndertaleCommand(languageManager))
-
-            // ===[ ROLEPLAY ]===
-            register(RoleplayCommand(languageManager))
 
             // ===[ ROBLOX ]===
             register(RobloxCommand(languageManager))
