@@ -50,6 +50,9 @@ profileDesigns:
   defaultLight:
     title: "Padrão Claro"
     description: *defaultProfileDesign
+  defaultEaster2023:
+    title: "Padrão de Páscoa 2023"
+    description: "O clássico perfil da Loritta com temática de páscoa"
   modernBlurple:
     title: "Modernidade Roxa"
     description: "Modernidade é muito mais chique que simplicidade"
@@ -1004,3 +1007,6 @@ backgrounds:
   caracalHamburgerCute:
     title: "Caracal comendo um Hamburger"
     description: "COMA COMA COMA!"
+  easter2023Loritta:
+    title: "Loritta de Páscoa"
+    description: "Feliz Páscoa!"
