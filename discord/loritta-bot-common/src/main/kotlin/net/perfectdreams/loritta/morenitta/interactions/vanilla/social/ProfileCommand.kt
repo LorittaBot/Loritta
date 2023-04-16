@@ -36,58 +36,7 @@ import org.jetbrains.exposed.sql.update
 import java.util.*
 
 class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
-    private val I18N_PREFIX = I18nKeysData.Commands.Command.Profile
-    private val PROFILE_VIEW_I18N_PREFIX = I18nKeysData.Commands.Command.Profileview
-    private val PROFILE_BADGES_I18N_PREFIX = I18nKeysData.Commands.Command.Profilebadges
-    private val ABOUT_ME_I18N_PREFIX = I18nKeysData.Commands.Command.Aboutme
-
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL) {
-        subcommand(PROFILE_VIEW_I18N_PREFIX.Label, PROFILE_VIEW_I18N_PREFIX.Description) {
-            executor = ProfileViewExecutor()
-        }
-
-        subcommand(ABOUT_ME_I18N_PREFIX.Label, ABOUT_ME_I18N_PREFIX.Description) {
-            executor = AboutMeExecutor()
-        }
-
-        subcommand(PROFILE_BADGES_I18N_PREFIX.Label, PROFILE_BADGES_I18N_PREFIX.Description) {
-            executor = ProfileBadgesExecutor()
-        }
-    }
-
-    inner class ProfileViewExecutor : LorittaSlashCommandExecutor() {
-        inner class Options : ApplicationCommandOptions() {
-            val user = optionalUser("user", PROFILE_VIEW_I18N_PREFIX.Options.User.Text)
-        }
-
-        override val options = Options()
-
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            val userToBeViewed = args[options.user]?.user ?: context.user
-
-            if (UserUtils.handleIfUserIsBanned(loritta, context, userToBeViewed))
-                return
-
-            context.deferChannelMessage(false)
-
-            val guild = context.guildOrNull
-
-            val result = loritta.profileDesignManager.createProfile(
-                loritta,
-                context.i18nContext,
-                context.locale,
-                loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
-                loritta.profileDesignManager.transformUserToProfileUserInfoData(userToBeViewed),
-                guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
-            )
-
-            val message = createMessage(loritta, context.i18nContext, context.user, userToBeViewed, result)
-
-            context.reply(false) {
-                message()
-            }
-        }
-
+    companion object {
         suspend fun createMessage(
             loritta: LorittaBot,
             i18nContext: I18nContext,
@@ -151,6 +100,59 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
                     }
                 )
+            }
+        }
+    }
+
+    private val I18N_PREFIX = I18nKeysData.Commands.Command.Profile
+    private val PROFILE_VIEW_I18N_PREFIX = I18nKeysData.Commands.Command.Profileview
+    private val PROFILE_BADGES_I18N_PREFIX = I18nKeysData.Commands.Command.Profilebadges
+    private val ABOUT_ME_I18N_PREFIX = I18nKeysData.Commands.Command.Aboutme
+
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL) {
+        subcommand(PROFILE_VIEW_I18N_PREFIX.Label, PROFILE_VIEW_I18N_PREFIX.Description) {
+            executor = ProfileViewExecutor()
+        }
+
+        subcommand(ABOUT_ME_I18N_PREFIX.Label, ABOUT_ME_I18N_PREFIX.Description) {
+            executor = AboutMeExecutor()
+        }
+
+        subcommand(PROFILE_BADGES_I18N_PREFIX.Label, PROFILE_BADGES_I18N_PREFIX.Description) {
+            executor = ProfileBadgesExecutor()
+        }
+    }
+
+    inner class ProfileViewExecutor : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val user = optionalUser("user", PROFILE_VIEW_I18N_PREFIX.Options.User.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            val userToBeViewed = args[options.user]?.user ?: context.user
+
+            if (UserUtils.handleIfUserIsBanned(loritta, context, userToBeViewed))
+                return
+
+            context.deferChannelMessage(false)
+
+            val guild = context.guildOrNull
+
+            val result = loritta.profileDesignManager.createProfile(
+                loritta,
+                context.i18nContext,
+                context.locale,
+                loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
+                loritta.profileDesignManager.transformUserToProfileUserInfoData(userToBeViewed),
+                guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
+            )
+
+            val message = createMessage(loritta, context.i18nContext, context.user, userToBeViewed, result)
+
+            context.reply(false) {
+                message()
             }
         }
     }

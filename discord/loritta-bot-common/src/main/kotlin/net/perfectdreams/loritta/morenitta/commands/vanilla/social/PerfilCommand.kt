@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
+import dev.minn.jda.ktx.messages.InlineMessage
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -8,6 +10,7 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
@@ -45,8 +48,6 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 		if (AccountUtils.checkAndSendMessageIfUserIsBanned(context, userProfile))
 			return
 
-		val settings = loritta.newSuspendedTransaction { userProfile.settings }
-
 		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
 			context.reply(LorittaReply(context.locale["commands.command.profile.profileshop", "${loritta.config.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
@@ -61,6 +62,12 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 			context.guildOrNull?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
 		)
 
-		context.sendFile(result.image.inputStream(), "lori_profile.${result.imageFormat.extension}", "📝 **|** " + context.getAsMention(true) + context.locale["commands.command.profile.profile"]) // E agora envie o arquivo
+		val message = ProfileCommand.createMessage(loritta, context.i18nContext, context.userHandle, user, result)
+
+		val createdMessage = InlineMessage(MessageCreateBuilder()).apply {
+			message()
+		}.build()
+
+		context.sendMessage(createdMessage)
 	}
 }
