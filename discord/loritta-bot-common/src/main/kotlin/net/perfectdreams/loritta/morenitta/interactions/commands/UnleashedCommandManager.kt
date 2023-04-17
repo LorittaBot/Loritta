@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.DailyCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFightCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.RollCommand
@@ -84,6 +85,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(ProfileCommand(loritta))
 
         // ===[ ECONOMY ]===
+        register(DailyCommand(loritta))
         register(EmojiFightCommand(loritta))
 
         // ===[ DREAMLAND ]===

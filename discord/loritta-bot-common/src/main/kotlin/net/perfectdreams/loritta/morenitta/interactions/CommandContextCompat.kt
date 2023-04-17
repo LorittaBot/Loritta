@@ -13,6 +13,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.text.TextUtils.convertMarkdownLinksWithLabelsToPlainLinks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -29,6 +30,7 @@ interface CommandContextCompat {
     val user: User
     val config: ServerConfig
     val guild: Guild
+    val guildOrNull: Guild?
     val locale: BaseLocale
     val i18nContext: I18nContext
     val messageChannel: MessageChannel
@@ -47,6 +49,9 @@ interface CommandContextCompat {
 
         override val guild: Guild
             get() = context.guild
+
+        override val guildOrNull: Guild?
+            get() = context.guildOrNull
 
         override val config: ServerConfig
             get() = context.config
@@ -98,6 +103,9 @@ interface CommandContextCompat {
         override val guild: Guild
             get() = context.guild
 
+        override val guildOrNull: Guild?
+            get() = context.guildOrNull
+
         override val config: ServerConfig
             get() = context.config
 
@@ -148,6 +156,9 @@ interface CommandContextCompat {
         override val guild: Guild
             get() = context.guild
 
+        override val guildOrNull: Guild?
+            get() = context.member?.guild // This is (somewhat) an hack because there isn't a guildOrNull in the context
+
         override val config: ServerConfig
             get() = context.serverConfig
 
@@ -171,6 +182,9 @@ interface CommandContextCompat {
             val inlineBuilder = MessageCreate {
                 // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
                 builder()
+
+                // We are going to replace any links with labels with just links, since Discord does not support labels with links if it isn't a webhook or an interaction
+                content = content?.convertMarkdownLinksWithLabelsToPlainLinks()
             }
 
             // This isn't a real follow-up interaction message, but we do have the message data, so that's why we are using it
@@ -199,6 +213,9 @@ interface CommandContextCompat {
         override val guild: Guild
             get() = context.guild
 
+        override val guildOrNull: Guild?
+            get() = context.guildOrNull
+
         override val config: ServerConfig
             get() = context.config
 
@@ -222,6 +239,9 @@ interface CommandContextCompat {
             val inlineBuilder = MessageCreate {
                 // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
                 builder()
+
+                // We are going to replace any links with labels with just links, since Discord does not support labels with links if it isn't a webhook or an interaction
+                content = content?.convertMarkdownLinksWithLabelsToPlainLinks()
             }
 
             // This isn't a real follow-up interaction message, but we do have the message data, so that's why we are using it
