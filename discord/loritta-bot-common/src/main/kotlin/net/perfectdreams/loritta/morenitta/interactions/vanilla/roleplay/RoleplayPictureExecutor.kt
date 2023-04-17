@@ -14,8 +14,6 @@ abstract class RoleplayPictureExecutor(private val attributes: RoleplayActionAtt
     override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        context.deferChannelMessage(false)
-
         val receiver = args[options.user]
 
         RoleplayCommand.executeCompat(
