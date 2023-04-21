@@ -25,7 +25,7 @@ class GamerSaferRoleCheckerUpdater(val m: LorittaBot) : RunnableCoroutine {
         m.transaction {
             // Check all "Requires Verification" roles
             // TODO: Get ONLY guilds that are handled by this instance
-            val gsVerificationRoles = GamerSaferUserRoles.selectAll()
+            val gsVerificationRoles = GamerSaferRequiresVerificationUsers.selectAll()
 
             for (gsVerificationRole in gsVerificationRoles) {
                 try {
@@ -34,10 +34,7 @@ class GamerSaferRoleCheckerUpdater(val m: LorittaBot) : RunnableCoroutine {
                     }.orderBy(GamerSaferSuccessfulVerifications.verifiedAt, SortOrder.DESC)
                         .firstOrNull()
 
-                    if (lastUserVerification == null || now >= lastUserVerification[GamerSaferSuccessfulVerifications.verifiedAt].plusMillis(
-                            gsVerificationRole[GamerSaferUserRoles.checkPeriod]
-                        )
-                    ) {
+                    if (lastUserVerification == null || now >= lastUserVerification[GamerSaferSuccessfulVerifications.verifiedAt].plusMillis(gsVerificationRole[GamerSaferUserRoles.checkPeriod])) {
                         val guild = m.lorittaShards.getGuildById(gsVerificationRole[GamerSaferUserRoles.guild])
                         val role = guild?.getRoleById(gsVerificationRole[GamerSaferUserRoles.role])
                         val member = guild?.retrieveMemberOrNullById(gsVerificationRole[GamerSaferUserRoles.user])

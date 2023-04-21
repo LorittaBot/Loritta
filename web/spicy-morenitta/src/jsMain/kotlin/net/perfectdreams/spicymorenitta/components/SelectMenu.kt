@@ -45,7 +45,7 @@ fun SelectMenu(
                     val currentlySelectedOption = entries.firstOrNull { it.selected }
                     // TODO: Better Max Values handling
                     if (currentlySelectedOption == null || maxValues != 1) {
-                        Text("Click Here!")
+                        Text("Selecione um Cargo")
                     } else {
                         currentlySelectedOption.content.invoke()
                     }

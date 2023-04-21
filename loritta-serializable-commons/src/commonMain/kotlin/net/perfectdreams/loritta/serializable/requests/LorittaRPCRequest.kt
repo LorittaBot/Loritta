@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.serializable.requests
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.serializable.GamerSaferVerificationRole
+import net.perfectdreams.loritta.serializable.GamerSaferVerificationUserAndRole
 
 @Serializable
 sealed class LorittaRPCRequest
@@ -36,5 +36,5 @@ class GetGamerSaferVerifyConfigRequest(
 @Serializable
 class PostGamerSaferVerifyConfigRequest(
     val guildId: Long,
-    val verificationRoles: List<GamerSaferVerificationRole>
+    val verificationRoles: List<GamerSaferVerificationUserAndRole>
 ) : LorittaRPCRequest()

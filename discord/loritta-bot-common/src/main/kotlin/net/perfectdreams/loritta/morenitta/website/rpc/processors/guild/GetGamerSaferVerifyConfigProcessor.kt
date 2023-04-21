@@ -4,19 +4,19 @@ import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
-import net.perfectdreams.loritta.serializable.GamerSaferVerificationRole
+import net.perfectdreams.loritta.serializable.GamerSaferVerificationUserAndRole
 import net.perfectdreams.loritta.serializable.requests.GetGamerSaferVerifyConfigRequest
 import net.perfectdreams.loritta.serializable.responses.DiscordAccountError
 import net.perfectdreams.loritta.serializable.responses.GetGamerSaferVerifyConfigResponse
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import org.jetbrains.exposed.sql.select
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 class GetGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
@@ -51,12 +51,13 @@ class GetGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProc
                     return GetGamerSaferVerifyConfigResponse.Unauthorized()
 
                 val verificationRoles = m.loritta.transaction {
-                    GamerSaferRequiresVerificationRoles.select {
-                        GamerSaferRequiresVerificationRoles.guild eq jdaGuild.idLong
+                    GamerSaferRequiresVerificationUsers.select {
+                        GamerSaferRequiresVerificationUsers.guild eq jdaGuild.idLong
                     }.map {
-                        GamerSaferVerificationRole(
-                            it[GamerSaferRequiresVerificationRoles.role],
-                            it[GamerSaferRequiresVerificationRoles.checkPeriod].milliseconds.toIsoString()
+                        GamerSaferVerificationUserAndRole(
+                            it[GamerSaferRequiresVerificationUsers.user],
+                            it[GamerSaferRequiresVerificationUsers.role],
+                            it[GamerSaferRequiresVerificationUsers.checkPeriod].milliseconds.toIsoString()
                         )
                     }
                 }

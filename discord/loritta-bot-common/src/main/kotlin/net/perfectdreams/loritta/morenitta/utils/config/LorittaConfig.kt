@@ -207,6 +207,7 @@ data class LorittaConfig(
         val provider: String,
         val secretKey: String,
         val endpointUrl: String,
+        val webhookSecret: String
     )
 
     @Serializable

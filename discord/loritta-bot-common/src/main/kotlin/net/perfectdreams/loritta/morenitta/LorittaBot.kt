@@ -431,8 +431,6 @@ class LorittaBot(
 	val ecbManager = ECBManager()
 	val activityUpdater = ActivityUpdater(this)
 
-	val gamerSaferWaitingForCallbacks = ConcurrentHashMap<Long, Channel<Unit>>()
-
 	private val debugWebServer = DebugWebServer()
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
@@ -849,6 +847,7 @@ class LorittaBot(
 					GamerSaferUserRoles,
 					GamerSaferSuccessfulVerifications,
 					GamerSaferGuildMembers,
+					GamerSaferGuilds,
 					BrowserFingerprints,
 					BotVotesUserAvailableNotifications,
 					Giveaways,
@@ -861,7 +860,7 @@ class LorittaBot(
 					Easter2023Players,
 					CollectedEaster2023Eggs,
 					CreatedEaster2023Baskets,
-					Easter2023SonhosTransactionsLog
+					Easter2023SonhosTransactionsLog,
                 )
             }
         }

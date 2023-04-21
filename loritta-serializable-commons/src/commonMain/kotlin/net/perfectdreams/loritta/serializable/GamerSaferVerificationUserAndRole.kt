@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.days
 
 @Serializable
-data class GamerSaferVerificationRole(
+data class GamerSaferVerificationUserAndRole(
+    val userId: Long,
     val roleId: Long,
     val time: String
 ) {

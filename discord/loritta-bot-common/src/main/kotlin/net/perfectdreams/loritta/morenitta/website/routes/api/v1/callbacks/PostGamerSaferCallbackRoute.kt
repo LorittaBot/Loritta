@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -39,6 +40,11 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 				val (providerId, guildId, additionalDataAsJsonBase64) = event.payload.internalId.split("|||")
 				val additionalData = Json.decodeFromString<GamerSaferGuildInviteAdditionalData>(Base64.getDecoder().decode(additionalDataAsJsonBase64.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
 
+				if (additionalData.token != loritta.config.loritta.gamerSafer.webhookSecret) {
+					call.respondText("", status = HttpStatusCode.Unauthorized)
+					return
+				}
+
 				loritta.transaction {
 					GamerSaferGuildMembers.insert {
 						it[GamerSaferGuildMembers.guild] = guildId.toLong()
@@ -49,6 +55,11 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 			}
 			is PlayerVerificationEvent -> {
 				val additionalData = Json.decodeFromString<GamerSaferPlayerVerificationAdditionalData>(Base64.getDecoder().decode(event.payload.discordMessage.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8))
+
+				if (additionalData.token != loritta.config.loritta.gamerSafer.webhookSecret) {
+					call.respondText("", status = HttpStatusCode.Unauthorized)
+					return
+				}
 
 				// Check what roles the user can receive
 				val matchedUserRoles = loritta.transaction {
@@ -64,7 +75,6 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 					}.toList()
 				}
 
-				// TODO: Relay to clusters?
 				val guild = loritta.lorittaShards.getGuildById(additionalData.guildId)!!
 
 				for (matchedUserRole in matchedUserRoles) {
@@ -76,52 +86,6 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 				// Done!
 			}
 		}
-
-		/* if (token != "abc") {
-			call.respondJson("{}", HttpStatusCode.Unauthorized)
-			return
-		}
-
-		val verifyId = call.parameters["verifyId"]?.toLong()
-		logger.info { "Verify ID: $verifyId" }
-
-		if (verifyId == null) {
-			call.respondJson("{}", HttpStatusCode.NotFound)
-			return
-		}
-
-		loritta.transaction {
-			val verificationUserData = GamerSaferRequiresVerificationUsers.select {
-				GamerSaferRequiresVerificationUsers.id eq verifyId
-			}.firstOrNull()
-
-			if (verificationUserData == null) {
-				call.respondJson("{}", HttpStatusCode.NotFound)
-				return@transaction
-			}
-
-			GamerSaferRequiresVerificationUsers.deleteWhere { GamerSaferRequiresVerificationUsers.id eq verifyId }
-
-			GamerSaferSuccessfulVerifications.insert {
-				it[GamerSaferSuccessfulVerifications.user] = verificationUserData[GamerSaferRequiresVerificationUsers.user]
-				it[GamerSaferSuccessfulVerifications.guild] = verificationUserData[GamerSaferRequiresVerificationUsers.guild]
-				it[GamerSaferSuccessfulVerifications.role] = verificationUserData[GamerSaferRequiresVerificationUsers.role]
-				it[GamerSaferSuccessfulVerifications.verifiedAt] = Instant.now()
-			}
-
-			val guild = loritta.lorittaShards.getGuildById(verificationUserData[GamerSaferRequiresVerificationUsers.guild])
-
-			if (guild == null) {
-				call.respondJson("{}", HttpStatusCode.NotFound)
-				return@transaction
-			}
-
-			guild.addRoleToMember(UserSnowflake.fromId(verificationUserData[GamerSaferRequiresVerificationUsers.user]), guild.getRoleById(verificationUserData[GamerSaferRequiresVerificationUsers.role])!!)
-				.await()
-		}
-
-		loritta.gamerSaferWaitingForCallbacks[verifyId]?.send(Unit)
-		loritta.gamerSaferWaitingForCallbacks.remove(verifyId)  */
 
 		call.respondText("{}")
 	}

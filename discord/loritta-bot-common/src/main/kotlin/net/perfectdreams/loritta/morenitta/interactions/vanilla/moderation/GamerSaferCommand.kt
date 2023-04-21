@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferGuildInviteAdditionalData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferPlayerVerificationAdditionalData
+import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.*
@@ -57,7 +58,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             }
 
             val provider = loritta.config.loritta.gamerSafer.provider
-            val jws = createJWTToken(buildJsonObject { put("alg", "HS256") }.toString(),"$provider|${context.guildId}")
+            val jws = GamerSaferUtils.createJWTTokenForGuild(loritta, guildId)
 
             when (mjs) {
                 GamerSaferGuildMemberJoinStatus.HAS_JOINED_THE_GUILD -> context.reply(true) {
@@ -73,13 +74,13 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                                 buildJsonObject {
                                     put("provider", provider)
                                     put("providerId", context.guildId!!.toString())
-                                    put("providerLinkBack", "TODO/api/v1/callbacks/gamersafer")
+                                    put("providerLinkBack", loritta.lorittaCluster.websiteUrl + "api/v1/callbacks/gamersafer")
                                     put("internalId",
                                         Base64.getEncoder().encodeToString(
                                             Json.encodeToString(
                                                 GamerSaferGuildInviteAdditionalData(
                                                     context.user.idLong,
-                                                    "a"
+                                                    loritta.config.loritta.gamerSafer.webhookSecret
                                                 )
                                             ).toByteArray(Charsets.UTF_8)
                                         )
@@ -108,25 +109,6 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     }
                 }
             }
-
-            // Wait until we receive the verification callback
-            /* val ch = Channel<Unit>()
-            loritta.gamerSaferWaitingForCallbacks[requiresVerificationUserData[GamerSaferRequiresVerificationUsers.id].value] = ch
-
-            try {
-                withTimeout(5.minutes) {
-                    ch.receive()
-
-                    context.reply(true) {
-                        styled(
-                            "Verificado com sucesso!",
-                            Emotes.LoriYay
-                        )
-                    }
-                }
-            } catch (e: TimeoutCancellationException) {
-                loritta.gamerSaferWaitingForCallbacks.remove(verifyId)
-            } */
         }
     }
 
@@ -144,7 +126,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             }
 
             val provider = loritta.config.loritta.gamerSafer.provider
-            val jws = createJWTToken(buildJsonObject { put("alg", "HS256") }.toString(),"$provider|${context.guildId}")
+            val jws = GamerSaferUtils.createJWTTokenForGuild(loritta, guildId)
 
             when {
                 mjs == null -> context.reply(true) {
@@ -160,7 +142,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                                 buildJsonObject {
                                     put("provider", provider)
                                     put("providerId", context.guildId!!.toString())
-                                    put("providerLinkBack", "TODO/api/v1/callbacks/gamersafer")
+                                    put("providerLinkBack", "https://phoenix-whistler.tail2f90.ts.net/api/v1/callbacks/gamersafer")
                                     put("guildMemberId", mjs[GamerSaferGuildMembers.gamerSaferUser])
                                     put("discordMessage",
                                         Base64.getEncoder().encodeToString(
@@ -168,7 +150,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                                                 GamerSaferPlayerVerificationAdditionalData(
                                                     context.guildId!!,
                                                     context.user.idLong,
-                                                    "a"
+                                                    loritta.config.loritta.gamerSafer.webhookSecret
                                                 )
                                             ).toByteArray(Charsets.UTF_8)
                                         )
@@ -187,50 +169,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     }
                 }
             }
-
-            // Wait until we receive the verification callback
-            /* val ch = Channel<Unit>()
-            loritta.gamerSaferWaitingForCallbacks[requiresVerificationUserData[GamerSaferRequiresVerificationUsers.id].value] = ch
-
-            try {
-                withTimeout(5.minutes) {
-                    ch.receive()
-
-                    context.reply(true) {
-                        styled(
-                            "Verificado com sucesso!",
-                            Emotes.LoriYay
-                        )
-                    }
-                }
-            } catch (e: TimeoutCancellationException) {
-                loritta.gamerSaferWaitingForCallbacks.remove(verifyId)
-            } */
         }
-    }
-
-    fun createJWTToken(header: String, data: String): String {
-        val base64WithoutPadding = Base64.getUrlEncoder().withoutPadding()
-
-        val secretKeyAsBase64 = loritta.config.loritta.gamerSafer.secretKey
-
-        val decodedKey: ByteArray = secretKeyAsBase64.toByteArray(Charsets.UTF_8)
-        val secretKey: SecretKey = SecretKeySpec(
-            decodedKey,
-            0,
-            decodedKey.size,
-            "HS256"
-        )
-
-        val mac = Mac.getInstance("HmacSHA256")
-        mac.init(secretKey)
-
-        val headerAsBase64 = base64WithoutPadding.encodeToString(header.toByteArray(Charsets.UTF_8))
-        val dataAsBase64 = base64WithoutPadding.encodeToString(data.toByteArray(Charsets.UTF_8))
-        val doneFinal = mac.doFinal("${headerAsBase64}.${dataAsBase64}".toByteArray(Charsets.UTF_8))
-        val doneFinalAsBase64 = base64WithoutPadding.encodeToString(doneFinal)
-
-        return "$headerAsBase64.$dataAsBase64.$doneFinalAsBase64"
     }
 
     enum class GamerSaferGuildMemberJoinStatus {

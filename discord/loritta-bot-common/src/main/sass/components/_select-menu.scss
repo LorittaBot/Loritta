@@ -2,6 +2,7 @@
 // Because styling a default select menu is hard as fuc
 .select-wrapper {
     position: relative;
+    display: inline-block;
 
     >.select {
         border: 1px solid #0000001f;
@@ -11,7 +12,8 @@
         cursor: pointer;
 
         text-overflow: ellipsis;
-        overflow: hidden;
+        // Adding overflow: hidden adds unnecessary padding (why)
+        // overflow: hidden;
         white-space: nowrap;
 
         &:focus {
@@ -58,6 +60,9 @@
         background-color: white;
         border-radius: 0px 0px 4px 4px;
         width: 100%;
+        max-height: 400px;
+        min-width: 200px;
+        overflow: auto;
         color: black;
         // This looks super ugly without "mix-blend-mode"
         // However we also need to use "z-index" to avoid content overlapping the dropdown, but "z-index" creates a new stacking context

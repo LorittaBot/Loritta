@@ -1,24 +1,34 @@
 package net.perfectdreams.loritta.morenitta.website.rpc.processors.guild
 
+import dev.minn.jda.ktx.coroutines.await
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.content.*
+import io.ktor.http.*
 import io.ktor.server.application.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
+import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferUtils
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
-import net.perfectdreams.loritta.serializable.requests.GetGamerSaferVerifyConfigRequest
 import net.perfectdreams.loritta.serializable.requests.PostGamerSaferVerifyConfigRequest
 import net.perfectdreams.loritta.serializable.responses.DiscordAccountError
-import net.perfectdreams.loritta.serializable.responses.GetGamerSaferVerifyConfigResponse
-import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.loritta.serializable.responses.PostGamerSaferVerifyConfigResponse
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import kotlin.time.Duration
 
 class PostGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
@@ -52,23 +62,64 @@ class PostGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcPro
                 if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id))
                     return PostGamerSaferVerifyConfigResponse.Unauthorized()
 
-                // TODO: Create GamerSafer Guild config if needed
-                // TODO: Check what roles the users have and remove them to require verification
+                val isGamerSaferGuildPresent = m.loritta.transaction {
+                    GamerSaferGuilds.select {
+                        GamerSaferGuilds.guildId eq guildId
+                    }.count() != 0L
+                }
+
+                if (!isGamerSaferGuildPresent) {
+                    val guildInfo = GamerSaferUtils.createGuildInfo(m.loritta, guildId)
+
+                    val guildCreateResponse =
+                        m.loritta.http.post("${m.loritta.config.loritta.gamerSafer.endpointUrl}/guilds") {
+                            bearerAuth(guildInfo.jws)
+
+                            setBody(
+                                TextContent(
+                                    buildJsonObject {
+                                        put("provider", guildInfo.provider)
+                                        put("providerId", guildInfo.providerId)
+                                        put("name", jdaGuild.name)
+                                    }.toString(),
+                                    ContentType.Application.Json
+                                )
+                            )
+                        }
+
+                    if (guildCreateResponse.status == HttpStatusCode.Created) {
+                        val creationPayload = guildCreateResponse.bodyAsText()
+                        m.loritta.transaction {
+                            GamerSaferGuilds.insert {
+                                it[GamerSaferGuilds.guildId] = guildId
+                                it[GamerSaferGuilds.creationPayload] = creationPayload
+                            }
+                        }
+                    }
+                }
 
                 m.loritta.transaction {
-                    // Delete all verification roles
-                    GamerSaferRequiresVerificationRoles.deleteWhere {
-                        GamerSaferRequiresVerificationRoles.guild eq jdaGuild.idLong
+                    // Delete all verification users
+                    GamerSaferRequiresVerificationUsers.deleteWhere {
+                        GamerSaferRequiresVerificationUsers.guild eq jdaGuild.idLong
                     }
 
                     // Reinsert them!
-                    for (role in request.verificationRoles) {
-                        GamerSaferRequiresVerificationRoles.insert {
-                            it[GamerSaferRequiresVerificationRoles.guild] = jdaGuild.idLong
-                            it[GamerSaferRequiresVerificationRoles.role] = role.roleId
-                            it[GamerSaferRequiresVerificationRoles.checkPeriod] = Duration.parseIsoString(role.time).inWholeMilliseconds
+                    for (userAndRole in request.verificationRoles) {
+                        GamerSaferRequiresVerificationUsers.insert {
+                            it[GamerSaferRequiresVerificationUsers.guild] = jdaGuild.idLong
+                            it[GamerSaferRequiresVerificationUsers.user] = userAndRole.userId
+                            it[GamerSaferRequiresVerificationUsers.role] = userAndRole.roleId
+                            it[GamerSaferRequiresVerificationUsers.checkPeriod] = Duration.parseIsoString(userAndRole.time).inWholeMilliseconds
                         }
                     }
+                }
+
+                // Remove all roles that requires verification from the members
+                for (userAndRole in request.verificationRoles) {
+                    val role = jdaGuild.getRoleById(userAndRole.roleId) ?: continue
+                    val member = jdaGuild.retrieveMemberOrNullById(userAndRole.userId) ?: continue
+                    jdaGuild.removeRoleFromMember(member, role).await()
                 }
 
                 return PostGamerSaferVerifyConfigResponse.Success()

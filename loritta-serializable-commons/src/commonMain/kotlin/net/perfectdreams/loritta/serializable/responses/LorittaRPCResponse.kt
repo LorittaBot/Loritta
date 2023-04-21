@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.serializable.responses
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestion
-import net.perfectdreams.loritta.serializable.GamerSaferVerificationRole
+import net.perfectdreams.loritta.serializable.GamerSaferVerificationUserAndRole
 
 @Serializable
 sealed interface LorittaRPCResponse
@@ -117,7 +117,7 @@ sealed interface GetGamerSaferVerifyConfigResponse : LorittaRPCResponse {
     @Serializable
     class Success(
         val roles: List<Role>,
-        val verificationRoles: List<GamerSaferVerificationRole>
+        val verificationRoles: List<GamerSaferVerificationUserAndRole>
     ) : GetGamerSaferVerifyConfigResponse
 
     @Serializable
