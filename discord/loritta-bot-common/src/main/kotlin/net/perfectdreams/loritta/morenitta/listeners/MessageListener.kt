@@ -88,9 +88,6 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		if (event.message.type != MessageType.DEFAULT && event.message.type != MessageType.INLINE_REPLY) // Existem vários tipos de mensagens no Discord, mas apenas estamos interessados nas mensagens padrões de texto
 			return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
 		loritta.launchMessageJob(event) {
 			try {
 				if (event.isFromType(ChannelType.PRIVATE)) {
@@ -391,9 +388,6 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 			return
 
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		if (event.channel.type == ChannelType.TEXT) { // Mensagens em canais de texto

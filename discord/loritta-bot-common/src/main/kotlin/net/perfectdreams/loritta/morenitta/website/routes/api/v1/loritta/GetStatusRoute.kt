@@ -44,7 +44,6 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 			}
 			put("threadCount", ManagementFactory.getThreadMXBean().threadCount)
 			put("globalRateLimitHits", loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute())
-			put("isIgnoringRequests", loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			put("pendingMessages", loritta.pendingMessages.size)
 			put("minShard", currentShard.minShard)
 			put("maxShard", currentShard.maxShard)

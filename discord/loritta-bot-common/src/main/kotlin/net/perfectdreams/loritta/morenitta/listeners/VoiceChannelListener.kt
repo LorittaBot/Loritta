@@ -30,9 +30,6 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
 		val channelLeft = event.channelLeft
 		val channelJoined = event.channelJoined
 		if (event.guild.selfMember == event.member && channelLeft != null && channelJoined == null) {

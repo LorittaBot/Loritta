@@ -63,9 +63,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
 		// Ignoring bot avatar updates because *every time* Loritta (or any other big bot that shares a lot of servers with her) changes their avatar,
 		// it would SPAM event log messages in a lot of servers, causing the global rate limit to be triggered. :(
 		if (event.user.isBot)
@@ -172,9 +169,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
 		if (!event.isFromGuild)
 			return
 
@@ -237,9 +231,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 	override fun onMessageBulkDelete(event: MessageBulkDeleteEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -322,9 +313,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
 		bannedUsers.put("${event.guild.id}#${event.user.id}", true)
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -370,9 +358,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 	override fun onGuildUnban(event: GuildUnbanEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -429,9 +414,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 	override fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {

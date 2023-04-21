@@ -210,9 +210,6 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
 		if (loritta.messageInteractionCache.containsKey(e.messageIdLong)) {
 			val functions = loritta.messageInteractionCache[e.messageIdLong]!!
 
@@ -367,9 +364,6 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (DebugLog.cancelAllEvents)
 			return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
 		logger.debug { "${event.member} joined server ${event.guild}" }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -414,9 +408,6 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 	override fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {
 		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
 		val member = event.member

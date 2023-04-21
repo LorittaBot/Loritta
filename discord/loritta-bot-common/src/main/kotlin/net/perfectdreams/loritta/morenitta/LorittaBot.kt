@@ -121,7 +121,6 @@ import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
-import net.perfectdreams.loritta.morenitta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.tables.Payments
@@ -143,7 +142,6 @@ import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.Reaction
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
@@ -173,7 +171,6 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaDevelopmentBundle
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaProductionBundle
-import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -190,7 +187,6 @@ import java.security.SecureRandom
 import java.sql.Connection
 import java.time.*
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -338,7 +334,6 @@ class LorittaBot(
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
 		.build<Long, Optional<CachedUserInfo>>()
 	var bucketedController: BucketedController? = null
-	val rateLimitChecker = RateLimitChecker(this)
 
 	val perfectPaymentsClient = PerfectPaymentsClient(config.loritta.perfectPayments.url)
 

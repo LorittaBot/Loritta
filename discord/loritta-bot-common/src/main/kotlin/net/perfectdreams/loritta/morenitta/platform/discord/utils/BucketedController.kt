@@ -57,7 +57,6 @@ class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Non
 		val diff = System.currentTimeMillis() - lastTooManyRequestsCheck
 		if (diff >= 15_000) {
 			logger.info { "Doing self too many requests check... Last check was ${diff}ms ago" }
-			loritta.rateLimitChecker.checkIfRequestShouldBeIgnored()
 			lastTooManyRequestsCheck = System.currentTimeMillis()
 		}
 	}
