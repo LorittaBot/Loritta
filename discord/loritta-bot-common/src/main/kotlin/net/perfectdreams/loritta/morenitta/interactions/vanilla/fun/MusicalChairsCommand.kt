@@ -255,7 +255,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
             }
 
             val validParticipants = voiceChannel.members.filter { !it.user.isBot }
-            if (false && 1 >= validParticipants.size) {
+            if (1 >= validParticipants.size) {
                 context.reply(false) {
                     styled(
                         content = context.i18nContext.get(I18N_PREFIX.YouNeedAtLeastTwoPeopleToStart),
