@@ -10,17 +10,16 @@ import net.perfectdreams.loritta.morenitta.utils.gson
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.atomic.AtomicInteger
 
-class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
+class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : RunnableCoroutine {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		const val DATA_KEY = "youtube_webhooks"
@@ -29,16 +28,14 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 	var youtubeWebhooks = mutableMapOf<String, YouTubeWebhook>()
 	var fileLoaded = false
 
-	override fun run() {
+	override suspend fun run() {
 		try {
 			// Servidores que usam o módulo do YouTube
-			val allChannelIds = runBlocking {
-				loritta.pudding.transaction {
-					TrackedYouTubeAccounts.slice(TrackedYouTubeAccounts.youTubeChannelId)
-						.selectAll()
-						.groupBy(TrackedYouTubeAccounts.youTubeChannelId)
-						.toMutableList()
-				}
+			val allChannelIds = loritta.pudding.transaction {
+				TrackedYouTubeAccounts.slice(TrackedYouTubeAccounts.youTubeChannelId)
+					.selectAll()
+					.groupBy(TrackedYouTubeAccounts.youTubeChannelId)
+					.toMutableList()
 			}
 
 			// IDs dos canais a serem verificados
@@ -46,14 +43,13 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 			channelIds.addAll(allChannelIds.map { it[TrackedYouTubeAccounts.youTubeChannelId] })
 
 			if (!fileLoaded) {
-				val youTubeWebhooksData = runBlocking {
-					loritta.newSuspendedTransaction {
-						MiscellaneousData.select { MiscellaneousData.id eq DATA_KEY }
-							.limit(1)
-							.firstOrNull()
-							?.get(MiscellaneousData.data)
-					}
+				val youTubeWebhooksData = loritta.newSuspendedTransaction {
+					MiscellaneousData.select { MiscellaneousData.id eq DATA_KEY }
+						.limit(1)
+						.firstOrNull()
+						?.get(MiscellaneousData.data)
 				}
+
 				fileLoaded = true
 				if (youTubeWebhooksData != null) {
 					youtubeWebhooks = gson.fromJson(youTubeWebhooksData)
@@ -73,7 +69,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 				}
 
 				if (System.currentTimeMillis() > webhook.createdAt + (webhook.lease * 1000)) {
-					logger.debug { "${channelId}'s webhook expired! We will recreate it..." }
+					logger.info { "${channelId}'s webhook expired! We will recreate it..." }
 					youtubeWebhooks.remove(channelId)
 					notCreatedYetChannels.add(channelId)
 				}
@@ -111,9 +107,9 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 							return@async null
 						}
 
-						// We need to put them outside of the .debug {} block since we *need* them to be incremented
+						// We need to put them outside of the .info {} block since we *need* them to be incremented
 						val incrementAndGet = webhookCount.incrementAndGet()
-						logger.debug { "$channelId's webhook was sucessfully created! Currently there is $incrementAndGet/${webhooksToBeCreatedCount} created webhooks!" }
+						logger.info { "$channelId's webhook was sucessfully created! Currently there is $incrementAndGet/${webhooksToBeCreatedCount} created webhooks!" }
 
 						return@async Pair(
 							channelId,
@@ -129,42 +125,36 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 				}
 			}
 
-			runBlocking {
-				tasks.forEachIndexed { index, deferred ->
-					val pair = deferred.await()
+			tasks.forEachIndexed { index, deferred ->
+				val pair = deferred.await()
 
-					if (pair != null)
-						youtubeWebhooks[pair.first] = pair.second
+				if (pair != null)
+					youtubeWebhooks[pair.first] = pair.second
 
-					if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
-						logger.info { "Saving YouTube Webhook File... $index channels were processed" }
-						runBlocking {
-							loritta.newSuspendedTransaction {
-								MiscellaneousData.upsert(MiscellaneousData.id) {
-									it[MiscellaneousData.id] = DATA_KEY
-									it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
-								}
-							}
+				if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
+					logger.info { "Saving YouTube Webhook File... $index channels were processed" }
+					loritta.newSuspendedTransaction {
+						MiscellaneousData.upsert(MiscellaneousData.id) {
+							it[MiscellaneousData.id] = DATA_KEY
+							it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
 						}
 					}
 				}
+			}
 
-				val createdWebhooksCount = webhookCount.get()
+			val createdWebhooksCount = webhookCount.get()
 
-				if (createdWebhooksCount != 0) {
-					runBlocking {
-						loritta.newSuspendedTransaction {
-							MiscellaneousData.upsert(MiscellaneousData.id) {
-								it[MiscellaneousData.id] = DATA_KEY
-								it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
-							}
-						}
+			if (createdWebhooksCount != 0) {
+				loritta.newSuspendedTransaction {
+					MiscellaneousData.upsert(MiscellaneousData.id) {
+						it[MiscellaneousData.id] = DATA_KEY
+						it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
 					}
-
-					logger.info { "Successfully wrote YouTube Webhook File! ${webhookCount.get()} channels were processed" }
-				} else {
-					logger.info { "Successfully finished YouTube Webhook Task! No new webhooks were created..." }
 				}
+
+				logger.info { "Successfully wrote YouTube Webhook File! ${webhookCount.get()} channels were processed" }
+			} else {
+				logger.info { "Successfully finished YouTube Webhook Task! No new webhooks were created..." }
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Error while processing YouTube channels" }

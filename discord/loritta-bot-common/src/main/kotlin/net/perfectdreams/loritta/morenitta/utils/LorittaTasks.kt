@@ -33,8 +33,6 @@ class LorittaTasks(val loritta: LorittaBot) {
 			val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
 
 			scheduleAtFixedRate(LorittaDailyShopUpdateTask(loritta), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
-
-			scheduleWithFixedDelay(CreateYouTubeWebhooksTask(loritta), 0L, 1L, TimeUnit.MINUTES)
 		}
 	}
 

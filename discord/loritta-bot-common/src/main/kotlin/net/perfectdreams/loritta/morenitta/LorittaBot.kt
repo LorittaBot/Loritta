@@ -171,6 +171,7 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaDevelopmentBundle
 import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaProductionBundle
+import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -1685,6 +1686,7 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(CorreiosPackageInfoUpdater::class.simpleName!!, 15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
+		scheduleCoroutineAtFixedRateIfMainReplica(CreateYouTubeWebhooksTask::class.simpleName!!, 1.minutes, action = CreateYouTubeWebhooksTask(this@LorittaBot))
 		scheduleCoroutineAtFixedRate(GamerSaferRoleCheckerUpdater::class.simpleName!!, 1.minutes, action = GamerSaferRoleCheckerUpdater(this))
 		scheduleCoroutineAtFixedRate(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
 
