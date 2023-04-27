@@ -50,22 +50,4 @@ object TextUtils {
      * Strips new lines from [this]
      */
     fun String.stripNewLines() = this.replace(Regex("[\\r\\n]"), "")
-
-    /**
-     * Converts Markdown links with label such as "[link here](https://loritta.website/)" to "link here https://loritta.website/"
-     *
-     * Links that have punctuation after the link, such as "[link here](https://loritta.website/)!" are converted to "link here! https://loritta.website/"
-     *
-     * Useful to convert messages to something that can be sent within bot messages that aren't within a webhook/interaction!
-     */
-    fun String.convertMarkdownLinksWithLabelsToPlainLinks(): String {
-        return this.replace(markdownUrlsRegex) {
-            val punctuation = it.groupValues[3]
-            if (punctuation.isNotEmpty()) {
-                "${it.groupValues[1]}${it.groupValues[3]} ${it.groupValues[2]}"
-            } else {
-                "${it.groupValues[1]} ${it.groupValues[2]}"
-            }
-        }
-    }
 }
