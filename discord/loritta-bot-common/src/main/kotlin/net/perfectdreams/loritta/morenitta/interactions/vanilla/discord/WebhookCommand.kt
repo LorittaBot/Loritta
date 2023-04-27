@@ -9,14 +9,9 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.generics.getChannel
 import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.WebhookCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.webhook.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.WebhookUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -154,6 +149,72 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
     }
 
+    // TODO: Migrate this to JDA
+    //class WebhookEditSimpleExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
+    //    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+    //        val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
+    //
+    //        val messageId = string("message_id", WebhookCommand.I18N_PREFIX.Options.MessageId.Text)
+    //
+    //        val message = string("message", WebhookCommand.I18N_PREFIX.Options.Message.Text)
+    //
+    //        val embedTitle = optionalString("embed_title", WebhookCommand.I18N_PREFIX.Options.EmbedTitle.Text)
+    //
+    //        val embedDescription = optionalString("embed_description", WebhookCommand.I18N_PREFIX.Options.EmbedDescription.Text)
+    //
+    //        val embedImageUrl = optionalString("embed_image_url", WebhookCommand.I18N_PREFIX.Options.EmbedImageUrl.Text)
+    //
+    //        val embedThumbnailUrl = optionalString("embed_thumbnail_url", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+    //
+    //        val embedColor = optionalString("embed_color", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+    //    }
+    //
+    //    override val options = Options()
+    //
+    //    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    //        context.deferChannelMessageEphemerally() // Defer the message ephemerally because we don't want users looking at the webhook URL
+    //
+    //        val webhookUrl = args[options.webhookUrl]
+    //        val messageId = WebhookCommandUtils.getRawMessageIdOrFromURLOrFail(context, args[options.messageId])
+    //        val message = args[options.message]
+    //
+    //        // Embed Stuff
+    //        val embedTitle = args[options.embedTitle]
+    //        val embedDescription = args[options.embedDescription]
+    //        val embedImageUrl = args[options.embedImageUrl]
+    //        val embedThumbnailUrl = args[options.embedThumbnailUrl]
+    //        val embedColor = args[options.embedColor]
+    //
+    //        WebhookCommandUtils.editMessageViaWebhook(context, webhookUrl, messageId) {
+    //            val embed = if (embedTitle != null || embedDescription != null || embedImageUrl != null || embedThumbnailUrl != null) {
+    //                EmbedRequest(
+    //                    title = embedTitle?.optional() ?: Optional(),
+    //                    description = embedDescription?.optional() ?: Optional(),
+    //                    image = embedImageUrl?.let { EmbedImageRequest(it) }?.optional() ?: Optional(),
+    //                    thumbnail = embedThumbnailUrl?.let { EmbedThumbnailRequest(it) }?.optional() ?: Optional(),
+    //                    color = embedColor?.let {
+    //                        try {
+    //                            Color.fromString(it)
+    //                        } catch (e: IllegalArgumentException) {
+    //                            context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidEmbedColor))
+    //                        }
+    //                    }?.toKordColor()?.optional() ?: Optional()
+    //                )
+    //            } else null
+    //
+    //            WebhookEditMessageRequest(
+    //                message
+    //                    .replace(
+    //                        "\\n",
+    //                        "\n"
+    //                    ) // TODO: When Discord supports multi line options, then we don't need this anymore :D
+    //                    .optional(),
+    //                embeds = if (embed != null) listOf(embed).optional() else Optional()
+    //            )
+    //        }
+    //    }
+    //}
+
     inner class WebhookSendRepostExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
             val webhookUrl = string("webhook_url", I18N_PREFIX.Options.WebhookUrl.Text)
@@ -259,6 +320,76 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
         }
     }
+
+    //class WebhookEditRepostExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
+    //    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+    //        val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
+    //
+    //        val messageId = string("message_id", WebhookCommand.I18N_PREFIX.Options.MessageId.Text)
+    //
+    //        val messageUrl = string("message_url", WebhookCommand.I18N_PREFIX.Options.MessageUrl.Text)
+    //
+    //        val embedTitle = optionalString("embed_title", WebhookCommand.I18N_PREFIX.Options.EmbedTitle.Text)
+    //
+    //        val embedDescription = optionalString("embed_description", WebhookCommand.I18N_PREFIX.Options.EmbedDescription.Text)
+    //
+    //        val embedImageUrl = optionalString("embed_image_url", WebhookCommand.I18N_PREFIX.Options.EmbedImageUrl.Text)
+    //
+    //        val embedThumbnailUrl = optionalString("embed_thumbnail_url", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+    //
+    //        val embedColor = optionalString("embed_color", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+    //    }
+    //
+    //    override val options = Options()
+    //
+    //    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    //        context.deferChannelMessageEphemerally() // Defer the message ephemerally because we don't want users looking at the webhook URL
+    //
+    //        val webhookUrl = args[options.webhookUrl]
+    //        val messageId = WebhookCommandUtils.getRawMessageIdOrFromURLOrFail(context, args[options.messageId])
+    //        val message = args[options.messageUrl]
+    //
+    //        val matcher = WebhookCommandUtils.messageUrlRegex.find(message) ?: context.failEphemerally(
+    //            context.i18nContext.get(
+    //                WebhookCommand.I18N_PREFIX.InvalidMessageUrl
+    //            )
+    //        )
+    //        val retrievedMessage = WebhookCommandUtils.getMessageOrFail(context, rest.channel,
+    //            Snowflake(matcher.groupValues[2].toLong()),
+    //            Snowflake(matcher.groupValues[3].toLong())
+    //        )
+    //
+    //        // Embed Stuff
+    //        val embedTitle = args[options.embedTitle]
+    //        val embedDescription = args[options.embedDescription]
+    //        val embedImageUrl = args[options.embedImageUrl]
+    //        val embedThumbnailUrl = args[options.embedThumbnailUrl]
+    //        val embedColor = args[options.embedColor]
+    //
+    //        WebhookCommandUtils.editMessageViaWebhook(context, webhookUrl, messageId) {
+    //            val embed = if (embedTitle != null || embedDescription != null || embedImageUrl != null || embedThumbnailUrl != null) {
+    //                EmbedRequest(
+    //                    title = embedTitle?.optional() ?: Optional(),
+    //                    description = embedDescription?.optional() ?: Optional(),
+    //                    image = embedImageUrl?.let { EmbedImageRequest(it) }?.optional() ?: Optional(),
+    //                    thumbnail = embedThumbnailUrl?.let { EmbedThumbnailRequest(it) }?.optional() ?: Optional(),
+    //                    color = embedColor?.let {
+    //                        try {
+    //                            Color.fromString(it)
+    //                        } catch (e: IllegalArgumentException) {
+    //                            context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidEmbedColor))
+    //                        }
+    //                    }?.toKordColor()?.optional() ?: Optional()
+    //                )
+    //            } else null
+    //
+    //            WebhookEditMessageRequest(
+    //                WebhookCommandUtils.cleanUpRetrievedMessageContent(retrievedMessage).optional(),
+    //                embeds = if (embed != null) listOf(embed).optional() else Optional()
+    //            )
+    //        }
+    //    }
+    //}
 
     inner class WebhookSendJsonExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
