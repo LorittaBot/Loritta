@@ -1,0 +1,795 @@
+package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
+
+import club.minnced.discord.webhook.WebhookClient
+import club.minnced.discord.webhook.send.WebhookEmbed
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
+import dev.kord.common.entity.Snowflake
+import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.generics.getChannel
+import kotlinx.serialization.json.*
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.WebhookCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.webhook.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
+import net.perfectdreams.loritta.cinnamon.discord.utils.WebhookUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.utils.Color
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.common.utils.URLUtils
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+
+class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Webhook
+    }
+
+    val messageUrlRegex = Regex("/channels/([0-9]+)/([0-9]+)/([0-9]+)")
+
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
+        subcommandGroup(I18N_PREFIX.Send.Label, TodoFixThisData) {
+            subcommand(I18N_PREFIX.Send.Simple.Label, I18N_PREFIX.Send.Simple.Description) {
+                executor = WebhookSendSimpleExecutor()
+            }
+
+            subcommand(I18N_PREFIX.Send.Json.Label, I18N_PREFIX.Send.Json.Description) {
+                executor = WebhookSendJsonExecutor()
+            }
+
+            subcommand(I18N_PREFIX.Send.Repost.Label, I18N_PREFIX.Send.Repost.Description) {
+                executor = WebhookSendRepostExecutor()
+            }
+        }
+
+        subcommandGroup(I18N_PREFIX.Edit.Label, TodoFixThisData) {
+            /* subcommand(I18N_PREFIX.Edit.Simple.Label, I18N_PREFIX.Edit.Simple.Description) {
+                executor = WebhookEditSimpleExecutor(it)
+            } */
+
+            subcommand(I18N_PREFIX.Edit.Json.Label, I18N_PREFIX.Edit.Json.Description) {
+                executor = WebhookEditJsonExecutor()
+            }
+
+            /* subcommand(I18N_PREFIX.Edit.Repost.Label, I18N_PREFIX.Send.Repost.Description) {
+                executor = WebhookEditRepostExecutor(it)
+            } */
+        }
+    }
+
+    inner class WebhookSendSimpleExecutor : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
+
+            val message = string("message", WebhookCommand.I18N_PREFIX.Options.Message.Text)
+
+            val username = optionalString("username", WebhookCommand.I18N_PREFIX.Options.Username.Text)
+
+            val avatarUrl = optionalString("avatar_url", WebhookCommand.I18N_PREFIX.Options.AvatarUrl.Text)
+
+            val embedTitle = optionalString("embed_title", WebhookCommand.I18N_PREFIX.Options.EmbedTitle.Text)
+
+            val embedDescription = optionalString("embed_description", WebhookCommand.I18N_PREFIX.Options.EmbedDescription.Text)
+
+            val embedImageUrl = optionalString("embed_image_url", WebhookCommand.I18N_PREFIX.Options.EmbedImageUrl.Text)
+
+            val embedThumbnailUrl = optionalString("embed_thumbnail_url", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+
+            val embedColor = optionalString("embed_color", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+
+            val threadId = optionalString("thread_id", I18N_PREFIX.Options.ThreadId.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
+
+            val webhookUrl = args[options.webhookUrl]
+            val message = args[options.message]
+            val username = args[options.username]
+            val avatarUrl = args[options.avatarUrl]
+
+            // Embed Stuff
+            val embedTitle = args[options.embedTitle]
+            val embedDescription = args[options.embedDescription]
+            val embedImageUrl = args[options.embedImageUrl]
+            val embedThumbnailUrl = args[options.embedThumbnailUrl]
+            val embedColor = args[options.embedColor]
+
+            val color = embedColor?.let {
+                try {
+                    Color.fromString(it).rgb
+                } catch (e: IllegalArgumentException) {
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidEmbedColor),
+                            Emotes.Error
+                        )
+                    }
+                }
+            }
+
+            val threadId = args[options.threadId]?.toLongOrNull()
+
+            sendMessageViaWebhook(context, webhookUrl, threadId) {
+                buildJsonObject {
+                    put("content", message)
+                    put("username", username)
+                    put("avatar_url", avatarUrl)
+
+                    if (embedTitle != null || embedDescription != null || embedImageUrl != null || embedThumbnailUrl != null) {
+                        putJsonArray("embeds") {
+                            addJsonObject {
+                                put("title", embedTitle)
+                                put("description", embedDescription)
+
+                                if (embedImageUrl != null)
+                                    putJsonObject("image") {
+                                        put("url", embedImageUrl)
+                                    }
+
+                                if (embedThumbnailUrl != null)
+                                    putJsonObject("thumbnail") {
+                                        put("url", embedThumbnailUrl)
+                                    }
+
+                                if (color != null)
+                                    put("color", color)
+                            }
+                        }
+                    }
+                }
+                decodeRequestFromString(context, message)
+            }
+        }
+    }
+
+    inner class WebhookSendRepostExecutor : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val webhookUrl = string("webhook_url", I18N_PREFIX.Options.WebhookUrl.Text)
+
+            val messageUrl = string("message_url", I18N_PREFIX.Options.MessageUrl.Text)
+
+            val username = optionalString("username", I18N_PREFIX.Options.Username.Text)
+
+            val avatarUrl = optionalString("avatar_url", I18N_PREFIX.Options.AvatarUrl.Text)
+
+            val embedTitle = optionalString("embed_title", I18N_PREFIX.Options.EmbedTitle.Text)
+
+            val embedDescription = optionalString("embed_description", I18N_PREFIX.Options.EmbedDescription.Text)
+
+            val embedImageUrl = optionalString("embed_image_url", I18N_PREFIX.Options.EmbedImageUrl.Text)
+
+            val embedThumbnailUrl = optionalString("embed_thumbnail_url", I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+
+            val embedColor = optionalString("embed_color", I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+
+            val threadId = optionalString("thread_id", I18N_PREFIX.Options.ThreadId.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
+
+            val webhookUrl = args[options.webhookUrl]
+            val messageUrl = args[options.messageUrl]
+            val username = args[options.username]
+            val avatarUrl = args[options.avatarUrl]
+
+            // Embed Stuff
+            val embedTitle = args[options.embedTitle]
+            val embedDescription = args[options.embedDescription]
+            val embedImageUrl = args[options.embedImageUrl]
+            val embedThumbnailUrl = args[options.embedThumbnailUrl]
+            val embedColor = args[options.embedColor]
+
+            val color = embedColor?.let {
+                try {
+                    Color.fromString(it).rgb
+                } catch (e: IllegalArgumentException) {
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidEmbedColor),
+                            Emotes.Error
+                        )
+                    }
+                }
+            }
+
+            val threadId = args[options.threadId]?.toLongOrNull()
+
+            val matcher = messageUrlRegex.find(messageUrl) ?: context.fail(true) {
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.InvalidMessageUrl
+                    ),
+                    Emotes.Error
+                )
+            }
+
+            val channel = loritta.lorittaShards.shardManager.getChannel<MessageChannel>(matcher.groupValues[2].toLong())
+            val retrievedMessage = channel?.retrieveMessageById(matcher.groupValues[3])
+                ?.await()
+                ?: context.fail(true) {
+                    styled(
+                        context.i18nContext.get(WebhookCommand.I18N_PREFIX.MessageToBeRepostedDoesNotExist),
+                        Emotes.Error
+                    )
+                }
+
+            sendMessageViaWebhook(context, webhookUrl, threadId) {
+                buildJsonObject {
+                    put("content", retrievedMessage.contentRaw)
+                    put("username", username)
+                    put("avatar_url", avatarUrl)
+
+                    if (embedTitle != null || embedDescription != null || embedImageUrl != null || embedThumbnailUrl != null) {
+                        putJsonArray("embeds") {
+                            addJsonObject {
+                                put("title", embedTitle)
+                                put("description", embedDescription)
+
+                                if (embedImageUrl != null)
+                                    putJsonObject("image") {
+                                        put("url", embedImageUrl)
+                                    }
+
+                                if (embedThumbnailUrl != null)
+                                    putJsonObject("thumbnail") {
+                                        put("url", embedThumbnailUrl)
+                                    }
+
+                                if (color != null)
+                                    put("color", color)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    inner class WebhookSendJsonExecutor : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val webhookUrl = string("webhook_url", I18N_PREFIX.Options.WebhookUrl.Text)
+
+            val json = string("json", I18N_PREFIX.Options.Json.Text)
+
+            val threadId = optionalString("thread_id", I18N_PREFIX.Options.ThreadId.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
+
+            val webhookUrl = args[options.webhookUrl]
+            val message = args[options.json]
+            val threadId = args[options.threadId]?.toLongOrNull()
+
+            sendMessageViaWebhook(context, webhookUrl, threadId) {
+                decodeRequestFromString(context, message)
+            }
+        }
+    }
+
+    inner class WebhookEditJsonExecutor : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val webhookUrl = string("webhook_url", I18N_PREFIX.Options.WebhookUrl.Text)
+
+            val messageId = string("message_id", I18N_PREFIX.Options.MessageId.Text)
+
+            val json = string("json", I18N_PREFIX.Options.Json.Text)
+
+            val threadId = optionalString("thread_id", I18N_PREFIX.Options.ThreadId.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
+
+            val webhookUrl = args[options.webhookUrl]
+            val messageId = getRawMessageIdOrFromURLOrFail(context, args[options.messageId])
+            val message = args[options.json]
+            val threadId = args[options.threadId]?.toLongOrNull()
+
+            editMessageViaWebhook(context, webhookUrl, messageId, threadId) {
+                decodeRequestFromString(context, message)
+            }
+        }
+    }
+
+    suspend fun sendMessageViaWebhook(
+        context: ApplicationCommandContext,
+        webhookUrl: String,
+        threadId: Long?,
+        requestBuilder: () -> (JsonObject)
+    ) {
+        val matchResult = WebhookUtils.webhookRegex.find(webhookUrl) ?: context.fail(true) {
+            styled(
+                context.i18nContext.get(I18N_PREFIX.InvalidWebhookUrl),
+                Emotes.Error
+            )
+        }
+
+        val webhookId = matchResult.groupValues[1].toLong()
+        val webhookToken = matchResult.groupValues[2]
+
+        // First we need to get the webhook's info
+        val webhook = context.event.jda.retrieveWebhookById(webhookId).await()
+        val targetChannel = webhook.channel
+        if (targetChannel is ForumChannel && threadId == null) {
+            context.fail(true) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.TargetChannelIsAForumButNoThreadIdWasProvided),
+                    Emotes.Error
+                )
+            }
+        }
+
+        WebhookClient.withId(webhookId, webhookToken)
+            .onThread(threadId ?: 0)
+            .use { webhookClient ->
+                // Can we workaround this by using horrible hacks?
+                // Yes we can!
+                val request = requestBuilder.invoke()
+
+                val content = getAsStringOrNull(request, "content")
+                val avatarUrl = getAsStringOrNull(request, "avatar_url")
+
+                // Validations before sending the message
+                // Message Length
+                validateMessageLength(context, content)
+
+                // Avatar URL
+                validateURLAsHttpOrHttps(
+                    context,
+                    avatarUrl,
+                    I18N_PREFIX.InvalidAvatarUrl
+                )
+
+                // Embeds
+                val embedsArray = request["embeds"]?.jsonArray
+
+                val sentMessage = webhookClient.send(
+                    WebhookMessageBuilder()
+                        .setContent(content)
+                        .setUsername(getAsStringOrNull(request, "username"))
+                        .setAvatarUrl(avatarUrl)
+                        .setTTS(getAsBooleanOrNull(request, "tts") ?: false)
+                        .apply {
+                            val embeds = embedsArray?.filterIsInstance<JsonObject>()
+
+                            if (embeds != null) {
+                                if (embeds.size > DiscordResourceLimits.Message.EmbedsPerMessage)
+                                    context.fail(true) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.TooManyEmbeds(
+                                                    DiscordResourceLimits.Message.EmbedsPerMessage
+                                                )
+                                            ),
+                                            Emotes.Error
+                                        )
+                                    }
+
+                                for (embed in embeds)
+                                    validateEmbedAndAppend(context, embed, this)
+                            }
+                        }
+                        .build()
+                ).await()
+
+                // I think these are always present, but who knows
+                // The guild ID is always NOT present
+                val messageId = sentMessage.id
+
+                sendWebhookSuccessMessage(
+                    context,
+                    messageId,
+                    I18N_PREFIX.Send.Success
+                )
+            }
+    }
+
+    suspend fun editMessageViaWebhook(
+        context: ApplicationCommandContext,
+        webhookUrl: String,
+        messageId: Long,
+        threadId: Long?,
+        requestBuilder: () -> (JsonObject)
+    ) {
+        val matchResult = WebhookUtils.webhookRegex.find(webhookUrl) ?: context.fail(true) {
+            styled(
+                context.i18nContext.get(I18N_PREFIX.InvalidWebhookUrl),
+                Emotes.Error
+            )
+        }
+
+        val webhookId = matchResult.groupValues[1].toLong()
+        val webhookToken = matchResult.groupValues[2]
+
+        // First we need to get the webhook's info
+        val webhook = context.event.jda.retrieveWebhookById(webhookId).await()
+        val targetChannel = webhook.channel
+        if (targetChannel is ForumChannel && threadId == null) {
+            context.fail(true) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.TargetChannelIsAForumButNoThreadIdWasProvided),
+                    Emotes.Error
+                )
+            }
+        }
+
+        WebhookClient.withId(webhookId, webhookToken)
+            .onThread(threadId ?: 0)
+            .use { webhookClient ->
+                // Can we workaround this by using horrible hacks?
+                // Yes we can!
+                val request = requestBuilder.invoke()
+
+                val content = getAsStringOrNull(request, "content")
+                val avatarUrl = getAsStringOrNull(request, "avatar_url")
+
+                // Validations before sending the message
+                // Message Length
+                validateMessageLength(context, content)
+
+                // Avatar URL
+                validateURLAsHttpOrHttps(
+                    context,
+                    avatarUrl,
+                    I18N_PREFIX.InvalidAvatarUrl
+                )
+
+                // Embeds
+                val embedsArray = request["embeds"]?.jsonArray
+
+                val sentMessage = webhookClient.edit(
+                    messageId,
+                    WebhookMessageBuilder()
+                        .setContent(content)
+                        .setUsername(getAsStringOrNull(request, "username"))
+                        .setAvatarUrl(avatarUrl)
+                        .setTTS(getAsBooleanOrNull(request, "tts") ?: false)
+                        .apply {
+                            val embeds = embedsArray?.filterIsInstance<JsonObject>()
+
+                            if (embeds != null) {
+                                if (embeds.size > DiscordResourceLimits.Message.EmbedsPerMessage)
+                                    context.fail(true) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.TooManyEmbeds(
+                                                    DiscordResourceLimits.Message.EmbedsPerMessage
+                                                )
+                                            ),
+                                            Emotes.Error
+                                        )
+                                    }
+
+                                for (embed in embeds)
+                                    validateEmbedAndAppend(context, embed, this)
+                            }
+                        }
+                        .build()
+                ).await()
+
+                // I think these are always present, but who knows
+                // The guild ID is always NOT present
+                val messageId = sentMessage.id
+
+                sendWebhookSuccessMessage(
+                    context,
+                    messageId,
+                    I18N_PREFIX.Edit.Success
+                )
+            }
+    }
+
+    fun decodeRequestFromString(context: ApplicationCommandContext, input: String): JsonObject {
+        try {
+            val parsedToJsonElement = Json.parseToJsonElement(input).jsonObject
+
+            val rebuiltJson = buildJsonObject {
+                for (entry in parsedToJsonElement.entries) {
+                    if (entry.key == "embed") {
+                        putJsonArray("embeds") {
+                            add(entry.value)
+                        }
+                    } else {
+                        put(entry.key, entry.value)
+                    }
+                }
+            }
+
+            return rebuiltJson
+        } catch (e: Exception) {
+            // Invalid message
+            if (!input.startsWith("{")) // Doesn't seem to be a valid JSON, maybe they would prefer using "/webhook send simple"?
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidJsonMessageNoCurlyBraces(context.loritta.commandMentions.webhookSendSimple, context.loritta.commandMentions.webhookSendRepost)),
+                        Emotes.Error
+                    )
+                }
+            else
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.InvalidJsonMessage),
+                        Emotes.Error
+                    )
+                }
+        }
+    }
+
+    private fun validateMessageLength(context: ApplicationCommandContext, optionalContent: String?) {
+        optionalContent?.length?.let {
+            if (it > DiscordResourceLimits.Message.Length)
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18N_PREFIX.MessageTooBig(
+                                DiscordResourceLimits.Message.Length
+                            )
+                        ),
+                        Emotes.Error
+                    )
+                }
+        }
+    }
+
+    /**
+     * Validates if the [url] is a valid HTTP or HTTPS URL via [URLUtils.isValidHttpOrHttpsURL], if it isn't, the command will fail ephemerally with the [message]
+     */
+    private fun validateURLAsHttpOrHttps(context: ApplicationCommandContext, url: String?, message: StringI18nData) {
+        if (url != null && !URLUtils.isValidHttpOrHttpsURL(url))
+            context.fail(true) {
+                styled(
+                    context.i18nContext.get(message),
+                    Emotes.Error
+                )
+            }
+    }
+
+    private fun validateEmbedAndAppend(context: ApplicationCommandContext, embed: JsonObject, builder: WebhookMessageBuilder) {
+        // Embeds
+        val embedBuilder = WebhookEmbedBuilder()
+        var totalEmbedLength = 0
+
+        val title = getAsStringOrNull(embed, "title")
+        val titleLength = title?.length
+        if (titleLength != null && titleLength > DiscordResourceLimits.Embed.Title)
+            context.fail(true) {
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.EmbedTitleTooBig(
+                            DiscordResourceLimits.Embed.Title
+                        )
+                    ),
+                    Emotes.Error
+                )
+            }
+
+        totalEmbedLength += titleLength ?: 0
+        if (title != null)
+            embedBuilder.setTitle(WebhookEmbed.EmbedTitle(title, getAsStringOrNull(embed, "url")))
+
+        val description = getAsStringOrNull(embed, "description")
+        val descriptionLength = description?.length
+
+        if (descriptionLength != null && descriptionLength > DiscordResourceLimits.Embed.Description)
+            context.fail(true) {
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.EmbedDescriptionTooBig(
+                            DiscordResourceLimits.Embed.Description
+                        )
+                    ),
+                    Emotes.Error
+                )
+            }
+
+        totalEmbedLength += descriptionLength ?: 0
+        if (description != null)
+            embedBuilder.setDescription(description)
+
+        val fields = embed["fields"]?.jsonArray
+            ?.filterIsInstance<JsonObject>()
+        val fieldsSize = fields?.size
+        if (fieldsSize != null && fieldsSize > DiscordResourceLimits.Embed.FieldsPerEmbed)
+            context.fail(true) {
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.TooManyEmbedFields(
+                            DiscordResourceLimits.Embed.FieldsPerEmbed
+                        )
+                    ),
+                    Emotes.Error
+                )
+            }
+
+        if (fields != null) {
+            for (field in fields) {
+                val fieldName = getAsStringOrNull(field, "name") ?: " "
+                val fieldValue = getAsStringOrNull(field, "value") ?: " "
+                val fieldNameLength = fieldName.length
+                val fieldValueLength = fieldValue.length
+
+                if (fieldNameLength > DiscordResourceLimits.Embed.Field.Name)
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.EmbedFieldNameTooBig(
+                                    DiscordResourceLimits.Embed.Field.Name
+                                )
+                            ),
+                            Emotes.Error
+                        )
+                    }
+
+                if (fieldValueLength > DiscordResourceLimits.Embed.Field.Value)
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.EmbedFieldValueTooBig(
+                                    DiscordResourceLimits.Embed.Field.Value
+                                )
+                            ),
+                            Emotes.Error
+                        )
+                    }
+
+                totalEmbedLength += fieldNameLength
+                totalEmbedLength += fieldValueLength
+
+                embedBuilder.addField(
+                    WebhookEmbed.EmbedField(
+                        getAsBooleanOrNull(field, "inline") ?: true,
+                        fieldName,
+                        fieldValue
+                    )
+                )
+            }
+        }
+
+        val footer = embed["footer"]
+        if (footer is JsonObject) {
+            val footerText = getAsStringOrNull(footer, "text")
+            if (footerText != null) {
+                val footerIconUrl = getAsStringOrNull(footer, "icon_url")
+                val footerTextLength = footerText.length
+
+                if (footerTextLength > DiscordResourceLimits.Embed.Footer.Text)
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(
+                                WebhookCommand.I18N_PREFIX.EmbedFooterTooBig(
+                                    DiscordResourceLimits.Embed.Footer.Text
+                                )
+                            ),
+                            Emotes.Error
+                        )
+                    }
+
+                totalEmbedLength += footerTextLength
+
+                embedBuilder.setFooter(WebhookEmbed.EmbedFooter(footerText, footerIconUrl))
+            }
+        }
+
+        val author = embed["author"]
+        if (author is JsonObject) {
+            val authorName = getAsStringOrNull(author, "name")
+            if (authorName != null) {
+                val authorLength = authorName.length
+
+                if (authorLength > DiscordResourceLimits.Embed.Author.Name)
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(
+                                WebhookCommand.I18N_PREFIX.EmbedAuthorNameTooBig(
+                                    DiscordResourceLimits.Embed.Author.Name
+                                )
+                            ),
+                            Emotes.Error
+                        )
+                    }
+
+                totalEmbedLength += authorLength
+                embedBuilder.setAuthor(WebhookEmbed.EmbedAuthor(authorName, getAsStringOrNull(author, "icon_url"), getAsStringOrNull(author, "url")))
+            }
+        }
+
+        // Images
+        val image = embed["image"]
+        if (image is JsonObject) {
+            val url = getAsStringOrNull(image, "url")
+            validateURLAsHttpOrHttps(
+                context,
+                url,
+                I18N_PREFIX.InvalidEmbedImageUrl
+            )
+
+            embedBuilder.setImageUrl(url)
+        }
+
+        val thumbnail = embed["thumbnail"]
+        if (thumbnail is JsonObject) {
+            val url = getAsStringOrNull(thumbnail, "url")
+            validateURLAsHttpOrHttps(
+                context,
+                url,
+                I18N_PREFIX.InvalidEmbedThumbnailUrl
+            )
+
+            embedBuilder.setThumbnailUrl(url)
+        }
+
+        val color = embed["color"]?.jsonPrimitive?.intOrNull
+        embedBuilder.setColor(color)
+
+        if (totalEmbedLength > DiscordResourceLimits.Embed.TotalCharacters)
+            context.fail(true) {
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.EmbedTooBig(
+                            DiscordResourceLimits.Embed.TotalCharacters
+                        )
+                    ),
+                    Emotes.Error
+                )
+            }
+
+        builder.addEmbeds(embedBuilder.build())
+    }
+
+    private suspend fun sendWebhookSuccessMessage(context: ApplicationCommandContext, messageId: Long?, message: StringI18nData) = context.reply(true) {
+        styled(
+            "**${context.i18nContext.get(message)}**",
+            Emotes.LoriYay
+        )
+
+        if (messageId != null) {
+            styled(
+                context.i18nContext.get(WebhookCommand.I18N_PREFIX.MessageId(messageId.toString()))
+            )
+        }
+
+        styled(
+            "*${context.i18nContext.get(WebhookCommand.I18N_PREFIX.WatchOutDontSendTheWebhookUrlToOtherUsers)}*"
+        )
+    }
+
+    /**
+     * Gets a Message ID from the [input].
+     *
+     * * The input is parsed as a Long, if it fails...
+     * * The input is parsed as Message URL and the Message ID is extracted from the message, if it fails...
+     * * The command fails ephemerally
+     */
+    private fun getRawMessageIdOrFromURLOrFail(context: ApplicationCommandContext, input: String): Long {
+        return input.toLongOrNull() ?: messageUrlRegex.find(input)?.groupValues?.get(3)?.toLongOrNull() ?: context.fail(true) {
+            styled(
+                context.i18nContext.get(I18N_PREFIX.InvalidMessageUrl),
+                Emotes.Error
+            )
+        }
+    }
+
+    private fun getAsJsonPrimitiveOrNull(json: JsonObject, field: String) = json[field]?.jsonPrimitive
+    private fun getAsStringOrNull(json: JsonObject, field: String) = json[field]?.jsonPrimitive?.contentOrNull
+    private fun getAsBooleanOrNull(json: JsonObject, field: String) = json[field]?.jsonPrimitive?.booleanOrNull
+}
