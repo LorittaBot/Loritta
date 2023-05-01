@@ -4,9 +4,8 @@ plugins {
     id("maven-publish")
 }
 
-repositories {
-    mavenLocal()
-}
+version = "0.0.1-SNAPSHOT"
+group = "net.perfectdreams.loritta.facingworlds"
 
 kotlin {
     jvm {
@@ -26,7 +25,6 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 api(project(":common"))
-                api(project(":pudding:data"))
             }
         }
 

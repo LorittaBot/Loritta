@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("net.perfectdreams.i18nhelper.plugin") version libs.versions.i18nhelper
+    id("maven-publish")
 }
 
 val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.GenerateI18nKeysTask>("generateI18nKeys") {
@@ -178,6 +179,16 @@ kotlin {
                 // Internationalization
                 api("net.perfectdreams.i18nhelper.formatters:intl-messageformat-js:${libs.versions.i18nhelper.get()}")
             }
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "PerfectDreams"
+            url = uri("https://repo.perfectdreams.net/")
+            credentials(PasswordCredentials::class)
         }
     }
 }
