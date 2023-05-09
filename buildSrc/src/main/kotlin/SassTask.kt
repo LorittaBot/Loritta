@@ -1,14 +1,7 @@
-
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.gradle.work.InputChanges
 import java.io.File
 import java.io.FileOutputStream
@@ -54,16 +47,19 @@ abstract class SassTask : DefaultTask() {
 
         val isWindows = operatingSystem.internalOs.isWindows
         val isLinux = operatingSystem.internalOs.isLinux
+        val isMacOsX = operatingSystem.internalOs.isMacOsX
 
         val folderName = when {
             isWindows -> "windows"
             isLinux -> "linux"
+            isMacOsX -> "macosx"
             else -> throw UnsupportedOperationException("Unsupported OS $operatingSystem! The sassTask code must be updated to support it!")
         }
 
         val url = when {
             isWindows -> "https://github.com/sass/dart-sass/releases/download/1.35.2/dart-sass-1.35.2-windows-x64.zip"
             isLinux -> "https://github.com/sass/dart-sass/releases/download/1.35.2/dart-sass-1.35.2-linux-x64.tar.gz"
+            isMacOsX -> "https://github.com/sass/dart-sass/releases/download/1.35.2/dart-sass-1.35.2-macos-x64.tar.gz"
             else -> throw UnsupportedOperationException("Unsupported OS $operatingSystem! The sassTask code must be updated to support it!")
         }
 
@@ -124,13 +120,13 @@ abstract class SassTask : DefaultTask() {
                 if (status != 0)
                     error("SASS failed! Status: $status")
             }
-            isLinux -> {
+
+            isLinux || isMacOsX -> {
                 val pb = ProcessBuilder(
                     "$dartSassOsTempFolder/dart-sass/sass",
                     originalSassLocation.toString(),
                     outputSassLocationFile.toString()
-                )
-                    .start()
+                ).start()
 
                 val status = pb.waitFor()
 
@@ -142,6 +138,7 @@ abstract class SassTask : DefaultTask() {
                 if (status != 0)
                     error("SASS failed! Status: $status")
             }
+
             else -> {
                 throw UnsupportedOperationException("Unsupported OS $operatingSystem! The sassTask code must be updated to support it!")
             }
