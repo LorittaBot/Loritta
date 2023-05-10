@@ -65,6 +65,9 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.GuildImpl
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
+import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
@@ -600,14 +603,30 @@ class LorittaBot(
 		interactionsManager.register()
 
 		// Validate if we don't have more commands than Discord allows
-		val commandCount = interaKTions.manager.applicationCommandsDeclarations.size + interactionsListener.manager.slashCommands.size + interactionsListener.manager.userCommands.size + interactionsListener.manager.messageCommands.size
+		val slashCommandCount = interaKTions.manager.applicationCommandsDeclarations.filterIsInstance<SlashCommandDeclaration>().size + interactionsListener.manager.slashCommands.size
 
-		if (commandCount > 100) {
-			logger.error { "Currently there are $commandCount root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
+		if (slashCommandCount > 100) {
+			logger.error { "Currently there are $slashCommandCount root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
 			exitProcess(1)
 		}
 
-		logger.info { "Total Root Commands: $commandCount/100" }
+		val userCommandCount = interaKTions.manager.applicationCommandsDeclarations.filterIsInstance<UserCommandDeclaration>().size + interactionsListener.manager.userCommands.size
+
+		if (userCommandCount > 5) {
+			logger.error { "Currently there are $slashCommandCount user commands registered, however Discord has a 5 user command limit! You need to remove some of the commands!" }
+			exitProcess(1)
+		}
+
+		val messageCommandCount = interaKTions.manager.applicationCommandsDeclarations.filterIsInstance<MessageCommandDeclaration>().size + interactionsListener.manager.messageCommands.size
+
+		if (messageCommandCount > 5) {
+			logger.error { "Currently there are $slashCommandCount message commands registered, however Discord has a 5 message command limit! You need to remove some of the commands!" }
+			exitProcess(1)
+		}
+
+		logger.info { "Total Root Commands: $slashCommandCount/100" }
+		logger.info { "Total User Commands: $userCommandCount/5" }
+		logger.info { "Total Message Commands: $messageCommandCount/5" }
 
 		logger.info { "Starting Pudding tasks..." }
 		pudding.startPuddingTasks()
