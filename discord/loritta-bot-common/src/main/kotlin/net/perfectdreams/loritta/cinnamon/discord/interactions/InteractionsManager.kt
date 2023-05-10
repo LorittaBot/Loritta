@@ -114,14 +114,6 @@ class InteractionsManager(
 
         // ===[ OTHER STUFF ]===
         register(ActivateInviteBlockerBypassButtonClickExecutor(loritta))
-
-        // Validate if we don't have more commands than Discord allows
-        if (interaKTions.manager.applicationCommandsDeclarations.size > 100) {
-            logger.error { "Currently there are ${interaKTions.manager.applicationCommandsDeclarations.size} root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
-            exitProcess(1)
-        }
-
-        logger.info { "Total Root Commands: ${interaKTions.manager.applicationCommandsDeclarations.size}/100" }
     }
 
     private fun register(declarationWrapper: CinnamonSlashCommandDeclarationWrapper) {

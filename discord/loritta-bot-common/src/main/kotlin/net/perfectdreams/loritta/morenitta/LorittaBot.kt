@@ -195,6 +195,7 @@ import kotlin.concurrent.thread
 import kotlin.io.path.*
 import kotlin.math.ceil
 import kotlin.reflect.KClass
+import kotlin.system.exitProcess
 import kotlin.time.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -598,6 +599,16 @@ class LorittaBot(
 		logger.info { "Registering interactions features..." }
 		interactionsManager.register()
 
+		// Validate if we don't have more commands than Discord allows
+		val commandCount = interaKTions.manager.applicationCommandsDeclarations.size + interactionsListener.manager.slashCommands.size + interactionsListener.manager.userCommands.size + interactionsListener.manager.messageCommands.size
+
+		if (commandCount > 100) {
+			logger.error { "Currently there are $commandCount root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
+			exitProcess(1)
+		}
+
+		logger.info { "Total Root Commands: $commandCount/100" }
+
 		logger.info { "Starting Pudding tasks..." }
 		pudding.startPuddingTasks()
 		GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
@@ -817,27 +828,27 @@ class LorittaBot(
 	fun initPostgreSql() {
 		logger.info("Iniciando PostgreSQL...")
 
-        runBlocking {
-            transaction {
-                createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
-                createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
-                createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
-                createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
+		runBlocking {
+			transaction {
+				createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
+				createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
+				createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
+				createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
 				createOrUpdatePostgreSQLEnum(EasterEggColor.values())
 
-                // TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
-                SchemaUtils.createMissingTablesAndColumns(
+				// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
+				SchemaUtils.createMissingTablesAndColumns(
 					net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies,
-                    GatewayActivities,
-                    UserSettings,
-                    Backgrounds,
-                    BackgroundVariations,
-                    ConcurrentLoginBuckets,
-                    Christmas2022Players,
-                    Christmas2022Drops,
-                    CollectedChristmas2022Points,
-                    Christmas2022SonhosTransactionsLog,
-                    DailyRewardSonhosTransactionsLog,
+					GatewayActivities,
+					UserSettings,
+					Backgrounds,
+					BackgroundVariations,
+					ConcurrentLoginBuckets,
+					Christmas2022Players,
+					Christmas2022Drops,
+					CollectedChristmas2022Points,
+					Christmas2022SonhosTransactionsLog,
+					DailyRewardSonhosTransactionsLog,
 					GamerSaferRequiresVerificationRoles,
 					GamerSaferRequiresVerificationUsers,
 					GamerSaferUserRoles,
@@ -857,9 +868,9 @@ class LorittaBot(
 					CollectedEaster2023Eggs,
 					CreatedEaster2023Baskets,
 					Easter2023SonhosTransactionsLog,
-                )
-            }
-        }
+				)
+			}
+		}
 
 		// Hidden behind a env flag, because FOR SOME REASON Exposed thinks that it is a good idea to
 		// "ALTER TABLE serverconfigs ALTER COLUMN prefix TYPE TEXT, ALTER COLUMN prefix SET DEFAULT '+'"
@@ -1234,8 +1245,8 @@ class LorittaBot(
 	}
 
 	suspend fun <T> transaction(statement: suspend Transaction.() -> T) = pudding.transaction {
-        statement.invoke(this)
-    }
+		statement.invoke(this)
+	}
 
 	suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: suspend Transaction.() -> T): T
 			= pudding.transaction(repetitions, transactionIsolation, statement)
@@ -1264,8 +1275,8 @@ class LorittaBot(
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
 		return pudding.transaction {
-            _getOrCreateServerConfig(guildId)
-        }
+			_getOrCreateServerConfig(guildId)
+		}
 	}
 
 	/**
