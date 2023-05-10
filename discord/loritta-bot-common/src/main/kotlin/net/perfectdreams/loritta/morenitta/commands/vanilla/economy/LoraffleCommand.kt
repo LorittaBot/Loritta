@@ -37,6 +37,14 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 		if (SonhosUtils.checkIfEconomyIsDisabled(context))
 			return
 
+		if (true) {
+			context.reply(
+				"Atualmente a rifa está temporariamente desativada devido a bugs, sem previsão de volta.",
+				Constants.ERROR
+			)
+			return
+		}
+
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "clear" && loritta.isOwner(context.userHandle.id)) {
