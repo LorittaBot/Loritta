@@ -163,6 +163,23 @@ data class ShipEffectSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class RaffleRewardSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long
+) : SonhosTransaction()
+
+@Serializable
+data class RaffleTicketsSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val ticketQuantity: Long
+) : SonhosTransaction()
+
+@Serializable
 data class UnknownSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

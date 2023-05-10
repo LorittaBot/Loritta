@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransa
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.common.utils.TransactionType
 import org.jetbrains.exposed.sql.*
@@ -96,6 +97,14 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             it.leftJoin(EmojiFightSonhosTransactionsLog.leftJoin(EmojiFightMatchmakingResults.leftJoin(EmojiFightParticipants)))
         else it
     }.let {
+        val r1 = Raffles.alias("r1")
+        val r2 = Raffles.alias("r2")
+
+        if (TransactionType.RAFFLE in transactionTypeFilter)
+            it.leftJoin(RaffleRewardSonhosTransactionsLog.leftJoin(r1, { RaffleRewardSonhosTransactionsLog.raffle }, { this[Raffles.id] }))
+                .leftJoin(RaffleTicketsSonhosTransactionsLog.leftJoin(r2, { RaffleTicketsSonhosTransactionsLog.raffle }, { this[Raffles.id] }))
+        else it
+    }.let {
         if (TransactionType.SPARKLYPOWER_LSX in transactionTypeFilter)
             it.leftJoin(SparklyPowerLSXSonhosTransactionsLog)
         else it
@@ -140,6 +149,9 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.COINFLIP_BET -> cond.or(CoinFlipBetSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())
                     TransactionType.EMOJI_FIGHT_BET -> cond.or(EmojiFightSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.RAFFLE -> cond
+                        .or(RaffleTicketsSonhosTransactionsLog.id.isNotNull())
+                        .or(RaffleRewardSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SONHOS_BUNDLE_PURCHASE -> cond.or(SonhosBundlePurchaseSonhosTransactionsLog.id.isNotNull())
                     TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())

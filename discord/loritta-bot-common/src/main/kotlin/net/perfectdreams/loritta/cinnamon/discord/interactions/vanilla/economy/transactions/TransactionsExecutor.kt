@@ -224,6 +224,10 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                         // ===[ EMOJI FIGHT BET ]===
                         is EmojiFightBetSonhosTransaction -> EmojiFightBetSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
+                        // ===[ RAFFLE ]===
+                        is RaffleRewardSonhosTransaction -> RaffleRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is RaffleTicketsSonhosTransaction -> RaffleTicketsSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
                         // ===[ SPARKLYPOWER LSX ]===
                         is SparklyPowerLSXSonhosTransaction -> SparklyPowerLSXSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 

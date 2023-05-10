@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosP
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
@@ -204,6 +205,21 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[CoinFlipBetMatchmakingResults.quantityAfterTax],
             row[CoinFlipBetMatchmakingResults.tax],
             row[CoinFlipBetMatchmakingResults.taxPercentage]
+        )
+    } else if (row.getOrNull(RaffleTicketsSonhosTransactionsLog.id) != null) {
+        RaffleTicketsSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[RaffleTicketsSonhosTransactionsLog.sonhos],
+            row[RaffleTicketsSonhosTransactionsLog.ticketQuantity]
+        )
+    } else if (row.getOrNull(RaffleRewardSonhosTransactionsLog.id) != null) {
+        RaffleRewardSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[Raffles.paidOutPrize] ?: -1,
         )
     } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
         SparklyPowerLSXSonhosTransaction(

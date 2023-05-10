@@ -1,0 +1,17 @@
+label: "rifa"
+description: "Rifa da Loritta"
+
+rf: "Tipo da Rifa"
+
+status:
+  label: "status"
+  description: "Mostra o status da rifa atual"
+
+buy:
+  label: "comprar"
+  description: "Compra tickets na rifa"
+
+raffleTypes:
+  loritta: "Loritta"
+  pantufa: "Pantufa"
+  gabriela: "Gabriela"

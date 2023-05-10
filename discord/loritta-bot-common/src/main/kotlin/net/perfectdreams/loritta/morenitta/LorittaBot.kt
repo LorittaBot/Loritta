@@ -43,7 +43,6 @@ import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.tables.ShipEffects
 import net.perfectdreams.loritta.morenitta.tables.StarboardMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
-import net.perfectdreams.loritta.morenitta.threads.RaffleThread
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.utils.*
 import mu.KotlinLogging
@@ -112,16 +111,18 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CollectedEas
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CreatedEaster2023Baskets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Easter2023SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.common.utils.*
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
@@ -134,10 +135,6 @@ import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.common.utils.StoragePaths
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
@@ -149,6 +146,7 @@ import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
+import net.perfectdreams.loritta.morenitta.raffles.LorittaRaffleTask
 import net.perfectdreams.loritta.morenitta.tables.DonationConfigs
 import net.perfectdreams.loritta.morenitta.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ExperienceRoleRates
@@ -326,7 +324,6 @@ class LorittaBot(
 
 	var builder: DefaultShardManagerBuilder
 
-	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
 
 	var newWebsite: LorittaWebsite? = null
@@ -657,42 +654,6 @@ class LorittaBot(
 		logger.info { "Iniciando bom dia & cia..." }
 		bomDiaECia = BomDiaECia(this)
 
-		if (this.isMainInstance) {
-			logger.info { "Loading raffle..." }
-			val raffleData = runBlocking {
-				newSuspendedTransaction {
-					MiscellaneousData.select { MiscellaneousData.id eq RaffleThread.DATA_KEY }
-						.limit(1)
-						.firstOrNull()
-						?.get(MiscellaneousData.data)
-				}
-			}
-
-			if (raffleData != null) {
-				logger.info { "Parsing the JSON object..." }
-				val json = JsonParser.parseString(raffleData).obj
-
-				logger.info { "Loaded raffle data! ${RaffleThread.started}; ${json["lastWinnerId"].nullString}; ${json["lastWinnerPrize"].nullInt}" }
-				RaffleThread.started = json["started"].long
-				RaffleThread.lastWinnerId = json["lastWinnerId"].nullLong
-				RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].nullInt ?: 0
-				val userIdArray = json["userIds"].nullArray
-
-				if (userIdArray != null) {
-					logger.info { "Loading ${userIdArray.size()} raffle user entries..." }
-					val firstUserIdEntry = userIdArray.firstOrNull()
-					if (firstUserIdEntry != null) {
-						logger.info { "Loading directly from the JSON array..." }
-						RaffleThread.userIds.addAll(userIdArray.map { it.long })
-					}
-				}
-			}
-
-			RaffleThread.isReady = true
-			raffleThread = RaffleThread(this)
-			raffleThread.start()
-		}
-
 		// Ou seja, agora a Loritta está funcionando, Yay!
 		Runtime.getRuntime().addShutdownHook(
 			thread(false) {
@@ -854,6 +815,7 @@ class LorittaBot(
 				createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
 				createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
 				createOrUpdatePostgreSQLEnum(EasterEggColor.values())
+				createOrUpdatePostgreSQLEnum(RaffleType.values())
 
 				// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
 				SchemaUtils.createMissingTablesAndColumns(
@@ -887,6 +849,12 @@ class LorittaBot(
 					CollectedEaster2023Eggs,
 					CreatedEaster2023Baskets,
 					Easter2023SonhosTransactionsLog,
+					PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionsLog,
+					PowerStreamClaimedFirstSonhosRewardSonhosTransactionsLog,
+					RaffleTicketsSonhosTransactionsLog,
+					RaffleRewardSonhosTransactionsLog,
+					Raffles,
+					RaffleTickets
 				)
 			}
 		}
@@ -1717,6 +1685,7 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(CreateYouTubeWebhooksTask::class.simpleName!!, 1.minutes, action = CreateYouTubeWebhooksTask(this@LorittaBot))
+		scheduleCoroutineAtFixedRateIfMainReplica(LorittaRaffleTask::class.simpleName!!, 1.seconds, action = LorittaRaffleTask(this@LorittaBot))
 		scheduleCoroutineAtFixedRate(GamerSaferRoleCheckerUpdater::class.simpleName!!, 1.minutes, action = GamerSaferRoleCheckerUpdater(this))
 		scheduleCoroutineAtFixedRate(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
 

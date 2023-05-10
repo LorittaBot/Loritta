@@ -35,6 +35,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.EmojiFightBet.Description,
         Emotes.Rooster
     ),
+    RAFFLE(
+        I18nKeysData.Commands.Command.Transactions.Types.Raffle.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Raffle.Description,
+        Emotes.Ticket,
+    ),
     HOME_BROKER(
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Title,
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Description,
@@ -74,5 +79,5 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.Events.Title,
         I18nKeysData.Commands.Command.Transactions.Types.Events.Description,
         Emotes.LoriYay,
-    )
+    ),
 }

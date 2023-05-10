@@ -1,21 +1,25 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.threads.RaffleThread
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
-import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -23,13 +27,10 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle", listOf("rifa", "raffle", "lorifa"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
-	companion object {
-		const val MAX_TICKETS_BY_USER_PER_ROUND = 100_000
-	}
-
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.raffle.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.raffle.examples")
 
@@ -37,30 +38,9 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 		if (SonhosUtils.checkIfEconomyIsDisabled(context))
 			return
 
-		if (true) {
-			context.reply(
-				"Atualmente a rifa está temporariamente desativada devido a bugs, sem previsão de volta.",
-				Constants.ERROR
-			)
-			return
-		}
+		val raffleType = RaffleType.LORITTA
 
 		val arg0 = context.args.getOrNull(0)
-
-		if (arg0 == "clear" && loritta.isOwner(context.userHandle.id)) {
-			context.reply(
-				LorittaReply(
-					"Limpando ${RaffleThread.userIds.size}..."
-				)
-			)
-			RaffleThread.userIds.clear()
-			context.reply(
-				LorittaReply(
-					"Limpo! ${RaffleThread.userIds.size}"
-				)
-			)
-			return
-		}
 
 		val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
 
@@ -79,31 +59,35 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 				return
 			}
 
-			if (quantity > MAX_TICKETS_BY_USER_PER_ROUND) {
+			if (quantity > raffleType.maxTicketsByUserPerRound) {
 				context.reply(
 					LorittaReply(
-						"Você só pode apostar no máximo $MAX_TICKETS_BY_USER_PER_ROUND tickets por rodada!",
+						"Você só pode apostar no máximo ${raffleType.maxTicketsByUserPerRound} tickets por rodada!",
 						Constants.ERROR
 					)
 				)
 				return
 			}
 
-			val body = HttpRequest.post("${shard.getUrl(loritta)}/api/v1/loritta/raffle")
-				.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-				.header("Authorization", loritta.lorittaInternalApiKey.name)
-				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-				.readTimeout(loritta.config.loritta.clusterReadTimeout)
-				.send(
-					gson.toJson(
-						jsonObject(
-							"userId" to context.userHandle.id,
-							"quantity" to quantity,
-							"localeId" to context.config.localeId
-						)
+			val body = loritta.httpWithoutTimeout.post("${shard.getUrl(loritta)}/api/v1/loritta/raffle") {
+				userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+				header("Authorization", loritta.lorittaInternalApiKey.name)
+
+				setBody(
+					TextContent(
+						Json.encodeToString(
+							buildJsonObject {
+								put("userId", context.userHandle.idLong)
+								put("quantity", quantity)
+								put("localeId", context.config.localeId)
+								put("invokedAt", System.currentTimeMillis())
+								put("type", RaffleType.LORITTA.name)
+							}
+						),
+						ContentType.Application.Json
 					)
 				)
-				.body()
+			}.bodyAsText()
 
 			val json = JsonParser.parseString(body)
 
@@ -122,7 +106,7 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 			if (status == BuyRaffleTicketStatus.TOO_MANY_TICKETS) {
 				context.reply(
 					LorittaReply(
-						"Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${MAX_TICKETS_BY_USER_PER_ROUND - json["ticketCount"].int} tickets!",
+						"Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${raffleType.maxTicketsByUserPerRound - json["ticketCount"].int} tickets!",
 						Constants.ERROR
 					)
 				)
@@ -163,7 +147,7 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 
 			context.reply(
 				LorittaReply(
-					context.locale["commands.command.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
+					context.locale["commands.command.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * raffleType.ticketPrice],
 					"\uD83C\uDFAB"
 				),
 				LorittaReply(
@@ -174,12 +158,12 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 			return
 		}
 
-		val body = HttpRequest.get("${shard.getUrl(loritta)}/api/v1/loritta/raffle")
-			.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-			.header("Authorization", loritta.lorittaInternalApiKey.name)
-			.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-			.readTimeout(loritta.config.loritta.clusterReadTimeout)
-			.body()
+		val body = loritta.httpWithoutTimeout.get("${shard.getUrl(loritta)}/api/v1/loritta/raffle") {
+			userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+			header("Authorization", loritta.lorittaInternalApiKey.name)
+		}.bodyAsText()
+
+		println(body)
 
 		val json = JsonParser.parseString(body)
 
@@ -187,7 +171,7 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 			?.toLongOrNull()
 		val currentTickets = json["currentTickets"].int
 		val usersParticipating = json["usersParticipating"].int
-		val started = json["started"].long
+		val endsAt = json["endsAt"].long
 		val lastWinnerPrize = json["lastWinnerPrize"].long
 
 		val lastWinner = if (lastWinnerId != null) {
@@ -213,7 +197,7 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 				"<:loritta:331179879582269451>"
 			),
 			LorittaReply(
-				context.locale["commands.command.raffle.currentPrize", (currentTickets * 250).toString()],
+				context.locale["commands.command.raffle.currentPrize", (currentTickets * raffleType.ticketPrice).toString()],
 				"<:starstruck:540988091117076481>",
 				mentionUser = false
 			),
@@ -233,7 +217,7 @@ class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle"
 				mentionUser = false
 			),
 			LorittaReply(
-				context.locale["commands.command.raffle.resultsIn", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(started + 3600000, locale)],
+				context.locale["commands.command.raffle.resultsIn", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(endsAt, locale)],
 				prefix = "\uD83D\uDD52",
 				mentionUser = false
 			),
