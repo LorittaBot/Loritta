@@ -27,12 +27,12 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
     }
 
     override suspend fun run() {
-        val dmsToBeSent = mutableListOf<RaffleDM>()
-
         // TODO: Locales, maybe get the preferred user locale ID?
         val locale = m.localeManager.getLocaleById("default")
 
-        m.transaction {
+        val dmsToBeSent = m.transaction {
+            val dmsToBeSent = mutableListOf<RaffleDM>()
+
             val now = Instant.now()
 
             // Get current active raffles
@@ -137,6 +137,8 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                     }
                 }
             }
+
+            return@transaction dmsToBeSent
         }
 
         for (raffleDM in dmsToBeSent) {
