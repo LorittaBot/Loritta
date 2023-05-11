@@ -15,7 +15,6 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Easter2023SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleTicketsSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -73,7 +72,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 				}
 			}
 
-			val requiredCount = quantity.toLong() * RaffleType.LORITTA.ticketPrice
+			val requiredCount = quantity.toLong() * RaffleType.ORIGINAL.ticketPrice
 			logger.info("$userId irá comprar $quantity tickets por ${requiredCount}!")
 
 			val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)

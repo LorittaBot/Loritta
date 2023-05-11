@@ -1,17 +1,32 @@
 label: "rifa"
 description: "Rifa da Loritta"
 
-rf: "Tipo da Rifa"
-
 status:
   label: "status"
   description: "Mostra o status da rifa atual"
 
+  boughtTickets: "Tickets comprados: **{ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}}**"
+  buyAnTicketFor: "Compre um ticket por **{ticketPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** usando {raffleBuyMention}!"
+  currentPrize: "Prêmio atual: **{currentPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**"
+  usersParticipating: "Pessoas participando: **{usersParticipating,plural, =0 {# pessoas} one {# pessoa} other {# pessoas}}**"
+  lastWinner: "Último ganhador: **`{user}` ({lastPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} Sonhos)**"
+  resultsIn: "Resultado irá sair em **{result}**!"
+
+  options:
+    raffleType:
+      text: "A rifa que você deseja ver informações sobre"
 buy:
   label: "comprar"
   description: "Compra tickets na rifa"
 
+  youBoughtAnTicket: "Você comprou {ticketCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por **{totalPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! Agora é só sentar, relaxar, e acompanhar o status da rifa usando {raffleStatusMention}!"
+  wantMoreChances: "Querendo mais chances de ganhar? Que tal comprar outro ticket? {raffleBuyMention}"
+
+  options:
+    raffleType:
+      text: "A rifa que você deseja comprar tickets"
+    quantity:
+      text: "A quantidade de tickets que você irá comprar"
 raffleTypes:
-  loritta: "Loritta"
-  pantufa: "Pantufa"
-  gabriela: "Gabriela"
+  original: "Rifa Original"
+  lightning: "Rifa Relâmpago"

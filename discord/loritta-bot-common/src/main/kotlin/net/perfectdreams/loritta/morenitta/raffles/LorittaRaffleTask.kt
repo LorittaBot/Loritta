@@ -19,6 +19,7 @@ import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.io.File
 import java.time.Instant
+import kotlin.time.toJavaDuration
 
 class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
     companion object {
@@ -113,7 +114,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                     Raffles.insert {
                         it[Raffles.raffleType] = currentRaffle[Raffles.raffleType]
                         it[Raffles.startedAt] = now
-                        it[Raffles.endsAt] = now.plusMillis(3_600_000)
+                        it[Raffles.endsAt] = (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
                         it[Raffles.endedAt] = null
                         it[Raffles.winnerTicket] = null
                         it[Raffles.paidOutPrize] = null
@@ -129,7 +130,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                     Raffles.insert {
                         it[Raffles.raffleType] = type
                         it[Raffles.startedAt] = now
-                        it[Raffles.endsAt] = now.plusMillis(3_600_000)
+                        it[Raffles.endsAt] = (now + type.raffleDuration.toJavaDuration())
                         it[Raffles.endedAt] = null
                         it[Raffles.winnerTicket] = null
                         it[Raffles.paidOutPrize] = null

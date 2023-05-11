@@ -15,17 +15,18 @@ import org.jetbrains.exposed.sql.select
 
 class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+		val raffleType = call.parameters["type"]?.let { RaffleType.valueOf(it) } ?: RaffleType.ORIGINAL
+
 		val response = loritta.transaction {
-			// Get current active raffles
-			// For now, we only support Loritta's raffle
+			// Get current active raffle based on the selected raffle type
 			val currentRaffle = Raffles.select {
-				Raffles.endedAt.isNull() and (Raffles.raffleType eq RaffleType.LORITTA)
+				Raffles.endedAt.isNull() and (Raffles.raffleType eq raffleType)
 			}.orderBy(Raffles.endsAt, SortOrder.DESC)
 				.limit(1)
 				.first()
 
 			val previousRaffle = Raffles.select {
-				Raffles.endedAt.isNotNull() and (Raffles.raffleType eq RaffleType.LORITTA)
+				Raffles.endedAt.isNotNull() and (Raffles.raffleType eq raffleType)
 			}.orderBy(Raffles.endedAt, SortOrder.DESC)
 				.limit(1)
 				.firstOrNull()
