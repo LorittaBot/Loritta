@@ -53,6 +53,7 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 						put("currentTickets", currentTickets.size)
 						put("usersParticipating", currentTickets.map { it[RaffleTickets.userId] }.distinct().size)
 						put("endsAt", currentRaffle[Raffles.endsAt].toEpochMilli())
+						put("raffleId", currentRaffle[Raffles.id].value)
 					}
 				}
 			}
@@ -63,6 +64,7 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 				put("currentTickets", currentTickets.size)
 				put("usersParticipating", currentTickets.map { it[RaffleTickets.userId] }.distinct().size)
 				put("endsAt", currentRaffle[Raffles.endsAt].toEpochMilli())
+				put("raffleId", currentRaffle[Raffles.id].value)
 			}
 		}
 

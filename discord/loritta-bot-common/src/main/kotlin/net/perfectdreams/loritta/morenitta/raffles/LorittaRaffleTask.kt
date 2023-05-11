@@ -8,13 +8,16 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleRewardSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleTicketsSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.io.File
@@ -29,6 +32,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
     override suspend fun run() {
         // TODO: Locales, maybe get the preferred user locale ID?
         val locale = m.localeManager.getLocaleById("default")
+        val i18nContext = m.languageManager.defaultI18nContext
 
         val dmsToBeSent = m.transaction {
             val dmsToBeSent = mutableListOf<RaffleDM>()
@@ -91,16 +95,45 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         }
 
                         dmsToBeSent.add(
-                            RaffleDM(
+                            RaffleDM.WonTheRaffle(
                                 winnerId,
+                                currentRaffle[Raffles.raffleType],
                                 money,
                                 totalTicketsBoughtByTheUser,
                                 totalUsersInTheRaffle,
                                 totalTickets
                             )
                         )
+
+                        // Get everyone that asked to be notified about this raffle (EXCEPT THE WINNER)
+                        UserAskedRaffleNotifications.select {
+                            UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id] and (UserAskedRaffleNotifications.userId neq winnerId)
+                        }.toList()
+                            .forEach {
+                                dmsToBeSent.add(
+                                    RaffleDM.LostTheRaffle(
+                                        it[UserAskedRaffleNotifications.userId],
+                                        currentRaffle[Raffles.raffleType],
+                                        winnerId,
+                                        money,
+                                        totalTicketsBoughtByTheUser,
+                                        totalUsersInTheRaffle,
+                                        totalTickets
+                                    )
+                                )
+                            }
                     } else {
                         logger.info { "No one participated in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})..." }
+
+                        // Get everyone that asked to be notified about this raffle
+                        UserAskedRaffleNotifications.select {
+                            UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id]
+                        }.toList()
+                            .forEach {
+                                dmsToBeSent.add(
+                                    RaffleDM.LostTheRaffleNoOneBoughtTickets(it[UserAskedRaffleNotifications.userId], currentRaffle[Raffles.raffleType])
+                                )
+                            }
                     }
 
                     // Update the raffle to set its end time
@@ -142,33 +175,96 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
         }
 
         for (raffleDM in dmsToBeSent) {
-            val user = m.lorittaShards.retrieveUserById(raffleDM.winnerId)
+            val user = m.lorittaShards.retrieveUserById(raffleDM.userId)
 
             if (user != null && !user.isBot) {
                 try {
-                    val embed = EmbedBuilder()
-                    embed.setThumbnail("attachment://loritta_money.png")
-                    embed.setColor(Color(47, 182, 92))
-                    embed.setTitle("\uD83C\uDF89 ${locale["commands.command.raffle.victory.title"]}!")
-                    embed.setDescription(
-                        locale.getList(
-                            "commands.command.raffle.victory.description",
-                            raffleDM.totalTicketsBoughtByTheUser,
-                            raffleDM.money,
-                            raffleDM.totalUsersInTheRaffle,
-                            raffleDM.totalTickets,
-                            raffleDM.totalTicketsBoughtByTheUser / raffleDM.totalTickets.toDouble(),
-                            Emotes.LORI_RICH,
-                            Emotes.LORI_NICE
-                        ).joinToString("\n")
-                    )
+                    val message = when (raffleDM) {
+                        is RaffleDM.WonTheRaffle -> {
+                            val embed = EmbedBuilder()
+                            embed.setThumbnail("attachment://loritta_money.png")
+                            embed.setColor(Color(47, 182, 92))
+                            embed.setTitle("\uD83C\uDF89 ${locale["commands.command.raffle.victory.title"]}! - ${i18nContext.get(raffleDM.raffleType.title)}")
+                            embed.setDescription(
+                                locale.getList(
+                                    "commands.command.raffle.victory.description",
+                                    raffleDM.totalTicketsBoughtByTheUser,
+                                    raffleDM.money,
+                                    raffleDM.totalUsersInTheRaffle,
+                                    raffleDM.totalTickets,
+                                    raffleDM.totalTicketsBoughtByTheUser / raffleDM.totalTickets.toDouble(),
+                                    Emotes.LORI_RICH,
+                                    Emotes.LORI_NICE
+                                ).joinToString("\n")
+                            )
 
-                    embed.setTimestamp(Instant.now())
-                    val message = MessageCreateBuilder()
-                        .setContent(" ")
-                        .setEmbeds(embed.build())
-                        .addFiles(FileUpload.fromData(File(LorittaBot.ASSETS, "loritta_money_discord.png"), "loritta_money.png"))
-                        .build()
+                            embed.setTimestamp(Instant.now())
+                            MessageCreateBuilder()
+                                .setContent(" ")
+                                .setEmbeds(embed.build())
+                                .addFiles(FileUpload.fromData(File(LorittaBot.ASSETS, "loritta_money_discord.png"), "loritta_money.png"))
+                                .build()
+                        }
+                        is RaffleDM.LostTheRaffle -> {
+                            val lastWinnerId = raffleDM.winnerId
+                            val lastWinner = if (lastWinnerId != null) {
+                                m.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
+                            } else {
+                                null
+                            }
+
+                            val nameAndDiscriminator = if (lastWinner != null) {
+                                (lastWinner.name + "#" + lastWinner.discriminator).let {
+                                    if (MiscUtils.hasInvite(it))
+                                        "¯\\_(ツ)_/¯"
+                                    else
+                                        it
+                                }
+                            } else {
+                                "\uD83E\uDD37"
+                            }.stripCodeMarks()
+
+                            val i18nPrefix = I18nKeysData.Commands.Command.Raffle.DirectMessages.YouLost
+
+                            val embed = EmbedBuilder()
+                            embed.setThumbnail("https://assets.perfectdreams.media/loritta/emotes/lori-sob.png")
+                            embed.setColor(Color(47, 182, 92))
+                            embed.setTitle("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title)))}")
+                            embed.setDescription(
+                                i18nContext.get(
+                                    i18nPrefix.Description(
+                                        "`$nameAndDiscriminator`",
+                                        raffleDM.money
+                                    )
+                                ).joinToString("\n\n")
+                            )
+
+                            embed.setTimestamp(Instant.now())
+                            MessageCreateBuilder()
+                                .setContent(" ")
+                                .setEmbeds(embed.build())
+                                .build()
+                        }
+
+                        is RaffleDM.LostTheRaffleNoOneBoughtTickets -> {
+                            val i18nPrefix = I18nKeysData.Commands.Command.Raffle.DirectMessages.YouLostNoOneBoughtTickets
+
+                            val embed = EmbedBuilder()
+                            embed.setThumbnail("https://assets.perfectdreams.media/loritta/emotes/lori-zz.png")
+                            embed.setColor(Color(47, 182, 92))
+                            embed.setTitle("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title)))}")
+                            embed.setDescription(
+                                i18nContext.get(i18nPrefix.Description).joinToString("\n\n")
+                            )
+
+                            embed.setTimestamp(Instant.now())
+                            MessageCreateBuilder()
+                                .setContent(" ")
+                                .setEmbeds(embed.build())
+                                .build()
+                        }
+                    }
+
                     user.openPrivateChannel().queue {
                         it.sendMessage(message)
                             .queue()
@@ -179,11 +275,32 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
         }
     }
 
-    data class RaffleDM(
-        val winnerId: Long,
-        val money: Int,
-        val totalTicketsBoughtByTheUser: Int,
-        val totalUsersInTheRaffle: Int,
-        val totalTickets: Int
-    )
+    sealed class RaffleDM {
+        abstract val userId: Long
+        abstract val raffleType: RaffleType
+
+        class WonTheRaffle(
+            override val userId: Long,
+            override val raffleType: RaffleType,
+            val money: Int,
+            val totalTicketsBoughtByTheUser: Int,
+            val totalUsersInTheRaffle: Int,
+            val totalTickets: Int
+        ) : RaffleDM()
+
+        class LostTheRaffle(
+            override val userId: Long,
+            override val raffleType: RaffleType,
+            val winnerId: Long,
+            val money: Int,
+            val totalTicketsBoughtByTheUser: Int,
+            val totalUsersInTheRaffle: Int,
+            val totalTickets: Int
+        ) : RaffleDM()
+
+        class LostTheRaffleNoOneBoughtTickets(
+            override val userId: Long,
+            override val raffleType: RaffleType,
+        ) : RaffleDM()
+    }
 }

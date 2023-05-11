@@ -30,3 +30,15 @@ buy:
 raffleTypes:
   original: "Rifa Original"
   lightning: "Rifa Relâmpago"
+
+directMessages:
+  youLost:
+    title: "Você perdeu a rifa... - {raffleType}"
+    description:
+      - "Infelizmente hoje não foi o seu dia de sorte..."
+      - "{user} venceu a rifa e ganhou **{totalSonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** nela!"
+      - "O sonho de ficar rico era tão perto, mas ao mesmo tempo tão longe... Tenha mais sorte na próxima rifa!"
+  youLostNoOneBoughtTickets:
+    title: "Você perdeu a rifa... Eita, mas ninguém comprou tickets! - {raffleType}"
+    description:
+      - "Ninguém comprou tickets nesta rifa, então ninguém ganhou!"

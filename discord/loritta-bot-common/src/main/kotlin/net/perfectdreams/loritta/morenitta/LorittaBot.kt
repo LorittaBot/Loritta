@@ -113,6 +113,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Dr
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
@@ -854,7 +855,8 @@ class LorittaBot(
 					RaffleTicketsSonhosTransactionsLog,
 					RaffleRewardSonhosTransactionsLog,
 					Raffles,
-					RaffleTickets
+					RaffleTickets,
+					UserAskedRaffleNotifications
 				)
 			}
 		}

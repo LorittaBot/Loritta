@@ -12,8 +12,10 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
@@ -28,6 +30,11 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 
 class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -53,6 +60,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val endsAt = json["endsAt"].long
             val endsAtInSeconds = endsAt / 1000
             val lastWinnerPrize = json["lastWinnerPrize"].long
+            val raffleId = json["raffleId"].long
 
             val lastWinner = if (lastWinnerId != null) {
                 loritta.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
@@ -70,6 +78,49 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             } else {
                 "\uD83E\uDD37"
             }.stripCodeMarks()
+
+            val notifyMeButton = loritta.interactivityManager
+                .button(
+                    ButtonStyle.PRIMARY,
+                    "Me notificar quando a rifa acabar"
+                ) { context ->
+                    val hook = context.deferChannelMessage(true)
+
+                    val addedNotification = loritta.transaction {
+                        val alreadyHasNotification = UserAskedRaffleNotifications.select {
+                            UserAskedRaffleNotifications.userId eq context.user.idLong and (UserAskedRaffleNotifications.raffle eq raffleId)
+                        }.count() != 0L
+
+                        if (alreadyHasNotification) {
+                            UserAskedRaffleNotifications.deleteWhere {
+                                UserAskedRaffleNotifications.userId eq context.user.idLong and (UserAskedRaffleNotifications.raffle eq raffleId)
+                            }
+
+                            return@transaction false
+                        } else {
+                            UserAskedRaffleNotifications.insert {
+                                it[UserAskedRaffleNotifications.raffle] = raffleId
+                                it[UserAskedRaffleNotifications.userId] = context.user.idLong
+                            }
+
+                            return@transaction true
+                        }
+                    }
+
+                    context.reply(true) {
+                        if (addedNotification) {
+                            styled(
+                                "Você será notificado via mensagem direta quando a rifa acabar, até mesmo se você perder ela!",
+                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHi
+                            )
+                        } else {
+                            styled(
+                                "Você não será notificado via mensagem direta quando a rifa acabar, exceto se você ganhar ela!",
+                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                            )
+                        }
+                    }
+                }
 
             context.reply(false) {
                 styled(
@@ -108,6 +159,8 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     context.i18nContext.get(I18N_PREFIX.Status.BuyAnTicketFor(raffleType.ticketPrice, loritta.commandMentions.raffleBuy)),
                     prefix = "\uD83D\uDCB5",
                 )
+
+                actionRow(notifyMeButton)
             }
         }
 
