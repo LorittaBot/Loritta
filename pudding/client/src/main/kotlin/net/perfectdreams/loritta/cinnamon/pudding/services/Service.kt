@@ -42,6 +42,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.M
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.alias
 
 open class Service(private val pudding: Pudding) {
     fun PuddingUserProfile.Companion.fromRow(row: ResultRow) = PuddingUserProfile(
@@ -219,7 +220,7 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SonhosTransactionsLog.id].value,
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
-            row[Raffles.paidOutPrize] ?: -1,
+            row[Raffles.alias("r1")[Raffles.paidOutPrize]] ?: -1,
         )
     } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
         SparklyPowerLSXSonhosTransaction(
