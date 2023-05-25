@@ -252,6 +252,7 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 																m.sendRPCRequest<PostGamerSaferVerifyConfigResponse>(
 																	PostGamerSaferVerifyConfigRequest(
 																		screen.guildId,
+																		true,
 																		screen.gamerSaferVerifiedRoleId,
 																		screen.gamerSaferVerificationRoles
 																	)

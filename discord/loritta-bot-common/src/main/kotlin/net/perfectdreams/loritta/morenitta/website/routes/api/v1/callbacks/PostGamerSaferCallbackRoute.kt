@@ -8,13 +8,13 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferUserRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.*
 import net.perfectdreams.sequins.ktor.BaseRoute
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -62,7 +62,13 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 				}
 
 				// Check what roles the user can receive
-				val matchedUserRoles = loritta.transaction {
+				val (gsGuildConfig, matchedUserRoles) = loritta.transaction {
+					val gsGuildConfig = ServerConfigs.innerJoin(GamerSaferConfigs).select {
+						ServerConfigs.id eq additionalData.guildId
+					}
+						.limit(1)
+						.firstOrNull()
+
 					// Insert that the user has successfully verified
 					GamerSaferSuccessfulVerifications.insert {
 						it[GamerSaferSuccessfulVerifications.guild] = additionalData.guildId
@@ -70,17 +76,31 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 						it[GamerSaferSuccessfulVerifications.verifiedAt] = Instant.now()
 					}
 
-					GamerSaferUserRoles.select {
+					val userRoles = GamerSaferUserRoles.select {
 						GamerSaferUserRoles.user eq (additionalData.userId) and (GamerSaferUserRoles.guild eq additionalData.guildId)
 					}.toList()
+
+					Pair(gsGuildConfig, userRoles)
 				}
 
-				val guild = loritta.lorittaShards.getGuildById(additionalData.guildId)!!
+				if (gsGuildConfig != null && gsGuildConfig[GamerSaferConfigs.enabled]) {
+					val guild = loritta.lorittaShards.getGuildById(additionalData.guildId)!!
 
-				for (matchedUserRole in matchedUserRoles) {
-					val role = guild.getRoleById(matchedUserRole[GamerSaferUserRoles.role]) ?: continue // Role does not exist!
-					guild.addRoleToMember(UserSnowflake.fromId(additionalData.userId), role)
-						.await()
+					// Check and give verified role
+					val verifiedRoleId = gsGuildConfig[GamerSaferConfigs.verifiedRoleId]
+					if (verifiedRoleId != null) {
+						val verifiedRole = guild.getRoleById(verifiedRoleId)
+						if (verifiedRole != null) {
+							guild.addRoleToMember(UserSnowflake.fromId(additionalData.userId), verifiedRole)
+								.await()
+						}
+					}
+
+					for (matchedUserRole in matchedUserRoles) {
+						val role = guild.getRoleById(matchedUserRole[GamerSaferUserRoles.role]) ?: continue // Role does not exist!
+						guild.addRoleToMember(UserSnowflake.fromId(additionalData.userId), role)
+							.await()
+					}
 				}
 
 				// Done!

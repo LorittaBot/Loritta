@@ -3,7 +3,10 @@ package net.perfectdreams.loritta.morenitta.website.rpc.processors.guild
 import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
+import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
@@ -49,8 +52,14 @@ class GetGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProc
                 if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id))
                     return GetGamerSaferVerifyConfigResponse.Unauthorized()
 
-                val verificationRoles = m.loritta.transaction {
-                    GamerSaferRequiresVerificationUsers.select {
+                val (gsGuildConfig, verificationRoles) = m.loritta.transaction {
+                    val gsGuildConfig = ServerConfigs.innerJoin(GamerSaferConfigs).select {
+                        ServerConfigs.id eq guildId
+                    }
+                        .limit(1)
+                        .firstOrNull()
+
+                    val verificationRoles = GamerSaferRequiresVerificationUsers.select {
                         GamerSaferRequiresVerificationUsers.guild eq jdaGuild.idLong
                     }.map {
                         GamerSaferVerificationUserAndRole(
@@ -59,9 +68,12 @@ class GetGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProc
                             it[GamerSaferRequiresVerificationUsers.checkPeriod].milliseconds.toIsoString()
                         )
                     }
+
+                    Pair(gsGuildConfig, verificationRoles)
                 }
 
                 return GetGamerSaferVerifyConfigResponse.Success(
+                    gsGuildConfig?.get(GamerSaferConfigs.enabled) ?: false,
                     jdaGuild.roles.filter { !it.isManaged && !it.isPublicRole }.map {
                         GetGamerSaferVerifyConfigResponse.Role(
                             it.name,

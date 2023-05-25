@@ -116,6 +116,7 @@ sealed interface GetDailyRewardResponse : LorittaRPCResponse {
 sealed interface GetGamerSaferVerifyConfigResponse : LorittaRPCResponse {
     @Serializable
     class Success(
+        val enabled: Boolean,
         val roles: List<Role>,
         val verifiedRoleId: Long,
         val verificationRoles: List<GamerSaferVerificationUserAndRole>

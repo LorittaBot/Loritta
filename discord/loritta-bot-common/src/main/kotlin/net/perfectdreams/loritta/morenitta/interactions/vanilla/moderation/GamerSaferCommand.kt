@@ -9,14 +9,18 @@ import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuildMembers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuilds
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferGuildInviteAdditionalData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferPlayerVerificationAdditionalData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.*
@@ -44,10 +48,17 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             val guildId = context.guildId!! // This command cannot be used in DMs anyway
 
-            // TODO: Check if the GamerSafer module is enabled
-
-            // Check if the user has already joined the GamerSafer guild
+            // Check if the GamerSafer module is enabled and if the user has already joined the GamerSafer guild
             val mjs = loritta.transaction {
+                val gsGuildConfig = ServerConfigs.innerJoin(GamerSaferConfigs).select {
+                    ServerConfigs.id eq guildId
+                }
+                    .limit(1)
+                    .firstOrNull()
+
+                if (gsGuildConfig == null || !gsGuildConfig[GamerSaferConfigs.enabled])
+                    return@transaction null
+                
                 if (GamerSaferGuildMembers.select { GamerSaferGuildMembers.guild eq guildId and (GamerSaferGuildMembers.discordUser eq context.user.idLong) }.count() == 0L) {
                     // Didn't join the guild yet
                     GamerSaferGuildMemberJoinStatus.DIDNT_JOIN_THE_GUILD_YET
@@ -55,6 +66,13 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     // Has joined the guild
                     GamerSaferGuildMemberJoinStatus.HAS_JOINED_THE_GUILD
                 }
+            }
+
+            if (mjs == null) {
+                context.reply(true) {
+                    content = "GamerSafer não está ativada neste servidor"
+                }
+                return
             }
 
             val provider = loritta.config.loritta.gamerSafer.provider
