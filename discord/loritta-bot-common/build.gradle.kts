@@ -109,8 +109,8 @@ dependencies {
     implementation("org.gagravarr:vorbis-java-core:0.8")
 
     // GalleryOfDreams client
-    implementation("net.perfectdreams.galleryofdreams:common:1.0.9")
-    implementation("net.perfectdreams.galleryofdreams:client:1.0.9")
+    implementation("net.perfectdreams.galleryofdreams:common:1.0.11")
+    implementation("net.perfectdreams.galleryofdreams:client:1.0.11")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
