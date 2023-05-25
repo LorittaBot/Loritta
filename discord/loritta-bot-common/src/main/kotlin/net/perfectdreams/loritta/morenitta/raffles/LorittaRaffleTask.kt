@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.io.File
+import java.sql.Connection
 import java.time.Instant
 import kotlin.time.toJavaDuration
 
@@ -34,7 +35,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
         val locale = m.localeManager.getLocaleById("default")
         val i18nContext = m.languageManager.defaultI18nContext
 
-        val dmsToBeSent = m.transaction {
+        val dmsToBeSent = m.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
             val dmsToBeSent = mutableListOf<RaffleDM>()
 
             val now = Instant.now()

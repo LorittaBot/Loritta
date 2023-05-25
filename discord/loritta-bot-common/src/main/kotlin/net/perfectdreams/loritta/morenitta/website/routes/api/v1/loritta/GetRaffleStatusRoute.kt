@@ -12,12 +12,13 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import java.sql.Connection
 
 class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val raffleType = call.parameters["type"]?.let { RaffleType.valueOf(it) } ?: RaffleType.ORIGINAL
 
-		val response = loritta.transaction {
+		val response = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
 			// Get current active raffle based on the selected raffle type
 			val currentRaffle = Raffles.select {
 				Raffles.endedAt.isNull() and (Raffles.raffleType eq raffleType)

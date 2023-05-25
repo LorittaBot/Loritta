@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.*
+import java.sql.Connection
 import java.time.Instant
 
 class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
@@ -38,7 +39,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 		val invokedAt = Instant.ofEpochMilli(json["invokedAt"].long)
 		val type = RaffleType.valueOf(json["type"].string)
 
-		val response = loritta.transaction {
+		val response = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
 			// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
 			// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
 			val currentRaffle = Raffles.select {

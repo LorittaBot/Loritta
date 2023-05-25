@@ -1234,7 +1234,7 @@ class LorittaBot(
 		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
 	}
 
-	suspend fun <T> transaction(statement: suspend Transaction.() -> T) = pudding.transaction {
+	suspend fun <T> transaction(transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: suspend Transaction.() -> T) = pudding.transaction(transactionIsolation) {
 		statement.invoke(this)
 	}
 
