@@ -18,6 +18,8 @@ import net.perfectdreams.spicymorenitta.utils.DashboardUtils.launchWithLoadingSc
 import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFixLeftSidebarScroll
 import net.perfectdreams.spicymorenitta.utils.State
 import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.css.*
+import org.jetbrains.compose.web.css.rgb
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 import kotlin.time.Duration.Companion.days
@@ -64,6 +66,35 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 													var verifyEveryX by remember { mutableStateOf<String>(1.days.toIsoString()) }
 
 													Div {
+														Text("Cargo de Verificação: ")
+														val entries = response.roles
+															.map { roleData ->
+																SelectMenuEntry(
+																	{
+																		Span(attrs = {
+																			if (roleData.color != 0x1FFFFFFF) {
+																				style {
+																					color(unpackRGB(roleData.color))
+																				}
+																			}
+																		}) {
+																			Text(roleData.name)
+																		}
+																	},
+																	screen.gamerSaferVerifiedRoleId == roleData.id,
+																	{
+																		screen.gamerSaferVerifiedRoleId = roleData.id
+																	},
+																	{}
+																)
+															}
+
+														SelectMenu(entries)
+													}
+
+													Hr {}
+
+													Div {
 														Text("ID do Usuário: ")
 														Input(type = InputType.Text) {
 															value(userId) // calling value(...) is necessary to make input "Controlled"
@@ -79,14 +110,22 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 															.filter {
 																it.id !in screen.gamerSaferVerificationRoles.map { it.roleId }
 															}
-															.map {
+															.map { roleData ->
 																SelectMenuEntry(
 																	{
-																		Text(it.name)
+																		Span(attrs = {
+																			if (roleData.color != 0x1FFFFFFF) {
+																				style {
+																					color(unpackRGB(roleData.color))
+																				}
+																			}
+																		}) {
+																			Text(roleData.name)
+																		}
 																	},
-																	roleId == it.id,
+																	roleId == roleData.id,
 																	{
-																		roleId = it.id
+																		roleId = roleData.id
 																	},
 																	{}
 																)
@@ -161,11 +200,29 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 												Hr {}
 												if (screen.gamerSaferVerificationRoles.isNotEmpty()) {
 													for (role in screen.gamerSaferVerificationRoles) {
+														val roleData = response.roles.firstOrNull { role.roleId == it.id }
+
 														Div {
 															Text("Usuário: ")
 															Text(role.userId.toString())
 															Text(" - Cargo: ")
-															Text(role.roleId.toString())
+															Span(attrs = {
+																classes("discord-mention")
+
+																if (roleData != null && roleData.color != 0x1FFFFFFF) {
+																	style {
+																		color(unpackRGB(roleData.color))
+																		backgroundColor(unpackRGBBackground(roleData.color))
+																	}
+																}
+															}) {
+																Text("@")
+																if (roleData != null) {
+																	Text(roleData.name)
+																} else {
+																	Text("Cargo Desconhecido (${role.roleId})")
+																}
+															}
 
 															Text(" ")
 															Button(
@@ -195,6 +252,7 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 																m.sendRPCRequest<PostGamerSaferVerifyConfigResponse>(
 																	PostGamerSaferVerifyConfigRequest(
 																		screen.guildId,
+																		screen.gamerSaferVerifiedRoleId,
 																		screen.gamerSaferVerificationRoles
 																	)
 																)
@@ -219,5 +277,21 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 				}
 			}
 		}
+	}
+
+	fun unpackRGB(packedRGB: Int): CSSColorValue {
+		val red = (packedRGB shr 16) and 0xFF
+		val green = (packedRGB shr 8) and 0xFF
+		val blue = packedRGB and 0xFF
+
+		return rgb(red, green, blue)
+	}
+
+	fun unpackRGBBackground(packedRGB: Int): CSSColorValue {
+		val red = (packedRGB shr 16) and 0xFF
+		val green = (packedRGB shr 8) and 0xFF
+		val blue = packedRGB and 0xFF
+
+		return rgba(red, green, blue, 0.7)
 	}
 }

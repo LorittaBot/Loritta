@@ -44,7 +44,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             val guildId = context.guildId!! // This command cannot be used in DMs anyway
 
-            // TODO: Check if the member has any matching roles that requires joining the GS guild
+            // TODO: Check if the GamerSafer module is enabled
 
             // Check if the user has already joined the GamerSafer guild
             val mjs = loritta.transaction {
@@ -101,7 +101,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
                     context.reply(true) {
                         styled(
-                            "Accesse o QR code no app da GamerSafer para entrar na guilda!",
+                            "Acesse o QR code no app da GamerSafer para entrar na guilda!",
                             Emotes.LoriHi
                         )
 

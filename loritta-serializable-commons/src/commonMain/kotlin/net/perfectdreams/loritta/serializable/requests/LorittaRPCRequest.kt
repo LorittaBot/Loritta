@@ -36,5 +36,6 @@ class GetGamerSaferVerifyConfigRequest(
 @Serializable
 class PostGamerSaferVerifyConfigRequest(
     val guildId: Long,
+    val verifiedRoleId: Long?,
     val verificationRoles: List<GamerSaferVerificationUserAndRole>
 ) : LorittaRPCRequest()

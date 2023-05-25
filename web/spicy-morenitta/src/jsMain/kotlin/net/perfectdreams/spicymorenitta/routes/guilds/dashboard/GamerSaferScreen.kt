@@ -50,6 +50,7 @@ sealed class GamerSaferScreen(internal val route: GamerSaferVerifyRoute) {
 
     class GamerSaferVerifyScreen(route: GamerSaferVerifyRoute, val guildId: Long) : GamerSaferScreen(route) {
         var responseState by mutableStateOf<State<GetGamerSaferVerifyConfigResponse>>(State.Loading())
+        var gamerSaferVerifiedRoleId by mutableStateOf<Long?>(null)
         var gamerSaferVerificationRoles = mutableStateListOf<GamerSaferVerificationUserAndRole>()
 
         override fun onLoad() {
@@ -57,6 +58,7 @@ sealed class GamerSaferScreen(internal val route: GamerSaferVerifyRoute) {
                 val response = m.sendRPCRequest<GetGamerSaferVerifyConfigResponse>(GetGamerSaferVerifyConfigRequest(guildId))
                 responseState = State.Success(response)
                 if (response is GetGamerSaferVerifyConfigResponse.Success) {
+                    gamerSaferVerifiedRoleId = response.verifiedRoleId
                     gamerSaferVerificationRoles.addAll(response.verificationRoles)
                 }
             }

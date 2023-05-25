@@ -820,6 +820,7 @@ class LorittaBot(
 
 				// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
 				SchemaUtils.createMissingTablesAndColumns(
+					ServerConfigs,
 					net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies,
 					GatewayActivities,
 					UserSettings,
@@ -831,12 +832,12 @@ class LorittaBot(
 					CollectedChristmas2022Points,
 					Christmas2022SonhosTransactionsLog,
 					DailyRewardSonhosTransactionsLog,
-					GamerSaferRequiresVerificationRoles,
 					GamerSaferRequiresVerificationUsers,
 					GamerSaferUserRoles,
 					GamerSaferSuccessfulVerifications,
 					GamerSaferGuildMembers,
 					GamerSaferGuilds,
+					GamerSaferConfigs,
 					BrowserFingerprints,
 					BotVotesUserAvailableNotifications,
 					Giveaways,

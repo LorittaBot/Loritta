@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.rpc.processors.guild
 import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
@@ -66,9 +65,11 @@ class GetGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProc
                     jdaGuild.roles.filter { !it.isManaged && !it.isPublicRole }.map {
                         GetGamerSaferVerifyConfigResponse.Role(
                             it.name,
-                            it.idLong
+                            it.idLong,
+                            it.colorRaw
                         )
                     },
+                    0L,
                     verificationRoles
                 )
             }

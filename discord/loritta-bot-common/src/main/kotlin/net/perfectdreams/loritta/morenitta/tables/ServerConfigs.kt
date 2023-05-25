@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.tables
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
 import net.perfectdreams.loritta.morenitta.utils.exposed.array
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.AutoroleConfigs
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.EconomyConfigs
@@ -35,5 +36,6 @@ object ServerConfigs : SnowflakeTable() {
 	val inviteBlockerConfig = optReference("invite_blocker_config", InviteBlockerConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val welcomerConfig = optReference("welcomer_config", WelcomerConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val moderationConfig = optReference("moderation_config", ModerationConfigs, onDelete = ReferenceOption.CASCADE).index()
+	val gamerSaferConfig = optReference("gamersafer_config", GamerSaferConfigs, onDelete = ReferenceOption.CASCADE).index()
 	val migrationVersion = integer("migration_version").default(0)
 }

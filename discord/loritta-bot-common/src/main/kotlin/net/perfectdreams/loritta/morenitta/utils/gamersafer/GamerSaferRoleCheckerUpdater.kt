@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.utils.gamersafer
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferUserRoles

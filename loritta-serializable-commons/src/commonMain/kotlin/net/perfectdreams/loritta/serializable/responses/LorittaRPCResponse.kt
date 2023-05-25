@@ -117,6 +117,7 @@ sealed interface GetGamerSaferVerifyConfigResponse : LorittaRPCResponse {
     @Serializable
     class Success(
         val roles: List<Role>,
+        val verifiedRoleId: Long,
         val verificationRoles: List<GamerSaferVerificationUserAndRole>
     ) : GetGamerSaferVerifyConfigResponse
 
@@ -129,7 +130,8 @@ sealed interface GetGamerSaferVerifyConfigResponse : LorittaRPCResponse {
     @Serializable
     data class Role(
         val name: String,
-        val id: Long
+        val id: Long,
+        val color: Int
     )
 }
 

@@ -82,7 +82,10 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val notifyMeButton = loritta.interactivityManager
                 .button(
                     ButtonStyle.PRIMARY,
-                    "Me notificar quando a rifa acabar"
+                    context.i18nContext.get(I18N_PREFIX.Status.NotifyMe.Label),
+                    {
+                        loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHi
+                    }
                 ) { context ->
                     val hook = context.deferChannelMessage(true)
 
@@ -110,12 +113,12 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     context.reply(true) {
                         if (addedNotification) {
                             styled(
-                                "Você será notificado via mensagem direta quando a rifa acabar, até mesmo se você perder ela!",
+                                context.i18nContext.get(I18N_PREFIX.Status.NotifyMe.NotifyAdded),
                                 net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHi
                             )
                         } else {
                             styled(
-                                "Você não será notificado via mensagem direta quando a rifa acabar, exceto se você ganhar ela!",
+                                context.i18nContext.get(I18N_PREFIX.Status.NotifyMe.NotifyRemoved),
                                 net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
                             )
                         }
