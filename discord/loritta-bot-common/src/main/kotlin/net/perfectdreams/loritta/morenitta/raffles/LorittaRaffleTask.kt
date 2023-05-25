@@ -35,6 +35,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
         val locale = m.localeManager.getLocaleById("default")
         val i18nContext = m.languageManager.defaultI18nContext
 
+        // Serializable is used because REPEATABLE READ will cause issues if someone buys raffle tickets when the LorittaRaffleTask is processing the current raffle winners
         val dmsToBeSent = m.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
             val dmsToBeSent = mutableListOf<RaffleDM>()
 

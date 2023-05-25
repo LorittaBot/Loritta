@@ -39,6 +39,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 		val invokedAt = Instant.ofEpochMilli(json["invokedAt"].long)
 		val type = RaffleType.valueOf(json["type"].string)
 
+		// Serializable is used because REPEATABLE READ will cause issues if someone buys raffle tickets when the LorittaRaffleTask is processing the current raffle winners
 		val response = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
 			// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
 			// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
