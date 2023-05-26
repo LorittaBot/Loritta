@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.serializable.GiveawayRoles
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.awt.Color
+import java.sql.Connection
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
@@ -43,253 +44,250 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                 val serverConfig = m.getOrCreateServerConfig(guild.idLong, true)
                 val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-                m.giveawayManager.giveawayMutexes.getOrPut(dbId) { Mutex() }
-                    .withLock {
-                        val state = m.transaction {
-                            val giveaway = Giveaways.select { Giveaways.id eq dbId }
-                                .firstOrNull() ?: return@transaction GiveawayState.UnknownGiveaway
+                // Serializable is used because REPEATABLE READ will cause issues if someone spam clicks the button, or if the giveaway ends at the same time someone clicks on the button
+                val state = m.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
+                    val giveaway = Giveaways.select { Giveaways.id eq dbId }
+                        .firstOrNull() ?: return@transaction GiveawayState.UnknownGiveaway
 
-                            // The giveaway has already finished!
-                            if (giveaway[Giveaways.finished])
-                                return@transaction GiveawayState.AlreadyFinished
+                    // The giveaway has already finished!
+                    if (giveaway[Giveaways.finished])
+                        return@transaction GiveawayState.AlreadyFinished
 
-                            if (GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value and (GiveawayParticipants.userId eq event.user.idLong) }
-                                    .count() != 0L)
-                                return@transaction GiveawayState.AlreadyParticipating
+                    if (GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value and (GiveawayParticipants.userId eq event.user.idLong) }.count() != 0L)
+                        return@transaction GiveawayState.AlreadyParticipating
 
-                            // Check if the user has all allowed roles
-                            val allowedRoles = giveaway[Giveaways.allowedRoles]?.let { Json.decodeFromString<GiveawayRoles>(it) }
+                    // Check if the user has all allowed roles
+                    val allowedRoles = giveaway[Giveaways.allowedRoles]?.let { Json.decodeFromString<GiveawayRoles>(it) }
 
-                            if (allowedRoles != null) {
-                                val memberRoleIds = event.member!!.roles.map { it.idLong }.toSet()
+                    if (allowedRoles != null) {
+                        val memberRoleIds = event.member!!.roles.map { it.idLong }.toSet()
 
-                                if (allowedRoles.isAndCondition) {
-                                    val missingRoleIds = (allowedRoles.roleIds - memberRoleIds)
+                        if (allowedRoles.isAndCondition) {
+                            val missingRoleIds = (allowedRoles.roleIds - memberRoleIds)
 
-                                    if (missingRoleIds.isNotEmpty())
-                                        return@transaction GiveawayState.MissingRoles(allowedRoles)
-                                } else {
-                                    val hasAnyRole = allowedRoles.roleIds.any { it in memberRoleIds }
-                                    if (!hasAnyRole)
-                                        return@transaction GiveawayState.MissingRoles(allowedRoles)
-                                }
-                            }
-
-                            // Check if the user does not have any blocked roles
-                            val deniedRoles = giveaway[Giveaways.deniedRoles]?.let { Json.decodeFromString<GiveawayRoles>(it) }
-
-                            if (deniedRoles != null) {
-                                val memberRoleIds = event.member!!.roles.map { it.idLong }.toSet()
-
-                                if (deniedRoles.isAndCondition) {
-                                    val hasAllRoles = deniedRoles.roleIds.all { it in deniedRoles.roleIds }
-
-                                    if (hasAllRoles)
-                                        return@transaction GiveawayState.BlockedRoles(deniedRoles)
-                                } else {
-                                    val hasAnyRole = deniedRoles.roleIds.any { it in memberRoleIds }
-                                    if (hasAnyRole)
-                                        return@transaction GiveawayState.BlockedRoles(deniedRoles)
-                                }
-                            }
-
-                            GiveawayParticipants.insert {
-                                it[GiveawayParticipants.userId] = event.user.idLong
-                                it[GiveawayParticipants.giveawayId] = dbId
-                                it[GiveawayParticipants.joinedAt] = Instant.now()
-                            }
-
-                            val participants =
-                                GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
-                                    .count()
-
-                            return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles)
+                            if (missingRoleIds.isNotEmpty())
+                                return@transaction GiveawayState.MissingRoles(allowedRoles)
+                        } else {
+                            val hasAnyRole = allowedRoles.roleIds.any { it in memberRoleIds }
+                            if (!hasAnyRole)
+                                return@transaction GiveawayState.MissingRoles(allowedRoles)
                         }
+                    }
 
-                        when (state) {
-                            GiveawayState.UnknownGiveaway -> {
-                                deferredEdit.sendMessage(
-                                    MessageCreate {
-                                        styled(
-                                            i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.UnknownGiveaway),
-                                            Emotes.LoriSob
-                                        )
+                    // Check if the user does not have any blocked roles
+                    val deniedRoles = giveaway[Giveaways.deniedRoles]?.let { Json.decodeFromString<GiveawayRoles>(it) }
+
+                    if (deniedRoles != null) {
+                        val memberRoleIds = event.member!!.roles.map { it.idLong }.toSet()
+
+                        if (deniedRoles.isAndCondition) {
+                            val hasAllRoles = deniedRoles.roleIds.all { it in deniedRoles.roleIds }
+
+                            if (hasAllRoles)
+                                return@transaction GiveawayState.BlockedRoles(deniedRoles)
+                        } else {
+                            val hasAnyRole = deniedRoles.roleIds.any { it in memberRoleIds }
+                            if (hasAnyRole)
+                                return@transaction GiveawayState.BlockedRoles(deniedRoles)
+                        }
+                    }
+
+                    GiveawayParticipants.insert {
+                        it[GiveawayParticipants.userId] = event.user.idLong
+                        it[GiveawayParticipants.giveawayId] = dbId
+                        it[GiveawayParticipants.joinedAt] = Instant.now()
+                    }
+
+                    val participants =
+                        GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
+                            .count()
+
+                    return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles)
+                }
+
+                when (state) {
+                    GiveawayState.UnknownGiveaway -> {
+                        deferredEdit.sendMessage(
+                            MessageCreate {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.UnknownGiveaway),
+                                    Emotes.LoriSob
+                                )
+                            }
+                        )
+                            .setEphemeral(true)
+                            .await()
+                    }
+
+                    GiveawayState.AlreadyFinished -> {
+                        deferredEdit.sendMessage(MessageCreate {
+                            styled(
+                                i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.GiveawayHasAlreadyEnded),
+                                Emotes.LoriSob
+                            )
+                        })
+                            .setEphemeral(true)
+                            .await()
+                    }
+
+                    GiveawayState.AlreadyParticipating -> {
+                        deferredEdit.sendMessage(
+                            MessageCreate {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreAlreadyParticipating),
+                                    Emotes.LoriSob
+                                )
+
+                                actionRow(
+                                    m.interactivityManager.buttonForUser(event.user, ButtonStyle.DANGER, i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.LeaveGiveaway), { loriEmoji = Emotes.LoriBear }) {
+                                        val deferredReply = it.event.deferReply(true).await()
+
+                                        // First we will try to make the user leave the giveaway
+                                        val leftGiveaway = m.transaction {
+                                            // Shouldn't ever be null here (unless if it is was deleted somewhere else)
+                                            val giveaway = Giveaways.select { Giveaways.id eq dbId }
+                                                .first()
+
+                                            // Delete the user's entry...
+                                            GiveawayParticipants.deleteWhere {
+                                                GiveawayParticipants.userId eq event.user.idLong and (GiveawayParticipants.giveawayId eq dbId)
+                                            }
+
+                                            // Get all participants...
+                                            val participants = GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
+                                                .count()
+
+                                            // Parse the allowed roles into JSON objects
+                                            val allowedRoles = giveaway[Giveaways.allowedRoles]?.let {
+                                                Json.decodeFromString<GiveawayRoles>(it)
+                                            }
+                                            val deniedRoles = giveaway[Giveaways.deniedRoles]?.let {
+                                                Json.decodeFromString<GiveawayRoles>(it)
+                                            }
+
+                                            // And that's a wrap!
+                                            LeftGiveaway(giveaway, participants, allowedRoles, deniedRoles)
+                                        }
+
+                                        // Update the giveaway message to indicate that the user left
+                                        m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
+                                        m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
+                                            // We have a 5s delay before *really* updating the message
+                                            delay(5.seconds)
+
+                                            guild.getGuildMessageChannelById(leftGiveaway.giveaway[Giveaways.textChannelId])
+                                                ?.editMessageById(
+                                                    leftGiveaway.giveaway[Giveaways.messageId],
+                                                    MessageEditData.fromCreateData(
+                                                        m.giveawayManager.createGiveawayMessage(
+                                                            m.languageManager.getI18nContextByLegacyLocaleId(
+                                                                leftGiveaway.giveaway[Giveaways.locale]
+                                                            ),
+                                                            leftGiveaway.giveaway[Giveaways.reason],
+                                                            leftGiveaway.giveaway[Giveaways.description],
+                                                            leftGiveaway.giveaway[Giveaways.reaction],
+                                                            leftGiveaway.giveaway[Giveaways.imageUrl],
+                                                            leftGiveaway.giveaway[Giveaways.thumbnailUrl],
+                                                            leftGiveaway.giveaway[Giveaways.color]?.let {
+                                                                Color.decode(
+                                                                    it
+                                                                )
+                                                            },
+                                                            leftGiveaway.giveaway[Giveaways.finishAt],
+                                                            event.guild!!,
+                                                            leftGiveaway.giveaway[Giveaways.customMessage],
+                                                            leftGiveaway.giveaway[Giveaways.id].value,
+                                                            leftGiveaway.participants,
+                                                            leftGiveaway.allowedRoles,
+                                                            leftGiveaway.deniedRoles
+                                                        )
+                                                    )
+                                                )
+                                                ?.await()
+
+                                            m.giveawayManager.giveawayMessageUpdateJobs.remove(dbId)
+                                        }
+
+                                        // Tell the user that they left the giveaway
+                                        deferredReply.editOriginal(
+                                            MessageEdit {
+                                                styled(
+                                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouLeftTheGiveaway),
+                                                    Emotes.LoriSob
+                                                )
+                                            }).await()
                                     }
                                 )
-                                    .setEphemeral(true)
-                                    .await()
-                            }
+                            })
+                            .setEphemeral(true)
+                            .await()
+                    }
 
-                            GiveawayState.AlreadyFinished -> {
-                                deferredEdit.sendMessage(MessageCreate {
+                    is GiveawayState.MissingRoles -> {
+                        if (state.allowedRoles.isAndCondition) {
+                            deferredEdit.sendMessage(
+                                MessageCreate {
                                     styled(
-                                        i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.GiveawayHasAlreadyEnded),
+                                        i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.MissingRolesAnd(state.allowedRoles.roleIds.joinToString { "<@&${it}>" })),
                                         Emotes.LoriSob
                                     )
                                 })
-                                    .setEphemeral(true)
-                                    .await()
-                            }
+                                .setEphemeral(true)
+                                .await()
+                        } else {
+                            deferredEdit.sendMessage(
+                                MessageCreate {
+                                    styled(
+                                        i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.MissingRolesOr(state.allowedRoles.roleIds.joinToString { "<@&${it}>" })),
+                                        Emotes.LoriSob
+                                    )
+                                })
+                                .setEphemeral(true)
+                                .await()
+                        }
+                    }
 
-                            GiveawayState.AlreadyParticipating -> {
-                                deferredEdit.sendMessage(
-                                    MessageCreate {
-                                        styled(
-                                            i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreAlreadyParticipating),
-                                            Emotes.LoriSob
-                                        )
+                    is GiveawayState.BlockedRoles -> {
+                        if (state.deniedRoles.isAndCondition) {
+                            deferredEdit.sendMessage(
+                                MessageCreate {
+                                    styled(
+                                        i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.BlockedRolesAnd(state.deniedRoles.roleIds.joinToString { "<@&${it}>" })),
+                                        Emotes.LoriSob
+                                    )
+                                })
+                                .setEphemeral(true)
+                                .await()
+                        } else {
+                            deferredEdit.sendMessage(
+                                MessageCreate {
+                                    styled(
+                                        i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.BlockedRolesOr(state.deniedRoles.roleIds.joinToString { "<@&${it}>" })),
+                                        Emotes.LoriSob
+                                    )
+                                })
+                                .setEphemeral(true)
+                                .await()
+                        }
+                    }
 
-                                        actionRow(
-                                            m.interactivityManager.buttonForUser(event.user, ButtonStyle.DANGER, i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.LeaveGiveaway), { loriEmoji = Emotes.LoriBear }) {
-                                                val deferredReply = it.event.deferReply(true).await()
+                    is GiveawayState.Success -> {
+                        val giveaway = state.giveaway
 
-                                                m.giveawayManager.giveawayMutexes.getOrPut(dbId) { Mutex() }
-                                                    .withLock {
-                                                        // First we will try to make the user leave the giveaway
-                                                        val leftGiveaway = m.transaction {
-                                                            // Shouldn't ever be null here (unless if it is was deleted somewhere else)
-                                                            val giveaway = Giveaways.select { Giveaways.id eq dbId }
-                                                                .first()
+                        deferredEdit.sendMessage(
+                            MessageCreate {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreNowParticipating),
+                                    Emotes.LoriYay
+                                )
+                            })
+                            .setEphemeral(true)
+                            .await()
 
-                                                            // Delete the user's entry...
-                                                            GiveawayParticipants.deleteWhere {
-                                                                GiveawayParticipants.userId eq event.user.idLong and (GiveawayParticipants.giveawayId eq dbId)
-                                                            }
-
-                                                            // Get all participants...
-                                                            val participants = GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
-                                                                    .count()
-
-                                                            // Parse the allowed roles into JSON objects
-                                                            val allowedRoles = giveaway[Giveaways.allowedRoles]?.let {
-                                                                Json.decodeFromString<GiveawayRoles>(it)
-                                                            }
-                                                            val deniedRoles = giveaway[Giveaways.deniedRoles]?.let {
-                                                                Json.decodeFromString<GiveawayRoles>(it)
-                                                            }
-
-                                                            // And that's a wrap!
-                                                            LeftGiveaway(giveaway, participants, allowedRoles, deniedRoles)
-                                                        }
-
-                                                        // Update the giveaway message to indicate that the user left
-                                                        m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
-                                                        m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
-                                                            // We have a 5s delay before *really* updating the message
-                                                            delay(5.seconds)
-
-                                                            guild.getGuildMessageChannelById(leftGiveaway.giveaway[Giveaways.textChannelId])
-                                                                ?.editMessageById(
-                                                                    leftGiveaway.giveaway[Giveaways.messageId],
-                                                                    MessageEditData.fromCreateData(
-                                                                        m.giveawayManager.createGiveawayMessage(
-                                                                            m.languageManager.getI18nContextByLegacyLocaleId(
-                                                                                leftGiveaway.giveaway[Giveaways.locale]
-                                                                            ),
-                                                                            leftGiveaway.giveaway[Giveaways.reason],
-                                                                            leftGiveaway.giveaway[Giveaways.description],
-                                                                            leftGiveaway.giveaway[Giveaways.reaction],
-                                                                            leftGiveaway.giveaway[Giveaways.imageUrl],
-                                                                            leftGiveaway.giveaway[Giveaways.thumbnailUrl],
-                                                                            leftGiveaway.giveaway[Giveaways.color]?.let {
-                                                                                Color.decode(
-                                                                                    it
-                                                                                )
-                                                                            },
-                                                                            leftGiveaway.giveaway[Giveaways.finishAt],
-                                                                            event.guild!!,
-                                                                            leftGiveaway.giveaway[Giveaways.customMessage],
-                                                                            leftGiveaway.giveaway[Giveaways.id].value,
-                                                                            leftGiveaway.participants,
-                                                                            leftGiveaway.allowedRoles,
-                                                                            leftGiveaway.deniedRoles
-                                                                        )
-                                                                    )
-                                                                )
-                                                                ?.await()
-
-                                                            m.giveawayManager.giveawayMessageUpdateJobs.remove(dbId)
-                                                        }
-                                                    }
-
-                                                // Tell the user that they left the giveaway
-                                                deferredReply.editOriginal(
-                                                    MessageEdit {
-                                                        styled(
-                                                            i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouLeftTheGiveaway),
-                                                            Emotes.LoriSob
-                                                        )
-                                                    }).await()
-                                            }
-                                        )
-                                    })
-                                    .setEphemeral(true)
-                                    .await()
-                            }
-
-                            is GiveawayState.MissingRoles -> {
-                                if (state.allowedRoles.isAndCondition) {
-                                    deferredEdit.sendMessage(
-                                        MessageCreate {
-                                            styled(
-                                                i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.MissingRolesAnd(state.allowedRoles.roleIds.joinToString { "<@&${it}>" })),
-                                                Emotes.LoriSob
-                                            )
-                                        })
-                                        .setEphemeral(true)
-                                        .await()
-                                } else {
-                                    deferredEdit.sendMessage(
-                                        MessageCreate {
-                                            styled(
-                                                i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.MissingRolesOr(state.allowedRoles.roleIds.joinToString { "<@&${it}>" })),
-                                                Emotes.LoriSob
-                                            )
-                                        })
-                                        .setEphemeral(true)
-                                        .await()
-                                }
-                            }
-
-                            is GiveawayState.BlockedRoles -> {
-                                if (state.deniedRoles.isAndCondition) {
-                                    deferredEdit.sendMessage(
-                                        MessageCreate {
-                                            styled(
-                                                i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.BlockedRolesAnd(state.deniedRoles.roleIds.joinToString { "<@&${it}>" })),
-                                                Emotes.LoriSob
-                                            )
-                                        })
-                                        .setEphemeral(true)
-                                        .await()
-                                } else {
-                                    deferredEdit.sendMessage(
-                                        MessageCreate {
-                                            styled(
-                                                i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.BlockedRolesOr(state.deniedRoles.roleIds.joinToString { "<@&${it}>" })),
-                                                Emotes.LoriSob
-                                            )
-                                        })
-                                        .setEphemeral(true)
-                                        .await()
-                                }
-                            }
-
-                            is GiveawayState.Success -> {
-                                val giveaway = state.giveaway
-
-                                deferredEdit.sendMessage(
-                                    MessageCreate {
-                                        styled(
-                                            i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreNowParticipating),
-                                            Emotes.LoriYay
-                                        )
-                                    })
-                                    .setEphemeral(true)
-                                    .await()
-
-                                m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
-                                m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
+                        m.giveawayManager.giveawayMessageUpdateMutexes.getOrPut(dbId) { Mutex() }.withLock {
+                            m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
+                            m.giveawayManager.giveawayMessageUpdateJobs[dbId] =
+                                GlobalScope.launch(m.coroutineDispatcher) {
                                     // We have a 5s delay before *really* updating the message
                                     delay(5.seconds)
 
@@ -316,9 +314,9 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                                     m.giveawayManager.giveawayMessageUpdateJobs.remove(dbId)
                                 }
-                            }
                         }
                     }
+                }
             }
         } else if (event.componentId.startsWith(GiveawayManager.GIVEAWAY_PARTICIPANTS_COMPONENT_PREFIX + ":")) {
             val dbId = event.componentId.substringAfter(":").toLong()

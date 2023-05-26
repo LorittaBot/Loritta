@@ -48,7 +48,7 @@ class GiveawayManager(val loritta: LorittaBot) {
 
     var giveawayTasks = ConcurrentHashMap<Long, Job>()
     private val logger = KotlinLogging.logger {}
-    val giveawayMutexes = ConcurrentHashMap<Long, Mutex>()
+    val giveawayMessageUpdateMutexes = ConcurrentHashMap<Long, Mutex>()
     val giveawayMessageUpdateJobs = ConcurrentHashMap<Long, Job>()
 
     fun getReactionMention(reaction: String): String {
@@ -375,7 +375,7 @@ class GiveawayManager(val loritta: LorittaBot) {
 
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
-        giveawayMutexes.remove(giveaway.id.value)
+        giveawayMessageUpdateMutexes.remove(giveaway.id.value)
 
         if (deleteFromDatabase || forceDelete) {
             if (forceDelete || System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= giveaway.finishAt) { // Já se passaram uma semana?
