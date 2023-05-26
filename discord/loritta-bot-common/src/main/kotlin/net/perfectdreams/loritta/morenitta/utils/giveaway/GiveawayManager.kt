@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.serializable.GiveawayRoles
 import net.perfectdreams.sequins.text.StringUtils
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
+import java.sql.Connection
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
@@ -393,7 +394,7 @@ class GiveawayManager(val loritta: LorittaBot) {
             val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
             val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-            val participantsIds = loritta.transaction {
+            val participantsIds = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
                 GiveawayParticipants.select {
                     GiveawayParticipants.giveawayId eq giveaway.id.value
                 }.map { it[GiveawayParticipants.userId] }
