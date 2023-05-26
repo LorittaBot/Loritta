@@ -81,7 +81,7 @@ class GetGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProc
                             it.colorRaw
                         )
                     },
-                    0L,
+                    gsGuildConfig?.get(GamerSaferConfigs.verifiedRoleId),
                     verificationRoles
                 )
             }

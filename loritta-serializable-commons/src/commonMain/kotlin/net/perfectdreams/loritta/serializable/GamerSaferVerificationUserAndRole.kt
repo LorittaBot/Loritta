@@ -13,7 +13,9 @@ data class GamerSaferVerificationUserAndRole(
         val allowedTimes = setOf(
             1.days,
             3.days,
-            7.days
+            7.days,
+            30.days,
+            365.days
         )
     }
 

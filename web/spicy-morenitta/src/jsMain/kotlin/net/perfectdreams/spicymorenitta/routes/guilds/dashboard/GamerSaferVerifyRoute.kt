@@ -107,9 +107,6 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 													Div {
 														Text("Cargo: ")
 														val entries = response.roles
-															.filter {
-																it.id !in screen.gamerSaferVerificationRoles.map { it.roleId }
-															}
 															.map { roleData ->
 																SelectMenuEntry(
 																	{
@@ -166,11 +163,30 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 																	verifyEveryX = 7.days.toIsoString()
 																},
 																{}
+															),
+															SelectMenuEntry(
+																{
+																	Text("30 dias")
+																},
+																verifyEveryX == 30.days.toIsoString(),
+																{
+																	verifyEveryX = 30.days.toIsoString()
+																},
+																{}
+															),
+															SelectMenuEntry(
+																{
+																	Text("365 dias")
+																},
+																verifyEveryX == 365.days.toIsoString(),
+																{
+																	verifyEveryX = 365.days.toIsoString()
+																},
+																{}
 															)
 														)
 
 														SelectMenu(entries2)
-
 													}
 
 													Div {

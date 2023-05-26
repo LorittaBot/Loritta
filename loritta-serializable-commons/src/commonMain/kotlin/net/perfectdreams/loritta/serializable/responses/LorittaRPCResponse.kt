@@ -118,7 +118,7 @@ sealed interface GetGamerSaferVerifyConfigResponse : LorittaRPCResponse {
     class Success(
         val enabled: Boolean,
         val roles: List<Role>,
-        val verifiedRoleId: Long,
+        val verifiedRoleId: Long?,
         val verificationRoles: List<GamerSaferVerificationUserAndRole>
     ) : GetGamerSaferVerifyConfigResponse
 

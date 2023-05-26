@@ -48,9 +48,9 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             val guildId = context.guildId!! // This command cannot be used in DMs anyway
 
-            // Check if the GamerSafer module is enabled and if the user has already joined the GamerSafer guild
+            // Check if the user has already joined the GamerSafer guild
             val mjs = loritta.transaction {
-                val gsGuildConfig = ServerConfigs.innerJoin(GamerSaferConfigs).select {
+                val gsGuildConfig = ServerConfigs.innerJoin(GamerSaferGuilds).select {
                     ServerConfigs.id eq guildId
                 }
                     .limit(1)
@@ -160,7 +160,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                                 buildJsonObject {
                                     put("provider", provider)
                                     put("providerId", context.guildId!!.toString())
-                                    put("providerLinkBack", "https://phoenix-whistler.tail2f90.ts.net/api/v1/callbacks/gamersafer")
+                                    put("providerLinkBack", loritta.lorittaCluster.websiteUrl + "api/v1/callbacks/gamersafer")
                                     put("guildMemberId", mjs[GamerSaferGuildMembers.gamerSaferUser])
                                     put("discordMessage",
                                         Base64.getEncoder().encodeToString(

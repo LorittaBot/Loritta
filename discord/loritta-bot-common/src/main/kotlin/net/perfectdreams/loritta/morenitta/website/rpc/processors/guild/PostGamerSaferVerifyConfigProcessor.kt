@@ -10,8 +10,10 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
+import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
@@ -22,10 +24,8 @@ import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProc
 import net.perfectdreams.loritta.serializable.requests.PostGamerSaferVerifyConfigRequest
 import net.perfectdreams.loritta.serializable.responses.DiscordAccountError
 import net.perfectdreams.loritta.serializable.responses.PostGamerSaferVerifyConfigResponse
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import kotlin.time.Duration
 
 class PostGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
@@ -96,6 +96,29 @@ class PostGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcPro
                 }
 
                 m.loritta.transaction {
+                    val gsGuildConfigId = ServerConfigs.innerJoin(GamerSaferConfigs).select {
+                        ServerConfigs.id eq guildId
+                    }
+                        .limit(1)
+                        .firstOrNull()
+                        ?.get(GamerSaferConfigs.id)
+
+                    if (gsGuildConfigId != null) {
+                        GamerSaferConfigs.update({ GamerSaferConfigs.id eq gsGuildConfigId }) {
+                            it[GamerSaferConfigs.enabled] = request.enabled
+                            it[GamerSaferConfigs.verifiedRoleId] = request.verifiedRoleId
+                        }
+                    } else {
+                        val newGsGuildConfigId = GamerSaferConfigs.insertAndGetId {
+                            it[GamerSaferConfigs.enabled] = request.enabled
+                            it[GamerSaferConfigs.verifiedRoleId] = request.verifiedRoleId
+                        }
+
+                        ServerConfigs.update({ ServerConfigs.id eq guildId }) {
+                            it[ServerConfigs.gamerSaferConfig] = newGsGuildConfigId
+                        }
+                    }
+
                     // Delete all verification users
                     GamerSaferRequiresVerificationUsers.deleteWhere {
                         GamerSaferRequiresVerificationUsers.guild eq jdaGuild.idLong
