@@ -58,6 +58,9 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                     // Check if there are at least any ticket on the raffle and, if it is, then we process and get the winner
                     var winnerTicketId: Long? = null
                     var paidOutPrize: Long? = null
+                    var paidOutPrizeAfterTax: Long? = null
+                    var tax: Long? = null
+                    var taxPercentage: Double? = null
 
                     if (tickets.isNotEmpty()) {
                         // Get the winner of this raffle...
@@ -70,6 +73,8 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
 
                         val moneyWithoutTaxes = tickets.size * 250
+                        paidOutPrize = moneyWithoutTaxes.toLong()
+
                         val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
 
                         val lorittaProfile = m.getOrCreateLorittaProfile(winnerId)
@@ -79,10 +84,13 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         val totalTickets = tickets.size
                         val totalUsersInTheRaffle = tickets.map { it[RaffleTickets.userId] }.distinct().size
 
-                        paidOutPrize = money.toLong()
+                        paidOutPrizeAfterTax = money.toLong()
+
+                        tax = paidOutPrize - paidOutPrizeAfterTax
+                        taxPercentage = (1.0.toBigDecimal() - plan.totalLoraffleReward.toBigDecimal()).toDouble() // Avoid rounding errors
 
                         lorittaProfile.addSonhosAndAddToTransactionLogNested(
-                            money.toLong(),
+                            paidOutPrizeAfterTax,
                             SonhosPaymentReason.RAFFLE
                         )
 
@@ -143,6 +151,15 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         it[Raffles.winnerTicket] = winnerTicketId
                         it[Raffles.endedAt] = now
                         it[Raffles.paidOutPrize] = paidOutPrize
+                        it[Raffles.paidOutPrizeAfterTax] = paidOutPrizeAfterTax
+
+                        if (tax != null) {
+                            it[Raffles.tax] = tax
+                            it[Raffles.taxPercentage] = taxPercentage
+                        } else {
+                            it[Raffles.tax] = null
+                            it[Raffles.taxPercentage] = null
+                        }
                     }
 
                     // Now that the previous raffle has ended, let's create a new raffle of this type!
@@ -153,6 +170,8 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         it[Raffles.endedAt] = null
                         it[Raffles.winnerTicket] = null
                         it[Raffles.paidOutPrize] = null
+                        it[Raffles.tax] = null
+                        it[Raffles.taxPercentage] = null
                     }
                 }
             }

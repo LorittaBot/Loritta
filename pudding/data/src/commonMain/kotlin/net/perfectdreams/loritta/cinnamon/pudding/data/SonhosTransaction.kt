@@ -167,7 +167,10 @@ data class RaffleRewardSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
     override val user: UserId,
-    val sonhos: Long
+    val quantity: Long,
+    val quantityAfterTax: Long,
+    val tax: Long?,
+    val taxPercentage: Double?
 ) : SonhosTransaction()
 
 @Serializable

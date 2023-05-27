@@ -60,6 +60,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val endsAt = json["endsAt"].long
             val endsAtInSeconds = endsAt / 1000
             val lastWinnerPrize = json["lastWinnerPrize"].long
+            val lastWinnerPrizeAfterTax = json["lastWinnerPrizeAfterTax"].nullLong
             val raffleId = json["raffleId"].long
 
             val lastWinner = if (lastWinnerId != null) {
@@ -147,10 +148,17 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 )
 
                 if (lastWinnerId != null) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Status.LastWinner("$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize)),
-                        "\uD83D\uDE0E",
-                    )
+                    if (lastWinnerPrizeAfterTax != null && lastWinnerPrizeAfterTax != lastWinnerPrize) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Status.LastWinnerTaxed("$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize, lastWinnerPrizeAfterTax)),
+                            "\uD83D\uDE0E",
+                        )
+                    } else {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Status.LastWinner("$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize)),
+                            "\uD83D\uDE0E",
+                        )
+                    }
                 }
 
                 styled(

@@ -19,10 +19,19 @@ object RaffleRewardSonhosTransactionTransformer : SonhosTransactionTransformer<R
         transaction: RaffleRewardSonhosTransaction
     ): suspend StringBuilder.() -> (Unit) = {
         appendMoneyEarnedEmoji()
-        append(
-            i18nContext.get(
-                SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Raffle.WonRaffle(transaction.sonhos)
+
+        if (transaction.tax != null && transaction.taxPercentage != null) {
+            append(
+                i18nContext.get(
+                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Raffle.WonRaffleTaxed(transaction.quantityAfterTax, transaction.quantity)
+                )
             )
-        )
+        } else {
+            append(
+                i18nContext.get(
+                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Raffle.WonRaffle(transaction.quantity)
+                )
+            )
+        }
     }
 }

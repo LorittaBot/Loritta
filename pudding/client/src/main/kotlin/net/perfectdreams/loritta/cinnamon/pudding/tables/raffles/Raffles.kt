@@ -13,4 +13,7 @@ object Raffles : LongIdTable() {
 
     val winnerTicket = optReference("winner_ticket", RaffleTickets)
     val paidOutPrize = long("paid_out_prize").nullable()
+    val paidOutPrizeAfterTax = long("paid_out_prize_after_tax").nullable()
+    val tax = long("tax").nullable()
+    val taxPercentage = double("tax_percentage").nullable()
 }

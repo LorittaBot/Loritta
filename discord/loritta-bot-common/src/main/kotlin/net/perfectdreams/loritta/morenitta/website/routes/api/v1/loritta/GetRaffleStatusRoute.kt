@@ -46,11 +46,13 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 						.first()
 
 					val prize = previousRaffle[Raffles.paidOutPrize]
+					val prizeAfterTax = previousRaffle[Raffles.paidOutPrizeAfterTax]
 					val userId = previousRaffleWinnerTicket[RaffleTickets.userId]
 
 					return@transaction buildJsonObject {
 						put("lastWinnerId", userId)
 						put("lastWinnerPrize", prize)
+						put("lastWinnerPrizeAfterTax", prizeAfterTax)
 						put("currentTickets", currentTickets.size)
 						put("usersParticipating", currentTickets.map { it[RaffleTickets.userId] }.distinct().size)
 						put("endsAt", currentRaffle[Raffles.endsAt].toEpochMilli())

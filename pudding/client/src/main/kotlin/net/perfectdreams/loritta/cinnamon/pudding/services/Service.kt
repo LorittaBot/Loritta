@@ -221,6 +221,9 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
             row[Raffles.alias("r1")[Raffles.paidOutPrize]] ?: -1,
+            row[Raffles.alias("r1")[Raffles.paidOutPrizeAfterTax]] ?: row[Raffles.alias("r1")[Raffles.paidOutPrize]] ?: -1,
+            row[Raffles.alias("r1")[Raffles.tax]],
+            row[Raffles.alias("r1")[Raffles.taxPercentage]],
         )
     } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
         SparklyPowerLSXSonhosTransaction(
