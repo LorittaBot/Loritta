@@ -44,7 +44,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 			// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
 			// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
 			val currentRaffle = Raffles.select {
-				Raffles.raffleType eq type and (Raffles.endedAt.isNull()) and (Raffles.endsAt greaterEq invokedAt)
+				Raffles.raffleType eq type and (Raffles.endedAt.isNull()) and (Raffles.endsAt greaterEq invokedAt) and (Raffles.startedAt lessEq invokedAt)
 			}.firstOrNull()
 
 			// The raffle hasn't been created yet! The LorittaRaffleTask on the main instance should *hopefully* create the new raffle soon...
