@@ -118,6 +118,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.12.2")
 }
 
+val jsBrowserDistribution = tasks.getByPath(":web:spicy-morenitta:jsBrowserDistribution")
 val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val sass = tasks.register<SassTask>("sass-style-scss") {
@@ -141,6 +142,7 @@ tasks {
         from("../../resources/") // Include folders from the resources root folder
 
         // We need to wait until the JS build finishes and the SASS files are generated
+        dependsOn(jsBrowserDistribution)
         dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
         dependsOn(sassLegacy)

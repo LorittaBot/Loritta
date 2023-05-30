@@ -5,6 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import org.jsoup.Jsoup
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
 
 class ECBManager {
@@ -15,7 +16,7 @@ class ECBManager {
     fun getOrUpdateExchangeRates(): Deferred<Map<String, Double>> {
         val diff = System.currentTimeMillis() - updatedAt
 
-        if (diff >= Duration.hours(1).inWholeMilliseconds) {
+        if (diff >= 1.hours.inWholeMilliseconds) {
             job = GlobalScope.async {
                 val jsoup = Jsoup.connect("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?${System.currentTimeMillis()}")
                     .get()

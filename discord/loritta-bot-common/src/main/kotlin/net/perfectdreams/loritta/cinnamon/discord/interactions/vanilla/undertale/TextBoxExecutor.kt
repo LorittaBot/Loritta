@@ -45,6 +45,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.select
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import java.io.InputStream
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 
 class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
@@ -61,7 +62,7 @@ class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient
             val interactionDataId = loritta.pudding.interactionsData.insertInteractionData(
                 Json.encodeToJsonElement<TextBoxOptionsData>(data).jsonObject,
                 now,
-                now + Duration.Companion.minutes(15) // Expires after 15m
+                now + 15.minutes // Expires after 15m
             )
 
             val encodedComponent = ComponentDataUtils.encode(

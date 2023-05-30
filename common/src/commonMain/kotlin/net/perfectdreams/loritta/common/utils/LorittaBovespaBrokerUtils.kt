@@ -5,7 +5,7 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 object LorittaBovespaBrokerUtils {
@@ -13,7 +13,7 @@ object LorittaBovespaBrokerUtils {
     const val OUT_OF_SESSION = "out_of_session" // Inactive stock
     const val MARKET = "market" // Active stock, can be bought/sold
     @OptIn(ExperimentalTime::class)
-    val OUTDATED_STOCKS_TIME = Duration.seconds(60) // After how much time the data should be considered stale
+    val OUTDATED_STOCKS_TIME = 60.seconds // After how much time the data should be considered stale
     val TIME_OPEN = Pair(10, 0)
     val TIME_CLOSING = Pair(16, 55)
     val BOVESPA_TIMEZONE = TimeZone.of("America/Sao_Paulo")

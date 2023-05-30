@@ -65,6 +65,7 @@ jib {
     }
 }
 
+val jsBrowserDistribution = tasks.getByPath(":web:showtime:showtime-frontend:jsBrowserDistribution")
 val jsBrowserProductionWebpack = tasks.getByPath(":web:showtime:showtime-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val sass = tasks.register<SassTask>("sass-style-scss") {
@@ -79,6 +80,7 @@ tasks {
         from("../../resources/") // Include folders from the resources web folder
 
         // We need to wait until the JS build finishes and the SASS files are generated
+        dependsOn(jsBrowserDistribution)
         dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
 

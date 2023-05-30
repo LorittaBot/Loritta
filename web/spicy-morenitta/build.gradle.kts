@@ -1,7 +1,7 @@
 plugins {
 	kotlin("multiplatform")
 	kotlin("plugin.serialization")
-	id("org.jetbrains.compose") version "1.2.0-alpha01-dev750"
+	id("org.jetbrains.compose") version "1.4.0"
 }
 
 repositories {
@@ -40,7 +40,7 @@ kotlin {
 	sourceSets {
 		val jsMain by getting {
 			dependencies {
-				implementation(compose.web.core)
+				implementation(compose.html.core)
 				implementation(compose.runtime)
 				implementation(kotlin("stdlib-common"))
 				implementation(project(":common"))
