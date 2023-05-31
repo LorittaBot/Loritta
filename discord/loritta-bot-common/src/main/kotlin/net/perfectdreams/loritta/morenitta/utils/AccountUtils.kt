@@ -109,8 +109,8 @@ object AccountUtils {
                 context.i18nContext,
                 userProfile.userId,
                 bannedState[BannedUsers.reason],
-                bannedState[BannedUsers.bannedAt],
-                bannedState[BannedUsers.expiresAt]
+                bannedState[BannedUsers.bannedAt] / 1000,
+                bannedState[BannedUsers.expiresAt]?.let { it / 1000 }
             )
 
             context.sendMessage(content)
@@ -123,17 +123,17 @@ object AccountUtils {
         i18nContext: I18nContext,
         userId: Long,
         reason: String,
-        banDateInEpochSeconds: Long,
-        expiresDateInEpochSeconds: Long?,
+        banDateInEpochMillis: Long,
+        expiresDateInEpochMillis: Long?,
     ) = i18nContext.get(
-        if (expiresDateInEpochSeconds != null) {
+        if (expiresDateInEpochMillis != null) {
             I18nKeysData.Commands.UserIsLorittaBannedTemporary(
                 // TODO: Replace with "mentionUser"
                 mention = "<@$userId>",
                 loriHmpf = Emotes.LoriHmpf,
                 reason = reason,
-                banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
-                expiresDate = "<t:$expiresDateInEpochSeconds:R> (<t:$expiresDateInEpochSeconds:f>)",
+                banDate = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(banDateInEpochMillis),
+                expiresDate = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(expiresDateInEpochMillis),
                 loriSob = Emotes.LoriSob
             )
         } else {
@@ -141,7 +141,7 @@ object AccountUtils {
                 mention = "<@$userId>",
                 loriHmpf = Emotes.LoriHmpf,
                 reason = reason,
-                banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
+                banDate = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(banDateInEpochMillis),
                 loriSob = Emotes.LoriSob
             )
         }
