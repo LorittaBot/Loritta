@@ -3,18 +3,9 @@ package net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ChannelInfoCommand
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
-import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtilsKotlin
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.localized
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -48,10 +39,9 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.CommandCooldownManager
-import net.perfectdreams.loritta.morenitta.utils.CommandUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import java.sql.Connection
@@ -270,53 +260,58 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 					return true
 
 				// Cooldown
-				var commandCooldown = command.cooldown
-				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
-				val guildId = ev.guild?.idLong
-				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
+				// Skip cooldown if the user is not a Loritta supervisor...
+				if (!context.user.isLorittaSupervisor(context.loritta.lorittaShards)) {
+					var commandCooldown = command.cooldown
+					val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
+					val guildId = ev.guild?.idLong
+					val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
 
-				val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
+					val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
-				if (plan.lessCooldown) {
-					commandCooldown /= 2
-				}
-
-				val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
-					ev,
-					commandCooldown
-				)
-
-				if (cooldownStatus.sendMessage) {
-					val fancy = TimeFormat.RELATIVE.format(cooldown + cooldownTriggeredAt)
-
-					val key = when (cooldownStatus) {
-						CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE ->
-							LocaleKeyData(
-								"commands.pleaseWaitCooldown",
-								listOf(
-									LocaleStringData(fancy),
-									LocaleStringData("\uD83D\uDE45")
-								)
-							)
-						CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE_REPEATED ->
-							LocaleKeyData(
-								"commands.pleaseWaitCooldownRepeated",
-								listOf(
-									LocaleStringData(fancy),
-									LocaleStringData(Emotes.LORI_HMPF.toString())
-								)
-							)
-						else -> throw IllegalArgumentException("Invalid Cooldown Status $cooldownStatus, marked as send but there isn't any locale keys related to it!")
+					if (plan.lessCooldown) {
+						commandCooldown /= 2
 					}
 
-					context.reply(
-						LorittaReply(
-							locale[key],
-							"\uD83D\uDD25"
-						)
+					val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
+						ev,
+						commandCooldown
 					)
-					return true
-				} else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
+
+					if (cooldownStatus.sendMessage) {
+						val fancy = TimeFormat.RELATIVE.format(cooldown + cooldownTriggeredAt)
+
+						val key = when (cooldownStatus) {
+							CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE ->
+								LocaleKeyData(
+									"commands.pleaseWaitCooldown",
+									listOf(
+										LocaleStringData(fancy),
+										LocaleStringData("\uD83D\uDE45")
+									)
+								)
+
+							CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE_REPEATED ->
+								LocaleKeyData(
+									"commands.pleaseWaitCooldownRepeated",
+									listOf(
+										LocaleStringData(fancy),
+										LocaleStringData(Emotes.LORI_HMPF.toString())
+									)
+								)
+
+							else -> throw IllegalArgumentException("Invalid Cooldown Status $cooldownStatus, marked as send but there isn't any locale keys related to it!")
+						}
+
+						context.reply(
+							LorittaReply(
+								locale[key],
+								"\uD83D\uDD25"
+							)
+						)
+						return true
+					} else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
+				}
 
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(
 						LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {

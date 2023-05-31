@@ -285,53 +285,58 @@ class CommandManager(val loritta: LorittaBot) {
 					return true
 
 				// Cooldown
-				var commandCooldown = command.cooldown
-				val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
-				val guildId = ev.guild?.idLong
-				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
+				// Skip cooldown if the user is not a Loritta supervisor...
+				if (!context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+					var commandCooldown = command.cooldown
+					val donatorPaid = loritta.getActiveMoneyFromDonations(ev.author.idLong)
+					val guildId = ev.guild?.idLong
+					val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
 
-				val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
+					val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
-				if (plan.lessCooldown) {
-					commandCooldown /= 2
-				}
-
-				val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
-					ev,
-					commandCooldown
-				)
-
-				if (cooldownStatus.sendMessage) {
-					val fancy = TimeFormat.RELATIVE.format(cooldown + cooldownTriggeredAt)
-
-					val key = when (cooldownStatus) {
-						CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE ->
-							LocaleKeyData(
-								"commands.pleaseWaitCooldown",
-								listOf(
-									LocaleStringData(fancy),
-									LocaleStringData("\uD83D\uDE45")
-								)
-							)
-						CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE_REPEATED ->
-							LocaleKeyData(
-								"commands.pleaseWaitCooldownRepeated",
-								listOf(
-									LocaleStringData(fancy),
-									LocaleStringData(Emotes.LORI_HMPF.toString())
-								)
-							)
-						else -> throw IllegalArgumentException("Invalid Cooldown Status $cooldownStatus, marked as send but there isn't any locale keys related to it!")
+					if (plan.lessCooldown) {
+						commandCooldown /= 2
 					}
 
-					context.reply(
-						LorittaReply(
-							locale[key],
-							"\uD83D\uDD25"
-						)
+					val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
+						ev,
+						commandCooldown
 					)
-					return true
-				} else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
+
+					if (cooldownStatus.sendMessage) {
+						val fancy = TimeFormat.RELATIVE.format(cooldown + cooldownTriggeredAt)
+
+						val key = when (cooldownStatus) {
+							CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE ->
+								LocaleKeyData(
+									"commands.pleaseWaitCooldown",
+									listOf(
+										LocaleStringData(fancy),
+										LocaleStringData("\uD83D\uDE45")
+									)
+								)
+
+							CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE_REPEATED ->
+								LocaleKeyData(
+									"commands.pleaseWaitCooldownRepeated",
+									listOf(
+										LocaleStringData(fancy),
+										LocaleStringData(Emotes.LORI_HMPF.toString())
+									)
+								)
+
+							else -> throw IllegalArgumentException("Invalid Cooldown Status $cooldownStatus, marked as send but there isn't any locale keys related to it!")
+						}
+
+						context.reply(
+							LorittaReply(
+								locale[key],
+								"\uD83D\uDD25"
+							)
+						)
+						return true
+					} else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
+				}
 
 				val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
@@ -447,9 +452,7 @@ class CommandManager(val loritta: LorittaBot) {
 				DonateUtils.getRandomDonationMessage(
 					loritta,
 					locale,
-					lorittaUser.profile,
-					donatorPaid,
-					guildPaid
+					lorittaUser.profile
 				)?.let { context.reply(it) }
 
 				if (!context.isPrivateChannel) {

@@ -16,7 +16,7 @@ object DonateUtils {
 	 * @param donatorPaid how much the user donated
 	 * @return A reply, may be null
 	 */
-	fun getRandomDonationMessage(loritta: LorittaBot, locale: BaseLocale, profile: Profile, donatorPaid: Double, guildPaid: Double): LorittaReply? {
+	fun getRandomDonationMessage(loritta: LorittaBot, locale: BaseLocale, profile: Profile): LorittaReply? {
 		val willRestartAt = loritta.patchData.willRestartAt
 		if (willRestartAt != null) {
 			val instant = Instant.ofEpochMilli(willRestartAt).atZone(Constants.LORITTA_TIMEZONE)
