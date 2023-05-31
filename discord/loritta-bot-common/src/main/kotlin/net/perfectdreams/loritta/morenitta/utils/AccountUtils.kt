@@ -110,12 +110,14 @@ object AccountUtils {
         if (bannedState != null) {
             context.sendMessage(
                 MessageCreate {
-                    buildBanMessage(
-                        context.i18nContext,
-                        userProfile.userId,
-                        bannedState[BannedUsers.reason],
-                        bannedState[BannedUsers.bannedAt],
-                        bannedState[BannedUsers.expiresAt]
+                    apply(
+                        buildBanMessage(
+                            context.i18nContext,
+                            userProfile.userId,
+                            bannedState[BannedUsers.reason],
+                            bannedState[BannedUsers.bannedAt],
+                            bannedState[BannedUsers.expiresAt]
+                        )
                     )
                 }
             )
