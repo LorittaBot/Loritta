@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -125,25 +126,48 @@ object AccountUtils {
         reason: String,
         banDateInEpochMillis: Long,
         expiresDateInEpochMillis: Long?,
-    ) = i18nContext.get(
-        if (expiresDateInEpochMillis != null) {
-            I18nKeysData.Commands.UserIsLorittaBannedTemporary(
-                // TODO: Replace with "mentionUser"
-                mention = "<@$userId>",
-                loriHmpf = Emotes.LoriHmpf,
-                reason = reason,
-                banDate = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(banDateInEpochMillis),
-                expiresDate = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(expiresDateInEpochMillis),
-                loriSob = Emotes.LoriSob
+    ): InlineMessage<*>.() -> (Unit) = {
+        if (expiresDateInEpochMillis == null) {
+            styled(
+                i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.UserIsBannedPermanent("<@$userId>")),
+                Emotes.LoriBonk
             )
         } else {
-            I18nKeysData.Commands.UserIsLorittaBannedPermanent(
-                mention = "<@$userId>",
-                loriHmpf = Emotes.LoriHmpf,
-                reason = reason,
-                banDate = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(banDateInEpochMillis),
-                loriSob = Emotes.LoriSob
+            styled(
+                i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.UserIsBannedTemporary("<@$userId>")),
+                Emotes.LoriBonk
             )
         }
-    ).joinToString("\n")
+
+        styled(
+            i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.Reason),
+            Emotes.LoriReading
+        )
+
+        styled(
+            i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.ReasonText(reason))
+        )
+
+        styled(
+            i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.BannedAt(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(banDateInEpochMillis))),
+            Emotes.LoriHmpf
+        )
+
+        if (expiresDateInEpochMillis == null) {
+            styled(
+                i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.ExpiresAtPermanent),
+                Emotes.LoriLurk
+            )
+        } else {
+            styled(
+                i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.ExpiresAtTemporary(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(expiresDateInEpochMillis))),
+                Emotes.LoriLurk
+            )
+        }
+
+        styled(
+            i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.TooLateToSaySorry),
+            Emotes.LoriSob
+        )
+    }
 }
