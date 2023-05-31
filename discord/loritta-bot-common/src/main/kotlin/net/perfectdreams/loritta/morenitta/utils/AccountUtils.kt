@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -13,7 +14,6 @@ import net.perfectdreams.loritta.morenitta.dao.Daily
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.tables.Dailies
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -80,16 +80,18 @@ object AccountUtils {
         val userBannedState = loritta.pudding.users.getUserBannedState(UserId(userId))
 
         if (userBannedState != null) {
-            val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
-            val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
+            val banDateInEpochMillis = userBannedState.bannedAt.toEpochMilliseconds()
+            val expiresDateInEpochMillis = userBannedState.expiresAt?.toEpochMilliseconds()
 
             val messageBuilder: InlineMessage<*>.() -> (Unit) = {
-                content = buildBanMessage(
-                    context.i18nContext,
-                    userId,
-                    userBannedState.reason,
-                    banDateInEpochSeconds,
-                    expiresDateInEpochSeconds
+                apply(
+                    buildBanMessage(
+                        context.i18nContext,
+                        userId,
+                        userBannedState.reason,
+                        banDateInEpochMillis,
+                        expiresDateInEpochMillis
+                    )
                 )
             }
 
@@ -106,15 +108,17 @@ object AccountUtils {
         val bannedState = userProfile.getBannedState(context.loritta)
 
         if (bannedState != null) {
-            val content = buildBanMessage(
-                context.i18nContext,
-                userProfile.userId,
-                bannedState[BannedUsers.reason],
-                bannedState[BannedUsers.bannedAt] / 1000,
-                bannedState[BannedUsers.expiresAt]?.let { it / 1000 }
+            context.sendMessage(
+                MessageCreate {
+                    buildBanMessage(
+                        context.i18nContext,
+                        userProfile.userId,
+                        bannedState[BannedUsers.reason],
+                        bannedState[BannedUsers.bannedAt],
+                        bannedState[BannedUsers.expiresAt]
+                    )
+                }
             )
-
-            context.sendMessage(content)
             return true
         }
         return false
