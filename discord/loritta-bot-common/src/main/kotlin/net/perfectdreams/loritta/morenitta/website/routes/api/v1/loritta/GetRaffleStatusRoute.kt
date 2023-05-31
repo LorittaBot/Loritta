@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
 import io.ktor.server.application.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
@@ -9,6 +11,7 @@ import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -18,7 +21,7 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val raffleType = call.parameters["type"]?.let { RaffleType.valueOf(it) } ?: RaffleType.ORIGINAL
 
-		val response = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
+		val raffleStatus = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
 			// Get current active raffle based on the selected raffle type
 			val currentRaffle = Raffles.select {
 				Raffles.endedAt.isNull() and (Raffles.raffleType eq raffleType)
@@ -49,28 +52,29 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 					val prizeAfterTax = previousRaffle[Raffles.paidOutPrizeAfterTax]
 					val userId = previousRaffleWinnerTicket[RaffleTickets.userId]
 
-					return@transaction buildJsonObject {
-						put("lastWinnerId", userId)
-						put("lastWinnerPrize", prize)
-						put("lastWinnerPrizeAfterTax", prizeAfterTax)
-						put("currentTickets", currentTickets.size)
-						put("usersParticipating", currentTickets.map { it[RaffleTickets.userId] }.distinct().size)
-						put("endsAt", currentRaffle[Raffles.endsAt].toEpochMilli())
-						put("raffleId", currentRaffle[Raffles.id].value)
-					}
+					return@transaction RaffleStatus(
+						userId,
+						currentTickets.size,
+						currentTickets.map { it[RaffleTickets.userId] }.distinct().size,
+						currentRaffle[Raffles.endsAt].toEpochMilli(),
+						prize,
+						prizeAfterTax,
+						currentRaffle[Raffles.id].value
+					)
 				}
 			}
 
-			return@transaction buildJsonObject {
-				put("lastWinnerId", null)
-				put("lastWinnerPrize", 0)
-				put("currentTickets", currentTickets.size)
-				put("usersParticipating", currentTickets.map { it[RaffleTickets.userId] }.distinct().size)
-				put("endsAt", currentRaffle[Raffles.endsAt].toEpochMilli())
-				put("raffleId", currentRaffle[Raffles.id].value)
-			}
+			return@transaction RaffleStatus(
+				null,
+				currentTickets.size,
+				currentTickets.map { it[RaffleTickets.userId] }.distinct().size,
+				currentRaffle[Raffles.endsAt].toEpochMilli(),
+				null,
+				null,
+				currentRaffle[Raffles.id].value
+			)
 		}
 
-		call.respondJson(response)
+		call.respondJson(Json.encodeToString(raffleStatus))
 	}
 }

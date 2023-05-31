@@ -6,6 +6,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -30,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -51,17 +53,15 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 header("Authorization", loritta.lorittaInternalApiKey.name)
             }.bodyAsText()
 
-            val json = JsonParser.parseString(body)
+            val raffleStatus = Json.decodeFromString<RaffleStatus>(body)
 
-            val lastWinnerId = json["lastWinnerId"].nullString
-                ?.toLongOrNull()
-            val currentTickets = json["currentTickets"].int
-            val usersParticipating = json["usersParticipating"].int
-            val endsAt = json["endsAt"].long
-            val endsAtInSeconds = endsAt / 1000
-            val lastWinnerPrize = json["lastWinnerPrize"].long
-            val lastWinnerPrizeAfterTax = json["lastWinnerPrizeAfterTax"].nullLong
-            val raffleId = json["raffleId"].long
+            val lastWinnerId = raffleStatus.lastWinnerId
+            val currentTickets = raffleStatus.currentTickets
+            val usersParticipating = raffleStatus.usersParticipating
+            val endsAtInSeconds = raffleStatus.endsAt / 1000
+            val lastWinnerPrize = raffleStatus.lastWinnerPrize
+            val lastWinnerPrizeAfterTax = raffleStatus.lastWinnerPrizeAfterTax
+            val raffleId = raffleStatus.raffleId
 
             val lastWinner = if (lastWinnerId != null) {
                 loritta.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
@@ -147,7 +147,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     "\uD83D\uDC65",
                 )
 
-                if (lastWinnerId != null) {
+                if (lastWinnerId != null && lastWinnerPrize != null) {
                     if (lastWinnerPrizeAfterTax != null && lastWinnerPrizeAfterTax != lastWinnerPrize) {
                         styled(
                             context.i18nContext.get(I18N_PREFIX.Status.LastWinnerTaxed("$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize, lastWinnerPrizeAfterTax)),
