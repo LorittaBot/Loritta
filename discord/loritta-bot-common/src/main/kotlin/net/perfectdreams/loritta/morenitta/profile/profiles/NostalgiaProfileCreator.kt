@@ -162,7 +162,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 				graphics.font = latoRegular20
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), latoRegular20)
 				graphics.font = latoBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 2), Rectangle(545, 108 + 14  + 18, 256, 14), latoBold16)
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(545, 108 + 14  + 18, 256, 14), latoBold16)
 			}
 		}
 

@@ -113,7 +113,7 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 					graphics.font = latoRegular16
 					ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), latoRegular16)
 					graphics.font = latoBlack12
-					ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 2), Rectangle(635, 350 + 16 + 18, 165, 14), latoBlack12)
+					ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(635, 350 + 16 + 18, 165, 14), latoBlack12)
 				}
 			}
 
