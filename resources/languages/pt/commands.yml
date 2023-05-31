@@ -45,7 +45,6 @@ commands:
     userIsBannedPermanent: "{mention} está **banido(a) permanentemente**!"
     userIsBannedTemporary: "{mention} está **temporariamente banido(a)**!"
     reason: "**Motivo do Banimento:**"
-    reasonText: "> {reason}"
     bannedAt: "**Banido:** {banDate}"
     expiresAtPermanent: "**Expira:** Nunca (Permanente)"
     expiresAtTemporary: "**Expira:** {expiresDate}"

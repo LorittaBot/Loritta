@@ -67,9 +67,7 @@ object UserUtils {
                     Emotes.LoriReading
                 )
 
-                styled(
-                    context.i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.ReasonText(userBannedState.reason))
-                )
+                styled(userBannedState.reason)
 
                 styled(
                     context.i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.BannedAt(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(banDateInEpochMillis))),
