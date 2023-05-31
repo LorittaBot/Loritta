@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
+import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Reputation
@@ -42,7 +43,7 @@ class RepCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rep", listOf("
 			val diff = System.currentTimeMillis() - lastReputationGiven.receivedAt
 
 			if (3_600_000 > diff) {
-				val fancy = DateUtils.formatDateDiff(lastReputationGiven.receivedAt + 3.6e+6.toLong(), locale)
+				val fancy = TimeFormat.RELATIVE.format(lastReputationGiven.receivedAt + 3.6e+6.toLong())
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.reputation.wait", fancy])
 				return
 			}

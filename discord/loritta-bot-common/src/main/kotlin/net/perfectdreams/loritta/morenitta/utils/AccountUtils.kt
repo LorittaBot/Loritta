@@ -1,9 +1,16 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import dev.minn.jda.ktx.messages.InlineMessage
+import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Daily
 import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
@@ -63,45 +70,80 @@ object AccountUtils {
         return getUserLastDailyRewardReceived(loritta, profile, dayAtMidnight)
     }
 
-    suspend fun checkAndSendMessageIfUserIsBanned(context: CommandContext, userProfile: Profile): Boolean {
-        val bannedState = userProfile.getBannedState(context.loritta)
-        val locale = context.locale
 
-        if (bannedState != null) {
-            val bannedAt = bannedState[BannedUsers.bannedAt]
-            val bannedAtDiff = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(bannedAt, locale)
-            val banExpiresAt = bannedState[BannedUsers.expiresAt]
-            val responses = mutableListOf(
-                LorittaReply(
-                    "<@${userProfile.userId}> está **banido**",
-                    "\uD83D\uDE45"
-                ),
-                LorittaReply(
-                    "**Motivo:** `${bannedState[BannedUsers.reason]}`",
-                    "✍",
-                    mentionUser = false
-                ),
-                LorittaReply(
-                    "**Data do Banimento:** `$bannedAtDiff`",
-                    "⏰",
-                    mentionUser = false
-                )
-            )
+    suspend fun checkAndSendMessageIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, user: User)
+            = checkAndSendMessageIfUserIsBanned(loritta, context, user.idLong)
 
-            if (banExpiresAt != null) {
-                val banDurationDiff = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(banExpiresAt, locale)
-                responses.add(
-                    LorittaReply(
-                        "**Duração do banimento:** `$banDurationDiff`",
-                        "⏳",
-                        mentionUser = false
-                    )
+    suspend fun checkAndSendMessageIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, userId: Long): Boolean {
+        // Check if the user is banned from using Loritta
+        val userBannedState = loritta.pudding.users.getUserBannedState(UserId(userId))
+
+        if (userBannedState != null) {
+            val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
+            val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
+
+            val messageBuilder: InlineMessage<*>.() -> (Unit) = {
+                content = buildBanMessage(
+                    context.i18nContext,
+                    userId,
+                    userBannedState.reason,
+                    banDateInEpochSeconds,
+                    expiresDateInEpochSeconds
                 )
             }
 
-            context.reply(*responses.toTypedArray())
+            context.reply(context.wasInitiallyDeferredEphemerally ?: true) {
+                messageBuilder()
+            }
+            return true
+        }
+
+        return false
+    }
+
+    suspend fun checkAndSendMessageIfUserIsBanned(context: CommandContext, userProfile: Profile): Boolean {
+        val bannedState = userProfile.getBannedState(context.loritta)
+
+        if (bannedState != null) {
+            val content = buildBanMessage(
+                context.i18nContext,
+                userProfile.userId,
+                bannedState[BannedUsers.reason],
+                bannedState[BannedUsers.bannedAt],
+                bannedState[BannedUsers.expiresAt]
+            )
+
+            context.sendMessage(content)
             return true
         }
         return false
     }
+
+    private fun buildBanMessage(
+        i18nContext: I18nContext,
+        userId: Long,
+        reason: String,
+        banDateInEpochSeconds: Long,
+        expiresDateInEpochSeconds: Long?,
+    ) = i18nContext.get(
+        if (expiresDateInEpochSeconds != null) {
+            I18nKeysData.Commands.UserIsLorittaBannedTemporary(
+                // TODO: Replace with "mentionUser"
+                mention = "<@$userId>",
+                loriHmpf = Emotes.LoriHmpf,
+                reason = reason,
+                banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
+                expiresDate = "<t:$expiresDateInEpochSeconds:R> (<t:$expiresDateInEpochSeconds:f>)",
+                loriSob = Emotes.LoriSob
+            )
+        } else {
+            I18nKeysData.Commands.UserIsLorittaBannedPermanent(
+                mention = "<@$userId>",
+                loriHmpf = Emotes.LoriHmpf,
+                reason = reason,
+                banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
+                loriSob = Emotes.LoriSob
+            )
+        }
+    ).joinToString("\n")
 }

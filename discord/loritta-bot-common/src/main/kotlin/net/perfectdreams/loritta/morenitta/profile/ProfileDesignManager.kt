@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.UserFlags
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.User
 import dev.kord.rest.Image
@@ -14,7 +13,6 @@ import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
-import net.perfectdreams.loritta.cinnamon.discord.utils.DateUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources

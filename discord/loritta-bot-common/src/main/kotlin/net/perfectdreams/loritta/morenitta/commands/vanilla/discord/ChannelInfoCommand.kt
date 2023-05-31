@@ -58,7 +58,7 @@ class ChannelInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 			builder.addField("\uD83D\uDD39 ${context.locale["$LOCALE_PREFIX.channelinfo.channelMention"]}", "`${channel.asMention}`", true)
 			builder.addField("\uD83D\uDCBB ${context.locale["$LOCALE_PREFIX.userinfo.discordId"]}", "`${channel.id}`", true)
 			builder.addField("\uD83D\uDD1E NSFW", if (channel.isNSFW) context.locale["loritta.fancyBoolean.true"] else context.locale["loritta.fancyBoolean.false"], true)
-			builder.addField("\uD83D\uDCC5 ${context.locale["$LOCALE_PREFIX.channelinfo.channelCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(channel.timeCreated, context.locale), true)
+			builder.addField("\uD83D\uDCC5 ${context.locale["$LOCALE_PREFIX.channelinfo.channelCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(channel.timeCreated), true)
 			builder.addField("\uD83D\uDD39 Guild", "`${channel.guild.name}`", true)
 			context.sendMessage(context.user.asMention, builder.build())
 		}

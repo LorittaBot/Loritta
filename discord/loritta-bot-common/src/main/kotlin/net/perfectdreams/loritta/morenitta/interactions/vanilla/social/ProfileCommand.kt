@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalStri
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.tables.Profiles
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -133,7 +134,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
             val userToBeViewed = args[options.user]?.user ?: context.user
 
-            if (UserUtils.handleIfUserIsBanned(loritta, context, userToBeViewed))
+            if (AccountUtils.checkAndSendMessageIfUserIsBanned(loritta, context, userToBeViewed))
                 return
 
             context.deferChannelMessage(false)

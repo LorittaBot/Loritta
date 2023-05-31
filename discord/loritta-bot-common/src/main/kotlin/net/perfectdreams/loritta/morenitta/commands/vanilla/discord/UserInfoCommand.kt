@@ -111,13 +111,13 @@ class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo"
 			addField("\uD83D\uDD16 ${context.locale["commands.command.userinfo.discordTag"]}", "`${user.name}#${user.discriminator}`", true)
 			addField("\uD83D\uDCBB ${context.locale["commands.command.userinfo.discordId"]}", "`${user.id}`", true)
 
-			addField("\uD83D\uDCC5 ${context.locale["commands.command.userinfo.accountCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(user.timeCreated, context.locale), true)
+			addField("\uD83D\uDCC5 ${context.locale["commands.command.userinfo.accountCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(user.timeCreated), true)
 			if (member != null) {
-				addField("\uD83C\uDF1F ${context.locale["commands.command.userinfo.accountJoined"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(member.timeJoined, context.locale), true)
+				addField("\uD83C\uDF1F ${context.locale["commands.command.userinfo.accountJoined"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(member.timeJoined), true)
 
 				val timeBoosted = member.timeBoosted
 				if (timeBoosted != null)
-					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.command.userinfo.boostingSince"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(timeBoosted, context.locale), true)
+					addField("${Emotes.LORI_NITRO_BOOST} ${context.locale["commands.command.userinfo.boostingSince"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(timeBoosted), true)
 			}
 
 			if (context.message.channel.idLong == 358774895850815488L || context.message.channel.idLong == 547119872568459284L) {

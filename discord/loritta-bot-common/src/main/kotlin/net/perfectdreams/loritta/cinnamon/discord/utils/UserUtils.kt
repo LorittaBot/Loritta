@@ -36,50 +36,6 @@ import java.util.*
 object UserUtils {
     private val logger = KotlinLogging.logger {}
 
-    suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: net.perfectdreams.loritta.morenitta.interactions.InteractionContext, user: net.dv8tion.jda.api.entities.User)
-            = handleIfUserIsBanned(loritta, context, user.idLong)
-
-    suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: net.perfectdreams.loritta.morenitta.interactions.InteractionContext, userId: Long): Boolean {
-        // Check if the user is banned from using Loritta
-        val userBannedState = loritta.pudding.users.getUserBannedState(UserId(userId))
-
-        if (userBannedState != null) {
-            val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
-            val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
-
-            val messageBuilder: InlineMessage<*>.() -> (Unit) = {
-                content = context.i18nContext.get(
-                    if (expiresDateInEpochSeconds != null) {
-                        I18nKeysData.Commands.UserIsLorittaBannedTemporary(
-                            // TODO: Replace with "mentionUser"
-                            mention = "<@$userId>",
-                            loriHmpf = Emotes.LoriHmpf,
-                            reason = userBannedState.reason,
-                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
-                            expiresDate = "<t:$expiresDateInEpochSeconds:R> (<t:$expiresDateInEpochSeconds:f>)",
-                            loriSob = Emotes.LoriSob
-                        )
-                    } else {
-                        I18nKeysData.Commands.UserIsLorittaBannedPermanent(
-                            mention = "<@$userId>",
-                            loriHmpf = Emotes.LoriHmpf,
-                            reason = userBannedState.reason,
-                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
-                            loriSob = Emotes.LoriSob
-                        )
-                    }
-                ).joinToString("\n")
-            }
-
-            context.reply(context.wasInitiallyDeferredEphemerally ?: true) {
-                messageBuilder()
-            }
-            return true
-        }
-
-        return false
-    }
-
     suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, user: User)
             = handleIfUserIsBanned(loritta, context, user.id)
 

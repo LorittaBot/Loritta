@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -301,7 +302,7 @@ class CommandManager(val loritta: LorittaBot) {
 				)
 
 				if (cooldownStatus.sendMessage) {
-					val fancy = DateUtils.formatDateDiff(cooldown + cooldownTriggeredAt, locale)
+					val fancy = TimeFormat.RELATIVE.format(cooldown + cooldownTriggeredAt)
 
 					val key = when (cooldownStatus) {
 						CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE ->

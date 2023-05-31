@@ -126,7 +126,7 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 			embed.addField("\uD83D\uDD16 ${context.locale["commands.command.emojiinfo.emojiName"]}", "`${emote.name}`", true)
 			embed.addField("\uD83D\uDCBB ${context.locale["commands.command.emojiinfo.emojiId"]}", "`${emote.id}`", true)
 			embed.addField("\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}", "`${emote.asMention}`", true)
-			embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.emojiinfo.emojiCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(emote.timeCreated, context.locale), true)
+			embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.emojiinfo.emojiCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(emote.timeCreated), true)
 			if (sourceGuild != null)
 				embed.addField("\uD83D\uDD0E ${context.locale["commands.command.emojiinfo.seenAt"]}", "`${sourceGuild.name}`", true)
 			embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)

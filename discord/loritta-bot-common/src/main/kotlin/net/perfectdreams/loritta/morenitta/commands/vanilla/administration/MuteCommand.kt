@@ -178,7 +178,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.mute.punishAction"], reason)
 
 						val timePretty = if (time != null)
-							DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(time, context.locale)
+							DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(time)
 						else context.locale["commands.command.mute.forever"]
 
 						embed.addField(

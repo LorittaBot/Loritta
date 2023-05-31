@@ -121,7 +121,7 @@ class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(16f)
 			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(280, 270 + 23, 218, 18), graphics.font)
 			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(12f)
-			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(280, 270 + 23 + 16, 218, 15), graphics.font)
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 2), Rectangle(280, 270 + 23 + 16, 218, 15), graphics.font)
 		}
 
 		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(13f)

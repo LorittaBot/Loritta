@@ -1,15 +1,16 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import net.dv8tion.jda.api.utils.TimeFormat
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import java.time.Instant
-import java.time.OffsetDateTime
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import java.time.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 object DateUtils {
-	private const val maxYears = 100000
-
 	/**
 	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)"
 	 *
@@ -17,7 +18,7 @@ object DateUtils {
 	 * @param locale  the locale that the data should be humanized in
 	 * @return the humanized string
 	 */
-	fun formatDateWithRelativeFromNowAndAbsoluteDifference(time: OffsetDateTime, locale: BaseLocale) = formatDateWithRelativeFromNowAndAbsoluteDifference(time.toInstant(), locale)
+	fun formatDateWithRelativeFromNowAndAbsoluteDifference(locale: BaseLocale, i18nContext: I18nContext, time: OffsetDateTime) = formatDateWithRelativeFromNowAndAbsoluteDifference(locale, i18nContext, time.toInstant())
 
 	/**
 	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)"
@@ -26,7 +27,7 @@ object DateUtils {
 	 * @param locale  the locale that the data should be humanized in
 	 * @return the humanized string
 	 */
-	fun formatDateWithRelativeFromNowAndAbsoluteDifference(instant: Instant, locale: BaseLocale) = formatDateWithRelativeFromNowAndAbsoluteDifference(instant.toEpochMilli(), locale)
+	fun formatDateWithRelativeFromNowAndAbsoluteDifference(locale: BaseLocale, i18nContext: I18nContext, instant: Instant) = formatDateWithRelativeFromNowAndAbsoluteDifference(locale, i18nContext, instant.toEpochMilli())
 
 	/**
 	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)"
@@ -35,72 +36,109 @@ object DateUtils {
 	 * @param locale     the locale that the data should be humanized in
 	 * @return the humanized string
 	 */
-	fun formatDateWithRelativeFromNowAndAbsoluteDifference(epochMilli: Long, locale: BaseLocale): String {
-		val timeDifference = formatDateDiff(epochMilli, locale)
+	fun formatDateWithRelativeFromNowAndAbsoluteDifference(locale: BaseLocale, i18nContext: I18nContext, epochMilli: Long): String {
+		val timeDifference = formatDateDiff(i18nContext, System.currentTimeMillis(), epochMilli)
 		return "${epochMilli.humanize(locale)} ($timeDifference)"
 	}
 
-	fun dateDiff(type: Int, fromDate: Calendar, toDate: Calendar, future: Boolean): Int {
-		val year = Calendar.YEAR
-
-		val fromYear = fromDate.get(year)
-		val toYear = toDate.get(year)
-		if (Math.abs(fromYear - toYear) > maxYears) {
-			toDate.set(year, fromYear + if (future) maxYears else -maxYears)
-		}
-
-		var diff = 0
-		var savedDate = fromDate.timeInMillis
-		while (future && !fromDate.after(toDate) || !future && !fromDate.before(toDate)) {
-			savedDate = fromDate.timeInMillis
-			fromDate.add(type, if (future) 1 else -1)
-			diff++
-		}
-		diff--
-		fromDate.timeInMillis = savedDate
-		return diff
+	/**
+	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)" using Discord's markdown extensions
+	 *
+	 * @param epochMilli the time in milliseconds
+	 * @return the humanized string
+	 */
+	fun formatDateWithRelativeFromNowAndAbsoluteDifference(epochMilli: Long): String {
+		return "${TimeFormat.DATE_TIME_SHORT.format(epochMilli)} (${TimeFormat.RELATIVE.format(epochMilli)})"
 	}
 
-	fun formatDateDiff(date: Long, locale: BaseLocale): String {
-		val c = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
-		c.timeInMillis = date
-		val now = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
-		return formatDateDiff(now, c, locale)
+	/**
+	 * Formats a [offsetDateTime] into humanized string of "$absoluteTime ($relativeTime)" using Discord's markdown extensions
+	 *
+	 * @param offsetDateTime the time
+	 * @return the humanized string
+	 */
+	fun formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(offsetDateTime: OffsetDateTime) = formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(offsetDateTime.toInstant())
+
+
+	/**
+	 * Formats a [instant] into humanized string of "$absoluteTime ($relativeTime)" using Discord's markdown extensions
+	 *
+	 * @param instant the time
+	 * @return the humanized string
+	 */
+	fun formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(instant: Instant) = formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(instant.toEpochMilli())
+
+	/**
+	 * Formats a [epochMilli] date into humanized string of "$absoluteTime ($relativeTime)" using Discord's markdown extensions
+	 *
+	 * @param epochMilli the time in milliseconds
+	 * @return the humanized string
+	 */
+	fun formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(epochMilli: Long): String {
+		return "${TimeFormat.DATE_TIME_SHORT.format(epochMilli)} (${TimeFormat.RELATIVE.format(epochMilli)})"
 	}
 
-	fun formatDateDiff(fromDate: Long, toDate: Long, locale: BaseLocale): String {
-		val c = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
-		c.timeInMillis = fromDate
-		val now = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
-		now.timeInMillis = toDate
-		return formatDateDiff(now, c, locale)
+	fun formatDiscordLikeRelativeDate(i18nContext: I18nContext, fromEpochMilli: Long, toEpochMilli: Long): String {
+		val result = formatDateDiff(i18nContext, fromEpochMilli, toEpochMilli, 1)
+
+		return if (fromEpochMilli > toEpochMilli) {
+			i18nContext.get(I18nKeysData.Time.TimeSpanInTheFuture(result))
+		} else {
+			i18nContext.get(I18nKeysData.Time.TimeSpanInThePast(result))
+		}
 	}
 
-	fun formatDateDiff(fromDate: Calendar, toDate: Calendar, locale: BaseLocale): String {
-		var future = false
-		if (toDate == fromDate) {
-			return locale["loritta.date.aFewMilliseconds"]
+	fun formatDateDiff(i18nContext: I18nContext, fromEpochMilli: Long, toEpochMilli: Long, maxParts: Int = Int.MAX_VALUE) = formatDateDiff(
+		i18nContext,
+		LocalDateTime.ofInstant(Instant.ofEpochMilli(fromEpochMilli), Constants.LORITTA_TIMEZONE),
+		LocalDateTime.ofInstant(Instant.ofEpochMilli(toEpochMilli), Constants.LORITTA_TIMEZONE),
+		maxParts
+	)
+
+	fun formatDateDiff(i18nContext: I18nContext, argumentFromDateTime: LocalDateTime, argumentToDateTime: LocalDateTime, maxParts: Int = Int.MAX_VALUE): String {
+		// https://stackoverflow.com/a/59119149/7271796
+		val fromDateTime: LocalDateTime
+		val toDateTime: LocalDateTime
+
+		// If the "from" time is in the future, we will invert the arguments to avoid the calculating failing with "a few milliseconds"
+		if (argumentFromDateTime > argumentToDateTime) {
+			toDateTime = argumentFromDateTime
+			fromDateTime = argumentToDateTime
+		} else {
+			toDateTime = argumentToDateTime
+			fromDateTime = argumentFromDateTime
 		}
-		if (toDate.after(fromDate)) {
-			future = true
+
+		// get the calendar period between the times (years, months & days)
+		var period = Period.between(fromDateTime.toLocalDate(), toDateTime.toLocalDate())
+
+		// make sure to get the floor of the number of days
+		period = period.minusDays(if (toDateTime.toLocalTime() >= fromDateTime.toLocalTime()) 0 else 1)
+
+		// get the remainder as a duration (hours, minutes, etc.)
+		var duration: Duration = Duration.between(fromDateTime, toDateTime)
+
+		// remove days, already counted in the period
+		duration = duration.minusDays(duration.toDaysPart())
+
+		val parts = mutableListOf<String>()
+
+		fun createAndAdd(value: Int, key: (Int) -> (StringI18nData)) {
+			if (value >= 1L)
+				parts.add(i18nContext.get(key.invoke(value)))
 		}
-		val sb = StringBuilder()
-		val types = intArrayOf(Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND)
-		val names = arrayOf(locale["loritta.date.year"], locale["loritta.date.years"], locale["loritta.date.month"], locale["loritta.date.months"], locale["loritta.date.day"], locale["loritta.date.days"], locale["loritta.date.hour"], locale["loritta.date.hours"], locale["loritta.date.minute"], locale["loritta.date.minutes"], locale["loritta.date.second"], locale["loritta.date.seconds"])
-		var accuracy = 0
-		for (i in types.indices) {
-			if (accuracy > 2) {
-				break
-			}
-			val diff = dateDiff(types[i], fromDate, toDate, future)
-			if (diff > 0) {
-				accuracy++
-				sb.append(" ").append(diff).append(" ").append(names[i * 2 + (if (diff > 1) 1 else 0)])
-			}
-		}
-		return if (sb.isEmpty()) {
-			locale["loritta.date.aFewMilliseconds"]
-		} else sb.toString().trim { it <= ' ' }
+
+		createAndAdd(period.years) { I18nKeysData.Time.Years(it) }
+		createAndAdd(period.months) { I18nKeysData.Time.Months(it) }
+		createAndAdd(period.days) { I18nKeysData.Time.Days(it) }
+		createAndAdd(duration.toHoursPart()) { I18nKeysData.Time.Hours(it) }
+		createAndAdd(duration.toMinutesPart()) { I18nKeysData.Time.Minutes(it) }
+		createAndAdd(duration.toSecondsPart()) { I18nKeysData.Time.Seconds(it) }
+
+		return if (parts.isEmpty())
+			i18nContext.get(I18nKeysData.Time.AFewMilliseconds)
+		else
+			parts.take(maxParts).joinToString(", ")
 	}
 
 	fun formatMillis(timeInMillis: Long, locale: BaseLocale): String {
