@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import dev.minn.jda.ktx.interactions.commands.*
-import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -10,6 +9,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
@@ -32,12 +31,17 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.AutocompleteExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.LongDiscordOptionReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.NumberDiscordOptionReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.StringDiscordOptionReference
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.postgresql.util.PGobject
 import java.util.*
 
@@ -641,6 +645,97 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             } catch (e: Exception) {
                 // TODO: Proper catch and throw
                 e.printStackTrace()
+            }
+        }
+    }
+
+    override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
+        loritta.launchMessageJob(event) {
+            var rootDeclaration: SlashCommandDeclaration? = null
+            var slashDeclaration: SlashCommandDeclaration? = null
+
+            for (declaration in manager.slashCommands) {
+                val rootLabel = event.name
+                val subcommandGroupLabel = event.subcommandGroup
+                val subcommandLabel = event.subcommandName
+
+                if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
+                    if (subcommandGroupLabel == null && subcommandLabel == null) {
+                        // Already found it, yay!
+                        slashDeclaration = declaration
+                        rootDeclaration = declaration
+                    } else {
+                        // Check root subcommands
+                        if (subcommandLabel != null) {
+                            if (subcommandGroupLabel == null) {
+                                // "/name subcommand"
+                                slashDeclaration =
+                                    declaration.subcommands.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel }
+                                rootDeclaration = declaration
+                                break
+                            } else {
+                                // "/name subcommandGroup subcommand"
+                                slashDeclaration = declaration.subcommandGroups.firstOrNull {
+                                    manager.slashCommandDefaultI18nContext.get(it.name) == subcommandGroupLabel
+                                }
+                                    ?.subcommands
+                                    ?.firstOrNull {
+                                        manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel
+                                    }
+                                rootDeclaration = declaration
+                                break
+                            }
+                        }
+                    }
+                    break
+                }
+            }
+
+            // We should throw an error here
+            // But we won't because we still use Discord InteraKTions
+            if (rootDeclaration == null || slashDeclaration == null)
+                return@launchMessageJob
+
+            // No executor, bail out!
+            val executor = slashDeclaration.executor ?: return@launchMessageJob
+
+            val autocompletingOption = executor.options.registeredOptions
+                .firstOrNull {
+                    it.name == event.focusedOption.name
+                } ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the option doesn't exist!")
+
+            when (autocompletingOption) {
+                is StringDiscordOptionReference -> {
+                    val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<String> ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
+
+                    val map = autocompleteCallback.execute(event)
+                        .map {
+                            Command.Choice(it.key, it.value)
+                        }
+
+                    event.replyChoices(map).await()
+                }
+                is LongDiscordOptionReference -> {
+                    val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<Long> ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
+
+                    val map = autocompleteCallback.execute(event)
+                        .map {
+                            Command.Choice(it.key, it.value)
+                        }
+
+                    event.replyChoices(map).await()
+                }
+                is NumberDiscordOptionReference -> {
+                    val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<Double> ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
+
+                    val map = autocompleteCallback.execute(event)
+                        .map {
+                            Command.Choice(it.key, it.value)
+                        }
+
+                    event.replyChoices(map).await()
+                }
+                else -> error("Unsupported option reference for autocomplete ${autocompletingOption::class.simpleName}")
             }
         }
     }

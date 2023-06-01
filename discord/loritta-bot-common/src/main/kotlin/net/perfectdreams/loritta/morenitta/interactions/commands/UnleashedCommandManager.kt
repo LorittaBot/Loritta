@@ -327,8 +327,30 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 description,
                                 interaKTionsOption.required
                             ).apply {
+                                if (interaKTionsOption.autocompleteExecutor != null) {
+                                    isAutoComplete = true
+                                }
+
                                 if (interaKTionsOption.requiredRange != null) {
                                     setRequiredRange(interaKTionsOption.requiredRange.first, interaKTionsOption.requiredRange.last)
+                                }
+                            }
+                        )
+                    }
+
+                    is NumberDiscordOptionReference -> {
+                        return listOf(
+                            Option<Double>(
+                                interaKTionsOption.name,
+                                description,
+                                interaKTionsOption.required
+                            ).apply {
+                                if (interaKTionsOption.autocompleteExecutor != null) {
+                                    isAutoComplete = true
+                                }
+
+                                if (interaKTionsOption.requiredRange != null) {
+                                    setRequiredRange(interaKTionsOption.requiredRange.start, interaKTionsOption.requiredRange.endInclusive)
                                 }
                             }
                         )
@@ -341,6 +363,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 description,
                                 interaKTionsOption.required
                             ).apply {
+                                if (interaKTionsOption.autocompleteExecutor != null) {
+                                    isAutoComplete = true
+                                }
+
                                 for (choice in interaKTionsOption.choices) {
                                     when (choice) {
                                         is StringDiscordOptionReference.Choice.LocalizedChoice -> {

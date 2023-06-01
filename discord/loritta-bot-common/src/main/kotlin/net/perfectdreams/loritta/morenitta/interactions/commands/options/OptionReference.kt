@@ -19,9 +19,14 @@ sealed class DiscordOptionReference<T>(
 
 class StringDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean) : DiscordOptionReference<T>(name, description, required) {
     val choices = mutableListOf<Choice>()
+    var autocompleteExecutor: AutocompleteExecutor<T>? = null
 
     fun choice(name: String, value: String) = choices.add(Choice.RawChoice(name, value))
     fun choice(name: StringI18nData, value: String) = choices.add(Choice.LocalizedChoice(name, value))
+
+    fun autocomplete(executor: AutocompleteExecutor<T>) {
+        this.autocompleteExecutor = executor
+    }
 
     override fun get(option: OptionMapping): T {
         return option.asString as T
@@ -46,6 +51,29 @@ class LongDiscordOptionReference<T>(
     required: Boolean,
     val requiredRange: LongRange?
 ) : DiscordOptionReference<T>(name, description, required) {
+    var autocompleteExecutor: AutocompleteExecutor<T>? = null
+
+    fun autocomplete(executor: AutocompleteExecutor<T>) {
+        this.autocompleteExecutor = executor
+    }
+
+    override fun get(option: OptionMapping): T {
+        return option.asLong as T
+    }
+}
+
+class NumberDiscordOptionReference<T>(
+    name: String,
+    description: StringI18nData,
+    required: Boolean,
+    val requiredRange: ClosedFloatingPointRange<Double>?
+) : DiscordOptionReference<T>(name, description, required) {
+    var autocompleteExecutor: AutocompleteExecutor<T>? = null
+
+    fun autocomplete(executor: AutocompleteExecutor<T>) {
+        this.autocompleteExecutor = executor
+    }
+
     override fun get(option: OptionMapping): T {
         return option.asLong as T
     }

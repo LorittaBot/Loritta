@@ -23,6 +23,12 @@ open class ApplicationCommandOptions {
     fun optionalLong(name: String, description: StringI18nData, requiredRange: LongRange? = null) = LongDiscordOptionReference<Long?>(name, description, false, requiredRange)
         .also { registeredOptions.add(it) }
 
+    fun double(name: String, description: StringI18nData, requiredRange: ClosedFloatingPointRange<Double>? = null) = NumberDiscordOptionReference<Double>(name, description, true, requiredRange)
+        .also { registeredOptions.add(it) }
+
+    fun optionalDouble(name: String, description: StringI18nData, requiredRange: ClosedFloatingPointRange<Double>? = null) = NumberDiscordOptionReference<Double?>(name, description, false, requiredRange)
+        .also { registeredOptions.add(it) }
+
     fun user(name: String, description: StringI18nData) = UserDiscordOptionReference<UserAndMember>(name, description, true)
         .also { registeredOptions.add(it) }
 
