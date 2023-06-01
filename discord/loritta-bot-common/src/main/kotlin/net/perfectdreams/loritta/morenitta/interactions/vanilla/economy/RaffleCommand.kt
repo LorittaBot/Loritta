@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
+import dev.minn.jda.ktx.messages.MessageEdit
+import dev.minn.jda.ktx.messages.editMessage
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -11,32 +13,26 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.RaffleType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.EmojiFight
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.LoraffleCommand
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.RaffleStatus
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 
 class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -79,6 +75,49 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             } else {
                 "\uD83E\uDD37"
             }.stripCodeMarks()
+
+            val viewParticipants = loritta.interactivityManager
+                .button(
+                    ButtonStyle.SECONDARY,
+                    context.i18nContext.get(I18N_PREFIX.Status.Participants.Label),
+                    {
+                        loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCard
+                    }
+                ) { context ->
+                    val hook = context.deferChannelMessage(true)
+
+                    val raffleTicketsCount = RaffleTickets.userId.count()
+                    val participants = loritta.transaction {
+                        RaffleTickets.slice(RaffleTickets.userId, raffleTicketsCount).select {
+                            RaffleTickets.raffle eq raffleId
+                        }.groupBy(RaffleTickets.userId)
+                            .toList()
+                    }
+
+                    if (participants.isNotEmpty()) {
+                        context.chunkedReply(true) {
+                            content = "# ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCard} ${context.i18nContext.get(I18N_PREFIX.Status.Participants.RaffleParticipants)}\n"
+
+                            // Sort by order
+                            for (participant in participants.sortedByDescending {
+                                it[raffleTicketsCount]
+                            }) {
+                                val participantId = participant[RaffleTickets.userId]
+                                val ticketCount = participant[raffleTicketsCount]
+                                val userInfo = loritta.lorittaShards.retrieveUserInfoById(participantId)
+                                if (userInfo != null) {
+                                    styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantEntry(userInfo.name + "#" + userInfo.discriminator, participantId.toString(), ticketCount)))
+                                } else {
+                                    styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantUnknownEntry(participantId.toString(), ticketCount)))
+                                }
+                            }
+                        }
+                    } else {
+                        context.reply(true) {
+                            content = "Ninguém está participando da rifa..."
+                        }
+                    }
+                }
 
             val notifyMeButton = loritta.interactivityManager
                 .button(
@@ -171,7 +210,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     prefix = "\uD83D\uDCB5",
                 )
 
-                actionRow(notifyMeButton)
+                actionRow(notifyMeButton, viewParticipants)
             }
         }
 

@@ -18,6 +18,12 @@ status:
     notifyAdded: "Você será notificado via mensagem direta quando a rifa atual acabar, até mesmo se você perder ela!"
     notifyRemoved: "Você não será notificado via mensagem direta quando a rifa atual acabar, exceto se você ganhar ela!"
 
+  participants:
+    label: "Ver participantes da rifa"
+    raffleParticipants: "Participantes da Rifa"
+    participantEntry: "`{userTag}` (`{userId}`) - {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}}"
+    participantUnknownEntry: "Desconhecido (`{userId}`) - {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}}"
+
   options:
     raffleType:
       text: "A rifa que você deseja ver informações sobre"
