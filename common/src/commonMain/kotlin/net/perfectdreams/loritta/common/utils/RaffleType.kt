@@ -16,5 +16,5 @@ enum class RaffleType(
     val raffleDuration: Duration
 ) {
     ORIGINAL(I18nKeysData.Commands.Command.Raffle.RaffleTypes.Original, 250, 100_000, 1.hours),
-    LIGHTNING(I18nKeysData.Commands.Command.Raffle.RaffleTypes.Lightning,250, 5, 15.minutes)
+    LIGHTNING(I18nKeysData.Commands.Command.Raffle.RaffleTypes.Lightning,250, 1_000_000, 15.minutes)
 }
