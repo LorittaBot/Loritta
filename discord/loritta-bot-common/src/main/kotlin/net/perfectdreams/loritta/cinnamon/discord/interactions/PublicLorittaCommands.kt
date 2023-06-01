@@ -84,7 +84,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(ChavesCommand(languageManager))
 
             // ===[ UTILS ]===
-            register(HelpCommand(languageManager))
             register(MoneyCommand(languageManager))
             register(MorseCommand(languageManager))
             register(DictionaryCommand(languageManager))

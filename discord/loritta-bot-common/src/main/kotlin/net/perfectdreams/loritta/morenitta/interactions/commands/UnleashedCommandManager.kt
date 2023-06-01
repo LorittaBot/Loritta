@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.Gamer
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.HelpCommand
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
@@ -101,6 +102,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ UTILS ]===
         register(AnagramCommand())
+        register(HelpCommand())
 
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
