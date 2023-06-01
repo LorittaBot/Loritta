@@ -25,6 +25,7 @@ invalidMessageUrl: "Isso não parece ser uma URL de mensagem... Você tem certez
 invalidJsonMessage: "Isso não parece uma mensagem JSON válida... Verifique se você digitou a mensagem JSON corretamente, verifique se não há nenhum campo faltando... e tente novamente!"
 invalidJsonMessageNoCurlyBraces: "Isso não parece uma mensagem JSON válida... Afinal, ela nem tem chaves em volta dela! Tem certeza de que você deseja enviar uma mensagem JSON? Talvez {webhookSendSimpleCommandMention} ou {webhookSendRepostCommandMention} seja melhor e mais fácil para você!"
 targetChannelIsAForumButNoThreadIdWasProvided: "Você está tentando enviar uma mensagem em um canal de fórum, mas para isso você precisa incluir o ID do tópico onde a mensagem será enviada!"
+invalidMessage: "Não foi possível montar a sua mensagem... Verifique se o conteúdo da mensagem está correto, sem URLs mal formadas e que a sua mensagem possui conteúdo ou uma embed!"
 
 options:
   webhookUrl:

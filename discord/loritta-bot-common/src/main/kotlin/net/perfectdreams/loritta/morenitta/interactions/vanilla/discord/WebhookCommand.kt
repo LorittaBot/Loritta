@@ -65,7 +65,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         inner class Options : ApplicationCommandOptions() {
             val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
 
-            val message = string("message", WebhookCommand.I18N_PREFIX.Options.Message.Text)
+            val message = optionalString("message", WebhookCommand.I18N_PREFIX.Options.Message.Text)
 
             val username = optionalString("username", WebhookCommand.I18N_PREFIX.Options.Username.Text)
 
@@ -144,7 +144,6 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
                     }
                 }
-                decodeRequestFromString(context, message)
             }
         }
     }
@@ -495,32 +494,42 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 val embedsArray = request["embeds"]?.jsonArray
 
                 val sentMessage = webhookClient.send(
-                    WebhookMessageBuilder()
-                        .setContent(content)
-                        .setUsername(getAsStringOrNull(request, "username"))
-                        .setAvatarUrl(avatarUrl)
-                        .setTTS(getAsBooleanOrNull(request, "tts") ?: false)
-                        .apply {
-                            val embeds = embedsArray?.filterIsInstance<JsonObject>()
+                    try {
+                        WebhookMessageBuilder()
+                            .setContent(content)
+                            .setUsername(getAsStringOrNull(request, "username"))
+                            .setAvatarUrl(avatarUrl)
+                            .setTTS(getAsBooleanOrNull(request, "tts") ?: false)
+                            .apply {
+                                val embeds = embedsArray?.filterIsInstance<JsonObject>()
 
-                            if (embeds != null) {
-                                if (embeds.size > DiscordResourceLimits.Message.EmbedsPerMessage)
-                                    context.fail(true) {
-                                        styled(
-                                            context.i18nContext.get(
-                                                I18N_PREFIX.TooManyEmbeds(
-                                                    DiscordResourceLimits.Message.EmbedsPerMessage
-                                                )
-                                            ),
-                                            Emotes.Error
-                                        )
-                                    }
+                                if (embeds != null) {
+                                    if (embeds.size > DiscordResourceLimits.Message.EmbedsPerMessage)
+                                        context.fail(true) {
+                                            styled(
+                                                context.i18nContext.get(
+                                                    I18N_PREFIX.TooManyEmbeds(
+                                                        DiscordResourceLimits.Message.EmbedsPerMessage
+                                                    )
+                                                ),
+                                                Emotes.Error
+                                            )
+                                        }
 
-                                for (embed in embeds)
-                                    validateEmbedAndAppend(context, embed, this)
+                                    for (embed in embeds)
+                                        validateEmbedAndAppend(context, embed, this)
+                                }
                             }
+                            .build()
+                    } catch (e: IllegalStateException) {
+                        context.reply(true) {
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.InvalidMessage),
+                                Emotes.Error
+                            )
                         }
-                        .build()
+                        return
+                    }
                 ).await()
 
                 // I think these are always present, but who knows
