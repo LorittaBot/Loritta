@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonMessageCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.inviteblocker.ActivateInviteBlockerBypassButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGlobalAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGuildProfileAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserAvatarUserCommand
@@ -30,7 +29,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.OCRMessageCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.ocr.OCRTranslateButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker.*
-import kotlin.system.exitProcess
 
 class InteractionsManager(
     private val loritta: LorittaBot,
@@ -111,9 +109,6 @@ class InteractionsManager(
         register(ChangeColorPortraitTypeButtonClickExecutor(loritta, loritta.gabrielaImageServerClient))
 
         // ===[ ROBLOX ]===
-
-        // ===[ OTHER STUFF ]===
-        register(ActivateInviteBlockerBypassButtonClickExecutor(loritta))
     }
 
     private fun register(declarationWrapper: CinnamonSlashCommandDeclarationWrapper) {
