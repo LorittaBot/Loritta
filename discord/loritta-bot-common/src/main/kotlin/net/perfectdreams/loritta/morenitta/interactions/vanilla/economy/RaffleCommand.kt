@@ -116,7 +116,11 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
                     } else {
                         context.reply(true) {
-                            content = "Ninguém está participando da rifa..."
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.Status.Participants.NoOneIsParticipatingRightNow(loritta.commandMentions.raffleBuy)),
+                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                            )
+
                         }
                     }
                 }
