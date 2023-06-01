@@ -1,29 +1,29 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
+import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
+import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
 class LorittaCommand : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loritta
-    }
 
-    override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD) {
-        subcommand(I18nKeysData.Commands.Command.Loritta.Info.Label, I18nKeysData.Commands.Command.Loritta.Info.Description) {
-            executor = LorittaInfoExecutor()
-        }
-    }
-
-    inner class LorittaInfoExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        suspend fun executeCompat(context: CommandContextCompat) {
             context.deferChannelMessage(false)
 
             val since = Instant.now()
@@ -31,8 +31,27 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 .toKotlinInstant()
 
             val guildCount = context.loritta.lorittaShards.queryGuildCount()
-            val executedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getExecutedApplicationCommands(since)
-            val uniqueUsersExecutedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getUniqueUsersExecutedApplicationCommands(since)
+            val executedCommands = context.loritta.transaction {
+                val appCommands = ExecutedApplicationCommandsLog.select {
+                    ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
+                }.count()
+                val legacyCommands = ExecutedCommandsLog.select {
+                    ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
+                }.count()
+
+                return@transaction appCommands + legacyCommands
+            }
+
+            val uniqueUsersExecutedCommands = context.loritta.transaction {
+                val appCommands = ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
+                    ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
+                }.groupBy(ExecutedApplicationCommandsLog.userId).count()
+                val legacyCommands = ExecutedCommandsLog.slice(ExecutedCommandsLog.userId).select {
+                    ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
+                }.groupBy(ExecutedCommandsLog.userId).count()
+
+                return@transaction appCommands + legacyCommands
+            }
 
             context.reply(false) {
                 embed {
@@ -44,8 +63,8 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         I18N_PREFIX.Info.Embed.Description(
                             guildCount = guildCount,
                             commandCount = context.loritta.getCommandCount(),
-                            executedApplicationCommands = executedApplicationCommands,
-                            uniqueUsersExecutedApplicationCommands = uniqueUsersExecutedApplicationCommands,
+                            executedApplicationCommands = executedCommands,
+                            uniqueUsersExecutedApplicationCommands = uniqueUsersExecutedCommands,
                             userMention = context.user.asMention,
                             loriSunglasses = Emotes.LoriSunglasses,
                             loriYay = Emotes.LoriYay,
@@ -145,6 +164,18 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     )
                 )
             }
+        }
+    }
+
+    override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD) {
+        subcommand(I18nKeysData.Commands.Command.Loritta.Info.Label, I18nKeysData.Commands.Command.Loritta.Info.Description) {
+            executor = LorittaInfoExecutor()
+        }
+    }
+
+    inner class LorittaInfoExecutor : LorittaSlashCommandExecutor() {
+        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context))
         }
     }
 }
