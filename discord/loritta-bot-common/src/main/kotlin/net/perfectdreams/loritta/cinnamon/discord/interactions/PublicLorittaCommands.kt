@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.declarations.UndertaleCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.*
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.VieirinhaCommand
 
 /**
  * Public Loritta Commands
@@ -37,11 +38,9 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(RateCommand(languageManager))
             register(CancelledCommand(languageManager))
             register(SummonCommand(languageManager))
-            register(VieirinhaCommand(languageManager))
             register(TextTransformCommand(languageManager))
             register(JankenponCommand(languageManager))
             register(HungerGamesCommand(languageManager))
-
             register(SoundboxCommand(languageManager))
 
             // ===[ IMAGES ]===
