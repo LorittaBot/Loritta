@@ -1,5 +1,19 @@
 ---
 label: "loritta"
+ping:
+  label: "ping"
+  description: "Mostra informações sobre a latência da Loritta ao Discord"
+clusters:
+  label: "clusters"
+  description: "Mostra informações sobre os clusters/réplicas da Loritta"
+nerd:
+  label: "nerd"
+  description: "Mostra estatísticas para nerds sobre a instância atual da Loritta"
+  cachedGuilds: "Guilds em Cache"
+  cachedUsers: "Usuários em Cache"
+  cachedEmojis: "Emojis em Cache"
+  cachedRoles: "Cargos em Cache"
+  cachedChannels: "Canais em Cache"
 info:
   label: "info"
   description: "Mostra informações sobre a garotinha mais fofa deste universo!"
