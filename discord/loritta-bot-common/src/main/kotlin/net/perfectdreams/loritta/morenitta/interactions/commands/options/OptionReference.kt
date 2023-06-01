@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteExecutor
 
 sealed class OptionReference<T>(
     val name: String

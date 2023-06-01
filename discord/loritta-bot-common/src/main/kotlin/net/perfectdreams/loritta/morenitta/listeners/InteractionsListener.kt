@@ -31,7 +31,8 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.AutocompleteExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.LongDiscordOptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.NumberDiscordOptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.StringDiscordOptionReference
@@ -704,38 +705,102 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     it.name == event.focusedOption.name
                 } ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the option doesn't exist!")
 
-            when (autocompletingOption) {
-                is StringDiscordOptionReference -> {
-                    val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<String> ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
+            try {
+                val guild = event.guild
+                val member = event.member
 
-                    val map = autocompleteCallback.execute(event)
-                        .map {
+                val serverConfigJob = if (guild != null)
+                    loritta.getOrCreateServerConfigDeferred(guild.idLong, true)
+                else
+                    loritta.getOrCreateServerConfigDeferred(-1, true)
+
+                val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.user.idLong)
+
+                val serverConfig = serverConfigJob.await()
+                val lorittaProfile = lorittaProfileJob.await()
+
+                val currentLocale = loritta.newSuspendedTransaction {
+                    (lorittaProfile?.settings?.language ?: serverConfig.localeId)
+                }
+
+                val locale = loritta.localeManager.getLocaleById(currentLocale)
+                val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+                val lorittaUser = if (guild != null && member != null) {
+                    // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+                    val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
+                    val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
+                        member,
+                        rolesLorittaPermissions
+                    )
+                    GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
+                } else {
+                    LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
+                }
+
+                when (autocompletingOption) {
+                    is StringDiscordOptionReference -> {
+                        val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<String>
+                            ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
+
+                        val map = autocompleteCallback.execute(
+                            AutocompleteContext(
+                                loritta,
+                                serverConfig,
+                                lorittaUser,
+                                locale,
+                                i18nContext,
+                                event
+                            )
+                        ).map {
                             Command.Choice(it.key, it.value)
                         }
 
-                    event.replyChoices(map).await()
-                }
-                is LongDiscordOptionReference -> {
-                    val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<Long> ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
+                        event.replyChoices(map).await()
+                    }
+                    is LongDiscordOptionReference -> {
+                        val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<Long>
+                            ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
 
-                    val map = autocompleteCallback.execute(event)
-                        .map {
+                        val map = autocompleteCallback.execute(
+                            AutocompleteContext(
+                                loritta,
+                                serverConfig,
+                                lorittaUser,
+                                locale,
+                                i18nContext,
+                                event
+                            )
+                        ).map {
                             Command.Choice(it.key, it.value)
                         }
 
-                    event.replyChoices(map).await()
-                }
-                is NumberDiscordOptionReference -> {
-                    val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<Double> ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
+                        event.replyChoices(map).await()
+                    }
+                    is NumberDiscordOptionReference -> {
+                        val autocompleteCallback = autocompletingOption.autocompleteExecutor as? AutocompleteExecutor<Double>
+                            ?: error("Received Autocomplete request for ${event.focusedOption.name}, but the autocomplete callback doesn't exist!")
 
-                    val map = autocompleteCallback.execute(event)
-                        .map {
+                        val map = autocompleteCallback.execute(
+                            AutocompleteContext(
+                                loritta,
+                                serverConfig,
+                                lorittaUser,
+                                locale,
+                                i18nContext,
+                                event
+                            )
+                        ).map {
                             Command.Choice(it.key, it.value)
                         }
 
-                    event.replyChoices(map).await()
+                        event.replyChoices(map).await()
+                    }
+                    else -> error("Unsupported option reference for autocomplete ${autocompletingOption::class.simpleName}")
                 }
-                else -> error("Unsupported option reference for autocomplete ${autocompletingOption::class.simpleName}")
+            } catch (e: Exception) {
+                // TODO: Proper catch and throw
+                e.printStackTrace()
             }
         }
     }
