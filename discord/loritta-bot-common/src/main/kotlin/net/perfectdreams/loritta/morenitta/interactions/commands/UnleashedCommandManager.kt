@@ -37,6 +37,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.WebhookC
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.DailyCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFightCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.CoinFlipCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.MusicalChairsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.RollCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.ShipCommand
@@ -84,6 +85,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(MusicalChairsCommand(loritta))
         register(ShipCommand(loritta))
         register(RollCommand(loritta))
+        register(CoinFlipCommand())
 
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))
