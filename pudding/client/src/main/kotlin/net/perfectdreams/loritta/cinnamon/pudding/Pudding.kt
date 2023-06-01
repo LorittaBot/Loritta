@@ -158,6 +158,7 @@ class Pudding(
     val patchNotesNotifications = PatchNotesNotificationsService(this)
     val packagesTracking = PackagesTrackingService(this)
     val notifications = NotificationsService(this)
+    val reputations = ReputationsService(this)
 
     // Used to avoid having a lot of threads being created on the "dispatcher" just to be blocked waiting for a connection, causing thread starvation and an OOM kill
     val semaphore = Semaphore(permits)
