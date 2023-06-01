@@ -15,6 +15,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
@@ -105,7 +106,8 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 val participantId = participant[RaffleTickets.userId]
                                 val ticketCount = participant[raffleTicketsCount]
                                 val userInfo = loritta.lorittaShards.retrieveUserInfoById(participantId)
-                                if (userInfo != null) {
+                                val hasInviteOnName = userInfo?.name?.let { DiscordInviteUtils.hasInvite(it) }
+                                if (userInfo != null && hasInviteOnName == false) {
                                     styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantEntry(userInfo.name + "#" + userInfo.discriminator, participantId.toString(), ticketCount)))
                                 } else {
                                     styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantUnknownEntry(participantId.toString(), ticketCount)))
