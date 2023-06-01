@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.math.Dice
@@ -10,6 +9,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.CalculatorCommand
 
 class RollCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
