@@ -117,6 +117,12 @@ class CalculatorCommand : SlashCommandDeclarationWrapper {
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
             val expr = args[options.expression]
             if (expr == "empty") {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.YouNeedToTypeAnArithmeticExpression),
+                        Emotes.LoriSleeping
+                    )
+                }
                 return
             }
 
