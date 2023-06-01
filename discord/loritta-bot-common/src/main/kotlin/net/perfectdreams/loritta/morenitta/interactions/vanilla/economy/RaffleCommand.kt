@@ -210,6 +210,11 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     prefix = "\uD83D\uDCB5",
                 )
 
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.Status.YouCanBuyTickets(raffleType.maxTicketsByUserPerRound, context.i18nContext.get(raffleType.title))),
+                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm,
+                )
+
                 actionRow(notifyMeButton, viewParticipants)
             }
         }
