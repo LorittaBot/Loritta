@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -220,10 +220,10 @@ abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, 
 		if (botPermissions.isNotEmpty() || discordPermissions.isNotEmpty()) {
 			var field = ""
 			if (discordPermissions.isNotEmpty()) {
-				field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+				field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", discordPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(context.i18nContext)}`" })]}\n"
 			}
 			if (botPermissions.isNotEmpty()) {
-				field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+				field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", botPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(context.i18nContext)}`" })]}\n"
 			}
 			embed.addField(
 					"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",

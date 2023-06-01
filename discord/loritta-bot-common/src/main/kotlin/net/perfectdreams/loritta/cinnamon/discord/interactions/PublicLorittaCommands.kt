@@ -25,8 +25,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
         val wrapper = RegistryWrapper()
         with(wrapper) {
             // ===[ DISCORD ]===
-            register(UserCommand(languageManager))
-
             register(ServerCommand(languageManager))
             register(InviteCommand(languageManager))
             register(EmojiCommand(languageManager))

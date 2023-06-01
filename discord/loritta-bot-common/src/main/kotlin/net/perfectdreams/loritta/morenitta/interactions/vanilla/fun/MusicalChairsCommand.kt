@@ -28,7 +28,7 @@ import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -281,7 +281,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         content = context.i18nContext.get(
                             I18nKeysData.Commands.LoriDoesntHavePermissionDiscord(
                                 listOf(Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)
-                                    .joinToString(", ") { "`${it.localized(context.locale)}`" }
+                                    .joinToString(", ") { "`${it.getLocalizedName(context.i18nContext)}`" }
                             )
                         ),
                         prefix = Emotes.Error

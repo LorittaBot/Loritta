@@ -461,10 +461,10 @@ class DiscordCommandContext(
 			if (command.botRequiredPermissions.isNotEmpty() || command.userRequiredPermissions.isNotEmpty()) {
 				var field = ""
 				if (command.userRequiredPermissions.isNotEmpty()) {
-					field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+					field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(i18nContext)}`" })]}\n"
 				}
 				if (command.botRequiredPermissions.isNotEmpty()) {
-					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(i18nContext)}`" })]}\n"
 				}
 				embed.addField(
 					"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",

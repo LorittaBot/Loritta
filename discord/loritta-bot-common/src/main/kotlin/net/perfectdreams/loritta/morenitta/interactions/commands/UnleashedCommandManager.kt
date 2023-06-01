@@ -31,9 +31,8 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.LorittaCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.WebhookCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.DailyCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFightCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
@@ -76,6 +75,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ DISCORD ]===
         register(LorittaCommand())
         register(WebhookCommand(loritta))
+        register(UserCommand(loritta))
+        register(UserAvatarUserCommand())
+        register(UserInfoUserCommand())
 
         // ===[ MODERATION ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)

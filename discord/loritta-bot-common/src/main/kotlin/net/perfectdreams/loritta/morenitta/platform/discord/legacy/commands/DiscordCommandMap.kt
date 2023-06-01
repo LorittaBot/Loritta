@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ChannelInfoC
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -349,7 +349,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+						val required = missingPermissions.joinToString(", ", transform = { "`" + it.getLocalizedName(i18nContext) + "`" })
 						context.reply(
 							LorittaReply(
 								locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
@@ -400,7 +400,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 					val missingRequiredPermissions = command.userRequiredPermissions.filterNot { ev.message.member!!.hasPermission(ev.message.textChannel, it) }
 
 					if (missingRequiredPermissions.isNotEmpty()) {
-						val required = missingRequiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
+						val required = missingRequiredPermissions.joinToString(", ", transform = { "`" + it.getLocalizedName(i18nContext) + "`" })
 						context.reply(
 							LorittaReply(
 								locale["commands.userDoesntHavePermissionDiscord", required],

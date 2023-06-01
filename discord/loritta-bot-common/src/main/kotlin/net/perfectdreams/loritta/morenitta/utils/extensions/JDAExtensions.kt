@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
-import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.dv8tion.jda.api.utils.messages.MessageEditData
-import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
@@ -334,53 +334,53 @@ fun Guild.getGuildMessageChannelById(channelId: String) = getGuildMessageChannel
 
 fun Guild.getGuildMessageChannelById(channelId: Long) = this.getGuildChannelById(channelId) as? GuildMessageChannel
 
-fun Permission.localized(locale: BaseLocale): String {
-    return when (this) {
-        CREATE_INSTANT_INVITE -> locale["discord.permissions.createInstantInvite"]
-        KICK_MEMBERS -> locale["discord.permissions.kickMembers"]
-        BAN_MEMBERS -> locale["discord.permissions.banMembers"]
-        ADMINISTRATOR -> locale["discord.permissions.administrator"]
-        MANAGE_CHANNEL -> locale["discord.permissions.manageChannel"]
-        MANAGE_SERVER -> locale["discord.permissions.manageServer"]
-        MESSAGE_ADD_REACTION -> locale["discord.permissions.addReactions"]
-        VIEW_AUDIT_LOGS -> locale["discord.permissions.viewAuditLogs"]
-        PRIORITY_SPEAKER -> locale["discord.permissions.prioritySpeaker"]
-        VIEW_CHANNEL -> locale["discord.permissions.viewChannel"]
-        MESSAGE_SEND -> locale["discord.permissions.messageWrite"]
-        MESSAGE_TTS -> locale["discord.permissions.messageTTS"]
-        MESSAGE_MANAGE -> locale["discord.permissions.messageManage"]
-        MESSAGE_EMBED_LINKS -> locale["discord.permissions.messageEmbedLinks"]
-        MESSAGE_ATTACH_FILES -> locale["discord.permissions.attachFiles"]
-        MESSAGE_HISTORY -> locale["discord.permissions.messageHistory"]
-        MESSAGE_MENTION_EVERYONE -> locale["discord.permissions.mentionEveryone"]
-        MESSAGE_EXT_EMOJI -> locale["discord.permissions.messageExtEmoji"]
-        VOICE_CONNECT -> locale["discord.permissions.connect"]
-        VOICE_SPEAK -> locale["discord.permissions.speak"]
-        VOICE_MUTE_OTHERS -> locale["discord.permissions.muteVoiceMembers"]
-        VOICE_DEAF_OTHERS -> locale["discord.permissions.disableVoiceAudio"]
-        VOICE_MOVE_OTHERS -> locale["discord.permissions.moveVoiceMembers"]
-        VOICE_USE_VAD -> locale["discord.permissions.useVoiceDetection"]
-        NICKNAME_CHANGE -> locale["discord.permissions.changeNickname"]
-        NICKNAME_MANAGE -> locale["discord.permissions.manageNicknames"]
-        MANAGE_ROLES -> locale["discord.permissions.manageRoles"]
-        MANAGE_PERMISSIONS -> locale["discord.permissions.managePermissions"]
-        MANAGE_WEBHOOKS -> locale["discord.permissions.manageWebhooks"]
-        MANAGE_EMOJIS_AND_STICKERS -> locale["discord.permissions.manageEmotes"]
-        VOICE_STREAM -> locale["discord.permissions.voiceStream"]
-        VIEW_GUILD_INSIGHTS -> locale["discord.permissions.viewGuildInsights"]
-        USE_APPLICATION_COMMANDS -> locale["discord.permissions.useSlashCommands"]
-        MESSAGE_EXT_STICKER -> locale["discord.permissions.messageExtSticker"]
-        MANAGE_THREADS -> locale["discord.permissions.manageThreads"]
-        REQUEST_TO_SPEAK -> locale["discord.permissions.requestToSpeak"]
-        VOICE_START_ACTIVITIES -> locale["discord.permissions.voiceStartActivities"]
-        MANAGE_EVENTS -> locale["discord.permissions.manageEvents"]
-        MODERATE_MEMBERS -> locale["discord.permissions.moderateMembers"]
-        CREATE_PUBLIC_THREADS ->  locale["discord.permissions.usePublicThreads"]
-        CREATE_PRIVATE_THREADS -> locale["discord.permissions.usePrivateThreads"]
-        MESSAGE_SEND_IN_THREADS -> locale["discord.permissions.messageSendInThreads"]
-        UNKNOWN -> "This should never, ever happen!"
-    }
+fun Permission.getI18nKey() = when (this) {
+    CREATE_INSTANT_INVITE -> I18nKeys.Permissions.CreateInstantInvite
+    KICK_MEMBERS -> I18nKeys.Permissions.KickMembers
+    BAN_MEMBERS -> I18nKeys.Permissions.BanMembers
+    ADMINISTRATOR -> I18nKeys.Permissions.Administrator
+    MANAGE_CHANNEL -> I18nKeys.Permissions.ManageChannels
+    MANAGE_SERVER -> I18nKeys.Permissions.ManageGuild
+    MESSAGE_ADD_REACTION -> I18nKeys.Permissions.AddReactions
+    VIEW_AUDIT_LOGS -> I18nKeys.Permissions.ViewAuditLog
+    VIEW_CHANNEL -> I18nKeys.Permissions.ViewChannel
+    MESSAGE_SEND -> I18nKeys.Permissions.SendMessages
+    MESSAGE_TTS -> I18nKeys.Permissions.SendTTSMessages
+    MESSAGE_MANAGE -> I18nKeys.Permissions.ManageMessages
+    MESSAGE_EMBED_LINKS -> I18nKeys.Permissions.EmbedLinks
+    MESSAGE_ATTACH_FILES -> I18nKeys.Permissions.AttachFiles
+    MESSAGE_HISTORY -> I18nKeys.Permissions.ReadMessageHistory
+    MESSAGE_MENTION_EVERYONE -> I18nKeys.Permissions.MentionEveryone
+    MESSAGE_EXT_EMOJI -> I18nKeys.Permissions.UseExternalEmojis
+    VIEW_GUILD_INSIGHTS -> I18nKeys.Permissions.ViewGuildInsights
+    VOICE_CONNECT -> I18nKeys.Permissions.Connect
+    VOICE_SPEAK -> I18nKeys.Permissions.Speak
+    VOICE_MUTE_OTHERS -> I18nKeys.Permissions.MuteMembers
+    VOICE_DEAF_OTHERS -> I18nKeys.Permissions.DeafenMembers
+    VOICE_MOVE_OTHERS -> I18nKeys.Permissions.MoveMembers
+    VOICE_USE_VAD -> I18nKeys.Permissions.UseVAD
+    PRIORITY_SPEAKER -> I18nKeys.Permissions.PrioritySpeaker
+    NICKNAME_CHANGE -> I18nKeys.Permissions.ChangeNickname
+    NICKNAME_MANAGE -> I18nKeys.Permissions.ManageNicknames
+    MANAGE_ROLES -> I18nKeys.Permissions.ManageRoles
+    MANAGE_WEBHOOKS -> I18nKeys.Permissions.ManageWebhooks
+    MANAGE_EMOJIS_AND_STICKERS -> I18nKeys.Permissions.ManageEmojisAndStickers
+    USE_APPLICATION_COMMANDS -> I18nKeys.Permissions.UseApplicationCommands
+    REQUEST_TO_SPEAK -> I18nKeys.Permissions.RequestToSpeak
+    MANAGE_THREADS -> I18nKeys.Permissions.ManageThreads
+    CREATE_PUBLIC_THREADS -> I18nKeys.Permissions.CreatePublicThreads
+    CREATE_PRIVATE_THREADS -> I18nKeys.Permissions.CreatePrivateThreads
+    MESSAGE_SEND_IN_THREADS -> I18nKeys.Permissions.SendMessagesInThreads
+    MANAGE_PERMISSIONS -> I18nKeys.Permissions.ManagePermissions
+    MANAGE_EVENTS -> I18nKeys.Permissions.ManageEvents
+    MODERATE_MEMBERS -> I18nKeys.Permissions.ModerateMembers
+    MESSAGE_EXT_STICKER -> I18nKeys.Permissions.UseExternalStickers
+    VOICE_STREAM -> I18nKeys.Permissions.Video
+    VOICE_START_ACTIVITIES -> I18nKeys.Permissions.StartActivities
+    UNKNOWN -> I18nKeys.Permissions.UnknownPermission
 }
+
+fun Permission.getLocalizedName(i18nContext: I18nContext) = i18nContext.get(this.getI18nKey())
 
 /**
  * Gets the effective avatar URL in the specified [format]

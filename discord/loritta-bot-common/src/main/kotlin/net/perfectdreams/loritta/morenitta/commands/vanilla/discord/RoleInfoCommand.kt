@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
@@ -53,7 +53,7 @@ class RoleInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta,
                 } else {
                     locale["loritta.fancyBoolean.false"]
                 }
-                val permissions = role.permissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })
+                val permissions = role.permissions.joinToString(", ", transform = { "`${it.getLocalizedName(context.i18nContext)}`" })
 
                 builder.setTitle("\uD83D\uDCBC ${role.name}")
                 if (role.color != null)

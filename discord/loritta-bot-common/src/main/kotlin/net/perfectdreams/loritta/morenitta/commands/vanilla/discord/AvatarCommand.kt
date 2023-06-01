@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
+import dev.minn.jda.ktx.messages.MessageCreate
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -15,6 +16,9 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.util.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.UserAndMember
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.UserCommand
 
 class AvatarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "avatar", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	companion object {
@@ -42,32 +46,18 @@ class AvatarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "avatar", ca
 			getAvatar = context.userHandle
 		}
 
-		val embed = EmbedBuilder()
-		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		embed.setDescription("**${context.locale["$LOCALE_PREFIX.clickHere", "${getAvatar.effectiveAvatarUrl}?size=2048"]}**")
+		val member = context.guildOrNull?.getMember(getAvatar)
 
-		// Easter Egg: Pantufa
-		if (getAvatar.idLong == 390927821997998081L)
-			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.pantufaCute"]}* ${Emotes.LORI_TEMMIE}")
-
-		// Easter Egg: Gabriela
-		if (getAvatar.idLong == 481901252007952385L)
-			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.gabrielaCute"]}* ${Emotes.LORI_PAT}")
-
-		// Easter Egg: Pollux
-		if (getAvatar.idLong == 271394014358405121L || getAvatar.idLong == 354285599588483082L || getAvatar.idLong == 578913818961248256L)
-			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.polluxCute"]}* ${Emotes.LORI_HEART}")
-
-		// Easter Egg: Loritta
-		if (getAvatar.id == loritta.config.loritta.discord.applicationId.toString()) {
-			val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
-			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
-
-			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.lorittaCute"]}* ${Emotes.LORI_SMILE}")
-		}
-
-		embed.setTitle("\uD83D\uDDBC ${getAvatar.name}")
-		embed.setImage("${getAvatar.effectiveAvatarUrl}?size=2048")
-		context.sendMessage(context.getAsMention(true), embed.build())
+		context.sendMessage(
+			MessageCreate {
+				apply(
+					UserCommand.createAvatarMessage(
+						CommandContextCompat.LegacyMessageCommandContextCompat(context),
+						UserAndMember(getAvatar, member),
+						UserCommand.Companion.AvatarTarget.GLOBAL_AVATAR
+					)
+				)
+			}
+		)
 	}
 }

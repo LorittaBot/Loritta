@@ -9,11 +9,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonMessageCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGlobalAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGuildProfileAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserAvatarUserCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserInfoUserCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.info.ShowGuildMemberPermissionsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipglobal.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker.BrokerInfoCategorySelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.CancelSonhosTransferButtonExecutor
@@ -47,14 +42,6 @@ class InteractionsManager(
         publicLorittaCommands.commands().forEach {
             register(it)
         }
-
-        // ===[ DISCORD ]===
-        register(UserAvatarUserCommand(languageManager))
-        register(SwitchToGuildProfileAvatarExecutor(loritta, discordConfig.applicationId))
-        register(SwitchToGlobalAvatarExecutor(loritta, discordConfig.applicationId))
-
-        register(UserInfoUserCommand(languageManager))
-        register(ShowGuildMemberPermissionsExecutor(loritta))
 
         // ===[ MODERATION ]===
         register(ConfirmBanButtonExecutor(loritta))
