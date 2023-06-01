@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.d
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.DashboardCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.*
@@ -33,7 +32,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(EmojiCommand(languageManager))
 
             // ===[ MODERATION ]===
-            register(DashboardCommand(languageManager))
             register(BanCommand(languageManager))
             register(PredefinedReasonsCommand(languageManager))
 
