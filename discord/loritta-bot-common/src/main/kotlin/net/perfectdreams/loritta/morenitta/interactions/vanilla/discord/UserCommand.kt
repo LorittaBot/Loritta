@@ -99,26 +99,8 @@ class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 // This should NEVER be null at this point!
                 val imageUrl = when (avatarTarget) {
-                    AvatarTarget.GLOBAL_AVATAR -> userAndMember.user.getEffectiveAvatarUrl(
-                        if (userAndMember.user.avatarId?.startsWith("a_") == true)
-                            ImageFormat.GIF
-                        else
-                            ImageFormat.PNG,
-                        2048
-                    )
-                    AvatarTarget.GUILD_AVATAR -> {
-                        if (userAndMember.member?.effectiveAvatarUrl != null) {
-                            userAndMember.member.effectiveAvatarUrl + "?size=2048"
-                        } else {
-                            userAndMember.user.getEffectiveAvatarUrl(
-                                if (userAndMember.user.avatarId?.startsWith("a_") == true)
-                                    ImageFormat.GIF
-                                else
-                                    ImageFormat.PNG,
-                                2048
-                            )
-                        }
-                    }
+                    AvatarTarget.GLOBAL_AVATAR -> userAndMember.user.avatar?.getUrl(2048) ?: userAndMember.user.defaultAvatar.url
+                    AvatarTarget.GUILD_AVATAR -> userAndMember.member?.avatar?.getUrl(2048) ?: userAndMember.user.defaultAvatar.url
                 }
 
                 image = imageUrl
