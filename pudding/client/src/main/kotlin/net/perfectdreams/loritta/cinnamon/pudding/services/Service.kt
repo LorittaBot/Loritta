@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
@@ -119,14 +120,17 @@ open class Service(private val pudding: Pudding) {
         Background.fromRow(row)
     )
 
-    fun Reputation.Companion.fromRow(row: ResultRow) = Reputation(
-        row[Reputations.id].value,
-        row[Reputations.givenById],
-        row[Reputations.givenByIp],
-        row[Reputations.givenByEmail],
-        row[Reputations.receivedById],
-        row[Reputations.receivedAt],
-        row[Reputations.content],
+    fun PuddingReputation.Companion.fromRow(row: ResultRow) = PuddingReputation(
+        pudding,
+        Reputation(
+            row[Reputations.id].value,
+            row[Reputations.givenById],
+            row[Reputations.givenByIp],
+            row[Reputations.givenByEmail],
+            row[Reputations.receivedById],
+            row[Reputations.receivedAt],
+            row[Reputations.content],
+        )
     )
 }
 

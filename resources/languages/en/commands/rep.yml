@@ -16,6 +16,7 @@ delete:
   label: "delete"
   description: "Delete a reputation received by you"
   successfullyDeleted: "Success! The reputation has been deleted from your history!"
+  reputationNotFound: "This reputation does not exist in your history, remember, you can only delete reputations received by you!"
 
   options:
     rep:

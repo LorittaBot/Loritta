@@ -6,8 +6,8 @@ import kotlinx.datetime.toKotlinTimeZone
 import kotlinx.datetime.toLocalDateTime
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.pudding.data.Reputation
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -114,7 +114,7 @@ class RepCommand : SlashCommandDeclarationWrapper {
                 }
             }
 
-            private suspend fun formatReputation(reputation: Reputation, context: AutocompleteContext): String {
+            private suspend fun formatReputation(reputation: PuddingReputation, context: AutocompleteContext): String {
                 return buildString {
                     val givenAtTime = Instant.fromEpochMilliseconds(reputation.receivedAt)
                         .toLocalDateTime(Constants.LORITTA_TIMEZONE.toKotlinTimeZone())
@@ -141,7 +141,18 @@ class RepCommand : SlashCommandDeclarationWrapper {
         override val options = Options()
 
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            context.loritta.pudding.reputations.deleteReputation(args[options.rep].toLong())
+            val reputation = context.loritta.pudding.reputations.getReputation(args[options.rep].toLong())
+
+            if (reputation == null || reputation.receivedById != context.user.id.toLong()) {
+                context.fail(true) {
+                    this.styled(
+                        context.i18nContext.get(I18N_PREFIX.Delete.ReputationNotFound),
+                        Emotes.Error
+                    )
+                }
+            }
+
+            reputation.delete()
 
             context.reply(true) {
                 this.styled(
