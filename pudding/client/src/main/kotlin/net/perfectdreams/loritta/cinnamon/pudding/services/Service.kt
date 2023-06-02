@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
@@ -39,6 +40,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import org.jetbrains.exposed.sql.ResultRow
@@ -116,6 +118,19 @@ open class Service(private val pudding: Pudding) {
     fun PuddingBackground.Companion.fromRow(row: ResultRow) = PuddingBackground(
         pudding,
         Background.fromRow(row)
+    )
+
+    fun PuddingReputation.Companion.fromRow(row: ResultRow) = PuddingReputation(
+        pudding,
+        Reputation(
+            row[Reputations.id].value,
+            row[Reputations.givenById],
+            row[Reputations.givenByIp],
+            row[Reputations.givenByEmail],
+            row[Reputations.receivedById],
+            row[Reputations.receivedAt],
+            row[Reputations.content],
+        )
     )
 }
 

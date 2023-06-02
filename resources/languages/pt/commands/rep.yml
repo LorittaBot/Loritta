@@ -1,0 +1,23 @@
+label: "rep"
+description: "Comandos relacionandos com o sistema de reputação"
+
+give:
+  label: "give"
+  description: "Dê reputação para outro usuário!"
+  repSelf: "Você não pode dar reputação para si mesmo, bobinho!"
+  wait: "Você pode dar uma nova reputação **{time}**!"
+  reputationLink: "Quase pronto! Para dar a reputação, confirme ela em {repLink}"
+
+  options:
+    user:
+      description: "O usuário que você deseja dar a reputação"
+
+delete:
+  label: "delete"
+  description: "Deleta uma reputação recebida por você"
+  successfullyDeleted: "Sucesso! A reputação foi deletada do seu histórico!"
+  reputationNotFound: "Essa reputação não existe no seu histórico, lembre-se, você só pode deletar reputações recebidas por você!"
+
+  options:
+    rep:
+      description: "A reputação que você deseja deletar, digite para filtrar"

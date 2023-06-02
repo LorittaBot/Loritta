@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
@@ -11,6 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.common.utils.TransactionType
 import org.jetbrains.exposed.sql.*
+import kotlin.time.Duration.Companion.days
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {
     /**
@@ -189,5 +191,12 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                 Daily.fromRow(dailyResult)
             else null
         }
+    }
+
+    suspend fun userGotDailyRecently(userId: Long, numberOfDays: Int): Boolean {
+        return getUserLastDailyRewardReceived(
+            UserId(userId),
+            Clock.System.now() - numberOfDays.days
+        ) != null
     }
 }
