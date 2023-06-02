@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
@@ -48,16 +49,21 @@ class AvatarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "avatar", ca
 
 		val member = context.guildOrNull?.getMember(getAvatar)
 
+		val contextCompat = CommandContextCompat.LegacyMessageCommandContextCompat(context)
+
 		context.sendMessage(
 			MessageCreate {
 				apply(
 					UserCommand.createAvatarMessage(
-						CommandContextCompat.LegacyMessageCommandContextCompat(context),
+						contextCompat,
 						UserAndMember(getAvatar, member),
 						UserCommand.Companion.AvatarTarget.GLOBAL_AVATAR
 					)
 				)
 			}
 		)
+
+		if (getAvatar.id == context.userHandle.id)
+			contextCompat.giveAchievementAndNotify(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
 	}
 }

@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotableUserIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -589,6 +590,9 @@ class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
                 )
             }
+
+            if (userAndMember.user.id == context.user.id)
+                context.giveAchievementAndNotify(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
         }
     }
 
