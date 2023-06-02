@@ -432,7 +432,7 @@ class LorittaBot(
 	val ecbManager = ECBManager()
 	val activityUpdater = ActivityUpdater(this)
 
-	private val debugWebServer = DebugWebServer()
+	private val debugWebServer = DebugWebServer(this)
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
 	var isActive = true
