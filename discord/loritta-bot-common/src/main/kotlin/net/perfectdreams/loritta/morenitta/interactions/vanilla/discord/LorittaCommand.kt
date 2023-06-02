@@ -14,6 +14,8 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.sharding.ShardManager
+import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ExecutedApplicationCommandsLog
@@ -429,8 +431,15 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     "<:kotlin:453714186925637642>",
                 )
 
-                val cachedChannels = lorittaShards.shardManager.guildCache.sumOf { it.channels.size }
-
+                val cachedChannels = ShardManager::class.members
+                    .filter {
+                        it.name.endsWith("ChannelCache")
+                    }
+                    .map {
+                        it.call(lorittaShards.shardManager) as SnowflakeCacheView<*>
+                    }
+                    .sumOf { it.size() }
+                
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedGuilds)}:** ${lorittaShards.shardManager.guildCache.size()}")
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedUsers)}:** ${lorittaShards.shardManager.userCache.size()}")
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedEmojis)}:** ${lorittaShards.shardManager.emojiCache.size()}")
