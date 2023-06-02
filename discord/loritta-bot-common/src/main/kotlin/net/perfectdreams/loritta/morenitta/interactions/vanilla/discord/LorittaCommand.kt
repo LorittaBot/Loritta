@@ -439,7 +439,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         it.call(lorittaShards.shardManager) as SnowflakeCacheView<*>
                     }
                     .sumOf { it.size() }
-                
+
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedGuilds)}:** ${lorittaShards.shardManager.guildCache.size()}")
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedUsers)}:** ${lorittaShards.shardManager.userCache.size()}")
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedEmojis)}:** ${lorittaShards.shardManager.emojiCache.size()}")
