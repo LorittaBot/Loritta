@@ -66,12 +66,14 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             val uniqueUsersExecutedCommands = context.loritta.transaction {
                 val appCommands = ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
                     ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
-                }.groupBy(ExecutedApplicationCommandsLog.userId).count()
+                }.groupBy(ExecutedApplicationCommandsLog.userId).toList()
+                    .map { it[ExecutedApplicationCommandsLog.userId] }
                 val legacyCommands = ExecutedCommandsLog.slice(ExecutedCommandsLog.userId).select {
                     ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
-                }.groupBy(ExecutedCommandsLog.userId).count()
+                }.groupBy(ExecutedCommandsLog.userId).toList()
+                    .map { it[ExecutedCommandsLog.userId] }
 
-                return@transaction appCommands + legacyCommands
+                return@transaction (appCommands + legacyCommands).distinct().size
             }
 
             context.reply(false) {
