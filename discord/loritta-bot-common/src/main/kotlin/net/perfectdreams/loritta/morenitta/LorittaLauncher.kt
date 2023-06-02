@@ -139,6 +139,9 @@ object LorittaLauncher {
 		// Enable coroutine names, they are visible when dumping the coroutines
 		System.setProperty("kotlinx.coroutines.debug", "on")
 
+		// Enable coroutines stacktrace recovery
+		System.setProperty("kotlinx.coroutines.stacktrace.recovery", "true")
+
 		// It is recommended to set this to false to avoid performance hits with the DebugProbes option!
 		DebugProbes.enableCreationStackTraces = false
 		DebugProbes.install()
