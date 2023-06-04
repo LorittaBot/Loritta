@@ -33,7 +33,7 @@ buy:
   label: "comprar"
   description: "Compra tickets na rifa"
 
-  youBoughtAnTicket: "Você comprou {ticketCount,plural, =0 {# tickets} one {# ticket} other {# tickets}} por **{totalPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! Agora é só sentar, relaxar, e acompanhar o status da rifa usando {raffleStatusMention}!"
+  youBoughtAnTicket: "Você comprou {ticketCount,plural, =0 {# tickets} one {# ticket} other {# tickets}} por **{totalPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** na **{raffleType}**! Agora é só sentar, relaxar, e acompanhar o status da rifa usando {raffleStatusMention}!"
   wantMoreChances: "Querendo mais chances de ganhar? Que tal comprar outro ticket? {raffleBuyMention}"
 
   options:
