@@ -806,55 +806,68 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
     }
 
     private fun updateCommands(guildId: Long, action: (List<CommandData>) -> (List<Command>)): List<DiscordCommand> {
+        logger.info { "Updating slash command on guild $guildId..." }
+
         val applicationCommands = manager.slashCommands.map { manager.convertDeclarationToJDA(it) } + loritta.interactionsManager.interaKTions.manager.applicationCommandsDeclarations.map { manager.convertInteraKTionsDeclarationToJDA(it) } + manager.userCommands.map { manager.convertDeclarationToJDA(it) } + manager.messageCommands.map { manager.convertDeclarationToJDA(it) }
         val applicationCommandsHash = applicationCommands.sumOf { it.toData().toString().hashCode() }
 
-        var registeredCommands: List<DiscordCommand>? = null
+        while (true) {
+            val lockId = "loritta-cinnamon-application-command-updater-$guildId".hashCode()
 
-        loritta.pudding.hikariDataSource.connection.use { connection ->
-            // First, we will hold a lock to avoid other instances trying to update the app commands at the same time
-            val xactLockStatement = connection.prepareStatement("SELECT pg_advisory_xact_lock(?);")
-            xactLockStatement.setInt(1, "loritta-cinnamon-application-command-updater".hashCode())
-            xactLockStatement.execute()
+            try {
+                var registeredCommands: List<DiscordCommand>? = null
 
-            val pairData =
-                connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = $guildId;")
-                    .executeQuery()
-                    .let {
-                        if (it.next())
-                            Pair(it.getInt("hash"), it.getString("data"))
-                        else
-                            null
+                loritta.pudding.hikariDataSource.connection.use { connection ->
+                    logger.info { "Locking PostgreSQL advisory lock $lockId" }
+                    // First, we will hold a lock to avoid other instances trying to update the app commands at the same time
+                    val xactLockStatement = connection.prepareStatement("SELECT pg_advisory_xact_lock(?);")
+                    xactLockStatement.setInt(1, lockId)
+                    xactLockStatement.execute()
+                    logger.info { "Successfully acquired PostgreSQL advisory lock $lockId!" }
+
+                    val pairData =
+                        connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = $guildId;")
+                            .executeQuery()
+                            .let {
+                                if (it.next())
+                                    Pair(it.getInt("hash"), it.getString("data"))
+                                else
+                                    null
+                            }
+
+                    if (pairData == null || applicationCommandsHash != pairData.first) {
+                        // Needs to be updated!
+                        logger.info { "Updating Loritta commands in guild $guildId... Hash: $applicationCommandsHash, lock $lockId" }
+                        val updatedCommands = action.invoke(applicationCommands)
+                        val updatedCommandsData = updatedCommands.map {
+                            DiscordCommand.from(it)
+                        }
+
+                        val updateStatement =
+                            connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES ($guildId, $applicationCommandsHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $applicationCommandsHash, data = ?;")
+
+                        val pgObject = PGobject()
+                        pgObject.type = "jsonb"
+                        pgObject.value = Json.encodeToString(updatedCommandsData)
+                        updateStatement.setObject(1, pgObject)
+                        updateStatement.setObject(2, pgObject)
+                        updateStatement.executeUpdate()
+
+                        logger.info { "Successfully updated Loritta's commands in guild $guildId! Hash: $applicationCommandsHash, lock $lockId" }
+                        registeredCommands = updatedCommandsData
+                    } else {
+                        // No need for update, yay :3
+                        logger.info { "Stored guild $guildId (lock $lockId) commands hash match our hash $applicationCommandsHash, so we don't need to update, yay! :3" }
+                        registeredCommands = Json.decodeFromString(pairData.second)
                     }
 
-            if (pairData == null || applicationCommandsHash != pairData.first) {
-                // Needs to be updated!
-                logger.info { "Updating Loritta commands in guild $guildId... Hash: $applicationCommandsHash" }
-                val updatedCommands = action.invoke(applicationCommands)
-                val updatedCommandsData = updatedCommands.map {
-                    DiscordCommand.from(it)
+                    connection.commit()
                 }
 
-                val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES ($guildId, $applicationCommandsHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $applicationCommandsHash, data = ?;")
-
-                val pgObject = PGobject()
-                pgObject.type = "jsonb"
-                pgObject.value = Json.encodeToString(updatedCommandsData)
-                updateStatement.setObject(1, pgObject)
-                updateStatement.setObject(2, pgObject)
-                updateStatement.executeUpdate()
-
-                logger.info { "Successfully updated Loritta's commands in guild $guildId! Hash: $applicationCommandsHash" }
-                registeredCommands = updatedCommandsData
-            } else {
-                // No need for update, yay :3
-                logger.info { "Stored guild $guildId commands hash match our hash $applicationCommandsHash, so we don't need to update, yay! :3" }
-                registeredCommands = Json.decodeFromString(pairData.second)
+                return registeredCommands!!
+            } catch (e: Exception) {
+                logger.warn { "Something went wrong while trying to update slash commands! Retrying... Lock: $lockId" }
             }
-
-            connection.commit()
         }
-
-        return registeredCommands!!
     }
 }
