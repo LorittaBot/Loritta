@@ -394,6 +394,8 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
     inner class LorittaNerdStatsExecutor : LorittaSlashCommandExecutor() {
         override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+            
             val locale = context.locale
             val lorittaShards = context.loritta.lorittaShards
 
