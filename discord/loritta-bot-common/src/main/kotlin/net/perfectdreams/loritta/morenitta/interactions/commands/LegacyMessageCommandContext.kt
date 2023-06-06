@@ -62,6 +62,9 @@ class LegacyMessageCommandContext(
         builder: suspend InlineMessage<MessageCreateData>.() -> Unit
     ): InteractionMessage {
         val inlineBuilder = MessageCreate {
+            // Don't let ANY mention through, you can still override the mentions in the builder
+            mentions {}
+
             // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
             builder()
 

@@ -52,6 +52,9 @@ abstract class InteractionContext(
 
     override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
         val createdMessage = InlineMessage(MessageCreateBuilder()).apply {
+            // Don't let ANY mention through, you can still override the mentions in the builder
+            mentions {}
+            
             builder()
         }.build()
 
