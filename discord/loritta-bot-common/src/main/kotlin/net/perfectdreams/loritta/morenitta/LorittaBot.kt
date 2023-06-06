@@ -117,6 +117,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LanguageManager
@@ -820,6 +821,7 @@ class LorittaBot(
 				createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
 				createOrUpdatePostgreSQLEnum(EasterEggColor.values())
 				createOrUpdatePostgreSQLEnum(RaffleType.values())
+				createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
 
 				// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
 				SchemaUtils.createMissingTablesAndColumns(

@@ -24,11 +24,13 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
+import org.apache.commons.text.similarity.LevenshteinDistance
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -218,13 +220,15 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
     private val musicalChairsSessions = ConcurrentHashMap.newKeySet<Long>()
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+        enableLegacyMessageSupport = true
+
         defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)
         isGuildOnly = true
 
         executor = MusicalChairsExecutor()
     }
 
-    inner class MusicalChairsExecutor : LorittaSlashCommandExecutor() {
+    inner class MusicalChairsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val song = optionalString("song", I18N_PREFIX.Options.Song.Text) {
                 for (song in songs) {
@@ -235,10 +239,12 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
             val songId = args[options.song]
+
+            println("song id: $songId")
 
             val guild = context.guild
 
@@ -305,7 +311,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
         }
 
         private suspend fun startMusicalChairs(
-            context: InteractionContext,
+            context: UnleashedContext,
             i18nContext: I18nContext,
             guild: Guild,
             audioChannel: AudioChannel,
@@ -657,6 +663,24 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                     )
                 }
             }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            if (args.isEmpty())
+                return emptyMap()
+
+            val songNameInput = args.joinToString(" ")
+
+            val songResult = songs.sortedBy {
+                LevenshteinDistance.getDefaultInstance().apply(it.name, songNameInput)
+            }.first()
+
+            return mapOf(
+                options.song to songResult.name
+            )
         }
     }
 

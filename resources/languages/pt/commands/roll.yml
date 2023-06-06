@@ -1,6 +1,16 @@
 ---
 label: "rolar"
 description: "Rola um, ou múltiplos, dados e mostra o resultado, perfeito se você quiser jogar Monopoly mas você acabou perdendo todos os seus dados."
+examples:
+  - "|-| Gira um dado de 6 lados"
+  - "12 |-| Gira um dado de 12 lados"
+  - "24 |-| Gira um dado de 24 lados"
+  - "2d20 |-| Gira dois dados de 20 lados"
+  - "3d5 |-| Gira três dados de 5 lados"
+  - "4d10 |-| Gira quatro dados de 10 lados"
+  - "5..10 |-| Gira um dado com valores de 5 até 10"
+  - "10d100..999 |-| Gira 10 dados com valores de 100 até 999"
+  - "6 * 10 |-| Gira um dado de 6 lados e multiplica o valor final por 10"
 howManySides: "Quantos lados o dado que eu irei rolar tem"
 invalidBound: "Eu tentei rolar os dados, mas... ele desapareceu! Poof! Acho que ele desapareceu porque você criou um dado inválido... Me diga, como era para eu rolar aquilo?"
 result: "Você rolou um **{diceExpression}**... e conseguiu **{result,number,integer}**!"

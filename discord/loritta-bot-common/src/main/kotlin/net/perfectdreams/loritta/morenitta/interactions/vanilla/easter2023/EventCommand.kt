@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.easter2023event.LorittaEaster2023Event
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
@@ -37,8 +38,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import java.time.Instant
 import kotlin.math.ceil
 
@@ -64,7 +63,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     inner class JoinEventExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             if (!LorittaEaster2023Event.isEventActive()) {
@@ -138,7 +137,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     inner class StatsEventExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             val (joined, collectedPoints) = loritta.newSuspendedTransaction {
@@ -232,7 +231,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     inner class InventoryEventExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             val eggColorCount = Easter2023Drops.eggColor.count()
@@ -452,7 +451,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val page = (args[options.page]?.minus(1)) ?: 0
 
             context.deferChannelMessage(false)
@@ -462,7 +461,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
         }
 
-        private suspend fun createRankMessage(context: InteractionContext, page: Long): suspend InlineMessage<*>.() -> (Unit) = {
+        private suspend fun createRankMessage(context: UnleashedContext, page: Long): suspend InlineMessage<*>.() -> (Unit) = {
             styled(
                 context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
                 Emotes.LoriReading

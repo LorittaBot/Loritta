@@ -4,7 +4,6 @@ import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import dev.kord.common.entity.Snowflake
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.generics.getChannel
 import kotlinx.serialization.json.*
@@ -21,6 +20,7 @@ import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.common.utils.URLUtils
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 
@@ -86,7 +86,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
 
             val webhookUrl = args[options.webhookUrl]
@@ -239,7 +239,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
 
             val webhookUrl = args[options.webhookUrl]
@@ -401,7 +401,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
 
             val webhookUrl = args[options.webhookUrl]
@@ -427,7 +427,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true) // Defer the message ephemerally because we don't want users looking at the webhook URL
 
             val webhookUrl = args[options.webhookUrl]
@@ -442,7 +442,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     suspend fun sendMessageViaWebhook(
-        context: ApplicationCommandContext,
+        context: UnleashedContext,
         webhookUrl: String,
         threadId: Long?,
         requestBuilder: () -> (JsonObject)
@@ -458,7 +458,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         val webhookToken = matchResult.groupValues[2]
 
         // First we need to get the webhook's info
-        val webhook = context.event.jda.retrieveWebhookById(webhookId).await()
+        val webhook = context.jda.retrieveWebhookById(webhookId).await()
         val targetChannel = webhook.channel
         if (targetChannel is ForumChannel && threadId == null) {
             context.fail(true) {
@@ -545,7 +545,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     suspend fun editMessageViaWebhook(
-        context: ApplicationCommandContext,
+        context: UnleashedContext,
         webhookUrl: String,
         messageId: Long,
         threadId: Long?,
@@ -562,7 +562,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         val webhookToken = matchResult.groupValues[2]
 
         // First we need to get the webhook's info
-        val webhook = context.event.jda.retrieveWebhookById(webhookId).await()
+        val webhook = context.jda.retrieveWebhookById(webhookId).await()
         val targetChannel = webhook.channel
         if (targetChannel is ForumChannel && threadId == null) {
             context.fail(true) {
@@ -639,7 +639,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
     }
 
-    fun decodeRequestFromString(context: ApplicationCommandContext, input: String): JsonObject {
+    fun decodeRequestFromString(context: UnleashedContext, input: String): JsonObject {
         try {
             val parsedToJsonElement = Json.parseToJsonElement(input).jsonObject
 
@@ -675,7 +675,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
     }
 
-    private fun validateMessageLength(context: ApplicationCommandContext, optionalContent: String?) {
+    private fun validateMessageLength(context: UnleashedContext, optionalContent: String?) {
         optionalContent?.length?.let {
             if (it > DiscordResourceLimits.Message.Length)
                 context.fail(true) {
@@ -694,7 +694,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     /**
      * Validates if the [url] is a valid HTTP or HTTPS URL via [URLUtils.isValidHttpOrHttpsURL], if it isn't, the command will fail ephemerally with the [message]
      */
-    private fun validateURLAsHttpOrHttps(context: ApplicationCommandContext, url: String?, message: StringI18nData) {
+    private fun validateURLAsHttpOrHttps(context: UnleashedContext, url: String?, message: StringI18nData) {
         if (url != null && !URLUtils.isValidHttpOrHttpsURL(url))
             context.fail(true) {
                 styled(
@@ -704,7 +704,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
     }
 
-    private fun validateEmbedAndAppend(context: ApplicationCommandContext, embed: JsonObject, builder: WebhookMessageBuilder) {
+    private fun validateEmbedAndAppend(context: UnleashedContext, embed: JsonObject, builder: WebhookMessageBuilder) {
         // Embeds
         val embedBuilder = WebhookEmbedBuilder()
         var totalEmbedLength = 0
@@ -896,7 +896,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         builder.addEmbeds(embedBuilder.build())
     }
 
-    private suspend fun sendWebhookSuccessMessage(context: ApplicationCommandContext, messageId: Long?, message: StringI18nData) = context.reply(true) {
+    private suspend fun sendWebhookSuccessMessage(context: UnleashedContext, messageId: Long?, message: StringI18nData) = context.reply(true) {
         styled(
             "**${context.i18nContext.get(message)}**",
             Emotes.LoriYay
@@ -920,7 +920,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
      * * The input is parsed as Message URL and the Message ID is extracted from the message, if it fails...
      * * The command fails ephemerally
      */
-    private fun getRawMessageIdOrFromURLOrFail(context: ApplicationCommandContext, input: String): Long {
+    private fun getRawMessageIdOrFromURLOrFail(context: UnleashedContext, input: String): Long {
         return input.toLongOrNull() ?: messageUrlRegex.find(input)?.groupValues?.get(3)?.toLongOrNull() ?: context.fail(true) {
             styled(
                 context.i18nContext.get(I18N_PREFIX.InvalidMessageUrl),

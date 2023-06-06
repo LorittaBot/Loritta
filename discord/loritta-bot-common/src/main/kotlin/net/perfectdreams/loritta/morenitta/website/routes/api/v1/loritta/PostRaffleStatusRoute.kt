@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.LoraffleCommand
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +17,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleTicketsSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
@@ -50,7 +50,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 			// The raffle hasn't been created yet! The LorittaRaffleTask on the main instance should *hopefully* create the new raffle soon...
 			if (currentRaffle == null) {
 				return@transaction jsonObject(
-					"status" to LoraffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA.toString()
+					"status" to RaffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA.toString()
 				)
 			}
 
@@ -64,11 +64,11 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 			if (currentUserTicketQuantity + quantity > maxTicketsByUserPerRoundForThisRaffleType) {
 				return@transaction if (currentUserTicketQuantity == maxTicketsByUserPerRoundForThisRaffleType) {
 					jsonObject(
-						"status" to LoraffleCommand.BuyRaffleTicketStatus.THRESHOLD_EXCEEDED.toString()
+						"status" to RaffleCommand.BuyRaffleTicketStatus.THRESHOLD_EXCEEDED.toString()
 					)
 				} else {
 					jsonObject(
-						"status" to LoraffleCommand.BuyRaffleTicketStatus.TOO_MANY_TICKETS.toString(),
+						"status" to RaffleCommand.BuyRaffleTicketStatus.TOO_MANY_TICKETS.toString(),
 						"ticketCount" to currentUserTicketQuantity
 					)
 				}
@@ -111,11 +111,11 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 				logger.info { "$userId bought $quantity tickets for ${requiredCount}! (Before they had ${lorittaProfile.money + requiredCount}) sonhos!)" }
 
 				return@transaction jsonObject(
-					"status" to LoraffleCommand.BuyRaffleTicketStatus.SUCCESS.toString()
+					"status" to RaffleCommand.BuyRaffleTicketStatus.SUCCESS.toString()
 				)
 			} else {
 				return@transaction jsonObject(
-					"status" to LoraffleCommand.BuyRaffleTicketStatus.NOT_ENOUGH_MONEY.toString(),
+					"status" to RaffleCommand.BuyRaffleTicketStatus.NOT_ENOUGH_MONEY.toString(),
 					"canOnlyPay" to requiredCount - lorittaProfile.money
 				)
 			}

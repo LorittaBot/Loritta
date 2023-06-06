@@ -12,8 +12,9 @@ import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -22,8 +23,20 @@ import java.time.ZonedDateTime
 class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Daily
+    }
 
-        suspend fun executeCompat(context: CommandContextCompat) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+        enableLegacyMessageSupport = true
+        alternativeLegacyLabels.apply {
+            add("diário")
+            add("bolsafamília")
+        }
+
+        executor = DailyExecutor()
+    }
+
+    inner class DailyExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val guild = context.guildOrNull
 
             context.deferChannelMessage(true)
@@ -202,15 +215,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 )
             }
         }
-    }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
-        executor = DailyExecutor()
-    }
-
-    inner class DailyExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context))
-        }
+        override suspend fun convertToInteractionsArguments(context: LegacyMessageCommandContext, args: List<String>): Map<OptionReference<*>, Any?>? = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 }

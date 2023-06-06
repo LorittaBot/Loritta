@@ -17,10 +17,10 @@ class UserAvatarUserCommand : UserCommandDeclarationWrapper {
             val member = context.guildOrNull?.getMember(user)
             context.reply(true) {
                 apply(
-                    UserCommand.createAvatarMessage(
-                        CommandContextCompat.InteractionsCommandContextCompat(context),
+                    UserAvatarExecutor.createAvatarMessage(
+                        context,
                         UserAndMember(user, member),
-                        UserCommand.Companion.AvatarTarget.GLOBAL_AVATAR
+                        UserAvatarExecutor.AvatarTarget.GLOBAL_AVATAR
                     )
                 )
             }

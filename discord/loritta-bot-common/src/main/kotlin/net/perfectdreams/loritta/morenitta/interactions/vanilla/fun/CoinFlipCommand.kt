@@ -6,13 +6,30 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 
 class CoinFlipCommand : SlashCommandDeclarationWrapper  {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Coinflip
+    }
 
-        suspend fun executeCompat(context: CommandContextCompat) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+        enableLegacyMessageSupport = true
+
+        this.alternativeLegacyLabels.apply {
+            add("girarmoeda")
+            add("flipcoin")
+            add("caracoroa")
+        }
+
+        executor = CoinFlipExecutor()
+    }
+
+    inner class CoinFlipExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val isTails = context.loritta.random.nextBoolean()
             val prefix: String
             val message: StringI18nData
@@ -32,15 +49,10 @@ class CoinFlipCommand : SlashCommandDeclarationWrapper  {
                 )
             }
         }
-    }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
-        executor = CoinFlipExecutor()
-    }
-
-    inner class CoinFlipExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context))
-        }
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 }

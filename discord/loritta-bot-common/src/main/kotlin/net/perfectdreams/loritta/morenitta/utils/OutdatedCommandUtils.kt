@@ -42,11 +42,9 @@ object OutdatedCommandUtils {
     /**
      * This checks if the outdated command warning should be sent or not, based on the amount of days between now and the deadline date
      */
-    private fun shouldSendOutdatedCommandWarning(): Boolean {
-        val now = Instant.now()
-        val dayDiff = now.until(OUTDATED_COMMAND_WARNING_DEADLINE, ChronoUnit.DAYS)
-        return LorittaBot.RANDOM.nextLong(0, dayDiff.coerceAtLeast(1L)) == 0L
-    }
+    // For now, it should NEVER send a warning, because Discord is taking their sweeeeet time to fix the countless issues present in interactions
+    // So, for now, let the users use message commands without repercussions: They are in a better state than Discord's slash commands
+    private fun shouldSendOutdatedCommandWarning() = false
 
     private fun buildEmbed(locale: BaseLocale, slashCommandName: String) = EmbedBuilder()
         .setTitle("${locale["commands.outdatedCommand.title"]} <:lori_zap:956404868417990776>")

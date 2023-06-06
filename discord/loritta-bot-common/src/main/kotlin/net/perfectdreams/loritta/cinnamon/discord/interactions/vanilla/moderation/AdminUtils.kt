@@ -31,10 +31,9 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.utils.Placeholders
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 
 object AdminUtils {
-    private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
-
     suspend fun appendCheckResultReason(loritta: LorittaBot, i18nContext: I18nContext, punisherMember: Member, builder: MessageBuilder, check: InteractionCheck) {
         val (issuer, target, result) = check
 
@@ -308,7 +307,7 @@ object AdminUtils {
         val users = mutableListOf<UserQueryResult>()
 
         // First, we will get all the mentioned users in the usersAsString, as long as they are ResolvedObjects map
-        USER_MENTION_REGEX.findAll(usersAsString)
+        DiscordUtils.USER_MENTION_REGEX.findAll(usersAsString)
             .mapNotNull { it.groupValues[1].toLongOrNull() }
             .map { Snowflake(it) }
             .mapNotNull {
@@ -322,7 +321,7 @@ object AdminUtils {
             .toCollection(users)
 
         // Now, we will get all the user IDs in the input
-        usersAsString.replace(USER_MENTION_REGEX, " ")
+        usersAsString.replace(DiscordUtils.USER_MENTION_REGEX, " ")
             .split(" ")
             .asSequence()
             .filter { it.isNotBlank() }

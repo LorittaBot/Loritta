@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
-import dev.kord.common.Color
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -10,46 +9,14 @@ import net.perfectdreams.loritta.common.utils.math.MathUtils
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 
 class CalculatorCommand : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Calc
-
-        suspend fun executeCompat(context: CommandContextCompat, expression: String) {
-            val result = eval(expression)
-
-            if (result != null) {
-                context.reply(false) {
-                    styled(
-                        content = context.i18nContext.get(
-                            I18N_PREFIX.Result(
-                                result
-                            )
-                        ),
-                        prefix = Emotes.LoriReading
-                    )
-                }
-
-                if (expression.replace(" ", "") == "1+1")
-                    context.giveAchievementAndNotify(AchievementType.ONE_PLUS_ONE_CALCULATION)
-            } else {
-                // TODO: Fix stripCodeMarks
-                context.reply(true) {
-                    styled(
-                        content = context.i18nContext.get(
-                            I18N_PREFIX.Invalid(
-                                expression
-                            )
-                        ),
-                        prefix = Emotes.LoriHm
-                    )
-                }
-            }
-        }
-
 
         private fun eval(expression: String): Double? {
             try {
@@ -82,10 +49,21 @@ class CalculatorCommand : SlashCommandDeclarationWrapper {
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS) {
+        enableLegacyMessageSupport = true
+
+        examples = I18N_PREFIX.Examples
+
+        alternativeLegacyLabels.apply {
+            add("calculadora")
+            add("calculator")
+            add("calcular")
+            add("calculate")
+        }
+
         executor = CalculatorExecutor()
     }
 
-    inner class CalculatorExecutor : LorittaSlashCommandExecutor() {
+    inner class CalculatorExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val expression = string("expression", I18N_PREFIX.Options.Expression) {
                 autocomplete { context ->
@@ -114,9 +92,9 @@ class CalculatorCommand : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            val expr = args[options.expression]
-            if (expr == "empty") {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val expression = args[options.expression]
+            if (expression == "empty") {
                 context.reply(true) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.YouNeedToTypeAnArithmeticExpression),
@@ -126,7 +104,49 @@ class CalculatorCommand : SlashCommandDeclarationWrapper {
                 return
             }
 
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context), expr)
+            val result = eval(expression)
+
+            if (result != null) {
+                context.reply(false) {
+                    styled(
+                        content = context.i18nContext.get(
+                            I18N_PREFIX.Result(
+                                result
+                            )
+                        ),
+                        prefix = Emotes.LoriReading
+                    )
+                }
+
+                if (expression.replace(" ", "") == "1+1")
+                    context.giveAchievementAndNotify(AchievementType.ONE_PLUS_ONE_CALCULATION)
+            } else {
+                // TODO: Fix stripCodeMarks
+                context.reply(true) {
+                    styled(
+                        content = context.i18nContext.get(
+                            I18N_PREFIX.Invalid(
+                                expression
+                            )
+                        ),
+                        prefix = Emotes.LoriHm
+                    )
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            if (args.isEmpty()) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.expression to context.args.joinToString(" ")
+            )
         }
     }
 }

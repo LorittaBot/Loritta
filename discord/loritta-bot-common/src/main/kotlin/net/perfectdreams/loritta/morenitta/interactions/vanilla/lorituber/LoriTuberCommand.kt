@@ -12,6 +12,8 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedHook
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.CreateCharacterScreen
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.LoriTuberScreen
@@ -32,8 +34,10 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     }
 
     inner class LoriTuberExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            val hook = context.deferChannelMessage(false)
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            // TODO: Remove this cast if we end up supporting message commands for LoriTuber
+            val hook = (context.deferChannelMessage(false) as UnleashedHook.InteractionHook)
+                .jdaHook
 
             val character = sendLoriTuberRPCRequest<GetCharactersByOwnerResponse>(GetCharactersByOwnerRequest(context.user.idLong))
                 .characters

@@ -17,8 +17,8 @@ class UserInfoUserCommand : UserCommandDeclarationWrapper {
             val member = context.guildOrNull?.getMember(user)
             context.reply(true) {
                 apply(
-                    UserCommand.createUserInfoMessage(
-                        CommandContextCompat.InteractionsCommandContextCompat(context),
+                    UserInfoExecutor.createUserInfoMessage(
+                        context,
                         UserAndMember(user, member)
                     )
                 )

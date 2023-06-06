@@ -1,6 +1,10 @@
 ---
 label: "anagrama"
 description: "Crie um anagrama a partir de um texto! Perfeito se você quer ser misterioso com suas mensagens"
+examples:
+  - "Loritta |-| Cria um anagrama usando a palavra \"Loritta\""
+  - "kk eae men |-| Cria um anagrama usando a frase \"kk eae men\""
+  - "Asriel Dreemurr |-| Cria um anagrama usando a frase \"Asriel Dreemurr\""
 result: "**Seu anagrama é...** `{anagramResult}`"
 stats: "A palavra `{originalWord}` possui **{howMany} anagramas diferentes**!"
 options:

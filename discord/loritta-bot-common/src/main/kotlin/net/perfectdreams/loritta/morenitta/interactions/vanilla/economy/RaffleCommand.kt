@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
-import dev.minn.jda.ktx.messages.MessageEdit
-import dev.minn.jda.ktx.messages.editMessage
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -25,12 +23,11 @@ import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.LoraffleCommand
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -38,9 +35,54 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Raffle
+    }
 
-        // Compatibility for the old loraffle message command
-        suspend fun executeStatusCompat(context: CommandContextCompat, raffleType: RaffleType) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+        enableLegacyMessageSupport = true
+
+        subcommand(I18N_PREFIX.Status.Label, I18N_PREFIX.Status.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("loraffle")
+                add("rifa")
+                add("raffle")
+                add("lorifa")
+            }
+
+            executor = RaffleStatusExecutor()
+        }
+
+        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                listOf("buy", "comprar").forEach {
+                    add("loraffle $it")
+                    add("lorifa $it")
+                    // We don't need these as alternate names because InteraKTions Unleashed will automatically pick up these aliases
+                    // add("rifa $it")
+                    // add("raffle $it")
+                }
+            }
+
+            executor = RaffleBuyExecutor()
+        }
+    }
+
+    inner class RaffleStatusExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val raffleType = string(
+                "raffle_type",
+                I18N_PREFIX.Status.Options.RaffleType.Text
+            ) {
+                for (raffleType in RaffleType.values()) {
+                    choice(raffleType.title, raffleType.name)
+                }
+            }
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val raffleType = RaffleType.valueOf(args[options.raffleType])
+
             val loritta = context.loritta
 
             val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
@@ -225,8 +267,70 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
         }
 
-        // Compatibility for the old loraffle message command
-        suspend fun executeBuyCompat(context: CommandContextCompat, raffleType: RaffleType, quantity: Long) {
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // I think that this should NEVER be null... well, I hope so
+            val declarationPath = loritta.interactionsListener.manager.findDeclarationPath(context.commandDeclaration)
+
+            val fullLabel = buildString {
+                declarationPath.forEach {
+                    when (it) {
+                        is SlashCommandDeclaration -> append(context.i18nContext.get(it.name))
+                        is SlashCommandGroupDeclaration -> append(context.i18nContext.get(it.name))
+                    }
+                    this.append(" ")
+                }
+            }.trim()
+
+            val raffleTypeAsString = args.getOrNull(0)
+            val raffleType = raffleTypeAsString?.let {
+                RaffleType.values().firstOrNull { context.i18nContext.get(it.shortName).normalize() == raffleTypeAsString.normalize() }
+            }
+
+            if (raffleType == null) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Buy.YouNeedToSelectWhatRaffleTypeYouWant),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                    )
+
+                    for (availableRaffleType in RaffleType.values()) {
+                        styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName)}`")
+                    }
+                }
+                return null
+            }
+
+            return mapOf(
+                options.raffleType to raffleType.name, // We need to use the raffle type name, not the raffle type reference... Yes, it is kinda "ewww"
+            )
+        }
+    }
+
+    inner class RaffleBuyExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val raffleType = string(
+                "raffle_type",
+                I18N_PREFIX.Buy.Options.RaffleType.Text
+            ) {
+                for (raffleType in RaffleType.values()) {
+                    choice(raffleType.title, raffleType.name)
+                }
+            }
+
+            val quantity = long(
+                "quantity",
+                I18N_PREFIX.Buy.Options.Quantity.Text
+            )
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val raffleType = RaffleType.valueOf(args[options.raffleType])
+
             if (SonhosUtils.checkIfEconomyIsDisabled(context))
                 return
 
@@ -236,7 +340,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
 
-            val quantity = quantity.coerceAtLeast(1)
+            val quantity = args[options.quantity].coerceAtLeast(1)
 
             val dailyReward = AccountUtils.getUserTodayDailyReward(loritta, loritta.getOrCreateLorittaProfile(context.user.idLong))
 
@@ -282,9 +386,9 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val json = JsonParser.parseString(body)
 
-            val status = LoraffleCommand.BuyRaffleTicketStatus.valueOf(json["status"].string)
+            val status = BuyRaffleTicketStatus.valueOf(json["status"].string)
 
-            if (status == LoraffleCommand.BuyRaffleTicketStatus.THRESHOLD_EXCEEDED) {
+            if (status == BuyRaffleTicketStatus.THRESHOLD_EXCEEDED) {
                 context.reply(false) {
                     styled(
                         "Você já tem tickets demais! Guarde um pouco do seu dinheiro para a próxima rodada!",
@@ -294,7 +398,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (status == LoraffleCommand.BuyRaffleTicketStatus.TOO_MANY_TICKETS) {
+            if (status == BuyRaffleTicketStatus.TOO_MANY_TICKETS) {
                 context.reply(false) {
                     styled(
                         "Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${raffleType.maxTicketsByUserPerRound - json["ticketCount"].int} tickets!",
@@ -304,7 +408,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (status == LoraffleCommand.BuyRaffleTicketStatus.NOT_ENOUGH_MONEY) {
+            if (status == BuyRaffleTicketStatus.NOT_ENOUGH_MONEY) {
                 context.reply(false) {
                     styled(
                         context.locale["commands.command.raffle.notEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1L) "" else "s"],
@@ -325,7 +429,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            if (status == LoraffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA) {
+            if (status == BuyRaffleTicketStatus.STALE_RAFFLE_DATA) {
                 context.reply(false) {
                     styled(
                         "O resultado da rifa demorou tanto para sair que já começou uma nova rifa enquanto você comprava!",
@@ -348,65 +452,66 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
             return
         }
-    }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
-        subcommand(I18N_PREFIX.Status.Label, I18N_PREFIX.Status.Description) {
-            executor = RaffleStatusExecutor()
-        }
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // I think that this should NEVER be null... well, I hope so
+            val declarationPath = loritta.interactionsListener.manager.findDeclarationPath(context.commandDeclaration)
 
-        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
-            executor = RaffleBuyExecutor()
-        }
-    }
-
-    inner class RaffleStatusExecutor : LorittaSlashCommandExecutor() {
-        inner class Options : ApplicationCommandOptions() {
-            val raffleType = string(
-                "raffle_type",
-                I18N_PREFIX.Status.Options.RaffleType.Text
-            ) {
-                for (raffleType in RaffleType.values()) {
-                    choice(raffleType.title, raffleType.name)
+            val fullLabel = buildString {
+                declarationPath.forEach {
+                    when (it) {
+                        is SlashCommandDeclaration -> append(context.i18nContext.get(it.name))
+                        is SlashCommandGroupDeclaration -> append(context.i18nContext.get(it.name))
+                    }
+                    this.append(" ")
                 }
-            }
-        }
+            }.trim()
 
-        override val options = Options()
-
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            executeStatusCompat(
-                CommandContextCompat.InteractionsCommandContextCompat(context),
-                RaffleType.valueOf(args[options.raffleType])
-            )
-        }
-    }
-
-    inner class RaffleBuyExecutor : LorittaSlashCommandExecutor() {
-        inner class Options : ApplicationCommandOptions() {
-            val raffleType = string(
-                "raffle_type",
-                I18N_PREFIX.Buy.Options.RaffleType.Text
-            ) {
-                for (raffleType in RaffleType.values()) {
-                    choice(raffleType.title, raffleType.name)
-                }
+            val raffleTypeAsString = args.getOrNull(0)
+            val raffleType = raffleTypeAsString?.let {
+                RaffleType.values().firstOrNull { context.i18nContext.get(it.shortName).normalize() == raffleTypeAsString.normalize() }
             }
 
-            val quantity = long(
-                "quantity",
-                I18N_PREFIX.Buy.Options.Quantity.Text
+            if (raffleType == null) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Status.YouNeedToSelectWhatRaffleTypeYouWant),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                    )
+
+                    for (availableRaffleType in RaffleType.values()) {
+                        styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName)}`")
+                    }
+                }
+                return null
+            }
+
+            val quantityAsString = args.getOrNull(1)
+            if (quantityAsString == null) {
+                context.explain()
+                return null
+            }
+            val quantity = NumberUtils.convertShortenedNumberToLong(quantityAsString)
+            if (quantity == null) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.raffleType to raffleType.name, // We need to use the raffle type name, not the raffle type reference... Yes, it is kinda "ewww"
+                options.quantity to quantity
             )
         }
+    }
 
-        override val options = Options()
-
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            executeBuyCompat(
-                CommandContextCompat.InteractionsCommandContextCompat(context),
-                RaffleType.valueOf(args[options.raffleType]),
-                args[options.quantity]
-            )
-        }
+    enum class BuyRaffleTicketStatus {
+        SUCCESS,
+        THRESHOLD_EXCEEDED,
+        TOO_MANY_TICKETS,
+        NOT_ENOUGH_MONEY,
+        STALE_RAFFLE_DATA
     }
 }

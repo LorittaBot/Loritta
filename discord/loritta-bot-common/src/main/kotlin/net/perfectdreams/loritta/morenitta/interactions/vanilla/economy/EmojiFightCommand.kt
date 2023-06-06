@@ -11,10 +11,13 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.EmojiFight
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 
 class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -23,9 +26,22 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+        enableLegacyMessageSupport = true
         isGuildOnly = true
 
+        alternativeLegacyLabels.apply {
+            add("emotefight")
+        }
+
         subcommand(I18N_PREFIX.Start.Label, I18N_PREFIX.Start.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("emojifight")
+                add("rinhadeemoji")
+                add("emotefight")
+            }
+
+            alternativeLegacyLabels.add("bet")
+
             executor = EmojiFightStartExecutor()
         }
 
@@ -34,7 +50,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         }
     }
 
-    inner class EmojiFightStartExecutor : LorittaSlashCommandExecutor() {
+    inner class EmojiFightStartExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val sonhos = optionalString(
                 "sonhos",
@@ -50,7 +66,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val selfUserProfile = context.lorittaUser.profile
 
             // Gets the first argument
@@ -139,16 +155,29 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             emojiFight.start()
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            val sonhosQuantity = args.getOrNull(0)
+            val participants = args.getOrNull(1)?.toLongOrNull()
+
+            return mapOf(
+                options.sonhos to sonhosQuantity,
+                options.maxPlayers to participants
+            )
+        }
     }
 
-    inner class EmojiFightChangeEmojiExecutor : LorittaSlashCommandExecutor() {
+    inner class EmojiFightChangeEmojiExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val emoji = optionalString("emoji", I18N_PREFIX.Emoji.Options.Emoji.Text)
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val canUseCustomEmojis = loritta.newSuspendedTransaction {
                 UserPremiumPlans.getPlanFromValue(loritta._getActiveMoneyFromDonations(context.user.idLong)).customEmojisInEmojiFight
             }
@@ -211,6 +240,18 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     styled("Lembre-se que eu preciso estar no servidor onde o emoji está para eu conseguir usar o emoji!")
                     styled("Observação: Você será banido de usar a Loritta caso você coloque emojis sugestivos ou NSFW. Tenha bom senso e não atrapalhe os servidores dos outros com bobagens!")
                 }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            if (args.isEmpty())
+                return mapOf()
+
+            return mapOf(
+                options.emoji to args.joinToString(" ")
+            )
         }
     }
 }

@@ -14,6 +14,8 @@ status:
   lastWinnerTaxed: "Último ganhador: **`{user}` ({lastPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {lastPrizeAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}))**"
   resultsIn: "Resultado irá sair em **{result}**!"
 
+  youNeedToSelectWhatRaffleTypeYouWant: "Você precisa escolher qual rifa você deseja ver as informações sobre!"
+
   notifyMe:
     label: "Me notificar quando a rifa acabar"
     notifyAdded: "Você será notificado via mensagem direta quando a rifa atual acabar, até mesmo se você perder ela!"
@@ -36,6 +38,8 @@ buy:
   youBoughtAnTicket: "Você comprou {ticketCount,plural, =0 {# tickets} one {# ticket} other {# tickets}} por **{totalPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** na **{raffleType}**! Agora é só sentar, relaxar, e acompanhar o status da rifa usando {raffleStatusMention}!"
   wantMoreChances: "Querendo mais chances de ganhar? Que tal comprar outro ticket? {raffleBuyMention}"
 
+  youNeedToSelectWhatRaffleTypeYouWant: "Você precisa escolher qual rifa você deseja comprar tickets!"
+
   options:
     raffleType:
       text: "A rifa que você deseja comprar tickets"
@@ -43,8 +47,11 @@ buy:
       text: "A quantidade de tickets que você irá comprar"
 raffleTypes:
   original: "Rifa Original"
+  originalShortName: "original"
   lightning: "Rifa Relâmpago"
+  lightningShortName: "relâmpago"
   daily: "Rifa Diária"
+  dailyShortName: "diária"
 
 directMessages:
   youLost:

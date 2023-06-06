@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.CaraCoroaCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
@@ -246,10 +245,10 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
 										if (isTails) {
 											prefix = "<:coroa:412586257114464259>"
-											message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.tails"]
+											message = locale["commands.command.flipcoin.tails"]
 										} else {
 											prefix = "<:cara:412586256409559041>"
-											message = locale["${CaraCoroaCommand.LOCALE_PREFIX}.heads"]
+											message = locale["commands.command.flipcoin.heads"]
 										}
 
 										val winner: User

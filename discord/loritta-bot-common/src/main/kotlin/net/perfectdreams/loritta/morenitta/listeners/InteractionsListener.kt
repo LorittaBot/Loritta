@@ -39,6 +39,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.StringD
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
@@ -182,7 +183,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
 
-                val args = SlashCommandArguments(event)
+                val args = SlashCommandArguments(SlashCommandArgumentsSource.SlashCommandArgumentsEventSource(event))
                 context = ApplicationCommandContext(
                     loritta,
                     serverConfig,
@@ -191,6 +192,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
+
+                // Check if user is banned
+                if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+                    return@launchMessageJob
 
                 executor.execute(
                     context,

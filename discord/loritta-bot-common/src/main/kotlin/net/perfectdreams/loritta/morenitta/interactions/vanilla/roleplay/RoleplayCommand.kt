@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
@@ -23,9 +24,8 @@ class RoleplayCommand {
         // This compat is used for:
         // - The slash command
         // - The user command
-        // - The legacy command
         suspend fun executeCompat(
-            context: CommandContextCompat,
+            context: UnleashedContext,
             attributes: RoleplayActionAttributes,
             receiver: User
         ) {
@@ -85,32 +85,75 @@ class RoleplayCommand {
 
     class RoleplaySlashCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ROLEPLAY) {
+            enableLegacyMessageSupport = true
+
             subcommand(I18N_PREFIX.Hug.Label, I18N_PREFIX.Hug.Description) {
                 executor = RoleplayHugExecutor()
+
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("hug")
+                    add("abraço")
+                    add("abraçar")
+                }
             }
 
             subcommand(I18N_PREFIX.Kiss.Label, I18N_PREFIX.Kiss.Description) {
                 executor = RoleplayKissExecutor()
+
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("kiss")
+                    add("beijo")
+                    add("beijar")
+                }
             }
 
             subcommand(I18N_PREFIX.Slap.Label, I18N_PREFIX.Slap.Description) {
                 executor = RoleplaySlapExecutor()
+
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("slap")
+                    add("tapa")
+                    add("tapinha")
+                }
             }
 
             subcommand(I18N_PREFIX.Headpat.Label, I18N_PREFIX.Headpat.Description) {
                 executor = RoleplayHeadPatExecutor()
+
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("headpat")
+                    add("headpet")
+                    add("cafuné")
+                    add("pat")
+                }
             }
 
             subcommand(I18N_PREFIX.Highfive.Label, I18N_PREFIX.Highfive.Description) {
                 executor = RoleplayHighFiveExecutor()
+
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("highfive")
+                    add("hifive")
+                    add("tocaaqui")
+                }
             }
 
             subcommand(I18N_PREFIX.Attack.Label, I18N_PREFIX.Attack.Description) {
                 executor = RoleplayAttackExecutor()
+
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("attack")
+                    add("atacar")
+                }
             }
 
             subcommand(I18N_PREFIX.Dance.Label, I18N_PREFIX.Dance.Description) {
                 executor = RoleplayDanceExecutor()
+
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("dance")
+                    add("dancar")
+                }
             }
         }
 
@@ -166,7 +209,7 @@ class RoleplayCommand {
                                     loriEmoji = it.embedEmoji
                                 }
                             ) { context ->
-                                executeCompat(CommandContextCompat.ComponentContextCompat(context), it, user)
+                                executeCompat(context, it, user)
                             }
                         }
 

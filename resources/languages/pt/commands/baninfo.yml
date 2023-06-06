@@ -1,6 +1,7 @@
 label: "baninfo"
 description: "Mostra as informações do banimento de um meliante"
-
+examples:
+  - "213466096718708737 |-| Mostra as informações do banimento de um meliante pelo ID"
 unbanUser: "Desbanir Usuário"
 ifYouWantToUnbanThisUser: "Se você deseja desbanir este usuário, aperte no {emoji}!"
 

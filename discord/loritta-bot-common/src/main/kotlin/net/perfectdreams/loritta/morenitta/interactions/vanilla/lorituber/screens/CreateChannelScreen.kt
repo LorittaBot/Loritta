@@ -39,12 +39,12 @@ class CreateChannelScreen(command: LoriTuberCommand, user: User, hook: Interacti
                         ViewChannelScreen(
                             command,
                             user,
-                            it.deferEdit(),
+                            it.deferEdit().jdaHook,
                             character,
                             channelResponse.id
                         )
                     )
-                    is CreateChannelResponse.CharacterAlreadyHasTooManyChannels -> it.deferEdit().editOriginal(
+                    is CreateChannelResponse.CharacterAlreadyHasTooManyChannels -> it.deferEdit().jdaHook.editOriginal(
                         MessageEdit {
                             content = "Você já tem muitos canais no LoriTube!"
                         }

@@ -10,6 +10,8 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedHook
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedMentions
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 
@@ -22,7 +24,7 @@ class ModalContext(
     lorittaUser: LorittaUser,
     locale: BaseLocale,
     i18nContext: I18nContext,
-    override val event: ModalInteraction
-) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext) {
-    suspend fun deferEdit(): InteractionHook = event.deferEdit().await()
+    val event: ModalInteraction
+) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList()), event) {
+    suspend fun deferEdit() = UnleashedHook.InteractionHook(event.deferEdit().await())
 }

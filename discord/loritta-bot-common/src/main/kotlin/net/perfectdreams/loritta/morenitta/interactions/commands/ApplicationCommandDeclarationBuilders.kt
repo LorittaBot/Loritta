@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
-import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
+import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.commands.CommandCategory
 
@@ -18,9 +18,13 @@ class SlashCommandDeclarationBuilder(
     val description: StringI18nData,
     val category: CommandCategory
 ) {
+    var examples: ListI18nData? = null
     var executor: LorittaSlashCommandExecutor? = null
     var defaultMemberPermissions: DefaultMemberPermissions? = null
     var isGuildOnly = false
+    var enableLegacyMessageSupport = false
+    var alternativeLegacyLabels = mutableListOf<String>()
+    var alternativeLegacyAbsoluteCommandPaths = mutableListOf<String>()
     val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<SlashCommandGroupDeclarationBuilder>()
 
@@ -49,8 +53,12 @@ class SlashCommandDeclarationBuilder(
             name,
             description,
             category,
+            examples,
             defaultMemberPermissions,
             isGuildOnly,
+            enableLegacyMessageSupport,
+            alternativeLegacyLabels,
+            alternativeLegacyAbsoluteCommandPaths,
             executor,
             subcommands.map { it.build() },
             subcommandGroups.map { it.build() }
@@ -66,6 +74,7 @@ class SlashCommandGroupDeclarationBuilder(
 ) {
     // Groups can't have executors!
     val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
+    var alternativeLegacyLabels = mutableListOf<String>()
 
     fun subcommand(name: StringI18nData, description: StringI18nData, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += SlashCommandDeclarationBuilder(
@@ -80,6 +89,7 @@ class SlashCommandGroupDeclarationBuilder(
             name,
             description,
             category,
+            alternativeLegacyLabels,
             subcommands.map { it.build() }
         )
     }

@@ -1,5 +1,9 @@
 ---
 label: "ship"
+examples:
+  - "297153970613387264 265640832093257729 |-| Faz um ship com duas pessoas pelo ID delas"
+  - "@Loritta |-| Você pode até tentar shipar comigo, mas eu não quero namorar e nem casar com você, gosto de você apenas como amigx!"
+  - "Cremosa |-| Em vez de tentar conquistar a cremosa, se iluda pensando que você irá namorar com ela vendo o seu ship com ela!"
 description: "O amor está no ar! Verifique se o seu casal dos sonhos irá funcionar... ou não!"
 newCouple: "Hmmm, será que temos um novo casal aqui?"
 scoreImpossible:

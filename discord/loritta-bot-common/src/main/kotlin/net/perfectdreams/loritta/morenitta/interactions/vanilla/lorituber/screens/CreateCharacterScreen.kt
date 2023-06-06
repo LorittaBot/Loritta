@@ -39,7 +39,7 @@ class CreateCharacterScreen(command: LoriTuberCommand, user: User, hook: Interac
                         ViewMotivesScreen(
                             command,
                             user,
-                            it.deferEdit(),
+                            it.deferEdit().jdaHook,
                             LoriTuberCommand.PlayerCharacter(
                                 characterResponse.id,
                                 characterResponse.name,
@@ -48,7 +48,7 @@ class CreateCharacterScreen(command: LoriTuberCommand, user: User, hook: Interac
                             )
                         )
                     )
-                    is CreateCharacterResponse.UserAlreadyHasTooManyCharacters -> it.deferEdit().editOriginal(
+                    is CreateCharacterResponse.UserAlreadyHasTooManyCharacters -> it.deferEdit().jdaHook.editOriginal(
                         MessageEdit {
                             content = "Você já tem muitos personagens vivendo na DreamLand!"
                         }

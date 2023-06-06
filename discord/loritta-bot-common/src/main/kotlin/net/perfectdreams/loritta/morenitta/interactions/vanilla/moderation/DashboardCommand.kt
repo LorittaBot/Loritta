@@ -7,17 +7,29 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 
 class DashboardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
+    companion object {
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Dashboard
+    }
+
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION) {
+        enableLegacyMessageSupport = true
+
+        this.alternativeLegacyLabels.apply {
+            add("painel")
+            add("configurar")
+            add("config")
+        }
+
         executor = DashboardExecutor()
     }
 
-    companion object {
-        private val I18N_PREFIX = I18nKeysData.Commands.Command.Dashboard
-
-        suspend fun executeCompat(context: CommandContextCompat) {
+    inner class DashboardExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val guild = context.guildOrNull
             val dashboardUrl = "${context.loritta.config.loritta.website.url}dashboard"
             var url = dashboardUrl
@@ -32,11 +44,10 @@ class DashboardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                 )
             }
         }
-    }
 
-    inner class DashboardExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context))
-        }
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> = emptyMap()
     }
 }

@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 
 object AchievementUtils {
@@ -91,7 +92,7 @@ object AchievementUtils {
      */
     suspend fun giveAchievementToUserAndNotifyThem(
         loritta: LorittaBot,
-        context: InteractionContext,
+        context: UnleashedContext,
         i18nContext: I18nContext,
         userId: UserSnowflake,
         type: AchievementType,

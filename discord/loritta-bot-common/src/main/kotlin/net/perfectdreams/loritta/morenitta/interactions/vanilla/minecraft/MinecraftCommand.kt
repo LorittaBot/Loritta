@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.URLUtils
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
@@ -65,7 +66,7 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     }
 
     inner class SparklyPowerExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.reply(true) {
                 styled(
                     context.i18nContext.get(I18N_PREFIX.Sparklypower.Response1),
@@ -85,7 +86,7 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val player = args[options.username]
 
             if (!player.matches(VALID_NAME_REGEX))
@@ -123,7 +124,7 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val player = args[options.username]
 
             val uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:$player").toByteArray(Charsets.UTF_8))
@@ -175,7 +176,7 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val playerNameOrUrl = args[options.skin]
             val sweatshirtStyleName = args[options.sweatshirtStyle]
 
@@ -261,7 +262,7 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val player = args[options.username]
             if (!player.matches(VALID_NAME_REGEX))
                 context.fail(true) {
@@ -309,7 +310,7 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val player = args[options.username]
             if (!player.matches(VALID_NAME_REGEX))
                 context.fail(true) {

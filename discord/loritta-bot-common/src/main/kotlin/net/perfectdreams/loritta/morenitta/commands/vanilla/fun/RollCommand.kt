@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.commands.vanilla.utils.CalculadoraCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.remove
 import net.perfectdreams.loritta.common.commands.ArgumentType
@@ -78,7 +77,7 @@ class RollCommand(loritta: LorittaBot) : AbstractCommand(loritta, "roll", listOf
 					} catch (ex: RuntimeException) {
 						context.reply(
                                 LorittaReply(
-                                        context.locale["${CalculadoraCommand.LOCALE_PREFIX}.invalid", expression] + " ${Emotes.LORI_CRYING}",
+                                        context.locale["commands.command.calc.invalid", expression] + " ${Emotes.LORI_CRYING}",
                                         Emotes.LORI_HM
                                 )
 						)

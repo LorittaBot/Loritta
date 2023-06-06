@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -36,7 +37,7 @@ class RepCommand : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val user = args[options.user].user
 
             if (context.user.id == user.id) {
@@ -84,7 +85,7 @@ class RepCommand : SlashCommandDeclarationWrapper {
             var url = "${context.loritta.config.loritta.website.url}user/${user.id}/rep"
 
             if (context.guildId != null)
-                url += "?guild=${context.guildId}&channel=${context.event.channel?.id}"
+                url += "?guild=${context.guildId}&channel=${context.channel.idLong}"
 
             context.reply(true) {
                 this.styled(
@@ -140,7 +141,7 @@ class RepCommand : SlashCommandDeclarationWrapper {
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val reputation = context.loritta.pudding.reputations.getReputation(args[options.rep].toLong())
 
             if (reputation == null || reputation.receivedById != context.user.id.toLong()) {

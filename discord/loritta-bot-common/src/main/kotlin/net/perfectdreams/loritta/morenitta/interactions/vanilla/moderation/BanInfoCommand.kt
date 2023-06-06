@@ -1,10 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation
 
-import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
@@ -17,45 +15,45 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.AdminUtils
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.UnbanCommand
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 
 class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
+    companion object {
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Baninfo
+    }
+
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION) {
+        enableLegacyMessageSupport = true
+        isGuildOnly = true
+
         defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)
+
+        examples = I18N_PREFIX.Examples
 
         executor = BanInfoExecutor()
     }
 
-    companion object {
-        private val I18N_PREFIX = I18nKeysData.Commands.Command.Baninfo
+    inner class BanInfoExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val user = user("user", I18N_PREFIX.Options.User.Text)
+        }
 
-        suspend fun executeCompat(context: CommandContextCompat, userId: String) {
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val bannedUser = args[options.user]
             val locale = context.locale
             val i18nContext = context.i18nContext
             val guild = context.guild
-            val user = context.user
             val loritta = context.loritta
 
-            val retrievedUser = loritta.lorittaShards.retrieveUserById(userId)
-
-            if (retrievedUser == null) {
-                context.reply(true) {
-                    styled(
-                        locale["commands.userDoesNotExist", userId.stripCodeMarks()],
-                        Emotes.LORI_CRYING.asMention
-                    )
-                }
-                return
-            }
-
             try {
-                val banInformation = userId.let { context.guild.retrieveBan(UserSnowflake.fromId(it.toLong())).await() }
+                val banInformation = context.guild.retrieveBan(bannedUser.user).await()
                 val banReason = banInformation.reason ?: locale["commands.command.baninfo.noReasonSpecified"]
                 val embed = EmbedBuilder()
                     .setTitle("${Emotes.LORI_COFFEE} ${locale["commands.command.baninfo.title"]}")
@@ -68,7 +66,7 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 context.reply(false) {
                     embeds += embed.build()
 
-                    actionRow(loritta.interactivityManager.buttonForUser(user, ButtonStyle.DANGER, i18nContext.get(I18N_PREFIX.UnbanUser), { emoji = Emoji.fromUnicode("⚒️") }) {
+                    actionRow(loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.DANGER, i18nContext.get(I18N_PREFIX.UnbanUser), { emoji = Emoji.fromUnicode("⚒️") }) {
                         val deferredChannelMessage = it.deferChannelMessage(true)
 
                         val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
@@ -77,9 +75,9 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             loritta,
                             settings,
                             guild,
-                            user,
+                            context.user,
                             locale,
-                            retrievedUser,
+                            bannedUser.user,
                             "",
                             false
                         )
@@ -91,7 +89,7 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     Emotes.LORI_BAN_HAMMER.asMention
                                 )
                             }
-                        ).await()
+                        )
                     })
                 }
             } catch (e: ErrorResponseException) {
@@ -107,19 +105,18 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 throw e
             }
         }
-    }
 
-    inner class BanInfoExecutor : LorittaSlashCommandExecutor() {
-        inner class Options : ApplicationCommandOptions() {
-            val user = user("user", I18N_PREFIX.Options.User.Text)
-        }
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val userAndMember = context.getUserAndMember(0)
+            if (userAndMember == null) {
+                context.explain()
+                return null
+            }
 
-        override val options = Options()
-
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            val user = args[options.user]
-
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context), user.user.id)
+            return mapOf(options.user to userAndMember)
         }
     }
 }

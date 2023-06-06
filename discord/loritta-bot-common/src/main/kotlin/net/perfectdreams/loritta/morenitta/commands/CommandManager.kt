@@ -54,9 +54,7 @@ class CommandManager(val loritta: LorittaBot) {
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
 
 	init {
-		commandMap.add(RollCommand(loritta))
 		commandMap.add(FaustaoCommand(loritta))
-		commandMap.add(CaraCoroaCommand(loritta))
 		commandMap.add(PedraPapelTesouraCommand(loritta))
 		commandMap.add(VaporondaCommand(loritta))
 		commandMap.add(QualidadeCommand(loritta))
@@ -69,7 +67,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(SpinnerCommand(loritta))
 		commandMap.add(LavaCommand(loritta))
 		commandMap.add(LavaReversoCommand(loritta))
-		commandMap.add(ShipCommand(loritta))
 		commandMap.add(AvaliarWaifuCommand(loritta))
 		commandMap.add(RazoesCommand(loritta))
 		commandMap.add(DeusCommand(loritta))
@@ -107,17 +104,13 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(VemDeZapCommand(loritta))
 
 		// =======[ MISC ]======
-		commandMap.add(AjudaCommand(loritta))
-		commandMap.add(PingCommand(loritta))
 		commandMap.add(SayCommand(loritta))
 		commandMap.add(EscolherCommand(loritta))
 		commandMap.add(LanguageCommand(loritta))
 		commandMap.add(PatreonCommand(loritta))
 
 		// =======[ SOCIAL ]======
-		commandMap.add(PerfilCommand(loritta))
 		commandMap.add(BackgroundCommand(loritta))
-		commandMap.add(SobreMimCommand(loritta))
 		commandMap.add(RepCommand(loritta))
 		commandMap.add(RankCommand(loritta))
 		commandMap.add(EditarXPCommand(loritta))
@@ -135,21 +128,16 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(DicioCommand(loritta))
 		commandMap.add(TempoCommand(loritta))
 		commandMap.add(PackageInfoCommand(loritta))
-		commandMap.add(AnagramaCommand(loritta))
-		commandMap.add(CalculadoraCommand(loritta))
 		commandMap.add(MorseCommand(loritta))
 		commandMap.add(OCRCommand(loritta))
 		commandMap.add(EncodeCommand(loritta))
 		commandMap.add(LyricsCommand(loritta))
 
 		// =======[ DISCORD ]=======
-		commandMap.add(BotInfoCommand(loritta))
-		commandMap.add(AvatarCommand(loritta))
 		commandMap.add(ServerIconCommand(loritta))
 		commandMap.add(EmojiCommand(loritta))
 		commandMap.add(ServerInfoCommand(loritta))
 		commandMap.add(InviteCommand(loritta))
-		commandMap.add(UserInfoCommand(loritta))
 		commandMap.add(InviteInfoCommand(loritta))
 		commandMap.add(AddEmojiCommand(loritta))
 		commandMap.add(RemoveEmojiCommand(loritta))
@@ -202,8 +190,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// 	commandMap.add(AntiRaidCommand(loritta))
 
 		// =======[ ECONOMIA ]========
-		commandMap.add(LoraffleCommand(loritta))
-		commandMap.add(DailyCommand(loritta))
 		commandMap.add(PagarCommand(loritta))
 		commandMap.add(SonhosCommand(loritta))
 		commandMap.add(LigarCommand(loritta))

@@ -5,13 +5,23 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 
 class HelpCommand : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Help
+    }
 
-        suspend fun executeCompat(context: CommandContextCompat) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS) {
+        enableLegacyMessageSupport = true
+
+        executor = HelpExecutor()
+    }
+
+    inner class HelpExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.reply(false) {
                 embed {
                     title = "${Emotes.LoriHeart} ${context.i18nContext.get(I18N_PREFIX.LorittaHelp)}"
@@ -48,15 +58,10 @@ class HelpCommand : SlashCommandDeclarationWrapper {
                 }
             }
         }
-    }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS) {
-        executor = HelpExecutor()
-    }
-
-    inner class HelpExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context))
-        }
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 }

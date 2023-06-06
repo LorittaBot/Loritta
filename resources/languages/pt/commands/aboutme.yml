@@ -1,5 +1,8 @@
 label: "sobremim"
 description: "Altere a seção de \"Sobre Mim\" do seu perfil para que fique do jeitinho que você gosta"
+examples:
+  - "Eu gosto da Loritta! |-| Altera o seu \"Sobre Mim\" para idolatrar a pessoa mais incrível que existe no universo"
+  - "Olá, eu sou uma pessoa muito legal que gosta de gatinhos fofos |-| Altera o seu \"Sobre Mim\" para algo que não infla o meu ego"
 successfullyChanged: "Sua mensagem do seu perfil foi alterada para `{aboutMe}`!"
 options:
   aboutme:

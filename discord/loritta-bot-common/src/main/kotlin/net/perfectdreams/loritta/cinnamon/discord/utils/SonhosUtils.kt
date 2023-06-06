@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import org.jetbrains.exposed.sql.select
@@ -167,6 +168,19 @@ object SonhosUtils {
     suspend fun checkIfEconomyIsDisabled(context: CommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.LegacyMessageCommandContextCompat(context))
     suspend fun checkIfEconomyIsDisabled(context: DiscordCommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.LegacyDiscordCommandContextCompat(context))
     suspend fun checkIfEconomyIsDisabled(context: ApplicationCommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.InteractionsCommandContextCompat(context))
+
+    suspend fun checkIfEconomyIsDisabled(context: UnleashedContext): Boolean {
+        if (isEconomyDisabled(context.loritta)) {
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.EconomyIsDisabled),
+                    Emotes.LoriSob
+                )
+            }
+            return true
+        }
+        return false
+    }
 
     suspend fun checkIfEconomyIsDisabled(context: CommandContextCompat): Boolean {
         if (isEconomyDisabled(context.loritta)) {

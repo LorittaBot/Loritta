@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import java.net.URLEncoder
 import java.text.MessageFormat
+import java.text.Normalizer
 
 fun String.stripNewLines(): String {
 	return this.replace(Regex("[\\r\\n]"), "")
@@ -41,4 +42,10 @@ fun String.substringIfNeeded(range: IntRange = 0 until 2000, suffix: String = ".
 
 fun String.escapeMentions(): String {
 	return this.replace(Regex("\\\\+@"), "@").replace("@", "@\u200B")
+}
+
+fun String.normalize(): String {
+	val normalizedString = Normalizer.normalize(this, Normalizer.Form.NFD)
+	val regex = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+	return regex.replace(normalizedString, "")
 }

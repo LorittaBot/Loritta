@@ -15,6 +15,7 @@ class GetCommandsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/com
 
 		val locale = loritta.localeManager.getLocaleById(localeId)
 
+		// TODO: Enable Unleashed commands support, this is hard because we don't use BaseLocale for it
 		val commands = loritta.legacyCommandManager.commandMap.map {
 			CommandInfo(
 					it::class.java.simpleName,

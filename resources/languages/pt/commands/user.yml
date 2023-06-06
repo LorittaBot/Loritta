@@ -4,6 +4,10 @@ description: "Comandos relacionados a usuários do Discord"
 avatar:
   label: "avatar"
   description: "Mostra o avatar do seu perfil ou o avatar do perfil de outro usuário"
+  examples:
+    - "|-| Mostra o seu próprio avatar"
+    - "@Loritta |-| Mostra o avatar da pessoa mais linda que existe neste mundo!"
+    - "123170274651668480 |-| Mostra o avatar de um usuário pelo ID"
   yourselfEasterEgg: "Apesar de tudo, ainda é você."
   lorittaEasterEgg: "Sim, eu sei que sou muito fofa!"
   pantufaEasterEgg: "Sim, a Pantufa também é muito fofa! Só olhe para ela, tããão fofinha!"

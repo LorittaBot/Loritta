@@ -7,8 +7,10 @@ import net.perfectdreams.loritta.common.utils.math.Dice
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.CalculatorCommand
 
 class RollCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -17,17 +19,26 @@ class RollCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+        enableLegacyMessageSupport = true
+
+        alternativeLegacyLabels.apply {
+            add("dice")
+            add("dado")
+        }
+
+        this.examples = I18N_PREFIX.Examples
+
         executor = RollExecutor()
     }
 
-    inner class RollExecutor : LorittaSlashCommandExecutor() {
+    inner class RollExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val dices = optionalString("dices", I18N_PREFIX.Options.Dices)
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val dicesAndMathExpressionAsString = args[options.dices]
             val dicesAsString: String?
             val mathExpressionAsString: String?
@@ -151,6 +162,20 @@ class RollCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 if (response.isNotEmpty())
                     styled(content = response, prefix = "\uD83E\uDD13")
             }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            if (context.args.isEmpty()) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.dices to context.args.joinToString(" ")
+            )
         }
     }
 }

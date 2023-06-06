@@ -26,7 +26,9 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
@@ -43,8 +45,46 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
         private val CLUSTERS_I18N_PREFIX = I18N_PREFIX.Clusters
         private val INFO_I18N_PREFIX = I18N_PREFIX.Info
         private val NERD_I18N_PREFIX = I18N_PREFIX.Nerd
+    }
 
-        suspend fun executeCompat(context: CommandContextCompat) {
+    override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD) {
+        enableLegacyMessageSupport = true
+
+        subcommand(INFO_I18N_PREFIX.Label, INFO_I18N_PREFIX.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("botinfo")
+            }
+
+            executor = LorittaInfoExecutor()
+        }
+
+        subcommand(PING_I18N_PREFIX.Label, PING_I18N_PREFIX.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("ping")
+            }
+
+            executor = LorittaPingExecutor()
+        }
+
+        subcommand(CLUSTERS_I18N_PREFIX.Label, CLUSTERS_I18N_PREFIX.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("ping clusters")
+            }
+
+            executor = LorittaClustersExecutor()
+        }
+
+        subcommand(NERD_I18N_PREFIX.Label, NERD_I18N_PREFIX.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("botinfo extended")
+            }
+
+            executor = LorittaNerdStatsExecutor()
+        }
+    }
+
+    inner class LorittaInfoExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
             val since = Instant.now()
@@ -188,44 +228,25 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 )
             }
         }
-    }
 
-    override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD) {
-        subcommand(INFO_I18N_PREFIX.Label, INFO_I18N_PREFIX.Description) {
-            executor = LorittaInfoExecutor()
-        }
-
-        subcommand(PING_I18N_PREFIX.Label, PING_I18N_PREFIX.Description) {
-            executor = LorittaPingExecutor()
-        }
-
-        subcommand(CLUSTERS_I18N_PREFIX.Label, CLUSTERS_I18N_PREFIX.Description) {
-            executor = LorittaClustersExecutor()
-        }
-
-        subcommand(NERD_I18N_PREFIX.Label, NERD_I18N_PREFIX.Description) {
-            executor = LorittaNerdStatsExecutor()
-        }
-    }
-
-    inner class LorittaInfoExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context))
-        }
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
 
-    inner class LorittaPingExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    inner class LorittaPingExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val time = System.currentTimeMillis()
 
             fun buildPingMessage(apiLatency: Long?): InlineMessage<*>.() -> (Unit) = {
                 styled(
-                    content = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${context.loritta.config.loritta.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${context.loritta.lorittaCluster.id} (`${context.loritta.lorittaCluster.name}`))",
+                    content = "**Pong!** (\uD83D\uDCE1 Shard ${context.jda.shardInfo.shardId}/${context.loritta.config.loritta.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${context.loritta.lorittaCluster.id} (`${context.loritta.lorittaCluster.name}`))",
                     prefix = ":ping_pong:"
                 )
                 styled(
-                    content = "**Gateway Ping:** `${context.event.jda.gatewayPing}ms`",
+                    content = "**Gateway Ping:** `${context.jda.gatewayPing}ms`",
                     prefix = ":stopwatch:"
                 )
                 if (apiLatency != null)
@@ -249,10 +270,15 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 apply(buildPingMessage(diff))
             }
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
-    inner class LorittaClustersExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    inner class LorittaClustersExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
             val results = context.loritta.config.loritta.clusters.instances.map {
@@ -390,10 +416,15 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 }
             }
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
-    inner class LorittaNerdStatsExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    inner class LorittaNerdStatsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
             
             val locale = context.locale
@@ -480,6 +511,11 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 )
             }
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ) = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
     private data class ClusterQueryResult(

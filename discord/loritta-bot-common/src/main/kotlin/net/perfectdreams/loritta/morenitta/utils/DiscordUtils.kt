@@ -6,6 +6,9 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 
 object DiscordUtils {
+	// From JDA
+	val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
+
 	/**
 	 * Gets a Discord Shard ID from the provided Guild ID
 	 *
@@ -78,6 +81,20 @@ object DiscordUtils {
 					return user
 				}
 			}
+		}
+
+		// Extract user IDs in mentions that the user isn't present in the usersInContext list
+		try {
+			if (extractUserViaUserIdRetrieval && extractUserViaMention) {
+				val match = USER_MENTION_REGEX.find(input)
+				if (match != null) {
+					val user = loritta.lorittaShards.retrieveUserById(match.groupValues[1])
+
+					if (user != null) // Pelo visto é!
+						return user
+				}
+			}
+		} catch (e: Exception) {
 		}
 
 		// First, we will check if it is an ID and then we will check if it is a name

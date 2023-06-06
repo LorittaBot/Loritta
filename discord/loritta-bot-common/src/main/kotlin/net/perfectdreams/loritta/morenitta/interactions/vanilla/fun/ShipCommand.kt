@@ -8,7 +8,6 @@ import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.gabrielaimageserver.exceptions.*
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -19,8 +18,11 @@ import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import kotlin.math.absoluteValue
@@ -30,8 +32,40 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val inputConverter = ShipDiscordMentionInputConverter()
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Ship
+    }
 
-        suspend fun executeCompat(context: CommandContextCompat, result1: ConverterResult, result2: ConverterResult) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+        examples = I18N_PREFIX.Examples
+
+        enableLegacyMessageSupport = true
+
+        this.alternativeLegacyLabels.apply {
+            add("shippar")
+        }
+
+        executor = ShipExecutor()
+    }
+
+    inner class ShipExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val user1 = string("user1", I18N_PREFIX.Options.User1)
+            val user2 = optionalString("user2", I18N_PREFIX.Options.User2)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val user1 = args[options.user1]
+            val user2 = args[options.user2]
+
+            // We need to pass thru our input converter to convert user mentions into a user object, or keep it as a string
+            val result1 = inputConverter.convert(context, user1)
+            val result2 = if (user2 != null)
+                inputConverter.convert(context, user2)
+            else UserResult(context.user) // If the user2 is not present, we will use the user itself in the ship
+
             val user1Id: Long
             val user2Id: Long
             val user1Name: String
@@ -280,32 +314,51 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             if (isLorittaWithShipEffects && isShipWithTheSelfUser)
                 context.giveAchievementAndNotify(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
         }
-    }
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
-        executor = ShipExecutor()
-    }
 
-    inner class ShipExecutor : LorittaSlashCommandExecutor() {
-        inner class Options : ApplicationCommandOptions() {
-            val user1 = string("user1", I18N_PREFIX.Options.User1)
-            val user2 = optionalString("user2", I18N_PREFIX.Options.User2)
-        }
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val user1Name: String? = args.getOrNull(0)
+            var user2Name: String? = args.getOrNull(1)
 
-        override val options = Options()
+            val user1 = context.getUser(0)
+            var user2 = context.getUser(1)
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-            context.deferChannelMessage(false)
+            if (user1Name != null && user2Name == null && user2 == null) {
+                // If the user2 is null, but user1 is not null, we are going to use user2 to the user that executed the command
+                //
+                // So, if I use "+ship @Loritta" it would be the same thing as using "+ship @Loritta @YourUserHere"
+                user2 = context.user
+            }
 
-            val user1 = args[options.user1]
-            val user2 = args[options.user2]
+            if (user2 != null) {
+                user2Name = user2.name
+            }
 
-            // We need to pass thru our input converter to convert user mentions into a user object, or keep it as a string
-            val result1 = inputConverter.convert(context, user1)
-            val result2 = if (user2 != null)
-                inputConverter.convert(context, user2)
-            else UserResult(context.user) // If the user2 is not present, we will use the user itself in the ship
+            var formattedUser1: String? = user1Name
+            var formattedUser2: String? = user2Name
 
-            executeCompat(CommandContextCompat.InteractionsCommandContextCompat(context), result1, result2)
+            // Inject retrieved users into the mentioned users list
+            if (user1 != null) {
+                formattedUser1 = user1.asMention
+                context.mentions.injectUser(user1)
+            }
+
+            if (user2 != null) {
+                formattedUser2 = user2.asMention
+                context.mentions.injectUser(user2)
+            }
+
+            if (formattedUser1 == null) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.user1 to formattedUser1,
+                options.user2 to formattedUser2
+            )
         }
     }
 
@@ -315,20 +368,18 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     class StringWithImageResult(val string: String, val imageUrl: String) : ConverterResult()
 
     class ShipDiscordMentionInputConverter {
-        // From JDA
-        private val userRegex = Regex("<@!?(\\d+)>")
-
-        suspend fun convert(context: ApplicationCommandContext, input: String): ConverterResult {
+        suspend fun convert(context: UnleashedContext, input: String): ConverterResult {
             // Check for user mention
-            val userMatch = userRegex.matchEntire(input)
-            if (userMatch != null) {
-                // Is a mention... maybe?
-                val userId = userMatch.groupValues[1].toLongOrNull() ?: return StringResult(input) // If the input is not a long, then return the input
-                val user = context.event.options.flatMap { it.mentions.users }.firstOrNull { it.idLong == userId } ?: return StringResult(input) // If there isn't any matching user, then return the input
-                return UserResult(
-                    user
-                )
-            }
+            // We could manually check it from context.mentions.users
+            // But because we use legacy command context, a fake user-mention-in-a-string input won't magically provide the user in the context.mentions.user list
+            val userMatch = DiscordUtils.extractUserFromString(
+                context.loritta,
+                input,
+                context.mentions.users
+            )
+
+            if (userMatch != null)
+                return UserResult(userMatch)
 
             // Check for emote mention
             val emoteMatch = DiscordRegexes.DiscordEmote.matchEntire(input)

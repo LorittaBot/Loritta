@@ -68,7 +68,7 @@ class ServerIconCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 
 		val embed = EmbedBuilder()
 		embed.setColor(Constants.DISCORD_BLURPLE) // Cor do embed (Cor padrão do Discord)
-		val description = "**${context.locale["${AvatarCommand.LOCALE_PREFIX}.clickHere", "$iconUrl?size=2048"]}**"
+		val description = "**${context.locale["commands.command.avatar.clickHere", "$iconUrl?size=2048"]}**"
 
 		val guildIconUrl = iconUrl
 

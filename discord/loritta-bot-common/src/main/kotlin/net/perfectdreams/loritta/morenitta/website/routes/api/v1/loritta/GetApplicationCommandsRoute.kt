@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
 import io.ktor.server.application.*
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclaration
@@ -9,8 +8,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclaration
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandGroupDeclaration
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommand
-import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.ApplicationCommandInfo
 import net.perfectdreams.loritta.serializable.SlashCommandGroupInfo

@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApp
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 
 /**
  * Clean up and escape user input, useful when displaying user input
@@ -25,13 +26,13 @@ suspend fun cleanUpForOutput(
  * Clean up and escape user input, useful when displaying user input
  */
 suspend fun cleanUpForOutput(
-    context: net.perfectdreams.loritta.morenitta.interactions.InteractionContext,
+    context: UnleashedContext,
     input: String,
     escapeMentions: Boolean = true,
     stripCodeBackticks: Boolean = true,
     stripInvites: Boolean = true
 ): String {
-    return cleanUpForOutput(context.loritta, context.event.guild?.idLong?.let { Snowflake(it) }, context.event.member?.roles?.map { Snowflake(it.idLong) }?.toSet() ?: emptySet(), input, escapeMentions, stripCodeBackticks, stripInvites)
+    return cleanUpForOutput(context.loritta, context.guildOrNull?.idLong?.let { Snowflake(it) }, context.memberOrNull?.roles?.map { Snowflake(it.idLong) }?.toSet() ?: emptySet(), input, escapeMentions, stripCodeBackticks, stripInvites)
 }
 
 /**

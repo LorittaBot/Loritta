@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.morenitta.api.commands.CommandException
 import net.perfectdreams.loritta.morenitta.api.commands.CommandMap
 import net.perfectdreams.loritta.morenitta.api.commands.SilentCommandException
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.commands.vanilla.action.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.GuildBannerCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.RoleInfoCommand
@@ -59,15 +58,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			// ===[ MAGIC ]===
 			LoriToolsCommand(loritta),
 
-			// ===[ ROLEPLAY ]===
-			AttackCommand(loritta),
-			DanceCommand(loritta),
-			HeadPatCommand(loritta),
-			HighFiveCommand(loritta),
-			HugCommand(loritta),
-			KissCommand(loritta),
-			SlapCommand(loritta),
-
 			// ===[ ECONOMY ]===
 			SonhosTopCommand(loritta),
 			SonhosTopLocalCommand(loritta),
@@ -81,9 +71,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			ScratchCardTopCommand(loritta),
 			CoinFlipBetCommand(loritta),
 			CoinFlipBetStatsCommand(loritta),
-			EmojiFightCommand(loritta),
-			EmojiFightBetCommand(loritta),
-			EmojiFightEmojiCommand(loritta),
 
 			// ===[ SOCIAL ]===
 			BomDiaECiaStatusCommand(loritta),
@@ -92,12 +79,10 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			RepTopCommand(loritta),
 			XpNotificationsCommand(loritta),
 			RepListCommand(loritta),
-			DashboardCommand(loritta),
 			RenameChannelCommand(loritta),
 			RenameEmojiCommand(loritta),
 
 			// ===[ ADMIN ]===
-			BanInfoCommand(loritta),
 			ClearCommand(loritta),
 			UnwarnCommand(loritta),
 

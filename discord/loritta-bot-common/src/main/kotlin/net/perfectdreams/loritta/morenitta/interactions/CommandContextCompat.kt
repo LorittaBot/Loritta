@@ -43,7 +43,7 @@ interface CommandContextCompat {
     /**
      * Compatibility layer for Loritta's InteraKTions Unleashed command contexts
      */
-    class InteractionsCommandContextCompat(val context: ApplicationCommandContext) : CommandContextCompat {
+    class InteractionsCommandContextCompat(val context: UnleashedContext) : CommandContextCompat {
         override val user: User
             get() = context.user
 
@@ -63,7 +63,7 @@ interface CommandContextCompat {
             get() = context.i18nContext
 
         override val messageChannel: MessageChannel
-            get() = (context.event.channel as? MessageChannel) ?: error("Command wasn't used in a message channel!")
+            get() = context.channelOrNull ?: error("Command wasn't used in a message channel!")
 
         override val loritta: LorittaBot
             get() = context.loritta

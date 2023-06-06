@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Daily
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.SortOrder
@@ -72,10 +73,10 @@ object AccountUtils {
     }
 
 
-    suspend fun checkAndSendMessageIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, user: User)
+    suspend fun checkAndSendMessageIfUserIsBanned(loritta: LorittaBot, context: UnleashedContext, user: User)
             = checkAndSendMessageIfUserIsBanned(loritta, context, user.idLong)
 
-    suspend fun checkAndSendMessageIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, userId: Long): Boolean {
+    suspend fun checkAndSendMessageIfUserIsBanned(loritta: LorittaBot, context: UnleashedContext, userId: Long): Boolean {
         // Check if the user is banned from using Loritta
         val userBannedState = loritta.pudding.users.getUserBannedState(UserId(userId))
 

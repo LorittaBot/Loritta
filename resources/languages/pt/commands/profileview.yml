@@ -1,5 +1,9 @@
 label: "ver"
 description: "Veja o seu perfil social, ou o perfil social de outros usuários!"
+examples:
+  - "|-| Mostra o seu próprio perfil"
+  - "@Loritta |-| Veja o perfil da garota mais maravilhosa do Discord!"
+  - "390927821997998081 |-| Mostra o perfil de um usuário pelo ID"
 changeAboutMe: "Alterar Sobre Mim"
 options:
   user:

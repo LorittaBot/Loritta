@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -23,8 +22,10 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
@@ -93,7 +94,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                             val message = createMessage(loritta, it.i18nContext, it.user, it.user, result)
 
-                            hook.editOriginal(
+                            hook.jdaHook.editOriginal(
                                 MessageEdit {
                                     message()
                                 }
@@ -111,27 +112,47 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     private val ABOUT_ME_I18N_PREFIX = I18nKeysData.Commands.Command.Aboutme
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL) {
+        enableLegacyMessageSupport = true
+
+        examples = PROFILE_VIEW_I18N_PREFIX.Examples
+
         subcommand(PROFILE_VIEW_I18N_PREFIX.Label, PROFILE_VIEW_I18N_PREFIX.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("profile")
+                add("perfil")
+            }
+
             executor = ProfileViewExecutor()
         }
 
         subcommand(ABOUT_ME_I18N_PREFIX.Label, ABOUT_ME_I18N_PREFIX.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("sobremim")
+                add("aboutme")
+            }
+
+            examples = ABOUT_ME_I18N_PREFIX.Examples
+
             executor = AboutMeExecutor()
         }
 
         subcommand(PROFILE_BADGES_I18N_PREFIX.Label, PROFILE_BADGES_I18N_PREFIX.Description) {
+            alternativeLegacyLabels.apply {
+                add("insígnias")
+            }
+
             executor = ProfileBadgesExecutor()
         }
     }
 
-    inner class ProfileViewExecutor : LorittaSlashCommandExecutor() {
+    inner class ProfileViewExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val user = optionalUser("user", PROFILE_VIEW_I18N_PREFIX.Options.User.Text)
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val userToBeViewed = args[options.user]?.user ?: context.user
 
             if (AccountUtils.checkAndSendMessageIfUserIsBanned(loritta, context, userToBeViewed))
@@ -156,16 +177,25 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 message()
             }
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(
+                options.user to context.getUserAndMember(0)
+            )
+        }
     }
 
-    inner class AboutMeExecutor : LorittaSlashCommandExecutor() {
+    inner class AboutMeExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val aboutMe = string("about_me", ABOUT_ME_I18N_PREFIX.Options.Aboutme.Text)
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             val newAboutMe = args[options.aboutMe]
@@ -183,10 +213,24 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 )
             }
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            if (args.isEmpty()) {
+                context.explain()
+                return null
+            }
+
+            return mapOf(
+                options.aboutMe to context.args.joinToString(" ")
+            )
+        }
     }
 
-    inner class ProfileBadgesExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    inner class ProfileBadgesExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
             context.reply(false) {
@@ -194,7 +238,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
         }
 
-        private suspend fun createBadgeListMessage(context: InteractionContext): suspend InlineMessage<*>.() -> (Unit) {
+        private suspend fun createBadgeListMessage(context: UnleashedContext): suspend InlineMessage<*>.() -> (Unit) {
             return {
                 // We need the mutual guilds to retrieve the user's guild badges.
                 // However, because bots can be in a LOT of guilds (causing GC pressure), so we will just return an empty array.
@@ -283,7 +327,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
 
         private suspend fun createBadgeViewMessage(
-            context: InteractionContext,
+            context: UnleashedContext,
             badge: Badge
         ): suspend InlineMessage<*>.() -> (Unit) {
             return {
@@ -335,5 +379,10 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 actionRow(components)
             }
         }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 }

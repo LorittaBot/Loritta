@@ -2,11 +2,16 @@ package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import dev.kord.common.Locale
 import dev.minn.jda.ktx.interactions.commands.*
+import kotlinx.datetime.Clock
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Message.Attachment
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.Channel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
@@ -23,12 +28,21 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customop
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.ImageReferenceOrAttachmentOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.StringListCommandOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.UserListCommandOption
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
@@ -48,7 +62,10 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepComman
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.CalculatorCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.HelpCommand
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
+import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
     val slashCommands = mutableListOf<SlashCommandDeclaration>()
@@ -58,7 +75,33 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
 
     fun register(declaration: SlashCommandDeclarationWrapper) {
-        slashCommands += declaration.command().build()
+        val builtDeclaration = declaration.command().build()
+
+        if (builtDeclaration.enableLegacyMessageSupport) {
+            // Validate if all executors inherit LorittaLegacyMessageCommandExecutor
+            val executors = mutableListOf<Any>()
+            if (builtDeclaration.executor != null)
+                executors += builtDeclaration.executor
+
+            for (subcommand in builtDeclaration.subcommands) {
+                if (subcommand.executor != null)
+                    executors += subcommand.executor
+            }
+
+            for (subcommandGroup in builtDeclaration.subcommandGroups) {
+                for (subcommand in subcommandGroup.subcommands) {
+                    if (subcommand.executor != null)
+                        executors += subcommand.executor
+                }
+            }
+
+            for (executor in executors) {
+                if (executor !is LorittaLegacyMessageCommandExecutor)
+                    error("${executor::class.simpleName} does not inherit LorittaLegacyMessageCommandExecutor, but enable legacy message support is enabled!")
+            }
+        }
+
+        slashCommands += builtDeclaration
     }
 
     fun register(declaration: UserCommandDeclarationWrapper) {
@@ -115,6 +158,299 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
         register(RoleplayCommand.RoleplayUserCommand(loritta))
+    }
+
+    /**
+     * Checks if the command should be handled (if all conditions are valid, like labels, etc)
+     *
+     * This is used if a command has [enableLegacyMessageSupport]
+     *
+     * @param event          the event wrapped in a LorittaMessageEvent
+     * @param legacyServerConfig        the server configuration
+     * @param legacyLocale      the language of the server
+     * @param lorittaUser the user that is executing this command
+     * @return            if the command was handled or not
+     */
+    suspend fun matches(event: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
+        var rootDeclaration: SlashCommandDeclaration? = null
+        var slashDeclaration: SlashCommandDeclaration? = null
+
+        // If there's no root label, then it is impossible for us to check the results...
+        val level1Label = rawArguments.getOrNull(0)?.normalize() ?: return false
+        val level2Label = rawArguments.getOrNull(1)?.normalize()
+        val level3Label = rawArguments.getOrNull(2)?.normalize()
+
+        var argumentsToBeDropped = 0
+
+        fun isDeclarationExecutable(declaration: SlashCommandDeclaration) = declaration.executor != null
+
+        // Because this is a message, we need to do all the label checks manually... *sigh*
+        // We want to check the label in every available language
+        fun checkIfDeclarationLabelMatches(label: String, commandDeclaration: SlashCommandDeclaration): Boolean {
+            for (i18nContext in languageManager.languageContexts.values) {
+                val vanillaLabelMatchResult = label == i18nContext.get(commandDeclaration.name)
+                    .normalize()
+                val alternativeLegacyLabelsMatchResult = label in commandDeclaration.alternativeLegacyLabels
+                    .map { it.normalize() }
+
+                if (vanillaLabelMatchResult || alternativeLegacyLabelsMatchResult)
+                    return true
+            }
+            return false
+        }
+
+        fun checkIfDeclarationLabelMatches(label: String, commandDeclaration: net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandGroupDeclaration): Boolean {
+            for (i18nContext in languageManager.languageContexts.values) {
+                val vanillaLabelMatchResult = label == i18nContext.get(commandDeclaration.name)
+                    .normalize()
+                val alternativeLegacyLabelsMatchResult = label in commandDeclaration.alternativeLegacyLabels.map { it.normalize() }
+
+                if (vanillaLabelMatchResult || alternativeLegacyLabelsMatchResult)
+                    return true
+            }
+            return false
+        }
+
+        for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
+            if (checkIfDeclarationLabelMatches(level1Label, declaration)) {
+                // Found something, but let's keep going because there may be subcommands
+                // There's a bunch of declaration.executor != null checks here because we only want to use the command IF there's an executor bound to the declaration
+                // To avoid slash commands like "+raffle" declaration being used, when it reality it should fall back to the configured absolute command
+                if (isDeclarationExecutable(declaration)) {
+                    slashDeclaration = declaration
+                    rootDeclaration = declaration
+                    argumentsToBeDropped = 1
+                }
+
+                // Check root subcommands
+                if (level2Label != null) {
+                    // "/name subcommand"
+                    val foundDeclaration = declaration.subcommands.firstOrNull { checkIfDeclarationLabelMatches(level2Label, it) }
+                    if (foundDeclaration != null && isDeclarationExecutable(foundDeclaration)) {
+                        slashDeclaration = declaration.subcommands.firstOrNull { checkIfDeclarationLabelMatches(level2Label, it) }
+                        rootDeclaration = declaration
+                        argumentsToBeDropped = 2
+                    }
+
+                    if (level3Label != null) {
+                        // "/name subcommandGroup subcommand"
+                        val foundDeclaration = declaration.subcommandGroups.firstOrNull {
+                            checkIfDeclarationLabelMatches(level2Label, it)
+                        }
+                            ?.subcommands
+                            ?.firstOrNull {
+                                checkIfDeclarationLabelMatches(level3Label, it)
+                            }
+
+                        if (foundDeclaration != null && isDeclarationExecutable(foundDeclaration)) {
+                            slashDeclaration = foundDeclaration
+                            rootDeclaration = declaration
+                            argumentsToBeDropped = 3
+                        }
+                        break
+                    }
+                }
+                break
+            }
+        }
+
+        // No match? Check all executor's absolute paths
+        if (rootDeclaration == null || slashDeclaration == null) {
+            val declarations = mutableListOf<SlashCommandDeclaration>()
+
+            // Get all executors that have enable legacy message support enabled
+            for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
+                if (isDeclarationExecutable(declaration))
+                    declarations.add(declaration)
+
+                declaration.subcommands.forEach {
+                    if (isDeclarationExecutable(it))
+                        declarations.add(it)
+                }
+
+                declaration.subcommandGroups.forEach {
+                    it.subcommands.forEach {
+                        if (isDeclarationExecutable(it))
+                            declarations.add(it)
+                    }
+                }
+            }
+
+            var bestMatch: SlashCommandDeclaration? = null
+            var absolutePathSize = 0
+
+            for (declaration in declarations) {
+                absolutePathLoop@for (absolutePath in declaration.alternativeLegacyAbsoluteCommandPaths) {
+                    argumentsToBeDropped = 0
+
+                    val absolutePathSplit = absolutePath.split(" ")
+
+                    if (absolutePathSize > absolutePathSplit.size)
+                        continue@absolutePathLoop // Too smol, the current command is a better match
+
+                    for ((index, pathSection) in absolutePathSplit.withIndex()) {
+                        val rawArgument = rawArguments.getOrNull(index)?.normalize() ?: continue@absolutePathLoop
+
+                        if (pathSection.normalize() == rawArgument) {
+                            argumentsToBeDropped++
+                        } else {
+                            continue@absolutePathLoop
+                        }
+                    }
+
+                    bestMatch = declaration
+                    absolutePathSize = argumentsToBeDropped
+                }
+            }
+
+            if (bestMatch != null) {
+                rootDeclaration = bestMatch
+                slashDeclaration = bestMatch
+                argumentsToBeDropped = absolutePathSize
+            }
+        }
+
+        // No match, bail out!
+        if (rootDeclaration == null || slashDeclaration == null)
+            return false
+
+        val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
+        if (executor !is LorittaLegacyMessageCommandExecutor)
+            error("$executor doesn't inherit LorittaLegacyMessageCommandExecutor!")
+
+        val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
+        val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
+        val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
+            .labels(rootDeclarationClazzName, executorClazzName)
+            .startTimer()
+
+        // These variables are used in the catch { ... } block, to make our lives easier
+        var context: UnleashedContext? = null
+        var stacktrace: String? = null
+
+        try {
+            val rawArgumentsAfterDrop = rawArguments.drop(argumentsToBeDropped)
+
+            context = LegacyMessageCommandContext(
+                loritta,
+                serverConfig,
+                lorittaUser,
+                locale,
+                i18nContext,
+                event,
+                rawArgumentsAfterDrop,
+                slashDeclaration
+            )
+
+            // Check if user is banned
+            if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+                return true
+
+            if (rawArgumentsAfterDrop.getOrNull(0) == "🤷") { // Show the command's help embed if 🤷 has been used
+                context.explain()
+                return true
+            }
+
+            if (rootDeclaration.isGuildOnly && context.guildOrNull == null) {
+                // Matched, but it is guild only
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18nKeysData.Commands.CommandOnlyAvailableInGuilds),
+                        Emotes.Error
+                    )
+                }
+                return true
+            }
+
+            // Are we in a guild?
+            if (context.guildOrNull != null) {
+                // Get the permissions
+                // To mimick how slash commands work, we only check the root declaration permissions
+                val requiredPermissionsRaw = rootDeclaration.defaultMemberPermissions?.permissionsRaw
+                if (requiredPermissionsRaw != null) {
+                    val requiredPermissions = Permission.getPermissions(requiredPermissionsRaw)
+
+                    val missingPermissions = requiredPermissions.filter { !context.member.hasPermission(context.channel as GuildChannel, it) }
+
+                    if (missingPermissions.isNotEmpty()) {
+                        val missingPermissionsAsString = missingPermissions.joinToString(
+                            ", ",
+                            transform = { "`" + it.getLocalizedName(i18nContext) + "`" }
+                        )
+                        context.reply(true) {
+                            styled(
+                                locale["commands.userDoesntHavePermissionDiscord", missingPermissionsAsString],
+                                Constants.ERROR
+                            )
+                        }
+                        return true
+                    }
+                }
+            }
+
+            val argMap = executor.convertToInteractionsArguments(context, rawArgumentsAfterDrop)
+
+            // If the argument map is null, bail out!
+            if (argMap != null) {
+                val args = SlashCommandArguments(SlashCommandArgumentsSource.SlashCommandArgumentsMapSource(argMap))
+
+                executor.execute(
+                    context,
+                    args
+                )
+            }
+        } catch (e: CommandException) {
+            context?.reply(e.ephemeral, e.builder)
+        } catch (e: Exception) {
+            // TODO: Proper catch and throw
+            e.printStackTrace()
+
+            stacktrace = e.stackTraceToString()
+        }
+
+        loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(
+            event.author.idLong,
+            event.guild?.idLong,
+            event.channel.idLong,
+            Clock.System.now(),
+            ApplicationCommandType.LEGACY_CHAT_MESSAGE_INPUT,
+            rootDeclarationClazzName,
+            executorClazzName,
+            // Because this is via legacy message, we don't actually have "options" per se, so let's store the raw message content
+            buildJsonObject {
+                put("raw_message", event.message.contentRaw)
+            },
+            stacktrace == null,
+            timer.observeDuration(),
+            stacktrace
+        )
+
+        return true
+    }
+
+    /**
+     * Gets the declaration path (command -> group -> subcommand, and anything in between)
+     */
+    fun findDeclarationPath(endDeclaration: SlashCommandDeclaration): List<Any> {
+        for (declaration in slashCommands) {
+            if (declaration == endDeclaration) {
+                return listOf(declaration)
+            }
+
+            for (subcommandDeclaration in declaration.subcommands) {
+                if (subcommandDeclaration == endDeclaration)
+                    return listOf(declaration, subcommandDeclaration)
+            }
+
+            for (group in declaration.subcommandGroups) {
+                for (subcommandDeclaration in declaration.subcommands) {
+                    if (subcommandDeclaration == endDeclaration)
+                        return listOf(declaration, group, subcommandDeclaration)
+                }
+            }
+        }
+
+        error("Declaration path is null for $endDeclaration! This should never happen! Are you trying to find a declaration that isn't registered in InteraKTions Unleashed?")
     }
 
     /**
