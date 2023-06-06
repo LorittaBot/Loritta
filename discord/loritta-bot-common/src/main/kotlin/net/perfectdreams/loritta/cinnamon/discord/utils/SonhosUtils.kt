@@ -80,7 +80,7 @@ object SonhosUtils {
         }
     }
 
-    suspend fun InlineMessage<MessageCreateData>.appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
+    suspend fun InlineMessage<*>.appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
         loritta: LorittaBot,
         i18nContext: I18nContext,
         userId: UserId,

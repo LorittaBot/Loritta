@@ -90,7 +90,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ ECONOMY ]===
             register(SonhosCommand(languageManager))
-            register(BrokerCommand(languageManager))
+            // register(BrokerCommand(languageManager))
             register(BetCommand(languageManager))
 
             // ===[ SOCIAL ]===

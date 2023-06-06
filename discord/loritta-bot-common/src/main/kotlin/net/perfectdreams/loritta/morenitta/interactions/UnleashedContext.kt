@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -113,7 +114,7 @@ abstract class UnleashedContext(
      * @see fail
      * @see CommandException
      */
-    fun fail(ephemeral: Boolean, text: String, emote: String): Nothing = throw CommandException(ephemeral) {
+    fun fail(ephemeral: Boolean, text: String, emote: String = Emotes.Error.asMention): Nothing = throw CommandException(ephemeral) {
         styled(text, emote)
     }
 

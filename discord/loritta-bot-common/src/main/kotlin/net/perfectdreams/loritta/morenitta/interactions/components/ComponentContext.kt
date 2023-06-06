@@ -1,10 +1,12 @@
 package net.perfectdreams.loritta.morenitta.interactions.components
 
 import dev.minn.jda.ktx.interactions.components.replyModal
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.Component
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -31,6 +33,16 @@ class ComponentContext(
     val event: ComponentInteraction
 ) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList()), event) {
     suspend fun deferEdit(): InteractionHook = event.deferEdit().await()
+
+    /**
+     * Defers the edit with [deferEdit] and edits the message with the result of the [action]
+     */
+    suspend inline fun deferAndEditOriginal(action: () -> (MessageEditData)): Message {
+        val hook = deferEdit()
+
+        val result = action.invoke()
+        return hook.editOriginal(result).await()
+    }
 
     /**
      * Invalidates the component callback

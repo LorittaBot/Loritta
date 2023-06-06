@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.BrokerCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.DailyCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFightCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
@@ -142,6 +143,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(DailyCommand(loritta))
         register(EmojiFightCommand(loritta))
         register(RaffleCommand(loritta))
+        register(BrokerCommand(loritta))
 
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
@@ -468,7 +470,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             }
 
             if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
-                if (declaration.executor != null)
+                // If legacy message support is enabled, then the executor *can* actually be used via message command, so we will skip this check
+                if (declaration.executor != null && !declaration.enableLegacyMessageSupport)
                     error("Command ${declaration::class.simpleName} has a root executor, but it also has subcommand/subcommand groups!")
 
                 for (subcommand in declaration.subcommands) {
