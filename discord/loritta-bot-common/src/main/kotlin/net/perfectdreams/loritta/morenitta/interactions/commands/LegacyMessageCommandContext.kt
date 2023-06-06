@@ -35,6 +35,7 @@ class LegacyMessageCommandContext(
     i18nContext: I18nContext,
     val event: LorittaMessageEvent,
     val args: List<String>,
+    override val rootDeclaration: SlashCommandDeclaration,
     override val commandDeclaration: SlashCommandDeclaration
 ) : UnleashedContext(
     loritta,

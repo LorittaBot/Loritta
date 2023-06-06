@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.commands
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -13,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.InteractionMessage
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import java.time.Instant
 
 /**
@@ -25,6 +27,7 @@ interface CommandContext {
     val locale: BaseLocale
     val i18nContext: I18nContext
     val config: ServerConfig
+    val rootDeclaration: SlashCommandDeclaration
     val commandDeclaration: SlashCommandDeclaration
 
     suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage
@@ -153,23 +156,23 @@ interface CommandContext {
             )
         }
 
-        /* val command = command
-        if (command is DiscordCommand) {
-            if (command.botRequiredPermissions.isNotEmpty() || command.userRequiredPermissions.isNotEmpty()) {
-                var field = ""
-                if (command.userRequiredPermissions.isNotEmpty()) {
-                    field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(i18nContext)}`" })]}\n"
-                }
-                if (command.botRequiredPermissions.isNotEmpty()) {
-                    field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(i18nContext)}`" })]}\n"
-                }
-                embed.addField(
-                    "\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
-                    field,
-                    false
-                )
+        val userRequiredPermissionsRaw = rootDeclaration.defaultMemberPermissions?.permissionsRaw
+        if (userRequiredPermissionsRaw != null) {
+            val userRequiredPermissions = Permission.getPermissions(userRequiredPermissionsRaw)
+
+            var field = ""
+            if (userRequiredPermissions.isNotEmpty()) {
+                field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", userRequiredPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(i18nContext)}`" })]}\n"
             }
-        } */
+            // if (command.botRequiredPermissions.isNotEmpty()) {
+            //     field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.joinToString(", ", transform = { "`${it.getLocalizedName(i18nContext)}`" })]}\n"
+            // }
+            embed.addField(
+                "\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
+                field,
+                false
+            )
+        }
 
         val otherAlternatives = mutableListOf(
             buildString {

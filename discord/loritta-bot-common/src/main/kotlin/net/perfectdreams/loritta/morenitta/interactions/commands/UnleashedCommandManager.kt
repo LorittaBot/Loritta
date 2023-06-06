@@ -342,6 +342,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 i18nContext,
                 event,
                 rawArgumentsAfterDrop,
+                rootDeclaration,
                 slashDeclaration
             )
 
