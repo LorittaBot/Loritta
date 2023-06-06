@@ -425,8 +425,6 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
     inner class LorittaNerdStatsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            context.deferChannelMessage(false)
-            
             val locale = context.locale
             val lorittaShards = context.loritta.lorittaShards
 
@@ -477,9 +475,6 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedGuilds)}:** ${lorittaShards.shardManager.guildCache.size()}")
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedUsers)}:** ${lorittaShards.shardManager.userCache.size()}")
-                styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedEmojis)}:** ${lorittaShards.shardManager.emojiCache.size()}")
-                styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedRoles)}:** ${lorittaShards.shardManager.roleCache.size()}")
-                styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedChannels)}:** $cachedChannels")
 
                 styled(
                     "**${locale["commands.command.botinfo.memoryUsed"]}:** $usedMemory MB",
