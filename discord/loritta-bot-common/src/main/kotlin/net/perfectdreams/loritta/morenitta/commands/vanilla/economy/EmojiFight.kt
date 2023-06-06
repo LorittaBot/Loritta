@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
@@ -41,7 +42,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
  * Creates a Emoji Fight
  */
 class EmojiFight(
-    private val context: CommandContextCompat,
+    private val context: UnleashedContext,
     private val entryPrice: Long?, // null = only for fun emoji fight
     private val maxPlayers: Int = DEFAULT_MAX_PLAYER_COUNT
 ) {

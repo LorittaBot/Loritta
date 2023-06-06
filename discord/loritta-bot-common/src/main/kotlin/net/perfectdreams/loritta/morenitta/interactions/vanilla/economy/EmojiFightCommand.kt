@@ -17,7 +17,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 
 class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -33,16 +32,14 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             add("emotefight")
         }
 
+        executor = EmojiFightForFunStartExecutor()
+
         subcommand(I18N_PREFIX.Start.Label, I18N_PREFIX.Start.Description) {
-            alternativeLegacyAbsoluteCommandPaths.apply {
-                add("emojifight")
-                add("rinhadeemoji")
-                add("emotefight")
+            alternativeLegacyLabels.apply {
+                add("bet")
             }
 
-            alternativeLegacyLabels.add("bet")
-
-            executor = EmojiFightStartExecutor()
+            executor = EmojiFightBetStartExecutor()
         }
 
         subcommand(I18N_PREFIX.Emoji.Label, I18N_PREFIX.Emoji.Description) {
@@ -50,7 +47,41 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         }
     }
 
-    inner class EmojiFightStartExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    // Only used for message commands
+    inner class EmojiFightForFunStartExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val maxPlayers = optionalLong(
+                "max_players",
+                I18N_PREFIX.Start.Options.MaxPlayers.Text,
+                requiredRange = 2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT.toLong()
+            )
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val maxPlayersInEvent = args[options.maxPlayers]?.toInt()?.coerceIn(2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT) ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
+
+            val emojiFight = EmojiFight(
+                context,
+                null,
+                maxPlayersInEvent
+            )
+
+            emojiFight.start()
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            val participants = args.getOrNull(0)?.toLongOrNull()
+
+            return mapOf(options.maxPlayers to participants)
+        }
+    }
+
+    inner class EmojiFightBetStartExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val sonhos = optionalString(
                 "sonhos",
@@ -148,7 +179,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             val maxPlayersInEvent = args[options.maxPlayers]?.toInt()?.coerceIn(2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT) ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
 
             val emojiFight = EmojiFight(
-                CommandContextCompat.InteractionsCommandContextCompat(context),
+                context,
                 totalEarnings,
                 maxPlayersInEvent
             )
