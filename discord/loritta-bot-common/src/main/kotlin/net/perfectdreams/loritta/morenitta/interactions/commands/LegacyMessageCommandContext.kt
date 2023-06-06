@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -19,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
+import java.util.*
 
 /**
  * A command context that provides compatibility with legacy message commands.
@@ -63,7 +65,11 @@ class LegacyMessageCommandContext(
     ): InteractionMessage {
         val inlineBuilder = MessageCreate {
             // Don't let ANY mention through, you can still override the mentions in the builder
-            mentions {}
+            allowedMentionTypes = EnumSet.of(
+                Message.MentionType.CHANNEL,
+                Message.MentionType.EMOJI,
+                Message.MentionType.SLASH_COMMAND
+            )
 
             // We need to do this because "builder" is suspendable, because we can't inline this function due to it being in an interface
             builder()

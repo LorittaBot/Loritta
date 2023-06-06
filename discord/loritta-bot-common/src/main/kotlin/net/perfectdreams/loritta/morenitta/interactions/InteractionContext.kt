@@ -5,6 +5,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -22,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.commands.CommandException
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import java.util.*
 
 abstract class InteractionContext(
     loritta: LorittaBot,
@@ -53,8 +55,12 @@ abstract class InteractionContext(
     override suspend fun reply(ephemeral: Boolean, builder: suspend InlineMessage<MessageCreateData>.() -> Unit): InteractionMessage {
         val createdMessage = InlineMessage(MessageCreateBuilder()).apply {
             // Don't let ANY mention through, you can still override the mentions in the builder
-            mentions {}
-            
+            allowedMentionTypes = EnumSet.of(
+                Message.MentionType.CHANNEL,
+                Message.MentionType.EMOJI,
+                Message.MentionType.SLASH_COMMAND
+            )
+
             builder()
         }.build()
 
