@@ -134,6 +134,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(RollCommand(loritta))
         register(CoinFlipCommand())
         register(VieirinhaCommand())
+        register(CancelledCommand())
 
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))

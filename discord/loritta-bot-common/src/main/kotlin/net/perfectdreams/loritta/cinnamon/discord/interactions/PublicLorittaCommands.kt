@@ -36,7 +36,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ FUN ]===
             register(RateCommand(languageManager))
-            register(CancelledCommand(languageManager))
             register(SummonCommand(languageManager))
             register(TextTransformCommand(languageManager))
             register(JankenponCommand(languageManager))

@@ -1,6 +1,9 @@
 ---
 label: "cancelar"
 description: "Seu melhor amigo foi cancelado pela cultura de cancelamento do Twitter! Mas... por que eles foram cancelados?"
+examples:
+  - "@Loritta |-| Cancela um usuário pela menção... manas, me ajudem! Uma pessoa tão doce como eu não pode ser cancelada!"
+  - "234395307759108106 |-| Cancela um usuário pelo ID"
 reasons:
   - "por ser atraente demais"
   - "ter charme demais"
