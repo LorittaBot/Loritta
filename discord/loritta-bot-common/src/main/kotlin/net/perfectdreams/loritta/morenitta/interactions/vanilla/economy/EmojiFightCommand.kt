@@ -145,7 +145,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 }
             }
 
-            val maxPlayersInEvent = args[options.maxPlayers]?.toInt() ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
+            val maxPlayersInEvent = args[options.maxPlayers]?.toInt()?.coerceIn(2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT) ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
 
             val emojiFight = EmojiFight(
                 CommandContextCompat.InteractionsCommandContextCompat(context),
