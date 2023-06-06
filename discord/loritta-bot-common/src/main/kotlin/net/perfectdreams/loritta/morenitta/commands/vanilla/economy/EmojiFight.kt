@@ -514,6 +514,12 @@ class EmojiFight(
                 "commands.command.emojifightbet.wonBetTaxed"
 
             context.reply(false) {
+                // Mention the fight creator and the winner
+                mentions {
+                    user(context.user)
+                    user(winner.key)
+                }
+
                 styled(
                     context.locale[
                             localeKey,
@@ -530,6 +536,12 @@ class EmojiFight(
             }
         } else {
             context.reply(false) {
+                // Mention the fight creator and the winner
+                mentions {
+                    user(context.user)
+                    user(winner.key)
+                }
+
                 styled(
                     context.locale[
                             "commands.command.emojifight.wonBet",
