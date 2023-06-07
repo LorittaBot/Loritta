@@ -50,7 +50,9 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
                             )
                             .await()
                     }
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                    logger.warn(e) { "Something went wrong while attempting to notify $userId about vote ${userToBeNotifiedData[BotVotesUserAvailableNotifications.id]}!" }
+                }
             }
 
             BotVotesUserAvailableNotifications.update({ BotVotesUserAvailableNotifications.id inList usersToBeNotifiedData.map { it[BotVotesUserAvailableNotifications.id] }}) {
