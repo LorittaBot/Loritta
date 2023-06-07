@@ -1,14 +1,23 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 
+import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.AttachedFile
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.XpRankExecutor
 import net.perfectdreams.loritta.cinnamon.discord.utils.ExperienceUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ExperienceRoleRates
@@ -16,7 +25,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.R
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -24,12 +32,15 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.normalize
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
+import kotlin.math.ceil
 
 class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -51,11 +62,17 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = viewXpExecutor
         }
 
-        /* subcommand(XP_RANK_I18N_PREFIX.Label, XP_RANK_I18N_PREFIX.Description) {
-            executor = { XpRankExecutor(it) }
+        subcommand(XP_RANK_I18N_PREFIX.Label, XP_RANK_I18N_PREFIX.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("rank")
+                add("top")
+                add("leaderboard")
+                add("ranking")
+            }
+
+            executor = XpRankExecutor()
         }
 
-        */
         subcommand(XP_EDIT_I18N_PREFIX.Label, XP_EDIT_I18N_PREFIX.Description) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("editarxp")
@@ -66,9 +83,9 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = EditXpExecutor()
         }
 
-        /* subcommand(XP_TRANSFER_I18N_PREFIX.Label, XP_TRANSFER_I18N_PREFIX.Description) {
-            executor = { TransferXpExecutor(it) }
-        } */
+        subcommand(XP_TRANSFER_I18N_PREFIX.Label, XP_TRANSFER_I18N_PREFIX.Description) {
+            executor = TransferXpExecutor()
+        }
     }
 
     inner class ViewXpExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -221,11 +238,10 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val localProfile = localConfig.getUserData(loritta, userToBeEdited.user.idLong, userIsMember)
             val oldUserXp = localProfile.xp
 
-            var newXpValue = when (args[options.mode]) {
-                "SET" -> { xpValue }
-                "ADD" -> { oldUserXp+xpValue }
-                "REMOVE" -> { oldUserXp-xpValue }
-                else -> { xpValue }
+            var newXpValue = when (XpModificationMode.valueOf(args[options.mode])) {
+                XpModificationMode.SET -> { xpValue }
+                XpModificationMode.ADD -> { oldUserXp+xpValue }
+                XpModificationMode.REMOVE -> { oldUserXp-xpValue }
             }
 
             if (newXpValue < 0) { newXpValue = 0 }
@@ -292,9 +308,310 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context.mentions.injectUser(userAndMember.user)
 
             return mapOf(
-                options.mode to mode,
+                options.mode to mode.name,
                 options.user to userAndMember,
                 options.value to quantity
+            )
+        }
+    }
+
+    inner class TransferXpExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val mode = string("mode", XP_TRANSFER_I18N_PREFIX.Options.Mode.Text) {
+                for (mode in XpTransferMode.values()) {
+                    choice(XP_TRANSFER_I18N_PREFIX.Options.Mode.Choice.Add, mode.name)
+                    choice(XP_TRANSFER_I18N_PREFIX.Options.Mode.Choice.Set, mode.name)
+                }
+            }
+
+            val user = user("user", XP_TRANSFER_I18N_PREFIX.Options.User.Text)
+
+            val target = user("target", XP_TRANSFER_I18N_PREFIX.Options.Target.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            if (!context.member.hasPermission(Permission.MANAGE_SERVER)) {
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.UserDoesntHavePermissionDiscord(
+                                context.i18nContext.get(I18nKeysData.Permissions.ManageGuild)
+                            )
+                        ),
+                        Emotes.LoriZap
+                    )
+                }
+            }
+
+            val userToBeEdited = args[options.user]
+            val targetToBeEdited = args[options.target]
+
+            context.deferChannelMessage(false)
+
+            if (userToBeEdited.user.id == targetToBeEdited.user.id) {
+                context.fail(false) {
+                    styled(
+                        context.i18nContext.get(XpCommand.XP_TRANSFER_I18N_PREFIX.UserIsTheSameAsTarget),
+                        Emotes.LoriFire
+                    )
+                }
+            }
+
+            val guildId = context.guild.idLong
+            val filter = GuildProfiles.guildId eq guildId
+
+            val userProfile = loritta.pudding.transaction { GuildProfiles.selectFirstOrNull { (filter and (GuildProfiles.userId eq userToBeEdited.user.idLong)) } }
+            val targetProfile = loritta.pudding.transaction { GuildProfiles.selectFirstOrNull { (filter and (GuildProfiles.userId eq targetToBeEdited.user.idLong)) } }
+
+            if (userProfile?.get(GuildProfiles.xp)!! <= 0) {
+                context.fail(false) {
+                    styled(
+                        context.i18nContext.get(XpCommand.XP_TRANSFER_I18N_PREFIX.UserHas0Xp),
+                        Emotes.LoriHm
+                    )
+                }
+            }
+
+            val xpTransferMode = XpTransferMode.valueOf(args[options.mode])
+            val targetXp = when (xpTransferMode) {
+                XpTransferMode.ADD -> { (userProfile.get(GuildProfiles.xp)) + (targetProfile?.get(GuildProfiles.xp)?: 0) }
+                XpTransferMode.SET -> { (userProfile.get(GuildProfiles.xp)) }
+            }
+
+            loritta.pudding.transaction {
+                GuildProfiles.update({ filter and (GuildProfiles.userId eq userToBeEdited.user.id.toLong()) }) { it[xp] = 0  }
+                GuildProfiles.update({ filter and (GuildProfiles.userId eq targetToBeEdited.user.id.toLong() )}) { it[xp] = targetXp }
+            }
+
+            if (xpTransferMode == XpTransferMode.SET) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(
+                            XpCommand.XP_TRANSFER_I18N_PREFIX.TranferedXp(
+                                userToBeEdited.user.asMention,
+                                userProfile.get(GuildProfiles.xp), targetToBeEdited.user.asMention, (targetProfile?.get(GuildProfiles.xp) ?: 0)
+                            )
+                        ),
+                        Emotes.LoriShining
+                    )
+                }
+            } else {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(
+                            XpCommand.XP_TRANSFER_I18N_PREFIX.TransferedXpWithAddition(
+                                userToBeEdited.user.asMention, userProfile.get(GuildProfiles.xp), targetToBeEdited.user.asMention
+                            )
+                        ),
+                        Emotes.LoriShining
+                    )
+                    styled(
+                        context.i18nContext.get(
+                            XpCommand.XP_TRANSFER_I18N_PREFIX.AdditionInfo(
+                                targetToBeEdited.user.asMention, (targetProfile?.get(GuildProfiles.xp)?: 0), targetXp
+                            )
+                        ),
+                        Emotes.LoriSunglasses
+                    )
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val declarationPath = loritta.interactionsListener.manager.findDeclarationPath(context.commandDeclaration)
+
+            val fullLabel = buildString {
+                declarationPath.forEach {
+                    when (it) {
+                        is SlashCommandDeclaration -> append(context.i18nContext.get(it.name))
+                        is SlashCommandGroupDeclaration -> append(context.i18nContext.get(it.name))
+                    }
+                    this.append(" ")
+                }
+            }.trim()
+
+            val modeAsString = args.getOrNull(0)
+            val mode = modeAsString?.let {
+                XpTransferMode.values().firstOrNull { context.i18nContext.get(it.shortName).normalize().lowercase() == modeAsString.normalize().lowercase() }
+            }
+
+            if (mode == null) {
+                context.reply(true) {
+                    /* styled(
+                        context.i18nContext.get(I18N_PREFIX.Status.YouNeedToSelectWhatRaffleTypeYouWant),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                    ) */
+
+                    for (availableModificationMode in XpTransferMode.values()) {
+                        styled("**${context.i18nContext.get(availableModificationMode.shortName)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableModificationMode.shortName).lowercase()}`")
+                    }
+                }
+                return null
+            }
+
+            val userAndMember = context.getUserAndMember(1)
+            val userAndMemberTarget = context.getUserAndMember(2)
+
+            if (userAndMember == null || userAndMemberTarget == null) {
+                context.explain()
+                return null
+            }
+
+            context.mentions.injectUser(userAndMember.user)
+            context.mentions.injectUser(userAndMemberTarget.user)
+
+            return mapOf(
+                options.mode to mode.name,
+                options.user to userAndMember,
+                options.target to userAndMemberTarget
+            )
+        }
+    }
+
+    inner class XpRankExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val page = optionalLong("page", XpCommand.XP_RANK_I18N_PREFIX.Options.Page.Text, RankingGenerator.VALID_RANKING_PAGES)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val guild = context.guild
+
+            val userPage = args[options.page] ?: 1L
+            val page = userPage - 1
+
+            val message = createMessage(
+                loritta,
+                context,
+                guild,
+                page
+            )
+
+            context.reply(false) {
+                message()
+            }
+        }
+
+        suspend fun createMessage(
+            loritta: LorittaBot,
+            context: UnleashedContext,
+            guild: Guild,
+            page: Long
+        ): suspend InlineMessage<*>.() -> (Unit) = {
+            styled(
+                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
+                Emotes.LoriReading
+            )
+
+            val (totalCount, profiles) = loritta.pudding.transaction {
+                val totalCount = GuildProfiles.select {
+                    (GuildProfiles.guildId eq guild.id.toLong()) and
+                            (GuildProfiles.isInGuild eq true)
+                }.count()
+
+                val profilesInTheQuery = GuildProfiles.select {
+                    (GuildProfiles.guildId eq guild.id.toLong()) and
+                            (GuildProfiles.isInGuild eq true)
+                }
+                    .orderBy(GuildProfiles.xp to SortOrder.DESC)
+                    .limit(5, page * 5)
+                    .toList()
+
+                Pair(totalCount, profilesInTheQuery)
+            }
+
+            // Calculates the max page
+            val maxPage = ceil(totalCount / 5.0)
+            val maxPageZeroIndexed = maxPage - 1
+
+            files += AttachedFile.fromData(
+                RankingGenerator.generateRanking(
+                    loritta,
+                    page * 5,
+                    guild.name,
+                    guild.icon?.getUrl(512),
+                    profiles.map {
+                        val xp = it[GuildProfiles.xp]
+                        val level = ExperienceUtils.getCurrentLevelForXp(xp)
+
+                        RankingGenerator.UserRankInformation(
+                            it[GuildProfiles.userId],
+                            context.i18nContext.get(XpCommand.XP_RANK_I18N_PREFIX.TotalXpAndLevel(xp, level))
+                        )
+                    }
+                ) {
+                    loritta.pudding.transaction {
+                        GuildProfiles.update({ GuildProfiles.id eq it.toLong() and (GuildProfiles.guildId eq guild.id.toLong()) }) {
+                            it[isInGuild] = false
+                        }
+                    }
+                    null
+                }.toByteArray(ImageFormatType.PNG).inputStream(),
+                "rank.png"
+            )
+
+            actionRow(
+                loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    ButtonStyle.PRIMARY,
+                    builder = {
+                        loriEmoji = Emotes.ChevronLeft
+                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES
+                    }
+                ) {
+                    it.deferAndEditOriginal {
+                        val message = createMessage(loritta, context, guild, page - 1)
+
+                        MessageEdit {
+                            message()
+                        }
+                    }
+                },
+                loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    ButtonStyle.PRIMARY,
+                    builder = {
+                        loriEmoji = Emotes.ChevronRight
+                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
+                    }
+                ) {
+                    it.deferAndEditOriginal {
+                        val message = createMessage(loritta, context, guild, page + 1)
+
+                        MessageEdit {
+                            message()
+                        }
+                    }
+                }
+            )
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val page = context.args.getOrNull(0)?.toLongOrNull()
+
+            if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+                context.reply(false) {
+                    styled(
+                        context.locale["commands.invalidRankingPage"],
+                        Constants.ERROR
+                    )
+                }
+                return null
+            }
+
+            return mapOf(
+                options.page to page
             )
         }
     }
@@ -302,6 +619,11 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     enum class XpModificationMode(val shortName: StringI18nData) {
         ADD(XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Add),
         REMOVE(XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Remove),
+        SET(XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Set)
+    }
+
+    enum class XpTransferMode(val shortName: StringI18nData) {
+        ADD(XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Add),
         SET(XP_EDIT_I18N_PREFIX.Options.Mode.Choice.Set)
     }
 }

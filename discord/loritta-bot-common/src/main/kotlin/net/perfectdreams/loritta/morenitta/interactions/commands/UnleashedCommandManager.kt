@@ -143,7 +143,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))
         register(RepCommand())
-        // register(XpCommand(loritta))
+        register(XpCommand(loritta))
 
         // ===[ ECONOMY ]===
         register(DailyCommand(loritta))

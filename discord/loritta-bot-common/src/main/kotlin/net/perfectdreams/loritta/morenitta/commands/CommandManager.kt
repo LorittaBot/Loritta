@@ -112,8 +112,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ SOCIAL ]======
 		commandMap.add(BackgroundCommand(loritta))
 		commandMap.add(RepCommand(loritta))
-		commandMap.add(RankCommand(loritta))
-		commandMap.add(EditarXPCommand(loritta))
 		commandMap.add(AfkCommand(loritta))
 		commandMap.add(MarryCommand(loritta))
 		commandMap.add(DivorceCommand(loritta))
