@@ -465,6 +465,10 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     val currentInput = it.event.focusedOption.value
 
                     val ticker = it.event.getOption("ticker")?.asString ?: return@autocomplete mapOf()
+                    // Not a valid ticker, bye!
+                    if (ticker !in LorittaBovespaBrokerUtils.validStocksCodes)
+                        return@autocomplete mapOf()
+                    
                     val tickerInfo = loritta.pudding.bovespaBroker.getTicker(ticker.uppercase())
 
                     val quantity = NumberUtils.convertShortenedNumberToLong(it.i18nContext, currentInput) ?: return@autocomplete mapOf(
@@ -612,6 +616,10 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     val currentInput = it.event.focusedOption.value
 
                     val ticker = it.event.getOption("ticker")?.asString ?: return@autocomplete mapOf()
+                    // Not a valid ticker, bye!
+                    if (ticker !in LorittaBovespaBrokerUtils.validStocksCodes)
+                        return@autocomplete mapOf()
+
                     val tickerInfo = loritta.pudding.bovespaBroker.getTicker(ticker.uppercase())
 
                     val quantity = NumberUtils.convertShortenedNumberToLong(it.i18nContext, currentInput) ?: return@autocomplete mapOf(
