@@ -292,7 +292,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             if (raffleType == null) {
                 context.reply(true) {
                     styled(
-                        context.i18nContext.get(I18N_PREFIX.Buy.YouNeedToSelectWhatRaffleTypeYouWant),
+                        context.i18nContext.get(I18N_PREFIX.Status.YouNeedToSelectWhatRaffleTypeYouWant),
                         net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
                     )
 
@@ -478,7 +478,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             if (raffleType == null) {
                 context.reply(true) {
                     styled(
-                        context.i18nContext.get(I18N_PREFIX.Status.YouNeedToSelectWhatRaffleTypeYouWant),
+                        context.i18nContext.get(I18N_PREFIX.Buy.YouNeedToSelectWhatRaffleTypeYouWant),
                         net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
                     )
 
