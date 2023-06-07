@@ -60,6 +60,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.Gamer
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.CalculatorCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.HelpCommand
@@ -139,6 +140,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))
         register(RepCommand())
+        // register(XpCommand(loritta))
 
         // ===[ ECONOMY ]===
         register(DailyCommand(loritta))

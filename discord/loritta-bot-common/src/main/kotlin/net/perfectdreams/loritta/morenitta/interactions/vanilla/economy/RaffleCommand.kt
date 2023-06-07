@@ -472,7 +472,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val raffleTypeAsString = args.getOrNull(0)
             val raffleType = raffleTypeAsString?.let {
-                RaffleType.values().firstOrNull { context.i18nContext.get(it.shortName).normalize() == raffleTypeAsString.normalize() }
+                RaffleType.values().firstOrNull { context.i18nContext.get(it.shortName).normalize().lowercase() == raffleTypeAsString.normalize().lowercase() }
             }
 
             if (raffleType == null) {
@@ -483,7 +483,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
 
                     for (availableRaffleType in RaffleType.values()) {
-                        styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName)}`")
+                        styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName).lowercase()}`")
                     }
                 }
                 return null
