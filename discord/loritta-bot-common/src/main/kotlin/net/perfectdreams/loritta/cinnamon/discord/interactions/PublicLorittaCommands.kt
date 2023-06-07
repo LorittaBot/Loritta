@@ -97,6 +97,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             register(AfkCommand(languageManager))
             register(GenderCommand(languageManager))
+            register(XpCommand(languageManager))
 
             // ===[ UNDERTALE ]===
             register(UndertaleCommand(languageManager))
