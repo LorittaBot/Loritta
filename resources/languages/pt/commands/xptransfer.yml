@@ -1,4 +1,4 @@
-label: "transfer"
+label: "transferir"
 description: "Transfira o XP de usuário para outro no servidor!"
 tranferedXp: "Prontinho! O XP de {user} **({userOldXp, number})** foi transferido para {target}, que tinha **{targetOldXp,number}** de XP!"
 transferedXpWithAddition: "Prontinho! O Xp de {user} **({userOldXp, number})** foi transferido e somado com o Xp de {target}!"

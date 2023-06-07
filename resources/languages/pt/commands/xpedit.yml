@@ -1,4 +1,4 @@
-label: "edit"
+label: "editar"
 description: "Edite o XP de usuário no servidor!"
 editedXp: "Prontinho! O XP de {user} foi alterado de **{oldXp,number}** para **{xp,number}**!"
 level: "Nível {level,number}"
