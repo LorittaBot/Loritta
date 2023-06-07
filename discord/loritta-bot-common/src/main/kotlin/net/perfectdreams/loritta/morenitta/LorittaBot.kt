@@ -1689,14 +1689,14 @@ class LorittaBot(
 	}
 
 	private fun startTasks() {
-		scheduleCoroutineAtFixedRate(ActivityUpdater::class.simpleName!!, 1.minutes, action = activityUpdater)
 		scheduleCoroutineAtFixedRateIfMainReplica(CorreiosPackageInfoUpdater::class.simpleName!!, 15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(CreateYouTubeWebhooksTask::class.simpleName!!, 1.minutes, action = CreateYouTubeWebhooksTask(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaRaffleTask::class.simpleName!!, 1.seconds, action = LorittaRaffleTask(this@LorittaBot))
+		scheduleCoroutineAtFixedRateIfMainReplica(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
+		scheduleCoroutineAtFixedRate(ActivityUpdater::class.simpleName!!, 1.minutes, action = activityUpdater)
 		scheduleCoroutineAtFixedRate(GamerSaferRoleCheckerUpdater::class.simpleName!!, 1.minutes, action = GamerSaferRoleCheckerUpdater(this))
-		scheduleCoroutineAtFixedRate(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {
