@@ -40,6 +40,7 @@ import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.LigarCommand
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -66,7 +67,9 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.Calculator
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.HelpCommand
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
+import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
@@ -347,6 +350,24 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 rootDeclaration,
                 slashDeclaration
             )
+
+            if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
+                if (serverConfig.warnIfBlacklisted) {
+                    if (serverConfig.blacklistedWarning?.isNotEmpty() == true && event.guild != null && event.member != null && event.textChannel != null) {
+                        val generatedMessage = MessageUtils.generateMessage(
+                            serverConfig.blacklistedWarning ?: "???",
+                            listOf(event.member, event.textChannel, event.guild),
+                            event.guild
+                        )
+                        if (generatedMessage != null)
+                            event.textChannel.sendMessage(generatedMessage)
+                                .referenceIfPossible(event.message, serverConfig, true)
+                                .await()
+                    }
+                }
+                // Channel is blocked so let's bail out
+                return true
+            }
 
             // Check if user is banned
             if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
