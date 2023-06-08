@@ -377,6 +377,11 @@ fun Permission.getI18nKey() = when (this) {
     MESSAGE_EXT_STICKER -> I18nKeys.Permissions.UseExternalStickers
     VOICE_STREAM -> I18nKeys.Permissions.Video
     VOICE_START_ACTIVITIES -> I18nKeys.Permissions.StartActivities
+    MANAGE_GUILD_EXPRESSIONS -> I18nKeys.Permissions.ManageGuildExpressions
+    VIEW_CREATOR_MONETIZATION_ANALYTICS -> I18nKeys.Permissions.ViewCreatorMonetizationAnalytics
+    MESSAGE_ATTACH_VOICE_MESSAGE -> I18nKeys.Permissions.MessageAttachVoiceMessage
+    VOICE_USE_SOUNDBOARD -> I18nKeys.Permissions.VoiceUseSoundboard
+    VOICE_USE_EXTERNAL_SOUNDS -> I18nKeys.Permissions.VoiceUseExternalSounds
     UNKNOWN -> I18nKeys.Permissions.UnknownPermission
 }
 

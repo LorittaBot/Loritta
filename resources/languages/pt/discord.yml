@@ -42,6 +42,11 @@ permissions:
   useExternalStickers: "Usar figurinhas externas"
   video: "Vídeo"
   startActivities: "Usar atividades"
+  manageGuildExpressions: "Gerenciar expressões"
+  viewCreatorMonetizationAnalytics: "Ver analíticas de criador"
+  messageAttachVoiceMessage: "Enviar mensagens de voz"
+  voiceUseSoundboard: "Usar efeitos sonoros"
+  voiceUseExternalSounds: "Usar sons externos"
   unknownPermission: "Permissão desconhecida"
 guildFeatures:
   inviteSplash: "Fundo de convite"
