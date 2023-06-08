@@ -6,4 +6,5 @@ object SonhosBundles : LongIdTable() {
     val active = bool("active").index()
     val sonhos = long("sonhos")
     val price = double("price")
+    val bonus = long("bonus").nullable()
 }

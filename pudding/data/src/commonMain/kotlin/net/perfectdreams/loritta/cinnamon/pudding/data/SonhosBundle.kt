@@ -7,5 +7,6 @@ data class SonhosBundle(
     val id: Long,
     val active: Boolean,
     val price: Double,
-    val sonhos: Long
+    val sonhos: Long,
+    val bonus: Long?
 )
