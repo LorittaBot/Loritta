@@ -23,7 +23,8 @@ class GetSonhosBundlesRoute(val m: LorittaDashboardBackend) : BaseRoute("/api/v1
                         it[SonhosBundles.id].value,
                         it[SonhosBundles.active],
                         it[SonhosBundles.price],
-                        it[SonhosBundles.sonhos]
+                        it[SonhosBundles.sonhos],
+                        it[SonhosBundles.bonus]
                     )
                 }
             )

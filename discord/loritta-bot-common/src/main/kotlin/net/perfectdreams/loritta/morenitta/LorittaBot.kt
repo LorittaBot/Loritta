@@ -132,7 +132,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedContro
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.tables.Payments
-import net.perfectdreams.loritta.morenitta.tables.SonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
@@ -862,7 +862,8 @@ class LorittaBot(
 					RaffleRewardSonhosTransactionsLog,
 					Raffles,
 					RaffleTickets,
-					UserAskedRaffleNotifications
+					UserAskedRaffleNotifications,
+					SonhosBundles
 				)
 			}
 		}

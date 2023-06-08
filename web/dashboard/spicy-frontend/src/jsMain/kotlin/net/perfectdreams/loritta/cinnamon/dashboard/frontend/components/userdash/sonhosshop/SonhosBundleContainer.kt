@@ -21,8 +21,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopSc
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundle
 import org.jetbrains.compose.web.attributes.disabled
-import org.jetbrains.compose.web.css.percent
-import org.jetbrains.compose.web.css.width
+import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Li
@@ -69,8 +68,29 @@ fun SonhosBundleContainer(
             }
         }
 
+        var fancyValue = sonhosBundle.sonhos
+        val bonus = sonhosBundle.bonus
+        if (bonus != null) {
+            fancyValue -= bonus
+        }
+
         Div(attrs = { classes("bundle-title") }) {
-            LocalizedText(m.globalState, I18nKeysData.Website.Dashboard.SonhosShop.BundleTitle(sonhosBundle.sonhos))
+            LocalizedText(m.globalState, I18nKeysData.Website.Dashboard.SonhosShop.BundleTitle(fancyValue))
+        }
+
+        if (bonus != null) {
+            Div(attrs = { classes("bundle-bonus") }) {
+                Text("+ ")
+
+                Img(src = "https://assets.perfectdreams.media/loritta/sonhos/bundle-5bcd4860@640w.png") {
+                    style {
+                        height(1.em)
+                    }
+                }
+
+                Text(" ")
+                LocalizedText(m.globalState, I18nKeysData.Website.Dashboard.SonhosShop.BundleBonus(bonus))
+            }
         }
 
         DiscordButton(

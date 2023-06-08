@@ -4,6 +4,7 @@ website:
     sonhosShop:
       title: "Lojinha de Sonhos"
       bundleTitle: "{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}"
+      bundleBonus: "{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de bônus"
       faq:
         whyCanIBuySonhos:
           title: "Por que vocês vendem sonhos? Isso não é injusto com quem não tem dinheiro?"
