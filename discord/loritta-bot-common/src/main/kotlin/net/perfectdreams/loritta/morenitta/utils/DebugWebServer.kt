@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import io.ktor.server.application.*
+import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +20,7 @@ class DebugWebServer(val m: LorittaBot) {
         // 3003 = 30/03, Loritta's birthday!
         // The port is 13003 because Windows seems to reserve port 3003 for other purposes
         // Reserved ports can be checked with "netsh interface ipv4 show excludedportrange protocol=tcp"
-        val server = embeddedServer(Netty, 13003) {
+        val server = embeddedServer(CIO, 13003) {
             routing {
                 // Dumps all currently running coroutines
                 get("/coroutines") {

@@ -10,12 +10,12 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.server.cio.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
-import io.ktor.server.netty.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.sessions.*
@@ -129,7 +129,7 @@ class LorittaWebsite(
 
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig(loritta)
-	lateinit var server: NettyApplicationEngine
+	lateinit var server: CIOApplicationEngine
 	private val typesToCache = listOf(
 		ContentType.Text.CSS,
 		ContentType.Text.JavaScript,
@@ -163,7 +163,7 @@ class LorittaWebsite(
 
 		val routes = DefaultRoutes.defaultRoutes(loritta, this)
 
-		val server = embeddedServer(Netty, loritta.config.loritta.website.port) {
+		val server = embeddedServer(CIO, loritta.config.loritta.website.port) {
 			install(CachingHeaders) {
 				options { call, outgoingContent ->
 					val contentType = outgoingContent.contentType
