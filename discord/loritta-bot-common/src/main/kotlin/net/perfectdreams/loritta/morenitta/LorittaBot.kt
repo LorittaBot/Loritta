@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.utils.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
@@ -58,6 +59,7 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.managers.AudioManager
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.requests.RestConfig
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
@@ -506,6 +508,13 @@ class LorittaBot(
 			.setRawEventsEnabled(true)
 			// We want to override JDA's shutdown hook to store the cache on disk when shutting down
 			.setEnableShutdownHook(false)
+			.apply {
+				val baseUrl = config.loritta.discord.baseUrl
+				if (baseUrl != null) {
+					logger.info { "Using Discord's base URL $baseUrl" }
+					setRestConfig(RestConfig().setBaseUrl("${baseUrl.removeSuffix("/")}/api/v" + JDAInfo.DISCORD_REST_VERSION + "/"))
+				}
+			}
 			.addEventListeners(
 				discordListener,
 				eventLogListener,

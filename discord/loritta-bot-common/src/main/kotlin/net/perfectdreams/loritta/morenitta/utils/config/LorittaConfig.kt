@@ -57,7 +57,8 @@ data class LorittaConfig(
         val maxRequestsPerHost: Int,
         val maxConcurrency: Int,
         val okHttp: JdaOkHttpConfig,
-        val requestLimiter: RequestLimiterConfig
+        val requestLimiter: RequestLimiterConfig,
+        val baseUrl: String?
     ) {
         @Serializable
         data class JdaOkHttpConfig(
