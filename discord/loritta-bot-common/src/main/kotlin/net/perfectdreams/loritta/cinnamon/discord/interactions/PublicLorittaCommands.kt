@@ -65,7 +65,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(MemeMakerCommand(languageManager))
             register(MarkMetaCommand(languageManager))
             register(DrawnMaskCommand(languageManager))
-            register(SadRealityCommand(languageManager))
             register(EveryGroupHasCommand(languageManager))
             register(ThanksFriendsCommand(languageManager))
 

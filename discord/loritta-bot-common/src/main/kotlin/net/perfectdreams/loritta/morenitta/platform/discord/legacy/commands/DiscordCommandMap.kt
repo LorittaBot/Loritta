@@ -140,7 +140,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			AtendenteCommand(loritta),
 			DrawnWordCommand(loritta),
 			EmojiMashupCommand(loritta),
-			TristeRealidadeCommand(loritta),
 
 			// ===[ ROBLOX ]===
 			RbUserCommand(loritta),
