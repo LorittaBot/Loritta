@@ -37,7 +37,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
-    
+
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         val guild = event.guild ?: return
 
@@ -178,8 +178,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                         // Update the giveaway message to indicate that the user left
                                         m.giveawayManager.giveawayMessageUpdateJobs[dbId]?.cancel()
                                         m.giveawayManager.giveawayMessageUpdateJobs[dbId] = GlobalScope.launch(m.coroutineDispatcher) {
-                                            // We have a 5s delay before *really* updating the message
-                                            delay(5.seconds)
+                                            // We have a 1s delay before *really* updating the message
+                                            delay(1.seconds)
 
                                             guild.getGuildMessageChannelById(leftGiveaway.giveaway[Giveaways.textChannelId])
                                                 ?.editMessageById(
