@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
+import dev.minn.jda.ktx.generics.getChannel
 import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.GlobalScope
@@ -9,6 +10,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -31,6 +34,10 @@ import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
 class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+    
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         val guild = event.guild ?: return
 
@@ -38,7 +45,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
             val dbId = event.componentId.substringAfter(":").toLong()
 
             GlobalScope.launch {
-                val deferredEdit = event.interaction.deferEdit()
+                val deferredReply = event.interaction.deferReply(true)
                     .await()
 
                 val serverConfig = m.getOrCreateServerConfig(guild.idLong, true)
@@ -107,32 +114,31 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                 when (state) {
                     GiveawayState.UnknownGiveaway -> {
-                        deferredEdit.sendMessage(
-                            MessageCreate {
+                        deferredReply.editOriginal(
+                            MessageEdit {
                                 styled(
                                     i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.UnknownGiveaway),
                                     Emotes.LoriSob
                                 )
                             }
-                        )
-                            .setEphemeral(true)
-                            .await()
+                        ).await()
                     }
 
                     GiveawayState.AlreadyFinished -> {
-                        deferredEdit.sendMessage(MessageCreate {
-                            styled(
-                                i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.GiveawayHasAlreadyEnded),
-                                Emotes.LoriSob
-                            )
-                        })
-                            .setEphemeral(true)
+                        deferredReply.editOriginal(
+                            MessageEdit {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.GiveawayHasAlreadyEnded),
+                                    Emotes.LoriSob
+                                )
+                            }
+                        )
                             .await()
                     }
 
                     GiveawayState.AlreadyParticipating -> {
-                        deferredEdit.sendMessage(
-                            MessageCreate {
+                        deferredReply.editOriginal(
+                            MessageEdit {
                                 styled(
                                     i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreAlreadyParticipating),
                                     Emotes.LoriSob
@@ -219,54 +225,49 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                     }
                                 )
                             })
-                            .setEphemeral(true)
                             .await()
                     }
 
                     is GiveawayState.MissingRoles -> {
                         if (state.allowedRoles.isAndCondition) {
-                            deferredEdit.sendMessage(
-                                MessageCreate {
+                            deferredReply.editOriginal(
+                                MessageEdit {
                                     styled(
                                         i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.MissingRolesAnd(state.allowedRoles.roleIds.joinToString { "<@&${it}>" })),
                                         Emotes.LoriSob
                                     )
                                 })
-                                .setEphemeral(true)
                                 .await()
                         } else {
-                            deferredEdit.sendMessage(
-                                MessageCreate {
+                            deferredReply.editOriginal(
+                                MessageEdit {
                                     styled(
                                         i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.MissingRolesOr(state.allowedRoles.roleIds.joinToString { "<@&${it}>" })),
                                         Emotes.LoriSob
                                     )
                                 })
-                                .setEphemeral(true)
                                 .await()
                         }
                     }
 
                     is GiveawayState.BlockedRoles -> {
                         if (state.deniedRoles.isAndCondition) {
-                            deferredEdit.sendMessage(
-                                MessageCreate {
+                            deferredReply.editOriginal(
+                                MessageEdit {
                                     styled(
                                         i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.BlockedRolesAnd(state.deniedRoles.roleIds.joinToString { "<@&${it}>" })),
                                         Emotes.LoriSob
                                     )
                                 })
-                                .setEphemeral(true)
                                 .await()
                         } else {
-                            deferredEdit.sendMessage(
-                                MessageCreate {
+                            deferredReply.editOriginal(
+                                MessageEdit {
                                     styled(
                                         i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.BlockedRolesOr(state.deniedRoles.roleIds.joinToString { "<@&${it}>" })),
                                         Emotes.LoriSob
                                     )
                                 })
-                                .setEphemeral(true)
                                 .await()
                         }
                     }
@@ -274,14 +275,13 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     is GiveawayState.Success -> {
                         val giveaway = state.giveaway
 
-                        deferredEdit.sendMessage(
-                            MessageCreate {
+                        deferredReply.editOriginal(
+                            MessageEdit {
                                 styled(
                                     i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreNowParticipating),
                                     Emotes.LoriYay
                                 )
                             })
-                            .setEphemeral(true)
                             .await()
 
                         m.giveawayManager.giveawayMessageUpdateMutexes.getOrPut(dbId) { Mutex() }.withLock {
@@ -291,7 +291,15 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                     // We have a 5s delay before *really* updating the message
                                     delay(5.seconds)
 
-                                    deferredEdit.editOriginal(
+                                    val channel = event.jda.getChannel<MessageChannel>(giveaway[Giveaways.textChannelId])
+
+                                    if (channel == null) {
+                                        logger.warn { "Couldn't update giveaway ${giveaway[Giveaways.id]} because the channel ${giveaway[Giveaways.textChannelId]} doesn't exist!" }
+                                        return@launch
+                                    }
+
+                                    channel.editMessageById(
+                                        giveaway[Giveaways.messageId],
                                         MessageEditData.fromCreateData(
                                             m.giveawayManager.createGiveawayMessage(
                                                 m.languageManager.getI18nContextByLegacyLocaleId(giveaway[Giveaways.locale]),
