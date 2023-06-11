@@ -16,6 +16,8 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 
 class RankCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rank", listOf("top", "leaderboard", "ranking"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.rank.description")
@@ -68,7 +70,7 @@ class RankCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rank", listOf
 				loritta,
 				page * 5,
 				context.guild.name,
-				context.guild.iconUrl,
+				context.guild.getIconUrl(256, ImageFormat.PNG),
 				profiles.map {
 					RankingGenerator.UserRankInformation(
 						it.userId,

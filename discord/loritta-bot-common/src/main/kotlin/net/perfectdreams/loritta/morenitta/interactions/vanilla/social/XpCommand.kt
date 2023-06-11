@@ -33,7 +33,9 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
+import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import net.perfectdreams.loritta.morenitta.utils.normalize
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -537,7 +539,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     loritta,
                     page * 5,
                     guild.name,
-                    guild.icon?.getUrl(512),
+                    context.guild.getIconUrl(256, ImageFormat.PNG),
                     profiles.map {
                         val xp = it[GuildProfiles.xp]
                         val level = ExperienceUtils.getCurrentLevelForXp(xp)

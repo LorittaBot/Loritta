@@ -33,9 +33,7 @@ object RankingGenerator {
 		val graphics = base.createGraphics()
 			.withTextAntialiasing()
 
-		val serverIconUrl = guildIconUrl?.replace("jpg", "png")
-
-		val serverIcon = (serverIconUrl?.let { ImageUtils.downloadImage(it) } ?: ImageUtils.DEFAULT_DISCORD_AVATAR)
+		val serverIcon = (guildIconUrl?.let { ImageUtils.downloadImage(it) } ?: ImageUtils.DEFAULT_DISCORD_AVATAR)
 			.getResizedInstance(282, 282, InterpolationType.BILINEAR)
 
 		graphics.drawImage(serverIcon, 518, -104, null)

@@ -7,8 +7,10 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
+import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import org.jetbrains.exposed.sql.*
 
 class SonhosTopLocalCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("sonhos top local", "atm top local"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
@@ -50,7 +52,7 @@ class SonhosTopLocalCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 						loritta,
 						page * 5,
 						guild.name,
-						guild.iconUrl,
+						guild.getIconUrl(256, ImageFormat.PNG),
 						userData.map {
 							RankingGenerator.UserRankInformation(
 								it[Profiles.id].value,

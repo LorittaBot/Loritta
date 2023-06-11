@@ -7,7 +7,9 @@ import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.BotVotes
+import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
+import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import org.jetbrains.exposed.sql.*
 
 class DiscordBotListTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl top local"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
@@ -58,7 +60,7 @@ class DiscordBotListTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommand
                         loritta,
                         page * 5,
                         guild.name,
-                        guild.iconUrl,
+                        guild.getIconUrl(256, ImageFormat.PNG),
                         userData.map {
                             RankingGenerator.UserRankInformation(
                                 it[userId],

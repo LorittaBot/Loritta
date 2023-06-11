@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils.extensions
 
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
@@ -18,12 +16,15 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
+import net.dv8tion.jda.api.utils.ImageProxy
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 
@@ -409,4 +410,14 @@ fun User.getEffectiveAvatarUrl(format: ImageFormat, imageSize: Int): String {
         // This only exists in png AND doesn't have any other sizes
         "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
     }
+}
+
+/**
+ * Gets the guild's icon URL in the specified [format] and [ímageSize]
+ *
+ * @see getEffectiveAvatarUrlInFormat
+ */
+fun Guild.getIconUrl(size: Int, format: ImageFormat): String? {
+    val iconId = this.iconId ?: return null
+    return String.format(Guild.ICON_URL, this.id, iconId, format.extension)
 }
