@@ -216,7 +216,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                     loritta.lorittaShards.updateCachedUserData(context.user)
                 }
-                
+
                 executor.execute(
                     context,
                     args

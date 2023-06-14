@@ -455,7 +455,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
 
                     return@autocomplete results.map {
-                        "${it.name} (${it.ticker})" to it.ticker.lowercase()
+                        "${it.name} (${it.ticker})" to it.ticker.uppercase()
                     }.take(25).toMap()
                 }
             }
@@ -464,7 +464,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 autocomplete {
                     val currentInput = it.event.focusedOption.value
 
-                    val ticker = it.event.getOption("ticker")?.asString ?: return@autocomplete mapOf()
+                    val ticker = it.event.getOption("ticker")?.asString?.uppercase() ?: return@autocomplete mapOf()
                     // Not a valid ticker, bye!
                     if (ticker !in LorittaBovespaBrokerUtils.validStocksCodes)
                         return@autocomplete mapOf()
@@ -606,7 +606,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
 
                     return@autocomplete results.map {
-                        "${it.name} (${it.ticker})" to it.ticker.lowercase()
+                        "${it.name} (${it.ticker})" to it.ticker
                     }.take(25).toMap()
                 }
             }
@@ -615,7 +615,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 autocomplete {
                     val currentInput = it.event.focusedOption.value
 
-                    val ticker = it.event.getOption("ticker")?.asString ?: return@autocomplete mapOf()
+                    val ticker = it.event.getOption("ticker")?.asString?.uppercase() ?: return@autocomplete mapOf()
                     // Not a valid ticker, bye!
                     if (ticker !in LorittaBovespaBrokerUtils.validStocksCodes)
                         return@autocomplete mapOf()
