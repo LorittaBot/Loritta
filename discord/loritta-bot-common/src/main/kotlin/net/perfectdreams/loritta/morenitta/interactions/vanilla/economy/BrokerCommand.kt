@@ -469,7 +469,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     if (ticker !in LorittaBovespaBrokerUtils.validStocksCodes)
                         return@autocomplete mapOf()
 
-                    val tickerInfo = loritta.pudding.bovespaBroker.getTicker(ticker.uppercase())
+                    val tickerInfo = loritta.pudding.bovespaBroker.getTicker(ticker)
 
                     val quantity = NumberUtils.convertShortenedNumberToLong(it.i18nContext, currentInput) ?: return@autocomplete mapOf(
                         it.i18nContext.get(
@@ -620,7 +620,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     if (ticker !in LorittaBovespaBrokerUtils.validStocksCodes)
                         return@autocomplete mapOf()
 
-                    val tickerInfo = loritta.pudding.bovespaBroker.getTicker(ticker.uppercase())
+                    val tickerInfo = loritta.pudding.bovespaBroker.getTicker(ticker)
 
                     val quantity = NumberUtils.convertShortenedNumberToLong(it.i18nContext, currentInput) ?: return@autocomplete mapOf(
                         it.i18nContext.get(
