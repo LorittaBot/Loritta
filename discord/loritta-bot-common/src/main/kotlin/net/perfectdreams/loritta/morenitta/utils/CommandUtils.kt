@@ -14,7 +14,10 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.morenitta.tables.Profiles
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.update
+import java.sql.Connection
 
 object CommandUtils {
 	/**

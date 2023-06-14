@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -71,6 +72,9 @@ import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.update
+import java.sql.Connection
 import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
@@ -417,6 +421,22 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         return true
                     }
                 }
+            }
+
+            loritta.transaction {
+                lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
+
+                // Set that the user is in the guild
+                val guildId = context.guildId
+                if (guildId != null) {
+                    GuildProfiles.update({
+                        GuildProfiles.userId eq lorittaUser.profile.userId and (GuildProfiles.guildId eq guildId)
+                    }) {
+                        it[GuildProfiles.isInGuild] = true
+                    }
+                }
+
+                loritta.lorittaShards.updateCachedUserData(context.user)
             }
 
             val argMap = executor.convertToInteractionsArguments(context, rawArgumentsAfterDrop)

@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetr
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -44,6 +45,9 @@ import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.update
 import org.postgresql.util.PGobject
 import java.util.*
 
@@ -197,6 +201,22 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
                     return@launchMessageJob
 
+                loritta.transaction {
+                    lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
+
+                    // Set that the user is in the guild
+                    val guildId = context.guildId
+                    if (guildId != null) {
+                        GuildProfiles.update({
+                            GuildProfiles.userId eq lorittaUser.profile.userId and (GuildProfiles.guildId eq guildId)
+                        }) {
+                            it[GuildProfiles.isInGuild] = true
+                        }
+                    }
+
+                    loritta.lorittaShards.updateCachedUserData(context.user)
+                }
+                
                 executor.execute(
                     context,
                     args
