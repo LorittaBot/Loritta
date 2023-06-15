@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.withTextAntialiasing
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.asPomeloOrLegacyTag
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -31,16 +32,18 @@ object User128AvatarText {
         val stringYBase = y + 10
         val stringXBase = x + 1
 
+        // Text
+        val tag = user.asPomeloOrLegacyTag
+
         // Outline
         for (xPlus in -1..1) {
             for (yPlus in -1..1) {
-                graphics.drawString(user.asTag, stringXBase + xPlus, stringYBase + yPlus)
+                graphics.drawString(tag, stringXBase + xPlus, stringYBase + yPlus)
             }
         }
 
         graphics.color = Color.WHITE
-        // Text
-        graphics.drawString(user.asTag, stringXBase, stringYBase)
+        graphics.drawString(tag, stringXBase, stringYBase)
 
         graphics.font = loritta.graphicsFonts.bebasNeueRegular.deriveFont(22f)
 

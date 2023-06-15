@@ -421,3 +421,10 @@ fun Guild.getIconUrl(size: Int, format: ImageFormat): String? {
     val iconId = this.iconId ?: return null
     return String.format(Guild.ICON_URL, this.id, iconId, format.extension)
 }
+
+/**
+ * Gets the [User]'s pomelo (new username system) tag in a `@username` format, or gets the [User]'s legacy (old username system) in a `Username#1234` format,
+ * depending if the user has already migrated to the new username system or not.
+ */
+val User.asPomeloOrLegacyTag
+    get() = if (this.discriminator == "0000") { "@${this.name}" } else this.asTag
