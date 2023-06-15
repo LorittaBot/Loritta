@@ -83,7 +83,7 @@ class ThanksFriendsCommand : SlashCommandDeclarationWrapper  {
 
                     if (noPermissionToQuery) {
                         styled(context.i18nContext.get(I18nKeysData.Commands.UsersFill.NotEnoughUsersPermissionsTip), Emotes.LoriReading)
-                    } else if (context.guildOrNull != null) {
+                    } else if (context.guildOrNull == null) {
                         styled(context.i18nContext.get(I18nKeysData.Commands.UsersFill.NotEnoughUsersGuildTip), Emotes.LoriReading)
                     }
                 }
