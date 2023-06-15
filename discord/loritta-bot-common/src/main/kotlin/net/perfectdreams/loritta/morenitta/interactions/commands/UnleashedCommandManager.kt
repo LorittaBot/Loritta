@@ -54,6 +54,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.DailyCom
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFightCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.EveryGroupHasCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.SadRealityCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
@@ -147,7 +148,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ IMAGES ]==
         register(SadRealityCommand())
-        
+        register(EveryGroupHasCommand())
+
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))
         register(RepCommand())

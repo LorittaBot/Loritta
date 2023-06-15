@@ -99,7 +99,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 		// =======[ DIVERSÃO ]======
 		commandMap.add(BemBoladaCommand(loritta))
-		commandMap.add(TodoGrupoTemCommand(loritta))
 		commandMap.add(TioDoPaveCommand(loritta))
 		commandMap.add(VemDeZapCommand(loritta))
 

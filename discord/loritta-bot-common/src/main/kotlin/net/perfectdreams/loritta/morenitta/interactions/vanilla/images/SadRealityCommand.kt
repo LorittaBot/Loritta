@@ -65,7 +65,6 @@ class SadRealityCommand : SlashCommandDeclarationWrapper  {
                 )
             )
 
-
             // Not enough users!
             if (!successfullyFilled) {
                 context.fail(false) {

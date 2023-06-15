@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.EveryGroupHasCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.ThanksFriendsCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
