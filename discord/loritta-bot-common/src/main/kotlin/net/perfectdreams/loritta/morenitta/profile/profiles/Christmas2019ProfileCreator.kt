@@ -56,7 +56,6 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 		val marriedWith = if (marriedWithId != null) { loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 
 		var xpLocal: Long? = null
 		var localPosition: Long? = null
@@ -93,7 +92,7 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 		drawBadges(resizedBadges, graphics)
 
 		graphics.font = latoBlack16
-		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics, globalPosition, localPosition, xpLocal, globalEconomyPosition)
+		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics, null, localPosition, xpLocal, globalEconomyPosition)
 
 		graphics.font = latoRegular22
 
@@ -158,11 +157,7 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: ProfileGuildInfoData?, graphics: Graphics, globalPosition: Long?, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long?): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
-
-		if (globalPosition != null)
-			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
-		else
-			userInfo.add("${userProfile.xp} XP")
+		userInfo.add("${userProfile.xp} XP")
 
 		// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
 		if (guild != null) {

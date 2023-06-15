@@ -104,14 +104,9 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 		val shiftY = 291
 
 		graphics.font = latoBlack20
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		graphics.drawText(loritta, "Global", 4, 21 + shiftY, 244)
 		graphics.font = latoBold20
-
-		if (globalPosition != null)
-			graphics.drawText(loritta, "#$globalPosition / ${userProfile.xp} XP", 4, 39  + shiftY, 244)
-		else
-			graphics.drawText(loritta, "${userProfile.xp} XP", 4, 39  + shiftY, 244)
+		graphics.drawText(loritta, "${userProfile.xp} XP", 4, 39  + shiftY, 244)
 
 		if (guild != null) {
 			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)

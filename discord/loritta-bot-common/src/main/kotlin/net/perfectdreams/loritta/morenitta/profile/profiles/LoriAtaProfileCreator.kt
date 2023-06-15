@@ -37,11 +37,7 @@ class LoriAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
-		if (globalPosition != null)
-			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
-		else
-			userInfo.add("${userProfile.xp} XP")
+		userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
 			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)

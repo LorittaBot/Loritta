@@ -103,11 +103,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 		graphics.font = latoBlack20
 		graphics.drawText(loritta, "Global", 159, 21 + shiftY, 800 - 6)
 		graphics.font = latoBold20
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
-		if (globalPosition != null)
-			graphics.drawText(loritta, "#$globalPosition / ${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
-		else
-			graphics.drawText(loritta, "${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
+		graphics.drawText(loritta, "${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
 
 		if (guild != null) {
 			val localProfile = loritta.newSuspendedTransaction {

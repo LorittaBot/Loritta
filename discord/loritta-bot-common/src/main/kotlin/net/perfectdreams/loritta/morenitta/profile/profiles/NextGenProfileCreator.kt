@@ -140,11 +140,7 @@ class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 		val userInfo = mutableListOf<String>()
 		graphics.drawText(loritta, "Global", 232, 157)
 		userInfo.add("Global")
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
-		if (globalPosition != null)
-			graphics.drawText(loritta, "#$globalPosition / ${userProfile.xp} XP", 232, 173)
-		else
-			graphics.drawText(loritta, "${userProfile.xp} XP", 232, 173)
+		graphics.drawText(loritta, "${userProfile.xp} XP", 232, 173)
 
 		if (guild != null) {
 			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)

@@ -60,8 +60,6 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
-
 		var xpLocal: Long? = null
 		var localPosition: Long? = null
 
@@ -97,7 +95,7 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 			drawBadges(resizedBadges, graphics)
 
 			graphics.font = latoBlack16
-			val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics, globalPosition, localPosition, xpLocal, globalEconomyPosition)
+			val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics, null, localPosition, xpLocal, globalEconomyPosition)
 
 			graphics.font = latoRegular22
 

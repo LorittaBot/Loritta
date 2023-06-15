@@ -51,18 +51,6 @@ object ProfileUtils {
     }
 
     /**
-     * Gets the user's global position in the experience ranking
-     *
-     * @param  userProfile the user's profile
-     * @return the user's current global position in the experience ranking
-     */
-    suspend fun getGlobalExperiencePosition(loritta: LorittaBot, userProfile: Profile) =
-        // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any XP, we just return null! :3
-        if (userProfile.xp >= 100_000L)
-            loritta.pudding.sonhos.getSonhosRankPositionBySonhos(userProfile.money)
-        else null
-
-    /**
      * Gets the user's global position in the economy ranking
      *
      * @param  userProfile the user's profile

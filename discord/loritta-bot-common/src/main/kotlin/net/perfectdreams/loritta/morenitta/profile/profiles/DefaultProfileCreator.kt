@@ -32,16 +32,16 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 	}
 
 	override suspend fun create(
-        sender: ProfileUserInfoData,
-        user: ProfileUserInfoData,
-        userProfile: Profile,
-        guild: ProfileGuildInfoData?,
-        badges: List<BufferedImage>,
-        locale: BaseLocale,
-        i18nContext: I18nContext,
-        background: BufferedImage,
-        aboutMe: String,
-        allowedDiscordEmojis: List<Snowflake>?
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: Profile,
+		guild: ProfileGuildInfoData?,
+		badges: List<BufferedImage>,
+		locale: BaseLocale,
+		i18nContext: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/modern/profile_wrapper_blurple.png")
 		val profileWrapperOverlay = readImageFromResources("/profile/modern/profile_wrapper_blurple_overlay.png")
@@ -86,11 +86,7 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 			}
 		}
 
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
-		if (globalPosition != null)
-			drawSection(graphics, latoBlack20, latoBold20, "Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
-		else
-			drawSection(graphics, latoBlack20, latoBold20, "Global", "${userProfile.xp} XP", 562, 21)
+		drawSection(graphics, latoBlack20, latoBold20, "Global", "${userProfile.xp} XP", 562, 21)
 
 		if (guild != null) {
 			val guildIcon = LorittaUtils.downloadImage(loritta, guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
