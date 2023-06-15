@@ -65,7 +65,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(MemeMakerCommand(languageManager))
             register(MarkMetaCommand(languageManager))
             register(DrawnMaskCommand(languageManager))
-            register(ThanksFriendsCommand(languageManager))
 
             // ===[ VIDEOS ]===
             register(CarlyAaahCommand(languageManager))

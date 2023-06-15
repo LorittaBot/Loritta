@@ -1,12 +1,17 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
 import net.dv8tion.jda.api.utils.AttachedFile
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
@@ -16,9 +21,9 @@ import net.perfectdreams.loritta.morenitta.utils.UserUtils
 import net.perfectdreams.loritta.morenitta.utils.images.userAvatarCollage
 import java.awt.Color
 
-class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
+class ThanksFriendsCommand : SlashCommandDeclarationWrapper  {
     companion object {
-        val I18N_PREFIX = I18nKeysData.Commands.Command.Everygrouphas
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Thanksfriends
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
@@ -30,12 +35,15 @@ class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
 
     inner class SadRealityExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
-            val user1 = optionalUser("user1", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Popular.Male))
-            val user2 = optionalUser("user2", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Quiet.Male))
-            val user3 = optionalUser("user3", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Clown.Male))
-            val user4 = optionalUser("user4", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Nerd.Male))
-            val user5 = optionalUser("user5", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Fanboy.Male))
-            val user6 = optionalUser("user6", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Cranky.Male))
+            val user1 = optionalUser("user1", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Thanks))
+            val user2 = optionalUser("user2", I18N_PREFIX.Options.User2.Text(I18N_PREFIX.Slot.For))
+            val user3 = optionalUser("user3", I18N_PREFIX.Options.User3.Text(I18N_PREFIX.Slot.Being))
+            val user4 = optionalUser("user4", I18N_PREFIX.Options.User4.Text(I18N_PREFIX.Slot.The))
+            val user5 = optionalUser("user5", I18N_PREFIX.Options.User5.Text(I18N_PREFIX.Slot.NotYou))
+            val user6 = optionalUser("user6", I18N_PREFIX.Options.User6.Text(I18N_PREFIX.Slot.Best))
+            val user7 = optionalUser("user7", I18N_PREFIX.Options.User7.Text(I18N_PREFIX.Slot.Friends))
+            val user8 = optionalUser("user8", I18N_PREFIX.Options.User8.Text(I18N_PREFIX.Slot.Of))
+            val user9 = optionalUser("user9", I18N_PREFIX.Options.User9.Text(I18N_PREFIX.Slot.All))
         }
 
         override val options = Options()
@@ -49,6 +57,9 @@ class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
             val user4FromArguments = args[options.user4]
             val user5FromArguments = args[options.user5]
             val user6FromArguments = args[options.user6]
+            val user7FromArguments = args[options.user7]
+            val user8FromArguments = args[options.user8]
+            val user9FromArguments = args[options.user9]
 
             val (listOfUsers, successfullyFilled, noPermissionToQuery) = UserUtils.fillUsersFromRecentMessages(
                 context,
@@ -58,7 +69,10 @@ class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
                     user3FromArguments?.user,
                     user4FromArguments?.user,
                     user5FromArguments?.user,
-                    user6FromArguments?.user
+                    user6FromArguments?.user,
+                    user7FromArguments?.user,
+                    user8FromArguments?.user,
+                    user9FromArguments?.user
                 )
             )
 
@@ -75,63 +89,65 @@ class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
                 }
             }
 
-            val profileSettings = context.loritta.pudding.users.getProfileSettingsOfUsers(
-                listOfUsers.map { UserId(it.idLong) }
-            )
-
-            val result = userAvatarCollage(3, 2) {
-                localizedGenderedSlot(
+            val result = userAvatarCollage(3, 3) {
+                localizedSlot(
                     context.i18nContext,
                     listOfUsers[0],
                     Color.WHITE,
-                    profileSettings,
-                    I18N_PREFIX.Slot.Popular.Male,
-                    I18N_PREFIX.Slot.Popular.Female
+                    I18N_PREFIX.Slot.Thanks
                 )
-                localizedGenderedSlot(
+                localizedSlot(
                     context.i18nContext,
                     listOfUsers[1],
                     Color.WHITE,
-                    profileSettings,
-                    I18N_PREFIX.Slot.Quiet.Male,
-                    I18N_PREFIX.Slot.Quiet.Female
+                    I18N_PREFIX.Slot.For
                 )
-                localizedGenderedSlot(
+                localizedSlot(
                     context.i18nContext,
                     listOfUsers[2],
                     Color.WHITE,
-                    profileSettings,
-                    I18N_PREFIX.Slot.Clown.Male,
-                    I18N_PREFIX.Slot.Clown.Female
+                    I18N_PREFIX.Slot.Being
                 )
-                localizedGenderedSlot(
+                localizedSlot(
                     context.i18nContext,
                     listOfUsers[3],
                     Color.WHITE,
-                    profileSettings,
-                    I18N_PREFIX.Slot.Nerd.Male,
-                    I18N_PREFIX.Slot.Nerd.Female
+                    I18N_PREFIX.Slot.The
                 )
-                localizedGenderedSlot(
+                localizedSlot(
                     context.i18nContext,
                     listOfUsers[4],
-                    Color.WHITE,
-                    profileSettings,
-                    I18N_PREFIX.Slot.Fanboy.Male,
-                    I18N_PREFIX.Slot.Fanboy.Female
+                    Color.RED,
+                    I18N_PREFIX.Slot.NotYou
                 )
-                localizedGenderedSlot(
+                localizedSlot(
                     context.i18nContext,
                     listOfUsers[5],
                     Color.WHITE,
-                    profileSettings,
-                    I18N_PREFIX.Slot.Cranky.Male,
-                    I18N_PREFIX.Slot.Cranky.Female
+                    I18N_PREFIX.Slot.Best
+                )
+                localizedSlot(
+                    context.i18nContext,
+                    listOfUsers[6],
+                    Color.WHITE,
+                    I18N_PREFIX.Slot.Friends
+                )
+                localizedSlot(
+                    context.i18nContext,
+                    listOfUsers[7],
+                    Color.WHITE,
+                    I18N_PREFIX.Slot.Of
+                )
+                localizedSlot(
+                    context.i18nContext,
+                    listOfUsers[8],
+                    Color.WHITE,
+                    I18N_PREFIX.Slot.All
                 )
             }.generate(context.loritta)
 
             context.reply(false) {
-                files += AttachedFile.fromData(result.toByteArray(ImageFormatType.PNG).inputStream(), "every_group_has.png")
+                files += AttachedFile.fromData(result.toByteArray(ImageFormatType.PNG).inputStream(), "thanks_friends.png")
             }
         }
 

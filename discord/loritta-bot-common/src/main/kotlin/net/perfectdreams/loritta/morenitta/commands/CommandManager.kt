@@ -75,7 +75,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(CepoCommand(loritta))
 		commandMap.add(DeusesCommand(loritta))
 		commandMap.add(GangueCommand(loritta))
-		commandMap.add(AmigosCommand(loritta))
 		commandMap.add(DiscordiaCommand(loritta))
 		commandMap.add(AmizadeCommand(loritta))
 		commandMap.add(PerdaoCommand(loritta))

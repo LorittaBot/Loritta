@@ -1,4 +1,6 @@
 label: "todogrupotem"
+examples:
+  - "@MrPowerGamerBR @Nightdavisao @Arth @Kaike Carlos @DanielaGC_ @hechfx |-| Edição com os avatares de usuários pela menção"
 description: "Todo grupo tem estes tipos de pessoas... incluindo o seu!"
 notEnoughUsers: "Não existem membros suficientes para eu escolher os tipos de pessoas do seu grupo de amigos, desculpe..."
 slot:
