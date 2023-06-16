@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.UserAndMember
 import net.perfectdreams.loritta.morenitta.utils.ApplicationInfoUtils
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.asPomeloOrLegacyTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 
@@ -95,7 +96,7 @@ object UserInfoExecutor {
 
                     append(" ")
 
-                    append(user.name)
+                    append(user.globalName ?: user.name)
                 }
                 url = "https://discord.com/users/${user.id}"
 
@@ -106,7 +107,7 @@ object UserInfoExecutor {
                 )
                 field(
                     "${Emotes.LoriLabel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}",
-                    "`${user.name}#${user.discriminator}`",
+                    "`${user.asPomeloOrLegacyTag}`",
                     true
                 )
                 field(
@@ -124,7 +125,7 @@ object UserInfoExecutor {
 
                 embed {
                     author(context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InfoAboutTheMember))
-                    title = member.nickname ?: user.name
+                    title = member.nickname ?: user.globalName ?: user.name
 
                     field(
                         "${Emotes.LoriCalendar} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.AccountJoinDate)}",
