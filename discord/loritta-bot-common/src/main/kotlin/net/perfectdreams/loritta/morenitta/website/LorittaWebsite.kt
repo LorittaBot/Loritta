@@ -33,13 +33,7 @@ import net.perfectdreams.loritta.morenitta.website.rpc.processors.Processors
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.*
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.HttpRedirectException
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.alreadyHandledStatus
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.Error404View
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -209,7 +203,7 @@ class LorittaWebsite(
 						)
 					} else {
 						logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
-						val hostHeader = call.request.host()
+						val hostHeader = call.request.hostFromHeader()
 						call.sessions.clear<LorittaJsonWebSession>()
 						call.respondRedirect("https://$hostHeader/dashboard", true)
 					}
@@ -230,7 +224,7 @@ class LorittaWebsite(
 						)
 					} else {
 						logger.warn { "Token exchange exception! Redirecting to dashboard... $cause" }
-						val hostHeader = call.request.host()
+						val hostHeader = call.request.hostFromHeader()
 						call.sessions.clear<LorittaJsonWebSession>()
 						call.respondRedirect("https://$hostHeader/dashboard", true)
 					}
