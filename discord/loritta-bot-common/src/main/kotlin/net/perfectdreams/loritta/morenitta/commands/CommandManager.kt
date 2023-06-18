@@ -198,6 +198,10 @@ class CommandManager(val loritta: LorittaBot) {
 				return true
 		}
 
+		return false
+	}
+
+	suspend fun matchesNashornCommands(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
 		// Checking custom commands
 		// To avoid unnecessary databases retrievals, we are going to check if the message starts with the server prefix or with Loritta's mention
 		val nashornCommands = loritta.newSuspendedTransaction {

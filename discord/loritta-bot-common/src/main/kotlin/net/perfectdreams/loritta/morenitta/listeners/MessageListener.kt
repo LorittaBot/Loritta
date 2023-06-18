@@ -493,11 +493,6 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 			// Executar comandos
 			var start = System.nanoTime()
-			if (loritta.interactionsListener.manager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, i18nContext, lorittaUser))
-				return true
-			logIfEnabled(enableProfiling) { "Checking for InteraKTions Unleashed map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
-
-			start = System.nanoTime()
 			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, i18nContext, lorittaUser))
 				return true
 			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
@@ -506,6 +501,16 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, i18nContext, lorittaUser))
 				return true
 			logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
+
+			start = System.nanoTime()
+			if (loritta.interactionsListener.manager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, i18nContext, lorittaUser))
+				return true
+			logIfEnabled(enableProfiling) { "Checking for InteraKTions Unleashed map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
+
+			start = System.nanoTime()
+			if (loritta.legacyCommandManager.matchesNashornCommands(lorittaMessageEvent, rawArguments, serverConfig, locale, i18nContext, lorittaUser))
+				return true
+			logIfEnabled(enableProfiling) { "Checking for legacy command manager (nashorn commands) commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
 		}
 
 		return false
