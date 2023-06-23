@@ -199,6 +199,18 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 																	println(roleId)
 																	println(verifyEveryX)
 
+																	val roleCount = screen.gamerSaferVerificationRoles.map {
+																		it.roleId
+																	}.distinct().size
+
+																	val staffCount = screen.gamerSaferVerificationRoles.size
+
+																	if (roleCount >= 3)
+																		return@onClick
+
+																	if (staffCount >= 20)
+																		return@onClick
+
 																	screen.gamerSaferVerificationRoles.add(
 																		GamerSaferVerificationUserAndRole(
 																			userId.toLong(),
