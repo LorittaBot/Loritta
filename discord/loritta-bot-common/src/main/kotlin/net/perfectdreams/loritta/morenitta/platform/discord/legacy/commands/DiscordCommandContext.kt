@@ -115,7 +115,10 @@ class DiscordCommandContext(
 						Message.MentionType.HERE
 					)
 					.addContent(content)
-					.setEmbeds(embed)
+					.apply {
+						if (embed != null)
+							setEmbeds(embed)
+					}
 					.build()
 			)
 				.addFiles(FileUpload.fromData(file, fileName))
@@ -132,7 +135,10 @@ class DiscordCommandContext(
 					Message.MentionType.HERE
 				)
 				.addContent(content)
-				.setEmbeds(embed)
+				.apply {
+					if (embed != null)
+						setEmbeds(embed)
+				}
 				.build()
 		)
 			.addFiles(FileUpload.fromData(inputStream, fileName))
