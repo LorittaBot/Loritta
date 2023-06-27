@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 
@@ -421,6 +422,49 @@ fun Guild.getIconUrl(size: Int, format: ImageFormat): String? {
     val iconId = this.iconId ?: return null
     return String.format(Guild.ICON_URL, this.id, iconId, format.extension)
 }
+
+/**
+ * Gets the [User]'s name within a markdown inline code block, with their name mention and ID.
+ */
+fun User.asUserNameCodeBlockPreviewTag(
+    stripCodeMarksFromInput: Boolean = true,
+    stripLinksFromInput: Boolean = true
+): String {
+    val globalName = this.globalName
+    val previewName = globalName ?: name
+
+    var previewNameStripped = previewName
+    if (stripCodeMarksFromInput)
+        previewNameStripped = previewNameStripped.stripCodeMarks()
+    if (stripLinksFromInput)
+        previewNameStripped = previewNameStripped.stripLinks()
+
+    var nameStripped = name
+    if (stripCodeMarksFromInput)
+        nameStripped = nameStripped.stripCodeMarks()
+    if (stripLinksFromInput)
+        nameStripped = nameStripped.stripLinks()
+
+    return "`$previewNameStripped` (`@${nameStripped}` | `$id`)"
+}
+
+/**
+ * Gets the [User]'s global name in a `Global Name` format, or gets the [User]'s legacy (old username system) in a `Username#1234` format,
+ * depending if the user has already migrated to the new username system or not.
+ */
+val User.asGlobalNameOrLegacyTag: String
+    get() {
+        val globalName = this.globalName
+        val hasPomelo = this.discriminator == "0000"
+
+        if (globalName != null)
+            return globalName
+
+        return if (hasPomelo)
+            this.name
+        else
+            this.asTag
+    }
 
 /**
  * Gets the [User]'s pomelo (new username system) tag in a `@username` format, or gets the [User]'s legacy (old username system) in a `Username#1234` format,
