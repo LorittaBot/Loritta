@@ -439,13 +439,20 @@ fun User.asUserNameCodeBlockPreviewTag(
     if (stripLinksFromInput)
         previewNameStripped = previewNameStripped.stripLinks()
 
+    val hasPomelo = this.discriminator == "0000"
     var nameStripped = name
     if (stripCodeMarksFromInput)
         nameStripped = nameStripped.stripCodeMarks()
     if (stripLinksFromInput)
         nameStripped = nameStripped.stripLinks()
 
-    return "`$previewNameStripped` (`@${nameStripped}` | `$id`)"
+    val nameDisplay = if (hasPomelo) {
+        "@$nameStripped"
+    } else {
+        "$nameStripped#${discriminator}"
+    }
+
+    return "`$previewNameStripped` (`$nameDisplay` | `$id`)"
 }
 
 /**
