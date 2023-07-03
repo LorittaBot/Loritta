@@ -196,9 +196,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         var slashDeclaration: SlashCommandDeclaration? = null
 
         // If there's no root label, then it is impossible for us to check the results...
-        val level1Label = rawArguments.getOrNull(0)?.normalize() ?: return false
-        val level2Label = rawArguments.getOrNull(1)?.normalize()
-        val level3Label = rawArguments.getOrNull(2)?.normalize()
+        val level1Label = rawArguments.getOrNull(0)?.lowercase()?.normalize() ?: return false
+        val level2Label = rawArguments.getOrNull(1)?.lowercase()?.normalize()
+        val level3Label = rawArguments.getOrNull(2)?.lowercase()?.normalize()
 
         var argumentsToBeDropped = 0
 
@@ -309,7 +309,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         continue@absolutePathLoop // Too smol, the current command is a better match
 
                     for ((index, pathSection) in absolutePathSplit.withIndex()) {
-                        val rawArgument = rawArguments.getOrNull(index)?.normalize() ?: continue@absolutePathLoop
+                        val rawArgument = rawArguments.getOrNull(index)?.lowercase()?.normalize() ?: continue@absolutePathLoop
 
                         if (pathSection.normalize() == rawArgument) {
                             argumentsToBeDropped++
