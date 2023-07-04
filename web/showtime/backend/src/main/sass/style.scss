@@ -135,16 +135,25 @@ body {
   visibility: hidden;
 }
 
+// The "image-rendering: smooth" is to avoid artifacts on the image's edges, due to the face being "weirdly" cropped lmao
+.eyes-open-pose {
+  // visibility: hidden;
+  image-rendering: smooth;
+}
+
 .blinking-pose {
   visibility: hidden;
+  image-rendering: smooth;
 }
 
 .blushing-pose {
   visibility: hidden;
+  image-rendering: smooth;
 }
 
 .dark-sweater-pose {
   visibility: hidden;
+  image-rendering: smooth;
 }
 
 #inner-content {

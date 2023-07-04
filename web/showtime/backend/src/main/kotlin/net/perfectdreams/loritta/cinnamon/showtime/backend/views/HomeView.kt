@@ -53,7 +53,7 @@ class HomeView(
                 // Ordem: Do primeiro (a base) para o último
                 imgSrcSetFromEtherealGambi(
                     showtimeBackend,
-                    showtimeBackend.images.lorittaJumbotron,
+                    showtimeBackend.images.lorittaJumbotronBase,
                     "png",
                     "(max-width: 1366px) 570px"
                 )
@@ -64,6 +64,14 @@ class HomeView(
                     "(max-width: 1366px) 570px"
                 ) {
                     classes = classes + "dark-sweater-pose"
+                }
+                imgSrcSetFromEtherealGambi(
+                    showtimeBackend,
+                    showtimeBackend.images.lorittaJumbotronEyesOpen,
+                    "png",
+                    "(max-width: 1366px) 570px"
+                ) {
+                    classes = classes + "eyes-open-pose"
                 }
                 imgSrcSetFromEtherealGambi(
                     showtimeBackend,

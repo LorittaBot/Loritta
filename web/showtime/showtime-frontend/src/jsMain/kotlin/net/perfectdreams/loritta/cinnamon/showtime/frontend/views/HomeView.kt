@@ -31,8 +31,7 @@ class HomeView(val showtime: ShowtimeFrontend) : DokyoView() {
             val x = (it.asDynamic().pageX - offset.left) / blushingPose.offsetWidth // Se usar "selfie.offsetWidth", sempre irá retornar 0 pois as imagens são absolutas
             val y = (it.asDynamic().pageY - offset.top) / selfie.offsetHeight
 
-            // debug("x: $x; y: $y")
-            if (x in 0.22..0.32 && y in 0.29..0.39) {
+            if (x in 0.39..0.43 && y in 0.37 ..0.41) {
                 blushingPose.style.visibility = "visible"
             }
         }

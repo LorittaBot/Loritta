@@ -19,6 +19,11 @@ $min-lori-width: 980px;
     100% { background-position: 0px -1000px, 0px 0px; }
 }
 
+@keyframes loritta-breathing {
+    0% { transform: scaleY(100%); }
+    100% { transform: scaleY(98%); }
+}
+
     .bouncy-arrow {
         color: white;
         position: absolute;
@@ -110,8 +115,10 @@ $min-lori-width: 980px;
         position: absolute;
         bottom: 0;
         left: 3.5vw;
-        height: 92.5vh;
+        height: 100vh;
         z-index: 1;
+        animation: loritta-breathing 3s infinite alternate;
+        transform-origin: center bottom;
 
         img {
             height: 100%;

@@ -33,10 +33,11 @@ class EtherealGambiImages(private val etherealGambiClient: EtherealGambiClient) 
     val lorittaImages = registerImagePreload("/loritta/loritta-images")
     val lorittaFortnite = registerImagePreload("/loritta/loritta-fortnite")
 
-    val lorittaJumbotron = registerImagePreload("/loritta/loritta-jumbotron/loritta-v2")
-    val lorittaJumbotronDark = registerImagePreload("/loritta/loritta-jumbotron/loritta-v2-dark")
-    val lorittaJumbotronBlush = registerImagePreload("/loritta/loritta-jumbotron/loritta-v2-blush")
-    val lorittaJumbotronBlink = registerImagePreload("/loritta/loritta-jumbotron/loritta-v2-blink")
+    val lorittaJumbotronBase = registerImagePreload("/loritta/loritta-jumbotron/loritta-v3-outline12px-base")
+    val lorittaJumbotronEyesOpen = registerImagePreload("/loritta/loritta-jumbotron/loritta-v3-outline12px-eyes")
+    val lorittaJumbotronDark = registerImagePreload("/loritta/loritta-jumbotron/loritta-v3-outline12px-dark")
+    val lorittaJumbotronBlush = registerImagePreload("/loritta/loritta-jumbotron/loritta-v3-outline12px-blush")
+    val lorittaJumbotronBlink = registerImagePreload("/loritta/loritta-jumbotron/loritta-v3-outline12px-blink")
 
     val lorittaRichHeathecliff = registerImagePreload("/loritta/loritta-rich-heathecliff")
 
