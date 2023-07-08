@@ -464,15 +464,6 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     "<:kotlin:453714186925637642>",
                 )
 
-                val cachedChannels = ShardManager::class.members
-                    .filter {
-                        it.name.endsWith("ChannelCache")
-                    }
-                    .map {
-                        it.call(lorittaShards.shardManager) as SnowflakeCacheView<*>
-                    }
-                    .sumOf { it.size() }
-
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedGuilds)}:** ${lorittaShards.shardManager.guildCache.size()}")
                 styled("**${context.i18nContext.get(NERD_I18N_PREFIX.CachedUsers)}:** ${lorittaShards.shardManager.userCache.size()}")
 
