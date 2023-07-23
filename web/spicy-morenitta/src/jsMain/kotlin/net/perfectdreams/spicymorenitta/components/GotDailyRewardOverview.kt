@@ -1,3 +1,4 @@
+
 package net.perfectdreams.spicymorenitta.components
 
 import androidx.compose.runtime.Composable
@@ -174,11 +175,19 @@ fun GotDailyRewardOverview(
             }
 
             A(href = "https://tiktok.com/@lorittamorenittabot", attrs = {
-                classes("button", "purple")
+                classes("button", "black")
                 target(ATarget.Blank)
                 attr("style", "justify-content: center; align-items: center; display: flex;")
             }) {
                 I(attrs = { classes("fab", "fa-tiktok") })
+            }
+
+            A(href = "https://www.twitch.tv/lorittamorenitta", attrs = {
+                classes("button", "purple")
+                target(ATarget.Blank)
+                attr("style", "justify-content: center; align-items: center; display: flex;")
+            }) {
+                I(attrs = { classes("fab", "fa-twitch") })
             }
         }
 
