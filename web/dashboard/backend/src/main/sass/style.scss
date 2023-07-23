@@ -68,17 +68,17 @@ h2 {
 }
 
 nav#mobile-left-sidebar {
-    background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
+    background: #2b2d31;
     height: 50px;
     display: flex;
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
     z-index: 1;
     align-items: center;
     justify-content: space-between;
-    box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+    box-shadow: rgba(0, 101, 255, 0.3) 0px 0px 15px; // Shadow
     color: white;
 
     @include bp('medium') {
@@ -137,10 +137,10 @@ nav#left-sidebar {
     flex-shrink: 0; // Do not shink the sidebar!
     box-shadow: initial; // Shadow
     z-index: 2; // Make the left sidebar be on top of the right sidebar, fixes the shadow
-    color: white;
-    background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
-    // Seems weird but this is only used for small breakpoints
-    top: 0;
+    color: #333333;
+    background: #f2f3f5;
+    // Seems weird but this is used for mobile
+    top: 50px;
     // Again, for small breakpoints
     // We don't use 100vh because Chrome Mobile has a dynamic navbar that causes issues, this fixes the issue, albeit the page scroll animation becomes a bit crappy
     // https://stackoverflow.com/questions/37112218/css3-100vh-not-constant-in-mobile-browser
@@ -162,9 +162,8 @@ nav#left-sidebar {
     // Used for mobile
     &.is-open {
         visibility: visible;
-        top: 0;
         left: 0%;
-        box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px; // Shadow
         transform: translate(0%);
     }
 
@@ -183,7 +182,7 @@ nav#left-sidebar {
         position: sticky;
         top: 0; // These two are REQUIRED for sticky position to work
         left: 0;
-        box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px; // Shadow
     }
 
     > .entries {
@@ -196,7 +195,7 @@ nav#left-sidebar {
 
         > .divider {
             width: 100%;
-            border: 1px solid #ffffff57;
+            border: 1px solid #ebedef;
         }
 
         > .category {
@@ -241,7 +240,7 @@ nav#left-sidebar {
     }
 
     > .user-info-wrapper {
-        background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 79, 201) 0%, rgb(0, 69, 176) 100%) repeat scroll 0% 0%;
+        background: #ebedef;
         height: 60px;
 
         > .user-info {
