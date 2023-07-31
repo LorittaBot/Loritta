@@ -2,10 +2,10 @@ package net.perfectdreams.loritta.morenitta.website.session
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.utils.gson
-import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.toWebSessionIdentification
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -80,6 +80,7 @@ data class LorittaJsonWebSession(
 			val username: String,
 			val discriminator: String,
 			val verified: Boolean,
+			val globalName: String?,
 			val email: String?,
 			val avatar: String?,
 			val createdAt: Long,

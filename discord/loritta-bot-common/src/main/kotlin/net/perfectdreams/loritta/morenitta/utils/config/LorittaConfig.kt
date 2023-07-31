@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.utils.config
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
-import net.dv8tion.jda.api.OnlineStatus
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -131,6 +130,7 @@ data class LorittaConfig(
         val maxGuildTries: Int,
         val sessionHex: String,
         val sessionName: String,
+        val sessionDomain: String,
         val spicyMorenittaJsPath: String?,
     ) {
         @Serializable

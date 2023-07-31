@@ -263,7 +263,7 @@ class LorittaWebsite(
 
 				cookie<LorittaJsonWebSession>(loritta.config.loritta.website.sessionName) {
 					cookie.path = "/"
-					cookie.domain = loritta.config.loritta.website.url.split("/").dropLast(1).last().split(":").first()
+					cookie.domain = loritta.config.loritta.website.sessionDomain
 					cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
 					transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
 				}
