@@ -213,6 +213,27 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             UserId(info[CachedDiscordUsers.id].value),
             info[CachedDiscordUsers.name],
             info[CachedDiscordUsers.discriminator],
+            info[CachedDiscordUsers.globalName],
+            info[CachedDiscordUsers.avatarId]
+        )
+    }
+
+    /**
+     * Gets [name]'s cached user info from the database if it is present (Pomelo)
+     *
+     * @param userId the user's ID
+     * @return the cached user info or null if it doesn't exist
+     */
+    suspend fun getCachedUserInfoByPomeloName(name: String) = pudding.transaction {
+        val info = CachedDiscordUsers.selectFirstOrNull {
+            CachedDiscordUsers.name eq name and (CachedDiscordUsers.discriminator eq "0000")
+        } ?: return@transaction null
+
+        CachedUserInfo(
+            UserId(info[CachedDiscordUsers.id].value),
+            info[CachedDiscordUsers.name],
+            info[CachedDiscordUsers.discriminator],
+            info[CachedDiscordUsers.globalName],
             info[CachedDiscordUsers.avatarId]
         )
     }
@@ -232,6 +253,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             UserId(info[CachedDiscordUsers.id].value),
             info[CachedDiscordUsers.name],
             info[CachedDiscordUsers.discriminator],
+            info[CachedDiscordUsers.globalName],
             info[CachedDiscordUsers.avatarId]
         )
     }
@@ -250,6 +272,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         userId: UserId,
         name: String,
         discriminator: String,
+        globalName: String?,
         avatarId: String?
     ) = pudding.transaction {
         val info = CachedDiscordUsers.selectFirstOrNull {
@@ -261,6 +284,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             CachedDiscordUsers.update({ CachedDiscordUsers.id eq userId.value.toLong() }) {
                 it[CachedDiscordUsers.name] = name
                 it[CachedDiscordUsers.discriminator] = discriminator
+                it[CachedDiscordUsers.globalName] = globalName
                 it[CachedDiscordUsers.avatarId] = avatarId
                 it[CachedDiscordUsers.updatedAt] = now
             }

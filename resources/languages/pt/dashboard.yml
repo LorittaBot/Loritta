@@ -71,3 +71,17 @@ website:
       description:
         - "Para sua segurança, você precisa verificar sua conta do Discord antes de comprar algo."
         - "Após verificar, volte aqui para continuar a sua compra!"
+    lorittaSpawner:
+      pocketLoritta: "Loritta de Bolso"
+      doYouWantSomeCompany:
+        - "Quer uma amiguinha pra te fazer companhia?"
+        - "Invoque a Loritta & Amigas para te fazerem companhia enquanto você configura o seu servidor! Ao invocar, elas ficarão perambulando pela sua tela, correndo e pulando feito doidinhas."
+        - "Mas se elas começarem a te cansar, clique para limpar para mandar as pestinhas pras cucuias."
+      spawnPlayer: "Invocar {name}"
+      cleanUp: "Limpar"
+      activityLevel:
+        title: "Nível de Atividade"
+        types:
+          low: "Bicho Preguiça"
+          medium: "Mediano"
+          high: "Tomaram Energético"

@@ -1,11 +1,13 @@
 package net.perfectdreams.loritta.serializable
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import kotlin.time.Duration.Companion.days
 
 @Serializable
 data class GamerSaferVerificationUserAndRole(
     val userId: Long,
+    val cachedUserInfo: CachedUserInfo?,
     val roleId: Long,
     val time: String
 ) {

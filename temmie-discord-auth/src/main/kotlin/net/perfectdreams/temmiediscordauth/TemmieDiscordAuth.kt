@@ -282,6 +282,8 @@ class TemmieDiscordAuth(
 		val locale: String?,
 		@SerializedName("verified")
 		val verified: Boolean,
+		@SerializedName("global_name")
+		val globalName: String?,
 		@SerializedName("email")
 		val email: String?,
 		@SerializedName("flags")
