@@ -15,7 +15,7 @@
     }
 
     &:disabled {
-        opacity: 0.7;
+        opacity: 0.5;
         cursor: not-allowed;
 
         &:hover {
@@ -28,6 +28,14 @@
 
         &:hover {
             background-color: darken(#298546, 10%);
+        }
+    }
+
+    &.danger {
+        background-color: #da373c;
+
+        &:hover {
+            background-color: darken(#da373c, 10%);
         }
     }
 }

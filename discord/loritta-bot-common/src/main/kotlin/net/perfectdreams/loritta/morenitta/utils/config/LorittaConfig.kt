@@ -94,7 +94,8 @@ data class LorittaConfig(
             val name: String,
             val minShard: Int,
             val maxShard: Int,
-            val websiteUrl: String
+            val websiteUrl: String,
+            val rpcUrl: String
         ) {
             fun getUrl(loritta: LorittaBot) = DiscordUtils.getUrlForLorittaClusterId(loritta, id)
             fun getUserAgent(loritta: LorittaBot) = getUserAgent(loritta.config.loritta.environment)

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.GlobalState
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
@@ -20,9 +20,9 @@ fun LocalizedText(i18nContext: I18nContext, keyData: StringI18nData) {
 fun LocalizedText(globalState: GlobalState, keyData: StringI18nData) {
     val state = globalState.i18nContext
     when (state) {
-        is State.Failure -> Text(keyData.key.key)
-        is State.Loading -> Text("...")
-        is State.Success -> LocalizedText(state.value, keyData)
+        is Resource.Failure -> Text(keyData.key.key)
+        is Resource.Loading -> Text("...")
+        is Resource.Success -> LocalizedText(state.value, keyData)
     }
 }
 

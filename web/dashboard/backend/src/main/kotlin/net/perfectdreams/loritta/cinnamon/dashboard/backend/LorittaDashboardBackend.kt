@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend
 
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -12,38 +15,51 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
-import net.perfectdreams.loritta.common.locale.LanguageManager
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.HomeRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.LocalizedRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.ShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.SonhosShopRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetLanguageInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetSpicyInfoRoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.PostLorittaDashboardRpcProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.GetSonhosBundlesRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.PostSonhosBundlesRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetSearchUserRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetSelfUserInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.PutShipEffectsRoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.dashboard.configure.ConfigureGamerSaferVerifyRoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.Processors
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.PerfectPaymentsClient
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.config.RootConfig
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
+import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import java.util.*
 
 class LorittaDashboardBackend(
     val config: RootConfig,
     val languageManager: LanguageManager,
-    val pudding: Pudding
+    val pudding: Pudding,
+    val replicasInfo: LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.Success,
+    val http: HttpClient
 ) {
+    val processors = Processors(this)
     private val routes = listOf(
         HomeRoute(this),
         ShipEffectsRoute(this),
         SonhosShopRoute(this),
+        ConfigureGamerSaferVerifyRoute(this),
 
         // ===[ API ]===
+        PostLorittaDashboardRpcProcessor(this),
         GetSpicyInfoRoute(this),
         GetSelfUserInfoRoute(this),
         GetShipEffectsRoute(this),
@@ -122,5 +138,16 @@ class LorittaDashboardBackend(
             }
         }
         server.start(true)
+    }
+
+    suspend inline fun <reified T : LorittaInternalRPCResponse> makeRPCRequest(
+        cluster: LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.LorittaCluster,
+        rpc: LorittaInternalRPCRequest
+    ): T {
+        return Json.decodeFromString<T>(
+            http.post("${cluster.rpcUrl.removeSuffix("/")}/rpc") {
+                setBody(Json.encodeToString<LorittaInternalRPCRequest>(rpc))
+            }.bodyAsText()
+        )
     }
 }

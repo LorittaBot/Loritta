@@ -15,12 +15,22 @@ fun UserInfoSidebar(userIdentification: GetUserIdentificationResponse) {
         }
 
         Div(attrs = { classes("user-tag") }) {
-            Div(attrs = { classes("name") }) {
-                Text(userIdentification.username)
-            }
+            val globalName = userIdentification.globalName
 
-            Div(attrs = { classes("discriminator") }) {
-                Text("#${userIdentification.discriminator}")
+            if (globalName != null) {
+                // If the user has a global name set, use it as the name
+                Div(attrs = { classes("name") }) {
+                    Text(globalName)
+                }
+
+                // And then use the user's username below it
+                Div(attrs = { classes("discriminator") }) {
+                    Text("@${userIdentification.username}")
+                }
+            } else {
+                Div(attrs = { classes("name") }) {
+                    Text("@${userIdentification.username}")
+                }
             }
         }
     }

@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.utils
 
-import dev.kord.common.entity.DiscordUser
 import io.ktor.server.application.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.*
 
 class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: LorittaJsonWebSession) {
@@ -61,16 +61,17 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
         )
     }
 
-    private fun convertToWebSessionIdentification(discordUser: DiscordUser): LorittaJsonWebSession.UserIdentification {
+    private fun convertToWebSessionIdentification(userIdentification: TemmieDiscordAuth.UserIdentification): LorittaJsonWebSession.UserIdentification {
         val now = System.currentTimeMillis()
 
         return LorittaJsonWebSession.UserIdentification(
-            discordUser.id.value.toString(),
-            discordUser.username,
-            discordUser.discriminator,
-            discordUser.verified.discordBoolean,
-            discordUser.email.value,
-            discordUser.avatar,
+            userIdentification.id,
+            userIdentification.username,
+            userIdentification.discriminator,
+            userIdentification.verified,
+            userIdentification.globalName,
+            userIdentification.email,
+            userIdentification.avatar,
             now,
             now
         )

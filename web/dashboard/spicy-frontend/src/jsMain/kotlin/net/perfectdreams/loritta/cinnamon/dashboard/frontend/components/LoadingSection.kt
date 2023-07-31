@@ -17,3 +17,17 @@ fun LoadingSection(i18nContext: I18nContext) {
         }
     }
 }
+
+/**
+ * A [LoadingSection] that fills the entire height of the parent div, centralizing the loading section
+ */
+@Composable
+fun FillContentLoadingSection(i18nContext: I18nContext) {
+    Div(attrs = { classes("loading-section", "fill-content-loading-section") }) {
+        Img(LoadingGifs.list.random())
+
+        Div {
+            LocalizedText(i18nContext, I18nKeysData.Website.Dashboard.Loading)
+        }
+    }
+}

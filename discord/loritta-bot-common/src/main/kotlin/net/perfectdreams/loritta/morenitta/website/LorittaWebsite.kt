@@ -17,6 +17,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.cachingheaders.*
+import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
@@ -275,6 +276,8 @@ class LorittaWebsite(
 					transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
 				}
 			}
+
+			install(Compression)
 
 			routing {
 				static {

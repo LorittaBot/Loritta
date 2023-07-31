@@ -14,6 +14,7 @@ object SVGIconManager {
     val bars by lazy { register(svgBars, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val times by lazy { register(svgTimes, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val cogs by lazy { register(svgCogs, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val user by lazy { register(svgUser, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val idCard by lazy { register(svgIdCard, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val images by lazy { register(svgImages, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val moneyBillWave by lazy { register(svgMoneyBillWave, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
@@ -95,6 +96,10 @@ external val svgBars: dynamic
 @JsModule("./icons/fontawesome5/solid/cogs.svg")
 @JsNonModule
 external val svgCogs: dynamic
+
+@JsModule("./icons/fontawesome5/solid/user.svg")
+@JsNonModule
+external val svgUser: dynamic
 
 @JsModule("./icons/fontawesome5/solid/id-card.svg")
 @JsNonModule

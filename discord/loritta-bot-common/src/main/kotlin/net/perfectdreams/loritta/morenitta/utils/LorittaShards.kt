@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.sharding.ShardManager
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
-import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
@@ -163,7 +163,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		val results = searchUserInAllLorittaClusters(username, discriminator, limit = 1)
 		val result = results.firstOrNull()
 		if (result != null) {
-			updateCachedUserData(result["id"].long, result["name"].string, result["discriminator"].string, result["avatarId"].nullString)
+			updateCachedUserData(result["id"].long, result["name"].string, result["discriminator"].string, result["globalName"].nullString, result["avatarId"].nullString)
 			return CachedUserInfo(
 				result["id"].long,
 				result["name"].string,
@@ -193,10 +193,10 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		return user
 	}
 
-	suspend fun updateCachedUserData(user: User) = updateCachedUserData(user.idLong, user.name, user.discriminator, user.avatarId)
+	suspend fun updateCachedUserData(user: User) = updateCachedUserData(user.idLong, user.name, user.discriminator, user.globalName, user.avatarId)
 
 	@Suppress("IMPLICIT_CAST_TO_ANY")
-	suspend fun updateCachedUserData(id: Long, name: String, discriminator: String, avatarId: String?) {
+	suspend fun updateCachedUserData(id: Long, name: String, discriminator: String, globalName: String?, avatarId: String?) {
 		val now = System.currentTimeMillis()
 		loritta.newSuspendedTransaction {
 			val cachedData = CachedDiscordUsers.select { CachedDiscordUsers.id eq id }.firstOrNull()
@@ -205,6 +205,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 				CachedDiscordUsers.update({ CachedDiscordUsers.id eq id }) {
 					it[CachedDiscordUsers.name] = name
 					it[CachedDiscordUsers.discriminator] = discriminator
+					it[CachedDiscordUsers.globalName] = globalName
 					it[CachedDiscordUsers.avatarId] = avatarId
 					it[CachedDiscordUsers.updatedAt] = now
 				}
@@ -213,6 +214,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 					it[CachedDiscordUsers.id] = EntityID(id, CachedDiscordUsers)
 					it[CachedDiscordUsers.name] = name
 					it[CachedDiscordUsers.discriminator] = discriminator
+					it[CachedDiscordUsers.globalName] = globalName
 					it[CachedDiscordUsers.avatarId] = avatarId
 					it[createdAt] = now
 					it[updatedAt] = now

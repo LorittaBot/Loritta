@@ -4,7 +4,6 @@ import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
@@ -64,6 +63,7 @@ class GetGamerSaferVerifyConfigProcessor(val m: LorittaWebsite) : LorittaRpcProc
                     }.map {
                         GamerSaferVerificationUserAndRole(
                             it[GamerSaferRequiresVerificationUsers.user],
+                            null,
                             it[GamerSaferRequiresVerificationUsers.role],
                             it[GamerSaferRequiresVerificationUsers.checkPeriod].milliseconds.toIsoString()
                         )

@@ -8,6 +8,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":web:dashboard:dashboard-common"))
     implementation(project(":pudding:client"))
+    implementation(project(":temmie-discord-auth"))
 
     // Logging Stuff
     implementation(libs.logback.classic)
@@ -29,9 +30,6 @@ dependencies {
 
     // Sequins
     implementation("net.perfectdreams.sequins.ktor:base-route:1.0.4")
-
-    // Kord Common, we use it for model classes
-    implementation("dev.kord:kord-common:0.8.x-lori-fork-20221109.172532-16")
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
@@ -57,6 +55,13 @@ jib {
     }
 }
 
+// DEV VERSION:
+// val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsDevelopmentExecutableCompileSync")
+// I don't know why this is required when developing
+// val jsBrowserDistributionX = tasks.getByPath(":web:dashboard:spicy-frontend:jsProductionExecutableCompileSync")
+// jsBrowserDistributionX.dependsOn(jsBrowserDistributionX)
+// val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDevelopmentWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+// PROD VERSION:
 val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDistribution")
 val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 

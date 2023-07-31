@@ -1,6 +1,22 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.common
 
 object RoutePaths {
-    const val SHIP_EFFECTS = "/users/@me/ship-effects"
-    const val SONHOS_SHOP = "/users/@me/sonhos-shop"
+    val SHIP_EFFECTS = listOf(
+        ScreenPathElement.StringPathElement("users"),
+        ScreenPathElement.StringPathElement("@me"),
+        ScreenPathElement.StringPathElement("ship-effects")
+    )
+
+    val SONHOS_SHOP = listOf(
+        ScreenPathElement.StringPathElement("users"),
+        ScreenPathElement.StringPathElement("@me"),
+        ScreenPathElement.StringPathElement("sonhos-shop")
+    )
+
+    val GUILD_GAMERSAFER_CONFIG = listOf(
+        ScreenPathElement.StringPathElement("guilds"),
+        ScreenPathElement.OptionPathElement("guildId"),
+        ScreenPathElement.StringPathElement("configure"),
+        ScreenPathElement.StringPathElement("gamersafer-verify")
+    )
 }

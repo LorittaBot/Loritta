@@ -22,6 +22,7 @@ object ContextStringToUserInfoConverter {
                 UserId(user.id.value),
                 user.username,
                 user.discriminator,
+                null,
                 user.data.avatar
             )
         }

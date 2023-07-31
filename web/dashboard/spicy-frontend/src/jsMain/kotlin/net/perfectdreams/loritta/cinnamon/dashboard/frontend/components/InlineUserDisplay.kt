@@ -19,11 +19,22 @@ fun InlineUserDisplay(userInfo: CachedUserInfo) {
         }
 
         Div {
-            Text(userInfo.name + "#" + userInfo.discriminator + " (")
-            Code {
-                Text(userInfo.id.value.toString())
+            val globalName = userInfo.globalName
+
+            if (globalName != null) {
+                Text("$globalName (")
+                Text("@${userInfo.name} / ")
+                Code {
+                    Text(userInfo.id.value.toString())
+                }
+                Text(")")
+            } else {
+                Text(userInfo.name + " (")
+                Code {
+                    Text(userInfo.id.value.toString())
+                }
+                Text(")")
             }
-            Text(")")
         }
     }
 }

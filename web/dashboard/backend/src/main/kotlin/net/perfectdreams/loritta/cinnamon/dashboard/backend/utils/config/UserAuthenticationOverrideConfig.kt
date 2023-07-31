@@ -8,5 +8,6 @@ data class UserAuthenticationOverrideConfig(
     val id: Long,
     val name: String,
     val discriminator: String,
-    val avatarId: String
+    val globalName: String?,
+    val avatarId: String?
 )

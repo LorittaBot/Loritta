@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.Requir
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.receiveAndDecodeRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.TemmieDiscordAuth
 import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.PutShipEffectsRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.NotEnoughSonhosErrorResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.PutShipEffectsResponse
@@ -19,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ShipEffectSonhosTransactionsLog
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId

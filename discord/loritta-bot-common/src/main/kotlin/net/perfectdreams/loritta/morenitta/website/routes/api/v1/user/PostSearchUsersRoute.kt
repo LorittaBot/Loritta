@@ -39,23 +39,24 @@ class PostSearchUsersRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 		}
 
 		val array = loritta.lorittaShards.getUsers()
-				.asSequence() // With asSequence, the sequence will respect the "take" and won't process more than the defined limit
-				.filter { filter.invoke(it) }
-				.map {
-					jsonObject(
-							"id" to it.idLong,
-							"name" to it.name,
-							"discriminator" to it.discriminator,
-							"avatarId" to it.avatarId
-					)
-				}
-				.run {
-					if (limit != null)
-						this.take(limit)
-					else this
-				}
-				.toList()
-				.toJsonArray()
+			.asSequence() // With asSequence, the sequence will respect the "take" and won't process more than the defined limit
+			.filter { filter.invoke(it) }
+			.map {
+				jsonObject(
+					"id" to it.idLong,
+					"name" to it.name,
+					"discriminator" to it.discriminator,
+					"globalName" to it.globalName,
+					"avatarId" to it.avatarId
+				)
+			}
+			.run {
+				if (limit != null)
+					this.take(limit)
+				else this
+			}
+			.toList()
+			.toJsonArray()
 
 		call.respondJson(array)
 	}

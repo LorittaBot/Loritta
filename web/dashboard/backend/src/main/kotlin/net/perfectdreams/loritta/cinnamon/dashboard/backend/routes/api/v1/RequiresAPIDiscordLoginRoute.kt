@@ -7,9 +7,9 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.TemmieDiscordAuth
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.lorittaSession
 import net.perfectdreams.sequins.ktor.BaseRoute
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path: String) : BaseRoute(path) {
     companion object {
@@ -32,6 +32,7 @@ abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path
                     m.config.userAuthenticationOverride.name,
                     m.config.userAuthenticationOverride.discriminator,
                     true,
+                    m.config.userAuthenticationOverride.globalName,
                     "me@loritta.website",
                     m.config.userAuthenticationOverride.avatarId,
                     System.currentTimeMillis(),

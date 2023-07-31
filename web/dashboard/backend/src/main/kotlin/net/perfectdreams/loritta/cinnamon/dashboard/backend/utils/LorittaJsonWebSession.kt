@@ -1,11 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.utils
 
-import dev.kord.common.entity.DiscordUser
-import io.ktor.server.application.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 
 data class LorittaJsonWebSession(
@@ -27,6 +22,7 @@ data class LorittaJsonWebSession(
         val username: String,
         val discriminator: String,
         val verified: Boolean,
+        val globalName: String? = null,
         val email: String? = null, // Looks like this can be missing
         val avatar: String? = null, // Looks like this can be missing
         val createdAt: Long,

@@ -3,6 +3,12 @@
     align-items: center;
     font-size: 2em;
     flex-direction: column;
+    text-align: center;
+
+    &.fill-content-loading-section {
+        height: 100%;
+        justify-content: center;
+    }
 
     img {
         width: 192px;

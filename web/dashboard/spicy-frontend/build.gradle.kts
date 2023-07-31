@@ -31,6 +31,8 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(project(":web:dashboard:dashboard-common"))
                 implementation(libs.ktor.client.js)
+                implementation(npm("pixi.js", "7.2.4"))
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-extensions:1.0.1-pre.599")
             }
 
             resources.srcDir("../../resources/") // Include folders from the resources web folder

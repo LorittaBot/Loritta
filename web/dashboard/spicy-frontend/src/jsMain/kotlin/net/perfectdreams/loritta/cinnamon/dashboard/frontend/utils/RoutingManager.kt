@@ -20,11 +20,16 @@ class RoutingManager(private val m: LorittaDashboardFrontend) {
     var screenState by mutableStateOf<Screen?>(null)
 
     fun switchBasedOnPath(i18nContext: I18nContext, path: String, backInHistory: Boolean) {
+        val currentScreen = screenState
+
         logger.info { "Trying to find a screen that matches $path" }
 
-        val screenPath = ScreenPath.all.firstOrNull { it.matches(path) }
-        if (screenPath != null)
-            switch(i18nContext, screenPath.createScreen(m, path), backInHistory)
+        for (availablePath in ScreenPath.all) {
+            val result = availablePath.matches(path)
+            if (result is ScreenPath.ScreenPathMatchResult.Success) {
+                switch(i18nContext, availablePath.createScreen(m, currentScreen, path, result.parsedArguments), backInHistory)
+            }
+        }
     }
 
     fun switch(i18nContext: I18nContext, screen: Screen, backInHistory: Boolean) {
@@ -47,7 +52,7 @@ class RoutingManager(private val m: LorittaDashboardFrontend) {
         // https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
         logger.info { "Updating document title to match new screen and pushing new state (if $backInHistory is true)" }
         document.title = "${i18nContext.get(screen.createTitle())} • ${i18nContext.get(I18nKeysData.Website.Dashboard.Title)}"
-        val newPath = "/${i18nContext.get(I18nKeysData.Website.Dashboard.LocalePathId)}${screen.createPath().build()}"
+        val newPath = "/${i18nContext.get(I18nKeysData.Website.Dashboard.LocalePathId)}${screen.createPathWithArguments().build()}"
 
         // We don't want to push state when the user is going back their history, because if we did, that would create a "infinite loop" that the browser pops the old state... then we insert the state again
         if (!backInHistory)

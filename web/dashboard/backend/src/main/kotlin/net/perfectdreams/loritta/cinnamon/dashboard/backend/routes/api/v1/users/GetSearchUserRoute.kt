@@ -7,8 +7,8 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBack
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondJson
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.TemmieDiscordAuth
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class GetSearchUserRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRoute(m, "/api/v1/users/search") {
     override suspend fun onAuthenticatedRequest(
@@ -18,6 +18,7 @@ class GetSearchUserRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRo
     ) {
         val id = call.parameters["id"]?.toLong()
         val tag = call.parameters["tag"]
+        val pomelo = call.parameters["pomelo"]
 
         if (id != null) {
             val cachedUserInfo = m.pudding.users.getCachedUserInfoById(UserId(id))
@@ -39,6 +40,15 @@ class GetSearchUserRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRo
                 // TODO: Query via Discord's API too
                 call.respondText("", status = HttpStatusCode.NotFound)
             }
-        } else error("Tried to search users, but I couldn't find any parameters to do it!")
+        } else if (pomelo != null) {
+            val cachedUserInfo = m.pudding.users.getCachedUserInfoByPomeloName(pomelo)
+
+            if (cachedUserInfo != null) {
+                call.respondJson(cachedUserInfo)
+            } else {
+                // TODO: Query via Discord's API too
+                call.respondText("", status = HttpStatusCode.NotFound)
+            }
+        } else  error("Tried to search users, but I couldn't find any parameters to do it!")
     }
 }

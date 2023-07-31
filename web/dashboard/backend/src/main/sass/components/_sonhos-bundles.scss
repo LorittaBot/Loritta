@@ -38,7 +38,7 @@
 
         .bundle-title {
             font-size: 2em;
-            color: #29a6fe;
+            color: var(--loritta-blue);
             font-weight: bold;
             text-align: center;
             overflow-wrap: anywhere; // Just because Loritta Canary has loooong bundle titles
@@ -49,7 +49,7 @@
             font-weight: 1000;
             text-align: center;
             overflow-wrap: anywhere;
-            color: #29a6fe;
+            color: var(--loritta-blue);
         }
 
         button {

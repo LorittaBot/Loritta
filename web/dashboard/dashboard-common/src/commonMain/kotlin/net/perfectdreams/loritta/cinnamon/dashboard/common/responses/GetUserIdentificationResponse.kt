@@ -8,6 +8,7 @@ data class GetUserIdentificationResponse(
     val id: UserId,
     val username: String,
     val discriminator: String,
+    val globalName: String?,
     val avatarId: String?,
     val verified: Boolean,
     val money: Long,

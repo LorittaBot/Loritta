@@ -1,36 +1,74 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths
 
 import net.perfectdreams.loritta.cinnamon.dashboard.common.RoutePaths
+import net.perfectdreams.loritta.cinnamon.dashboard.common.ScreenPathElement
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.Screen
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopScreen
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.*
 
-sealed class ScreenPath {
-    object ShipEffectsScreenPath : ScreenPath() {
-        override fun matches(path: String) = path == build()
-
-        override fun createScreen(m: LorittaDashboardFrontend, path: String) = ShipEffectsScreen(m)
-
-        override fun build() = RoutePaths.SHIP_EFFECTS
+sealed class ScreenPath(val elements: List<ScreenPathElement>) {
+    object ShipEffectsScreenPath : ScreenPath(RoutePaths.SHIP_EFFECTS) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ): Screen = ShipEffectsScreen(m)
     }
 
-    object SonhosShopScreenPath : ScreenPath() {
-        override fun matches(path: String) = path == build()
-
-        override fun createScreen(m: LorittaDashboardFrontend, path: String) = SonhosShopScreen(m)
-
-        override fun build() = RoutePaths.SONHOS_SHOP
+    object SonhosShopScreenPath : ScreenPath(RoutePaths.SONHOS_SHOP) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ): Screen = SonhosShopScreen(m)
     }
 
-    abstract fun matches(path: String): Boolean
-    abstract fun createScreen(m: LorittaDashboardFrontend, path: String): Screen
-    abstract fun build(): String
+    object ConfigureGuildGamerSaferVerifyPath : ScreenPath(RoutePaths.GUILD_GAMERSAFER_CONFIG) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ) = ConfigureGuildGamerSaferVerifyScreen(m, parsedArguments["guildId"]!!.toLong())
+    }
+
+    fun matches(path: String): ScreenPathMatchResult {
+        val split = path.split("/").drop(1)
+        val parsedArguments = mutableMapOf<String, String>()
+        for ((index, e) in split.withIndex()) {
+            val el = elements.getOrNull(index) ?: return ScreenPathMatchResult.Failure
+
+            when (el) {
+                is ScreenPathElement.OptionPathElement -> {
+                    parsedArguments[el.parameterId] = e
+                }
+                is ScreenPathElement.StringPathElement -> {
+                    if (e != el.text)
+                        return ScreenPathMatchResult.Failure
+                }
+            }
+        }
+        return ScreenPathMatchResult.Success(parsedArguments)
+    }
+
+    abstract fun createScreen(
+        m: LorittaDashboardFrontend,
+        currentScreen: Screen?,
+        path: String,
+        parsedArguments: Map<String, String>
+    ): Screen
+
+    sealed class ScreenPathMatchResult {
+        object Failure : ScreenPathMatchResult()
+        class Success(val parsedArguments: Map<String, String>) : ScreenPathMatchResult()
+    }
 
     companion object {
         val all = listOf(
             ShipEffectsScreenPath,
-            SonhosShopScreenPath
+            SonhosShopScreenPath,
+            ConfigureGuildGamerSaferVerifyPath
         )
     }
 }

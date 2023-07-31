@@ -15,11 +15,11 @@ import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.morenitta.tables.BotVotes
-import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.morenitta.tables.SonhosTransaction

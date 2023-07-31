@@ -5,11 +5,13 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferUserRoles
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class GamerSaferRoleCheckerUpdater(val m: LorittaBot) : RunnableCoroutine {
@@ -29,14 +31,14 @@ class GamerSaferRoleCheckerUpdater(val m: LorittaBot) : RunnableCoroutine {
             for (gsVerificationRole in gsVerificationRoles) {
                 try {
                     val lastUserVerification = GamerSaferSuccessfulVerifications.select {
-                        GamerSaferSuccessfulVerifications.user eq gsVerificationRole[GamerSaferSuccessfulVerifications.user] and (GamerSaferSuccessfulVerifications.guild eq gsVerificationRole[GamerSaferUserRoles.guild])
+                        GamerSaferSuccessfulVerifications.user eq gsVerificationRole[GamerSaferSuccessfulVerifications.user] and (GamerSaferSuccessfulVerifications.guild eq gsVerificationRole[GamerSaferRequiresVerificationUsers.guild])
                     }.orderBy(GamerSaferSuccessfulVerifications.verifiedAt, SortOrder.DESC)
                         .firstOrNull()
 
-                    if (lastUserVerification == null || now >= lastUserVerification[GamerSaferSuccessfulVerifications.verifiedAt].plusMillis(gsVerificationRole[GamerSaferUserRoles.checkPeriod])) {
-                        val guild = m.lorittaShards.getGuildById(gsVerificationRole[GamerSaferUserRoles.guild])
-                        val role = guild?.getRoleById(gsVerificationRole[GamerSaferUserRoles.role])
-                        val member = guild?.retrieveMemberOrNullById(gsVerificationRole[GamerSaferUserRoles.user])
+                    if (lastUserVerification == null || now >= lastUserVerification[GamerSaferSuccessfulVerifications.verifiedAt].plusMillis(gsVerificationRole[GamerSaferRequiresVerificationUsers.checkPeriod])) {
+                        val guild = m.lorittaShards.getGuildById(gsVerificationRole[GamerSaferRequiresVerificationUsers.guild])
+                        val role = guild?.getRoleById(gsVerificationRole[GamerSaferRequiresVerificationUsers.role])
+                        val member = guild?.retrieveMemberOrNullById(gsVerificationRole[GamerSaferRequiresVerificationUsers.user])
 
                         if (role != null && member != null) {
                             try {
@@ -52,7 +54,7 @@ class GamerSaferRoleCheckerUpdater(val m: LorittaBot) : RunnableCoroutine {
                         }
                     }
                 } catch (e: Exception) {
-                    logger.warn(e) { "Failed to run required verification check for role ${gsVerificationRole[GamerSaferUserRoles.role]} in guild ${gsVerificationRole[GamerSaferUserRoles.guild]}"}
+                    logger.warn(e) { "Failed to run required verification check for role ${gsVerificationRole[GamerSaferRequiresVerificationUsers.role]} in guild ${gsVerificationRole[GamerSaferRequiresVerificationUsers.guild]}"}
                 }
             }
         }

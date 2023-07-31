@@ -8,13 +8,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.window
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -26,28 +21,29 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFro
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
 
 class GlobalState(val m: LorittaDashboardFrontend) {
-    private var userInfoState = mutableStateOf<State<GetUserIdentificationResponse>>(State.Loading())
-    var userInfo by userInfoState
-    var i18nContext by mutableStateOf<State<I18nContext>>(State.Loading())
-    private var spicyInfoState = mutableStateOf<State<GetSpicyInfoResponse>>(State.Loading())
-    var spicyInfo by spicyInfoState
+    private var userInfoResource = mutableStateOf<Resource<GetUserIdentificationResponse>>(Resource.Loading())
+    var userInfo by userInfoResource
+    var i18nContext by mutableStateOf<Resource<I18nContext>>(Resource.Loading())
+    private var spicyInfoResource = mutableStateOf<Resource<GetSpicyInfoResponse>>(Resource.Loading())
+    var spicyInfo by spicyInfoResource
     var isSidebarOpenState = mutableStateOf(false)
     var isSidebarOpen by isSidebarOpenState
     var activeModal by mutableStateOf<Modal?>(null)
+    var isLoading = false
 
     private val jobs = mutableListOf<Job>()
 
     suspend fun updateSelfUserInfo() {
-        m.makeApiRequestAndUpdateState(userInfoState, HttpMethod.Get, "/api/v1/users/@me")
+        m.makeApiRequestAndUpdateState(userInfoResource, HttpMethod.Get, "/api/v1/users/@me")
     }
 
     suspend fun updateSpicyInfo() {
-        m.makeApiRequestAndUpdateState(spicyInfoState, HttpMethod.Get, "/api/v1/spicy")
+        m.makeApiRequestAndUpdateState(spicyInfoResource, HttpMethod.Get, "/api/v1/spicy")
     }
 
     suspend fun updateI18nContext() {
         val i18nContext = retrieveI18nContext()
-        this@GlobalState.i18nContext = State.Success(i18nContext)
+        this@GlobalState.i18nContext = Resource.Success(i18nContext)
     }
 
     suspend fun retrieveI18nContext(): I18nContext {
@@ -74,7 +70,7 @@ class GlobalState(val m: LorittaDashboardFrontend) {
 
             // Super hacky! Waits until the state is success and then opens the modal
             while (true) {
-                val temp = (state as? State.Success)?.value
+                val temp = (state as? Resource.Success)?.value
                 if (temp != null) {
                     i18nContext = temp
                     break
@@ -141,5 +137,9 @@ class GlobalState(val m: LorittaDashboardFrontend) {
             jobs.remove(job)
         }
         return job
+    }
+
+    fun test() = flow<String> {
+
     }
 }

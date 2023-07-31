@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.utils
 
-import dev.kord.common.entity.DiscordUser
+import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 object WebsiteUtils {
-    fun checkIfAccountHasMFAEnabled(discordUser: DiscordUser): VerificationResult {
+    fun checkIfAccountHasMFAEnabled(userIdentification: TemmieDiscordAuth.UserIdentification): VerificationResult {
         // This is a security measure, to avoid "high risk" purchases.
         // We will require that users need to verify their account + have MFA enabled.
-        if (!discordUser.verified.discordBoolean)
+        if (!userIdentification.verified)
             return VerificationResult.UnverifiedAccount
 
-        if (!discordUser.mfaEnabled.discordBoolean)
+        if (userIdentification.mfaEnabled == false || userIdentification.mfaEnabled == null)
             return VerificationResult.MultiFactorAuthenticationDisabled
 
         return VerificationResult.Success

@@ -19,7 +19,6 @@ import net.perfectdreams.spicymorenitta.utils.DashboardUtils.switchContentAndFix
 import net.perfectdreams.spicymorenitta.utils.State
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.css.rgb
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 import kotlin.time.Duration.Companion.days
@@ -214,6 +213,7 @@ class GamerSaferVerifyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender(
 																	screen.gamerSaferVerificationRoles.add(
 																		GamerSaferVerificationUserAndRole(
 																			userId.toLong(),
+																			null,
 																			roleId!!,
 																			verifyEveryX
 																		)

@@ -4,16 +4,12 @@ import androidx.compose.runtime.Composable
 import kotlinx.datetime.Clock
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.EmptySection
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.IconWithText
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.InlineNullableUserDisplay
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LoadingSection
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedH2
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.RelativeTimeStamp
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.*
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.ShipEffectsViewModel
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
@@ -22,31 +18,24 @@ import org.jetbrains.compose.web.dom.Text
 fun ActiveShipEffects(
     m: LorittaDashboardFrontend,
     screen: ShipEffectsScreen,
+    vm: ShipEffectsViewModel,
     i18nContext: I18nContext
 ) {
     LocalizedH2(i18nContext, I18nKeysData.Website.Dashboard.ShipEffects.ActiveEffects.Title)
 
-    when (val state = screen.shipEffects) {
-        is State.Failure -> {}
-        is State.Loading -> {
+    when (val state = vm.shipEffects) {
+        is Resource.Failure -> {}
+        is Resource.Loading -> {
             LoadingSection(i18nContext)
         }
-        is State.Success -> {
-            Div(
-                attrs = {
-                    classes("cards")
-                }
-            ) {
+        is Resource.Success -> {
+            Cards {
                 val activeShipEffects = state.value.effects.filter { it.expiresAt > Clock.System.now() }.sortedByDescending { it.expiresAt }
                 if (activeShipEffects.isNotEmpty()) {
                     val selfUser = LocalUserIdentification.current
 
                     for (effect in activeShipEffects) {
-                        Div(
-                            attrs = {
-                                classes("card")
-                            }
-                        ) {
+                        Card {
                             // We will only show the user that has the effected applied, because we know that one of them will always be the self user
                             // Based on the implementation, we also know that the user1 in the ship effect is always the self user, but we will check it ourselves because...
                             // maybe the implementation may change some day?

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.key
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.request.*
@@ -11,47 +12,58 @@ import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.dom.addClass
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.LorittaRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.GuildLeftSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserLeftSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserRightSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.gamersaferverify.GamerSaferVerify
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.shipeffects.ShipEffectsOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.sonhosshop.SonhosShopOverview
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopScreen
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.GlobalState
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalI18nContext
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInfo
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.NitroPayUtils
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.RoutingManager
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.loggerClassName
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.setJsonBody
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.GameState
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.*
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.*
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.GuildViewModel
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.viewModel
+import net.perfectdreams.loritta.cinnamon.dashboard.utils.pixi.Application
+import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
+import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
-import org.w3c.dom.COMPLETE
-import org.w3c.dom.DocumentReadyState
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.INTERACTIVE
+import org.w3c.dom.*
 
-class LorittaDashboardFrontend {
+class LorittaDashboardFrontend(private val app: Application) {
     companion object {
         private val logger = KotlinLogging.loggerClassName(LorittaDashboardFrontend::class)
     }
 
     val routingManager = RoutingManager(this)
     val globalState = GlobalState(this)
+
     val http = HttpClient(Js) {
         expectSuccess = false
     }
     val spaLoadingWrapper by lazy { document.getElementById("spa-loading-wrapper") as HTMLDivElement? }
+    val gameState = GameState(app)
+
+    val configSavedSfx: Audio by lazy { Audio("${window.location.origin}/assets/snd/config-saved.ogg") }
+    val configErrorSfx: Audio by lazy { Audio("${window.location.origin}/assets/snd/config-error.ogg") }
+
+    private fun appendGameOverlay() {
+        app.view.addClass("loritta-game-canvas")
+        document.body!!.appendChild(app.view)
+    }
 
     fun start() {
         logger.info { "Howdy from Kotlin ${KotlinVersion.CURRENT}! :3" }
 
         NitroPayUtils.prepareNitroPayState()
+
+        appendGameOverlay()
 
         globalState.launch {
             globalState.launch { globalState.updateSelfUserInfo() }
@@ -59,7 +71,7 @@ class LorittaDashboardFrontend {
 
             // We need to get it in this way, because we want to get the i18nContext for the routing manager
             val i18nContext = globalState.retrieveI18nContext()
-            globalState.i18nContext = State.Success(i18nContext)
+            globalState.i18nContext = Resource.Success(i18nContext)
 
             // Switch based on the path
             routingManager.switchBasedOnPath(i18nContext, "/${window.location.pathname.split("/").drop(2).joinToString("/")}", false)
@@ -83,7 +95,7 @@ class LorittaDashboardFrontend {
             val spicyInfo = globalState.spicyInfo
             val i18nContext = globalState.i18nContext
 
-            if (userInfo !is State.Success || i18nContext !is State.Success || spicyInfo !is State.Success) {
+            if (userInfo !is Resource.Success || i18nContext !is Resource.Success || spicyInfo !is Resource.Success) {
                 Text("Loading...")
             } else {
                 CompositionLocalProvider(LocalI18nContext provides i18nContext.value) {
@@ -104,16 +116,12 @@ class LorittaDashboardFrontend {
 
                                             onClick {
                                                 // Close modal when clicking outside of the screen
-                                                globalState.activeModal = null
+                                                if (it.target == it.currentTarget)
+                                                    globalState.activeModal = null
                                             }
                                         }) {
                                             Div(attrs = {
                                                 classes("modal")
-
-                                                onClick {
-                                                    // Don't propagate the click to the modal wrapper
-                                                    it.stopPropagation()
-                                                }
                                             }) {
                                                 Div(attrs = { classes("content") }) {
                                                     Div(attrs = { classes("title") }) {
@@ -133,20 +141,54 @@ class LorittaDashboardFrontend {
                                     }
                                 }
 
-                                when (val screen = routingManager.screenState) {
-                                    is ShipEffectsScreen -> {
-                                        ShipEffectsOverview(
-                                            this@LorittaDashboardFrontend,
-                                            screen,
-                                            i18nContext.value
-                                        )
+                                val screen = routingManager.screenState
+
+                                when (screen) {
+                                    is UserScreen -> {
+                                        UserLeftSidebar(this@LorittaDashboardFrontend)
+
+                                        UserRightSidebar(this@LorittaDashboardFrontend) {
+                                            when (screen) {
+                                                is ShipEffectsScreen -> {
+                                                    ShipEffectsOverview(
+                                                        this@LorittaDashboardFrontend,
+                                                        screen,
+                                                        i18nContext.value
+                                                    )
+                                                }
+                                                is SonhosShopScreen -> {
+                                                    SonhosShopOverview(
+                                                        this@LorittaDashboardFrontend,
+                                                        screen,
+                                                        i18nContext.value
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
-                                    is SonhosShopScreen -> {
-                                        SonhosShopOverview(
-                                            this@LorittaDashboardFrontend,
-                                            screen,
-                                            i18nContext.value
-                                        )
+                                    is GuildScreen -> {
+                                        // Always recompose if it is a new guild ID, to force the guild data to be reloaded
+                                        key(screen.guildId) {
+                                            val vm = viewModel { GuildViewModel(this@LorittaDashboardFrontend, it, screen.guildId) }
+                                            val guildInfoResource = vm.guildInfoResource
+
+                                            val guild = ((guildInfoResource as? Resource.Success)?.value as? LorittaDashboardRPCResponse.GetGuildInfoResponse.Success)?.guild
+
+                                            GuildLeftSidebar(this@LorittaDashboardFrontend, screen, guild)
+
+                                            UserRightSidebar(this@LorittaDashboardFrontend) {
+                                                when (screen) {
+                                                    is ConfigureGuildGamerSaferVerifyScreen -> {
+                                                        GamerSaferVerify(
+                                                            this@LorittaDashboardFrontend,
+                                                            screen,
+                                                            i18nContext.value,
+                                                            vm
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                     else -> {
                                         Text("I don't know how to handle screen $screen")
@@ -182,6 +224,28 @@ class LorittaDashboardFrontend {
         return Json.decodeFromString(body)
     }
 
+    suspend inline fun <reified T : LorittaDashboardRPCResponse> makeRPCRequest(request: LorittaDashboardRPCRequest): T {
+        val body = http.post("${window.location.origin}/api/v1/rpc") {
+            setBody(
+                Json.encodeToString<LorittaDashboardRPCRequest>(
+                    request
+                )
+            )
+        }.bodyAsText()
+        return Json.decodeFromString(body)
+    }
+
+    suspend inline fun <reified T : LorittaDashboardRPCResponse> makeRPCRequestAndUpdateState(resource: MutableState<Resource<T>>, request: LorittaDashboardRPCRequest) {
+        resource.value = Resource.Loading()
+        val response = try {
+            makeRPCRequest<T>(request)
+        } catch (e: Exception) {
+            resource.value = Resource.Failure(e)
+            return
+        }
+        resource.value = Resource.Success(response)
+    }
+
     suspend fun putLorittaRequest(path: String, request: LorittaRequest): LorittaResponse {
         val body = http.put("${window.location.origin}$path") {
             setJsonBody(request)
@@ -196,12 +260,12 @@ class LorittaDashboardFrontend {
         return Json.decodeFromString(body)
     }
 
-    suspend inline fun <reified T : LorittaResponse> makeApiRequestAndUpdateState(state: MutableState<State<T>>, method: HttpMethod, path: String) {
-        state.value = State.Loading()
+    suspend inline fun <reified T : LorittaResponse> makeApiRequestAndUpdateState(resource: MutableState<Resource<T>>, method: HttpMethod, path: String) {
+        resource.value = Resource.Loading()
         val response = makeApiRequest(method, path)
         if (response is T)
-            state.value = State.Success(response)
+            resource.value = Resource.Success(response)
         else
-            state.value = State.Failure(null)
+            resource.value = Resource.Failure(null)
     }
 }

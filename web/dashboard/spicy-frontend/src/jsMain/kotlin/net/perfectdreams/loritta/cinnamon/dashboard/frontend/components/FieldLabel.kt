@@ -13,3 +13,12 @@ fun FieldLabel(text: String, forId: String) {
         }
     }
 }
+
+@Composable
+fun FieldLabel(text: String) {
+    Div(attrs = { classes("field-title") }) {
+        Label {
+            Text(text)
+        }
+    }
+}

@@ -25,32 +25,35 @@ fun AdSidebar(m: LorittaDashboardFrontend) {
             Ad(Ads.RIGHT_SIDEBAR_AD)
         }
     } else {
-        Aside(attrs = { id("loritta-snug") }) {
-            Img(src = "https://assets.perfectdreams.media/loritta/loritta-snuggle.png") {
-                onClick {
-                    m.globalState.openModal(
-                        I18nKeysData.Website.Dashboard.ThankYouMoneyModal.Title,
-                        {
-                            Div(attrs = {
-                                style {
-                                    textAlign("center")
-                                }
-                            }) {
-                                Img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-kiss.png") {
-                                    attr("height", "200")
-                                }
+        // We are going to allocate the sidebar area anyway
+        Aside(attrs = { id("that-wasnt-very-cash-money-of-you") }) {
+            Aside(attrs = { id("loritta-snug") }) {
+                Img(src = "https://assets.perfectdreams.media/loritta/loritta-snuggle.png") {
+                    onClick {
+                        m.globalState.openModal(
+                            I18nKeysData.Website.Dashboard.ThankYouMoneyModal.Title,
+                            {
+                                Div(attrs = {
+                                    style {
+                                        textAlign("center")
+                                    }
+                                }) {
+                                    Img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-kiss.png") {
+                                        attr("height", "200")
+                                    }
 
-                                for (text in LocalI18nContext.current.get(I18nKeysData.Website.Dashboard.ThankYouMoneyModal.Description)) {
-                                    P {
-                                        Text(text)
+                                    for (text in LocalI18nContext.current.get(I18nKeysData.Website.Dashboard.ThankYouMoneyModal.Description)) {
+                                        P {
+                                            Text(text)
+                                        }
                                     }
                                 }
+                            },
+                            {
+                                CloseModalButton(m.globalState)
                             }
-                        },
-                        {
-                            CloseModalButton(m.globalState)
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }

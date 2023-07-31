@@ -19,11 +19,13 @@ fun DiscordButton(
         when (type) {
             DiscordButtonType.SUCCESS -> "success"
             DiscordButtonType.SECONDARY -> "secondary"
+            DiscordButtonType.DANGER -> "danger"
         }
     )
 }, content)
 
 enum class DiscordButtonType {
     SUCCESS,
-    SECONDARY
+    SECONDARY,
+    DANGER
 }

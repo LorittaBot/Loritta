@@ -122,7 +122,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
@@ -133,7 +132,6 @@ import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
-import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
@@ -164,7 +162,6 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.Moderati
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.StarboardConfigs
 import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
 import net.perfectdreams.loritta.morenitta.utils.TrinketsStuff
 import net.perfectdreams.loritta.morenitta.utils.config.*
@@ -176,10 +173,8 @@ import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferRoleCheckerUpdater
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
-import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
-import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaDevelopmentBundle
-import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaProductionBundle
+import net.perfectdreams.loritta.morenitta.website.*
+import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import okhttp3.Dispatcher
@@ -436,7 +431,7 @@ class LorittaBot(
 	val ecbManager = ECBManager()
 	val activityUpdater = ActivityUpdater(this)
 
-	private val debugWebServer = DebugWebServer(this)
+	private val internalWebServer = InternalWebServer(this)
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
 	var isActive = true
@@ -581,7 +576,7 @@ class LorittaBot(
 	)
 	fun start() {
 		logger.info { "Starting Debug Web Server..." }
-		debugWebServer.start()
+		internalWebServer.start()
 
 		logger.info { "Registering Prometheus Collectors..." }
 		Prometheus.register()
@@ -848,7 +843,6 @@ class LorittaBot(
 					Christmas2022SonhosTransactionsLog,
 					DailyRewardSonhosTransactionsLog,
 					GamerSaferRequiresVerificationUsers,
-					GamerSaferUserRoles,
 					GamerSaferSuccessfulVerifications,
 					GamerSaferGuildMembers,
 					GamerSaferGuilds,
@@ -873,7 +867,8 @@ class LorittaBot(
 					Raffles,
 					RaffleTickets,
 					UserAskedRaffleNotifications,
-					SonhosBundles
+					SonhosBundles,
+					net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 				)
 			}
 		}
@@ -1461,6 +1456,7 @@ class LorittaBot(
 				UserId(restUser.id.value),
 				restUser.username,
 				restUser.discriminator,
+				null,
 				restUser.avatar
 			)
 
@@ -1468,6 +1464,7 @@ class LorittaBot(
 				UserId(restUser.id.value),
 				restUser.username,
 				restUser.discriminator,
+				null,
 				restUser.avatar
 			)
 		}
@@ -1480,6 +1477,7 @@ class LorittaBot(
 			UserId(user.id.value),
 			user.username,
 			user.discriminator,
+			null,
 			user.data.avatar
 		)
 	}

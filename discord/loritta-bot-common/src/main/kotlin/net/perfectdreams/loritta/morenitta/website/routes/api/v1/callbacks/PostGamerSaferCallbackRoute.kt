@@ -8,13 +8,15 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuildMembers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferSuccessfulVerifications
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.*
 import net.perfectdreams.sequins.ktor.BaseRoute
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -76,8 +78,8 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 						it[GamerSaferSuccessfulVerifications.verifiedAt] = Instant.now()
 					}
 
-					val userRoles = GamerSaferUserRoles.select {
-						GamerSaferUserRoles.user eq (additionalData.userId) and (GamerSaferUserRoles.guild eq additionalData.guildId)
+					val userRoles = GamerSaferRequiresVerificationUsers.select {
+						GamerSaferRequiresVerificationUsers.user eq (additionalData.userId) and (GamerSaferRequiresVerificationUsers.guild eq additionalData.guildId)
 					}.toList()
 
 					Pair(gsGuildConfig, userRoles)
@@ -97,7 +99,7 @@ class PostGamerSaferCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/
 					}
 
 					for (matchedUserRole in matchedUserRoles) {
-						val role = guild.getRoleById(matchedUserRole[GamerSaferUserRoles.role]) ?: continue // Role does not exist!
+						val role = guild.getRoleById(matchedUserRole[GamerSaferRequiresVerificationUsers.role]) ?: continue // Role does not exist!
 						guild.addRoleToMember(UserSnowflake.fromId(additionalData.userId), role)
 							.await()
 					}

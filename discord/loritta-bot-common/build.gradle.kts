@@ -75,6 +75,7 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-sessions:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
 
     implementation("com.google.code.gson:gson:2.9.1")
     implementation("io.pebbletemplates:pebble:3.1.4")

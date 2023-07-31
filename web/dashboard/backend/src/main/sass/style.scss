@@ -12,6 +12,7 @@ $mobile-version: 1279px;
 @use "components/fan-art-overview-tags";
 @use "components/inline-user-display";
 @use "components/loading-section";
+@use "components/error-section";
 @use "components/empty-section";
 @use "components/discord-button";
 @use "components/cards";
@@ -20,6 +21,8 @@ $mobile-version: 1279px;
 @use "components/fancy-bullet-points";
 @use "components/fancy-details";
 @use "components/payment-methods";
+@use "components/discord-mention";
+@use "components/loritta-spawner";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
 
@@ -35,7 +38,7 @@ $mobile-version: 1279px;
 }
 
 :root {
-    --loritta-blue: #29a6fe;
+    --loritta-blue: #{$loritta-blue};
 }
 
 body {
@@ -48,7 +51,7 @@ body {
 }
 
 h1, h2, h3, h4, h5 {
-    color: $loritta-blue;
+    color: var(--loritta-blue);
     margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
@@ -163,7 +166,7 @@ nav#left-sidebar {
     &.is-open {
         visibility: visible;
         left: 0%;
-        box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px; // Shadow
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 10px; // Shadow
         transform: translate(0%);
     }
 
@@ -199,7 +202,8 @@ nav#left-sidebar {
         }
 
         > .category {
-            font-weight: bold;
+            font-weight: 1000;
+            color: var(--loritta-blue);
             text-transform: uppercase;
             font-size: 18px;
             margin-top: 0.25em;
@@ -210,6 +214,18 @@ nav#left-sidebar {
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        > .guild-icon-wrapper {
+            display: flex;
+            justify-content: center;
+
+            img {
+                border-radius: 100%;
+                width: 160px;
+                height: 160px;
+                background-color: #c8c8c8;
+            }
         }
 
         // Can be nested within a div
@@ -226,6 +242,8 @@ nav#left-sidebar {
             margin-top: 0.2em;
             margin-bottom: 0.2em;
             font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
 
             &:hover {
                 opacity: 1;
@@ -236,6 +254,31 @@ nav#left-sidebar {
                 height: 24px;
                 display: block;
             }
+        }
+
+        > .loritta-logo {
+            font-family: Pacifico;
+            font-size: 3em;
+            text-align: center;
+            display: block;
+            line-height: 1;
+            margin: 0;
+            color: var(--loritta-blue);
+            font-weight: normal;
+        }
+
+        > .guild-name {
+            font-family: "Lato", "Arial", "sans-serif";
+            font-size: 1.5em;
+            text-align: center;
+            display: block;
+            margin: 0;
+            color: var(--loritta-blue);
+            font-weight: 1000;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     }
 
@@ -280,21 +323,24 @@ nav#left-sidebar {
 }
 
 section#right-sidebar {
-    padding-left: 5em;
-    padding-right: 5em;
     overflow: auto;
     width: 100%;
     // 50px = Navbar
     height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: row;
 
-    @media (max-width: 500px) {
-        padding-left: 1em;
-        padding-right: 1em;
+    @include bp('medium') {
+        width: calc(100% - 160px);
     }
 
     // We don't need to reserve the 50px if we aren't showing the navbar!
     @include bp('medium') {
         height: 100vh;
+    }
+
+    @media (max-width: 1279px) {
+        margin-top: 50px;
     }
 
     >.content {
@@ -303,6 +349,15 @@ section#right-sidebar {
         margin-left: auto;
         margin-right: auto;
         line-height: 1.58;
+        padding-left: 5em;
+        padding-right: 5em;
+        padding-top: 1em;
+        padding-bottom: 1em;
+
+        @media (max-width: 500px) {
+            padding-left: 1em;
+            padding-right: 1em;
+        }
 
         hr {
             box-sizing: content-box;
@@ -344,38 +399,39 @@ aside#that-wasnt-very-cash-money-of-you {
     width: 160px;
     max-width: 160px;
     min-width: 160px;
-    background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
     // background-color: rgba(200, 200, 200, 255);
     align-items: center;
     display: none;
 
-    @include bp('medium') {
-        display: flex;
-    }
-}
-
-aside#loritta-snug {
-    position: fixed;
-    bottom: 0;
-    height: 75px;
-    width: 100vw;
-    display: none;
-    justify-content: flex-end;
-    align-items: flex-end;
-    pointer-events: none;
+    position: sticky;
+    right: 0;
+    top: 0;
+    height: 100vh;
 
     @include bp('medium') {
         display: flex;
     }
 
-    img {
+    aside#loritta-snug {
+        display: flex;
         height: 100%;
-        width: auto;
-        margin-right: 2em;
-        cursor: pointer;
-        pointer-events: visible;
-        animation: 4s ease-in-out infinite loritta-breathing-animation alternate;
-        transform-origin: bottom;
+        width: 100%;
+        justify-content: center;
+        align-items: flex-end;
+        pointer-events: none;
+
+        @include bp('medium') {
+            display: flex;
+        }
+
+        img {
+            height: auto;
+            width: 90%;
+            cursor: pointer;
+            pointer-events: visible;
+            animation: 4s ease-in-out infinite loritta-breathing-animation alternate;
+            transform-origin: bottom;
+        }
     }
 }
 
@@ -417,13 +473,28 @@ input {
 }
 
 .field-wrappers {
-    .field-title {
-        margin: 0 0 6px;
-        font-weight: bold;
-    }
-
     .field-wrapper:not(:first-child) {
         margin-top: 1em;
+    }
+}
+
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+    flex-wrap: wrap;
+
+    input {
+        width: 100%;
+    }
+
+    /* button {
+        width: fit-content;
+    } */
+
+    .field-title {
+        margin: 0 0 0.25em;
+        font-weight: bold;
     }
 }
 
@@ -445,6 +516,7 @@ input {
         width: 1em;
         height: 1em;
         display: flex;
+        flex-shrink: 0; // Do not shrink the icon if the screen is smol
     }
 }
 
@@ -470,4 +542,16 @@ input {
         height: 1em;
         color: $loritta-blue;
     }
+}
+
+.loritta-game-canvas {
+    touch-action: none;
+    cursor: inherit;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    pointer-events: none;
+    width: 100vw;
+    height: 100vh;
 }

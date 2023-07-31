@@ -20,6 +20,7 @@ kotlin {
                 api(libs.kotlin.logging)
                 api(project(":common"))
                 api(project(":pudding:data"))
+                api(project(":loritta-serializable-commons"))
             }
         }
     }

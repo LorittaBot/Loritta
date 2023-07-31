@@ -3,12 +3,7 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
@@ -18,8 +13,8 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseMod
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPathWithArguments
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.css.textAlign
@@ -32,7 +27,7 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
     private var rejectNewJobs = false
     private val jobs = mutableListOf<Job>()
 
-    abstract fun createPath(): ScreenPath
+    abstract fun createPathWithArguments(): ScreenPathWithArguments
     abstract fun createTitle(): StringI18nData
 
     open fun onLoad() {}
@@ -76,7 +71,7 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
         crossinline onSuccess: suspend (T) -> (Unit)
     ) {
         var disablePurchaseButton by mutableStateOf(false)
-        val sonhos = (m.globalState.userInfo as State.Success).value
+        val sonhos = (m.globalState.userInfo as Resource.Success).value
 
         m.globalState.openModal(
             i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Title),
