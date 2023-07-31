@@ -32,7 +32,7 @@ class TemmieDiscordAuth(
 	var generatedAt: Long? = null
 ) {
 	companion object {
-		private const val PREFIX = "https://discordapp.com/api"
+		private const val PREFIX = "https://discordapp.com/api/v10"
 		private const val USER_IDENTIFICATION_URL = "$PREFIX/users/@me"
 		private const val CONNECTIONS_URL = "$USER_IDENTIFICATION_URL/connections"
 		private const val USER_GUILDS_URL = "$USER_IDENTIFICATION_URL/guilds"
