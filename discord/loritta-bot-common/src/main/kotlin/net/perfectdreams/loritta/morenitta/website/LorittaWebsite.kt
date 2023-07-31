@@ -6,29 +6,24 @@ import com.mitchellbosecke.pebble.attributes.methodaccess.NoOpMethodAccessValida
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.server.application.*
 import io.ktor.server.cio.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
-import kotlinx.html.body
-import kotlinx.html.head
-import kotlinx.html.html
-import kotlinx.html.pre
+import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import kotlinx.html.title
 import mu.KotlinLogging
-import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.Processors
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
@@ -40,12 +35,9 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
 import java.io.StringWriter
-import java.nio.file.Files
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import kotlin.io.path.readBytes
-import kotlin.io.path.readText
 
 /**
  * Clone of the original "LorittaWebsite" from the "sweet-morenitta" module
@@ -77,14 +69,14 @@ class LorittaWebsite(
 		lateinit var WEBSITE_URL: String
 
 		fun canManageGuild(g: TemmieDiscordAuth.Guild): Boolean {
-			val isAdministrator = g.permissions shr 3 and 1 == 1
-			val isManager = g.permissions shr 5 and 1 == 1
+			val isAdministrator = g.permissions shr 3 and 1 == 1L
+			val isManager = g.permissions shr 5 and 1 == 1L
 			return g.owner || isAdministrator || isManager
 		}
 
 		fun getUserPermissionLevel(g: TemmieDiscordAuth.Guild): UserPermissionLevel {
-			val isAdministrator = g.permissions shr 3 and 1 == 1
-			val isManager = g.permissions shr 5 and 1 == 1
+			val isAdministrator = g.permissions shr 3 and 1 == 1L
+			val isManager = g.permissions shr 5 and 1 == 1L
 
 			return when {
 				g.owner -> UserPermissionLevel.OWNER

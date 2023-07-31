@@ -9,11 +9,11 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.content.TextContent
+import io.ktor.http.content.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -32,7 +32,7 @@ class TemmieDiscordAuth(
 	var generatedAt: Long? = null
 ) {
 	companion object {
-		private const val PREFIX = "https://discordapp.com/api/v10"
+		private const val PREFIX = "https://discord.com/api/v10"
 		private const val USER_IDENTIFICATION_URL = "$PREFIX/users/@me"
 		private const val CONNECTIONS_URL = "$USER_IDENTIFICATION_URL/connections"
 		private const val USER_GUILDS_URL = "$USER_IDENTIFICATION_URL/guilds"
@@ -302,7 +302,7 @@ class TemmieDiscordAuth(
 		@SerializedName("owner")
 		val owner: Boolean,
 		@SerializedName("permissions")
-		val permissions: Int,
+		val permissions: Long,
 		@SerializedName("features")
 		val features: List<String>
 	)
