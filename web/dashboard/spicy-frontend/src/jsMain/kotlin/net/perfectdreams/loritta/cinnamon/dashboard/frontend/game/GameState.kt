@@ -58,6 +58,23 @@ class GameState(
     var activityLevel by activityLevelState
 
     init {
+        // We need to manually add the font to the document body, if else, the font won't be loaded, because the font is only loaded if it is
+        // being used in a div
+        val fontFace = eval(
+            """
+                new FontFace(
+                  "m5x7",
+                  "url(${window.location.origin}/assets/css/m5x7.woff2)"
+                );
+            """.trimIndent()
+        )
+
+        fontFace.load()
+
+        document.asDynamic().fonts.add(fontFace)
+        // After this, the game ticker will check if the font is loaded and, if it is, it will render the players
+        // Kinda hacky, could be better, but it does work
+
         app.stage.addChild(lorittaPetsContainer)
         app.stage.addChild(lorittaNametagsContainer)
 
@@ -136,38 +153,47 @@ class GameState(
                 elapsedTicks++
             }
 
-            entities.forEach {
-                val playerRenderedEntity = renderedObjects.filterIsInstance<RenderedEntity<*>>().firstOrNull { re -> re.entity == it }
+            val isFontLoaded = document.asDynamic().fonts.check("24px m5x7") as Boolean
 
-                if (playerRenderedEntity == null) {
-                    println("Creating rendered entity for ${it}")
-                    val re = when (it) {
-                        is LorittaPlayer -> {
-                            RenderedLorittaPlayer(
-                                textures,
-                                random.nextInt(0, 100),
-                                lorittaPetsContainer,
-                                lorittaNametagsContainer,
-                                it
-                            )
+            // Very hacky solution to not render any players until the font is actually loaded
+            if (isFontLoaded) {
+                entities.forEach {
+                    val playerRenderedEntity =
+                        renderedObjects.filterIsInstance<RenderedEntity<*>>().firstOrNull { re -> re.entity == it }
+
+                    if (playerRenderedEntity == null) {
+                        println("Creating rendered entity for ${it}")
+                        val re = when (it) {
+                            is LorittaPlayer -> {
+                                RenderedLorittaPlayer(
+                                    textures,
+                                    random.nextInt(0, 100),
+                                    lorittaPetsContainer,
+                                    lorittaNametagsContainer,
+                                    it
+                                )
+                            }
+
+                            else -> {
+                                error("Unsupported entity ${it::class}")
+                            }
                         }
-                        else -> { error("Unsupported entity ${it::class}") }
+
+                        renderedObjects.add(re)
                     }
-
-                    renderedObjects.add(re)
                 }
-            }
 
-            val renderedEntitiesThatDoNotExist = renderedObjects.filter { it.shouldBeRemoved }
-            for (entity in renderedEntitiesThatDoNotExist) {
-                entity.destroy()
-            }
-            renderedObjects.removeAll(renderedEntitiesThatDoNotExist)
+                val renderedEntitiesThatDoNotExist = renderedObjects.filter { it.shouldBeRemoved }
+                for (entity in renderedEntitiesThatDoNotExist) {
+                    entity.destroy()
+                }
+                renderedObjects.removeAll(renderedEntitiesThatDoNotExist)
 
-            // println("Objects to be rendered: ${renderedObjects.size} - Removed objects from rendering: ${renderedEntitiesThatDoNotExist.size}")
+                // println("Objects to be rendered: ${renderedObjects.size} - Removed objects from rendering: ${renderedEntitiesThatDoNotExist.size}")
 
-            for (re in renderedObjects) {
-                re.render(isGameLogicUpdate, totalElapsedMS, 0.02)
+                for (re in renderedObjects) {
+                    re.render(isGameLogicUpdate, totalElapsedMS, 0.02)
+                }
             }
 
             totalElapsedMS += deltaMS

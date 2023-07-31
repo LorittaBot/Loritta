@@ -27,7 +27,6 @@ class GameTextures {
         Texture.from("${window.location.origin}/assets/img/pantufa-sprites/corrida5.png"),
         Texture.from("${window.location.origin}/assets/img/pantufa-sprites/corrida6.png")
     )
-    val pantufaDeadTexture = Texture.from("${window.location.origin}/assets/img/pantufa-sprites/morte.png")
 
     val gabrielaHurtTexture = Texture.from("${window.location.origin}/assets/img/gabriela-sprites/dano.png")
     val gabrielaIdleTexture = Texture.from("${window.location.origin}/assets/img/gabriela-sprites/repouso.png")
@@ -40,5 +39,4 @@ class GameTextures {
         Texture.from("${window.location.origin}/assets/img/gabriela-sprites/corrida5.png"),
         Texture.from("${window.location.origin}/assets/img/gabriela-sprites/corrida6.png")
     )
-    val gabrielaDeadTexture = Texture.from("${window.location.origin}/assets/img/gabriela-sprites/morte.png")
 }

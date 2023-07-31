@@ -22,10 +22,10 @@ class RenderedLorittaPlayer(
     var facingRight = true
     var text = Text(entity.owner, jso {
         fill = "white"
-        fontSize = 16
+        fontSize = 24
         lineJoin = "round"
         strokeThickness = 3
-        fontFamily = "Pixolletta8px"
+        fontFamily = "m5x7"
     })
     override val sprite: PixiSprite = PixiSprite(textures.lorittaHurtTexture)
 
