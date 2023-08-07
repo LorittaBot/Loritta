@@ -4,12 +4,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Activity.ActivityType
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GatewayActivities
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import java.time.Instant
 
 /**
  * Creates and updates gateway activities that are stored on the database
@@ -21,32 +16,10 @@ class ActivityUpdater(val loritta: LorittaBot) : RunnableCoroutine {
 
     private var lastActivity: ActivityWrapper? = null
 
-    suspend fun loadActivity(): ActivityWrapper? {
-        // Create a new activity
-        val now = Instant.now()
-        val gatewayActivity = loritta.newSuspendedTransaction {
-            GatewayActivities.select {
-                GatewayActivities.startsAt lessEq Instant.now() and (GatewayActivities.endsAt greaterEq now)
-            }.orderBy(Pair(GatewayActivities.startsAt, SortOrder.DESC), Pair(GatewayActivities.priority, SortOrder.DESC))
-                .limit(1)
-                .firstOrNull()
-        } ?: return null
-
-        val text = gatewayActivity[GatewayActivities.text]
-        val type = ActivityType.valueOf(gatewayActivity[GatewayActivities.type])
-        val streamUrl = gatewayActivity[GatewayActivities.streamUrl]
-
-        return ActivityWrapper(
-            text,
-            type,
-            streamUrl
-        )
-    }
-
     override suspend fun run() {
         logger.info { "Loading and updating activity..." }
         // Load the stored activity
-        val newActivity = loadActivity()
+        val newActivity = loritta.loadActivity()
 
         logger.info { "New activity is $newActivity" }
 

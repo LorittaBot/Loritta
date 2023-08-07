@@ -2,19 +2,22 @@
 package net.perfectdreams.spicymorenitta.components
 
 import androidx.compose.runtime.Composable
+import kotlinx.browser.window
 import kotlinx.coroutines.delay
-import kotlinx.html.*
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.serializable.responses.GetDailyRewardResponse
 import net.perfectdreams.spicymorenitta.i18nContext
 import net.perfectdreams.spicymorenitta.routes.DailyScreen
 import org.jetbrains.compose.web.attributes.ATarget
 import org.jetbrains.compose.web.attributes.target
+import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.keywords.auto
+import org.jetbrains.compose.web.css.percent
+import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.*
 import kotlin.math.PI
 import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 @Composable
 fun GotDailyRewardOverview(
@@ -145,7 +148,6 @@ fun GotDailyRewardOverview(
         }
 
         Div(
-
             attrs = {
                 attr("style", "display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5em;")
             }
@@ -188,6 +190,32 @@ fun GotDailyRewardOverview(
                 attr("style", "justify-content: center; align-items: center; display: flex;")
             }) {
                 I(attrs = { classes("fab", "fa-twitch") })
+            }
+        }
+
+        // If there's a twitch channel set, we will display an iframe
+        val twitchChannelToAdvertise = screen.response.twitchChannelToAdvertise
+        if (twitchChannelToAdvertise != null) {
+            Div(
+                attrs = {
+                    attr("style", "display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5em;")
+                }
+            ) {
+                Iframe(
+                    {
+                        attr("src", "https://player.twitch.tv/?channel=${twitchChannelToAdvertise.channelId}&parent=${window.location.host}&muted=false")
+                        attr("width", "1280")
+                        attr("height", "720")
+                        attr("allowfullscreen", "")
+                        attr("frameborder", "")
+
+                        style {
+                            width(100.percent)
+                            height(auto)
+                            property("aspect-ratio", "16/9")
+                        }
+                    }
+                )
             }
         }
 

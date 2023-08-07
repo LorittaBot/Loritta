@@ -1,7 +1,8 @@
 package net.perfectdreams.loritta.morenitta.website.rpc.processors.economy
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.nullBool
+import com.github.salomonbrys.kotson.obj
 import com.google.gson.JsonParser
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -10,13 +11,13 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.toJavaInstant
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Activity.ActivityType
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrowserFingerprints
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
@@ -24,7 +25,6 @@ import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestions
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.DonationConfigs
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
@@ -308,6 +308,28 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                     loritta.pudding.users.deleteSkipUserDailyTaxDirectMessageEntry(UserId(id))
 
                                     logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
+
+                                    // Get current Loritta activity
+                                    val gatewayActivity = loritta.loadActivity()
+
+                                    // Check if Loritta's status is a Twitch livestream
+                                    var twitchChannelToBeAdvertised: GetDailyRewardResponse.Success.TwitchChannel? = null
+
+                                    if (gatewayActivity != null) {
+                                        val type = gatewayActivity.type
+                                        val streamUrl = gatewayActivity.streamUrl
+                                        if (type == ActivityType.STREAMING && streamUrl != null) {
+                                            // Is this really a Twitch stream?
+                                            val url = Url(streamUrl)
+
+                                            // VERY VERY VERY hacky
+                                            if (url.host.contains("twitch.tv", true)) {
+                                                // Yes, it is!
+                                                twitchChannelToBeAdvertised = GetDailyRewardResponse.Success.TwitchChannel(url.fullPath.removePrefix("/"))
+                                            }
+                                        }
+                                    }
+
                                     return GetDailyRewardResponse.Success(
                                         receivedDailyAt,
                                         dailyPayoutWithoutAnyBonuses,
@@ -315,7 +337,8 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         question,
                                         lorittaProfile.money,
                                         sponsoredByData,
-                                        failedDailyServersInfo
+                                        failedDailyServersInfo,
+                                        twitchChannelToBeAdvertised
                                     )
                                 }
                             }

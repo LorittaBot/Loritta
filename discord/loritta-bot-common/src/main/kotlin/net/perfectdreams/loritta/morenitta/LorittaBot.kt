@@ -1799,5 +1799,27 @@ class LorittaBot(
 		return net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage(bytes.inputStream())
 	}
 
+	suspend fun loadActivity(): ActivityUpdater.ActivityWrapper? {
+		// Create a new activity
+		val now = Instant.now()
+		val gatewayActivity = newSuspendedTransaction {
+			GatewayActivities.select {
+				GatewayActivities.startsAt lessEq Instant.now() and (GatewayActivities.endsAt greaterEq now)
+			}.orderBy(Pair(GatewayActivities.startsAt, SortOrder.DESC), Pair(GatewayActivities.priority, SortOrder.DESC))
+				.limit(1)
+				.firstOrNull()
+		} ?: return null
+
+		val text = gatewayActivity[GatewayActivities.text]
+		val type = Activity.ActivityType.valueOf(gatewayActivity[GatewayActivities.type])
+		val streamUrl = gatewayActivity[GatewayActivities.streamUrl]
+
+		return ActivityUpdater.ActivityWrapper(
+			text,
+			type,
+			streamUrl
+		)
+	}
+
 	fun createActivityText(activityText: String, shardId: Int) = "$activityText | Cluster ${lorittaCluster.id} [$shardId]"
 }

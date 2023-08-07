@@ -67,6 +67,7 @@ sealed interface GetDailyRewardResponse : LorittaRPCResponse {
         val currentBalance: Long,
         val sponsoredBy: SonhosSponsor?,
         val failedGuilds: List<FailedGuild>,
+        val twitchChannelToAdvertise: TwitchChannel?
     ) : GetDailyRewardResponse {
         @Serializable
         data class FailedGuild(
@@ -91,6 +92,9 @@ sealed interface GetDailyRewardResponse : LorittaRPCResponse {
                 val quantity: Int
             ) : DailyPayoutBonus()
         }
+
+        @Serializable
+        data class TwitchChannel(val channelId: String)
     }
 
     @Serializable

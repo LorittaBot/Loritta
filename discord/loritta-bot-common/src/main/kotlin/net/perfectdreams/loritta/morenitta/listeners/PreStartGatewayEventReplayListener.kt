@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
@@ -17,7 +16,6 @@ import net.dv8tion.jda.internal.entities.SelfUserImpl
 import net.dv8tion.jda.internal.requests.WebSocketCode
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.ExperimentalTime
@@ -104,7 +102,7 @@ class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, privat
                         logger.info("Successfully replayed events for shard ${event.jda.shardInfo.shardId}!")
                         jdaImpl.presence.setPresence(
                             OnlineStatus.ONLINE,
-                            runBlocking { loritta.activityUpdater.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId) }
+                            runBlocking { loritta.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId) }
                         )
                         return
                     }
