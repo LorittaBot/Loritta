@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils
 
 enum class Language(val code: String) {
     AUTO_DETECT("auto"), // Not a "real language"
+    UNDETERMINED("und"),
     AFRIKAANS("af"),
     ALBANIAN("sq"),
     AMHARIC("am"),

@@ -1,5 +1,18 @@
 package net.perfectdreams.loritta.morenitta.commands
 
+import mu.KotlinLogging
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import net.dv8tion.jda.api.utils.TimeFormat
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.nashorn.NashornCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
@@ -17,27 +30,14 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleB
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBoxCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
-import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.dv8tion.jda.api.utils.MarkdownSanitizer
-import net.dv8tion.jda.api.utils.TimeFormat
-import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.locale.LocaleStringData
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
-import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.and
@@ -125,7 +125,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(TempoCommand(loritta))
 		commandMap.add(PackageInfoCommand(loritta))
 		commandMap.add(MorseCommand(loritta))
-		commandMap.add(OCRCommand(loritta))
 		commandMap.add(EncodeCommand(loritta))
 		commandMap.add(LyricsCommand(loritta))
 

@@ -41,7 +41,6 @@ import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.LigarCommand
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -66,9 +65,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.Rolepla
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.AnagramCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.CalculatorCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.HelpCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -76,7 +73,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
-import java.sql.Connection
 import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
@@ -174,6 +170,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(AnagramCommand())
         register(HelpCommand())
         register(CalculatorCommand())
+        register(OCRSlashCommand(loritta))
+        register(OCRMessageCommand(loritta))
 
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
@@ -798,7 +796,32 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                             )
                         )
                     }
+
+                    is AttachmentDiscordOptionReference -> {
+                        return listOf(
+                            Option<Attachment>(
+                                interaKTionsOption.name,
+                                description,
+                                interaKTionsOption.required
+                            )
+                        )
+                    }
                 }
+            }
+
+            is ImageReferenceOrAttachmentDiscordOptionReference -> {
+                return listOf(
+                    Option<String>(
+                        interaKTionsOption.name + "_data",
+                        "User, URL or Emoji",
+                        false
+                    ),
+                    Option<Attachment>(
+                        interaKTionsOption.name + "_attachment",
+                        "Image Attachment",
+                        false
+                    )
+                )
             }
         }
     }

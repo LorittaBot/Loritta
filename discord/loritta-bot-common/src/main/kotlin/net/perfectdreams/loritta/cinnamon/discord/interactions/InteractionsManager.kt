@@ -5,7 +5,6 @@ import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonMessageCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandDeclarationWrapper
@@ -20,9 +19,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.OCRMessageCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.ocr.OCRTranslateButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class InteractionsManager(
     private val loritta: LorittaBot,
@@ -64,9 +62,6 @@ class InteractionsManager(
 
         register(GoBackToPackageListButtonClickExecutor(loritta, loritta.correiosClient))
         register(TrackPackageButtonClickExecutor(loritta, loritta.correiosClient))
-
-        register(OCRMessageCommand(languageManager))
-        register(OCRTranslateButtonExecutor(loritta))
 
         // ===[ ECONOMY ]===
         register(ChangeTransactionPageButtonClickExecutor(loritta))

@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -43,6 +44,9 @@ class LegacyMessageCommandContext(
     lorittaUser,
     locale,
     i18nContext,
+    // TODO: Convert the current locale/i18nContext into a DiscordLocale
+    DiscordLocale.PORTUGUESE_BRAZILIAN,
+    DiscordLocale.PORTUGUESE_BRAZILIAN,
     event.jda,
     UnleashedMentions(
         event.message.mentions.users

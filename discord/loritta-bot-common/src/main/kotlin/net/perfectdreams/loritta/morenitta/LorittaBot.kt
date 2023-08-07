@@ -868,7 +868,8 @@ class LorittaBot(
 					RaffleTickets,
 					UserAskedRaffleNotifications,
 					SonhosBundles,
-					net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
+					CachedDiscordUsers,
+					CachedGoogleVisionOCRResults,
 				)
 			}
 		}

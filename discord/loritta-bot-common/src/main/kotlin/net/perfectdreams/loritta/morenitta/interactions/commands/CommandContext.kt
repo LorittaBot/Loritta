@@ -100,6 +100,8 @@ interface CommandContext {
                             is NumberDiscordOptionReference -> append("número")
                             is StringDiscordOptionReference -> append("texto")
                             is UserDiscordOptionReference -> append("usuário")
+                            is AttachmentDiscordOptionReference -> append("arquivo")
+                            is ImageReferenceOrAttachmentDiscordOptionReference -> append("referência de imagem")
                         }
 
                         if (option is DiscordOptionReference) {

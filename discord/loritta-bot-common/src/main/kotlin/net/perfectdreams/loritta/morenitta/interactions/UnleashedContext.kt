@@ -9,9 +9,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.interactions.InteractionHook
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -24,7 +22,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.commands.CommandException
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 
 abstract class UnleashedContext(
     val loritta: LorittaBot,
@@ -32,6 +29,8 @@ abstract class UnleashedContext(
     var lorittaUser: LorittaUser,
     val locale: BaseLocale,
     val i18nContext: I18nContext,
+    val discordGuildLocale: DiscordLocale,
+    val discordUserLocale: DiscordLocale,
     val jda: JDA,
     val mentions: UnleashedMentions,
     val user: User,

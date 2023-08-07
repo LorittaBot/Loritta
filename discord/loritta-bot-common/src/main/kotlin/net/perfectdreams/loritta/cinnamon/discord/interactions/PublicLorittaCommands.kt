@@ -1,19 +1,23 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
-import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.EmojiCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.InviteCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AfkCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.declarations.UndertaleCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.*
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.VieirinhaCommand
+import net.perfectdreams.loritta.common.locale.LanguageManager
 
 /**
  * Public Loritta Commands
@@ -82,7 +86,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(ColorInfoCommand(languageManager))
             register(NotificationsCommand(languageManager))
             register(TranslateCommand(languageManager))
-            register(OCRCommand(languageManager))
 
             // ===[ ECONOMY ]===
             register(SonhosCommand(languageManager))

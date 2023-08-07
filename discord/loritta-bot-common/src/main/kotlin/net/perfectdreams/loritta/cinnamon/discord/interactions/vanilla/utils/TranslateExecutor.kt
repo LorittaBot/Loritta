@@ -3,22 +3,18 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.TranslateCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTranslateClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.Language
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.common.utils.text.TextUtils
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     val cinnamonAutocomplete: (AutocompleteContext, FocusedCommandOption, Boolean) -> (Map<String, String>) = { autocompleteContext, focusedCommandOption, includeAuto ->
@@ -26,6 +22,7 @@ class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
 
         Language.values()
             .asSequence()
+            .filter { it != Language.UNDETERMINED }
             .filter {
                 if (!includeAuto) it != Language.AUTO_DETECT else true
             }

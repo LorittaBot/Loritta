@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
-import dev.minn.jda.ktx.interactions.commands.*
+import dev.minn.jda.ktx.interactions.commands.updateCommands
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -45,7 +46,6 @@ import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
 import org.postgresql.util.PGobject
@@ -891,7 +891,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 return registeredCommands!!
             } catch (e: Exception) {
-                logger.warn { "Something went wrong while trying to update slash commands! Retrying... Lock: $lockId" }
+                logger.warn(e) { "Something went wrong while trying to update slash commands! Retrying... Lock: $lockId" }
             }
         }
     }

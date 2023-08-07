@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands.options
 
+import net.dv8tion.jda.api.entities.Message.Attachment
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
 open class ApplicationCommandOptions {
@@ -33,5 +34,14 @@ open class ApplicationCommandOptions {
         .also { registeredOptions.add(it) }
 
     fun optionalUser(name: String, description: StringI18nData) = UserDiscordOptionReference<UserAndMember?>(name, description, false)
+        .also { registeredOptions.add(it) }
+
+    fun attachment(name: String, description: StringI18nData) = AttachmentDiscordOptionReference<Attachment>(name, description, true)
+        .also { registeredOptions.add(it) }
+
+    fun optionalAttachment(name: String, description: StringI18nData) = AttachmentDiscordOptionReference<Attachment?>(name, description, false)
+        .also { registeredOptions.add(it) }
+
+    fun imageReferenceOrAttachment(name: String, description: StringI18nData) = ImageReferenceOrAttachmentDiscordOptionReference<ImageReference>(name)
         .also { registeredOptions.add(it) }
 }

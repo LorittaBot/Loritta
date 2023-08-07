@@ -1,26 +1,14 @@
 package net.perfectdreams.loritta.morenitta.interactions
 
 import dev.minn.jda.ktx.messages.InlineMessage
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.interactions.commands.CommandException
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import java.util.*
@@ -39,6 +27,8 @@ abstract class InteractionContext(
     lorittaUser,
     locale,
     i18nContext,
+    replyCallback.userLocale,
+    replyCallback.guildLocale,
     replyCallback.jda,
     mentions,
     replyCallback.user,
