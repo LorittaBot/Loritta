@@ -29,23 +29,6 @@ class OCRCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ocr", listOf("
 		ByteArrayOutputStream().use {
 			ImageIO.write(contextImage, "png", it)
 
-			val json = jsonObject(
-					"requests" to jsonArray(
-							jsonObject(
-									"features" to jsonArray(
-											jsonObject(
-													"maxResults" to 1,
-													"type" to "TEXT_DETECTION"
-											)
-									),
-									"image" to jsonObject(
-											"content" to Base64.getEncoder().encodeToString(it.toByteArray())
-									)
-
-							)
-					)
-			)
-
 			val responses = loritta.googleVisionOCRClient.ocr(it.toByteArray())
 
 			val builder = EmbedBuilder()
