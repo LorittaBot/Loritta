@@ -64,6 +64,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
           arguments: |
             build
+            publish
             :discord:loritta-bot-common:jib
             :web:dashboard:backend:jib
             :web:showtime:backend:jib
