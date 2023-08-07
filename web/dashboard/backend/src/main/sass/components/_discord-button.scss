@@ -23,6 +23,14 @@
         }
     }
 
+    &.primary {
+        background-color: var(--loritta-blue);
+
+        &:hover {
+            background-color: darken(#29a6fe, 10%);
+        }
+    }
+
     &.success {
         background-color: #298546;
 

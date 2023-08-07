@@ -26,6 +26,22 @@ sealed class LorittaDashboardRPCResponse {
     }
 
     @Serializable
+    sealed class GetUserGuildsResponse : LorittaDashboardRPCResponse() {
+        @Serializable
+        class Success(val guilds: List<DiscordGuild>) : GetUserGuildsResponse()
+
+        @Serializable
+        data class DiscordGuild(
+            val id: Long,
+            val name: String,
+            val icon: String?,
+            val owner: Boolean,
+            val permissions: Long,
+            val features: List<String>
+        )
+    }
+
+    @Serializable
     sealed class GetGuildGamerSaferConfigResponse : LorittaDashboardRPCResponse() {
         @Serializable
         class Success(val config: GuildGamerSaferConfig) : GetGuildGamerSaferConfigResponse()
@@ -53,5 +69,29 @@ sealed class LorittaDashboardRPCResponse {
 
         @Serializable
         class MissingPermission : UpdateGuildGamerSaferConfigResponse(), MissingPermissionError
+    }
+
+    @Serializable
+    sealed class PutPowerStreamClaimedLimitedTimeSonhosRewardResponse : LorittaDashboardRPCResponse() {
+        @Serializable
+        class Success : PutPowerStreamClaimedLimitedTimeSonhosRewardResponse()
+
+        @Serializable
+        class UnknownUser : PutPowerStreamClaimedLimitedTimeSonhosRewardResponse()
+
+        @Serializable
+        class Unauthorized : PutPowerStreamClaimedLimitedTimeSonhosRewardResponse()
+    }
+
+    @Serializable
+    sealed class PutPowerStreamClaimedFirstSonhosRewardResponse : LorittaDashboardRPCResponse() {
+        @Serializable
+        class Success : PutPowerStreamClaimedFirstSonhosRewardResponse()
+
+        @Serializable
+        class UnknownUser : PutPowerStreamClaimedFirstSonhosRewardResponse()
+
+        @Serializable
+        class Unauthorized : PutPowerStreamClaimedFirstSonhosRewardResponse()
     }
 }

@@ -1,6 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.common
 
 object RoutePaths {
+    val GUILDS = listOf(
+        ScreenPathElement.StringPathElement("users"),
+        ScreenPathElement.StringPathElement("@me"),
+        ScreenPathElement.StringPathElement("guilds")
+    )
+
     val SHIP_EFFECTS = listOf(
         ScreenPathElement.StringPathElement("users"),
         ScreenPathElement.StringPathElement("@me"),

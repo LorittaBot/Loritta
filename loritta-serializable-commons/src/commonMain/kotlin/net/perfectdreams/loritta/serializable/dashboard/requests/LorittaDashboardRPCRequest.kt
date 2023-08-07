@@ -9,8 +9,28 @@ sealed class LorittaDashboardRPCRequest {
     class GetGuildInfoRequest(val guildId: Long) : LorittaDashboardRPCRequest()
 
     @Serializable
+    class GetUserGuildsRequest : LorittaDashboardRPCRequest()
+
+    @Serializable
     class GetGuildGamerSaferConfigRequest(val guildId: Long) : LorittaDashboardRPCRequest()
 
     @Serializable
     class UpdateGuildGamerSaferConfigRequest(val guildId: Long, val config: GuildGamerSaferConfig) : LorittaDashboardRPCRequest()
+
+    @Serializable
+    class PutPowerStreamClaimedLimitedTimeSonhosRewardRequest(
+        val userId: Long,
+        val quantity: Long,
+        val liveId: String,
+        val streamId: Long,
+        val rewardId: Long
+    ) : LorittaDashboardRPCRequest()
+
+    @Serializable
+    class PutPowerStreamClaimedFirstSonhosRewardRequest(
+        val userId: Long,
+        val quantity: Long,
+        val liveId: String,
+        val streamId: Long
+    ) : LorittaDashboardRPCRequest()
 }

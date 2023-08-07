@@ -8,4 +8,5 @@ object PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionsLog : LongIdTa
     val sonhos = long("sonhos")
     val streamId = long("stream")
     val rewardId = long("reward")
+    val liveId = text("live").nullable()
 }

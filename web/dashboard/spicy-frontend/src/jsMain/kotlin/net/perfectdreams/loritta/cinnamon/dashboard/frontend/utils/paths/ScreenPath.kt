@@ -6,6 +6,15 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFro
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.*
 
 sealed class ScreenPath(val elements: List<ScreenPathElement>) {
+    object ChooseAServerScreenPath : ScreenPath(RoutePaths.GUILDS) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ): Screen = ChooseAServerScreen(m)
+    }
+
     object ShipEffectsScreenPath : ScreenPath(RoutePaths.SHIP_EFFECTS) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
@@ -66,6 +75,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
 
     companion object {
         val all = listOf(
+            ChooseAServerScreenPath,
             ShipEffectsScreenPath,
             SonhosShopScreenPath,
             ConfigureGuildGamerSaferVerifyPath

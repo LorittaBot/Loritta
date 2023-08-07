@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserLeftSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserRightSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.gamersaferverify.GamerSaferVerify
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.guilds.ChooseAServerOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.shipeffects.ShipEffectsOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.sonhosshop.SonhosShopOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.GameState
@@ -149,6 +150,13 @@ class LorittaDashboardFrontend(private val app: Application) {
 
                                         UserRightSidebar(this@LorittaDashboardFrontend) {
                                             when (screen) {
+                                                is ChooseAServerScreen -> {
+                                                    ChooseAServerOverview(
+                                                        this@LorittaDashboardFrontend,
+                                                        screen,
+                                                        i18nContext.value
+                                                    )
+                                                }
                                                 is ShipEffectsScreen -> {
                                                     ShipEffectsOverview(
                                                         this@LorittaDashboardFrontend,

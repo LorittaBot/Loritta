@@ -13,5 +13,6 @@ data class RootConfig(
     val enableCORS: Boolean,
     val perfectPayments: PerfectPaymentsConfig,
     val userAuthenticationOverride: UserAuthenticationOverrideConfig,
-    val pudding: PuddingConfig
+    val pudding: PuddingConfig,
+    val authorizationTokens: List<AuthorizationToken>
 )

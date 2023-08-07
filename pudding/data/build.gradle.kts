@@ -4,7 +4,7 @@ plugins {
     id("maven-publish")
 }
 
-version = Versions.PUDDING
+version = "0.0.2-SNAPSHOT"
 
 kotlin {
     jvm {

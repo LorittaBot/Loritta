@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors
 
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
@@ -57,5 +58,23 @@ interface LorittaDashboardRpcProcessor<Req: LorittaDashboardRPCRequest, Res: Lor
             val discordAuth: TemmieDiscordAuth,
             val userIdentification: LorittaJsonWebSession.UserIdentification
         ) : DiscordAccountInformationResult()
+    }
+
+    suspend fun validateDashboardToken(loritta: LorittaDashboardBackend, call: ApplicationCall): DashboardTokenResult {
+        val authorizationToken = call.request.header("Authorization") ?: return DashboardTokenResult.InvalidTokenAuthorization
+
+        val valid = loritta.config.authorizationTokens.any { it.token == authorizationToken }
+
+        return if (valid) {
+            DashboardTokenResult.Success
+        } else {
+            DashboardTokenResult.InvalidTokenAuthorization
+        }
+    }
+
+    sealed class DashboardTokenResult {
+        object InvalidTokenAuthorization : DashboardTokenResult()
+
+        object Success : DashboardTokenResult()
     }
 }

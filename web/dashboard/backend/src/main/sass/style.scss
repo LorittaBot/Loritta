@@ -23,6 +23,7 @@ $mobile-version: 1279px;
 @use "components/payment-methods";
 @use "components/discord-mention";
 @use "components/loritta-spawner";
+@use "components/discord-invite-wrapper";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
 
@@ -555,4 +556,14 @@ input {
     pointer-events: none;
     width: 100vw;
     height: 100vh;
+}
+
+.choose-your-server {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+
+    @media screen and (max-width: 1024px) {
+        grid-template-columns: 1fr;
+    }
 }

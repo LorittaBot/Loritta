@@ -18,13 +18,10 @@ import io.ktor.util.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.HomeRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.LocalizedRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.ShipEffectsRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.SonhosShopRoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.*
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetLanguageInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetSpicyInfoRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.PostLorittaDashboardRpcProcessor
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.PostLorittaDashboardRpcProcessorRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.GetSonhosBundlesRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.PostSonhosBundlesRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetSearchUserRoute
@@ -54,12 +51,14 @@ class LorittaDashboardBackend(
     val processors = Processors(this)
     private val routes = listOf(
         HomeRoute(this),
+
+        GuildsRoute(this),
         ShipEffectsRoute(this),
         SonhosShopRoute(this),
         ConfigureGamerSaferVerifyRoute(this),
 
         // ===[ API ]===
-        PostLorittaDashboardRpcProcessor(this),
+        PostLorittaDashboardRpcProcessorRoute(this),
         GetSpicyInfoRoute(this),
         GetSelfUserInfoRoute(this),
         GetShipEffectsRoute(this),

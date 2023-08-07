@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboar
 import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 import net.perfectdreams.sequins.ktor.BaseRoute
 
-class PostLorittaDashboardRpcProcessor(private val m: LorittaDashboardBackend) : BaseRoute("/api/v1/rpc") {
+class PostLorittaDashboardRpcProcessorRoute(private val m: LorittaDashboardBackend) : BaseRoute("/api/v1/rpc") {
     override suspend fun onRequest(call: ApplicationCall) {
         val body = withContext(Dispatchers.IO) { call.receiveText() }
 
@@ -22,12 +22,24 @@ class PostLorittaDashboardRpcProcessor(private val m: LorittaDashboardBackend) :
                 m.processors.getGuildInfoProcessor.process(call, request)
             }
 
+            is LorittaDashboardRPCRequest.GetUserGuildsRequest -> {
+                m.processors.getUserGuildsProcessor.process(call, request)
+            }
+
             is LorittaDashboardRPCRequest.GetGuildGamerSaferConfigRequest -> {
                 m.processors.getGuildGamerSaferConfigProcessor.process(call, request)
             }
 
             is LorittaDashboardRPCRequest.UpdateGuildGamerSaferConfigRequest -> {
                 m.processors.updateGuildGamerSaferConfigProcessor.process(call, request)
+            }
+
+            is LorittaDashboardRPCRequest.PutPowerStreamClaimedFirstSonhosRewardRequest -> {
+                m.processors.putPowerStreamClaimedFirstSonhosRewardProcessor.process(call, request)
+            }
+
+            is LorittaDashboardRPCRequest.PutPowerStreamClaimedLimitedTimeSonhosRewardRequest -> {
+                m.processors.putPowerStreamClaimedLimitedTimeSonhosRewardProcessor.process(call, request)
             }
         }
 

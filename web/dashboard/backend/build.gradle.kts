@@ -59,7 +59,7 @@ jib {
 // val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsDevelopmentExecutableCompileSync")
 // I don't know why this is required when developing
 // val jsBrowserDistributionX = tasks.getByPath(":web:dashboard:spicy-frontend:jsProductionExecutableCompileSync")
-// jsBrowserDistributionX.dependsOn(jsBrowserDistributionX)
+// jsBrowserDistributionX.dependsOn(jsBrowserDistribution)
 // val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDevelopmentWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 // PROD VERSION:
 val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDistribution")

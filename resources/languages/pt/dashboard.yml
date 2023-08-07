@@ -7,6 +7,7 @@ website:
     frequentlyAskedQuestions: "Perguntas Frequentes"
 
     chooseAServer:
+      title: "Escolha um Servidor"
       noServerFound: "Nenhum servidor encontrado!"
       tryLoggingIn:
         - "Você não é dono ou você não tem permissão de administrador ou de gerenciar o servidor em algum servidor na sua conta!"

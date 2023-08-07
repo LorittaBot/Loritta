@@ -58,10 +58,6 @@ include(":loritta-serializable-commons")
 // ===[ LORITTA ]===
 include(":discord:loritta-bot-common")
 
-// ===[ EXTERNAL WEB API ]===
-include(":web:facing-worlds:facing-worlds-common")
-include(":web:facing-worlds:facing-worlds-backend")
-
 // ===[ SPICY MORENITTA ]===
 include(":web:spicy-morenitta")
 
