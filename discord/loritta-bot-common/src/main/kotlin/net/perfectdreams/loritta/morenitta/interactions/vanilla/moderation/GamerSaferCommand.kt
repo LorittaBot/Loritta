@@ -16,7 +16,10 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferGuildInviteAdditionalData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferPlayerVerificationAdditionalData
@@ -30,6 +33,8 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
     private val I18N_PREFIX = I18nKeysData.Commands.Command.Gamersafer
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+        isGuildOnly = true
+
         subcommand(I18N_PREFIX.Join.Label, I18N_PREFIX.Join.Description) {
             executor = GamerSaferJoinExecutor()
         }
