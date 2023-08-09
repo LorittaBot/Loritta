@@ -94,4 +94,13 @@ sealed class LorittaDashboardRPCResponse {
         @Serializable
         class Unauthorized : PutPowerStreamClaimedFirstSonhosRewardResponse()
     }
+
+    @Serializable
+    sealed class UpdateLorittaActivityResponse : LorittaDashboardRPCResponse() {
+        @Serializable
+        class Success : UpdateLorittaActivityResponse()
+
+        @Serializable
+        class Unauthorized : UpdateLorittaActivityResponse()
+    }
 }

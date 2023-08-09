@@ -41,6 +41,10 @@ class PostLorittaDashboardRpcProcessorRoute(private val m: LorittaDashboardBacke
             is LorittaDashboardRPCRequest.PutPowerStreamClaimedLimitedTimeSonhosRewardRequest -> {
                 m.processors.putPowerStreamClaimedLimitedTimeSonhosRewardProcessor.process(call, request)
             }
+
+            is LorittaDashboardRPCRequest.UpdateLorittaActivityRequest -> {
+                m.processors.updateLorittaActivityProcessor.process(call, request)
+            }
         }
 
         call.respondJson(

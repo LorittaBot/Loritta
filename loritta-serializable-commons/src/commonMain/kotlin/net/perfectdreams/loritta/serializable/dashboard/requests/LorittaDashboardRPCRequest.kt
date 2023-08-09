@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.serializable.dashboard.requests
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig
 
@@ -32,5 +33,15 @@ sealed class LorittaDashboardRPCRequest {
         val quantity: Long,
         val liveId: String,
         val streamId: Long
+    ) : LorittaDashboardRPCRequest()
+
+    @Serializable
+    class UpdateLorittaActivityRequest(
+        val text: String,
+        val type: String,
+        val priority: Int,
+        val startsAt: Instant,
+        val endsAt: Instant,
+        val streamUrl: String?
     ) : LorittaDashboardRPCRequest()
 }
