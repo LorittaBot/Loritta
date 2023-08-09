@@ -38,7 +38,7 @@ sealed class LorittaDashboardRPCRequest {
     @Serializable
     class UpdateLorittaActivityRequest(
         val text: String,
-        val type: String,
+        val activityType: String,
         val priority: Int,
         val startsAt: Instant,
         val endsAt: Instant,

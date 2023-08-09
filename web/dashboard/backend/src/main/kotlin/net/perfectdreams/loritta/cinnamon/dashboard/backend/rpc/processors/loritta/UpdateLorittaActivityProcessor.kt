@@ -20,7 +20,7 @@ class UpdateLorittaActivityProcessor(val m: LorittaDashboardBackend) : LorittaDa
                 m.pudding.transaction {
                     GatewayActivities.insert {
                         it[GatewayActivities.text] = request.text
-                        it[GatewayActivities.type] = request.type
+                        it[GatewayActivities.type] = request.activityType
                         it[GatewayActivities.priority] = request.priority
                         it[GatewayActivities.streamUrl] = request.streamUrl
                         it[GatewayActivities.submittedAt] = Instant.now()
