@@ -58,6 +58,7 @@ class ActivityUpdater(val loritta: LorittaBot) : RunnableCoroutine {
                 ActivityType.COMPETING -> Activity.competing(activityText)
                 ActivityType.WATCHING -> Activity.watching(activityText)
                 ActivityType.STREAMING -> Activity.streaming(activityText, streamUrl)
+                ActivityType.CUSTOM_STATUS -> Activity.customStatus(activityText)
                 else -> error("I don't know how to handle ${type}!")
             }
         }
