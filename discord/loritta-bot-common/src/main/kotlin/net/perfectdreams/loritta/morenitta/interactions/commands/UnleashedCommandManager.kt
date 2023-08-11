@@ -129,8 +129,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(UserInfoUserCommand())
 
         // ===[ MODERATION ]===
-        if (loritta.config.loritta.environment == EnvironmentType.CANARY)
-            register(GamerSaferCommand(loritta))
+        register(GamerSaferCommand(loritta))
         register(BanInfoCommand(loritta))
         register(DashboardCommand(loritta))
 

@@ -6,14 +6,12 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFro
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.Ad
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.SidebarEntryScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.LeftSidebar
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarCategory
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarDivider
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarEntryLink
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.GuildScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Ads
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInfo
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPathWithArguments
 import net.perfectdreams.loritta.serializable.DiscordGuild
@@ -65,18 +63,17 @@ fun GuildLeftSidebar(
             }
         }
 
-        SidebarEntryScreen(m, SVGIconManager.star, "Voltar ao Painel de Usuário", ScreenPathWithArguments(ScreenPath.ShipEffectsScreenPath, emptyMap()))
-        SidebarEntryScreen(m, SVGIconManager.star, "Ideias Aleatórias Test", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to 268353819409252352.toString())))
-        SidebarEntryScreen(m, SVGIconManager.star, "Lori Test", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to 297732013006389252.toString())))
-
+        // SidebarEntryScreen(m, SVGIconManager.star, "Voltar ao Painel de Usuário", ScreenPathWithArguments(ScreenPath.ShipEffectsScreenPath, emptyMap()))
+        // SidebarEntryScreen(m, SVGIconManager.star, "Ideias Aleatórias Test", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to 268353819409252352.toString())))
         // SidebarEntryLink(SVGIconManager.star, "${spicyInfo.legacyDashboardUrl}/dashboard", "Voltar ao Painel de Usuário")
 
-        SidebarDivider()
+        /* SidebarDivider()
 
         SidebarCategory("Configurações Gerais") {
             SidebarEntryLink(SVGIconManager.cogs, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure", "Configurações Gerais")
             // SidebarEntryLink(SVGIconManager.images, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/moderation", "Moderação")
-        }
+        } */
+        SidebarEntryScreen(m, SVGIconManager.star, "GamerSafer", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to screen.guildId.toString())))
 
         SidebarDivider()
 

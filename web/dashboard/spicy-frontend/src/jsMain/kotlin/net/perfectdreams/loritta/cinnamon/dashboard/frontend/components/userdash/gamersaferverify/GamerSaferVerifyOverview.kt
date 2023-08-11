@@ -42,11 +42,33 @@ fun GamerSaferVerifyOverview(
     Div {
         Div {
             Div {
+                var premiumKey by remember { mutableStateOf<String?>(null) }
                 var user by remember { mutableStateOf<CachedUserInfo?>(null) }
                 var roleId by remember { mutableStateOf<Long?>(null) }
                 var verifyEveryX by remember { mutableStateOf<String>(1.days.toIsoString()) }
 
                 FieldWrappers {
+                    /* FieldWrapper {
+                        FieldLabel("Key Premium da GamerSafer")
+
+                        Div {
+                            Text("Para usar todas as funcionalidades deste plugin, você precisa comprar um plano premium da GamerSafer - ")
+                            A(href = "https://checkout.gamersafer.com/loritta") {
+                                Text("https://checkout.gamersafer.com/loritta")
+                            }
+                        }
+
+                        TextInput(
+                            attrs = {
+                                value(premiumKey ?: "")
+
+                                onInput {
+                                    premiumKey = it.value
+                                }
+                            }
+                        )
+                    } */
+
                     FieldWrapper {
                         FieldLabel("Cargo de Verificação")
 
