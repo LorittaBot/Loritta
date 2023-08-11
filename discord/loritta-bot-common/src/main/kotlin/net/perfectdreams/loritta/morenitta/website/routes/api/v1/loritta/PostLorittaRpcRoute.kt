@@ -30,12 +30,6 @@ class PostLorittaRpcRoute(val m: LorittaWebsite) : BaseRoute("/api/v1/loritta/rp
             is GetDailyRewardRequest -> {
                 m.processors.getDailyRewardProcessor.process(call, request)
             }
-            is GetGamerSaferVerifyConfigRequest -> {
-                m.processors.getGamerSaferVerifyConfigProcessor.process(call, request)
-            }
-            is PostGamerSaferVerifyConfigRequest -> {
-                m.processors.postGamerSaferVerifyConfigProcessor.process(call, request)
-            }
         }
 
         call.respondJson(

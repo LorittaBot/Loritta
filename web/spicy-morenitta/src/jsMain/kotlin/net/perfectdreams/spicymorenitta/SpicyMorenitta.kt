@@ -7,15 +7,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.dom.addClass
@@ -42,29 +34,11 @@ import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
-import net.perfectdreams.spicymorenitta.routes.BaseRoute
-import net.perfectdreams.spicymorenitta.routes.Birthday2020Route
-import net.perfectdreams.spicymorenitta.routes.Birthday2020StatsRoute
-import net.perfectdreams.spicymorenitta.routes.CommandsRoute
-import net.perfectdreams.spicymorenitta.routes.DailyRoute
-import net.perfectdreams.spicymorenitta.routes.DiscordBotBrasileiroRoute
-import net.perfectdreams.spicymorenitta.routes.DonateRoute
-import net.perfectdreams.spicymorenitta.routes.HomeRoute
-import net.perfectdreams.spicymorenitta.routes.ReputationRoute
-import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.AvailableBundlesDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.BackgroundsListDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.DailyShopDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileDesignsListDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.ShipEffectsDashboardRoute
+import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.utils.*
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLAnchorElement
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.asList
+import org.w3c.dom.*
 import kotlin.collections.set
 import kotlin.js.Date
 import kotlin.js.Json
@@ -123,8 +97,7 @@ class SpicyMorenitta : Logging {
 		MemberCounterRoute(this),
 		ModerationConfigRoute(this),
 		WelcomerConfigRoute(this),
-		CustomCommandsRoute(this),
-		GamerSaferVerifyRoute(this)
+		CustomCommandsRoute(this)
 	)
 
 	val validWebsiteLocaleIds = mutableListOf(
