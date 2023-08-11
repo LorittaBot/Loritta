@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferGuilds
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -52,7 +51,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             // Check if the user has already joined the GamerSafer guild
             val mjs = loritta.transaction {
-                val gsGuildConfig = ServerConfigs.innerJoin(GamerSaferGuilds).select {
+                val gsGuildConfig = ServerConfigs.innerJoin(GamerSaferConfigs).select {
                     ServerConfigs.id eq guildId
                 }
                     .limit(1)
