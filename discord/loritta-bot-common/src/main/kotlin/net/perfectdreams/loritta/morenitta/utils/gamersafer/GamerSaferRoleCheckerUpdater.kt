@@ -31,7 +31,7 @@ class GamerSaferRoleCheckerUpdater(val m: LorittaBot) : RunnableCoroutine {
             for (gsVerificationRole in gsVerificationRoles) {
                 try {
                     val lastUserVerification = GamerSaferSuccessfulVerifications.select {
-                        GamerSaferSuccessfulVerifications.user eq gsVerificationRole[GamerSaferSuccessfulVerifications.user] and (GamerSaferSuccessfulVerifications.guild eq gsVerificationRole[GamerSaferSuccessfulVerifications.guild])
+                        GamerSaferSuccessfulVerifications.user eq gsVerificationRole[GamerSaferRequiresVerificationUsers.user] and (GamerSaferSuccessfulVerifications.guild eq gsVerificationRole[GamerSaferRequiresVerificationUsers.guild])
                     }.orderBy(GamerSaferSuccessfulVerifications.verifiedAt, SortOrder.DESC)
                         .firstOrNull()
 
