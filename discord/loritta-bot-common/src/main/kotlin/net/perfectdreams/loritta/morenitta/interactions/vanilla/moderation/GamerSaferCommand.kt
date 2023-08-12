@@ -93,7 +93,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                                 buildJsonObject {
                                     put("provider", provider)
                                     put("providerId", context.guildId!!.toString())
-                                    put("providerLinkBack", loritta.lorittaCluster.websiteUrl + "api/v1/callbacks/gamersafer")
+                                    put("providerLinkBack", loritta.lorittaCluster.websiteUrl.removeSuffix("/") + "/api/v1/callbacks/gamersafer")
                                     put("internalId",
                                         Base64.getEncoder().encodeToString(
                                             Json.encodeToString(
@@ -161,7 +161,7 @@ class GamerSaferCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                                 buildJsonObject {
                                     put("provider", provider)
                                     put("providerId", context.guildId!!.toString())
-                                    put("providerLinkBack", loritta.lorittaCluster.websiteUrl + "api/v1/callbacks/gamersafer")
+                                    put("providerLinkBack", loritta.lorittaCluster.websiteUrl.removeSuffix("/") + "/api/v1/callbacks/gamersafer")
                                     put("guildMemberId", mjs[GamerSaferGuildMembers.gamerSaferUser])
                                     put("discordMessage",
                                         Base64.getEncoder().encodeToString(
