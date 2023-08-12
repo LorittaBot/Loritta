@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -15,6 +16,7 @@ import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.SelfUserImpl
 import net.dv8tion.jda.internal.requests.WebSocketCode
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import java.io.File
 import java.util.concurrent.LinkedBlockingQueue
@@ -25,7 +27,13 @@ import kotlin.time.measureTime
 /**
  * Replays gateway events when the session is resumed, this should only be triggered on the first resume event received!
  */
-class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, private val initialSession: GatewaySessionData?, private val cacheFolder: File, private val state: MutableStateFlow<ProcessorState>) : ListenerAdapter() {
+class PreStartGatewayEventReplayListener(
+    private val loritta: LorittaBot,
+    private val initialSession: GatewaySessionData?,
+    private val gatewayExtras: GatewayExtrasData?,
+    private val cacheFolder: File,
+    private val state: MutableStateFlow<ProcessorState>
+) : ListenerAdapter() {
     companion object {
         private const val FAKE_EVENT_FIELD = "fakeout"
         private val logger = KotlinLogging.logger {}
@@ -52,7 +60,7 @@ class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, privat
                 // Only cancel dispatch events, we don't want the gateway connection to timeout due to not sending heartbeats
                 WebSocketCode.DISPATCH -> {
                     if (event.type == "RESUMED") {
-                        logger.info("Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data...")
+                        logger.info("Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let {  Clock.System.now() - it }} since shard shutdown began to now")
 
                         // No need to send the resumed event to JDA because we have sent our own faked READY event
                         event.isCancelled = true
@@ -99,7 +107,7 @@ class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, privat
                             (event.jda as JDAImpl).client.handleEvent(cachedEventWithoutSequence)
                         }
                         state.value = ProcessorState.FINISHED
-                        logger.info("Successfully replayed events for shard ${event.jda.shardInfo.shardId}!")
+                        logger.info { "Successfully replayed events for shard ${event.jda.shardInfo.shardId}! Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
                         jdaImpl.presence.setPresence(
                             OnlineStatus.ONLINE,
                             runBlocking { loritta.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId) }
@@ -123,7 +131,8 @@ class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, privat
 
                 WebSocketCode.INVALIDATE_SESSION -> {
                     // Session has been invalidated, clear out the replay cache
-                    logger.info { "Session has been invalidated, clearing out ${replayCache.size} events..." }
+                    val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
+                    logger.info { "Session has been invalidated, clearing out ${replayCache.size} events... Took $diff since shard shutdown began to now" }
                     state.value = ProcessorState.FINISHED
                     replayCache.clear()
                 }
@@ -137,7 +146,8 @@ class PreStartGatewayEventReplayListener(private val loritta: LorittaBot, privat
 
         if (event.newStatus == JDA.Status.CONNECTING_TO_WEBSOCKET) {
             if (initialSession != null) {
-                logger.info { "Connecting to WebSocket, sending faked READY event..." }
+                val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
+                logger.info { "Connecting to WebSocket, sending faked READY event... Took $diff since shard shutdown began to now" }
 
                 val jdaImpl = event.jda as JDAImpl
 

@@ -170,6 +170,7 @@ import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
+import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferRoleCheckerUpdater
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
@@ -219,7 +220,8 @@ class LorittaBot(
 	val localeManager: LocaleManager,
 	val pudding: Pudding,
 	val cacheFolder: File,
-	val initialSessions: Map<Int, GatewaySessionData>
+	val initialSessions: Map<Int, GatewaySessionData>,
+	val gatewayExtras: Map<Int, GatewayExtrasData>
 ) {
 	// ===[ STATIC ]===
 	companion object {
@@ -528,6 +530,7 @@ class LorittaBot(
 				PreStartGatewayEventReplayListener(
 					this,
 					initialSessions[it],
+					gatewayExtras[it],
 					cacheFolder,
 					preLoginStates[it]!!,
 				)
@@ -727,6 +730,7 @@ class LorittaBot(
 									File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
 								} else {
 									logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
+									val shutdownBeganAt = Clock.System.now()
 
 									// Connected, store to the cache
 									// Using close code 1012 does not invalidate your gateway session!
@@ -742,6 +746,7 @@ class LorittaBot(
 
 									val guildsCacheFile = File(shardCacheFolder, "guilds.json")
 									val sessionCacheFile = File(shardCacheFolder, "session.json")
+									val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
 									val versionFile = File(shardCacheFolder, "version")
 
 									val guildIdsForReadyEvent =
@@ -794,6 +799,17 @@ class LorittaBot(
 													resumeUrl,
 													jdaImpl.responseTotal,
 													guildIdsForReadyEvent
+												)
+											)
+										)
+
+									val shutdownFinishedAt = Clock.System.now()
+									gatewayExtrasFile
+										.writeText(
+											Json.encodeToString(
+												GatewayExtrasData(
+													shutdownBeganAt,
+													shutdownFinishedAt
 												)
 											)
 										)

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
@@ -11,6 +12,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import java.io.File
@@ -93,6 +95,7 @@ object LorittaLauncher {
 		cacheFolder.mkdirs()
 
 		val initialSessions = mutableMapOf<Int, GatewaySessionData>()
+		val gatewayExtras = mutableMapOf<Int, GatewayExtrasData>()
 		val previousVersionKeyFile = File(cacheFolder, "version")
 		if (previousVersionKeyFile.exists()) {
 			val previousVersion = UUID.fromString(previousVersionKeyFile.readText())
@@ -100,6 +103,7 @@ object LorittaLauncher {
 				try {
 					val shardCacheFolder = File(cacheFolder, shard.toString())
 					val sessionFile = File(shardCacheFolder, "session.json")
+					val extrasFile = File(shardCacheFolder, "extras.json")
 					val cacheVersionKeyFile = File(shardCacheFolder, "version")
 					// Does not exist, so bail out
 					if (!cacheVersionKeyFile.exists()) {
@@ -110,11 +114,13 @@ object LorittaLauncher {
 					val cacheVersion = UUID.fromString(cacheVersionKeyFile.readText())
 					// Only load the data if the version matches
 					if (cacheVersion == previousVersion) {
-						if (sessionFile.exists()) {
-							val sessionData = if (sessionFile.exists()) Json.decodeFromString<GatewaySessionData>(sessionFile.readText()) else null
-							if (sessionData != null)
-								initialSessions[shard] = sessionData
-						}
+						val sessionData = parseFileIfExistsNullIfException<GatewaySessionData>(sessionFile)
+						if (sessionData != null)
+							initialSessions[shard] = sessionData
+
+						val extrasData = parseFileIfExistsNullIfException<GatewayExtrasData>(extrasFile)
+						if (extrasData != null)
+							gatewayExtras[shard] = extrasData
 					} else {
 						logger.warn { "Couldn't load shard $shard cached data because the cache version does not match!" }
 					}
@@ -125,7 +131,7 @@ object LorittaLauncher {
 		}
 
 		// Iniciar instância da Loritta
-		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions)
+		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions, gatewayExtras)
 		loritta.start()
 	}
 
@@ -145,5 +151,22 @@ object LorittaLauncher {
 		// It is recommended to set this to false to avoid performance hits with the DebugProbes option!
 		DebugProbes.enableCreationStackTraces = false
 		DebugProbes.install()
+	}
+
+	/**
+	 * Parses the JSON [file] to a [T], if the file doesn't exist or if there was an issue while deserializing, the result will be null
+	 */
+	private inline fun <reified T> parseFileIfExistsNullIfException(file: File): T? {
+		return if (file.exists())
+			try {
+				Json.decodeFromString<T>(file.readText())
+			} catch (e: SerializationException) {
+				logger.warn(e) { "Failed to deserialize $file to ${T::class}! Returning null..." }
+				null
+			}
+		else {
+			logger.warn { "$file doesn't exist! Returning null..." }
+			null
+		}
 	}
 }
