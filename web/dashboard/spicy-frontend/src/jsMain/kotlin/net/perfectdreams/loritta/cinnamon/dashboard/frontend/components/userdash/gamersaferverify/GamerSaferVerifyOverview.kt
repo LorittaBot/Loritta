@@ -69,6 +69,14 @@ fun GamerSaferVerifyOverview(
                         )
                     } */
 
+                    H2 {
+                        Text("Cargo para Usuários Verificados")
+                    }
+
+                    P {
+                        Text("Qualquer usuário verificado receberá o cargo")
+                    }
+
                     FieldWrapper {
                         FieldLabel("Cargo de Verificação")
 
@@ -117,6 +125,14 @@ fun GamerSaferVerifyOverview(
                 }
 
                 Hr {}
+
+                H2 {
+                    Text("Cargos de Moderação")
+                }
+
+                P {
+                    Text("Configure que pessoas da sua equipe precisem verificar periodicamente para manterem seus cargos")
+                }
 
                 FieldWrappers {
                     FieldWrapper {
@@ -245,7 +261,7 @@ fun GamerSaferVerifyOverview(
                                         val staffCount = config.verificationRoles.size
 
                                         // TODO: Backend verifications
-                                        if (roleCount >= 1) {
+                                        if (roleCount >= 1 && config.verificationRoles.first().roleId != roleId) {
                                             m.globalState.openCloseOnlyModal("Função Premium") {
                                                 Text("Atualmente você só pode colocar um cargo para verificação")
                                             }
