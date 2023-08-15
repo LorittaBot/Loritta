@@ -79,8 +79,8 @@ class TemmieDiscordAuth(
 
 			val tree = JsonParser.parseString(result).asJsonObject
 
-			if (tree.has("error"))
-				throw TokenExchangeException("Error while exchanging token: ${tree["error"].asString}")
+			if (tree.has("errors"))
+				throw TokenExchangeException("Error while exchanging token: ${tree["errors"].asJsonObject}")
 
 			readTokenPayload(tree)
 
@@ -118,8 +118,8 @@ class TemmieDiscordAuth(
 
 			val tree = JsonParser.parseString(result).asJsonObject
 
-			if (tree.has("error"))
-				throw TokenExchangeException("Error while exchanging token: ${tree["error"].asString}")
+			if (tree.has("errors"))
+				throw TokenExchangeException("Error while exchanging token: ${tree["errors"].asJsonObject}")
 
 			val resultAsJson = JsonParser.parseString(result)
 			checkForRateLimit(httpResponse, resultAsJson)
