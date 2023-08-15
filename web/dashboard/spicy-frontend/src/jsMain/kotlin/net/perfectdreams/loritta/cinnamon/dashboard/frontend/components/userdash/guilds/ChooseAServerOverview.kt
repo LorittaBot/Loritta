@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.guilds
 
 import androidx.compose.runtime.Composable
+import kotlinx.browser.window
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
@@ -130,6 +131,10 @@ fun ChooseAServerOverview(
                         }
                     }
                 }
+            }
+
+            is LorittaDashboardRPCResponse.GetUserGuildsResponse.InvalidDiscordAuthorization -> {
+                window.location.replace(LocalSpicyInfo.current.authorizationUrl)
             }
         }
     }

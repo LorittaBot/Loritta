@@ -243,15 +243,25 @@ class LorittaDashboardFrontend(private val app: Application) {
         return Json.decodeFromString(body)
     }
 
-    suspend inline fun <reified T : LorittaDashboardRPCResponse> makeRPCRequestAndUpdateState(resource: MutableState<Resource<T>>, request: LorittaDashboardRPCRequest) {
+    suspend inline fun <reified T : LorittaDashboardRPCResponse> makeRPCRequestAndUpdateState(resource: MutableState<Resource<T>>, request: LorittaDashboardRPCRequest) = makeRPCRequestAndUpdateStateCheckType<T, T>(
+        resource,
+        request
+    )
+
+    suspend inline fun <reified D : LorittaDashboardRPCResponse, reified T : LorittaDashboardRPCResponse> makeRPCRequestAndUpdateStateCheckType(resource: MutableState<Resource<T>>, request: LorittaDashboardRPCRequest) {
         resource.value = Resource.Loading()
         val response = try {
-            makeRPCRequest<T>(request)
+            makeRPCRequest<D>(request)
         } catch (e: Exception) {
             resource.value = Resource.Failure(e)
             return
         }
-        resource.value = Resource.Success(response)
+
+        if (response !is T) {
+            resource.value = Resource.Failure(RuntimeException("Deserialized $response does not match the type!"))
+        } else {
+            resource.value = Resource.Success(response)
+        }
     }
 
     suspend fun putLorittaRequest(path: String, request: LorittaRequest): LorittaResponse {

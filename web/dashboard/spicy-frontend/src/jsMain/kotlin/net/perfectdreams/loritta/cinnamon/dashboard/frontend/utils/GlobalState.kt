@@ -15,16 +15,17 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.Language
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetSpicyInfoResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
+import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
+import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 
 class GlobalState(val m: LorittaDashboardFrontend) {
     private var userInfoResource = mutableStateOf<Resource<GetUserIdentificationResponse>>(Resource.Loading())
     var userInfo by userInfoResource
     var i18nContext by mutableStateOf<Resource<I18nContext>>(Resource.Loading())
-    private var spicyInfoResource = mutableStateOf<Resource<GetSpicyInfoResponse>>(Resource.Loading())
+    private var spicyInfoResource = mutableStateOf<Resource<LorittaDashboardRPCResponse.GetSpicyInfoResponse.Success>>(Resource.Loading())
     var spicyInfo by spicyInfoResource
     var isSidebarOpenState = mutableStateOf(false)
     var isSidebarOpen by isSidebarOpenState
@@ -38,7 +39,7 @@ class GlobalState(val m: LorittaDashboardFrontend) {
     }
 
     suspend fun updateSpicyInfo() {
-        m.makeApiRequestAndUpdateState(spicyInfoResource, HttpMethod.Get, "/api/v1/spicy")
+        m.makeRPCRequestAndUpdateStateCheckType<LorittaDashboardRPCResponse.GetSpicyInfoResponse, LorittaDashboardRPCResponse.GetSpicyInfoResponse.Success>(spicyInfoResource, LorittaDashboardRPCRequest.GetSpicyInfoRequest())
     }
 
     suspend fun updateI18nContext() {

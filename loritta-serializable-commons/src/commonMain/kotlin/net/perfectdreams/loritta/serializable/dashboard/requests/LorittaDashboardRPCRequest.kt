@@ -44,4 +44,7 @@ sealed class LorittaDashboardRPCRequest {
         val endsAt: Instant,
         val streamUrl: String?
     ) : LorittaDashboardRPCRequest()
+
+    @Serializable
+    class GetSpicyInfoRequest : LorittaDashboardRPCRequest()
 }

@@ -20,7 +20,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.*
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetLanguageInfoRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetSpicyInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.PostLorittaDashboardRpcProcessorRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.GetSonhosBundlesRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.PostSonhosBundlesRoute
@@ -59,7 +58,6 @@ class LorittaDashboardBackend(
 
         // ===[ API ]===
         PostLorittaDashboardRpcProcessorRoute(this),
-        GetSpicyInfoRoute(this),
         GetSelfUserInfoRoute(this),
         GetShipEffectsRoute(this),
         PutShipEffectsRoute(this),

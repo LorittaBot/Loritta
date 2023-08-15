@@ -1,13 +1,8 @@
 package net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.guild
 
 import io.ktor.server.application.*
-import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.LorittaInternalRpcProcessor
-import net.perfectdreams.loritta.serializable.DiscordGuild
-import net.perfectdreams.loritta.serializable.DiscordRole
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 

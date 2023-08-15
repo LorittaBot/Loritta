@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
@@ -11,6 +12,10 @@ import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboa
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 interface LorittaDashboardRpcProcessor<Req: LorittaDashboardRPCRequest, Res: LorittaDashboardRPCResponse> {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     suspend fun process(call: ApplicationCall, request: Req): Res
 
     suspend fun getDiscordAccountInformation(loritta: LorittaDashboardBackend, call: ApplicationCall): DiscordAccountInformationResult {
@@ -31,23 +36,28 @@ interface LorittaDashboardRpcProcessor<Req: LorittaDashboardRPCRequest, Res: Lor
             )
         }
 
-        val session = call.lorittaSession
-        val webSession = LorittaWebSession(loritta, session)
+        try {
+            val session = call.lorittaSession
+            val webSession = LorittaWebSession(loritta, session)
 
-        val discordAuth = webSession.getDiscordAuthFromJson()
-        val userIdentification = webSession.getUserIdentification(call)
+            val discordAuth = webSession.getDiscordAuthFromJson()
+            val userIdentification = webSession.getUserIdentification(call)
 
-        if (discordAuth == null || userIdentification == null)
-            return DiscordAccountInformationResult.InvalidDiscordAuthorization
+            if (discordAuth == null || userIdentification == null)
+                return DiscordAccountInformationResult.InvalidDiscordAuthorization
 
-        // TODO: Check if user is banned
-        /* val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+            // TODO: Check if user is banned
+            /* val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
         val bannedState = profile.getBannedState(loritta)
 
         if (bannedState != null)
             return DiscordAccountInformationResult.UserIsLorittaBanned */
 
-        return DiscordAccountInformationResult.Success(discordAuth, userIdentification)
+            return DiscordAccountInformationResult.Success(discordAuth, userIdentification)
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to query the user's Discord Auth data! Returning InvalidDiscordAuthorization..." }
+            return DiscordAccountInformationResult.InvalidDiscordAuthorization
+        }
     }
 
     sealed class DiscordAccountInformationResult {

@@ -45,6 +45,10 @@ class PostLorittaDashboardRpcProcessorRoute(private val m: LorittaDashboardBacke
             is LorittaDashboardRPCRequest.UpdateLorittaActivityRequest -> {
                 m.processors.updateLorittaActivityProcessor.process(call, request)
             }
+
+            is LorittaDashboardRPCRequest.GetSpicyInfoRequest -> {
+                m.processors.getSpicyInfoProcessor.process(call, request)
+            }
         }
 
         call.respondJson(

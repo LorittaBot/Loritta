@@ -31,6 +31,9 @@ sealed class LorittaDashboardRPCResponse {
         class Success(val guilds: List<DiscordGuild>) : GetUserGuildsResponse()
 
         @Serializable
+        class InvalidDiscordAuthorization : GetUserGuildsResponse()
+
+        @Serializable
         data class DiscordGuild(
             val id: Long,
             val name: String,
@@ -102,5 +105,16 @@ sealed class LorittaDashboardRPCResponse {
 
         @Serializable
         class Unauthorized : UpdateLorittaActivityResponse()
+    }
+
+    @Serializable
+    sealed class GetSpicyInfoResponse : LorittaDashboardRPCResponse() {
+        @Serializable
+        class Success(
+            // Easter egg
+            val comment: String,
+            val legacyDashboardUrl: String,
+            val authorizationUrl: String
+        ) : GetSpicyInfoResponse()
     }
 }
