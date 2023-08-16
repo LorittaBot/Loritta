@@ -1,20 +1,22 @@
-package net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.guild
+package net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.loritta
 
 import io.ktor.server.application.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.LorittaInternalRpcProcessor
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 
-class GetLorittaReplicasInfoProcessor(val m: LorittaBot) : LorittaInternalRpcProcessor<LorittaInternalRPCRequest.GetLorittaReplicasInfoRequest, LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse> {
+class GetLorittaInfoProcessor(val m: LorittaBot) : LorittaInternalRpcProcessor<LorittaInternalRPCRequest.GetLorittaInfoRequest, LorittaInternalRPCResponse.GetLorittaInfoResponse> {
     override suspend fun process(
         call: ApplicationCall,
-        request: LorittaInternalRPCRequest.GetLorittaReplicasInfoRequest
-    ): LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse {
-        return LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.Success(
+        request: LorittaInternalRPCRequest.GetLorittaInfoRequest
+    ): LorittaInternalRPCResponse.GetLorittaInfoResponse {
+        return LorittaInternalRPCResponse.GetLorittaInfoResponse.Success(
+            m.config.loritta.discord.applicationId.toLong(),
             m.config.loritta.discord.maxShards,
             m.config.loritta.clusters.instances.map {
-                LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.LorittaCluster(
+                LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster(
                     it.id,
                     it.name,
                     it.minShard,

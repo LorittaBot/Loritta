@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes
 
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import mu.KotlinLogging
@@ -9,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBack
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.lorittaSession
+import net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: String) : LocalizedRoute(m, path) {
@@ -49,7 +52,8 @@ abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: Strin
             if (discordAuth == null || userIdentification == null) {
                 logger.info { "Clearing any set sessions and redirecting request to unauthorized redirect URL... Json Web Session? $session; Is Discord Auth null? ${discordAuth == null}; Is User Identification null? ${userIdentification == null}" }
                 call.sessions.clear<LorittaJsonWebSession>()
-                call.respondRedirect(m.config.unauthorizedRedirectUrl)
+
+                call.respondRedirect(LorittaDiscordOAuth2AuthorizeScopeURL(m.lorittaInfo.clientId, m.config.legacyDashboardUrl.removeSuffix("/") + "/dashboard", call.request.origin.scheme + "://" + call.request.host() + call.request.uri).toString())
                 return
             }
 

@@ -14,7 +14,7 @@ class GetSpicyInfoProcessor(val m: LorittaDashboardBackend) : LorittaDashboardRp
         return LorittaDashboardRPCResponse.GetSpicyInfoResponse.Success(
             "Howdy! Did you know that Loritta is open source? https://github.com/LorittaBot/Loritta :3",
             m.config.legacyDashboardUrl.removeSuffix("/"),
-            m.config.unauthorizedRedirectUrl
+            m.lorittaInfo.clientId
         )
     }
 }

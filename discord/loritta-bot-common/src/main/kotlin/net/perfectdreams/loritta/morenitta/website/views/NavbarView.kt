@@ -20,6 +20,7 @@ import kotlinx.html.unsafe
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
 
 abstract class NavbarView(
     val loritta: LorittaBot,
@@ -348,7 +349,7 @@ abstract class NavbarView(
                             }
 
                             div(classes = "add-cta") {
-                                a(classes = "add-me button pink shadow big", href = loritta.config.loritta.discord.addBotUrl) {
+                                a(classes = "add-me button pink shadow big", href = LorittaDiscordOAuth2AddBotURL(loritta).toString()) {
                                     style = "font-size: 1.5em;"
 
                                     i(classes = "fas fa-plus") {}

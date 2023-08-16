@@ -26,12 +26,13 @@ sealed class LorittaInternalRPCResponse {
     }
 
     @Serializable
-    sealed class GetLorittaReplicasInfoResponse : LorittaInternalRPCResponse() {
+    sealed class GetLorittaInfoResponse : LorittaInternalRPCResponse() {
         @Serializable
         class Success(
+            val clientId: Long,
             val maxShards: Int,
             val instances: List<LorittaCluster>
-        ) : GetLorittaReplicasInfoResponse()
+        ) : GetLorittaInfoResponse()
 
         @Serializable
         data class LorittaCluster(

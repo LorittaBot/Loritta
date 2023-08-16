@@ -12,12 +12,14 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInf
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Svg
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.GuildsViewModel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.viewModel
+import net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 enum class UserPermissionLevel(val canAddBots: Boolean) {
     OWNER(true),
@@ -26,6 +28,7 @@ enum class UserPermissionLevel(val canAddBots: Boolean) {
     MEMBER(false)
 }
 
+@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun ChooseAServerOverview(
     m: LorittaDashboardFrontend,
@@ -134,7 +137,13 @@ fun ChooseAServerOverview(
             }
 
             is LorittaDashboardRPCResponse.GetUserGuildsResponse.InvalidDiscordAuthorization -> {
-                window.location.replace(LocalSpicyInfo.current.authorizationUrl)
+                val authorizeUrl = LorittaDiscordOAuth2AuthorizeScopeURL(
+                    LocalSpicyInfo.current.clientId,
+                    LocalSpicyInfo.current.legacyDashboardUrl + "/dashboard",
+                    window.location.href
+                )
+
+                window.location.replace(authorizeUrl.toString())
             }
         }
     }

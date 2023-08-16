@@ -2,12 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.routes
 
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.set
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
-import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.sessions.*
@@ -16,19 +11,17 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.toJson
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.toWebSessionIdentification
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.UserBannedView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
@@ -61,9 +54,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 					if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
 						call.respondHtml(WebsiteUtils.getDiscordCrawlerAuthenticationPage(loritta))
 					} else {
-						val state = JsonObject()
-						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
-						redirect(loritta.config.loritta.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+						redirect(LorittaDiscordOAuth2AuthorizeScopeURL(loritta,  "$scheme://$hostHeader" + call.request.path()).toString(), false)
 					}
 				}
 			} else {
@@ -74,9 +65,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 					storedUserIdentification ?: run {
 						// Okay... mas e se for nulo? Veio do master mas não tem session cache? Como pode??
 						// Iremos apenas pedir para o usuário reautenticar, porque alguma coisa deu super errado!
-						val state = JsonObject()
-						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
-						redirect(loritta.config.loritta.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+						redirect(LorittaDiscordOAuth2AuthorizeScopeURL(loritta, "$scheme://$hostHeader" + call.request.path()).toString(), false)
 					}
 				} else {
 					val auth = TemmieDiscordAuth(
@@ -326,8 +315,6 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 	open suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
 		// redirect to authentication owo
-		val state = JsonObject()
-		state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()
-		redirect(loritta.config.loritta.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+		redirect(LorittaDiscordOAuth2AuthorizeScopeURL(loritta, LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()).toString(), false)
 	}
 }

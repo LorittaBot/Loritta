@@ -1,13 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard
 
-import io.ktor.http.*
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
-import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
-import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -15,12 +7,18 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import kotlin.collections.set
 
 abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDashboardPath: String) : RequiresDiscordLoginLocalizedRoute(loritta, "/guild/{guildId}$originalDashboardPath") {
 	companion object {
@@ -46,7 +44,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		}
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
-				?: redirect(loritta.config.loritta.discord.addBotUrl + "&guild_id=$guildId", false)
+				?: redirect(LorittaDiscordOAuth2AddBotURL(loritta, guildId.toLong()).toString(), false)
 
 		logger.info { "JDA Guild get and check: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()

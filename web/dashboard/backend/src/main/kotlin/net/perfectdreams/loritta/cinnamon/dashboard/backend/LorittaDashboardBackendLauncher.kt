@@ -59,7 +59,7 @@ object LorittaDashboardBackendLauncher {
         m.start()
     }
 
-    suspend fun getLorittaReplicasInfo(rootConfig: RootConfig, http: HttpClient): LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.Success {
+    suspend fun getLorittaReplicasInfo(rootConfig: RootConfig, http: HttpClient): LorittaInternalRPCResponse.GetLorittaInfoResponse.Success {
         while (true) {
             try {
                 logger.info { "Attempting to get Loritta's replicas info from Loritta's main replica..." }
@@ -67,9 +67,9 @@ object LorittaDashboardBackendLauncher {
 
                 return Json.decodeFromString<LorittaInternalRPCResponse>(
                     http.post("${rootConfig.lorittaMainRpcUrl.removeSuffix("/")}/rpc") {
-                        setBody(Json.encodeToString<LorittaInternalRPCRequest>(LorittaInternalRPCRequest.GetLorittaReplicasInfoRequest()))
+                        setBody(Json.encodeToString<LorittaInternalRPCRequest>(LorittaInternalRPCRequest.GetLorittaInfoRequest()))
                     }.bodyAsText()
-                ) as LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.Success
+                ) as LorittaInternalRPCResponse.GetLorittaInfoResponse.Success
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to get Loritta's replicas info from Loritta's main replica! Trying again in 2s..." }
                 delay(2.seconds)

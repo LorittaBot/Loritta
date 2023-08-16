@@ -44,7 +44,7 @@ class LorittaDashboardBackend(
     val config: RootConfig,
     val languageManager: LanguageManager,
     val pudding: Pudding,
-    val replicasInfo: LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.Success,
+    val lorittaInfo: LorittaInternalRPCResponse.GetLorittaInfoResponse.Success,
     val http: HttpClient
 ) {
     val processors = Processors(this)
@@ -138,7 +138,7 @@ class LorittaDashboardBackend(
     }
 
     suspend inline fun <reified T : LorittaInternalRPCResponse> makeRPCRequest(
-        cluster: LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.LorittaCluster,
+        cluster: LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster,
         rpc: LorittaInternalRPCRequest
     ): T {
         return Json.decodeFromString<T>(

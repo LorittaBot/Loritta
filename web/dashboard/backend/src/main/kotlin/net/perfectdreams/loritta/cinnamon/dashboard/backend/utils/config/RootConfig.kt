@@ -7,7 +7,6 @@ data class RootConfig(
     val sessionHex: String,
     val sessionName: String,
     val sessionDomain: String,
-    val unauthorizedRedirectUrl: String,
     val lorittaMainRpcUrl: String,
     val legacyDashboardUrl: String,
     val enableCORS: Boolean,

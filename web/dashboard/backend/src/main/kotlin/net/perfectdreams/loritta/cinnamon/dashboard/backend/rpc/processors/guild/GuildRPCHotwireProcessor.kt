@@ -19,7 +19,7 @@ open class GuildRPCHotwireProcessor<
         InternalReq: LorittaInternalRPCRequest,
         InternalRes: LorittaInternalRPCResponse>(
     val m: LorittaDashboardBackend,
-    private val dashboardRequestToRPCRequestRemapper: (Req, LorittaJsonWebSession.UserIdentification) -> (Pair<LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.LorittaCluster, InternalReq>),
+    private val dashboardRequestToRPCRequestRemapper: (Req, LorittaJsonWebSession.UserIdentification) -> (Pair<LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster, InternalReq>),
     private val rpcResponseToDashboardResponseRemapper: (InternalRes) -> Res,
     private val missingPermissionResponse: () -> Res,
     private val unknownGuildResponse: () -> Res,

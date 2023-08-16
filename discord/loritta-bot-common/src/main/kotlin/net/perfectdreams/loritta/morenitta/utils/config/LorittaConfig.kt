@@ -50,8 +50,6 @@ data class LorittaConfig(
         val token: String,
         val applicationId: Snowflake,
         val clientSecret: String,
-        val addBotUrl: String,
-        val authorizationUrl: String,
         val maxShards: Int,
         val maxRequestsPerHost: Int,
         val maxConcurrency: Int,

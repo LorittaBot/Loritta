@@ -50,7 +50,7 @@ class PerfectPaymentsClient(val m: LorittaDashboardBackend, val url: String) {
                     Json.encodeToString(
                         CreatePaymentRequest(
                             paymentTitle,
-                            "${m.config.legacyDashboardUrl}/api/v1/callbacks/perfect-payments",
+                            "${m.config.legacyDashboardUrl.removeSuffix("/")}/api/v1/callbacks/perfect-payments",
                             amount,
                             "BRL",
                             externalReference

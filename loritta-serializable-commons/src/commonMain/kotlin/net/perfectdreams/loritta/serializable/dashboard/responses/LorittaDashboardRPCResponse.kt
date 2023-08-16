@@ -114,7 +114,7 @@ sealed class LorittaDashboardRPCResponse {
             // Easter egg
             val comment: String,
             val legacyDashboardUrl: String,
-            val authorizationUrl: String
+            val clientId: Long
         ) : GetSpicyInfoResponse()
     }
 }

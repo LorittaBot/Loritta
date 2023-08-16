@@ -12,7 +12,7 @@ sealed class LorittaInternalRPCRequest {
     ) : LorittaInternalRPCRequest()
 
     @Serializable
-    class GetLorittaReplicasInfoRequest : LorittaInternalRPCRequest()
+    class GetLorittaInfoRequest : LorittaInternalRPCRequest()
 
     @Serializable
     class GetGuildGamerSaferConfigRequest(

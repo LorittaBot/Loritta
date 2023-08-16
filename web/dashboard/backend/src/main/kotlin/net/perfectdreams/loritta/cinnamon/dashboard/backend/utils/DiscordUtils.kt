@@ -9,7 +9,7 @@ object DiscordUtils {
      *
      * @return the shard ID
      */
-    fun getLorittaClusterForGuildId(loritta: LorittaDashboardBackend, id: Long): LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.LorittaCluster {
+    fun getLorittaClusterForGuildId(loritta: LorittaDashboardBackend, id: Long): LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster {
         val shardId = getShardIdFromGuildId(loritta, id)
         return getLorittaClusterForShardId(loritta, shardId)
     }
@@ -19,7 +19,7 @@ object DiscordUtils {
      *
      * @return the shard ID
      */
-    fun getShardIdFromGuildId(loritta: LorittaDashboardBackend, id: Long) = getShardIdFromGuildId(id, loritta.replicasInfo.maxShards)
+    fun getShardIdFromGuildId(loritta: LorittaDashboardBackend, id: Long) = getShardIdFromGuildId(id, loritta.lorittaInfo.maxShards)
 
     /**
      * Gets a Discord Shard ID from the provided Guild ID
@@ -33,8 +33,8 @@ object DiscordUtils {
      *
      * @return the cluster
      */
-    fun getLorittaClusterForShardId(loritta: LorittaDashboardBackend, id: Int): LorittaInternalRPCResponse.GetLorittaReplicasInfoResponse.LorittaCluster {
-        val lorittaShard = loritta.replicasInfo.instances.firstOrNull { id in it.minShard..it.maxShard }
+    fun getLorittaClusterForShardId(loritta: LorittaDashboardBackend, id: Int): LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster {
+        val lorittaShard = loritta.lorittaInfo.instances.firstOrNull { id in it.minShard..it.maxShard }
         return lorittaShard ?: throw RuntimeException("Frick! I don't know what is the Loritta Shard for Discord Shard ID $id")
     }
 

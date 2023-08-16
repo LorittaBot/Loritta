@@ -1,15 +1,14 @@
 package net.perfectdreams.loritta.morenitta.website.views.user
 
-import com.github.salomonbrys.kotson.jsonObject
-import net.perfectdreams.loritta.morenitta.dao.Reputation
-import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.website.views.BaseView
+import net.perfectdreams.loritta.morenitta.dao.Reputation
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.morenitta.website.views.BaseView
 
 class UserReputationView(
     val loritta: LorittaBot,
@@ -267,11 +266,7 @@ class UserReputationView(
                                     if (channelId != null)
                                         redirectUrl += "?guild=$guildId&channel=$channelId"
 
-                                    val state = jsonObject(
-                                        "redirectUrl" to redirectUrl
-                                    )
-
-                                    a(classes = "button-discord button-discord-info pure-button g-recaptcha reputation-button", href = (loritta.config.loritta.discord.authorizationUrl + "&state=${java.util.Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")) {
+                                    a(classes = "button-discord button-discord-info pure-button g-recaptcha reputation-button", href = LorittaDiscordOAuth2AuthorizeScopeURL(loritta, redirectUrl).toString()) {
                                         id = "reputation-button"
                                         attributes["data-need-login"] = "true"
 

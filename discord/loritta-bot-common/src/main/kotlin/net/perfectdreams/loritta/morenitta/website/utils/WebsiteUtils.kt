@@ -4,32 +4,28 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
-import net.perfectdreams.loritta.morenitta.website.LoriWebCode
-import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.util.*
-import kotlinx.html.body
-import kotlinx.html.head
-import kotlinx.html.html
-import kotlinx.html.meta
-import kotlinx.html.p
+import kotlinx.html.*
 import kotlinx.html.stream.createHTML
-import kotlinx.html.title
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
+import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.morenitta.website.LoriWebCode
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.ConfigTransformer
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -187,7 +183,7 @@ object WebsiteUtils {
 		variables["pathNL"] = pathNoLanguageCode // path no language code
 		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
-		variables["addBotUrl"] = loritta.config.loritta.discord.addBotUrl
+		variables["addBotUrl"] = LorittaDiscordOAuth2AddBotURL(loritta).toString()
 
 		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
 		variables["currentUrl"] = correctUrl + req.path().substring(1)

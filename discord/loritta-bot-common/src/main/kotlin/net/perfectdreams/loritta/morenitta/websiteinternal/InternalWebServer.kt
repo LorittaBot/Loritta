@@ -47,8 +47,8 @@ class InternalWebServer(val m: LorittaBot) {
                                 processors.getGuildInfoProcessor.process(call, request)
                             }
 
-                            is LorittaInternalRPCRequest.GetLorittaReplicasInfoRequest -> {
-                                processors.getLorittaReplicasInfoProcessor.process(call, request)
+                            is LorittaInternalRPCRequest.GetLorittaInfoRequest -> {
+                                processors.getLorittaInfoProcessor.process(call, request)
                             }
 
                             is LorittaInternalRPCRequest.GetGuildGamerSaferConfigRequest -> {
