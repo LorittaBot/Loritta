@@ -4,47 +4,13 @@ package net.perfectdreams.spicymorenitta.routes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.*
-import jq
-import kotlinx.browser.document
-import kotlinx.browser.window
-import kotlinx.dom.addClass
-import kotlinx.dom.clear
-import kotlinx.dom.removeClass
-import kotlinx.html.*
-import kotlinx.html.dom.prepend
-import kotlinx.serialization.Serializable
-import loriUrl
-import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.components.GetDailyRewardOverview
 import net.perfectdreams.spicymorenitta.components.GotDailyRewardOverview
-import net.perfectdreams.spicymorenitta.http
-import net.perfectdreams.spicymorenitta.locale
-import net.perfectdreams.spicymorenitta.utils.*
-import net.perfectdreams.spicymorenitta.utils.locale.buildAsHtml
-import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.jetbrains.compose.web.css.opacity
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
-import org.w3c.dom.Audio
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.url.URLSearchParams
-import utils.CountUp
-import utils.CountUpOptions
-import utils.Moment
-import kotlin.collections.set
-import kotlin.js.Date
-import kotlin.js.Json
-import kotlin.js.json
-import kotlin.random.Random
 
 class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
     override val keepLoadingScreen: Boolean

@@ -9,7 +9,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.window
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -30,7 +29,6 @@ class GlobalState(val m: LorittaDashboardFrontend) {
     var isSidebarOpenState = mutableStateOf(false)
     var isSidebarOpen by isSidebarOpenState
     var activeModal by mutableStateOf<Modal?>(null)
-    var isLoading = false
 
     private val jobs = mutableListOf<Job>()
 
@@ -138,9 +136,5 @@ class GlobalState(val m: LorittaDashboardFrontend) {
             jobs.remove(job)
         }
         return job
-    }
-
-    fun test() = flow<String> {
-
     }
 }

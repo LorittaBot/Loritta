@@ -2,16 +2,18 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.WebhookType
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 
 object WebhookUtils {
+	val webhookRegex = Regex("/api/webhooks/([0-9]+)/([A-z0-9_-]+)")
+
 	/**
 	 * Retorna um TemmieWebhook com um webhook de um canal especificado, caso não exista nenhum webhook válido para o canal, ele irá criar um.
 	 *

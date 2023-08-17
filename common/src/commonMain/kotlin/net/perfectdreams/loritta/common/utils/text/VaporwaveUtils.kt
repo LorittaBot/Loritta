@@ -13,27 +13,27 @@ object VaporwaveUtils {
         val sb = StringBuilder()
         for (_c in str.toCharArray()) {
             val isUpperCase = _c.isUpperCase()
-            val c = _c.toLowerCase()
+            val c = _c.lowercaseChar()
             if (c.isWhitespace()) {
                 sb.append(" ")
                 continue
             }
-            var vaporC = (c.toInt() + 0xFEE0).toChar()
+            var vaporC = (c.code + 0xFEE0).toChar()
 
 
-            if (vaporC.toInt() !in 65281..65381) {
+            if (vaporC.code !in FULL_WIDTH_CHARACTERS_RANGE) {
                 // If it isn't within our range, let's append the original character
                 sb.append(c)
                 continue
             }
 
             if (isUpperCase)
-                vaporC = vaporC.toUpperCase()
+                vaporC = vaporC.uppercaseChar()
             sb.append(vaporC)
         }
         return sb.toString()
     }
 
     // Yet another case of "Kotlin stdlib does not have this for some reason"
-    private fun Char.isUpperCase() = this == this.toUpperCase()
+    private fun Char.isUpperCase() = this == this.uppercaseChar()
 }

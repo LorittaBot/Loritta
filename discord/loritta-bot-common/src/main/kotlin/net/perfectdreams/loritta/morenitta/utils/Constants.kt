@@ -1,25 +1,17 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import com.fasterxml.jackson.databind.BeanDescription
-import com.fasterxml.jackson.databind.DeserializationConfig
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.type.MapType
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
+import kotlinx.serialization.hocon.Hocon
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.jackson.FixedMapDeserializer
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import kotlinx.serialization.hocon.Hocon
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.common.utils.jackson.FixedMapDeserializer
-import net.perfectdreams.loritta.common.utils.Emotes
-import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font
 import java.io.File
@@ -73,8 +65,6 @@ object Constants {
 	const val ACTION_MALE_AND_MALE = "male_x_male"
 
 	val JSON_MAPPER = ObjectMapper()
-	val MAPPER = ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
-	val YAML = Yaml()
 	val HOCON = Hocon { useArrayPolymorphism = true }
 	val HOCON_MAPPER = ObjectMapper(HoconFactory()).apply {
 		this.enable(MapperFeature.ALLOW_EXPLICIT_PROPERTY_RENAMING)
@@ -120,7 +110,6 @@ object Constants {
 	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(41, 166, 254)
 	val ROBLOX_RED = Color(226, 35, 26)
-	val IMAGE_FALLBACK by lazy { ImageIO.read(File(LorittaBot.ASSETS, "avatar0.png")) }
 	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
 	val HTTP_URL_PATTERN = Pattern.compile("https?:\\/\\/[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
 	val EMOJI_PATTERN = Pattern.compile("(?:[\uD83C\uDF00-\uD83D\uDDFF]|[\uD83E\uDD00-\uD83E\uDDFF]|" +
@@ -243,18 +232,6 @@ object Constants {
 
 	val JACKEY: Font by lazy {
 		FileInputStream(File(LorittaBot.ASSETS + "jackeyfont.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-	}
-
-	val BURBANK_BIG_CONDENSED_BLACK: Font by lazy {
-		FileInputStream(File(LorittaBot.ASSETS + "burbank-big-condensed-black.otf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-	}
-
-	val BURBANK_BIG_CONDENSED_BOLD: Font by lazy {
-		FileInputStream(File(LorittaBot.ASSETS + "burbank-big-condensed-bold.otf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
