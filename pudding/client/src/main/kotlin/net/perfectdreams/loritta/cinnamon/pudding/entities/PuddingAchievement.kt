@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.Achievement
+import net.perfectdreams.loritta.serializable.Achievement
 
 class PuddingAchievement(
     private val pudding: Pudding,

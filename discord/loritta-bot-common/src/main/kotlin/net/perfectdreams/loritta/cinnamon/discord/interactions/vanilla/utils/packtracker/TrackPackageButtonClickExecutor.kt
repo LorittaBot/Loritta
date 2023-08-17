@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosFoundObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnknownObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.InvalidTrackingIdException
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 
 class TrackPackageButtonClickExecutor(
     loritta: LorittaBot,

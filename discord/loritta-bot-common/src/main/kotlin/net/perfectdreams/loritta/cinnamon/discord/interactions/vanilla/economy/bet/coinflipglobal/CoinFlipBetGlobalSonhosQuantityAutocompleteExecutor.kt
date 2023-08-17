@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.Auto
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 import kotlin.time.Duration.Companion.minutes
 
 class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta: LorittaBot) : CinnamonAutocompleteHandler<String>(loritta) {

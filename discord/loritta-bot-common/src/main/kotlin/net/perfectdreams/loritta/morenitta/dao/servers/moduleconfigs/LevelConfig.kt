@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs
 
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.LevelConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LevelConfigs
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID

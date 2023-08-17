@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.common.utils.Placeholders
 import net.perfectdreams.loritta.morenitta.LorittaBot

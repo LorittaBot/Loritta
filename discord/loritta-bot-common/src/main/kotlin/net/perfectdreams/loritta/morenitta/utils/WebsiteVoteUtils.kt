@@ -1,19 +1,21 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.dao.DonationKey
-import net.perfectdreams.loritta.morenitta.tables.Profiles
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotesUserAvailableNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BotVoteSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.LegacyWebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.BotVote
-import net.perfectdreams.loritta.morenitta.tables.BotVotes
+import net.perfectdreams.loritta.morenitta.dao.DonationKey
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -42,7 +44,7 @@ object WebsiteVoteUtils {
 	 * @param userId        the user that created the vote
 	 * @param websiteSource where the vote originated from
 	 */
-	suspend fun addVote(loritta: LorittaBot, userId: Long, websiteSource: WebsiteVoteSource) {
+	suspend fun addVote(loritta: LorittaBot, userId: Long, websiteSource: LegacyWebsiteVoteSource) {
 		voteMutex.withLock {
 			// Check if the user voted in the last 60s
 			// This is to avoid top.gg issues while retrying votes

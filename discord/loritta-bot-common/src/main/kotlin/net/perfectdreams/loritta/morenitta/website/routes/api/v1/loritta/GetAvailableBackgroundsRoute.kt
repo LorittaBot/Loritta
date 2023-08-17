@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 import io.ktor.server.application.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.pudding.data.Background
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
+import net.perfectdreams.loritta.serializable.Background
+import net.perfectdreams.loritta.serializable.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.morenitta.LorittaBot

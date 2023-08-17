@@ -13,8 +13,8 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.Screen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.builders.InputAttrsScope

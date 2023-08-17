@@ -6,20 +6,20 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
 import net.perfectdreams.loritta.morenitta.dao.Payment
-import net.perfectdreams.loritta.morenitta.tables.DonationKeys
-import net.perfectdreams.loritta.morenitta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 
@@ -117,7 +117,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                                 it[DonationKeys.userId] = event.userIdLong
                                 it[value] = 100.0
                                 it[expiresAt] = System.currentTimeMillis() + (Constants.DONATION_ACTIVE_MILLIS * 3)
-                                it[metadata] = jsonObject("type" to "LorittaChristmas2022Event")
+                                it[metadata] = jsonObject("type" to "LorittaChristmas2022Event").toString()
                             }
 
                             Payment.new {

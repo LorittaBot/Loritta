@@ -1,8 +1,8 @@
 package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.browser.window
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
+import net.perfectdreams.loritta.serializable.BackgroundStorageType
+import net.perfectdreams.loritta.serializable.BackgroundVariation
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.serializable.ProfileDesign

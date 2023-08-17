@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWeb
 import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.PutShipEffectsRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.NotEnoughSonhosErrorResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.PutShipEffectsResponse
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog

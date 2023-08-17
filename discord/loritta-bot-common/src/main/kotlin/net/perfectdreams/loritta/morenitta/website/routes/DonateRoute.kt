@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.website.routes
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
-import net.perfectdreams.loritta.morenitta.tables.DonationKeys
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import io.ktor.server.application.ApplicationCall
 import net.perfectdreams.i18nhelper.core.I18nContext

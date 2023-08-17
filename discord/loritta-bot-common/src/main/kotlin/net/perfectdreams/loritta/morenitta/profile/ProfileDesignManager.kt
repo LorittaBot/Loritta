@@ -30,7 +30,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.gifs.GifSequenceWriter
 import net.perfectdreams.loritta.morenitta.profile.profiles.*
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
@@ -316,8 +316,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val userId = user.id.toLong()
 
 		val hasUpvoted = loritta.newSuspendedTransaction {
-			net.perfectdreams.loritta.morenitta.tables.BotVotes.select {
-				net.perfectdreams.loritta.morenitta.tables.BotVotes.userId eq userId.toLong() and (net.perfectdreams.loritta.morenitta.tables.BotVotes.votedAt greaterEq System.currentTimeMillis() - (Constants.ONE_HOUR_IN_MILLISECONDS * 12))
+			net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes.select {
+				net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes.userId eq userId.toLong() and (net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes.votedAt greaterEq System.currentTimeMillis() - (Constants.ONE_HOUR_IN_MILLISECONDS * 12))
 			}.count() != 0L
 		}
 
@@ -382,9 +382,9 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val guildBadges = mutableListOf<Badge.GuildBadge>()
 
 		loritta.newSuspendedTransaction {
-			val results = (net.perfectdreams.loritta.morenitta.tables.ServerConfigs innerJoin net.perfectdreams.loritta.morenitta.tables.DonationConfigs)
+			val results = (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs innerJoin net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs)
 				.select {
-					net.perfectdreams.loritta.morenitta.tables.DonationConfigs.customBadge eq true and (net.perfectdreams.loritta.morenitta.tables.ServerConfigs.id inList mutualGuilds)
+					net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs.customBadge eq true and (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs.id inList mutualGuilds)
 				}
 
 			val configs = ServerConfig.wrapRows(results)

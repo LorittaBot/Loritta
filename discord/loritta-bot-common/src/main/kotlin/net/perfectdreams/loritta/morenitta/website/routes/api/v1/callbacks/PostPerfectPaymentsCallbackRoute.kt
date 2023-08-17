@@ -1,39 +1,29 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.nullLong
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.dao.DonationKey
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.dao.Payment
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.BannedUsers
-import net.perfectdreams.loritta.morenitta.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.DonationKey
+import net.perfectdreams.loritta.morenitta.dao.Payment
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
-import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -143,7 +133,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 			// User charged back the payment, let's ban him!
 			logger.warn { "User ${internalPayment.userId} charged back the payment! Let's ban him >:(" }
 
-			val metadata = internalPayment.metadata
+			val metadata = internalPayment.metadata?.let { JsonParser.parseString(it) }
 			if (metadata != null) {
 				if (internalPayment.reason == PaymentReason.SONHOS_BUNDLE) {
 					val metadataAsObj = metadata.obj
@@ -222,7 +212,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 				internalPayment.paidAt = System.currentTimeMillis()
 			}
 
-			val metadata = internalPayment.metadata
+			val metadata = internalPayment.metadata?.let { JsonParser.parseString(it) }
 			if (metadata != null) {
 				val metadataAsObj = metadata.obj
 

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.threads
 
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.dao.Reminder
-import net.perfectdreams.loritta.morenitta.tables.Reminders
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions

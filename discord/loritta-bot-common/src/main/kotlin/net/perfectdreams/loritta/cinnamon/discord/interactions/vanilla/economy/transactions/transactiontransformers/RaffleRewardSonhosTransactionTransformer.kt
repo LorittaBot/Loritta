@@ -5,10 +5,10 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers.DivineInterventionSonhosTransactionTransformer.appendMoneyEarnedEmoji
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.RaffleRewardSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.serializable.EmojiFightBetSonhosTransaction
+import net.perfectdreams.loritta.serializable.RaffleRewardSonhosTransaction
+import net.perfectdreams.loritta.serializable.UserId
 
 object RaffleRewardSonhosTransactionTransformer : SonhosTransactionTransformer<RaffleRewardSonhosTransaction> {
     override suspend fun transform(

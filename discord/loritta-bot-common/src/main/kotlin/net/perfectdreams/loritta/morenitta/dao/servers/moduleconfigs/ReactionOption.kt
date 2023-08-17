@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs
 
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ReactionOptions
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionOptions
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

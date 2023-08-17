@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
+import net.perfectdreams.loritta.serializable.ProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.update
 

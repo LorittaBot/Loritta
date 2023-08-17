@@ -9,7 +9,7 @@ version = Versions.PUDDING
 
 dependencies {
     implementation(project(":common"))
-    api(project(":pudding:data"))
+    api(project(":loritta-serializable-commons"))
 
     // Databases
     api(libs.exposed.core)

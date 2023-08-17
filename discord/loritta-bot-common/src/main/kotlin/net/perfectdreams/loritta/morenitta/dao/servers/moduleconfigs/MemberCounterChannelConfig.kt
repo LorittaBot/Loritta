@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs
 
-import net.perfectdreams.loritta.morenitta.utils.counter.CounterUtils
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MemberCounterChannelConfigs
+import net.perfectdreams.loritta.morenitta.utils.counter.CounterUtils
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID

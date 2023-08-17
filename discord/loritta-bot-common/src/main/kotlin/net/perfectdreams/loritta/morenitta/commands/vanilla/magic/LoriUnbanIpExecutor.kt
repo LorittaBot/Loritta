@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.tables.BannedIps
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedIps
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 

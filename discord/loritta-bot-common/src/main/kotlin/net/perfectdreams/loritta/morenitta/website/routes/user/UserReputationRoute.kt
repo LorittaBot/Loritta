@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.website.routes.user
 
 import net.perfectdreams.loritta.morenitta.dao.Reputation
-import net.perfectdreams.loritta.morenitta.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import io.ktor.server.application.*
 import io.ktor.server.request.*

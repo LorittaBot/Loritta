@@ -2,17 +2,18 @@ package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.obj
+import com.google.gson.JsonParser
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.NitroBoostUtils
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Payment
-import net.perfectdreams.loritta.morenitta.tables.Payments
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import org.jetbrains.exposed.sql.and
 
 class CheckBoostStatusModule(val loritta: LorittaBot) : MessageReceivedModule {
@@ -57,7 +58,7 @@ class CheckBoostStatusModule(val loritta: LorittaBot) : MessageReceivedModule {
 		var hasPaymentHere = false
 
 		for (nitroBoostPayment in donations) {
-			val metadata = nitroBoostPayment.metadata
+			val metadata = nitroBoostPayment.metadata?.let { JsonParser.parseString(it) }
 			val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == event.guild!!.idLong
 
 			if (isFromThisGuild) {

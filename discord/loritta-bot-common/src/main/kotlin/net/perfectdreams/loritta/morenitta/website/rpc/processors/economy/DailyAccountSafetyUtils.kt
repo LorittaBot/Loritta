@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.rpc.processors.economy
 
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -45,7 +45,7 @@ object DailyAccountSafetyUtils {
         // Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
         // Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
         val lastReceivedDailyAt = loritta.newSuspendedTransaction {
-            net.perfectdreams.loritta.morenitta.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(
+            net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies.select { Dailies.receivedById eq userIdentification.id.toLong() and (Dailies.receivedAt greaterEq todayAtMidnight) }.orderBy(
                 Dailies.receivedAt, SortOrder.DESC)
                 .map {
                     it[Dailies.receivedAt]
@@ -53,7 +53,7 @@ object DailyAccountSafetyUtils {
         }
 
         val sameIpDailyAt = loritta.newSuspendedTransaction {
-            net.perfectdreams.loritta.morenitta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
+            net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq todayAtMidnight) }
                 .orderBy(Dailies.receivedAt, SortOrder.DESC)
                 .map {
                     it[Dailies.receivedAt]
@@ -61,7 +61,7 @@ object DailyAccountSafetyUtils {
         }
 
         val sameIpDailyOneHourAgoAt = loritta.newSuspendedTransaction {
-            net.perfectdreams.loritta.morenitta.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq nowOneHourAgo) }
+            net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies.select { Dailies.ip eq ip and (Dailies.receivedAt greaterEq nowOneHourAgo) }
                 .orderBy(Dailies.receivedAt, SortOrder.DESC)
                 .map {
                     it[Dailies.receivedAt]

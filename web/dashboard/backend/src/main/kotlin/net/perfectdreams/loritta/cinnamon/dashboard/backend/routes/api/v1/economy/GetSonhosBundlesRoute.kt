@@ -4,7 +4,7 @@ import io.ktor.server.application.*
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetSonhosBundlesResponse
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundle
+import net.perfectdreams.loritta.serializable.SonhosBundle
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.select

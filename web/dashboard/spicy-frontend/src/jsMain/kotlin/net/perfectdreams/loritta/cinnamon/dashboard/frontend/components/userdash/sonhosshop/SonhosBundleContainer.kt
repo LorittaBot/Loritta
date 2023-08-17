@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordB
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopScreen
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundle
+import net.perfectdreams.loritta.serializable.SonhosBundle
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div

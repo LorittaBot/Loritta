@@ -40,7 +40,7 @@ class UserBannedView(loritta: LorittaBot, i18nContext: I18nContext, locale: Base
                         }
                         p {
                             code {
-                                + (bannedState[net.perfectdreams.loritta.morenitta.tables.BannedUsers.reason] ?: "¯\\_(ツ)_/¯")
+                                + (bannedState[net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers.reason] ?: "¯\\_(ツ)_/¯")
                             }
                         }
                     }

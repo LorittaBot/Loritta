@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.servers.GiveawayParticipants
-import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager

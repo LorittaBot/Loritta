@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.CustomCommand
-import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.CustomGuildCommands
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert

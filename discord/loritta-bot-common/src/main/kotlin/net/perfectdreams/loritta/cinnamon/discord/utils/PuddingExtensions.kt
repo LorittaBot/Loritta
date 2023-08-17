@@ -7,7 +7,7 @@ import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.User
 import net.perfectdreams.loritta.common.utils.LorittaPermission
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 

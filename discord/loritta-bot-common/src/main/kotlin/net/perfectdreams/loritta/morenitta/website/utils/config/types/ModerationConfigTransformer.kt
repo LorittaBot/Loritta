@@ -3,14 +3,15 @@ package net.perfectdreams.loritta.morenitta.website.utils.config.types
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import com.google.gson.JsonParser
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
+import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ModerationConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WarnAction
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.WarnActions
-import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -41,7 +42,7 @@ class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                     "punishmentAction" to it.punishmentAction.name
             )
 
-            val metadata = it.metadata
+            val metadata = it.metadata?.let { JsonParser.parseString(it) }
             if (metadata != null)
                 obj["customMetadata0"] = metadata["time"].string
 
@@ -121,7 +122,7 @@ class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                     if (time != null) {
                         it[WarnActions.metadata] = jsonObject(
                                 "time" to time
-                        )
+                        ).toString()
                     }
                 }
             }

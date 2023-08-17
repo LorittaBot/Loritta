@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.dao
 
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.StoredMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.StoredMessages
 import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass

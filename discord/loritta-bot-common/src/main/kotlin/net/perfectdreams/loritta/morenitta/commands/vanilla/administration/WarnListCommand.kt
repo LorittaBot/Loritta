@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Warn
-import net.perfectdreams.loritta.morenitta.tables.Warns
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Warns
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
+import net.perfectdreams.loritta.common.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import net.perfectdreams.loritta.morenitta.LorittaBot
 

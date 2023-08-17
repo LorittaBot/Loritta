@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEm
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 
 class PackageListExecutor(loritta: LorittaBot, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {
     companion object {

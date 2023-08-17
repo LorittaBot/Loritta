@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.serializable
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
+import net.perfectdreams.loritta.serializable.BackgroundWithVariations
 
 @Serializable
 data class ProfileSectionsResponse(

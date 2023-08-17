@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
 import org.jetbrains.exposed.sql.select
 
 class BomDiaECiaStatusCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia status", "bd&c status", "bdc status"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {

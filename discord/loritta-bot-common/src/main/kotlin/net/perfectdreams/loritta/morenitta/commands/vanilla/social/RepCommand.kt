@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Reputation
-import net.perfectdreams.loritta.morenitta.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale

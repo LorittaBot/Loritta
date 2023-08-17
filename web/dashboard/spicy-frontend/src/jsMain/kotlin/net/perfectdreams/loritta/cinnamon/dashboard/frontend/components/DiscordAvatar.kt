@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components
 import androidx.compose.runtime.Composable
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.DiscordCdn
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.Image
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Img
 import org.w3c.dom.HTMLImageElement

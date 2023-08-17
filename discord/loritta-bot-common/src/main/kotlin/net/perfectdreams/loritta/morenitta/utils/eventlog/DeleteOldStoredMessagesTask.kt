@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils.eventlog
 
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.StoredMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.StoredMessages
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction

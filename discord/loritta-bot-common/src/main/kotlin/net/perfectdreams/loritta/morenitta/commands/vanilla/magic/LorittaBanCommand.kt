@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import org.jetbrains.exposed.sql.insert
 import net.perfectdreams.loritta.morenitta.LorittaBot
 

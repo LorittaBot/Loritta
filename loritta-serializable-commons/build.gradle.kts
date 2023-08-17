@@ -26,7 +26,6 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 api(project(":common"))
-                api(project(":pudding:data"))
             }
         }
 

@@ -5,9 +5,12 @@ import LoriDashboard
 import SaveStuff
 import jQuery
 import jq
+import kotlinx.browser.document
+import kotlinx.dom.clear
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.common.utils.CounterThemes
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
@@ -22,11 +25,7 @@ import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
-import userdata.CounterThemes
 import userdata.CounterUtils
-import userdata.MemberCounterConfig
-import kotlinx.browser.document
-import kotlinx.dom.clear
 
 class MemberCounterRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{guildid}/configure/member-counter") {
 	override val keepLoadingScreen: Boolean

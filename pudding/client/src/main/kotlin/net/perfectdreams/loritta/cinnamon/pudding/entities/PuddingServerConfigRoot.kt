@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.InviteBlockerConfig
-import net.perfectdreams.loritta.cinnamon.pudding.data.MiscellaneousConfig
-import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
-import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
+import net.perfectdreams.loritta.serializable.InviteBlockerConfig
+import net.perfectdreams.loritta.serializable.MiscellaneousConfig
+import net.perfectdreams.loritta.serializable.ServerConfigRoot
+import net.perfectdreams.loritta.serializable.StarboardConfig
 
 class PuddingServerConfigRoot(
     private val pudding: Pudding,

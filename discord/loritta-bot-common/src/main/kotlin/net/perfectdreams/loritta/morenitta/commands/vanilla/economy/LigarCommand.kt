@@ -9,11 +9,11 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
-import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt

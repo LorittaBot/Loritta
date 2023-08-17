@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
-import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.Daily
+import net.perfectdreams.loritta.serializable.EmojiFightBetSonhosTransaction
+import net.perfectdreams.loritta.serializable.SonhosTransaction
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*

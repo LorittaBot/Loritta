@@ -19,7 +19,6 @@ kotlin {
                 api(libs.kotlinx.serialization.json)
                 api(libs.kotlin.logging)
                 api(project(":common"))
-                api(project(":pudding:data"))
                 api(project(":loritta-serializable-commons"))
             }
         }

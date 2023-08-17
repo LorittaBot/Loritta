@@ -34,17 +34,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import net.perfectdreams.loritta.morenitta.commands.CommandManager
-import net.perfectdreams.loritta.morenitta.listeners.*
-import net.perfectdreams.loritta.morenitta.tables.*
-import net.perfectdreams.loritta.morenitta.tables.Dailies
-import net.perfectdreams.loritta.morenitta.tables.Marriages
-import net.perfectdreams.loritta.morenitta.tables.Profiles
-import net.perfectdreams.loritta.morenitta.tables.ShipEffects
-import net.perfectdreams.loritta.morenitta.tables.StarboardMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
-import net.perfectdreams.loritta.morenitta.threads.RemindersThread
-import net.perfectdreams.loritta.morenitta.utils.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
@@ -85,7 +74,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosPackage
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
 import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
-import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.DiscordCacheService
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
@@ -97,17 +85,11 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushCl
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.Background
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
@@ -118,8 +100,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Pl
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
@@ -129,54 +113,42 @@ import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
-import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
-import net.perfectdreams.loritta.morenitta.tables.BannedUsers
-import net.perfectdreams.loritta.morenitta.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
-import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
-import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
-import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.*
-import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
-import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
+import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
+import net.perfectdreams.loritta.morenitta.listeners.*
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
+import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
+import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.raffles.LorittaRaffleTask
-import net.perfectdreams.loritta.morenitta.tables.DonationConfigs
-import net.perfectdreams.loritta.morenitta.tables.servers.GiveawayParticipants
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ExperienceRoleRates
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.InviteBlockerConfigs
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MiscellaneousConfigs
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationConfigs
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByExperience
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.StarboardConfigs
-import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
-import net.perfectdreams.loritta.morenitta.utils.Sponsor
-import net.perfectdreams.loritta.morenitta.utils.TrinketsStuff
+import net.perfectdreams.loritta.morenitta.threads.RemindersThread
+import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.config.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
-import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
-import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
-import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
+import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferRoleCheckerUpdater
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
+import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
+import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.website.*
 import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
+import net.perfectdreams.loritta.serializable.Background
+import net.perfectdreams.loritta.serializable.BackgroundStorageType
+import net.perfectdreams.loritta.serializable.BackgroundVariation
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -835,139 +807,7 @@ class LorittaBot(
 		logger.info("Iniciando PostgreSQL...")
 
 		runBlocking {
-			transaction {
-				createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
-				createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
-				createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
-				createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
-				createOrUpdatePostgreSQLEnum(EasterEggColor.values())
-				createOrUpdatePostgreSQLEnum(RaffleType.values())
-				createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
-
-				// TODO: Fix pudding tables to check if they aren't going to *explode* when we set up it to register all tables
-				SchemaUtils.createMissingTablesAndColumns(
-					ServerConfigs,
-					net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies,
-					GatewayActivities,
-					UserSettings,
-					Backgrounds,
-					BackgroundVariations,
-					ConcurrentLoginBuckets,
-					Christmas2022Players,
-					Christmas2022Drops,
-					CollectedChristmas2022Points,
-					Christmas2022SonhosTransactionsLog,
-					DailyRewardSonhosTransactionsLog,
-					GamerSaferRequiresVerificationUsers,
-					GamerSaferSuccessfulVerifications,
-					GamerSaferGuildMembers,
-					GamerSaferGuilds,
-					GamerSaferConfigs,
-					BrowserFingerprints,
-					BotVotesUserAvailableNotifications,
-					Giveaways,
-					GiveawayParticipants,
-					EmojiFightMatches,
-					EmojiFightMatchmakingResults,
-					EconomyState,
-					Mutes,
-					Easter2023Drops,
-					Easter2023Players,
-					CollectedEaster2023Eggs,
-					CreatedEaster2023Baskets,
-					Easter2023SonhosTransactionsLog,
-					PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionsLog,
-					PowerStreamClaimedFirstSonhosRewardSonhosTransactionsLog,
-					RaffleTicketsSonhosTransactionsLog,
-					RaffleRewardSonhosTransactionsLog,
-					Raffles,
-					RaffleTickets,
-					UserAskedRaffleNotifications,
-					SonhosBundles,
-					CachedDiscordUsers,
-					CachedGoogleVisionOCRResults,
-				)
-			}
-		}
-
-		// Hidden behind a env flag, because FOR SOME REASON Exposed thinks that it is a good idea to
-		// "ALTER TABLE serverconfigs ALTER COLUMN prefix TYPE TEXT, ALTER COLUMN prefix SET DEFAULT '+'"
-		// And that LOCKS the ServerConfig table, and sometimes that takes a LOOOONG time to complete, which locks up everything
-		if (System.getenv("LORITTA_CREATE_TABLES") != null) {
-			runBlocking {
-				pudding.createMissingTablesAndColumns { true }
-
-				pudding.transaction {
-					SchemaUtils.createMissingTablesAndColumns(
-						StoredMessages,
-						Profiles,
-						UserSettings,
-						Reminders,
-						Reputations,
-						Dailies,
-						Marriages,
-						Mutes,
-						Warns,
-						GuildProfiles,
-						Giveaways,
-						ReactionOptions,
-						ServerConfigs,
-						DonationKeys,
-						Payments,
-						ShipEffects,
-						BotVotes,
-						StoredMessages,
-						StarboardMessages,
-						Sponsors,
-						EconomyConfigs,
-						ExecutedCommandsLog,
-						BlacklistedGuilds,
-						RolesByExperience,
-						LevelAnnouncementConfigs,
-						LevelConfigs,
-						AuditLog,
-						ExperienceRoleRates,
-						BomDiaECiaWinners,
-						TrackedTwitterAccounts,
-						SonhosTransaction,
-						TrackedYouTubeAccounts,
-						TrackedTwitchAccounts,
-						CachedYouTubeChannelIds,
-						SonhosBundles,
-						Backgrounds,
-						BackgroundVariations,
-						Sets,
-						DailyShops,
-						DailyShopItems,
-						BackgroundPayments,
-						CachedDiscordUsers,
-						SentYouTubeVideoIds,
-						SpicyStacktraces,
-						BannedIps,
-						DonationConfigs,
-						StarboardConfigs,
-						MiscellaneousConfigs,
-						EventLogConfigs,
-						AutoroleConfigs,
-						InviteBlockerConfigs,
-						ServerRolePermissions,
-						WelcomerConfigs,
-						CustomGuildCommands,
-						MemberCounterChannelConfigs,
-						ModerationConfigs,
-						WarnActions,
-						ModerationPunishmentMessagesConfig,
-						BannedUsers,
-						ProfileDesigns,
-						ProfileDesignsPayments,
-						ProfileDesignGroups,
-						ProfileDesignGroupEntries,
-						DailyProfileShopItems,
-						CachedDiscordWebhooks,
-						CustomBackgroundSettings
-					)
-				}
-			}
+			pudding.createMissingTablesAndColumns { true }
 		}
 
 		TrinketsStuff.updateTrinkets(pudding)
@@ -1101,8 +941,8 @@ class LorittaBot(
 
 				// If the path exists, then the background (probably!) exists
 				if (resultRow != null) {
-					val file = resultRow[net.perfectdreams.loritta.morenitta.tables.CustomBackgroundSettings.file]
-					val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[net.perfectdreams.loritta.morenitta.tables.CustomBackgroundSettings.preferredMediaType])
+					val file = resultRow[net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings.file]
+					val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings.preferredMediaType])
 					return "${this.config.loritta.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(userId, file).join()}.$extension"
 				}
 			}
@@ -1454,7 +1294,7 @@ class LorittaBot(
 
 	suspend fun getCachedUserInfo(userId: Snowflake) = getCachedUserInfo(UserId(userId.value))
 
-	suspend fun getCachedUserInfo(userId: UserId): net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo? {
+	suspend fun getCachedUserInfo(userId: UserId): net.perfectdreams.loritta.serializable.CachedUserInfo? {
 		// First, try getting the cached user info from the database
 		val cachedUserInfoFromDatabase = pudding.users.getCachedUserInfoById(userId)
 		if (cachedUserInfoFromDatabase != null)
@@ -1477,7 +1317,7 @@ class LorittaBot(
 				restUser.avatar
 			)
 
-			return net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo(
+			return net.perfectdreams.loritta.serializable.CachedUserInfo(
 				UserId(restUser.id.value),
 				restUser.username,
 				restUser.discriminator,

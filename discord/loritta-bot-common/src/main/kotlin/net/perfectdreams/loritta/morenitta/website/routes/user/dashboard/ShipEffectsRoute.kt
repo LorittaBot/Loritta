@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.routes.user.dashboard
 
 import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.dao.ShipEffect
-import net.perfectdreams.loritta.morenitta.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.common.locale.BaseLocale

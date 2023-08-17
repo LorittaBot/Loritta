@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands
 
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
-import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.morenitta.api.commands.CommandBuilder
 import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 

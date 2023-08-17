@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils.counter
 
+import net.perfectdreams.loritta.common.utils.CounterThemes
+
 object CounterUtils {
 
     fun generatePrettyCounter(count: Int, list: List<String>, padding: Int): String {

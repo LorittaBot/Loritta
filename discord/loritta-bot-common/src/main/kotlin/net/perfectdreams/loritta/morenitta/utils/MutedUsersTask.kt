@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
-import net.perfectdreams.loritta.morenitta.tables.Mutes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot

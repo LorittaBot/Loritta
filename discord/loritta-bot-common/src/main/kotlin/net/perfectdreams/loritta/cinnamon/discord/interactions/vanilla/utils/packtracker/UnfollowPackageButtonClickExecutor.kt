@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.Compon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 
 class UnfollowPackageButtonClickExecutor(
     loritta: LorittaBot,

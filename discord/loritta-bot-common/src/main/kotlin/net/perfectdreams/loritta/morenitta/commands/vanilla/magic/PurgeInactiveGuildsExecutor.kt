@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
-import net.perfectdreams.loritta.morenitta.tables.Mutes
-import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.deleteWhere

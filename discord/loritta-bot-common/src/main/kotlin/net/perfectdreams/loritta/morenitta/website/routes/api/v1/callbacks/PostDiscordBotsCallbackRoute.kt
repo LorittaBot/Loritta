@@ -3,10 +3,8 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.website.LoriWebCode
-import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.Dispatchers
@@ -14,9 +12,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.perfectdreams.loritta.common.utils.LegacyWebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.utils.WebsiteVoteUtils
+import net.perfectdreams.loritta.morenitta.website.LoriWebCode
+import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.sequins.ktor.BaseRoute
 
@@ -61,7 +61,7 @@ class PostDiscordBotsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1
 				WebsiteVoteUtils.addVote(
 					loritta,
 					userId,
-					WebsiteVoteSource.DISCORD_BOTS
+					LegacyWebsiteVoteSource.DISCORD_BOTS
 				)
 			}
 		}

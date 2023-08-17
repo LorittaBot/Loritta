@@ -48,7 +48,6 @@ dependencyResolutionManagement {
 rootProject.name = "loritta-parent"
 
 // ===[ PUDDING ]===
-include(":pudding:data")
 include(":pudding:client")
 
 // ===[ COMMON ]===

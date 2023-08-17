@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao.servers
 
-import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

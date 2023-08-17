@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs
 
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.InviteBlockerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID

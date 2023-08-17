@@ -22,8 +22,8 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
-import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.ServerConfigRoot
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext as InteraKTionsApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext as InteraKTionsGuildApplicationCommandContext

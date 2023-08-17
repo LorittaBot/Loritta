@@ -29,7 +29,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
-import net.perfectdreams.loritta.morenitta.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.and
@@ -73,7 +73,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             val newAboutMe = args[aboutMeOption]
 
                             val userSettings = it.loritta.pudding.users.getOrCreateUserProfile(
-                                net.perfectdreams.loritta.cinnamon.pudding.data.UserId(
+                                net.perfectdreams.loritta.serializable.UserId(
                                     it.user.idLong
                                 )
                             )

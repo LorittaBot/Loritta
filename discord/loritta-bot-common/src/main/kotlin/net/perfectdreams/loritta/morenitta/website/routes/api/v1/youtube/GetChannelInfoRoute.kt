@@ -14,7 +14,7 @@ import io.ktor.server.application.*
 import io.ktor.http.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.CachedYouTubeChannelIds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedYouTubeChannelIds
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

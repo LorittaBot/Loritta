@@ -1,18 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.nullLong
-import com.github.salomonbrys.kotson.obj
-import net.perfectdreams.loritta.morenitta.dao.DonationKey
-import net.perfectdreams.loritta.morenitta.tables.Dailies
-import net.perfectdreams.loritta.morenitta.tables.DonationKeys
-import net.perfectdreams.loritta.morenitta.tables.Profiles
-import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.editMessageIfContentWasChanged
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
+import com.github.salomonbrys.kotson.*
+import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -20,21 +9,22 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.loritta.morenitta.dao.Payment
-import net.perfectdreams.loritta.morenitta.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.DonationKey
+import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
-import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.sum
-import org.jetbrains.exposed.sql.update
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.editMessageIfContentWasChanged
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
+import org.jetbrains.exposed.sql.*
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -142,7 +132,7 @@ object NitroBoostUtils {
 					val invalidNitroPayments = mutableListOf<Long>()
 
 					for (nitroBoostPayment in nitroBoostPayments) {
-						val metadata = nitroBoostPayment.metadata
+						val metadata = nitroBoostPayment.metadata?.let { JsonParser.parseString(it) }
 						val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
 						if (isFromThisGuild) {
@@ -164,7 +154,7 @@ object NitroBoostUtils {
 							(DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
 						}.toList()
 					}.forEach {
-						val metadata = it.metadata
+						val metadata = it.metadata?.let { JsonParser.parseString(it) }
 						val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 
 						if (isFromThisGuild) {
@@ -264,7 +254,7 @@ object NitroBoostUtils {
 				this.expiresAt = Long.MAX_VALUE // Nunca!
 				this.metadata = jsonObject(
 					"guildId" to member.guild.idLong
-				)
+				).toString()
 			}
 
 			// Gerar key de doação
@@ -274,7 +264,7 @@ object NitroBoostUtils {
 				this.expiresAt = Long.MAX_VALUE // Nunca!
 				this.metadata = jsonObject(
 					"guildId" to member.guild.idLong
-				)
+				).toString()
 			}
 		}
 
@@ -302,14 +292,14 @@ object NitroBoostUtils {
 			Payment.find {
 				(Payments.userId eq member.idLong) and (Payments.gateway eq PaymentGateway.NITRO_BOOST)
 			}.firstOrNull {
-				val metadata = it.metadata
+				val metadata = it.metadata?.let { JsonParser.parseString(it) }
 				metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 			}?.delete()
 
 			DonationKey.find {
 				(DonationKeys.userId eq member.idLong) and (DonationKeys.expiresAt eq Long.MAX_VALUE) and (DonationKeys.value eq 20.00)
 			}.firstOrNull {
-				val metadata = it.metadata
+				val metadata = it.metadata?.let { JsonParser.parseString(it) }
 				metadata != null && metadata.obj["guildId"].nullLong == guild.idLong
 			}?.apply {
 				this.expiresAt = System.currentTimeMillis() // Ou seja, a key estará expirada

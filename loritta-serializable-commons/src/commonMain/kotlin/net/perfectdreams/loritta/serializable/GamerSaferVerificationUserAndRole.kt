@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.serializable
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
+import net.perfectdreams.loritta.serializable.CachedUserInfo
 import kotlin.time.Duration.Companion.days
 
 @Serializable

@@ -25,7 +25,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.Correi
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.InvalidTrackingIdException
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 
 class TrackPackageExecutor(loritta: LorittaBot, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {
     companion object {

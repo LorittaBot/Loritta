@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 
 class GoBackToPackageListButtonClickExecutor(
     loritta: LorittaBot,

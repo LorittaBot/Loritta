@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
+import net.perfectdreams.loritta.serializable.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds

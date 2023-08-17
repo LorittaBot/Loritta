@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.Christmas2022SonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.Easter2023SonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.serializable.Christmas2022SonhosTransaction
+import net.perfectdreams.loritta.serializable.Easter2023SonhosTransaction
+import net.perfectdreams.loritta.serializable.UserId
 
 object Easter2023SonhosTransactionTransformer : SonhosTransactionTransformer<Easter2023SonhosTransaction> {
     override suspend fun transform(

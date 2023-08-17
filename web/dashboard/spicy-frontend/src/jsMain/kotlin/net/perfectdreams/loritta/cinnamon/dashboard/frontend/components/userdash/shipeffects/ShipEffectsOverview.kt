@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIden
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.ShipEffectsViewModel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.viewModel
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
+import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.attributes.InputType

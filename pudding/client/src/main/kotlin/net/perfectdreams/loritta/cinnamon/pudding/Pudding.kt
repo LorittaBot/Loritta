@@ -13,29 +13,42 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.exposedpowerutils.sql.upsert
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
-import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.common.commands.ApplicationCommandType
-import net.perfectdreams.loritta.common.components.ComponentType
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatchLosers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatchWinners
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
+import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
+import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
+import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CollectedEaster2023Eggs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CreatedEaster2023Baskets
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
+import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
+import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
+import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.components.ComponentType
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.common.utils.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BoostedCandyChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedCandies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Halloween2019Players
-import net.perfectdreams.loritta.common.utils.HostnameUtils
+import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
+import net.perfectdreams.loritta.serializable.BackgroundStorageType
+import net.perfectdreams.loritta.serializable.notifications.LorittaNotification
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -184,82 +197,157 @@ class Pudding(
         fun insertIfValid(vararg tables: Table) =
             schemas.addAll(tables.filter { shouldBeUpdated.invoke(it::class.simpleName!!) })
         insertIfValid(
-            Sets,
-            ProfileDesignGroups,
-            ProfileDesigns,
+            AuditLog,
+            BackgroundPayments,
             Backgrounds,
             BackgroundVariations,
-            BackgroundPayments,
-            UserSettings,
-            Profiles,
-            // We won't update ServerConfigs for now, because Pudding's ServerConfig has missing fields
-            // ServerConfigs,
-            ShipEffects,
-            Marriages,
-            UserAchievements,
-            InteractionsData,
-            ExecutedApplicationCommandsLog,
-            ExecutedComponentsLog,
-            TickerPrices,
-            BoughtStocks,
+            BannedIps,
             BannedUsers,
-            SonhosTransactionsLog,
-            BrokerSonhosTransactionsLog,
+            Birthday2020Drops,
+            Birthday2020Players,
+            BlacklistedGuilds,
+            BomDiaECiaMatches,
+            BomDiaECiaMatchLosers,
+            BomDiaECiaMatchWinners,
+            BomDiaECiaWinners,
+            BoostedCandyChannels,
+            BotVotes,
+            BotVotesUserAvailableNotifications,
+            BoughtStocks,
+            BrowserFingerprints,
             CachedDiscordUsers,
+            CachedDiscordUsersDirectMessageChannels,
+            CachedGoogleVisionOCRResults,
+            CachedYouTubeChannelIds,
+            Christmas2022Drops,
+            Christmas2022Players,
+            CollectedChristmas2022Points,
             CoinFlipBetGlobalMatchmakingQueue,
             CoinFlipBetGlobalMatchmakingResults,
             CoinFlipBetGlobalSonhosTransactionsLog,
-            SparklyPowerLSXSonhosTransactionsLog,
-            Dailies,
-            Payments,
-            GuildCountStats,
-            CachedDiscordUsersDirectMessageChannels,
-            DailyTaxSonhosTransactionsLog,
-            DailyTaxUsersToSkipDirectMessages,
             CoinFlipBetMatchmakingResults,
-            CoinFlipBetSonhosTransactionsLog,
+            CollectedBirthday2020Points,
+            CollectedCandies,
+            CollectedChristmas2019Points,
+            ConcurrentLoginBuckets,
+            CustomBackgroundSettings,
+            Dailies,
+            DailyProfileShopItems,
+            DailyShopItems,
+            DailyShops,
+            DailyTaxUsersToSkipDirectMessages,
+            DiscordLorittaApplicationCommandHashes,
+            DonationKeys,
+            CollectedEaster2023Eggs,
+            CreatedEaster2023Baskets,
+            Easter2023Drops,
+            Easter2023Players,
+            EconomyState,
             EmojiFightMatches,
-            EmojiFightParticipants,
             EmojiFightMatchmakingResults,
-            EmojiFightSonhosTransactionsLog,
-            DivineInterventionSonhosTransactionsLog,
-            BotVoteSonhosTransactionsLog,
-            PaymentSonhosTransactionResults,
-            PaymentSonhosTransactionsLog,
-            SonhosBundles,
-            SonhosBundlePurchaseSonhosTransactionsLog,
-            PatchNotesNotifications,
-            ReceivedPatchNotesNotifications,
-            TrackedCorreiosPackages,
-            UsersFollowingCorreiosPackages,
-            TrackedCorreiosPackagesEvents,
-            PendingImportantNotifications,
-            ShipEffectSonhosTransactionsLog,
-            UserNotifications,
+            EmojiFightParticipants,
+            ExecutedCommandsLog,
+            ExecutedComponentsLog,
+            GatewayActivities,
+            GuildCountStats,
+            GuildProfiles,
+            Halloween2019Players,
+            InteractionsData,
+            LoriTuberChannels,
+            LoriTuberCharacters,
+            LoriTuberMails,
+            LoriTuberPendingVideos,
+            LoriTuberServerInfos,
+            Marriages,
+            MiscellaneousData,
+            Mutes,
+            CorreiosPackageUpdateUserNotifications,
             DailyTaxTaxedUserNotifications,
             DailyTaxWarnUserNotifications,
-            CorreiosPackageUpdateUserNotifications,
-            BomDiaECiaMatches,
-            BotVoteSonhosTransactionsLog,
-            DiscordLorittaApplicationCommandHashes,
-            ModerationConfigs,
-            ModerationPunishmentMessagesConfig,
-            ModerationPredefinedPunishmentMessages,
+            UserNotifications,
+            PatchNotesNotifications,
+            Payments,
+            PaymentSonhosTransactionResults,
+            PendingImportantNotifications,
+            ProfileDesignGroupEntries,
+            ProfileDesignGroups,
+            ProfileDesigns,
+            ProfileDesignsPayments,
+            Profiles,
+            Raffles,
+            RaffleTickets,
+            UserAskedRaffleNotifications,
+            Raspadinhas,
+            ReceivedPatchNotesNotifications,
+            Reminders,
             Reputations,
-            CustomBackgroundSettings,
-            BotVotes,
+            SchemaVersion,
+            SentYouTubeVideoIds,
+            CustomGuildCommands,
+            GiveawayParticipants,
+            Giveaways,
             GuildProfiles,
+            AutoroleConfigs,
             DonationConfigs,
-            RolesByExperience,
+            EconomyConfigs,
+            EventLogConfigs,
             ExperienceRoleRates,
-            BoostedCandyChannels,
-            CollectedCandies,
-            Halloween2019Players,
-            CollectedChristmas2019Points,
-            Birthday2020Drops,
-            Birthday2020Players,
-            CollectedBirthday2020Points,
-            Raspadinhas
+            GamerSaferConfigs,
+            GamerSaferGuildMembers,
+            GamerSaferGuilds,
+            GamerSaferRequiresVerificationUsers,
+            GamerSaferSuccessfulVerifications,
+            InviteBlockerConfigs,
+            LevelAnnouncementConfigs,
+            LevelConfigs,
+            MemberCounterChannelConfigs,
+            MiscellaneousConfigs,
+            ModerationConfigs,
+            ModerationPredefinedPunishmentMessages,
+            ModerationPunishmentMessagesConfig,
+            ReactionOptions,
+            RolesByExperience,
+            StarboardConfigs,
+            TrackedTwitchAccounts,
+            TrackedTwitterAccounts,
+            TrackedYouTubeAccounts,
+            WarnActions,
+            WelcomerConfigs,
+            ServerConfigs,
+            ServerRolePermissions,
+            Sets,
+            ShipEffects,
+            SonhosBundles,
+            SonhosTransaction,
+            SonhosTransactionsLog,
+            SpicyStacktraces,
+            Sponsors,
+            StarboardMessages,
+            StoredMessages,
+            TickerPrices,
+            TrackedCorreiosPackages,
+            TrackedCorreiosPackagesEvents,
+            BotVoteSonhosTransactionsLog,
+            BrokerSonhosTransactionsLog,
+            Christmas2022SonhosTransactionsLog,
+            CoinFlipBetSonhosTransactionsLog,
+            DailyRewardSonhosTransactionsLog,
+            DailyTaxSonhosTransactionsLog,
+            DivineInterventionSonhosTransactionsLog,
+            Easter2023SonhosTransactionsLog,
+            EmojiFightSonhosTransactionsLog,
+            ExecutedApplicationCommandsLog,
+            PaymentSonhosTransactionsLog,
+            PowerStreamClaimedFirstSonhosRewardSonhosTransactionsLog,
+            PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionsLog,
+            RaffleRewardSonhosTransactionsLog,
+            RaffleTicketsSonhosTransactionsLog,
+            ShipEffectSonhosTransactionsLog,
+            SonhosBundlePurchaseSonhosTransactionsLog,
+            SparklyPowerLSXSonhosTransactionsLog,
+            UserAchievements,
+            UserSettings,
+            UsersFollowingCorreiosPackages
         )
 
         if (schemas.isNotEmpty())
@@ -306,6 +394,11 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
                 createOrUpdatePostgreSQLEnum(WebsiteVoteSource.values())
                 createOrUpdatePostgreSQLEnum(PendingImportantNotificationState.values())
+                createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
+                createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
+                createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
+                createOrUpdatePostgreSQLEnum(EasterEggColor.values())
+                createOrUpdatePostgreSQLEnum(RaffleType.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

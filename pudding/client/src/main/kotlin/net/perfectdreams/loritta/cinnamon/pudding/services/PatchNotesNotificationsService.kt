@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.PatchNotesNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.PatchNotesNotification
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedPatchNotesNotifications

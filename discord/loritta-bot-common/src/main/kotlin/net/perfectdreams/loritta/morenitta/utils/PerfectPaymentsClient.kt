@@ -5,15 +5,15 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.dao.DonationKey
-import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.dao.Payment
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
-import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
+import net.perfectdreams.loritta.morenitta.dao.DonationKey
+import net.perfectdreams.loritta.morenitta.dao.Payment
 import java.util.*
 
 class PerfectPaymentsClient(val url: String) {
@@ -71,7 +71,7 @@ class PerfectPaymentsClient(val url: String) {
                     this.discount = discount
 
                 if (metadata != null)
-                    this.metadata = metadata
+                    this.metadata = metadata.toString()
 
                 this.money = (storedAmount.toDouble() / 100).toBigDecimal()
                 this.createdAt = System.currentTimeMillis()

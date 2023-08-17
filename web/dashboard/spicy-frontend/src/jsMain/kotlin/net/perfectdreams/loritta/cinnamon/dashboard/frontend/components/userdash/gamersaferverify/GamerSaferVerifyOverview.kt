@@ -9,8 +9,8 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ConfigureGuildGamerSaferVerifyScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.GamerSaferVerifyViewModel
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.common.utils.Color
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import net.perfectdreams.loritta.serializable.GamerSaferVerificationUserAndRole

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.user
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.dao.Reputation
-import net.perfectdreams.loritta.morenitta.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import io.ktor.server.application.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute

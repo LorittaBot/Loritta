@@ -33,7 +33,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
-import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
+import net.perfectdreams.loritta.serializable.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull

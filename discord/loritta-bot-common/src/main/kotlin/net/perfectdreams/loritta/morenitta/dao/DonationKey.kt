@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao
 
-import net.perfectdreams.loritta.morenitta.tables.DonationKeys
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

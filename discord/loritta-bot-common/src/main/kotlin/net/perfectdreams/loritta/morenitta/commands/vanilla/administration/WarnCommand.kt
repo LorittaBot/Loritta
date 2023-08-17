@@ -2,25 +2,26 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
+import com.google.gson.JsonParser
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Warns
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Warn
-import net.perfectdreams.loritta.morenitta.tables.Warns
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
+import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 
 class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
@@ -118,7 +119,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 							member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(context, settings, locale, member, user, reason, isSilent)
 							member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
 								val metadata = punishment.metadata ?: continue@loop
-								val obj = metadata.obj
+								val obj = JsonParser.parseString(metadata).obj
 								val time = obj["time"].nullString?.let { TimeUtils.convertToMillisRelativeToNow(it) }
 								MuteCommand.muteUser(context, settings, member, time, locale, user, reason, isSilent)
 							}

@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.html.*
 import net.perfectdreams.dokyo.RoutePath
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.userTheme
 import net.perfectdreams.loritta.cinnamon.showtime.backend.views.StaffView

@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.TimeUnit
 

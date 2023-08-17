@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import net.perfectdreams.loritta.morenitta.dao.Warn
-import net.perfectdreams.loritta.morenitta.tables.Warns
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Warns
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.dv8tion.jda.api.Permission

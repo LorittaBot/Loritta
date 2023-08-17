@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.Reputation
+import net.perfectdreams.loritta.serializable.Reputation
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere

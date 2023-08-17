@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.common.responses
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundle
+import net.perfectdreams.loritta.serializable.SonhosBundle
 
 @Serializable
 data class GetSonhosBundlesResponse(

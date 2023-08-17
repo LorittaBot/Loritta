@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.dao.StarboardMessage
-import net.perfectdreams.loritta.morenitta.tables.StarboardMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import kotlinx.coroutines.sync.Mutex

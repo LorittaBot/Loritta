@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ReactionOptions
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale

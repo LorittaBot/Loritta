@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundStorageType
+import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object BackgroundVariations : LongIdTable() {

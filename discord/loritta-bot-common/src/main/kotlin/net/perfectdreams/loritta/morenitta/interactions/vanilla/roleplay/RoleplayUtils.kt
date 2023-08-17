@@ -127,8 +127,8 @@ object RoleplayUtils {
                 if (receiver == giver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseSelf(giverMention) }
                 } else {
-                    val giverMarriage = loritta.pudding.marriages.getMarriageByUser(net.perfectdreams.loritta.cinnamon.pudding.data.UserId(giver))
-                    val receiverMarriage = loritta.pudding.marriages.getMarriageByUser(net.perfectdreams.loritta.cinnamon.pudding.data.UserId(receiver))
+                    val giverMarriage = loritta.pudding.marriages.getMarriageByUser(net.perfectdreams.loritta.serializable.UserId(giver))
+                    val receiverMarriage = loritta.pudding.marriages.getMarriageByUser(net.perfectdreams.loritta.serializable.UserId(receiver))
 
                     // "Talarico é o cara que cobiça a mulher do próximo e as vezes até dos amigos."
                     // "Grass cutter"/"Grass cutter" in english
@@ -220,8 +220,8 @@ object RoleplayUtils {
             }
         }
 
-        val gender1 = loritta.pudding.users.getOrCreateUserProfile(net.perfectdreams.loritta.cinnamon.pudding.data.UserId(giver)).getProfileSettings().gender
-        val gender2 = loritta.pudding.users.getOrCreateUserProfile(net.perfectdreams.loritta.cinnamon.pudding.data.UserId(receiver)).getProfileSettings().gender
+        val gender1 = loritta.pudding.users.getOrCreateUserProfile(net.perfectdreams.loritta.serializable.UserId(giver)).getProfileSettings().gender
+        val gender2 = loritta.pudding.users.getOrCreateUserProfile(net.perfectdreams.loritta.serializable.UserId(receiver)).getProfileSettings().gender
 
         val result = roleplayActionAttributes.actionBlock.invoke(
             client,
@@ -295,7 +295,7 @@ object RoleplayUtils {
                             if (context.user.idLong == achievementReceiver)
                                 context.giveAchievementAndNotify(achievement)
                             else
-                                AchievementUtils.giveAchievementToUser(context.loritta, net.perfectdreams.loritta.cinnamon.pudding.data.UserId(achievementReceiver), achievement)
+                                AchievementUtils.giveAchievementToUser(context.loritta, net.perfectdreams.loritta.serializable.UserId(achievementReceiver), achievement)
                         }
                     }
                 } else {

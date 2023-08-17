@@ -17,11 +17,11 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.DailyProfileShopItems
-import net.perfectdreams.loritta.morenitta.tables.DailyShopItems
-import net.perfectdreams.loritta.morenitta.tables.DailyShops
-import net.perfectdreams.loritta.morenitta.tables.ProfileDesignsPayments
-import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyProfileShopItems
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyShopItems
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyShops
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession

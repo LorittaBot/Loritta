@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.CorreiosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosEvento
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 
 class SelectPackageSelectMenuExecutor(
     loritta: LorittaBot

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components
 
 import androidx.compose.runtime.Composable
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
+import net.perfectdreams.loritta.serializable.CachedUserInfo
 import org.jetbrains.compose.web.dom.Code
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text

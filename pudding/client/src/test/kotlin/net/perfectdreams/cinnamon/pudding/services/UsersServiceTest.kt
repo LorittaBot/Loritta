@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import net.perfectdreams.cinnamon.pudding.PuddingTestUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import org.jetbrains.exposed.sql.selectAll
 import org.junit.jupiter.api.Test

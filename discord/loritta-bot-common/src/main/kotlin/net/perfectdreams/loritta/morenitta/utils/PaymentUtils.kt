@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.FileUpload
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.SonhosTransaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -18,11 +19,11 @@ object PaymentUtils {
     var economyEnabled = true
 
     fun addToTransactionLogNested(
-            quantity: Long,
-            reason: SonhosPaymentReason,
-            receivedBy: Long? = null,
-            givenBy: Long? = null,
-            givenAtMillis: Long = System.currentTimeMillis()
+        quantity: Long,
+        reason: SonhosPaymentReason,
+        receivedBy: Long? = null,
+        givenBy: Long? = null,
+        givenAtMillis: Long = System.currentTimeMillis()
     ) {
         if (receivedBy == null && givenBy == null)
             throw IllegalArgumentException("receivedBy and givenBy is null! One of them must NOT be null!")

@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
-import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferGuildInviteAdditionalData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferPlayerVerificationAdditionalData
 import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferUtils

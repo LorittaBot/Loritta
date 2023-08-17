@@ -4,7 +4,7 @@ import io.ktor.server.application.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.GamerSaferRequiresVerificationUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.LorittaInternalRpcProcessor
 import net.perfectdreams.loritta.serializable.GamerSaferVerificationUserAndRole
 import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig

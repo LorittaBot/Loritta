@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.common.responses
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.serializable.UserId
 
 @Serializable
 data class GetUserIdentificationResponse(

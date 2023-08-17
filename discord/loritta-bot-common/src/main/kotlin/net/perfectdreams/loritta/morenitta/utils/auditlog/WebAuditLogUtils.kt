@@ -5,9 +5,9 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.cinnamon.pudding.tables.AuditLog
+import net.perfectdreams.loritta.common.utils.ActionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.AuditLog
-import net.perfectdreams.loritta.morenitta.utils.ActionType
 import org.jetbrains.exposed.sql.insert
 
 object WebAuditLogUtils {
@@ -28,7 +28,7 @@ object WebAuditLogUtils {
 					it[AuditLog.userId] = userId
 					it[AuditLog.executedAt] = System.currentTimeMillis()
 					it[AuditLog.actionType] = type
-					it[AuditLog.params] = params
+					it[AuditLog.params] = params.toString()
 				}
 			}
 		}

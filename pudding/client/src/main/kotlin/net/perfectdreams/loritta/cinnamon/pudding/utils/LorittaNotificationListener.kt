@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
+import net.perfectdreams.loritta.serializable.notifications.LorittaNotification
 
 class LorittaNotificationListener(hikariDataSource: HikariDataSource, val name: String = "Loritta PostgreSQL Notification Listener") {
     val notifications = MutableSharedFlow<LorittaNotification>()

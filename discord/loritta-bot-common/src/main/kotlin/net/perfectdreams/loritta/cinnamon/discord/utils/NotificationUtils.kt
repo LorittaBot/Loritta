@@ -13,11 +13,11 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosEvento
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
-import net.perfectdreams.loritta.cinnamon.pudding.data.CorreiosPackageUpdateUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserNotification
+import net.perfectdreams.loritta.serializable.CorreiosPackageUpdateUserNotification
+import net.perfectdreams.loritta.serializable.DailyTaxTaxedUserNotification
+import net.perfectdreams.loritta.serializable.DailyTaxWarnUserNotification
+import net.perfectdreams.loritta.serializable.UnknownUserNotification
+import net.perfectdreams.loritta.serializable.UserNotification
 
 object NotificationUtils {
     private val KTX_DATETIME_CORREIOS_OFFSET = UtcOffset(-3)

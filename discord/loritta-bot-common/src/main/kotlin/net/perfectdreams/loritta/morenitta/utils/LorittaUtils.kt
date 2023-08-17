@@ -7,8 +7,8 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.BannedUsers
-import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import java.io.InputStream

@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.Background
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
-import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
-import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
+import net.perfectdreams.loritta.serializable.Background
+import net.perfectdreams.loritta.serializable.BackgroundVariation
+import net.perfectdreams.loritta.serializable.DefaultBackgroundVariation
+import net.perfectdreams.loritta.serializable.ProfileDesignGroupBackgroundVariation
 
 class PuddingBackground(
     private val pudding: Pudding,

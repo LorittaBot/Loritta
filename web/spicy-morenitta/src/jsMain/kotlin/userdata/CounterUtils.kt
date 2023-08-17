@@ -3,6 +3,7 @@ package userdata
 import kotlinx.html.div
 import kotlinx.html.img
 import kotlinx.html.stream.appendHTML
+import net.perfectdreams.loritta.common.utils.CounterThemes
 
 object CounterUtils {
 

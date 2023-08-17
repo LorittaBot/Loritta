@@ -11,7 +11,7 @@ import io.ktor.server.request.receiveText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.tables.SpicyStacktraces
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SpicyStacktraces
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.insertAndGetId

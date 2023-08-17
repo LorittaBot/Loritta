@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.*
+import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions

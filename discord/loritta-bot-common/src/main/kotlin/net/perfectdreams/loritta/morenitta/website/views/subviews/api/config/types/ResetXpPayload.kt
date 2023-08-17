@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.morenitta.website.views.subviews.api.config.ty
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.common.utils.ActionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.ActionType
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.update

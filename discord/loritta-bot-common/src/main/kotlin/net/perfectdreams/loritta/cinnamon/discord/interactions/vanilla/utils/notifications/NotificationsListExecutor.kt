@@ -10,10 +10,10 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.NotificationsCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.data.CorreiosPackageUpdateUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
+import net.perfectdreams.loritta.serializable.CorreiosPackageUpdateUserNotification
+import net.perfectdreams.loritta.serializable.DailyTaxTaxedUserNotification
+import net.perfectdreams.loritta.serializable.DailyTaxWarnUserNotification
+import net.perfectdreams.loritta.serializable.UnknownUserNotification
 
 class NotificationsListExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
 

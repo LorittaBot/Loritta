@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
+import net.perfectdreams.loritta.serializable.ShipEffect
 
 data class PuddingShipEffect(
     private val pudding: Pudding,

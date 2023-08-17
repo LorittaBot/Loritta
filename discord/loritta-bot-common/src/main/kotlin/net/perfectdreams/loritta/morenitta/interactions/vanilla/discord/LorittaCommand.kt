@@ -30,7 +30,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
-import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import org.jetbrains.exposed.sql.select
 import java.lang.management.ManagementFactory

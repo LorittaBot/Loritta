@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.entities
 import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
+import net.perfectdreams.loritta.serializable.UserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import org.jetbrains.exposed.sql.update
 
