@@ -8,7 +8,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.LorittaBot

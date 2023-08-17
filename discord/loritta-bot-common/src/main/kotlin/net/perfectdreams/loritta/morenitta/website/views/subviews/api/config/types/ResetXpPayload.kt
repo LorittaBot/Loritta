@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.utils.ActionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig

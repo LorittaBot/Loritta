@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.modules.AutoroleModule
 import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import net.perfectdreams.loritta.morenitta.utils.extensions.await

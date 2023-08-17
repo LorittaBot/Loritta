@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard
 
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.*

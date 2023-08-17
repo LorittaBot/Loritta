@@ -89,7 +89,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points

@@ -45,7 +45,6 @@ object InteractionsMetrics : PrometheusMetrics() {
         .buckets(0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 7.5, 10.0, 15.0, 30.0)
         .create()
 
-    fun registerJFRExports() = JFRExports.register()
     fun registerInteractions() {
         EXECUTED_COMMAND_LATENCY_COUNT.register<Histogram>()
         EXECUTED_SELECT_MENU_LATENCY_COUNT.register<Histogram>()

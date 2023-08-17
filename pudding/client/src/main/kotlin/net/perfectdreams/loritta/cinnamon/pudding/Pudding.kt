@@ -8,8 +8,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.exposedpowerutils.sql.upsert
@@ -48,7 +46,6 @@ import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
-import net.perfectdreams.loritta.serializable.notifications.LorittaNotification
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -57,8 +54,6 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
-import kotlin.coroutines.AbstractCoroutineContextElement
-import kotlin.coroutines.CoroutineContext
 
 class Pudding(
     val hikariDataSource: HikariDataSource,
@@ -516,15 +511,6 @@ class Pudding(
     }
 
     /**
-     * Sends a notification to the `loritta` channel
-     */
-    suspend fun notify(notification: LorittaNotification) {
-        transaction {
-            exec("SELECT pg_notify('loritta', ?)", listOf(TextColumnType() to Json.encodeToString(notification)))
-        }
-    }
-
-    /**
      * Setups a shutdown hook to shut down the [puddingTasks] when the application shutdowns.
      */
     fun setupShutdownHook() {
@@ -535,11 +521,5 @@ class Pudding(
                 shutdown()
             }
         )
-    }
-
-    private class CoroutineTransaction(
-        val transaction: Transaction
-    ) : AbstractCoroutineContextElement(CoroutineTransaction) {
-        companion object Key : CoroutineContext.Key<CoroutineTransaction>
     }
 }

@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import java.io.File
 import java.util.*
@@ -69,7 +70,7 @@ object LorittaLauncher {
 		val lorittaCluster = config.loritta.clusters.instances.first { it.id == clusterId }
 		logger.info { "Loritta's Cluster ID: $clusterId (${lorittaCluster.name})" }
 
-		InteractionsMetrics.registerJFRExports()
+		Prometheus.registerJFRExports()
 		InteractionsMetrics.registerInteractions()
 
 		logger.info { "Registered Prometheus Metrics" }

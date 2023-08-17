@@ -64,6 +64,7 @@ object Prometheus {
             .labelNames("shard")
             .create()
 
+    fun registerJFRExports() = JFRExports.register()
     fun register() {
         GUILD_COUNT.register<Gauge>()
         USER_COUNT.register<Gauge>()
