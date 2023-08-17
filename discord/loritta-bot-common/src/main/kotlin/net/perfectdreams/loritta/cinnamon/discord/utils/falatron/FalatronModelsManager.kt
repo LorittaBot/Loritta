@@ -37,7 +37,7 @@ class FalatronModelsManager {
         val author: String? = null,
         val category: String,
         val description: String,
-        val dublador: String,
+        val dublador: String? = null,
         val image: String,
         val name: String,
         val path: String
