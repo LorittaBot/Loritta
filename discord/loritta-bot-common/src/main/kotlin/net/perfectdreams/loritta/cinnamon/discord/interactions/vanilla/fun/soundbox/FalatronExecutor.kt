@@ -21,7 +21,6 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
-import net.perfectdreams.loritta.serializable.notifications.*
 import java.util.*
 import kotlin.concurrent.thread
 
