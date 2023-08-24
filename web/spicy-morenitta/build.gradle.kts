@@ -1,7 +1,7 @@
 plugins {
 	kotlin("multiplatform")
 	kotlin("plugin.serialization")
-	id("org.jetbrains.compose") version "1.4.0"
+	id("org.jetbrains.compose") version "1.4.3"
 }
 
 repositories {
@@ -27,6 +27,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile> {
 		freeCompilerArgs += listOf(
 			"-P",
 			"plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
+			// Fixes an issue where "java.lang.IllegalStateException: IdSignature clash" when compiling the ReputationRoute's ReputationLeaderboardEntry
+			// (probably related to compose x kotlinx.serialization?)
+			// https://github.com/JetBrains/compose-multiplatform/issues/3418
+			"-Xklib-enable-signature-clash-checks=false"
 		)
 	}
 }
@@ -50,7 +54,6 @@ kotlin {
 				implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.3")
 				api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 				api("io.ktor:ktor-client-js:${Versions.KTOR}")
-				implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.5.2")
 				implementation("app.softwork:kotlinx-uuid-core:0.0.17")
 
 				// Yes, deprecated... but we need this because if we don't add this, DCE will fail :(

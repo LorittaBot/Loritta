@@ -11,7 +11,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             val kotlin = version("kotlin", "1.7.10")
-            val kotlinXSerialization = version("kotlinx-serialization", "1.4.0-RC")
+            val kotlinXSerialization = version("kotlinx-serialization", "1.6.0")
             val ktor = version("ktor", "2.0.3")
             val jib = version("jib", "3.2.1")
             val exposed = version("exposed", "0.41.1")

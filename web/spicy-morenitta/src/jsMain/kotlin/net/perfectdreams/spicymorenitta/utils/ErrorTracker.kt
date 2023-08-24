@@ -18,8 +18,11 @@ import org.w3c.dom.url.URLSearchParams
 import kotlin.js.Json
 
 object ErrorTracker : Logging {
-	private val isLocaleInitialized: Boolean
-		get() = ::locale.isInitialized
+	private val isLocaleInitialized = false
+	// After updating to Kotlin 1.9.0, this check is throwing "Backing field of 'var locale: BaseLocale' is not accessible at this point"
+	// So as a workaround, we will always return false here
+	// private val isLocaleInitialized: Boolean
+	// 	get() = ::locale.isInitialized
 
 	private val SOMETHING_WENT_WRONG: String
 		get() = if (isLocaleInitialized) locale["website.errorTracker.somethingWentWrong"] else "Something went wrong..."
