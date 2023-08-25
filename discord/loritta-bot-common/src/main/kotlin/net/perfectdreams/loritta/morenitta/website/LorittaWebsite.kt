@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import com.mitchellbosecke.pebble.PebbleEngine
 import com.mitchellbosecke.pebble.attributes.methodaccess.NoOpMethodAccessValidator
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
@@ -37,7 +36,6 @@ import java.io.File
 import java.io.StringWriter
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 
 /**
  * Clone of the original "LorittaWebsite" from the "sweet-morenitta" module
