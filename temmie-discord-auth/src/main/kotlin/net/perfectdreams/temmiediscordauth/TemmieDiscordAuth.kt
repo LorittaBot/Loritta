@@ -79,8 +79,12 @@ class TemmieDiscordAuth(
 
 			val tree = JsonParser.parseString(result).asJsonObject
 
+			// Discord seems to use the "errors" array for some things (like when your redirect uri is wrong) and the "error" string for other things (like when it is a invalid grant error)
 			if (tree.has("errors"))
 				throw TokenExchangeException("Error while exchanging token: ${tree["errors"].asJsonObject}")
+
+			if (tree.has("error"))
+				throw TokenExchangeException("Error while exchanging token: ${tree["error"].string}")
 
 			readTokenPayload(tree)
 
@@ -113,14 +117,19 @@ class TemmieDiscordAuth(
 				}
 			)
 
+			println(httpResponse.status)
 			val result = httpResponse.bodyAsText()
 			logger.info { result }
 
 			val tree = JsonParser.parseString(result).asJsonObject
 
+			// Discord seems to use the "errors" array for some things (like when your redirect uri is wrong) and the "error" string for other things (like when it is a invalid grant error)
 			if (tree.has("errors"))
 				throw TokenExchangeException("Error while exchanging token: ${tree["errors"].asJsonObject}")
 
+			if (tree.has("error"))
+				throw TokenExchangeException("Error while exchanging token: ${tree["error"].string}")
+			
 			val resultAsJson = JsonParser.parseString(result)
 			checkForRateLimit(httpResponse, resultAsJson)
 
