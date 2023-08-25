@@ -59,6 +59,19 @@ class LorittaWebsite(
 			.expireAfterAccess(1, TimeUnit.HOURS)
 			.build<String, CachedThumbnail>()
 
+		/**
+		 * The default on token change behavior used in [TemmieDiscordAuth]
+		 */
+		val ON_TOKEN_CHANGE_BEHAVIOR: (ApplicationCall, TemmieDiscordAuth) -> (Unit) = { call, auth ->
+			val session = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
+
+			call.sessions.set(
+				session.copy(
+					base64StoredDiscordAuthTokens = Base64.getEncoder().encode(auth.toJson().toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
+				)
+			)
+		}
+
 		class CachedThumbnail(
 			val type: ContentType,
 			val thumbnailBytes: ByteArray

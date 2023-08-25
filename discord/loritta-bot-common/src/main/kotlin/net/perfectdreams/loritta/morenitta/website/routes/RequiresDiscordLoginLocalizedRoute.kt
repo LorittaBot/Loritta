@@ -10,11 +10,11 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
@@ -45,7 +45,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 			println("Dashboard Auth Route")
 			val session: LorittaJsonWebSession = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
-			val discordAuth = session.getDiscordAuthFromJson(loritta)
+			val discordAuth = session.getDiscordAuthFromJson(loritta, call)
 
 			// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
 			// Se o parâmetro exista, vamos redirecionar!
@@ -73,7 +73,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 						loritta.config.loritta.discord.clientSecret,
 						code,
 						"$scheme://$hostHeader/dashboard",
-						listOf("identify", "guilds", "email")
+						listOf("identify", "guilds", "email"),
+						onTokenChange = {
+							LorittaWebsite.ON_TOKEN_CHANGE_BEHAVIOR(call, it)
+						}
 					)
 
 					auth.doTokenExchange()
@@ -283,7 +286,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 		logger.info { "Time to get session: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		val discordAuth = session.getDiscordAuthFromJson(loritta)
+		val discordAuth = session.getDiscordAuthFromJson(loritta, call)
 		logger.info { "Time to get Discord Auth: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 		val userIdentification = session.getUserIdentification(loritta, call)

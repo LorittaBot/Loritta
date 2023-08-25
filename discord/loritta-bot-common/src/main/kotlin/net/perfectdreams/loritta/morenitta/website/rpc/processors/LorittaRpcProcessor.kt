@@ -10,7 +10,7 @@ interface LorittaRpcProcessor {
     suspend fun getDiscordAccountInformation(loritta: LorittaBot, call: ApplicationCall): DiscordAccountInformationResult {
         val session = call.lorittaSession
 
-        val discordAuth = session.getDiscordAuthFromJson(loritta)
+        val discordAuth = session.getDiscordAuthFromJson(loritta, call)
         val userIdentification = session.getUserIdentification(loritta, call)
 
         if (discordAuth == null || userIdentification == null)

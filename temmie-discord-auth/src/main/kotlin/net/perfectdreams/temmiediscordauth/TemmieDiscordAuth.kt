@@ -29,7 +29,11 @@ class TemmieDiscordAuth(
 	var accessToken: String? = null,
 	var refreshToken: String? = null,
 	var expiresIn: Long? = null,
-	var generatedAt: Long? = null
+	var generatedAt: Long? = null,
+	/**
+	 * A block to be invoked after the authentication data changes during a [readTokenPayload], useful to store the changed data in a session
+	 */
+	private val onTokenChange: (TemmieDiscordAuth) -> (Unit) = {}
 ) {
 	companion object {
 		private const val PREFIX = "https://discord.com/api/v10"
@@ -129,7 +133,7 @@ class TemmieDiscordAuth(
 
 			if (tree.has("error"))
 				throw TokenExchangeException("Error while exchanging token: ${tree["error"].string}")
-			
+
 			val resultAsJson = JsonParser.parseString(result)
 			checkForRateLimit(httpResponse, resultAsJson)
 
@@ -240,6 +244,8 @@ class TemmieDiscordAuth(
 		refreshToken = payload["refresh_token"].string
 		expiresIn = payload["expires_in"].long
 		generatedAt = System.currentTimeMillis()
+
+		onTokenChange.invoke(this)
 	}
 
 	private suspend fun checkForRateLimit(response: HttpResponse, element: JsonElement): Boolean {

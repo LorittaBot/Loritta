@@ -6,19 +6,20 @@ import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.gson
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.toWebSessionIdentification
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.*
 
 data class LorittaJsonWebSession(
-		val base64CachedIdentification: String?,
-		val base64StoredDiscordAuthTokens: String?
+	val base64CachedIdentification: String?,
+	val base64StoredDiscordAuthTokens: String?
 ) {
 	companion object {
 		fun empty() = LorittaJsonWebSession(
-				null,
-				null
+			null,
+			null
 		)
 
 		private val logger = KotlinLogging.logger {}
@@ -35,7 +36,7 @@ data class LorittaJsonWebSession(
 			}
 		}
 
-		val discordIdentification = getDiscordAuthFromJson(loritta) ?: return null
+		val discordIdentification = getDiscordAuthFromJson(loritta, call) ?: return null
 
 		try {
 			val userIdentification = discordIdentification.getUserIdentification()
@@ -51,7 +52,7 @@ data class LorittaJsonWebSession(
 		}
 	}
 
-	fun getDiscordAuthFromJson(loritta: LorittaBot): TemmieDiscordAuth? {
+	fun getDiscordAuthFromJson(loritta: LorittaBot, call: ApplicationCall): TemmieDiscordAuth? {
 		if (base64StoredDiscordAuthTokens == null)
 			return null
 
@@ -63,28 +64,31 @@ data class LorittaJsonWebSession(
 		}
 
 		return TemmieDiscordAuth(
-				loritta.config.loritta.discord.applicationId.toString(),
-				loritta.config.loritta.discord.clientSecret,
-				json["authCode"].string,
-				json["redirectUri"].string,
-				json["scope"].array.map { it.string },
-				json["accessToken"].string,
-				json["refreshToken"].string,
-				json["expiresIn"].long,
-				json["generatedAt"].long
+			loritta.config.loritta.discord.applicationId.toString(),
+			loritta.config.loritta.discord.clientSecret,
+			json["authCode"].string,
+			json["redirectUri"].string,
+			json["scope"].array.map { it.string },
+			json["accessToken"].string,
+			json["refreshToken"].string,
+			json["expiresIn"].long,
+			json["generatedAt"].long,
+			onTokenChange = {
+				LorittaWebsite.ON_TOKEN_CHANGE_BEHAVIOR(call, it)
+			}
 		)
 	}
 
 	data class UserIdentification(
-			val id: String,
-			val username: String,
-			val discriminator: String,
-			val verified: Boolean,
-			val globalName: String?,
-			val email: String?,
-			val avatar: String?,
-			val createdAt: Long,
-			val updatedAt: Long
+		val id: String,
+		val username: String,
+		val discriminator: String,
+		val verified: Boolean,
+		val globalName: String?,
+		val email: String?,
+		val avatar: String?,
+		val createdAt: Long,
+		val updatedAt: Long
 	) {
 		fun toJson() = gson.toJson(this)
 	}

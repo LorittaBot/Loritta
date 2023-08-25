@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -22,7 +23,10 @@ class CreateWebhookRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks
 			loritta.config.loritta.discord.clientSecret,
 			code,
 			"https://$hostHeader/api/v1/callbacks/discord-webhook",
-			listOf("webhook.incoming")
+			listOf("webhook.incoming"),
+			onTokenChange = {
+				LorittaWebsite.ON_TOKEN_CHANGE_BEHAVIOR(call, it)
+			}
 		)
 
 		val authExchangePayload = auth.doTokenExchange()
