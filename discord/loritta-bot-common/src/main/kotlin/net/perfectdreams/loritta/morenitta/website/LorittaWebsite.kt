@@ -55,9 +55,6 @@ class LorittaWebsite(
 		val versionPrefix = "/v2"
 		private val logger = KotlinLogging.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
-		val cachedFanArtThumbnails = Caffeine.newBuilder()
-			.expireAfterAccess(1, TimeUnit.HOURS)
-			.build<String, CachedThumbnail>()
 
 		/**
 		 * The default on token change behavior used in [TemmieDiscordAuth]
@@ -71,11 +68,6 @@ class LorittaWebsite(
 				)
 			)
 		}
-
-		class CachedThumbnail(
-			val type: ContentType,
-			val thumbnailBytes: ByteArray
-		)
 
 		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String
