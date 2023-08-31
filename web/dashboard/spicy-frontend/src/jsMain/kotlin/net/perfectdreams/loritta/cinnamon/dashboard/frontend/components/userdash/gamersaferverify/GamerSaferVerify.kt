@@ -20,19 +20,14 @@ fun GamerSaferVerify(
 ) {
     val configViewModel = viewModel { GamerSaferVerifyViewModel(m, it, guildViewModel) }
 
-    ResourceChecker(i18nContext, guildViewModel.guildInfoResource, configViewModel.configResource) { guildResponse, configResponse ->
+    ResourceChecker(i18nContext, guildViewModel.guildInfoResource) { guildResponse ->
         ConfigChecker<LorittaDashboardRPCResponse.GetGuildInfoResponse.Success>(guildResponse) { guildSuccessResponse ->
-            ConfigChecker<LorittaDashboardRPCResponse.GetGuildGamerSaferConfigResponse.Success>(configResponse) { configSuccessResponse ->
-                val config = GamerSaferVerifyViewModel.MutableGuildGamerSaferConfig.from(configSuccessResponse.config)
-
-                GamerSaferVerifyOverview(
-                    m,
-                    screen,
-                    i18nContext,
-                    guildSuccessResponse.guild,
-                    config
-                )
-            }
+            GamerSaferVerifyOverview(
+                m,
+                screen,
+                i18nContext,
+                guildSuccessResponse.guild
+            )
         }
     }
 }

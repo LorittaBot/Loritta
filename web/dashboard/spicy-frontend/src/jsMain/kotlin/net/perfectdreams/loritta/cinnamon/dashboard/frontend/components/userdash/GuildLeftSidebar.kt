@@ -6,7 +6,9 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFro
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.Ad
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.SidebarEntryScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.LeftSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarCategory
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarDivider
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarEntryLink
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.GuildScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Ads
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInfo
@@ -67,13 +69,53 @@ fun GuildLeftSidebar(
         // SidebarEntryScreen(m, SVGIconManager.star, "Ideias Aleatórias Test", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to 268353819409252352.toString())))
         // SidebarEntryLink(SVGIconManager.star, "${spicyInfo.legacyDashboardUrl}/dashboard", "Voltar ao Painel de Usuário")
 
-        /* SidebarDivider()
-
-        SidebarCategory("Configurações Gerais") {
+        SidebarCategory("Geral") {
             SidebarEntryLink(SVGIconManager.cogs, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure", "Configurações Gerais")
-            // SidebarEntryLink(SVGIconManager.images, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/moderation", "Moderação")
-        } */
-        SidebarEntryScreen(m, SVGIconManager.star, "GamerSafer", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to screen.guildId.toString())))
+            SidebarEntryLink(SVGIconManager.terminal, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/commands", "Comandos")
+            SidebarEntryLink(SVGIconManager.addressCard, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/permissions", "Permissões")
+        }
+
+        SidebarDivider()
+
+        SidebarCategory("Moderação") {
+            SidebarEntryLink(SVGIconManager.exclamationCircle, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/moderation", "Moderação")
+            SidebarEntryLink(SVGIconManager.ban, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/invite-blocker", "Bloqueador de Convites")
+            SidebarEntryScreen(m, SVGIconManager.star, "GamerSafer", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to screen.guildId.toString())))
+        }
+
+        SidebarDivider()
+
+        SidebarCategory("Notificações") {
+            SidebarEntryLink(SVGIconManager.rightToBracket, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/welcomer", "Mensagens ao Entrar/Sair")
+            SidebarEntryLink(SVGIconManager.eye, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/event-log", "Event Log")
+            SidebarEntryLink(SVGIconManager.youtube, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/youtube", "YouTube")
+            SidebarEntryLink(SVGIconManager.twitch, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/twitch", "Twitch")
+        }
+
+        SidebarDivider()
+
+        SidebarCategory("Miscelânea") {
+            SidebarEntryLink(SVGIconManager.award, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/level", "Níveis por Experiência")
+            SidebarEntryLink(SVGIconManager.briefcase, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/autorole", "Autorole")
+            SidebarEntryLink(SVGIconManager.sortAmountUp, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/member-counter", "Contador de Membros")
+            SidebarEntryLink(SVGIconManager.star, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/starboard", "Starboard")
+            SidebarEntryLink(SVGIconManager.shuffle, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/miscellaneous", "Miscelânea")
+            SidebarEntryLink(SVGIconManager.list, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/audit-log", "Registro de Auditoria")
+        }
+
+        SidebarDivider()
+
+        SidebarCategory("Premium") {
+            SidebarEntryLink(SVGIconManager.star, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/premium", "Premium Keys")
+            SidebarEntryLink(SVGIconManager.star, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/badge", "Emblema Personalizado")
+            SidebarEntryLink(SVGIconManager.star, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/daily-multiplier", "Multiplicador de Sonhos")
+        }
+
+        SidebarDivider()
+
+        SidebarCategory("Suas Funcionalidades") {
+            SidebarEntryLink(SVGIconManager.star, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/custom-commands", "Comandos Personalizados")
+        }
 
         SidebarDivider()
 

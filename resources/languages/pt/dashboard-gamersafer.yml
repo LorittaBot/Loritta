@@ -2,3 +2,10 @@ website:
   dashboard:
     gamerSafer:
       title: "GamerSafer"
+      description:
+        - "Se você está aqui, é porque valoriza a segurança, certo? E eu, Loritta, também valorizo!  Por isso, quero te apresentar o GS Defender dos nossos parceiros da GamerSafer."
+        - "É uma ferramenta de verificação e autenticação avançada, que utiliza tecnologias inovadoras para assegurar a proteção do seu servidor, mantendo sempre a privacidade de dados."
+        - "Se eu confio, você também pode confiar! Coloque já o bot GS Defender e tenha um servidor ainda mais seguro."
+      addBot: "Adicionar GS Defender ao seu Servidor"
+      docs: "Documentação"
+      discordGamerSafer: "Discord GamerSafer"
