@@ -24,7 +24,7 @@ info:
     sellPrice: "**Venda:** {sellPrice,number}"
     priceBeforeMarketClose: "**Preço de Fechamento:** {closingPrice,number}"
     explanation:
-      - "Compre ações quando estarem baixas, venda ações quando estarem altas! Enquanto você não ganhará ou perderá dinheiro real comprando ações, a sensação triste de perder sonhos em uma ação é exatamente a mesma. {loriSob}"
+      - "Compre ações quando estiverem em baixa, venda ações quando estiverem em alta! Embora você não ganhe ou perca dinheiro real comprando ações, a triste sensação de perder seus sonhos em uma ação é exatamente a mesma. {loriSob}"
       - ""
       - "**Você pode comprar ações com** {brokerBuyCommandMention}"
       - "**Você pode vender ações com** {brokerSellCommandMention}"
