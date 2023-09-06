@@ -56,14 +56,14 @@ jib {
 }
 
 // DEV VERSION:
-val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsDevelopmentExecutableCompileSync")
+// val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsDevelopmentExecutableCompileSync")
 // I don't know why this is required when developing
-val jsBrowserDistributionX = tasks.getByPath(":web:dashboard:spicy-frontend:jsProductionExecutableCompileSync")
-jsBrowserDistributionX.dependsOn(jsBrowserDistribution)
-val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDevelopmentWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+// val jsBrowserDistributionX = tasks.getByPath(":web:dashboard:spicy-frontend:jsProductionExecutableCompileSync")
+// jsBrowserDistributionX.dependsOn(jsBrowserDistribution)
+// val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDevelopmentWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 // PROD VERSION:
-// val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDistribution")
-// val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+val jsBrowserDistribution = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserDistribution")
+val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val sass = tasks.register<SassTask>("sass-style-scss") {
     this.inputSass.set(file("src/main/sass/style.scss"))
