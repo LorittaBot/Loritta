@@ -16,6 +16,18 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile> {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        // Live Literals seems to be only used for hot reloading in dev mode, but Compose Web doesn't support hot reload yet
+        freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:liveLiterals=false",
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:liveLiteralsEnabled=false"
+        )
+    }
+}
+
 // Enable JS(IR) target and add dependencies
 kotlin {
     js(IR) {
@@ -32,6 +44,7 @@ kotlin {
                 implementation(project(":web:dashboard:dashboard-common"))
                 implementation(libs.ktor.client.js)
                 implementation(npm("pixi.js", "7.2.4"))
+                implementation(npm("showdown", "2.1.0"))
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-extensions:1.0.1-pre.599")
             }
 

@@ -5,7 +5,9 @@ public object DiscordCdn {
 
     public fun emoji(emojiId: ULong): CdnUrl = CdnUrl("$BASE_URL/emojis/$emojiId")
 
-    public fun defaultAvatar(discriminator: Int): CdnUrl = CdnUrl("$BASE_URL/embed/avatars/${discriminator % 5}")
+    public fun defaultAvatar(userId: ULong): CdnUrl = CdnUrl("$BASE_URL/embed/avatars/${(userId.toLong() shr 22) % 6}")
+
+    public fun defaultAvatarLegacy(discriminator: Int): CdnUrl = CdnUrl("$BASE_URL/embed/avatars/${discriminator % 5}")
 
     public fun userAvatar(userId: ULong, hash: String): CdnUrl = CdnUrl("$BASE_URL/avatars/$userId/$hash")
 

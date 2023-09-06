@@ -15,10 +15,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.*
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.HomeRoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.LocalizedRoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.SPARoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetLanguageInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.PostLorittaDashboardRpcProcessorRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.GetSonhosBundlesRoute
@@ -27,15 +28,16 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetSelfUserInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.PutShipEffectsRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.dashboard.configure.ConfigureGamerSaferVerifyRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.Processors
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.PerfectPaymentsClient
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.dashboard.common.RoutePaths
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.serializable.LorittaCluster
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import java.util.*
@@ -51,10 +53,11 @@ class LorittaDashboardBackend(
     private val routes = listOf(
         HomeRoute(this),
 
-        GuildsRoute(this),
-        ShipEffectsRoute(this),
-        SonhosShopRoute(this),
-        ConfigureGamerSaferVerifyRoute(this),
+        SPARoute(this, RoutePaths.GUILDS),
+        SPARoute(this, RoutePaths.SHIP_EFFECTS),
+        SPARoute(this, RoutePaths.SONHOS_SHOP),
+        SPARoute(this, RoutePaths.GUILD_GAMERSAFER_CONFIG),
+        SPARoute(this, RoutePaths.GUILD_WELCOMER_CONFIG),
 
         // ===[ API ]===
         PostLorittaDashboardRpcProcessorRoute(this),
@@ -138,7 +141,7 @@ class LorittaDashboardBackend(
     }
 
     suspend inline fun <reified T : LorittaInternalRPCResponse> makeRPCRequest(
-        cluster: LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster,
+        cluster: LorittaCluster,
         rpc: LorittaInternalRPCRequest
     ): T {
         return Json.decodeFromString<T>(

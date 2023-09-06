@@ -4,14 +4,12 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBack
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.economy.PutPowerStreamClaimedFirstSonhosRewardProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.economy.PutPowerStreamClaimedLimitedTimeSonhosRewardProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.guild.GetGuildGamerSaferConfigProcessor
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.guild.GetGuildInfoProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.guild.UpdateGuildGamerSaferConfigProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.loritta.GetSpicyInfoProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.loritta.UpdateLorittaActivityProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.users.GetUserGuildsProcessor
 
 class Processors(val m: LorittaDashboardBackend) {
-    val getGuildInfoProcessor = GetGuildInfoProcessor(m)
     val getUserGuildsProcessor = GetUserGuildsProcessor(m)
     val getGuildGamerSaferConfigProcessor = GetGuildGamerSaferConfigProcessor(m)
     val updateGuildGamerSaferConfigProcessor = UpdateGuildGamerSaferConfigProcessor(m)
@@ -19,4 +17,5 @@ class Processors(val m: LorittaDashboardBackend) {
     val putPowerStreamClaimedLimitedTimeSonhosRewardProcessor = PutPowerStreamClaimedLimitedTimeSonhosRewardProcessor(m)
     val updateLorittaActivityProcessor = UpdateLorittaActivityProcessor(m)
     val getSpicyInfoProcessor = GetSpicyInfoProcessor(m)
+    val executeDashGuildScopedProcessor = ExecuteDashGuildScopedProcessor(m)
 }

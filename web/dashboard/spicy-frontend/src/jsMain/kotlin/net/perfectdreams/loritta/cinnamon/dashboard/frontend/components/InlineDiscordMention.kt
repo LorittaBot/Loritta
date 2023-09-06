@@ -21,7 +21,6 @@ fun InlineDiscordMention(
             }
         }
     }) {
-        Text("@")
         Text(text)
     }
 }

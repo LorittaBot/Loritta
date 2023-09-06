@@ -2,13 +2,15 @@ package net.perfectdreams.loritta.serializable.internal.requests
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig
+import net.perfectdreams.loritta.serializable.dashboard.requests.DashGuildScopedRequest
 
 @Serializable
 sealed class LorittaInternalRPCRequest {
     @Serializable
-    class GetGuildInfoRequest(
+    class ExecuteDashGuildScopedRPCRequest(
         val guildId: Long,
-        val memberIdToBePermissionCheckedAgainst: Long?
+        val memberIdToBePermissionCheckedAgainst: Long,
+        val dashRequest: DashGuildScopedRequest
     ) : LorittaInternalRPCRequest()
 
     @Serializable

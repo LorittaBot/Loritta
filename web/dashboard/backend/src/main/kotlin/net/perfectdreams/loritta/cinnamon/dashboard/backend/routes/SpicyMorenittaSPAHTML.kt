@@ -1,20 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes
 
-import kotlinx.html.HEAD
-import kotlinx.html.HTML
-import kotlinx.html.ScriptType
-import kotlinx.html.body
-import kotlinx.html.head
-import kotlinx.html.link
-import kotlinx.html.meta
-import kotlinx.html.script
-import kotlinx.html.styleLink
-import kotlinx.html.title
-import kotlinx.html.unsafe
+import kotlinx.html.*
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 
 // https://github.com/thedaviddias/Front-End-Checklist
-fun galleryOfDreamsSpaHtml(
+fun spicyMorenittaSpaHtml(
     m: LorittaDashboardBackend,
     // i18nContext: I18nContext,
     title: String,
@@ -67,21 +57,6 @@ window["nitroAds"] = window["nitroAds"] || {
             link(rel = "alternate", href = m.websiteUrl + "/" + language.get(I18nKeysData.WebsiteLocaleIdPath) + pathWithoutLocaleId) {
                 attributes["hreflang"] = language.get(I18nKeysData.WebsiteLocaleIdPath)
             }
-        } */
-
-        // TODO: Remove later if Plausible is that good
-        /* unsafe {
-            raw("""
-                <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-30QBEL5NBS"></script>
-                <script>
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-
-                  gtag('config', 'G-30QBEL5NBS');
-                </script>
-            """.trimIndent())
         } */
 
         script(

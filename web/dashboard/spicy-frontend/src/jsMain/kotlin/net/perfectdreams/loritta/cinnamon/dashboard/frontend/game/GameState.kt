@@ -7,6 +7,7 @@ import io.ktor.util.date.*
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
+import kotlinx.datetime.Clock
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.entities.Entity
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.entities.LorittaPlayer
@@ -98,6 +99,13 @@ class GameState(
         // Process the game world on each render
         app.ticker.add { delta ->
             val newTime = getTimeMillis()
+            if (document.asDynamic().visibilityState != "visible") {
+                val newOldTime = getTimeMillis()
+                println("Document is not focused, so we will set the oldTime to now and retry later (diff: ${newOldTime - oldTime}ms), to avoid using too much CPU processing the entities... - ${Clock.System.now()}")
+                oldTime = newOldTime
+                return@add
+            }
+
             // println("oldTime: ${oldTime} x newTime: $newTime")
             val deltaMS = newTime - oldTime
             oldTime = newTime

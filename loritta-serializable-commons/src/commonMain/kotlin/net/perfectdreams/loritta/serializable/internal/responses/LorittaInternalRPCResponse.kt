@@ -1,8 +1,10 @@
 package net.perfectdreams.loritta.serializable.internal.responses
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.serializable.DiscordGuild
+import net.perfectdreams.loritta.common.utils.EnvironmentType
+import net.perfectdreams.loritta.serializable.LorittaCluster
 import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig
+import net.perfectdreams.loritta.serializable.dashboard.responses.DashGuildScopedResponse
 
 @Serializable
 sealed class LorittaInternalRPCResponse {
@@ -11,38 +13,17 @@ sealed class LorittaInternalRPCResponse {
     interface MissingPermissionError
 
     @Serializable
-    sealed class GetGuildInfoResponse : LorittaInternalRPCResponse() {
-        @Serializable
-        class Success(val guild: DiscordGuild) : GetGuildInfoResponse()
-
-        @Serializable
-        class UnknownGuild : GetGuildInfoResponse(), UnknownGuildError
-
-        @Serializable
-        class UnknownMember : GetGuildInfoResponse(), UnknownMemberError
-
-        @Serializable
-        class MissingPermission : GetGuildInfoResponse(), MissingPermissionError
-    }
+    class ExecuteDashGuildScopedRPCResponse(val response: DashGuildScopedResponse) : LorittaInternalRPCResponse()
 
     @Serializable
     sealed class GetLorittaInfoResponse : LorittaInternalRPCResponse() {
         @Serializable
         class Success(
             val clientId: Long,
+            val environmentType: EnvironmentType,
             val maxShards: Int,
             val instances: List<LorittaCluster>
         ) : GetLorittaInfoResponse()
-
-        @Serializable
-        data class LorittaCluster(
-            val id: Int,
-            val name: String,
-            val minShard: Int,
-            val maxShard: Int,
-            val websiteUrl: String,
-            val rpcUrl: String
-        )
     }
 
     @Serializable

@@ -1,8 +1,40 @@
-.text-input {
+input[type=text], textarea {
     border: 1px solid #0000001f;
     border-radius: 4px;
     background-color: #0000000a;
-    color: white;
     padding: 8px;
     width: 100%;
+    color: black;
+    transition-duration: 0.25s;
+    outline-color: rgba(var(--loritta-blue-rgb), 0.5);
+
+    &:focus {
+        background-color: white;
+        outline: 2px solid rgba(var(--loritta-blue-rgb), 0.5);
+        border-color: var(--loritta-blue);
+    }
+
+    &:hover {
+        background-color: white;
+        border-color: var(--loritta-blue);
+        outline: 4px solid rgba(var(--loritta-blue-rgb), 0.5);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--loritta-blue);
+        border-color: var(--loritta-blue);
+    }
+}
+
+input[type=text] {
+    // Additional settings if it is a text input
+    height: 40px;
+}
+
+textarea {
+    // Additional settings if it is a text area
+    resize: vertical;
+    min-height: 5em;
+    // Avoids the textarea resize handle feeling sluggish
+    transition: height 0s;
 }

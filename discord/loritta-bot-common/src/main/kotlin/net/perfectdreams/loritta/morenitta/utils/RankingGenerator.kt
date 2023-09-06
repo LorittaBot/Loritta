@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
-import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
+import net.perfectdreams.loritta.common.utils.EnvironmentType
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle

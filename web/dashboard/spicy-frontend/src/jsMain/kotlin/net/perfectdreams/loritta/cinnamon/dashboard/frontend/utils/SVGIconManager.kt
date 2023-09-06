@@ -37,6 +37,7 @@ object SVGIconManager {
     val sortAmountUp by lazy { register(svgArrowUpWideShort, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val shuffle by lazy { register(svgShuffle, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val list by lazy { register(svgList, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val gamerSafer by lazy { register(svgGamerSaferLogo, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
 
     /**
      * Loads and registers a SVG with [name] and [path]
@@ -201,3 +202,7 @@ external val svgShuffle: dynamic
 @JsModule("./icons/fontawesome6/solid/list.svg")
 @JsNonModule
 external val svgList: dynamic
+
+@JsModule("./icons/gamersafer-logo.svg")
+@JsNonModule
+external val svgGamerSaferLogo: dynamic

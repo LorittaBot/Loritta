@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.LorittaInternalRpcProcessor
+import net.perfectdreams.loritta.serializable.LorittaCluster
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 
@@ -14,9 +15,10 @@ class GetLorittaInfoProcessor(val m: LorittaBot) : LorittaInternalRpcProcessor<L
     ): LorittaInternalRPCResponse.GetLorittaInfoResponse {
         return LorittaInternalRPCResponse.GetLorittaInfoResponse.Success(
             m.config.loritta.discord.applicationId.toLong(),
+            m.config.loritta.environment,
             m.config.loritta.discord.maxShards,
             m.config.loritta.clusters.instances.map {
-                LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster(
+                LorittaCluster(
                     it.id,
                     it.name,
                     it.minShard,

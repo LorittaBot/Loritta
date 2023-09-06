@@ -7,7 +7,8 @@ data class DiscordGuild(
     val id: Long,
     val name: String,
     val iconId: String?,
-    val roles: List<DiscordRole>
+    val roles: List<DiscordRole>,
+    val channels: List<DiscordChannel>
 ) {
     fun getIconUrl(size: Int): String? {
         if (iconId == null)

@@ -24,6 +24,7 @@ details.fancy-details {
 	background-color: #f4f4f4;
 	border-radius: 12px;
 	overflow: hidden;
+	border: 1px solid #e1e1e4;
 
     > summary {
         list-style: none;
@@ -57,6 +58,10 @@ details.fancy-details > summary {
 	cursor: pointer;
 	background-color: #f8f8f8;
 	padding: 20px;
+}
+
+details.fancy-details[open] > summary {
+    border-bottom: 1px solid #e1e1e4;
 }
 
 details.fancy-details .details-content {

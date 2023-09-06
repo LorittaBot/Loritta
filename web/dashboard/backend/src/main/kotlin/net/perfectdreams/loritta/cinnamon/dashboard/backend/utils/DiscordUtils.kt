@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.utils
 
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
-import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
+import net.perfectdreams.loritta.serializable.LorittaCluster
 
 object DiscordUtils {
     /**
@@ -9,7 +9,7 @@ object DiscordUtils {
      *
      * @return the shard ID
      */
-    fun getLorittaClusterForGuildId(loritta: LorittaDashboardBackend, id: Long): LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster {
+    fun getLorittaClusterForGuildId(loritta: LorittaDashboardBackend, id: Long): LorittaCluster {
         val shardId = getShardIdFromGuildId(loritta, id)
         return getLorittaClusterForShardId(loritta, shardId)
     }
@@ -33,7 +33,7 @@ object DiscordUtils {
      *
      * @return the cluster
      */
-    fun getLorittaClusterForShardId(loritta: LorittaDashboardBackend, id: Int): LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster {
+    fun getLorittaClusterForShardId(loritta: LorittaDashboardBackend, id: Int): LorittaCluster {
         val lorittaShard = loritta.lorittaInfo.instances.firstOrNull { id in it.minShard..it.maxShard }
         return lorittaShard ?: throw RuntimeException("Frick! I don't know what is the Loritta Shard for Discord Shard ID $id")
     }

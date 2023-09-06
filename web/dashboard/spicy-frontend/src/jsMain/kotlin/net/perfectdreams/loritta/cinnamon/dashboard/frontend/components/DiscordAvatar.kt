@@ -19,7 +19,7 @@ fun DiscordAvatar(
         DiscordCdn.userAvatar(userId.value, avatarHash)
             .toUrl()
     } else {
-        DiscordCdn.defaultAvatar(discriminator.toInt())
+        DiscordCdn.defaultAvatarLegacy(discriminator.toInt())
             .toUrl {
                 format = Image.Format.PNG // For some weird reason, the default avatars aren't available in webp format (why?)
             }

@@ -11,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -41,27 +40,7 @@ class InternalWebServer(val m: LorittaBot) {
                 post("/rpc") {
                     val body = withContext(Dispatchers.IO) { call.receiveText() }
 
-                    val response = try {
-                        when (val request = Json.decodeFromString<LorittaInternalRPCRequest>(body)) {
-                            is LorittaInternalRPCRequest.GetGuildInfoRequest -> {
-                                processors.getGuildInfoProcessor.process(call, request)
-                            }
-
-                            is LorittaInternalRPCRequest.GetLorittaInfoRequest -> {
-                                processors.getLorittaInfoProcessor.process(call, request)
-                            }
-
-                            is LorittaInternalRPCRequest.GetGuildGamerSaferConfigRequest -> {
-                                processors.getGuildGamerSaferConfigProcessor.process(call, request)
-                            }
-
-                            is LorittaInternalRPCRequest.UpdateGuildGamerSaferConfigRequest -> {
-                                processors.updateGuildGamerSaferConfigProcessor.process(call, request)
-                            }
-                        }
-                    } catch (e: RPCResponseException) {
-                        e.response
-                    }
+                    val response = process(call, Json.decodeFromString<LorittaInternalRPCRequest>(body))
 
                     call.respondJson(
                         Json.encodeToString<LorittaInternalRPCResponse>(response)
@@ -102,5 +81,29 @@ class InternalWebServer(val m: LorittaBot) {
         }
 
         server.start(false)
+    }
+
+    suspend fun process(call: ApplicationCall, request: LorittaInternalRPCRequest): LorittaInternalRPCResponse {
+        return try {
+            when (request) {
+                is LorittaInternalRPCRequest.GetLorittaInfoRequest -> {
+                    processors.getLorittaInfoProcessor.process(call, request)
+                }
+
+                is LorittaInternalRPCRequest.GetGuildGamerSaferConfigRequest -> {
+                    processors.getGuildGamerSaferConfigProcessor.process(call, request)
+                }
+
+                is LorittaInternalRPCRequest.UpdateGuildGamerSaferConfigRequest -> {
+                    processors.updateGuildGamerSaferConfigProcessor.process(call, request)
+                }
+
+                is LorittaInternalRPCRequest.ExecuteDashGuildScopedRPCRequest -> {
+                    processors.executeDashGuildScopedProcessor.process(call, request)
+                }
+            }
+        } catch (e: RPCResponseException) {
+            e.response
+        }
     }
 }

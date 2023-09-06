@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.serializable.dashboard.responses
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.serializable.DiscordGuild
+import net.perfectdreams.loritta.serializable.PublicLorittaCluster
 import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig
 
 @Serializable
@@ -11,19 +13,7 @@ sealed class LorittaDashboardRPCResponse {
     interface MissingPermissionError
 
     @Serializable
-    sealed class GetGuildInfoResponse : LorittaDashboardRPCResponse() {
-        @Serializable
-        class Success(val guild: DiscordGuild) : GetGuildInfoResponse()
-
-        @Serializable
-        class UnknownGuild : GetGuildInfoResponse(), UnknownGuildError
-
-        @Serializable
-        class UnknownMember : GetGuildInfoResponse(), UnknownMemberError
-
-        @Serializable
-        class MissingPermission : GetGuildInfoResponse(), MissingPermissionError
-    }
+    class ExecuteDashGuildScopedRPCResponse(val dashResponse: DashGuildScopedResponse) : LorittaDashboardRPCResponse()
 
     @Serializable
     sealed class GetUserGuildsResponse : LorittaDashboardRPCResponse() {
@@ -114,7 +104,10 @@ sealed class LorittaDashboardRPCResponse {
             // Easter egg
             val comment: String,
             val legacyDashboardUrl: String,
-            val clientId: Long
+            val clientId: Long,
+            val environmentType: EnvironmentType,
+            val maxShards: Int,
+            val instances: List<PublicLorittaCluster>
         ) : GetSpicyInfoResponse()
     }
 }

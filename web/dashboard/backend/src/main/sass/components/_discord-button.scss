@@ -5,7 +5,7 @@
     color: white;
     font-weight: bold;
     border-radius: 3px;
-    padding: 0.5em 1em 0.5em 1em;
+    padding: 0.25em 1em;
     transition-duration: 0.25s;
     opacity: 1;
     background-color: #757575;
@@ -45,5 +45,12 @@
         &:hover {
             background-color: darken(#da373c, 10%);
         }
+    }
+}
+
+.modal-wrapper {
+    .discord-button {
+        // Buttons in modals have bigger padding
+        padding: 0.5em 1em;
     }
 }

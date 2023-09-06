@@ -25,4 +25,11 @@ object RoutePaths {
         ScreenPathElement.StringPathElement("configure"),
         ScreenPathElement.StringPathElement("gamersafer-verify")
     )
+
+    val GUILD_WELCOMER_CONFIG = listOf(
+        ScreenPathElement.StringPathElement("guilds"),
+        ScreenPathElement.OptionPathElement("guildId"),
+        ScreenPathElement.StringPathElement("configure"),
+        ScreenPathElement.StringPathElement("welcomer")
+    )
 }

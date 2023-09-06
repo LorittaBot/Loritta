@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPathWithArguments
+import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
@@ -80,13 +81,17 @@ fun GuildLeftSidebar(
         SidebarCategory("Moderação") {
             SidebarEntryLink(SVGIconManager.exclamationCircle, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/moderation", "Moderação")
             SidebarEntryLink(SVGIconManager.ban, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/invite-blocker", "Bloqueador de Convites")
-            SidebarEntryScreen(m, SVGIconManager.star, "GamerSafer", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to screen.guildId.toString())))
+            SidebarEntryScreen(m, SVGIconManager.gamerSafer, "GamerSafer", ScreenPathWithArguments(ScreenPath.ConfigureGuildGamerSaferVerifyPath, mapOf("guildId" to screen.guildId.toString())))
         }
 
         SidebarDivider()
 
         SidebarCategory("Notificações") {
-            SidebarEntryLink(SVGIconManager.rightToBracket, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/welcomer", "Mensagens ao Entrar/Sair")
+            if (spicyInfo.environmentType == EnvironmentType.CANARY) {
+                SidebarEntryScreen(m, SVGIconManager.rightToBracket, "Mensagens ao Entrar/Sair", ScreenPathWithArguments(ScreenPath.ConfigureGuildWelcomerPath, mapOf("guildId" to screen.guildId.toString())))
+            } else {
+                SidebarEntryLink(SVGIconManager.rightToBracket, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/event-log", "Mensagens ao Entrar/Sair")
+            }
             SidebarEntryLink(SVGIconManager.eye, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/event-log", "Event Log")
             SidebarEntryLink(SVGIconManager.youtube, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/youtube", "YouTube")
             SidebarEntryLink(SVGIconManager.twitch, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/twitch", "Twitch")

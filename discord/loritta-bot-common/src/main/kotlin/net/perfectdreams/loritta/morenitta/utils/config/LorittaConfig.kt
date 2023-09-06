@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils.config
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils

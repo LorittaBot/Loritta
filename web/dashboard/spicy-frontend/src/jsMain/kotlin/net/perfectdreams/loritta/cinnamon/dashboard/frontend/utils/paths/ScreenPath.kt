@@ -42,6 +42,15 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ) = ConfigureGuildGamerSaferVerifyScreen(m, parsedArguments["guildId"]!!.toLong())
     }
 
+    object ConfigureGuildWelcomerPath : ScreenPath(RoutePaths.GUILD_WELCOMER_CONFIG) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ) = ConfigureGuildWelcomerScreen(m, parsedArguments["guildId"]!!.toLong())
+    }
+
     fun matches(path: String): ScreenPathMatchResult {
         val split = path.split("/").drop(1)
         val parsedArguments = mutableMapOf<String, String>()
@@ -78,7 +87,8 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
             ChooseAServerScreenPath,
             ShipEffectsScreenPath,
             SonhosShopScreenPath,
-            ConfigureGuildGamerSaferVerifyPath
+            ConfigureGuildGamerSaferVerifyPath,
+            ConfigureGuildWelcomerPath
         )
     }
 }

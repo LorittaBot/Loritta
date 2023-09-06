@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.LorittaDashboardRpcProcessor
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
+import net.perfectdreams.loritta.serializable.LorittaCluster
 import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
 import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
@@ -19,7 +20,7 @@ open class GuildRPCHotwireProcessor<
         InternalReq: LorittaInternalRPCRequest,
         InternalRes: LorittaInternalRPCResponse>(
     val m: LorittaDashboardBackend,
-    private val dashboardRequestToRPCRequestRemapper: (Req, LorittaJsonWebSession.UserIdentification) -> (Pair<LorittaInternalRPCResponse.GetLorittaInfoResponse.LorittaCluster, InternalReq>),
+    private val dashboardRequestToRPCRequestRemapper: (Req, LorittaJsonWebSession.UserIdentification) -> (Pair<LorittaCluster, InternalReq>),
     private val rpcResponseToDashboardResponseRemapper: (InternalRes) -> Res,
     private val missingPermissionResponse: () -> Res,
     private val unknownGuildResponse: () -> Res,

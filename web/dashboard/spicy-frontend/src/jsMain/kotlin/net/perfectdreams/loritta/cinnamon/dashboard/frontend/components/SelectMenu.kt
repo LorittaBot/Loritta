@@ -122,6 +122,20 @@ fun SelectMenu(
                     entries.forEach { entry ->
                         Div(
                             attrs = {
+                                ref {
+                                    // Automatically scrolls to the selected entry
+                                    // We don't use scrollIntoView because it is "bad", as in: If you attempt to use the "center" option, it scrolls the entire page, which is not what we want!
+                                    if (singleValueSelectMenu && entry.selected) {
+                                        val parent = it.parentElement
+                                        if (parent != null) {
+                                            // Pretty sure the parent element cannot be nullable, but oh well
+                                            parent.scrollTop = it.offsetTop.toDouble()
+                                        }
+                                    }
+
+                                    onDispose {}
+                                }
+
                                 onClick {
                                     val isAlreadySelected = entry.selected
                                     if (singleValueSelectMenu && isAlreadySelected) {
@@ -168,13 +182,6 @@ fun SelectMenu(
     }
 }
 
-@Composable
-fun InnerSelectMenu(
-    entries: List<SelectMenuEntry>,
-    maxValues: Int? = 1
-) {
-
-}
 data class SelectMenuEntry(
     val content: @Composable () -> (Unit),
     val selected: Boolean,

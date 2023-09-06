@@ -24,11 +24,12 @@ $mobile-version: 1279px;
 @use "components/discord-mention";
 @use "components/loritta-spawner";
 @use "components/discord-invite-wrapper";
+@use "components/discord-toggle";
+@use "components/discord-message";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
 
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Pacifico&display=swap');
-
 
 @mixin bp($point) {
     @if $point == 'small' {
@@ -41,6 +42,7 @@ $mobile-version: 1279px;
 
 :root {
     --loritta-blue: #{$loritta-blue};
+    --loritta-blue-rgb: 41, 166, 254;
 }
 
 body {
@@ -319,7 +321,6 @@ nav#left-sidebar {
                     font-size: 0.75em;
                 }
             }
-
         }
     }
 }
@@ -446,34 +447,6 @@ aside#that-wasnt-very-cash-money-of-you {
   }
 }
 
-input {
-    padding: 10px;
-    height: 40px;
-    background-color: #f3f3f4;
-    border: 1px solid darken(#f3f3f4, 10%);
-    border-radius: 3px;
-    color: black;
-    transition-duration: 0.25s;
-    outline-color: fade-out($loritta-blue, 0.5);
-
-    &:focus {
-        background-color: white;
-        outline: 2px solid fade-out($loritta-blue, 0.5);
-        border-color: $loritta-blue;
-    }
-
-    &:hover {
-        background-color: white;
-        border-color: $loritta-blue;
-        outline: 4px solid fade-out($loritta-blue, 0.5);
-    }
-
-    &:focus-visible {
-        outline: 2px solid $loritta-blue;
-        border-color: $loritta-blue;
-    }
-}
-
 .field-wrappers {
     .field-wrapper:not(:first-child) {
         margin-top: 1em;
@@ -496,7 +469,10 @@ input {
 
     .field-title {
         margin: 0 0 0.25em;
-        font-weight: bold;
+        // A Discord-like field title
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 0.8em;
     }
 }
 

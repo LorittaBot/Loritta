@@ -15,7 +15,5 @@ class ConfigureGuildGamerSaferVerifyScreen(m: LorittaDashboardFrontend, guildId:
 
     override fun createTitle() = I18nKeysData.Website.Dashboard.GamerSafer.Title
 
-    // TODO: Load the server configuration from the website
-    //   For now we are loading on the composable itself... which isn't inherently a bad thing tbh
     override fun onLoad() {}
 }

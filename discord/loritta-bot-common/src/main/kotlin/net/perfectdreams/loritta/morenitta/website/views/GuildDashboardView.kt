@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 
 abstract class GuildDashboardView(
@@ -81,6 +80,14 @@ abstract class GuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/commands", true, locale["modules.sectionNames.commands"], "fa fa-terminal", "vanilla_commands")
                     appendEntry("/guild/${guild.id}/configure/permissions", true, locale["modules.sectionNames.permissions"], "fa fa-address-card", "permissions")
 
+                    appendEntry(
+                        "/guild/${guild.id}/configure/gamersafer-verify",
+                        true,
+                        "GamerSafer",
+                        "fas fa-list",
+                        "gamersafer_verify"
+                    )
+
                     hr(classes = "divider") {}
 
                     div(classes = "category") {
@@ -107,22 +114,6 @@ abstract class GuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/miscellaneous", true, "+${legacyBaseLocale.strings["CommandCategory_MISC_Name"]}", "fas fa-random", "miscellaneous")
                     appendEntry("/guild/${guild.id}/configure/audit-log", true, locale["modules.auditLog.title"], "fas fa-list", "audit_log")
 
-                    hr(classes = "divider") {}
-
-                    if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
-                        div(classes = "category") {
-                            +"GamerSafer"
-                        }
-
-                        appendEntry(
-                            "/guild/${guild.id}/configure/gamersafer-verify",
-                            true,
-                            "Verificação de Contas",
-                            "fas fa-list",
-                            "gamersafer_verify"
-                        )
-                    }
-                    
                     hr(classes = "divider") {}
 
                     div(classes = "category") {

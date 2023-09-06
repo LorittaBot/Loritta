@@ -7,7 +7,10 @@ import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig
 @Serializable
 sealed class LorittaDashboardRPCRequest {
     @Serializable
-    class GetGuildInfoRequest(val guildId: Long) : LorittaDashboardRPCRequest()
+    class ExecuteDashGuildScopedRPCRequest(
+        val guildId: Long,
+        val request: DashGuildScopedRequest
+    ) : LorittaDashboardRPCRequest()
 
     @Serializable
     class GetUserGuildsRequest : LorittaDashboardRPCRequest()
