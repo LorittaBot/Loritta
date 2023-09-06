@@ -125,6 +125,7 @@ data class LorittaConfig(
     data class WebsiteConfig(
         val url: String,
         val port: Int,
+        val spicyMorenittaDashboardUrl: String,
         val apiKeys: List<AuthenticationKey>,
         val maxGuildTries: Int,
         val sessionHex: String,

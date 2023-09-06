@@ -81,8 +81,8 @@ abstract class GuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/permissions", true, locale["modules.sectionNames.permissions"], "fa fa-address-card", "permissions")
 
                     appendEntry(
-                        "/guild/${guild.id}/configure/gamersafer-verify",
-                        true,
+                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removePrefix("/")}/guilds/${guild.id}/configure/gamersafer-verify",
+                        false,
                         "GamerSafer",
                         "fas fa-list",
                         "gamersafer_verify"
