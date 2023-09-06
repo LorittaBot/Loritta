@@ -65,6 +65,7 @@ object DeviousConverter {
 
                         put("id", user.idLong)
                         put("username", user.name)
+                        put("global_name", user.globalName)
                         put("discriminator", user.discriminator)
                         put("avatar", user.avatarId)
                         put("public_flags", user.flagsRaw)
