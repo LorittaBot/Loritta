@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks

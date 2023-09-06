@@ -69,6 +69,25 @@ abstract class GuildDashboardView(
                         }
                     }
 
+                    fun appendExternalEntry(url: String, name: String, icon: String, type: String) {
+                        a(href = url) {
+                            if (type == "default")
+                                attributes["data-general-section"] = "true"
+
+                            div(classes = "entry") {
+                                if (selectedType == type)
+                                    classes = classes + "selected-entry"
+
+                                i(classes = icon) {
+                                    attributes["aria-hidden"] = "true"
+                                }
+
+                                + " "
+                                + name
+                            }
+                        }
+                    }
+
                     div(classes = "category") {
                         + guild.name
                     }
@@ -80,9 +99,8 @@ abstract class GuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/commands", true, locale["modules.sectionNames.commands"], "fa fa-terminal", "vanilla_commands")
                     appendEntry("/guild/${guild.id}/configure/permissions", true, locale["modules.sectionNames.permissions"], "fa fa-address-card", "permissions")
 
-                    appendEntry(
-                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removePrefix("/")}/guilds/${guild.id}/configure/gamersafer-verify",
-                        false,
+                    appendExternalEntry(
+                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/gamersafer-verify",
                         "GamerSafer",
                         "fas fa-list",
                         "gamersafer_verify"
