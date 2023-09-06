@@ -99,14 +99,12 @@ abstract class GuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/commands", true, locale["modules.sectionNames.commands"], "fa fa-terminal", "vanilla_commands")
                     appendEntry("/guild/${guild.id}/configure/permissions", true, locale["modules.sectionNames.permissions"], "fa fa-address-card", "permissions")
 
-                    if (false) {
-                        appendExternalEntry(
-                            "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/gamersafer-verify",
-                            "GamerSafer",
-                            "fas fa-list",
-                            "gamersafer_verify"
-                        )
-                    }
+                    appendExternalEntry(
+                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/gamersafer-verify",
+                        "GamerSafer",
+                        "fas fa-list",
+                        "gamersafer_verify"
+                    )
 
                     hr(classes = "divider") {}
 
