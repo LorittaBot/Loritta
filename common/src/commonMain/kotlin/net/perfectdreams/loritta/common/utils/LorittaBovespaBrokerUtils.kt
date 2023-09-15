@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.common.utils
 
 import kotlinx.datetime.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -106,11 +106,6 @@ object LorittaBovespaBrokerUtils {
         StockTickerInfo(
             "IGTI3",
             "Jereissati Participações S.A.",
-            CompanyCategory.FINANCE
-        ),
-        StockTickerInfo(
-            "NUBR33",
-            "Nubank",
             CompanyCategory.FINANCE
         ),
         StockTickerInfo(
