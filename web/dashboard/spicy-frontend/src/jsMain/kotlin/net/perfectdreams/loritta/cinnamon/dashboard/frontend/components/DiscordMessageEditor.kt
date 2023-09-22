@@ -871,7 +871,7 @@ fun DiscordMessageEditor(
                         if (parsedMessage != null) {
                             DiscordMessageRenderer(
                                 RenderableDiscordUser.fromDiscordUser(selfUser)
-                                    .copy(name = "Loritta Morenitta \uD83D\uDE18"),
+                                    .copy(name = DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME),
                                 parsedMessage,
                                 null,
                                 targetGuild.channels,
@@ -881,7 +881,7 @@ fun DiscordMessageEditor(
                             // If the message couldn't be parsed, render it as a normal message
                             DiscordMessageRenderer(
                                 RenderableDiscordUser.fromDiscordUser(selfUser)
-                                    .copy(name = "Loritta Morenitta \uD83D\uDE18"),
+                                    .copy(name = DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME),
                                 DiscordMessage(
                                     content = rawMessage
                                 ),

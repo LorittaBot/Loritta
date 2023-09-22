@@ -10,6 +10,8 @@ object DiscordMessageUtils {
         setOption("simplifiedAutoLink", true)
     }
 
+    const val LORITTA_MORENITTA_FANCY_NAME = "Loritta Morenitta \uD83D\uDE18"
+
     val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
     val DiscordChannel = Regex("<#([0-9]+)>")
     // Yes the last \\ IS REQUIRED!! RegEx will complain that raw brackets are not allowed in unicode mode without the escaping!!!

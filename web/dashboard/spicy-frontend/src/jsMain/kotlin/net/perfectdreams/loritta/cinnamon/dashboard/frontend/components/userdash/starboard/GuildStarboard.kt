@@ -10,10 +10,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.ResourceChecker
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ConfigureGuildStarboardScreen
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.DiscordUtils
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Toast
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.*
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.GuildViewModel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.StarboardViewModel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.viewModel
@@ -189,7 +186,7 @@ fun GuildStarboard(
                         Div(attrs = { classes("message-preview") }) {
                             DiscordMessageStyle {
                                 DiscordMessageBlock(
-                                    starboardResponse.selfUser.globalName ?: starboardResponse.selfUser.name,
+                                    DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME,
                                     DiscordUtils.getUserAvatarUrl(
                                         starboardResponse.selfUser.id,
                                         starboardResponse.selfUser.avatarId
