@@ -4,8 +4,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRoute
 import net.perfectdreams.loritta.i18n.I18nKeys
-import net.perfectdreams.sequins.ktor.BaseRoute
 
 abstract class LocalizedRoute(val m: LorittaDashboardBackend, val originalPath: String) : BaseRoute("/{localeId}$originalPath") {
     override suspend fun onRequest(call: ApplicationCall) {

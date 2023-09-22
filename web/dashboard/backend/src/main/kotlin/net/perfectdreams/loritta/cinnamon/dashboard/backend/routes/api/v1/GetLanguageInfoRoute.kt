@@ -8,8 +8,8 @@ import io.ktor.server.util.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondJson
-import net.perfectdreams.sequins.ktor.BaseRoute
 import org.apache.commons.codec.digest.DigestUtils
 
 class GetLanguageInfoRoute(private val m: LorittaDashboardBackend) : BaseRoute("/api/v1/languages/{languageId}") {

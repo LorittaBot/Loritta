@@ -7,10 +7,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondJson
 import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
 import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
-import net.perfectdreams.sequins.ktor.BaseRoute
 
 class PostLorittaDashboardRpcProcessorRoute(private val m: LorittaDashboardBackend) : BaseRoute("/api/v1/rpc") {
     override suspend fun onRequest(call: ApplicationCall) {

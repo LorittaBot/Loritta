@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.PutShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.Processors
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRouteManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.PerfectPaymentsClient
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.WebsiteAssetsHashManager
@@ -52,6 +53,19 @@ class LorittaDashboardBackend(
     val spicyMorenittaBundle: SpicyMorenittaBundle
 ) {
     val processors = Processors(this)
+    private val routeManager = BaseRouteManager { _ ->
+        install(Sessions) {
+            val secretHashKey = hex(config.sessionHex)
+
+            cookie<LorittaJsonWebSession>(config.sessionName) {
+                cookie.path = "/"
+                cookie.domain = config.sessionDomain
+                cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
+                transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
+            }
+        }
+    }
+
     private val routes = listOf(
         HomeRoute(this),
 
@@ -101,17 +115,6 @@ class LorittaDashboardBackend(
                     allowMethod(HttpMethod.Put)
                     allowMethod(HttpMethod.Patch)
                     allowMethod(HttpMethod.Delete)
-                }
-            }
-
-            install(Sessions) {
-                val secretHashKey = hex(config.sessionHex)
-
-                cookie<LorittaJsonWebSession>(config.sessionName) {
-                    cookie.path = "/"
-                    cookie.domain = config.sessionDomain
-                    cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
-                    transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
                 }
             }
 
@@ -167,7 +170,10 @@ class LorittaDashboardBackend(
                         }
                     }
 
-                    route.register(this)
+                    // We want to use the BaseRouteManager because we don't want to enable the sessions' plugin on routes that do not need the session plugin
+                    // (like assets)
+                    // This way, things can ACTUALLY be cached by Cloudflare
+                    routeManager.register(this, route)
                 }
             }
         }

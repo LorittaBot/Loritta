@@ -5,10 +5,10 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.lorittaSession
-import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path: String) : BaseRoute(path) {
