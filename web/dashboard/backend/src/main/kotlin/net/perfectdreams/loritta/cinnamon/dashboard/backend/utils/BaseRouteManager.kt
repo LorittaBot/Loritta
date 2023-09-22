@@ -15,6 +15,7 @@ class BaseRouteManager(val onRouteCreation: Route.(String) -> (Unit)) {
             nRoute
         }
 
+        // TODO: The empty path feels nasty, how can we improve this?
         baseRoute.registerWithPath(currentRoute, "")
     }
 }

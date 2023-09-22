@@ -54,6 +54,7 @@ class LorittaDashboardBackend(
 ) {
     val processors = Processors(this)
     private val routeManager = BaseRouteManager { _ ->
+        // TODO: Instead of registering the sessions plugin EVERY TIME a new route is created... Maybe we could just *not* do this? Maybe check if path starts with X and THEN register the route
         install(Sessions) {
             val secretHashKey = hex(config.sessionHex)
 
