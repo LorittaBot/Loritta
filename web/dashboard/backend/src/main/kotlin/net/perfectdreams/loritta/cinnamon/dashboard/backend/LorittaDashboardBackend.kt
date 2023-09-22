@@ -8,6 +8,7 @@ import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
+import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.request.*
@@ -75,6 +76,14 @@ class LorittaDashboardBackend(
         PostSonhosBundlesRoute(this)
     )
 
+    private val typesToCache = listOf(
+        ContentType.Text.CSS,
+        ContentType.Text.JavaScript,
+        ContentType.Application.JavaScript,
+        ContentType.Image.Any,
+        ContentType.Audio.Any
+    )
+    
     val hashManager = WebsiteAssetsHashManager()
     val perfectPaymentsClient = PerfectPaymentsClient(this, config.perfectPayments.url)
 
@@ -103,6 +112,21 @@ class LorittaDashboardBackend(
                     cookie.domain = config.sessionDomain
                     cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
                     transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
+                }
+            }
+
+            install(CachingHeaders) {
+                options { call, outgoingContent ->
+                    val contentType = outgoingContent.contentType
+                    if (contentType != null) {
+                        val contentTypeWithoutParameters = contentType.withoutParameters()
+                        val matches = typesToCache.any { contentTypeWithoutParameters.match(it) || contentTypeWithoutParameters == it }
+
+                        if (matches)
+                            io.ktor.http.content.CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 365 * 24 * 3600))
+                        else
+                            null
+                    } else null
                 }
             }
 

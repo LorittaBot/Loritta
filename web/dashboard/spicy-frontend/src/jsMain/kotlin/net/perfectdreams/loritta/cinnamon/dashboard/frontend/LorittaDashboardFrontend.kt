@@ -121,11 +121,14 @@ class LorittaDashboardFrontend(private val app: Application) {
         renderComposable(rootElementId = "root") {
             // Add the "modal-open" class to the body when a modal is active
             // Only run the side effect if the active modal has changed
-            SideEffect {
-                // Yes, this NEEDS to be added to the body, we can't just apply it to the app-wrapper (trust me, I tried)
-                if (globalState.activeModals.isNotEmpty()) {
+            if (globalState.activeModals.isNotEmpty()) {
+                SideEffect {
+                    // Yes, this NEEDS to be added to the body, we can't just apply it to the app-wrapper (trust me, I tried)
                     document.body!!.addClass("modal-open")
-                } else {
+                }
+            } else {
+                SideEffect {
+                    // Yes, this NEEDS to be added to the body, we can't just apply it to the app-wrapper (trust me, I tried)
                     document.body!!.removeClass("modal-open")
                 }
             }
