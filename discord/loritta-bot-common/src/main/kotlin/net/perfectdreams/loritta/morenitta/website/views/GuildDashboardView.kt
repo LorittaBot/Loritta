@@ -161,12 +161,12 @@ abstract class GuildDashboardView(
                         + legacyBaseLocale.strings["DASHBOARD_YourFeatures"]!!
                     }
                     appendExternalEntry(
-                        "/guild/${guild.id}/configure/custom-commands",
+                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/custom-commands",
                         locale["modules.sectionNames.customCommands"],
                         "fas fa-code",
                         "custom_commands"
                     )
-                    
+
                     hr(classes = "divider") {}
 
                     a(href = "/support") {
