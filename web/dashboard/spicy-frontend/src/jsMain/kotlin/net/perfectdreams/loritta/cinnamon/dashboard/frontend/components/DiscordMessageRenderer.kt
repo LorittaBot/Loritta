@@ -564,7 +564,7 @@ private fun TransformedDiscordText(
                             if (channel != null) {
                                 InlineDiscordMention("#${channel.name}")
                             } else {
-                                InlineDiscordMention("#Desconhecido")
+                                InlineDiscordMention("#Desconhecido", Color(237, 66, 69))
                             }
                         }
                         is DiscordMessageUtils.DrawableText -> Text(section.text)
