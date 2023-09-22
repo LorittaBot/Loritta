@@ -11,6 +11,7 @@ object DiscordMessageUtils {
     }
 
     val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
+    val DiscordChannel = Regex("<#([0-9]+)>")
     // Yes the last \\ IS REQUIRED!! RegEx will complain that raw brackets are not allowed in unicode mode without the escaping!!!
     private val Placeholder = Regex("\\{([A-z0-9@\\-.]+)\\}")
 
@@ -92,6 +93,13 @@ object DiscordMessageUtils {
                 }
         }
 
+        if (DrawableType.DISCORD_CHANNEL in allowedDrawableTypes) {
+            DiscordChannel.findAll(text)
+                .forEach {
+                    matches.add(DiscordChannelRegexMatch(it))
+                }
+        }
+
         if (DrawableType.PLACEHOLDER in allowedDrawableTypes) {
             Placeholder.findAll(text)
                 .forEach {
@@ -120,6 +128,11 @@ object DiscordMessageUtils {
                     val emoteName = matchResult.groupValues[2]
                     val emoteId = matchResult.groupValues[3]
                     sections.add(DrawableDiscordEmote(emoteId.toLong(), animated))
+                }
+
+                is DiscordChannelRegexMatch -> {
+                    val channelId = matchResult.groupValues[1]
+                    sections.add(DrawableDiscordChannel(channelId.toLong()))
                 }
 
                 is PlaceholderRegexMatch -> {
@@ -180,16 +193,19 @@ object DiscordMessageUtils {
     sealed class RegexMatch(val match: MatchResult)
     private class PlaceholderRegexMatch(match: MatchResult) : RegexMatch(match)
     private class DiscordEmoteRegexMatch(match: MatchResult) : RegexMatch(match)
+    private class DiscordChannelRegexMatch(match: MatchResult) : RegexMatch(match)
 
     sealed class DrawableSection
     data class DrawableText(val text: String) : DrawableSection()
     data class DrawablePlaceholder(val placeholderName: String) : DrawableSection()
     data class DrawableDiscordEmote(val emoteId: Long, val animated: Boolean) : DrawableSection()
+    data class DrawableDiscordChannel(val channelId: Long) : DrawableSection()
 
     enum class DrawableType {
         TEXT,
         PLACEHOLDER,
-        DISCORD_EMOJI
+        DISCORD_EMOJI,
+        DISCORD_CHANNEL
     }
 
     enum class RenderDirection {

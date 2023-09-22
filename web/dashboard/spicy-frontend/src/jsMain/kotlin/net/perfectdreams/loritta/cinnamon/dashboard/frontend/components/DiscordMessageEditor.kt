@@ -863,6 +863,7 @@ fun DiscordMessageEditor(
                                 message.author,
                                 message.message,
                                 null,
+                                targetGuild.channels,
                                 placeholders,
                             )
                         }
@@ -873,6 +874,7 @@ fun DiscordMessageEditor(
                                     .copy(name = "Loritta Morenitta \uD83D\uDE18"),
                                 parsedMessage,
                                 null,
+                                targetGuild.channels,
                                 placeholders,
                             )
                         } else {
@@ -884,6 +886,7 @@ fun DiscordMessageEditor(
                                     content = rawMessage
                                 ),
                                 null,
+                                targetGuild.channels,
                                 placeholders
                             )
                         }
@@ -893,6 +896,7 @@ fun DiscordMessageEditor(
                                 message.author,
                                 message.message,
                                 null,
+                                targetGuild.channels,
                                 placeholders,
                             )
                         }
