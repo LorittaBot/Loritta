@@ -7,6 +7,7 @@ object DiscordMessageUtils {
     val showdown = ShowdownConverter().apply {
         setOption("simpleLineBreaks", true)
         setOption("strikethrough", true)
+        setOption("simplifiedAutoLink", true)
     }
 
     val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
