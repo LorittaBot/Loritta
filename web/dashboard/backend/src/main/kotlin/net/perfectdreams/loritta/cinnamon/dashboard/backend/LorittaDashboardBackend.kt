@@ -83,7 +83,7 @@ class LorittaDashboardBackend(
         ContentType.Image.Any,
         ContentType.Audio.Any
     )
-    
+
     val hashManager = WebsiteAssetsHashManager()
     val perfectPaymentsClient = PerfectPaymentsClient(this, config.perfectPayments.url)
 

@@ -129,15 +129,7 @@ fun GuildLeftSidebar(
         SidebarDivider()
 
         SidebarCategory("Suas Funcionalidades") {
-            if (spicyInfo.environmentType == EnvironmentType.CANARY) {
-                SidebarEntryScreen(m, SVGIconManager.code, i18nContext.get(I18nKeysData.Website.Dashboard.CustomCommands.Title), ScreenPathWithArguments(ScreenPath.ConfigureGuildCustomCommandsPath, mapOf("guildId" to screen.guildId.toString()), emptyMap()))
-            } else {
-                SidebarEntryLink(
-                    SVGIconManager.code,
-                    "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/custom-commands",
-                    i18nContext.get(I18nKeysData.Website.Dashboard.CustomCommands.Title)
-                )
-            }
+            SidebarEntryScreen(m, SVGIconManager.code, i18nContext.get(I18nKeysData.Website.Dashboard.CustomCommands.Title), ScreenPathWithArguments(ScreenPath.ConfigureGuildCustomCommandsPath, mapOf("guildId" to screen.guildId.toString()), emptyMap()))
         }
 
         SidebarDivider()
