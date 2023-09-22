@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 class ChooseAServerScreen(m: LorittaDashboardFrontend) : UserScreen(m) {
     override fun createPathWithArguments() = ScreenPathWithArguments(
         ScreenPath.ChooseAServerScreenPath,
+        mapOf(),
         mapOf()
     )
     override fun createTitle() = I18nKeysData.Website.Dashboard.ChooseAServer.Title

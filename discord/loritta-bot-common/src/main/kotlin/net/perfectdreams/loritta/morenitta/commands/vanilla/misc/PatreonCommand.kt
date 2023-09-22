@@ -16,7 +16,7 @@ class PatreonCommand(loritta: LorittaBot) : AbstractCommand(loritta, "donator", 
 		val patrons = "Veja todos os doadores em https://loritta.website/donate (tem tantos doadores que não cabe nesta mensagem! ${Emotes.LORI_CRYING})"
 
 		val embed = EmbedBuilder().apply {
-			setThumbnail("https://assets.perfectdreams.media/loritta/loritta-rich-heathecliff.png")
+			setThumbnail("https://stuff.loritta.website/loritta-rich-heathecliff.png")
 			setTitle("${Emotes.LORI_RICH} ${context.locale["commands.command.donate.thanks"]}")
 			setColor(Color(0, 193, 223))
 			setDescription(patrons)

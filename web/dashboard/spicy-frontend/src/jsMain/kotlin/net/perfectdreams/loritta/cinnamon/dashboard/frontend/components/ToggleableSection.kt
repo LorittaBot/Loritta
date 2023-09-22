@@ -6,17 +6,16 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 
 /**
- * A toggleable section controlled by a [DiscordToggle]
+ * A block of toggleable sections
  */
 @Composable
-fun ToggleableSection(
-    id: String,
-    title: String,
-    description: String = "-",
-    checked: Boolean,
-    onChange: (Boolean) -> (Unit),
-    block: @Composable () -> (Unit)
-) = ToggleableSection(id, { Text(title) }, { Text(description) }, checked, onChange, block)
+fun ToggleableSections(block: @Composable () -> (Unit)) {
+    Div(attrs = {
+        classes("toggleable-sections")
+    }) {
+        block.invoke()
+    }
+}
 
 /**
  * A toggleable section controlled by a [DiscordToggle]
@@ -25,10 +24,23 @@ fun ToggleableSection(
 fun ToggleableSection(
     id: String,
     title: String,
-    description: String = "-",
+    description: String?,
+    checked: Boolean,
+    onChange: (Boolean) -> (Unit),
+    block: @Composable () -> (Unit)
+) = ToggleableSection(id, { Text(title) }, description?.let { { Text(it) } }, checked, onChange, block)
+
+/**
+ * A toggleable section controlled by a [DiscordToggle]
+ */
+@Composable
+fun ToggleableSection(
+    id: String,
+    title: String,
+    description: String?,
     stateValue: MutableState<Boolean>,
     block: @Composable () -> (Unit)
-) = ToggleableSection(id, { Text(title) }, { Text(description) }, stateValue.value, { stateValue.value = it }, block)
+) = ToggleableSection(id, { Text(title) }, description?.let { { Text(it) } }, stateValue.value, { stateValue.value = it }, block)
 
 /**
  * A toggleable section controlled by a [DiscordToggle]
@@ -37,7 +49,7 @@ fun ToggleableSection(
 fun ToggleableSection(
     id: String,
     title: @Composable () -> (Unit),
-    description: @Composable () -> (Unit) = {},
+    description: @Composable (() -> (Unit))? = null,
     checked: Boolean,
     onChange: (Boolean) -> (Unit),
     block: @Composable () -> (Unit)

@@ -12,15 +12,15 @@ fun UIIcon(icon: SVGIconManager.SVGIcon, attrs: AttrBuilderContext<SVGElement>? 
     Svg(
         {
             ref { element ->
-                val viewBox = icon.element.getAttribute("viewBox")
-                if (viewBox != null)
-                    element.setAttributeNS(null, "viewBox", viewBox)
-
                 icon.element.children.asList().forEach {
                     element.appendChild(it.cloneNode(true))
                 }
                 onDispose {}
             }
+
+            val viewBox = icon.element.getAttribute("viewBox")
+            if (viewBox != null)
+                attr("viewBox", viewBox)
 
             attrs?.invoke(this)
         }

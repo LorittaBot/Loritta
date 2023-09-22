@@ -12,8 +12,9 @@ import org.w3c.dom.events.Event
 // Inspired by Discord's Select Menu
 @Composable
 fun SelectMenu(
+    placeholder: String,
+    maxValues: Int? = 1,
     entries: List<SelectMenuEntry>,
-    maxValues: Int? = 1
 ) {
     val singleValueSelectMenu = maxValues == 1
     var isSelectMenuVisible by remember { mutableStateOf(false) }
@@ -50,7 +51,7 @@ fun SelectMenu(
                         val currentlySelectedOption = entries.firstOrNull { it.selected }
                         // TODO: Better Max Values handling
                         if (currentlySelectedOption == null || maxValues != 1) {
-                            Text("Selecione um Cargo")
+                            Text(placeholder)
                         } else {
                             currentlySelectedOption.content.invoke()
                         }

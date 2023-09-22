@@ -206,7 +206,7 @@ class DailyView(
                     style = "text-align: left;"
 
                     div(classes = "title-with-emoji") {
-                        img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-zap.png", classes = "emoji-title")
+                        img(src = "https://stuff.loritta.website/emotes/lori-zap.png", classes = "emoji-title")
 
                         h2 {
                             + "Perguntas Frequentes"

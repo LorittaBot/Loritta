@@ -1,37 +1,46 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.salomonbrys.kotson.*
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
-import net.perfectdreams.loritta.morenitta.parallax.wrappers.ParallaxEmbed
-import net.perfectdreams.loritta.common.locale.BaseLocale
+import kotlinx.serialization.SerializationException
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.Component
+import net.dv8tion.jda.api.interactions.components.ItemComponent
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
-import net.perfectdreams.loritta.common.utils.format
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.Placeholders
-import kotlin.collections.component1
-import kotlin.collections.component2
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
+import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
+import net.perfectdreams.loritta.common.utils.format
+import net.perfectdreams.loritta.common.utils.placeholders.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
+import net.perfectdreams.loritta.morenitta.utils.placeholders.RenderableMessagePlaceholder
 import kotlin.collections.set
 
 object MessageUtils {
 	private val logger = KotlinLogging.logger {}
+	private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
 
 	/**
 	 * Watermarks the message with a user mention, to avoid ToS issues affecting Loritta with "anonymous message sends"
@@ -118,13 +127,149 @@ object MessageUtils {
 		return jsonObject.toString()
 	}
 
-	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): MessageCreateData? {
-		val jsonObject = try {
-			JsonParser.parseString(message).obj
-		} catch (ex: Exception) {
-			null
+	fun <T : MessagePlaceholder> generateMessage(message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), safe: Boolean = true): MessageCreateData? {
+		val customTokens = mutableListOf<RenderableMessagePlaceholder>()
+		section.placeholders.forEach {
+			val placeholderValue = customTokensBuilder.invoke(it)
+			customTokens.add(RenderableMessagePlaceholder(it, placeholderValue))
+		}
+		return generateMessage(message, guild, customTokens, safe)
+	}
+
+	fun generateMessage(message: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder> = listOf(), safe: Boolean = true): MessageCreateData? {
+		val originalDiscordMessage = try {
+			JsonIgnoreUnknownKeys.decodeFromString<DiscordMessage>(message)
+		} catch (e: SerializationException) {
+			DiscordMessage(content = message) // If the message is null, use the message as the content!
 		}
 
+		fun recursiveComponentReplacer(component: DiscordComponent): DiscordComponent {
+			return when (component) {
+				is DiscordComponent.DiscordActionRow -> {
+					with (component) {
+						component.copy(
+							components = this.components.map { recursiveComponentReplacer(it) }
+						)
+					}
+				}
+				is DiscordComponent.DiscordButton -> {
+					with (component) {
+						component.copy(
+							label = processStringAndReplaceTokens(this.label, 80, guild, customTokens),
+							url = replaceTokens(this.url, guild, customTokens)
+						)
+					}
+				}
+			}
+		}
+
+		// Let's replace all the tokens!
+		val discordMessage = with(originalDiscordMessage) {
+			copy(
+				content = processStringAndReplaceTokens(content, 2000, guild, customTokens),
+				embed = embed?.let {
+					with (it) {
+						this.copy(
+							author = with (author) {
+								this?.copy(
+									name = processStringAndReplaceTokens(this.name, 256, guild, customTokens),
+									url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
+									iconUrl = processUrlIfNotNull(replaceTokensIfNotNull(iconUrl, guild, customTokens))
+								)
+							},
+							title = processStringAndReplaceTokensIfNotNull(title, 256, guild, customTokens),
+							description = processStringAndReplaceTokensIfNotNull(description, 4096, guild, customTokens),
+							url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
+							footer = with(footer) {
+								this?.copy(
+									text = processStringAndReplaceTokens(text, 2048, guild, customTokens),
+									iconUrl = processImageUrlIfNotNull(replaceTokensIfNotNull(iconUrl, guild, customTokens))
+								)
+							},
+							image = with(image) {
+								this?.copy(
+									url = processImageUrl(replaceTokens(url, guild, customTokens))
+								)
+							},
+							thumbnail = with(thumbnail) {
+								this?.copy(
+									url = processImageUrl(replaceTokens(url, guild, customTokens))
+								)
+							},
+							fields = fields.map {
+								it.copy(
+									name = processStringAndReplaceTokens(it.name, 256, guild, customTokens),
+									value = processStringAndReplaceTokens(it.value, 1024, guild, customTokens),
+									inline = it.inline
+								)
+							}
+						)
+					}
+				},
+				components = components?.map { recursiveComponentReplacer(it) }
+			)
+		}
+
+		val messageBuilder = MessageCreateBuilder()
+		messageBuilder.setContent(discordMessage.content)
+		val discordEmbed = discordMessage.embed
+		if (discordEmbed != null) {
+			val embed = EmbedBuilder()
+				.setAuthor(discordEmbed.author?.name, discordEmbed.author?.url, discordEmbed.author?.iconUrl)
+				.setTitle(discordEmbed.title, discordEmbed.url)
+				.setDescription(discordEmbed.description)
+				.setThumbnail(discordEmbed.thumbnail?.url)
+				.setImage(discordEmbed.image?.url)
+				.setFooter(discordEmbed.footer?.text, discordEmbed.footer?.iconUrl)
+
+			for (field in discordEmbed.fields) {
+				embed.addField(field.name, field.value, field.inline)
+			}
+
+			val color = discordEmbed.color
+			if (color != null)
+				embed.setColor(color)
+
+			try {
+				messageBuilder.setEmbeds(embed.build())
+			} catch (e: Exception) {
+				// Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
+				// for the best!
+			}
+		}
+
+		fun recursiveComponentConverter(component: DiscordComponent): Component {
+			return when (component) {
+				is DiscordComponent.DiscordActionRow -> {
+					// ActionRows cannot have other ActionRows within them so whatever
+					ActionRow.of(component.components.map { recursiveComponentConverter(it) as ItemComponent })
+				}
+				is DiscordComponent.DiscordButton -> {
+					// We ONLY support link buttons
+					Button.of(
+						ButtonStyle.LINK,
+						component.url,
+						component.label
+					)
+				}
+			}
+		}
+
+		val components = discordMessage.components
+		if (components != null) {
+			for (component in components) {
+				// The first component must be a layout component (also known as... ActionRow)
+				// If it isn't, then the JSON is invalid!
+				messageBuilder.addComponents(recursiveComponentConverter(component) as LayoutComponent)
+			}
+		}
+
+		return messageBuilder.build()
+	}
+
+	// This is still used by "legacy" (let's be honest, it ain't legacy lmao) modules and commands
+	// Let's remap it to the new version!
+	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): MessageCreateData? {
 		val tokens = mutableMapOf<String, String?>()
 		tokens.putAll(customTokens)
 
@@ -132,12 +277,12 @@ object MessageUtils {
 			for (source in sources) {
 				if (source is User) {
 					tokens[Placeholders.USER_MENTION.name] = source.asMention
-					tokens[Placeholders.USER_NAME_SHORT.name] = source.name
-					tokens[Placeholders.USER_NAME.name] = source.name
+					tokens[Placeholders.USER_NAME_SHORT.name] = source.globalName ?: source.name
+					tokens[Placeholders.USER_NAME.name] = source.globalName ?: source.name
 					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.discriminator
 					tokens[Placeholders.USER_ID.name] = source.id
 					tokens[Placeholders.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
-					tokens[Placeholders.USER_TAG.name] = source.asTag
+					tokens[Placeholders.USER_TAG.name] = "@${source.name}"
 
 					tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.discriminator
 					tokens[Placeholders.Deprecated.USER_ID.name] = source.id
@@ -145,11 +290,11 @@ object MessageUtils {
 				}
 				if (source is Member) {
 					tokens[Placeholders.USER_MENTION.name] = source.asMention
-					tokens[Placeholders.USER_NAME_SHORT.name] = source.user.name
-					tokens[Placeholders.USER_NAME.name] = source.user.name
+					tokens[Placeholders.USER_NAME_SHORT.name] = source.user.globalName ?: source.user.name
+					tokens[Placeholders.USER_NAME.name] = source.user.globalName ?: source.user.name
 					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.user.discriminator
 					tokens[Placeholders.USER_ID.name] = source.id
-					tokens[Placeholders.USER_TAG.name] = source.user.asTag
+					tokens[Placeholders.USER_TAG.name] = "@${source.user.name}"
 					tokens[Placeholders.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
 					tokens[Placeholders.USER_NICKNAME.name] = source.effectiveName
 
@@ -179,91 +324,94 @@ object MessageUtils {
 			}
 		}
 
-		val messageBuilder = MessageCreateBuilder()
-		if (jsonObject != null) {
-			// alterar tokens
-			handleJsonTokenReplacer(jsonObject, sources, guild, tokens)
-			val jsonEmbed = jsonObject["embed"].nullObj
-			if (jsonEmbed != null) {
-				try {
-					val parallaxEmbed = LorittaBot.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-					messageBuilder.setEmbeds(parallaxEmbed.toDiscordEmbed(safe))
-				} catch (e: Exception) {
-					// Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
-					// for the best!
-				}
+		return generateMessage(
+			message,
+			guild,
+			tokens.filter { it.value != null }.map {
+				RenderableMessagePlaceholder(
+					GenericPlaceholders.Placeholder(
+						listOf(LorittaPlaceholder(it.key).toVisiblePlaceholder())
+					),
+					it.value!!
+				)
 			}
-			messageBuilder.addContent(jsonObject.obj["content"].nullString ?: " ")
-		} else {
-			messageBuilder.addContent(replaceTokens(message, sources, guild, tokens).substringIfNeeded())
-		}
-		if (messageBuilder.isEmpty)
-			return null
-		return messageBuilder.build()
+		)
 	}
 
-	private fun handleJsonTokenReplacer(jsonObject: JsonObject, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf()) {
-		for ((key, value) in jsonObject.entrySet()) {
-			when {
-				value.isJsonPrimitive && value.asJsonPrimitive.isString -> {
-					jsonObject[key] = replaceTokens(value.string, sources, guild, customTokens)
-				}
-				value.isJsonObject -> {
-					handleJsonTokenReplacer(value.obj, sources, guild, customTokens)
-				}
-				value.isJsonArray -> {
-					val array = JsonArray()
-					for (it in value.array) {
-						if (it.isJsonPrimitive && it.asJsonPrimitive.isString) {
-							array.add(replaceTokens(it.string, sources, guild, customTokens))
-							continue
-						} else if (it.isJsonObject) {
-							handleJsonTokenReplacer(it.obj, sources, guild, customTokens)
-						}
-						array.add(it)
-					}
-					jsonObject[key] = array
-				}
-			}
-		}
-	}
-
-	private fun replaceTokens(text: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf()): String {
+	private fun replaceTokens(text: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>): String {
 		var message = text
 
 		for ((token, value) in customTokens)
-			message = message.replace("{$token}", value ?: "\uD83E\uDD37")
+			for (name in token.names.map { it.placeholder.name })
+				message = message.replace("{$name}", value)
 
 		// Para evitar pessoas perguntando "porque os emojis não funcionam???", nós iremos dar replace automaticamente em algumas coisas
 		// para que elas simplesmente "funcionem:tm:"
 		// Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
 		if (guild != null) {
-			for (emote in guild.emojis) {
-				var index = 0
-				var overflow = 0
-				while (message.indexOf(":${emote.name}:", index) != -1) {
-					if (overflow == 999) {
-						logger.warn { "String $message was overflown (999 > $overflow) when processing emotes, breaking current execution"}
-						logger.warn { "Stuck while processing emote $emote, index = $index, indexOf = ${message.indexOf(":${emote.name}:", index)}"}
-						break
+			val emojis = guild.emojis
+
+			// Emojis are kinda tricky, we need to match
+			// :lori_clown:
+			// but not
+			// <:lori_clown:950111543574536212>
+			// but that's hard, so how can we do this?
+			// ...
+			// with the power of RegEx of course! :3
+			message = message.replace(CHAT_EMOJI_REGEX) {
+				val emojiName = it.groupValues[1]
+				val guildEmoji = emojis.firstOrNull { it.name == emojiName }
+				if (guildEmoji != null) {
+					buildString {
+						append("<")
+						if (guildEmoji.isAnimated)
+							append("a")
+						append(":")
+						append(guildEmoji.name)
+						append(":")
+						append(guildEmoji.id)
+						append(">")
 					}
-					val _index = index
-					index = message.indexOf(":${emote.name}:", index) + 1
-					if (message.indexOf(":${emote.name}:", _index) == 0 || (message[message.indexOf(":${emote.name}:", _index) - 1] != 'a' && message[message.indexOf(":${emote.name}:", _index) - 1] != '<')) {
-						message = message.replaceRange(index - 1..(index - 2) + ":${emote.name}:".length, emote.asMention)
-					}
-					overflow++
+				} else {
+					it.value // Emoji wasn't found, so let's keep it as is
 				}
 			}
-			for (textChannel in guild.textChannels) {
-				message = message.replace("#${textChannel.name}", textChannel.asMention)
-			}
-			for (roles in guild.roles) {
-				message = message.replace("@${roles.name}", roles.asMention)
-			}
+
+			// Before we did replace channel names/roles with proper mentions in the message
+			// However, that causes a lot of issues: What if there's a role WITHOUT a name? Then every "@" is replaced!
+			// What if someone wants to link Loritta's YouTube channel? Then the message will replace "@Loritta" with the role mention!
+			// That's baaaaad, so let's just... not do it.
 		}
 
 		return message
+	}
+
+	private fun replaceTokensIfNotNull(text: String?, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>) = text?.let { replaceTokens(text, guild, customTokens) }
+
+	private fun processStringAndReplaceTokens(text: String, maxSize: Int, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>) = processString(replaceTokens(text, guild, customTokens), maxSize)
+
+	private fun processStringAndReplaceTokensIfNotNull(text: String?, maxSize: Int, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>) = text?.let { processString(replaceTokens(it, guild, customTokens), maxSize) }
+
+	private fun processStringIfNotNull(text: String?, maxSize: Int) = text?.let { processString(it, maxSize) }
+
+	private fun processString(text: String, maxSize: Int) = text.substringIfNeeded(0 until maxSize)
+
+	private fun processImageUrl(url: String): String {
+		if (!url.isValidUrl())
+			return Constants.INVALID_IMAGE_URL
+		return url
+	}
+
+	private fun processImageUrlIfNotNull(url: String?): String? {
+		if (url != null && !url.isValidUrl())
+			return Constants.INVALID_IMAGE_URL
+		return url
+	}
+
+	private fun processUrlIfNotNull(url: String?): String? {
+		if (url != null && !url.isValidUrl())
+			return null
+		return url
 	}
 }
 

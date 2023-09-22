@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select

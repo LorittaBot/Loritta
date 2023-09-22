@@ -17,15 +17,26 @@ $mobile-version: 1279px;
 @use "components/discord-button";
 @use "components/cards";
 @use "components/modal";
+@use "components/toast";
 @use "components/sonhos-bundles";
 @use "components/fancy-bullet-points";
 @use "components/fancy-details";
+@use "components/fancy-table";
 @use "components/payment-methods";
 @use "components/discord-mention";
 @use "components/loritta-spawner";
 @use "components/discord-invite-wrapper";
 @use "components/discord-toggle";
 @use "components/discord-message";
+@use "components/welcomer";
+@use "components/starboard";
+@use "components/custom-commands";
+@use "components/discord-message-editor";
+@use "components/save-bar";
+@use "components/color-picker";
+@use "components/quick-magic";
+@use "components/theme-selector";
+@use "components/tag";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
 
@@ -43,11 +54,57 @@ $mobile-version: 1279px;
 :root {
     --loritta-blue: #{$loritta-blue};
     --loritta-blue-rgb: 41, 166, 254;
+    --input-background-color: rgb(244, 244, 244);
+    --input-secondary-element-background-color: rgb(255, 255, 255);
+    --input-text-color: black;
+    --input-border-color: rgb(204, 204, 204);
+    --first-level-border-radius: 7px;
+    --second-level-border-radius: 14px;
+    --sidebar-ad-width: 160px;
+    --left-sidebar-width: 360px;
+    --soft-border-color: rgba(0, 0, 0, 0.2);
+
+    --background-color: #ffffff;
+    --left-sidebar-background-color: #f2f3f5;
+    --user-info-wrapper-background-color: #ebedef;
+    --content-text-color: #333333;
+    --interactive-element-background-color: #f8f8f8;
+    --secondary-element-background-color: #f4f4f4;
+    --discord-embed-background-color: #f2f3f5;
+    --discord-embed-pill-color: rgb(227, 229, 232);
+    --divider-color: #ebedef;
+    --button-no-background-light-text-color: #ffffff;
+    --button-no-background-dark-text-color: #000000;
+}
+
+.dark-theme {
+    --background-color: #313338;
+    --left-sidebar-background-color: #2b2d31;
+    --user-info-wrapper-background-color: #232428;
+    --content-text-color: #b5bac1;
+    --input-text-color: white;
+    --input-background-color: rgb(24, 24, 24);
+    --input-secondary-element-background-color: var(--input-background-color);
+    --input-border-color: rgb(4, 4, 4);
+    --interactive-element-background-color: #2b2d31;
+    --secondary-element-background-color: #232428;
+    --discord-embed-background-color: #2b2d31;
+    --discord-embed-pill-color: rgb(30, 31, 34);
+    --divider-color: #3b3d44;
+    // Same thing but inverted woo
+    --button-no-background-light-text-color: #000000;
+    --button-no-background-dark-text-color: #ffffff;
 }
 
 body {
     margin: 0;
-    color: #333333;
+    color: var(--content-text-color);
+    background-color: var(--background-color);
+}
+
+#app-wrapper {
+    color: var(--content-text-color);
+    background-color: var(--background-color);
 }
 
 * {
@@ -75,7 +132,7 @@ h2 {
 }
 
 nav#mobile-left-sidebar {
-    background: #2b2d31;
+    background: var(--loritta-blue);
     height: 50px;
     display: flex;
     position: fixed;
@@ -144,8 +201,8 @@ nav#left-sidebar {
     flex-shrink: 0; // Do not shink the sidebar!
     box-shadow: initial; // Shadow
     z-index: 2; // Make the left sidebar be on top of the right sidebar, fixes the shadow
-    color: #333333;
-    background: #f2f3f5;
+    color: var(--content-text-color);
+    background: var(--left-sidebar-background-color);
     // Seems weird but this is used for mobile
     top: 50px;
     // Again, for small breakpoints
@@ -163,7 +220,7 @@ nav#left-sidebar {
     @media (min-width: 600px) {
         // Makes it look kinda pretty instead of filling the entire screen
         // However we will only apply if the screen size lets us do this without looking weird or ugly
-        max-width: 360px;
+        max-width: var(--left-sidebar-width);
     }
 
     // Used for mobile
@@ -186,8 +243,7 @@ nav#left-sidebar {
 
         min-width: 350px;
 
-        position: sticky;
-        top: 0; // These two are REQUIRED for sticky position to work
+        top: 0; // Keep it on the left side of the screen
         left: 0;
         box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px; // Shadow
     }
@@ -198,11 +254,11 @@ nav#left-sidebar {
         height: 100%;
         overflow: auto;
         scrollbar-width: thin; // Firefox only for now
-        scrollbar-color: #00c3ff #004ec8; // Also only available in Firefox
+        scrollbar-color: var(--loritta-blue) var(--left-sidebar-background-color); // Also only available in Firefox
 
         > .divider {
             width: 100%;
-            border: 1px solid #ebedef;
+            border: 1px solid var(--divider-color);
         }
 
         > .category {
@@ -287,7 +343,7 @@ nav#left-sidebar {
     }
 
     > .user-info-wrapper {
-        background: #ebedef;
+        background: var(--user-info-wrapper-background-color);
         height: 60px;
 
         > .user-info {
@@ -326,24 +382,20 @@ nav#left-sidebar {
 }
 
 section#right-sidebar {
-    overflow: auto;
     width: 100%;
-    // 50px = Navbar
-    height: calc(100vh - 50px);
     display: flex;
     flex-direction: row;
+    // We don't use overflow here, to let the ad sidebar propagate scroll thru
+    // The space used by the left sidebar, we NEED to do it that way because we cannot use overflow + sticky on the sidebar, because we want the sidebar ad to propagate scroll events thru
+    margin-left: var(--left-sidebar-width);
 
     @include bp('medium') {
         width: calc(100% - 160px);
     }
 
-    // We don't need to reserve the 50px if we aren't showing the navbar!
-    @include bp('medium') {
-        height: 100vh;
-    }
-
     @media (max-width: 1279px) {
         margin-top: 50px;
+        margin-left: 0;
     }
 
     >.content {
@@ -352,10 +404,14 @@ section#right-sidebar {
         margin-left: auto;
         margin-right: auto;
         line-height: 1.58;
-        padding-left: 5em;
-        padding-right: 5em;
+        // It was 5em before, now it is 4em, to allow more content to be visible in the join/leave sections
+        // Also with 4em+, the color palette wraps to a new row and that looks fugly lmao
+        padding-left: 4em;
+        padding-right: 4em;
         padding-top: 1em;
         padding-bottom: 1em;
+        // Workaround to avoid the save bar overflowing and causing white background below it
+        overflow: clip;
 
         @media (max-width: 500px) {
             padding-left: 1em;
@@ -369,9 +425,33 @@ section#right-sidebar {
             height: 1px;
         }
 
+        .hero-wrapper {
+            display: grid;
+            align-items: center;
+            grid-template-columns: 70fr 30fr;
+
+            .hero-image {
+                text-align: center;
+                aspect-ratio: 16/12;
+            }
+
+            .hero-text {
+                order: -1;
+            }
+
+            @media (max-width: 900px) {
+                text-align: center;
+                grid-template-columns: 1fr;
+
+                .hero-text {
+                    order: 1;
+                }
+            }
+        }
+
         // STATIC
         .hero-image {
-            max-height: 350px;
+            max-height: 100%;
             width: 100%;
             object-fit: contain;
             -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
@@ -399,14 +479,14 @@ section#right-sidebar {
 }
 
 aside#that-wasnt-very-cash-money-of-you {
-    width: 160px;
-    max-width: 160px;
-    min-width: 160px;
+    width: var(--sidebar-ad-width);
+    max-width: var(--sidebar-ad-width);
+    min-width: var(--sidebar-ad-width);
     // background-color: rgba(200, 200, 200, 255);
     align-items: center;
     display: none;
 
-    position: sticky;
+    position: fixed;
     right: 0;
     top: 0;
     height: 100vh;
@@ -421,7 +501,6 @@ aside#that-wasnt-very-cash-money-of-you {
         width: 100%;
         justify-content: center;
         align-items: flex-end;
-        pointer-events: none;
 
         @include bp('medium') {
             display: flex;
@@ -431,10 +510,24 @@ aside#that-wasnt-very-cash-money-of-you {
             height: auto;
             width: 90%;
             cursor: pointer;
-            pointer-events: visible;
             animation: 4s ease-in-out infinite loritta-breathing-animation alternate;
             transform-origin: bottom;
         }
+    }
+}
+
+// Used to reserve space on the layout
+aside#that-wasnt-very-cash-money-of-you-reserved-space {
+    width: var(--sidebar-ad-width);
+    max-width: var(--sidebar-ad-width);
+    min-width: var(--sidebar-ad-width);
+    align-items: center;
+    display: none;
+
+    height: 100vh;
+
+    @include bp('medium') {
+        display: flex;
     }
 }
 
@@ -447,10 +540,11 @@ aside#that-wasnt-very-cash-money-of-you {
   }
 }
 
+// This is like QuickMagic's vertical-list
 .field-wrappers {
-    .field-wrapper:not(:first-child) {
-        margin-top: 1em;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
 }
 
 .field-wrapper {
@@ -468,7 +562,6 @@ aside#that-wasnt-very-cash-money-of-you {
     } */
 
     .field-title {
-        margin: 0 0 0.25em;
         // A Discord-like field title
         text-transform: uppercase;
         font-weight: 600;

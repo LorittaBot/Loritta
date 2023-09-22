@@ -19,7 +19,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.15")
 
     // Ktor
-    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-cio:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-html-builder:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
@@ -77,13 +77,13 @@ tasks {
         from("../../resources/") // Include folders from the resources web folder
 
         // We need to wait until the JS build finishes and the SASS files are generated
-        dependsOn(jsBrowserDistribution)
-        dependsOn(jsBrowserProductionWebpack)
+        // dependsOn(jsBrowserDistribution)
+        // dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
 
         // Copy the output from the frontend task to the backend resources
-        from(jsBrowserProductionWebpack.destinationDirectory) {
-            into("static/assets/js/")
+        from(jsBrowserProductionWebpack.outputDirectory) {
+            into("spicy_frontend/js/")
         }
 
         // Same thing with the SASS output

@@ -7,51 +7,57 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.document
+import kotlinx.browser.localStorage
 import kotlinx.browser.window
 import kotlinx.dom.addClass
-import kotlinx.serialization.SerializationException
+import kotlinx.dom.removeClass
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.dashboard.common.embeds.DiscordEmbed
-import net.perfectdreams.loritta.cinnamon.dashboard.common.embeds.DiscordMessage
 import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.LorittaRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.*
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrapper
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.GuildLeftSidebar
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.ResourceChecker
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserLeftSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserRightSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.customcommands.AddNewGuildCustomCommand
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.customcommands.EditGuildCustomCommand
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.customcommands.GuildCustomCommands
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.gamersaferverify.GamerSaferVerify
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.guilds.ChooseAServerOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.shipeffects.ShipEffectsOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.sonhosshop.SonhosShopOverview
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.starboard.GuildStarboard
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.welcomer.GuildWelcomer
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.GameState
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.*
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.*
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.DiscordCdn
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.Image
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.GuildViewModel
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.WelcomerViewModel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.viewModel
 import net.perfectdreams.loritta.cinnamon.dashboard.utils.pixi.Application
-import net.perfectdreams.loritta.common.utils.Placeholders
-import net.perfectdreams.loritta.serializable.TextDiscordChannel
+import net.perfectdreams.loritta.serializable.dashboard.requests.DashGuildScopedRequest
 import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
+import net.perfectdreams.loritta.serializable.dashboard.responses.DashGuildScopedResponse
 import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
-import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.dom.TextArea
 import org.jetbrains.compose.web.renderComposable
-import org.w3c.dom.*
+import org.w3c.dom.COMPLETE
+import org.w3c.dom.DocumentReadyState
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.INTERACTIVE
+import kotlin.random.Random
 
 class LorittaDashboardFrontend(private val app: Application) {
     companion object {
         private val logger = KotlinLogging.loggerClassName(LorittaDashboardFrontend::class)
+        lateinit var INSTANCE: LorittaDashboardFrontend
+
+        /**
+         * If enabled, the canTalk permission check in the channel select menu will always fail.
+         *
+         * Useful to test the "Missing Permission" modal!
+         */
+        var shouldChannelSelectMenuPermissionCheckAlwaysFail = false
     }
 
     val routingManager = RoutingManager(this)
@@ -63,8 +69,7 @@ class LorittaDashboardFrontend(private val app: Application) {
     val spaLoadingWrapper by lazy { document.getElementById("spa-loading-wrapper") as HTMLDivElement? }
     val gameState = GameState(app)
 
-    val configSavedSfx: Audio by lazy { Audio("${window.location.origin}/assets/snd/config-saved.ogg") }
-    val configErrorSfx: Audio by lazy { Audio("${window.location.origin}/assets/snd/config-error.ogg") }
+    val soundEffects = SoundEffects(this)
 
     private fun appendGameOverlay() {
         app.view.addClass("loritta-game-canvas")
@@ -72,11 +77,21 @@ class LorittaDashboardFrontend(private val app: Application) {
     }
 
     fun start() {
+        INSTANCE = this
         logger.info { "Howdy from Kotlin ${KotlinVersion.CURRENT}! :3" }
 
         NitroPayUtils.prepareNitroPayState()
 
         appendGameOverlay()
+
+        val selectedTheme = localStorage.getItem("dashboard.selectedTheme")?.let {
+            ColorTheme.valueOf(it)
+        }
+
+        if (selectedTheme != null)
+            globalState.theme = selectedTheme
+        else
+            globalState.openThemeSelectorModal(true)
 
         globalState.launch {
             globalState.launch { globalState.updateSelfUserInfo() }
@@ -87,7 +102,7 @@ class LorittaDashboardFrontend(private val app: Application) {
             globalState.i18nContext = Resource.Success(i18nContext)
 
             // Switch based on the path
-            routingManager.switchBasedOnPath(i18nContext, "/${window.location.pathname.split("/").drop(2).joinToString("/")}", false)
+            routingManager.switchBasedOnPath(i18nContext, "/${window.location.pathname.split("/").drop(2).joinToString("/")}${window.location.search}", false)
 
             window.onpopstate = {
                 // TODO: We need to get the current i18nContext state from the globalState
@@ -95,7 +110,7 @@ class LorittaDashboardFrontend(private val app: Application) {
             }
 
             runOnDOMLoaded {
-                logger.info { "DOM has been loaded! Mounting Jetpack Compose Web..." }
+                logger.info { "DOM has been loaded! Mounting Jetpack Compose HTML..." }
 
                 renderApp()
             }
@@ -104,586 +119,70 @@ class LorittaDashboardFrontend(private val app: Application) {
 
     fun renderApp() {
         renderComposable(rootElementId = "root") {
-            val userInfo = globalState.userInfo
-            val spicyInfo = globalState.spicyInfo
-            val i18nContext = globalState.i18nContext
+            // Add the "modal-open" class to the body when a modal is active
+            // Only run the side effect if the active modal has changed
+            SideEffect {
+                // Yes, this NEEDS to be added to the body, we can't just apply it to the app-wrapper (trust me, I tried)
+                if (globalState.activeModals.isNotEmpty()) {
+                    document.body!!.addClass("modal-open")
+                } else {
+                    document.body!!.removeClass("modal-open")
+                }
+            }
 
-            if (userInfo !is Resource.Success || i18nContext !is Resource.Success || spicyInfo !is Resource.Success) {
-                Text("Loading...")
-            } else {
-                CompositionLocalProvider(LocalI18nContext provides i18nContext.value) {
-                    CompositionLocalProvider(LocalUserIdentification provides userInfo.value) {
-                        CompositionLocalProvider(LocalSpicyInfo provides spicyInfo.value) {
-                            // Fade out the single page application loading wrapper...
-                            spaLoadingWrapper?.addClass("loaded")
+            Div(attrs = {
+                id("app-wrapper")
+                classes(
+                    when (globalState.theme) {
+                        ColorTheme.LIGHT -> "light-theme"
+                        ColorTheme.DARK -> "dark-theme"
+                    }
+                )
+            }) {
+                val userInfo = globalState.userInfo
+                val spicyInfo = globalState.spicyInfo
+                val i18nContext = globalState.i18nContext
 
-                            Div(attrs = { id("wrapper") }) {
-                                // Wrapped in a div to only trigger a recomposition within this div when a modal is updated
-                                Div {
-                                    val activeModal = globalState.activeModal
+                if (userInfo !is Resource.Success || i18nContext !is Resource.Success || spicyInfo !is Resource.Success) {
+                    Text("Loading...")
+                } else {
+                    CompositionLocalProvider(LocalI18nContext provides i18nContext.value) {
+                        CompositionLocalProvider(LocalUserIdentification provides userInfo.value) {
+                            CompositionLocalProvider(LocalSpicyInfo provides spicyInfo.value) {
+                                // Fade out the single page application loading wrapper...
+                                spaLoadingWrapper?.addClass("loaded")
 
-                                    if (activeModal != null) {
-                                        // Open modal if there is one present
-                                        Div(attrs = {
-                                            classes("modal-wrapper")
-
-                                            onClick {
-                                                // Close modal when clicking outside of the screen
-                                                if (it.target == it.currentTarget)
-                                                    globalState.activeModal = null
-                                            }
-                                        }) {
+                                Div(attrs = { id("wrapper") }) {
+                                    // Wrapped in a div to only trigger a recomposition within this div when a modal is updated
+                                    Div {
+                                        for (activeModal in globalState.activeModals) {
+                                            // Open modal if there is one present
                                             Div(attrs = {
-                                                classes("modal")
+                                                classes("modal-wrapper")
+
+                                                if (activeModal.canBeClosedByClickingOutsideTheWindow) {
+                                                    onClick {
+                                                        // Close modal when clicking outside of the screen
+                                                        if (it.target == it.currentTarget)
+                                                            activeModal.close()
+                                                    }
+                                                }
                                             }) {
-                                                Div(attrs = { classes("content") }) {
-                                                    Div(attrs = { classes("title") }) {
-                                                        Text(activeModal.title)
+                                                Div(attrs = {
+                                                    classes("modal")
+                                                }) {
+                                                    Div(attrs = { classes("content") }) {
+                                                        Div(attrs = { classes("title") }) {
+                                                            Text(activeModal.title)
+                                                        }
+
+                                                        activeModal.body.invoke(activeModal)
                                                     }
 
-                                                    activeModal.body.invoke()
-                                                }
-
-                                                Div(attrs = { classes("buttons-wrapper") }) {
-                                                    activeModal.buttons.forEach {
-                                                        it.invoke()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                val screen = routingManager.screenState
-
-                                when (screen) {
-                                    is UserScreen -> {
-                                        UserLeftSidebar(this@LorittaDashboardFrontend)
-
-                                        UserRightSidebar(this@LorittaDashboardFrontend) {
-                                            when (screen) {
-                                                is ChooseAServerScreen -> {
-                                                    ChooseAServerOverview(
-                                                        this@LorittaDashboardFrontend,
-                                                        screen,
-                                                        i18nContext.value
-                                                    )
-                                                }
-                                                is ShipEffectsScreen -> {
-                                                    ShipEffectsOverview(
-                                                        this@LorittaDashboardFrontend,
-                                                        screen,
-                                                        i18nContext.value
-                                                    )
-                                                }
-                                                is SonhosShopScreen -> {
-                                                    SonhosShopOverview(
-                                                        this@LorittaDashboardFrontend,
-                                                        screen,
-                                                        i18nContext.value
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                    is GuildScreen -> {
-                                        // Always recompose if it is a new guild ID, to force the guild data to be reloaded
-                                        key(screen.guildId) {
-                                            val vm = viewModel { GuildViewModel(this@LorittaDashboardFrontend, it, screen.guildId) }
-                                            val guildInfoResource = vm.guildInfoResource
-
-                                            val guild = (guildInfoResource as? Resource.Success)?.value
-
-                                            GuildLeftSidebar(this@LorittaDashboardFrontend, screen, guild)
-
-                                            UserRightSidebar(this@LorittaDashboardFrontend) {
-                                                when (screen) {
-                                                    is ConfigureGuildGamerSaferVerifyScreen -> {
-                                                        GamerSaferVerify(
-                                                            this@LorittaDashboardFrontend,
-                                                            screen,
-                                                            i18nContext.value,
-                                                            vm
-                                                        )
-                                                    }
-
-                                                    is ConfigureGuildWelcomerScreen -> {
-                                                        val configViewModel = viewModel { WelcomerViewModel(this@LorittaDashboardFrontend, it, vm) }
-
-                                                        ResourceChecker(i18nContext.value, vm.guildInfoResource, configViewModel.configResource) { guild, welcomerResponse ->
-                                                            Text("hell yeah!!! ")
-
-                                                            val welcomerConfig = welcomerResponse.welcomerConfig
-                                                            if (welcomerConfig == null) {
-                                                                Text("No welcomer config set")
-                                                            } else {
-                                                                Text("${welcomerConfig}")
-                                                            }
-
-                                                            if (welcomerConfig != null) {
-                                                                val mutableWelcomerConfig by remember { mutableStateOf(WelcomerViewModel.toMutableConfig(welcomerConfig)) }
-
-                                                                Hr {}
-
-                                                                ToggleableSection(
-                                                                    "tell-on-join-section",
-                                                                    "Ativar as mensagens quando alguém entrar",
-                                                                    "-",
-                                                                    mutableWelcomerConfig._tellOnJoin,
-                                                                ) {
-                                                                    FieldWrappers {
-                                                                        FieldWrapper {
-                                                                            FieldLabel("Canal onde será enviado as mensagens")
-
-                                                                            SelectMenu(
-                                                                                guild.channels.filterIsInstance<TextDiscordChannel>()
-                                                                                    .map {
-                                                                                        SelectMenuEntry(
-                                                                                            {
-                                                                                                Text("#")
-                                                                                                Text(it.name)
-                                                                                            },
-                                                                                            it.id == mutableWelcomerConfig.channelJoinId,
-                                                                                            {
-                                                                                                mutableWelcomerConfig.channelJoinId =
-                                                                                                    it.id
-                                                                                            },
-                                                                                            {}
-                                                                                        )
-                                                                                    }
-                                                                            )
-                                                                        }
-
-                                                                        FieldWrapper {
-                                                                            FieldLabel("Mensagem quando alguém entrar")
-
-                                                                            val templates = mapOf(
-                                                                                "Padrão" to "\uD83D\uDC49 {@user} entrou no servidor!",
-                                                                                "Padrão, só que melhor" to "<a:lori_happy:521721811298156558> | {@user} acabou de entrar na {guild}! Agora temos {guild-size} membros!",
-                                                                                "Lista de Informações" to """{@user}, bem-vindo(a) ao {guild}! <a:lori_happy:521721811298156558>
-• Leia as #regras *(psiu, troque o nome do canal aqui na mensagem!)* para você poder conviver em harmonia! <:blobheart:467447056374693889>
-• Converse no canal de #bate-papo <:lori_pac:503600573741006863>
-• E é claro, divirta-se! <a:emojo_feriado:393751205308006421>
-
-Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
-                                                                                "Embed Simples" to """{
-   "content":"{@user}",
-   "embed":{
-      "color":-9270822,
-      "title":"👋Seja bem-vindo(a)!",
-      "description":"Olá {@user}! Seja bem-vindo(a) ao {guild}!"
-   }
-}""",
-                                                                                "Embed com Avatar" to """{
-   "content":"{@user}",
-   "embed":{
-      "color":-9270822,
-      "title":"👋Bem-vindo(a)!",
-      "description":"Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
-      "author":{
-         "name":"{user}#{user-discriminator}",
-         "icon_url":"{user-avatar-url}"
-      },
-      "thumbnail":{
-         "url":"{user-avatar-url}"
-      },
-    "footer": {
-      "text": "ID do usuário: {user-id}"
-    }
-   }
-}""",
-                                                                                "Embed com Avatar e Imagem" to """{
-   "content":"{@user}",
-   "embed":{
-      "color":-9270822,
-      "title":"👋Bem-vindo(a)!",
-      "description":"Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
-      "author":{
-         "name":"{user}#{user-discriminator}",
-         "icon_url":"{user-avatar-url}"
-      },
-      "thumbnail":{
-         "url":"{user-avatar-url}"
-      },
-	  "image": {
-	     "url": "https://media.giphy.com/media/GPQBFuG4ABACA/source.gif"
-	  },
-    "footer": {
-      "text": "ID do usuário: {user-id}"
-    }
-   }
-}""",
-                                                                                "Embed com Informações" to """{
-   "content":"{@user}",
-   "embed":{
-      "color":-14689638 ,
-      "title":"{user}#{user-discriminator} | Bem-vindo(a)!",
-      "thumbnail": {
-         "url" : "{user-avatar-url}"
-      },
-      "description":"<:lori_hug:515328576611155968> Olá, seja bem-vindo(a) ao {guild}!",
-      "fields": [
-        {
-            "name": "👋 Sabia que...",
-            "value": "Você é o {guild-size}º membro aqui no servidor?",
-            "inline": true
-        },
-        {
-            "name": "🛡 Tag do Usuário",
-            "value": "`{user}#{user-discriminator}` ({user-id})",
-            "inline": true
-        },
-        {
-            "name": "📛 Precisando de ajuda?",
-            "value": "Caso você tenha alguma dúvida ou problema, chame a nossa equipe!",
-            "inline": true
-        },
-        {
-            "name": "👮 Evite punições!",
-            "value": "Leia as nossas #regras para evitar ser punido no servidor!",
-            "inline": true
-        }
-      ],
-    "footer": {
-      "text": "{guild} • © Todos os direitos reservados."
-    }
-   }
-}""",
-                                                                                "Kit Social Influencer™" to """{
-   "content":"{@user}",
-   "embed":{
-      "color":-2342853,
-      "title":"{user}#{user-discriminator} | Bem-vindo(a)!",
-      "thumbnail": {
-         "url" : "{user-avatar-url}"
-      },
-      "description":"Salve {@user}! Você acabou de entrar no servidor do {guild}, aqui você poderá se interagir com fãs do {guild}, conversar sobre suas coisas favoritas e muito mais!",
-      "fields": [
-        {
-            "name": "📢 Fique atento!",
-            "value": "Novos vídeos do {guild} serão anunciados no #vídeos-novos!",
-            "inline": true
-        },
-        {
-            "name": "📺 Inscreva-se no canal se você ainda não é inscrito! ",
-            "value": "[Canal](https://www.youtube.com/channel/UC-eeXSRZ8cO-i2NZYrWGDnQ)",
-            "inline": true
-        },
-        {
-            "name": "🐦 Siga no Twitter! ",
-            "value": "[@LorittaBot](https://twitter.com/LorittaBot)",
-            "inline": true
-        },
-        {
-            "name": "🖼 Siga no Instagram! ",
-            "value": "[@lorittabot](https://instagram.com/lorittabot)",
-            "inline": true
-        }
-      ],
-    "footer": {
-      "text": "Eu sou muito fofa e o {guild} também :3"
-    }
-   }
-}"""
-                                                                            )
-
-                                                                            Div {
-                                                                                DiscordButton(
-                                                                                    DiscordButtonType.PRIMARY,
-                                                                                    attrs = {
-                                                                                        onClick {
-                                                                                            globalState.openCloseOnlyModal(
-                                                                                                "Templates de Mensagens"
-                                                                                            ) {
-                                                                                                Text("Sem criatividade? Então pegue um template!")
-
-                                                                                                Div(attrs = {
-                                                                                                    style {
-                                                                                                        display(
-                                                                                                            DisplayStyle.Flex
-                                                                                                        )
-                                                                                                        flexDirection(
-                                                                                                            FlexDirection.Column
-                                                                                                        )
-                                                                                                        gap(0.5.em)
-                                                                                                    }
-                                                                                                }) {
-                                                                                                    for (placeholder in templates) {
-                                                                                                        DiscordButton(
-                                                                                                            DiscordButtonType.PRIMARY,
-                                                                                                            attrs = {
-                                                                                                                onClick {
-                                                                                                                    globalState.openModal(
-                                                                                                                        "Você realmente quer substituir?",
-                                                                                                                        {
-                                                                                                                            Text(
-                                                                                                                                "Ao aplicar o template, a sua mensagem atual será perdida! A não ser se você tenha copiado ela para outro lugar, aí vida que segue né."
-                                                                                                                            )
-                                                                                                                        },
-                                                                                                                        {
-                                                                                                                            CloseModalButton(
-                                                                                                                                globalState
-                                                                                                                            )
-                                                                                                                        },
-                                                                                                                        {
-                                                                                                                            DiscordButton(
-                                                                                                                                DiscordButtonType.PRIMARY,
-                                                                                                                                attrs = {
-                                                                                                                                    onClick {
-                                                                                                                                        mutableWelcomerConfig.joinMessage =
-                                                                                                                                            placeholder.value
-                                                                                                                                        globalState.activeModal =
-                                                                                                                                            null
-                                                                                                                                    }
-                                                                                                                                }
-                                                                                                                            ) {
-                                                                                                                                Text(
-                                                                                                                                    "Aplicar"
-                                                                                                                                )
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                    )
-                                                                                                                }
-                                                                                                            }
-                                                                                                        ) {
-                                                                                                            Text(
-                                                                                                                placeholder.key
-                                                                                                            )
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                ) {
-                                                                                    Text("Template de Mensagens")
-                                                                                }
-                                                                            }
-
-                                                                            val joinMessage = mutableWelcomerConfig.joinMessage
-
-                                                                            Div {
-                                                                                TextArea(joinMessage) {
-                                                                                    onInput {
-                                                                                        println("Typing... ${it.value}")
-                                                                                        mutableWelcomerConfig.joinMessage = it.value
-                                                                                    }
-                                                                                }
-                                                                            }
-
-                                                                            val avatarId = userInfo.value.avatarId
-
-                                                                            val avatarUrl = if (avatarId != null) {
-                                                                                DiscordCdn.userAvatar(userInfo.value.id.value, avatarId)
-                                                                                    .toUrl()
-                                                                            } else {
-                                                                                DiscordCdn.defaultAvatar(userInfo.value.id.value)
-                                                                                    .toUrl {
-                                                                                        format = Image.Format.PNG // For some weird reason, the default avatars aren't available in webp format (why?)
-                                                                                    }
-                                                                            }
-
-                                                                            val placeholders = listOf(
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_MENTION,
-                                                                                    "@${userInfo.value.username}",
-                                                                                    "", // locale["$placeholdersUserPrefix.mention"],
-                                                                                    MessagePlaceholder.RenderType.MENTION,
-                                                                                    false
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_NAME_SHORT,
-                                                                                    userInfo.value.username,
-                                                                                    "", // locale["$placeholdersUserPrefix.name"],
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    false
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_NAME,
-                                                                                    userInfo.value.username,
-                                                                                    "", // locale["$placeholdersUserPrefix.name"],
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    false
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_DISCRIMINATOR,
-                                                                                    userInfo.value.discriminator,
-                                                                                    "", // locale["$placeholdersUserPrefix.discriminator"],
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    false
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_TAG,
-                                                                                    "@${userInfo.value.username}",
-                                                                                    "", // locale["$placeholdersUserPrefix.tag"],
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    false
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_ID,
-                                                                                    userInfo.value.id.value.toString(),
-                                                                                    "", // locale["$placeholdersUserPrefix.id"],
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    false
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_AVATAR_URL,
-                                                                                    avatarUrl,
-                                                                                    "", // locale["$placeholdersUserPrefix.avatarUrl"],
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    false
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.USER_NICKNAME,
-                                                                                    userInfo.value.username,
-                                                                                    "", // locale["$placeholdersUserPrefix.nickname"],
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    false
-                                                                                ),
-
-                                                                                // === [ DEPRECATED ] ===
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.Deprecated.USER_ID, // Deprecated
-                                                                                    userInfo.value.id.value.toString(),
-                                                                                    null,
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    true
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.Deprecated.USER_DISCRIMINATOR, // Deprecated
-                                                                                    userInfo.value.discriminator,
-                                                                                    null,
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    true
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.Deprecated.USER_NICKNAME, // Deprecated
-                                                                                    userInfo.value.username,
-                                                                                    null,
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    true
-                                                                                ),
-                                                                                MessagePlaceholder(
-                                                                                    Placeholders.Deprecated.USER_AVATAR_URL,
-                                                                                    avatarUrl,
-                                                                                    null,
-                                                                                    MessagePlaceholder.RenderType.TEXT,
-                                                                                    true
-                                                                                )
-                                                                            )
-
-                                                                            // I don't know why we need to use the key here to force it to recompose...
-                                                                            key(mutableWelcomerConfig.joinMessage) {
-                                                                                if (joinMessage != null) {
-                                                                                    val parsedMessage = try {
-                                                                                        Json.decodeFromString<DiscordMessage>(
-                                                                                            joinMessage
-                                                                                        )
-                                                                                    } catch (e: SerializationException) {
-                                                                                        null
-                                                                                    }
-
-                                                                                    if (parsedMessage != null) {
-                                                                                        Div {
-                                                                                            DiscordMessageRenderer(
-                                                                                                welcomerResponse.selfUser.copy(
-                                                                                                    name = "Loritta Morenitta \uD83D\uDE18"
-                                                                                                ),
-                                                                                                parsedMessage,
-                                                                                                placeholders
-                                                                                            )
-                                                                                        }
-                                                                                    } else {
-                                                                                        // Before we render the message as a normal message, we will check if the user *tried* to do a JSON message
-                                                                                        if (joinMessage.startsWith("{")) {
-                                                                                            Div {
-                                                                                                Text("Você tentou fazer uma mensagem em JSON? Se sim, tem algo errado nela!")
-                                                                                            }
-
-                                                                                            // Now we will check that MAYBE this is a "carl.gg" embed? (as in: the embed without the message object)
-                                                                                            val embed = try {
-                                                                                                Json.decodeFromString<DiscordEmbed>(joinMessage)
-                                                                                            } catch (e: SerializationException) { null }
-
-                                                                                            if (embed != null) {
-                                                                                                Div {
-                                                                                                    Text("Isso parece ser uma embed do carl.gg (raw embed json) seu safado sem vergonha ")
-
-                                                                                                    DiscordButton(
-                                                                                                        DiscordButtonType.PRIMARY,
-                                                                                                        attrs = {
-                                                                                                            onClick {
-                                                                                                                mutableWelcomerConfig.joinMessage =
-                                                                                                                    Json.encodeToString(
-                                                                                                                        DiscordMessage(
-                                                                                                                            "",
-                                                                                                                            embed
-                                                                                                                        )
-                                                                                                                    )
-                                                                                                            }
-                                                                                                        }
-                                                                                                    ) {
-                                                                                                        Text("Desculpe Lori só faça ela funcionar pfv")
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-
-                                                                                        // If the message couldn't be parsed, render it as a normal message
-                                                                                        Div {
-                                                                                            DiscordMessageRenderer(
-                                                                                                welcomerResponse.selfUser.copy(
-                                                                                                    name = "Loritta Morenitta \uD83D\uDE18"
-                                                                                                ),
-                                                                                                DiscordMessage(
-                                                                                                    content = joinMessage
-                                                                                                ),
-                                                                                                placeholders
-                                                                                            )
-                                                                                        }
-                                                                                    }
-                                                                                } else {
-                                                                                    Text("Null join message!")
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                DiscordToggle(
-                                                                    "tell-on-join",
-                                                                    "Ativar as mensagens quando alguém entrar",
-                                                                    stateValue = mutableWelcomerConfig._tellOnJoin
-                                                                )
-
-                                                                Hr {}
-
-                                                                DiscordToggle(
-                                                                    "tell-on-remove",
-                                                                    "Ativar as mensagens quando alguém sair",
-                                                                    stateValue = mutableWelcomerConfig._tellOnRemove
-                                                                )
-
-                                                                Hr {}
-
-                                                                DiscordToggle(
-                                                                    "tell-on-ban",
-                                                                    "Mostrar mensagem diferenciada ao ser banido",
-                                                                    stateValue = mutableWelcomerConfig._tellOnBan
-                                                                )
-
-                                                                Hr {}
-
-                                                                DiscordToggle(
-                                                                    "tell-on-dm",
-                                                                    "Ativar as mensagens enviadas nas mensagens diretas do usuário quando alguém entrar",
-                                                                    "Útil caso você queria mostrar informações básicas sobre o servidor para um usuário mas não quer que fique cheio de mensagens inúteis toda hora que alguém entra.",
-                                                                    stateValue = mutableWelcomerConfig._tellOnPrivateJoin
-                                                                )
-
-                                                                Hr {}
-
-                                                                Text(mutableWelcomerConfig.tellOnRemove.toString())
+                                                    if (activeModal.buttons.isNotEmpty()) {
+                                                        Div(attrs = { classes("buttons-wrapper") }) {
+                                                            activeModal.buttons.forEach {
+                                                                it.invoke(activeModal)
                                                             }
                                                         }
                                                     }
@@ -691,11 +190,189 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
                                             }
                                         }
                                     }
-                                    else -> {
-                                        Text("I don't know how to handle screen $screen")
-                                        if (screen != null)
-                                            Text(" (${screen::class})")
-                                        Text("!")
+
+                                    Div(attrs = {
+                                        classes("toast-list")
+
+                                        if (globalState.activeSaveBar)
+                                            classes("save-bar-active")
+                                    }) {
+                                        for (toastWithAnimationState in globalState.activeToasts) {
+                                            // We need to key it based on the ID to avoid Compose recomposing the toast notification during an animation
+                                            // https://kotlinlang.slack.com/archives/C01F2HV7868/p1694583087487209
+                                            key(toastWithAnimationState.toastId) {
+                                                LaunchedEffect(Unit) {
+                                                    soundEffects.toastNotificationWhoosh.play(
+                                                        0.05,
+                                                        Random.nextDouble(0.975, 1.025) // Change the speed/pitch to avoid the sound effect sounding repetitive
+                                                    )
+                                                }
+
+                                                Div(attrs = {
+                                                    id("toast-${toastWithAnimationState.toastId}")
+                                                    classes(
+                                                        "toast",
+                                                        when (toastWithAnimationState.toast.type) {
+                                                            Toast.Type.INFO -> "info"
+                                                            Toast.Type.SUCCESS -> "success"
+                                                            Toast.Type.WARN -> "warn"
+                                                        }
+                                                    )
+
+                                                    when (toastWithAnimationState.state.value) {
+                                                        GlobalState.ToastWithAnimationState.State.ADDED -> {
+                                                            classes("added")
+                                                            onAnimationEnd {
+                                                                println("Finished toast (added) animation!")
+                                                                toastWithAnimationState.state.value =
+                                                                    GlobalState.ToastWithAnimationState.State.DEFAULT
+                                                            }
+                                                        }
+
+                                                        GlobalState.ToastWithAnimationState.State.DEFAULT -> {
+                                                            // I'm just happy to be here
+                                                        }
+
+                                                        GlobalState.ToastWithAnimationState.State.REMOVED -> {
+                                                            classes("removed")
+                                                            onAnimationEnd {
+                                                                println("Finished toast (removed) animation!")
+                                                                globalState.activeToasts.remove(toastWithAnimationState)
+                                                            }
+                                                        }
+                                                    }
+                                                }) {
+                                                    Div(attrs = {
+                                                        classes("toast-title")
+                                                    }) {
+                                                        Text(toastWithAnimationState.toast.title)
+                                                    }
+
+                                                    Div {
+                                                        toastWithAnimationState.toast.body.invoke()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    val screen = routingManager.screenState
+
+                                    when (screen) {
+                                        is UserScreen -> {
+                                            UserLeftSidebar(this@LorittaDashboardFrontend)
+
+                                            UserRightSidebar(this@LorittaDashboardFrontend) {
+                                                when (screen) {
+                                                    is ChooseAServerScreen -> {
+                                                        ChooseAServerOverview(
+                                                            this@LorittaDashboardFrontend,
+                                                            screen,
+                                                            i18nContext.value
+                                                        )
+                                                    }
+
+                                                    is ShipEffectsScreen -> {
+                                                        ShipEffectsOverview(
+                                                            this@LorittaDashboardFrontend,
+                                                            screen,
+                                                            i18nContext.value
+                                                        )
+                                                    }
+
+                                                    is SonhosShopScreen -> {
+                                                        SonhosShopOverview(
+                                                            this@LorittaDashboardFrontend,
+                                                            screen,
+                                                            i18nContext.value
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        is GuildScreen -> {
+                                            // Always recompose if it is a new guild ID, to force the guild data to be reloaded
+                                            key(screen.guildId) {
+                                                val vm = viewModel {
+                                                    GuildViewModel(
+                                                        this@LorittaDashboardFrontend,
+                                                        it,
+                                                        screen.guildId
+                                                    )
+                                                }
+                                                val guildInfoResource = vm.guildInfoResource
+
+                                                val guild = (guildInfoResource as? Resource.Success)?.value
+
+                                                GuildLeftSidebar(this@LorittaDashboardFrontend, screen, guild)
+
+                                                UserRightSidebar(this@LorittaDashboardFrontend) {
+                                                    when (screen) {
+                                                        is ConfigureGuildGamerSaferVerifyScreen -> {
+                                                            GamerSaferVerify(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is ConfigureGuildWelcomerScreen -> {
+                                                            GuildWelcomer(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is ConfigureGuildStarboardScreen -> {
+                                                            GuildStarboard(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is ConfigureGuildCustomCommandsScreen -> {
+                                                            GuildCustomCommands(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is AddNewGuildCustomCommandScreen -> {
+                                                            AddNewGuildCustomCommand(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is EditGuildCustomCommandScreen -> {
+                                                            EditGuildCustomCommand(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        else -> {
+                                            Text("I don't know how to handle screen $screen")
+                                            if (screen != null)
+                                                Text(" (${screen::class})")
+                                            Text("!")
+                                        }
                                     }
                                 }
                             }
@@ -733,7 +410,82 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)""",
                 )
             )
         }.bodyAsText()
-        return Json.decodeFromString(body)
+        val response = Json.decodeFromString<LorittaDashboardRPCResponse>(body)
+        if (response !is T)
+            error("Response is not ${T::class}!")
+        return response
+    }
+
+    suspend inline fun <reified T : DashGuildScopedResponse> makeGuildScopedRPCRequest(guildId: Long, request: DashGuildScopedRequest): T {
+        val body = http.post("${window.location.origin}/api/v1/rpc") {
+            setBody(
+                Json.encodeToString<LorittaDashboardRPCRequest>(
+                    LorittaDashboardRPCRequest.ExecuteDashGuildScopedRPCRequest(
+                        guildId,
+                        request
+                    )
+                )
+            )
+        }.bodyAsText()
+        val response = Json.decodeFromString<LorittaDashboardRPCResponse>(body)
+        if (response !is LorittaDashboardRPCResponse.ExecuteDashGuildScopedRPCResponse)
+            error("Response is not a ExecuteDashGuildScopedRPCResponse!")
+        val dashResponse = response.dashResponse
+        if (dashResponse !is T)
+            error("Response is not ${T::class}!")
+        return dashResponse
+    }
+
+    suspend inline fun <reified T : DashGuildScopedResponse> makeGuildScopedRPCRequestWithGenericHandling(
+        guildId: Long,
+        request: DashGuildScopedRequest,
+        onSuccess: (T) -> (Unit),
+        onError: (DashGuildScopedResponse) -> (Unit)
+    ) {
+        val body = http.post("${window.location.origin}/api/v1/rpc") {
+            setBody(
+                Json.encodeToString<LorittaDashboardRPCRequest>(
+                    LorittaDashboardRPCRequest.ExecuteDashGuildScopedRPCRequest(
+                        guildId,
+                        request
+                    )
+                )
+            )
+        }.bodyAsText()
+        val response = Json.decodeFromString<LorittaDashboardRPCResponse>(body)
+        if (response !is LorittaDashboardRPCResponse.ExecuteDashGuildScopedRPCResponse)
+            error("Response is not a ExecuteDashGuildScopedRPCResponse!")
+        when (val dashResponse = response.dashResponse) {
+            DashGuildScopedResponse.InvalidDiscordAuthorization -> {
+                globalState.showToast(Toast.Type.WARN, "Autorização inválida!") {
+                    Text("Eu acho que a autorização expirou, tente recarregar a página!")
+                }
+                onError.invoke(dashResponse)
+            }
+            DashGuildScopedResponse.MissingPermission -> {
+                globalState.showToast(Toast.Type.WARN, "Sem permissão!") {
+                    Text("Você não tem permissão para realizar isto!")
+                }
+                onError.invoke(dashResponse)
+            }
+            DashGuildScopedResponse.UnknownGuild -> {
+                globalState.showToast(Toast.Type.WARN, "Servidor desconhecido!") {
+                    Text("O servidor não existe!")
+                }
+                onError.invoke(dashResponse)
+            }
+            DashGuildScopedResponse.UnknownMember -> {
+                globalState.showToast(Toast.Type.WARN, "Membro desconhecido!") {
+                    Text("O membro não está no servidor!")
+                }
+                onError.invoke(dashResponse)
+            }
+            else -> {
+                if (dashResponse !is T)
+                    error("Response is not ${T::class}!")
+                onSuccess.invoke(dashResponse)
+            }
+        }
     }
 
     suspend inline fun <reified T : LorittaDashboardRPCResponse> makeRPCRequestAndUpdateState(resource: MutableState<Resource<T>>, request: LorittaDashboardRPCRequest) = makeRPCRequestAndUpdateStateCheckType<T, T>(

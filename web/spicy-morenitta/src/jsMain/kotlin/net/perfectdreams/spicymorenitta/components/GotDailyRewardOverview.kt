@@ -62,7 +62,7 @@ fun GotDailyRewardOverview(
                 classes("sonhos-reward-wrapper")
             }
         ) {
-            Img(src = "https://assets.perfectdreams.media/loritta/sonhos/bundle-45b3b35d@320w.png") {
+            Img(src = "https://stuff.loritta.website/sonhos/bundle-45b3b35d@320w.png") {
                 this.attr("width", "200")
             }
 
@@ -283,7 +283,7 @@ fun GotDailyRewardOverview(
                 }
             }
 
-            Img(src = "https://assets.perfectdreams.media/loritta/loritta-happy.gif", attrs = {
+            Img(src = "https://stuff.loritta.website/loritta-happy.gif", attrs = {
                 classes("come-back-image")
             })
 

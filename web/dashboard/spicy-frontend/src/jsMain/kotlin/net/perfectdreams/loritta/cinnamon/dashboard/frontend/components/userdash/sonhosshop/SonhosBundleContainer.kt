@@ -7,13 +7,8 @@ import androidx.compose.runtime.setValue
 import kotlinx.browser.window
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.PostSonhosBundlesRequest
-import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.MultiFactorAuthenticationDisabledErrorResponse
-import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.PostSonhosBundlesResponse
-import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.RedirectToUrlResponse
-import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.UnknownSonhosBundleErrorResponse
-import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.UnverifiedAccountErrorResponse
+import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.*
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
@@ -21,13 +16,11 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopSc
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.SonhosBundle
 import org.jetbrains.compose.web.attributes.disabled
-import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Img
-import org.jetbrains.compose.web.dom.Li
-import org.jetbrains.compose.web.dom.P
-import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.dom.Ul
+import org.jetbrains.compose.web.css.em
+import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.percent
+import org.jetbrains.compose.web.css.width
+import org.jetbrains.compose.web.dom.*
 
 @Composable
 fun SonhosBundleContainer(
@@ -40,26 +33,26 @@ fun SonhosBundleContainer(
         Div(attrs = { classes("sonhos-wrapper") }) {
             val image = when {
                 sonhosBundle.sonhos >= 5_000_000 -> Pair(
-                    "https://assets.perfectdreams.media/loritta/sonhos/bundle-b58bf6d8@640w.png",
+                    "https://stuff.loritta.website/sonhos/bundle-b58bf6d8@640w.png",
                     100
                 )
                 sonhosBundle.sonhos >= 2_000_000 -> Pair(
-                    "https://assets.perfectdreams.media/loritta/sonhos/bundle-65a79e6a@640w.png",
+                    "https://stuff.loritta.website/sonhos/bundle-65a79e6a@640w.png",
                     90
                 )
                 sonhosBundle.sonhos >= 1_000_000 -> Pair(
-                    "https://assets.perfectdreams.media/loritta/sonhos/bundle-15560da1@640w.png",
+                    "https://stuff.loritta.website/sonhos/bundle-15560da1@640w.png",
                     80
                 )
                 sonhosBundle.sonhos >= 650_000 -> Pair(
-                    "https://assets.perfectdreams.media/loritta/sonhos/bundle-5bcd4860@640w.png",
+                    "https://stuff.loritta.website/sonhos/bundle-5bcd4860@640w.png",
                     70
                 )
                 sonhosBundle.sonhos >= 320_000 -> Pair(
-                    "https://assets.perfectdreams.media/loritta/sonhos/bundle-45b3b35d@640w.png",
+                    "https://stuff.loritta.website/sonhos/bundle-45b3b35d@640w.png",
                     60
                 )
-                else -> Pair("https://assets.perfectdreams.media/loritta/sonhos/bundle-f27ffabb@640w.png", 50)
+                else -> Pair("https://stuff.loritta.website/sonhos/bundle-f27ffabb@640w.png", 50)
             }
             Img(src = image.first) {
                 style {
@@ -82,7 +75,7 @@ fun SonhosBundleContainer(
             Div(attrs = { classes("bundle-bonus") }) {
                 Text("+ ")
 
-                Img(src = "https://assets.perfectdreams.media/loritta/sonhos/bundle-5bcd4860@640w.png") {
+                Img(src = "https://stuff.loritta.website/sonhos/bundle-5bcd4860@640w.png") {
                     style {
                         height(1.em)
                     }
@@ -97,8 +90,9 @@ fun SonhosBundleContainer(
             DiscordButtonType.SUCCESS,
             attrs = {
                 onClick {
-                    m.globalState.openModal(
+                    m.globalState.openModalWithCloseButton(
                         i18nContext.get(I18nKeysData.Website.Dashboard.BeforeBuyingTermsModal.Title),
+                        true,
                         {
                             P {
                                 LocalizedText(i18nContext, I18nKeysData.Website.Dashboard.BeforeBuyingTermsModal.YouAgreeTo)
@@ -110,9 +104,6 @@ fun SonhosBundleContainer(
                                     }
                                 }
                             }
-                        },
-                        {
-                            CloseModalButton(m.globalState)
                         },
                         {
                             var disableConfirmButton by mutableStateOf(false)
@@ -141,6 +132,7 @@ fun SonhosBundleContainer(
                                                     MultiFactorAuthenticationDisabledErrorResponse -> {
                                                         m.globalState.openCloseOnlyModal(
                                                             I18nKeysData.Website.Dashboard.PurchaseMFARequiredModal.Title,
+                                                            true,
                                                         ) {
                                                             for (text in i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseMFARequiredModal.Description)) {
                                                                 P {
@@ -152,6 +144,7 @@ fun SonhosBundleContainer(
                                                     UnverifiedAccountErrorResponse -> {
                                                         m.globalState.openCloseOnlyModal(
                                                             I18nKeysData.Website.Dashboard.PurchaseMFARequiredModal.Title,
+                                                            true,
                                                         ) {
                                                             for (text in i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseMFARequiredModal.Description)) {
                                                                 P {
@@ -160,7 +153,8 @@ fun SonhosBundleContainer(
                                                             }
                                                         }
                                                         m.globalState.openCloseOnlyModal(
-                                                            I18nKeysData.Website.Dashboard.PurchaseEmailNotVerifiedModal.Title
+                                                            I18nKeysData.Website.Dashboard.PurchaseEmailNotVerifiedModal.Title,
+                                                            true
                                                         ) {
                                                             for (text in i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseEmailNotVerifiedModal.Description)) {
                                                                 P {

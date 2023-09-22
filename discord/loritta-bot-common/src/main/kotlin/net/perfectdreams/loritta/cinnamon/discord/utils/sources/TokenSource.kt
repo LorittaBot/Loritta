@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.sources
 
-import net.perfectdreams.loritta.common.utils.LorittaPlaceholder
+import net.perfectdreams.loritta.common.utils.placeholders.LorittaPlaceholder
 
 interface TokenSource {
     fun tokens(): Map<LorittaPlaceholder, String?>

@@ -9,6 +9,7 @@ data class RootConfig(
     val sessionDomain: String,
     val lorittaMainRpcUrl: String,
     val legacyDashboardUrl: String,
+    val spicyMorenittaJsPath: String?,
     val enableCORS: Boolean,
     val perfectPayments: PerfectPaymentsConfig,
     val userAuthenticationOverride: UserAuthenticationOverrideConfig,

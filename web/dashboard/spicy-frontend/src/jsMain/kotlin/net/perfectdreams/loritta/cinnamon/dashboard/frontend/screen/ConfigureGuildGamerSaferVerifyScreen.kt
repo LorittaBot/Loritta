@@ -10,7 +10,8 @@ class ConfigureGuildGamerSaferVerifyScreen(m: LorittaDashboardFrontend, guildId:
         ScreenPath.ConfigureGuildGamerSaferVerifyPath,
         mapOf(
             "guildId" to guildId.toString()
-        )
+        ),
+        mapOf()
     )
 
     override fun createTitle() = I18nKeysData.Website.Dashboard.GamerSafer.Title

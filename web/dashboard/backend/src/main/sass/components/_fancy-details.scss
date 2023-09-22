@@ -21,10 +21,10 @@ details.fancy-details:hover {
 
 details.fancy-details {
 	transition-duration: 0.5s;
-	background-color: #f4f4f4;
+	background-color: var(--secondary-element-background-color);
 	border-radius: 12px;
 	overflow: hidden;
-	border: 1px solid #e1e1e4;
+	border: 1px solid var(--input-border-color);
 
     > summary {
         list-style: none;
@@ -56,12 +56,12 @@ details.fancy-details[open] > summary .chevron-icon {
 
 details.fancy-details > summary {
 	cursor: pointer;
-	background-color: #f8f8f8;
+	background-color: var(--interactive-element-background-color);
 	padding: 20px;
 }
 
 details.fancy-details[open] > summary {
-    border-bottom: 1px solid #e1e1e4;
+    border-bottom: 1px solid var(--input-border-color);
 }
 
 details.fancy-details .details-content {

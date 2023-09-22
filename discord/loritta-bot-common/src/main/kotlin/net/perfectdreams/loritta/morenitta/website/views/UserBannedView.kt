@@ -25,7 +25,7 @@ class UserBannedView(loritta: LorittaBot, i18nContext: I18nContext, locale: Base
                     div {
                         style = "text-align: center;"
 
-                        img(src = "https://assets.perfectdreams.media/loritta/loritta-stop-heathecliff.png") {
+                        img(src = "https://stuff.loritta.website/loritta-stop-heathecliff.png") {
                             width = "175"
                         }
 

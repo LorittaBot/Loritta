@@ -5,9 +5,9 @@
     display: inline-block;
 
     >.select {
-        border: 1px solid #0000001f;
-        border-radius: 4px;
-        background-color: #0000000a;
+        border: 1px solid var(--input-border-color);
+        border-radius: var(--first-level-border-radius);
+        background-color: var(--input-background-color);
         padding: 8px;
         cursor: pointer;
 
@@ -16,12 +16,17 @@
         // overflow: hidden;
         white-space: nowrap;
 
+        &:hover {
+            outline: 4px solid rgba(var(--loritta-blue-rgb), 0.5);
+        }
+
         &:focus {
-            outline: blue solid 2px;
+            outline: 2px solid rgba(var(--loritta-blue-rgb), 0.5);
+            border-color: var(--loritta-blue);
         }
 
         &.open {
-            border-radius: 4px 4px 0px 0px;
+            border-radius: var(--first-level-border-radius) var(--first-level-border-radius) 0px 0px;
         }
 
         >div {
@@ -60,7 +65,10 @@
         position: absolute;
         top: 100%;
         background-color: white;
-        border-radius: 0px 0px 4px 4px;
+        border-radius: 0px 0px var(--first-level-border-radius) var(--first-level-border-radius);
+        border-left: 1px solid var(--input-border-color);
+        border-right: 1px solid var(--input-border-color);
+        border-bottom: 1px solid var(--input-border-color);
         width: 100%;
         color: black;
         // This looks super ugly without "mix-blend-mode"

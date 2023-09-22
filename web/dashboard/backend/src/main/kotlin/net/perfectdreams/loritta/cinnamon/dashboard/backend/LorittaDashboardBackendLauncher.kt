@@ -12,9 +12,11 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.config.RootCon
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.config.ConfigUtils
+import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import java.util.*
+import kotlin.io.path.readText
 import kotlin.time.Duration.Companion.seconds
 
 object LorittaDashboardBackendLauncher {
@@ -48,12 +50,24 @@ object LorittaDashboardBackendLauncher {
 
         logger.info { "Started Pudding client!" }
 
+        // Loads the appropriate bundle depending if we are overriding the JS file or not
+        val spicyMorenittaJsBundle = if (rootConfig.spicyMorenittaJsPath != null) {
+            SpicyMorenittaDevelopmentBundle(rootConfig.spicyMorenittaJsPath)
+        } else {
+            SpicyMorenittaProductionBundle(
+                SpicyMorenittaBundle.createSpicyMorenittaJsBundleContent(
+                    LorittaDashboardBackend::class.getPathFromResources("/spicy_frontend/js/spicy-frontend.js")!!.readText()
+                )
+            )
+        }
+
         val m = LorittaDashboardBackend(
             rootConfig,
             languageManager,
             services,
             response,
-            http
+            http,
+            spicyMorenittaJsBundle
         )
         m.start()
     }

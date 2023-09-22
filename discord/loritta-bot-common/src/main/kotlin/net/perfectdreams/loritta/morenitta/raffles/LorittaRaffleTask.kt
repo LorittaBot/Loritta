@@ -248,7 +248,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             val i18nPrefix = I18nKeysData.Commands.Command.Raffle.DirectMessages.YouLost
 
                             val embed = EmbedBuilder()
-                            embed.setThumbnail("https://assets.perfectdreams.media/loritta/emotes/lori-sob.png")
+                            embed.setThumbnail("https://stuff.loritta.website/emotes/lori-sob.png")
                             embed.setColor(Color(47, 182, 92))
                             embed.setTitle("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title)))}")
                             embed.setDescription(
@@ -271,7 +271,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             val i18nPrefix = I18nKeysData.Commands.Command.Raffle.DirectMessages.YouLostNoOneBoughtTickets
 
                             val embed = EmbedBuilder()
-                            embed.setThumbnail("https://assets.perfectdreams.media/loritta/emotes/lori-zz.png")
+                            embed.setThumbnail("https://stuff.loritta.website/emotes/lori-zz.png")
                             embed.setColor(Color(47, 182, 92))
                             embed.setTitle("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title)))}")
                             embed.setDescription(

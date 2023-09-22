@@ -2,8 +2,14 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils
 
 import androidx.compose.runtime.Composable
 
-data class Modal(
+class Modal(
+    val globalState: GlobalState,
     val title: String,
-    val body: @Composable () -> (Unit),
-    val buttons: List<@Composable () -> (Unit)>
-)
+    val canBeClosedByClickingOutsideTheWindow: Boolean,
+    val body: @Composable (Modal) -> (Unit),
+    val buttons: List<@Composable (Modal) -> (Unit)>
+) {
+    fun close() {
+        globalState.activeModals.remove(this)
+    }
+}

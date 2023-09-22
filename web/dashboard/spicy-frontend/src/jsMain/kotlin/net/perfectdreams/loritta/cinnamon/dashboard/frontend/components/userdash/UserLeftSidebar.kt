@@ -33,7 +33,7 @@ fun UserLeftSidebar(
                 val userIdentification = (m.globalState.userInfo as? Resource.Success<GetUserIdentificationResponse>)?.value
 
                 if (userIdentification != null) {
-                    UserInfoSidebar(userIdentification)
+                    UserInfoSidebar(m, userIdentification)
                 }
             }
         }
@@ -61,7 +61,7 @@ fun UserLeftSidebar(
         SidebarCategory("Configurações do Usuário") {
             SidebarEntryLink(SVGIconManager.idCard, "${spicyInfo.legacyDashboardUrl}/user/@me/dashboard/profiles", "Layout de Perfil")
             SidebarEntryLink(SVGIconManager.images, "${spicyInfo.legacyDashboardUrl}/user/@me/dashboard/backgrounds", "Backgrounds")
-            SidebarEntryScreen(m, SVGIconManager.heart, I18nKeysData.Website.Dashboard.ShipEffects.Title, ScreenPathWithArguments(ScreenPath.ShipEffectsScreenPath, emptyMap()))
+            SidebarEntryScreen(m, SVGIconManager.heart, I18nKeysData.Website.Dashboard.ShipEffects.Title, ScreenPathWithArguments(ScreenPath.ShipEffectsScreenPath, emptyMap(), emptyMap()))
         }
 
         SidebarDivider()
@@ -69,7 +69,7 @@ fun UserLeftSidebar(
         SidebarCategory("Miscelânea") {
             SidebarEntryLink(SVGIconManager.moneyBillWave, "${spicyInfo.legacyDashboardUrl}/daily", "Daily")
             SidebarEntryLink(SVGIconManager.store, "${spicyInfo.legacyDashboardUrl}/user/@me/dashboard/daily-shop", "Loja Diária")
-            SidebarEntryScreen(m, SVGIconManager.shoppingCart, I18nKeysData.Website.Dashboard.SonhosShop.Title, ScreenPathWithArguments(ScreenPath.SonhosShopScreenPath, emptyMap()))
+            SidebarEntryScreen(m, SVGIconManager.shoppingCart, I18nKeysData.Website.Dashboard.SonhosShop.Title, ScreenPathWithArguments(ScreenPath.SonhosShopScreenPath, emptyMap(), emptyMap()))
             SidebarEntryLink(SVGIconManager.asterisk, "${spicyInfo.legacyDashboardUrl}/guidelines", "Diretrizes da Comunidade")
 
             Div(
@@ -78,7 +78,7 @@ fun UserLeftSidebar(
                     attr("tabindex", "0") // Make the entry tabbable
 
                     onClick {
-                        m.globalState.openCloseOnlyModal(i18nContext.get(I18nKeysData.Website.Dashboard.LorittaSpawner.PocketLoritta)) {
+                        m.globalState.openCloseOnlyModal(i18nContext.get(I18nKeysData.Website.Dashboard.LorittaSpawner.PocketLoritta), true) {
                             Div(attrs = {
                                 style {
                                     textAlign("center")
@@ -105,7 +105,8 @@ fun UserLeftSidebar(
                                         }
 
                                         SelectMenu(
-                                            GameState.ActivityLevel
+                                            placeholder = "Selecione o Nível de Atividade",
+                                            entries = GameState.ActivityLevel
                                                 .values()
                                                 .map {
                                                     SelectMenuEntry(

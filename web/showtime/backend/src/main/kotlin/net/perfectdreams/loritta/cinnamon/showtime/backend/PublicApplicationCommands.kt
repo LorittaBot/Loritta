@@ -187,7 +187,7 @@ class PublicApplicationCommands(languageManager: LanguageManager) {
         }
 
         command(ChavesOpeningExecutor::class) {
-            +VideoUrl("https://assets.perfectdreams.media/loritta/commands/chaves-opening.mp4")
+            +VideoUrl("https://stuff.loritta.website/commands/chaves-opening.mp4")
         }
     }
 

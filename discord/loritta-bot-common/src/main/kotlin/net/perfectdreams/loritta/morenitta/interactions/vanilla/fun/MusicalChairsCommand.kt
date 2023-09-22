@@ -584,7 +584,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
                         }
                         footer(
                             i18nContext.get(I18N_PREFIX.DjArthTheRat),
-                            "https://assets.perfectdreams.media/loritta/dj-arth.png"
+                            "https://stuff.loritta.website/dj-arth.png"
                         )
                         color = LorittaColors.LorittaAqua.rgb
                     }

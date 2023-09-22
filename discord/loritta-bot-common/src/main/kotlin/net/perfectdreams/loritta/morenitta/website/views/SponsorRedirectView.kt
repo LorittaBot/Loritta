@@ -41,7 +41,7 @@ body { background-color: #29a6fe; }
                 }
 
                 div(classes = "redirect-center") {
-                    img(src = "https://assets.perfectdreams.media/loritta/loritta-style-allouette.png") {
+                    img(src = "https://stuff.loritta.website/loritta-style-allouette.png") {
                         width = "384"
                         height = "384"
                     }

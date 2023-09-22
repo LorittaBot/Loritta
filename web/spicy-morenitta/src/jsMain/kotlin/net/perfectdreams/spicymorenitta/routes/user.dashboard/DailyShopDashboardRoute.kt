@@ -236,7 +236,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 div {
                     style = "text-align: center;"
 
-                    img(src = "https://assets.perfectdreams.media/loritta/loritta-daily-shop-allouette.png") {
+                    img(src = "https://stuff.loritta.website/loritta-daily-shop-allouette.png") {
                         style = "width: 400px;"
                     }
 

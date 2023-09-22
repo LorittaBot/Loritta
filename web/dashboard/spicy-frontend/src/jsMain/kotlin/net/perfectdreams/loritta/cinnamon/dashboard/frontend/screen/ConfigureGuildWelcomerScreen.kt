@@ -10,10 +10,11 @@ class ConfigureGuildWelcomerScreen(m: LorittaDashboardFrontend, guildId: Long) :
         ScreenPath.ConfigureGuildWelcomerPath,
         mapOf(
             "guildId" to guildId.toString()
-        )
+        ),
+        mapOf()
     )
 
-    override fun createTitle() = I18nKeysData.Website.Dashboard.GamerSafer.Title
+    override fun createTitle() = I18nKeysData.Website.Dashboard.Welcomer.Title
 
     override fun onLoad() {}
 }

@@ -9,9 +9,27 @@
     transition-duration: 0.25s;
     opacity: 1;
     background-color: #757575;
+    border: 1px solid var(--soft-border-color);
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 
     &:hover {
         background-color: darken(#757575, 10%);
+    }
+
+    .button-with-icon-wrapper {
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+        justify-content: center;
+
+        .button-icon {
+            height: 1em;
+            flex-shrink: 0; // Don't shrink if the button width is too smol
+        }
     }
 
     &:disabled {
@@ -46,11 +64,54 @@
             background-color: darken(#da373c, 10%);
         }
     }
+
+    &.no-background-light-text {
+        background-color: initial;
+        color: #ffffff;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-dark-text {
+        background-color: initial;
+        color: #000000;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-theme-dependent-light-text {
+        background-color: initial;
+        color: var(--button-no-background-light-text-color);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-theme-dependent-dark-text {
+        background-color: initial;
+        color: var(--button-no-background-dark-text-color);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
 }
 
 .modal-wrapper {
-    .discord-button {
-        // Buttons in modals have bigger padding
-        padding: 0.5em 1em;
+    .buttons-wrapper {
+        .discord-button {
+            // Buttons in modals have bigger padding
+            padding: 0.5em 1em;
+
+            &.no-background {
+                // And the no background button has a black font
+                color: black;
+            }
+        }
     }
 }

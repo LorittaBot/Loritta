@@ -1,0 +1,21 @@
+placeholders:
+  generic:
+    userName: "Mostra o nome exibido, ou o nome de usuário, do usuário"
+    userMention: "Menciona o usuário"
+    userId: "Mostra o ID do usuário"
+    userAvatarUrl: "Mostra a URL do avatar do usuário"
+    userTag: "Mostra a tag (@NomeDeUsuário) do usuário"
+    guildName: "Mostra o nome do servidor"
+    guildSize: "Mostra a quantidade de membros no servidor"
+  joinMessage:
+    userName: "Mostra o nome exibido, ou o nome de usuário, do usuário que entrou no servidor"
+    userMention: "Menciona o usuário que entrou no servidor"
+    userId: "Mostra o ID do usuário que entrou no servidor"
+    userAvatarUrl: "Mostra a URL do avatar do usuário que saiu do servidor"
+    userTag: "Mostra a tag (@NomeDeUsuário) do usuário que entrou no servidor"
+  leaveMessage:
+    userName: "Mostra o nome exibido, ou o nome de usuário, do usuário que saiu do servidor"
+    userMention: "Menciona o usuário que saiu do servidor"
+    userId: "Mostra o ID do usuário que saiu do servidor"
+    userAvatarUrl: "Mostra a URL do avatar do usuário que saiu do servidor"
+    userTag: "Mostra a tag (@NomeDeUsuário) do usuário que saiu do servidor"

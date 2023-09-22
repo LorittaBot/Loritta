@@ -18,7 +18,7 @@ fun InlineNullableUserDisplay(id: UserId, userInfo: CachedUserInfo?) {
             }
         ) {
             // Because the hash is null, the avatar will be rendered as Discord's default avatar
-            DiscordAvatar(id, "0000", null) {
+            DiscordAvatar(id, null) {
                 attr("width", "24")
                 attr("height", "24")
             }

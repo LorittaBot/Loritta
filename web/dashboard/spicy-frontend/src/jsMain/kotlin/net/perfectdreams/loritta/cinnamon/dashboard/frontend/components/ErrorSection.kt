@@ -11,7 +11,7 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 fun FillContentErrorSection(text: String) {
     Div(attrs = { classes("error-section", "fill-content-error-section") }) {
-        Img("https://assets.perfectdreams.media/loritta/emotes/lori-sob.png")
+        Img("https://stuff.loritta.website/emotes/lori-sob.png")
 
         Div {
             Text(text)

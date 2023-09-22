@@ -4,7 +4,6 @@ package net.perfectdreams.spicymorenitta.routes.guilds.dashboard
 import LoriDashboard
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import jq
 import kotlinx.browser.document
@@ -20,7 +19,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
-import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection

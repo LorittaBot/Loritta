@@ -1,16 +1,24 @@
+.toggleable-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
 .toggleable-section {
     // We can't use overflow: hidden here because that breaks select menu's menus! (they don't overflow)
-    background-color: #f4f4f4;
-    border-radius: 12px;
-    border: 1px solid #e1e1e4;
+    background-color: var(--secondary-element-background-color);
+    border-radius: var(--second-level-border-radius);
+    border: 1px solid var(--input-border-color);
+    --input-background-color: var(--input-secondary-element-background-color);
 
     .toggleable-selection {
-        background-color: #f8f8f8;
+        background-color: var(--interactive-element-background-color);
         padding: 20px;
-        border-radius: 12px 12px 0px 0px;
+        border-radius: var(--second-level-border-radius);
 
         &.is-open {
-            border-bottom: 1px solid #e1e1e4;
+            border-radius: var(--second-level-border-radius) var(--second-level-border-radius) 0px 0px;
+            border-bottom: 1px solid var(--input-border-color);
         }
     }
 
@@ -32,6 +40,7 @@ label.toggle-wrapper {
         flex-direction: column;
         flex-grow: 1;
         gap: 0.25em;
+        justify-content: center;
 
         .toggle-title {
             font-weight: 600;

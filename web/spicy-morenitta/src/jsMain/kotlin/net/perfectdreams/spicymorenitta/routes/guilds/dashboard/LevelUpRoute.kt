@@ -343,7 +343,7 @@ class LevelUpRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{
 										div {
 											style = "text-align: center;"
 
-											img(src = "https://assets.perfectdreams.media/loritta/loritta-stop-heathecliff.png") {
+											img(src = "https://stuff.loritta.website/loritta-stop-heathecliff.png") {
 												width = "250"
 											}
 

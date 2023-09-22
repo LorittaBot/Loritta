@@ -10,7 +10,7 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 fun EmptySection(i18nContext: I18nContext) {
     Div(attrs = { classes("empty-section") }) {
-        Img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-sob.png") {
+        Img(src = "https://stuff.loritta.website/emotes/lori-sob.png") {
             attr("width", "192")
             attr("height", "192")
         }

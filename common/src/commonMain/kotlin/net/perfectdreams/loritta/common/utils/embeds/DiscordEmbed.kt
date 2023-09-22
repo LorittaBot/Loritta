@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.dashboard.common.embeds
+package net.perfectdreams.loritta.common.utils.embeds
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

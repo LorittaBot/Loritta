@@ -1,6 +1,7 @@
-package net.perfectdreams.loritta.common.utils
+package net.perfectdreams.loritta.common.utils.placeholders
 
 object Placeholders {
+    // ===[ USER ]===
     val USER_MENTION = LorittaPlaceholder("@user")
     val USER_NAME_SHORT = LorittaPlaceholder("user")
     val USER_NAME = LorittaPlaceholder("user.name")
@@ -9,7 +10,11 @@ object Placeholders {
     val USER_ID = LorittaPlaceholder("user.id")
     val USER_AVATAR_URL = LorittaPlaceholder("user.avatar")
     val USER_NICKNAME = LorittaPlaceholder("user.nickname")
-    val LINK = LorittaPlaceholder("link")
+
+    // ===[ GUILD ]===
+    val GUILD_NAME_SHORT = LorittaPlaceholder("guild")
+    val GUILD_NAME = LorittaPlaceholder("guild.name")
+    val GUILD_SIZE = LorittaPlaceholder("guild.size")
 
     // ===[ EXPERIENCE ]===
     private const val EXPERIENCE_PREFIX = "experience"
@@ -37,6 +42,7 @@ object Placeholders {
     val PUNISHMENT_TYPE_SHORT = LorittaPlaceholder("punishment")
     val PUNISHMENT_DURATION = LorittaPlaceholder("duration")
 
+    // ===[ MODERATION ]===
     val STAFF_MENTION = LorittaPlaceholder("@staff")
     val STAFF_NAME_SHORT = LorittaPlaceholder("staff")
     val STAFF_NAME = LorittaPlaceholder("$STAFF_PREFIX.name")
@@ -45,6 +51,8 @@ object Placeholders {
     val STAFF_ID = LorittaPlaceholder("$STAFF_PREFIX.id")
     val STAFF_AVATAR_URL = LorittaPlaceholder("$STAFF_PREFIX.avatar")
     val STAFF_NICKNAME = LorittaPlaceholder("$STAFF_PREFIX.nickname")
+
+    val LINK = LorittaPlaceholder("link")
 
     object Deprecated {
         val USER_ID = LorittaPlaceholder("user-id")
@@ -56,6 +64,10 @@ object Placeholders {
         val STAFF_DISCRIMINATOR = LorittaPlaceholder("staff-discriminator")
         val STAFF_ID = LorittaPlaceholder("staff-id")
         val STAFF_AVATAR_URL = LorittaPlaceholder("staff-avatar-url")
+
+        // ===[ GUILD ]===
+        val GUILD_SIZE = LorittaPlaceholder("guild-size")
+        val GUILD_SIZE_JOINED = LorittaPlaceholder("guildsize")
     }
 
     /**

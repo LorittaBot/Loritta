@@ -7,6 +7,6 @@ import org.w3c.dom.parsing.DOMParser
  */
 // https://stackoverflow.com/questions/822452/strip-html-tags-from-text-using-plain-javascript
 fun stripHTML(input: String): String {
-    val doc = DOMParser().parseFromString(input, "text/html");
+    val doc = DOMParser().parseFromString(input, "text/html")
     return doc.body?.textContent ?: ""
 }

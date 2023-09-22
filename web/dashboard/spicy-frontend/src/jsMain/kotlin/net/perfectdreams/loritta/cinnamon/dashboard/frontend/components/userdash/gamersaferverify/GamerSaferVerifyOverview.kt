@@ -9,13 +9,18 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ConfigureGui
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.A
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.P
-import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.*
 
 @Composable
 fun GamerSaferVerifyOverview(m: LorittaDashboardFrontend, screen: ConfigureGuildGamerSaferVerifyScreen, i18nContext: I18nContext, guild: DiscordGuild, ) {
+    Div(attrs = {
+        attr("style", "text-align: center;")
+    }) {
+        H1 {
+            Text("GamerSafer")
+        }
+    }
+
     Div {
         for (text in i18nContext.get(I18nKeysData.Website.Dashboard.GamerSafer.Description)) {
             P {

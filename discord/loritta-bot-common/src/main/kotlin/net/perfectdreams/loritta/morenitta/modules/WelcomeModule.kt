@@ -2,71 +2,101 @@ package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.runBlocking
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.placeholders.JoinMessagePlaceholders
+import net.perfectdreams.loritta.common.utils.placeholders.LeaveMessagePlaceholders
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
+import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import org.apache.commons.io.IOUtils
 import java.nio.charset.Charset
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
 class WelcomeModule(val loritta: LorittaBot) {
+	companion object {
+		fun buildJoinMessagePlaceholders(guild: Guild, user: User): (JoinMessagePlaceholders.JoinMessagePlaceholder) -> String = {
+			when (it) {
+				JoinMessagePlaceholders.UserMentionPlaceholder -> user.asMention
+				JoinMessagePlaceholders.UserNamePlaceholder -> user.globalName ?: user.name
+				JoinMessagePlaceholders.UserDiscriminatorPlaceholder -> user.discriminator
+				JoinMessagePlaceholders.UserTagPlaceholder -> "@${user.name}"
+				JoinMessagePlaceholders.GuildNamePlaceholder -> guild.name
+				JoinMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
+				JoinMessagePlaceholders.UserAvatarUrlPlaceholder -> user.effectiveAvatarUrl
+				JoinMessagePlaceholders.UserIdPlaceholder -> user.idLong.toString()
+			}
+		}
+
+		fun buildLeaveMessagePlaceholders(guild: Guild, user: User): (LeaveMessagePlaceholders.LeaveMessagePlaceholder) -> String = {
+			when (it) {
+				LeaveMessagePlaceholders.UserMentionPlaceholder -> user.asMention
+				LeaveMessagePlaceholders.UserNamePlaceholder -> user.globalName ?: user.name
+				LeaveMessagePlaceholders.UserDiscriminatorPlaceholder -> user.discriminator
+				LeaveMessagePlaceholders.UserTagPlaceholder -> "@${user.name}"
+				LeaveMessagePlaceholders.GuildNamePlaceholder -> guild.name
+				LeaveMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
+				LeaveMessagePlaceholders.UserAvatarUrlPlaceholder -> user.effectiveAvatarUrl
+				LeaveMessagePlaceholders.UserIdPlaceholder -> user.idLong.toString()
+			}
+		}
+	}
+
 	private val logger = KotlinLogging.logger {}
 
 	val joinMembersCache = Caffeine.newBuilder()
-			.expireAfterAccess(15, TimeUnit.SECONDS)
-			.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
-				if (k1 != null && v1 != null) {
-					logger.info("Removendo join members cache de $k1... ${v1.size} membros tinham saído durante este período")
+		.expireAfterAccess(15, TimeUnit.SECONDS)
+		.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
+			if (k1 != null && v1 != null) {
+				logger.info("Removendo join members cache de $k1... ${v1.size} membros tinham saído durante este período")
 
-					if (v1.size > 20) {
-						logger.info("Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
+				if (v1.size > 20) {
+					logger.info("Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
-						val welcomerConfig = runBlocking {
-							loritta.pudding.transaction {
-								serverConfig.welcomerConfig
-							}
+					val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
+					val welcomerConfig = runBlocking {
+						loritta.pudding.transaction {
+							serverConfig.welcomerConfig
 						}
+					}
 
-						if (welcomerConfig != null) {
-							val channelJoinId = welcomerConfig.channelJoinId
-							if (welcomerConfig.tellOnJoin && !welcomerConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) {
-								val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
+					if (welcomerConfig != null) {
+						val channelJoinId = welcomerConfig.channelJoinId
+						if (welcomerConfig.tellOnJoin && !welcomerConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) {
+							val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
 
-								val textChannel = guild.getGuildMessageChannelById(channelJoinId)
+							val textChannel = guild.getGuildMessageChannelById(channelJoinId)
 
-								if (textChannel != null) {
-									if (textChannel.canTalk()) {
-										if (guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES)) {
-											val lines = mutableListOf<String>()
-											for (user in v1) {
-												lines.add("${user.name}#${user.discriminator} - (${user.id})")
-											}
-											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
-
-											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-
-											textChannel.sendMessage(
-												MessageCreateBuilder()
-													.setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO])
-													.addFiles(FileUpload.fromData(targetStream, "join-users.log"))
-													.build()
-											).queue()
-											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
+							if (textChannel != null) {
+								if (textChannel.canTalk()) {
+									if (guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES)) {
+										val lines = mutableListOf<String>()
+										for (user in v1) {
+											lines.add("${user.name}#${user.discriminator} - (${user.id})")
 										}
+										val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
+
+										val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+
+										textChannel.sendMessage(
+											MessageCreateBuilder()
+												.setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO])
+												.addFiles(FileUpload.fromData(targetStream, "join-users.log"))
+												.build()
+										).queue()
+										logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
 									}
 								}
 							}
@@ -74,45 +104,45 @@ class WelcomeModule(val loritta: LorittaBot) {
 					}
 				}
 			}
-			.build<Long, CopyOnWriteArrayList<User>>()
+		}
+		.build<Long, CopyOnWriteArrayList<User>>()
 	val leftMembersCache = Caffeine.newBuilder()
-			.expireAfterAccess(15, TimeUnit.SECONDS)
-			.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
-				if (k1 != null && v1 != null) {
-					logger.info("Removendo left members cache de $k1... ${v1.size} membros tinham saído durante este período")
+		.expireAfterAccess(15, TimeUnit.SECONDS)
+		.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
+			if (k1 != null && v1 != null) {
+				logger.info("Removendo left members cache de $k1... ${v1.size} membros tinham saído durante este período")
 
-					if (v1.size > 20) {
-						logger.info("Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
+				if (v1.size > 20) {
+					logger.info("Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
-						val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
-						val welcomerConfig = runBlocking {
-							loritta.pudding.transaction {
-								serverConfig.welcomerConfig
-							}
+					val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
+					val welcomerConfig = runBlocking {
+						loritta.pudding.transaction {
+							serverConfig.welcomerConfig
 						}
+					}
 
-						if (welcomerConfig != null) {
-							val channelRemoveId = welcomerConfig.channelRemoveId
-							if (welcomerConfig.tellOnRemove && !welcomerConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
-								val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
+					if (welcomerConfig != null) {
+						val channelRemoveId = welcomerConfig.channelRemoveId
+						if (welcomerConfig.tellOnRemove && !welcomerConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
+							val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
 
-								val textChannel = guild.getGuildMessageChannelById(channelRemoveId)
+							val textChannel = guild.getGuildMessageChannelById(channelRemoveId)
 
-								if (textChannel != null) {
-									if (textChannel.canTalk()) {
-										if (guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES)) {
-											val lines = mutableListOf<String>()
-											for (user in v1) {
-												lines.add("${user.name}#${user.discriminator} - (${user.id})")
-											}
-											val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
-
-											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-
-											textChannel.sendMessage(MessageCreateBuilder().setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFiles(
-												FileUpload.fromData(targetStream, "left-users.log")).queue()
-											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
+							if (textChannel != null) {
+								if (textChannel.canTalk()) {
+									if (guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES)) {
+										val lines = mutableListOf<String>()
+										for (user in v1) {
+											lines.add("${user.name}#${user.discriminator} - (${user.id})")
 										}
+										val targetStream = IOUtils.toInputStream(lines.joinToString("\n"), Charset.defaultCharset())
+
+										val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+
+										textChannel.sendMessage(MessageCreateBuilder().setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFiles(
+											FileUpload.fromData(targetStream, "left-users.log")).queue()
+										logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 									}
 								}
 							}
@@ -120,12 +150,13 @@ class WelcomeModule(val loritta: LorittaBot) {
 					}
 				}
 			}
-			.build<Long, CopyOnWriteArrayList<User>>()
+		}
+		.build<Long, CopyOnWriteArrayList<User>>()
 
 	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
 		val joinLeaveConfig = welcomerConfig
 		val tokens = mapOf(
-				"humanized-date" to event.member.timeJoined.humanize(loritta.localeManager.getLocaleById(serverConfig.localeId))
+			"humanized-date" to event.member.timeJoined.humanize(loritta.localeManager.getLocaleById(serverConfig.localeId))
 		)
 
 		logger.trace { "Member = ${event.member}, Guild ${event.guild} has tellOnJoin = ${joinLeaveConfig.tellOnJoin} and the joinMessage is ${joinLeaveConfig.joinMessage}, canalJoinId = ${joinLeaveConfig.channelJoinId}" }
@@ -163,7 +194,14 @@ class WelcomeModule(val loritta: LorittaBot) {
 						val deleteJoinMessagesAfter = welcomerConfig.deleteJoinMessagesAfter
 						logger.debug { "Member = ${event.member}, Sending join message \"$msg\" in $textChannel at $guild"}
 
-						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)!!).queue {
+						textChannel.sendMessage(
+							MessageUtils.generateMessage(
+								msg,
+								guild,
+								JoinMessagePlaceholders,
+								buildJoinMessagePlaceholders(event.guild, event.user)
+							)!!
+						).queue {
 							if (deleteJoinMessagesAfter != null && deleteJoinMessagesAfter != 0L)
 								it.delete().queueAfter(deleteJoinMessagesAfter, TimeUnit.SECONDS)
 						}
@@ -193,9 +231,9 @@ class WelcomeModule(val loritta: LorittaBot) {
 								event.guild,
 								locale["modules.welcomer.moduleDirectMessageJoinType"]
 							),
-							listOf(event.guild, event.member),
 							event.guild,
-							tokens
+							JoinMessagePlaceholders,
+							buildJoinMessagePlaceholders(event.guild, event.user)
 						)!!
 					).queue() // Pronto!
 				}
@@ -237,8 +275,6 @@ class WelcomeModule(val loritta: LorittaBot) {
 					var msg = joinLeaveConfig.removeMessage
 					logger.trace { "User = ${event.user}, Member = ${event.member}, Leave message is $msg for $guild, it will be sent at $textChannel"}
 
-					val customTokens = mutableMapOf<String, String>()
-
 					// Verificar se o usuário foi banido e, se sim, mudar a mensagem caso necessário
 					val bannedUserKey = "${event.guild.id}#${event.user.id}"
 
@@ -253,7 +289,14 @@ class WelcomeModule(val loritta: LorittaBot) {
 						val deleteRemoveMessagesAfter = welcomerConfig.deleteRemoveMessagesAfter
 						logger.debug { "User = ${event.user}, Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
 
-						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.user), guild, customTokens)!!).queue {
+						textChannel.sendMessage(
+							MessageUtils.generateMessage(
+								msg,
+								guild,
+								LeaveMessagePlaceholders,
+								buildLeaveMessagePlaceholders(guild, event.user)
+							)!!
+						).queue {
 							if (deleteRemoveMessagesAfter != null && deleteRemoveMessagesAfter != 0L)
 								it.delete().queueAfter(deleteRemoveMessagesAfter, TimeUnit.SECONDS)
 						}

@@ -282,7 +282,7 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
 
             description = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.NoTransactionsFunnyMessages).random()
 
-            image = "https://assets.perfectdreams.media/loritta/emotes/lori-sob.png"
+            image = "https://stuff.loritta.website/emotes/lori-sob.png"
         }
 
         suspend fun createTooManyPagesMessage(

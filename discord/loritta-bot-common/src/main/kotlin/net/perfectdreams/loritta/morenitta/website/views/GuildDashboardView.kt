@@ -112,7 +112,13 @@ abstract class GuildDashboardView(
                         + legacyBaseLocale.strings["DASHBOARD_Notifications"]!!
                     }
 
-                    appendEntry("/guild/${guild.id}/configure/welcomer", true, locale["modules.sectionNames.welcomer"], "fa fa-sign-in-alt", "welcomer")
+                    appendExternalEntry(
+                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/welcomer",
+                        locale["modules.sectionNames.welcomer"],
+                        "fa fa-sign-in-alt",
+                        "welcomer"
+                    )
+
                     appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", "event_log")
                     appendEntry("/guild/${guild.id}/configure/youtube", true, "YouTube", "fab fa-youtube", "youtube")
                     appendEntry("/guild/${guild.id}/configure/twitch", true,"Twitch", "fab fa-twitch", "livestream")
@@ -128,7 +134,12 @@ abstract class GuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/autorole", true, locale["modules.sectionNames.autorole"], "fa fa-briefcase", "autorole")
                     appendEntry("/guild/${guild.id}/configure/invite-blocker", true, locale["modules.sectionNames.inviteBlocker"], "fa fa-ban", "invite_blocker")
                     appendEntry("/guild/${guild.id}/configure/member-counter", true, locale["modules.sectionNames.memberCounter"], "fas fa-sort-amount-up", "member_counter")
-                    appendEntry("/guild/${guild.id}/configure/starboard", true, locale["modules.sectionNames.starboard"], "fa fa-star", "starboard")
+                    appendExternalEntry(
+                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/starboard",
+                        locale["modules.sectionNames.starboard"],
+                        "fa fa-star",
+                        "starboard"
+                    )
                     appendEntry("/guild/${guild.id}/configure/miscellaneous", true, "+${legacyBaseLocale.strings["CommandCategory_MISC_Name"]}", "fas fa-random", "miscellaneous")
                     appendEntry("/guild/${guild.id}/configure/audit-log", true, locale["modules.auditLog.title"], "fas fa-list", "audit_log")
 
@@ -149,8 +160,13 @@ abstract class GuildDashboardView(
                     div(classes = "category") {
                         + legacyBaseLocale.strings["DASHBOARD_YourFeatures"]!!
                     }
-                    appendEntry("/guild/${guild.id}/configure/custom-commands", true, locale["modules.sectionNames.customCommands"], "fas fa-code", "custom_commands")
-
+                    appendExternalEntry(
+                        "/guild/${guild.id}/configure/custom-commands",
+                        locale["modules.sectionNames.customCommands"],
+                        "fas fa-code",
+                        "custom_commands"
+                    )
+                    
                     hr(classes = "divider") {}
 
                     a(href = "/support") {

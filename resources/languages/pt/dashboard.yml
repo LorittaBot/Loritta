@@ -86,3 +86,8 @@ website:
           low: "Bicho Preguiça"
           medium: "Mediano"
           high: "Tomaram Energético"
+    channelNoTalkPermissionModal:
+      title: "Sem Permissão"
+      description:
+        - "Eu não tenho permissão para enviar mensagens no canal que você escolheu..."
+        - "Para eu conseguir falar neste canal, vá nas configurações do canal e, nas permissões avançadas, adicione que eu, ou o meu cargo, possa ler e mandar mensagens no canal!"

@@ -1,0 +1,6 @@
+website:
+  dashboard:
+    customCommands:
+      title: "Comandos Personalizados"
+      description:
+        - "Crie comandos personalizados para realçar mensagens importantes para os seus membros, ou use eles para as piadinhas internas do seu servidor."

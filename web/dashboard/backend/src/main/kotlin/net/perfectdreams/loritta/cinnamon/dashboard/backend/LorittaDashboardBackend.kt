@@ -5,9 +5,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
-import io.ktor.server.netty.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.request.*
@@ -47,7 +47,8 @@ class LorittaDashboardBackend(
     val languageManager: LanguageManager,
     val pudding: Pudding,
     val lorittaInfo: LorittaInternalRPCResponse.GetLorittaInfoResponse.Success,
-    val http: HttpClient
+    val http: HttpClient,
+    val spicyMorenittaBundle: SpicyMorenittaBundle
 ) {
     val processors = Processors(this)
     private val routes = listOf(
@@ -58,6 +59,10 @@ class LorittaDashboardBackend(
         SPARoute(this, RoutePaths.SONHOS_SHOP),
         SPARoute(this, RoutePaths.GUILD_GAMERSAFER_CONFIG),
         SPARoute(this, RoutePaths.GUILD_WELCOMER_CONFIG),
+        SPARoute(this, RoutePaths.GUILD_STARBOARD_CONFIG),
+        SPARoute(this, RoutePaths.GUILD_CUSTOM_COMMANDS_CONFIG),
+        SPARoute(this, RoutePaths.ADD_NEW_GUILD_CUSTOM_COMMAND_CONFIG),
+        SPARoute(this, RoutePaths.EDIT_GUILD_CUSTOM_COMMAND_CONFIG),
 
         // ===[ API ]===
         PostLorittaDashboardRpcProcessorRoute(this),
@@ -74,7 +79,7 @@ class LorittaDashboardBackend(
     val perfectPaymentsClient = PerfectPaymentsClient(this, config.perfectPayments.url)
 
     fun start() {
-        val server = embeddedServer(Netty, port = 8080) {
+        val server = embeddedServer(CIO, port = 8080) {
             // Enables gzip and deflate compression
             install(Compression)
 
@@ -105,9 +110,14 @@ class LorittaDashboardBackend(
                 static("/assets/") {
                     resources("static/assets/")
                 }
-            }
 
-            routing {
+                get("/assets/js/spicy-frontend.js") {
+                    call.respondText(
+                        spicyMorenittaBundle.content(),
+                        ContentType.Application.JavaScript
+                    )
+                }
+
                 for (route in routes) {
                     if (route is LocalizedRoute) {
                         val originalPath = route.originalPath

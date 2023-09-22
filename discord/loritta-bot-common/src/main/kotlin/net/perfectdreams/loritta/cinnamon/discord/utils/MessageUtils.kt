@@ -1,23 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import dev.kord.common.entity.DiscordChannel
-import dev.kord.common.entity.DiscordEmoji
-import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.Snowflake
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.TokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.LorittaPlaceholder
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.placeholders.LorittaPlaceholder
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 object MessageUtils {
     private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")

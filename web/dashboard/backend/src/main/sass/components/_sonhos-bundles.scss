@@ -8,13 +8,13 @@
     }
 
     .sonhos-bundle {
-        background-color: #f3f3f4;
+        background-color: var(--interactive-element-background-color);
         display: flex;
         flex-direction: column;
         padding: 1em;
         border-radius: 7px;
         position: relative;
-        border: 1px solid #e1e1e4;
+        border: 1px solid var(--input-border-color);
 
         .sonhos-wrapper {
             -webkit-mask-image: linear-gradient(to bottom, black 50%, rgba(0, 0, 0, 0) 100%);

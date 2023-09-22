@@ -40,7 +40,7 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
                             .sendMessageEmbeds(
                                 EmbedBuilder()
                                     .setColor(Constants.LORITTA_AQUA)
-                                    .setThumbnail("https://assets.perfectdreams.media/loritta/loritta-happy.gif")
+                                    .setThumbnail("https://stuff.loritta.website/loritta-happy.gif")
                                     .setTitle("${m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Title)} ${Emotes.LoriSmile}")
                                     .setDescription(
                                         (m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Description(Emotes.LoriLurk.toString(), Emotes.LoriHeart.toString())) + "https://top.gg/bot/${m.config.loritta.discord.applicationId}/vote")

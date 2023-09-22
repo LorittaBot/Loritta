@@ -1,10 +1,10 @@
 package net.perfectdreams.spicymorenitta.utils
 
+import kotlinx.browser.window
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
-import net.perfectdreams.loritta.common.utils.Placeholders
-import kotlinx.browser.window
 
 object EmbedEditorStuff {
     const val LORITTA_NAME = "Loritta"

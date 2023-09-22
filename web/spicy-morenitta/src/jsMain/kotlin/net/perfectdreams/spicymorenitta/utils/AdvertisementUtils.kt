@@ -110,7 +110,7 @@ object AdvertisementUtils : Logging {
 		modal.setContent(createHTML().div {
 			div {
 				style = "text-align: center;"
-				img(src = "https://assets.perfectdreams.media/loritta/loritta-crying-heathecliff.png") {
+				img(src = "https://stuff.loritta.website/loritta-crying-heathecliff.png") {
 					width = "250"
 				}
 

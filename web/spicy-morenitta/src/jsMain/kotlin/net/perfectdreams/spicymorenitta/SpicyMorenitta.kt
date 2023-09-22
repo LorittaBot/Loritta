@@ -187,7 +187,7 @@ class SpicyMorenitta : Logging {
 		info("I want to make the world a better place... making people happier and helping other people... changing their lives...")
 		info("I hope I succeed...")
 		// Chromium easter egg
-		console.log("%c       ", "font-size: 64px; background: url(https://assets.perfectdreams.media/loritta/loritta-zz-heathecliff.png) no-repeat; background-size: 64px 64px;")
+		console.log("%c       ", "font-size: 64px; background: url(https://stuff.loritta.website/loritta-zz-heathecliff.png) no-repeat; background-size: 64px 64px;")
 
 		if (window.location.pathname == "/auth") { // Nós não precisamos processar o resto do código apenas para verificar o popup de auth
 			AuthUtils.handlePopup()
@@ -455,7 +455,7 @@ class SpicyMorenitta : Logging {
 							div {
 								style = "text-align: center;"
 
-								img(src = "https://assets.perfectdreams.media/loritta/loritta-stop-heathecliff.png") {
+								img(src = "https://stuff.loritta.website/loritta-stop-heathecliff.png") {
 									width = "250"
 								}
 

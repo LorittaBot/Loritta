@@ -3,13 +3,10 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components
 import androidx.compose.runtime.Composable
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.GlobalState
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.H1
-import org.jetbrains.compose.web.dom.H2
-import org.jetbrains.compose.web.dom.Label
-import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.*
 
 @Composable
 fun LocalizedText(i18nContext: I18nContext, keyData: StringI18nData) {
@@ -33,6 +30,20 @@ fun LocalizedFieldLabel(i18nContext: I18nContext, keyData: StringI18nData, forId
             Text(i18nContext.get(keyData))
         }
     }
+}
+
+@Composable
+fun TextReplaceControls(
+    i18nContext: I18nContext,
+    key: StringI18nKey,
+    onText: @Composable (String) -> (Unit),
+    onControl: @Composable (String) -> (ControlResult)
+) {
+    TextReplaceControls(
+        i18nContext.language.textBundle.strings[key.key]!!,
+        onText,
+        onControl
+    )
 }
 
 @Composable

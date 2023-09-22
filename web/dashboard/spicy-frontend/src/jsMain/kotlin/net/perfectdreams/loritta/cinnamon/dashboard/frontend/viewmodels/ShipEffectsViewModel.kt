@@ -14,13 +14,12 @@ import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResp
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.NotEnoughSonhosErrorResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.PutShipEffectsResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
-import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.serializable.CachedUserInfo
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Div
@@ -33,7 +32,7 @@ class ShipEffectsViewModel(m: LorittaDashboardFrontend, scope: CoroutineScope) :
     var shipEffects by shipEffectsResource
 
     init {
-        println("Initialized ShipEffectsViewModel")
+        println("Initialized ${this::class.simpleName}")
         fetchActiveShipEffects()
     }
 
@@ -44,13 +43,11 @@ class ShipEffectsViewModel(m: LorittaDashboardFrontend, scope: CoroutineScope) :
     }
 
     fun openShipEffectPurchaseWarning(i18nContext: I18nContext, user: CachedUserInfo, shipPercentage: ShipPercentage) {
-        m.globalState.openModal(
+        m.globalState.openModalWithCloseButton(
             I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Title,
+            true,
             {
                 LocalizedText(m.globalState, I18nKeysData.Website.Dashboard.ShipEffects.SimilarActiveEffect.Description)
-            },
-            {
-                CloseModalButton(m.globalState)
             },
             {
                 DiscordButton(
@@ -81,29 +78,26 @@ class ShipEffectsViewModel(m: LorittaDashboardFrontend, scope: CoroutineScope) :
         }
     ) {
         // On finish, show new modal and ask to refresh the active effects
-        m.globalState.openModal(
+        m.globalState.openCloseOnlyModal(
             I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Title,
-            {
-                val randomPicture = listOf(
-                    "https://assets.perfectdreams.media/loritta/ship/pantufa.png",
-                    "https://assets.perfectdreams.media/loritta/ship/gabriela.png"
-                )
+            true,
+        ) {
+            val randomPicture = listOf(
+                "https://stuff.loritta.website/ship/pantufa.png",
+                "https://stuff.loritta.website/ship/gabriela.png"
+            )
 
-                Div(attrs = { style { textAlign("center") }}) {
-                    Img(randomPicture.random()) {
-                        attr("width", "300")
-                    }
+            Div(attrs = { style { textAlign("center") } }) {
+                Img(randomPicture.random()) {
+                    attr("width", "300")
                 }
-
-                Text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Description))
-            },
-            {
-                CloseModalButton(m.globalState, I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.ThanksLoveOracle)
             }
-        )
+
+            Text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.EffectApplied.Description))
+        }
 
         fetchActiveShipEffects()
-        m.configSavedSfx.play()
+        m.soundEffects.configSaved.play(1.0)
     }
 
     inline fun <reified T : LorittaResponse> openConfirmPurchaseModal(
@@ -116,11 +110,12 @@ class ShipEffectsViewModel(m: LorittaDashboardFrontend, scope: CoroutineScope) :
         var disablePurchaseButton by mutableStateOf(false)
         val sonhos = (m.globalState.userInfo as Resource.Success).value
 
-        m.globalState.openModal(
+        m.globalState.openModalWithCloseButton(
             i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Title),
+            true,
             {
                 Div(attrs = { style { textAlign("center") }}) {
-                    Img("https://assets.perfectdreams.media/loritta/lori-nota-fiscal.png") {
+                    Img("https://stuff.loritta.website/lori-nota-fiscal.png") {
                         attr("width", "300")
                     }
 
@@ -133,10 +128,7 @@ class ShipEffectsViewModel(m: LorittaDashboardFrontend, scope: CoroutineScope) :
                     }
                 }
             },
-            {
-                CloseModalButton(m.globalState)
-            },
-            {
+            { modal ->
                 DiscordButton(
                     DiscordButtonType.SUCCESS,
                     attrs = {
@@ -149,7 +141,7 @@ class ShipEffectsViewModel(m: LorittaDashboardFrontend, scope: CoroutineScope) :
                                 scope.launch {
                                     val result = purchaseBlock.invoke()
 
-                                    m.globalState.activeModal = null
+                                    modal.close()
 
                                     when (result) {
                                         is T -> { onSuccess.invoke(result) }
@@ -175,14 +167,11 @@ class ShipEffectsViewModel(m: LorittaDashboardFrontend, scope: CoroutineScope) :
 
     fun openNotEnoughSonhosModal(i18nContext: I18nContext, sonhos: Long) {
         // Uh oh...
-        m.globalState.openModal(
+        m.globalState.openCloseOnlyModal(
             i18nContext.get(I18nKeysData.Website.Dashboard.YouDontHaveEnoughSonhosModal.Title),
-            {
-                LocalizedText(i18nContext, I18nKeysData.Website.Dashboard.YouDontHaveEnoughSonhosModal.Description(sonhos))
-            },
-            {
-                CloseModalButton(m.globalState)
-            }
-        )
+            true
+        ) {
+            LocalizedText(i18nContext, I18nKeysData.Website.Dashboard.YouDontHaveEnoughSonhosModal.Description(sonhos))
+        }
     }
 }

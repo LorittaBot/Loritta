@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext

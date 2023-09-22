@@ -50,7 +50,7 @@ class CommunityGuidelinesView(
                         style = "text-align: left;"
 
                         div(classes = "title-with-emoji") {
-                            img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-ban-hammer.png", classes = "emoji-title")
+                            img(src = "https://stuff.loritta.website/emotes/lori-ban-hammer.png", classes = "emoji-title")
 
                             h2 {
                                 + i18nContext.get(I18nKeysData.Website.Guidelines.WhatYouCantDo.Title)
@@ -75,7 +75,7 @@ class CommunityGuidelinesView(
                         style = "text-align: center;"
 
                         div(classes = "title-with-emoji") {
-                            img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-sob.png", classes = "emoji-title")
+                            img(src = "https://stuff.loritta.website/emotes/lori-sob.png", classes = "emoji-title")
 
                             h2 {
                                 + i18nContext.get(I18nKeysData.Website.Guidelines.IfYouAreBanned.Title)

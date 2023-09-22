@@ -15,10 +15,10 @@ import org.jetbrains.compose.web.dom.Text
 fun DiscordToggle(
     id: String,
     title: String,
-    description: String = "-",
+    description: String?,
     checked: Boolean,
     onChange: (Boolean) -> (Unit)
-) = DiscordToggle(id, { Text(title) }, { Text(description) }, checked, onChange)
+) = DiscordToggle(id, { Text(title) }, description?.let { { Text(it) } }, checked, onChange)
 
 /**
  * A toggle/switch that looks like Discord's toggles
@@ -27,9 +27,9 @@ fun DiscordToggle(
 fun DiscordToggle(
     id: String,
     title: String,
-    description: String = "-",
+    description: String?,
     stateValue: MutableState<Boolean>
-) = DiscordToggle(id, { Text(title) }, { Text(description) }, stateValue.value, { stateValue.value = it })
+) = DiscordToggle(id, { Text(title) }, description?.let { { Text(it) } }, stateValue.value, { stateValue.value = it })
 
 /**
  * A toggle/switch that looks like Discord's toggles
@@ -38,7 +38,7 @@ fun DiscordToggle(
 fun DiscordToggle(
     id: String,
     title: @Composable () -> (Unit),
-    description: @Composable () -> (Unit) = {},
+    description: @Composable (() -> (Unit))? = null,
     checked: Boolean,
     onChange: (Boolean) -> (Unit)
 ) = Label(forId = id, attrs = {
@@ -53,10 +53,12 @@ fun DiscordToggle(
             title()
         }
 
-        Div(attrs = {
-            classes("toggle-description")
-        }) {
-            description()
+        if (description != null) {
+            Div(attrs = {
+                classes("toggle-description")
+            }) {
+                description()
+            }
         }
     }
 

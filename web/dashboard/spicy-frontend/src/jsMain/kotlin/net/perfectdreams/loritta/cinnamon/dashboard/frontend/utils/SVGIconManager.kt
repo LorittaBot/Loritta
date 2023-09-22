@@ -23,6 +23,7 @@ object SVGIconManager {
     val shoppingCart by lazy { register(svgShoppingCart, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val asterisk by lazy { register(svgAsterisk, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val star by lazy { register(svgStar, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val chevronLeft by lazy { register(svgChevronLeft, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val chevronDown by lazy { register(svgChevronDown, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val clock by lazy { register(svgClock, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val terminal by lazy { register(svgTerminal, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
@@ -38,6 +39,16 @@ object SVGIconManager {
     val shuffle by lazy { register(svgShuffle, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val list by lazy { register(svgList, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val gamerSafer by lazy { register(svgGamerSaferLogo, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val paperPlane by lazy { register(svgPaperPlane, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val diagramNext by lazy { register(svgDiagramNext, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val check by lazy { register(svgCheck, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val eyeDropper by lazy { register(svgEyeDropper, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val fileImport by lazy { register(svgFileImport, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val arrowUpRightFromSquare by lazy { register(svgArrowUpRightFromSquare, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val pencil by lazy { register(svgPencil, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val coloredFolder by lazy { register(svgColoredFolder) }
+    val coloredStar by lazy { register(svgColoredStar) }
+    val code by lazy { register(svgCode, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
 
     /**
      * Loads and registers a SVG with [name] and [path]
@@ -147,6 +158,10 @@ external val svgAsterisk: dynamic
 @JsNonModule
 external val svgStar: dynamic
 
+@JsModule("./icons/fontawesome6/solid/chevron-left.svg")
+@JsNonModule
+external val svgChevronLeft: dynamic
+
 @JsModule("./icons/fontawesome6/solid/chevron-down.svg")
 @JsNonModule
 external val svgChevronDown: dynamic
@@ -206,3 +221,43 @@ external val svgList: dynamic
 @JsModule("./icons/gamersafer-logo.svg")
 @JsNonModule
 external val svgGamerSaferLogo: dynamic
+
+@JsModule("./icons/fontawesome6/solid/paper-plane.svg")
+@JsNonModule
+external val svgPaperPlane: dynamic
+
+@JsModule("./icons/fontawesome6/solid/diagram-next.svg")
+@JsNonModule
+external val svgDiagramNext: dynamic
+
+@JsModule("./icons/fontawesome6/solid/check.svg")
+@JsNonModule
+external val svgCheck: dynamic
+
+@JsModule("./icons/fontawesome6/solid/eye-dropper.svg")
+@JsNonModule
+external val svgEyeDropper: dynamic
+
+@JsModule("./icons/fontawesome6/solid/file-import.svg")
+@JsNonModule
+external val svgFileImport: dynamic
+
+@JsModule("./icons/fontawesome6/solid/arrow-up-right-from-square.svg")
+@JsNonModule
+external val svgArrowUpRightFromSquare: dynamic
+
+@JsModule("./icons/fontawesome6/solid/pencil.svg")
+@JsNonModule
+external val svgPencil: dynamic
+
+@JsModule("./icons/twemoji-master/1f4c1.svg")
+@JsNonModule
+external val svgColoredFolder: dynamic
+
+@JsModule("./icons/twemoji-master/2b50.svg")
+@JsNonModule
+external val svgColoredStar: dynamic
+
+@JsModule("./icons/fontawesome6/solid/code.svg")
+@JsNonModule
+external val svgCode: dynamic

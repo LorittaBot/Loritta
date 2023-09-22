@@ -40,7 +40,7 @@ class SponsorsView(loritta: LorittaBot, i18nContext: I18nContext, locale: BaseLo
         div(classes = "odd-wrapper wobbly-bg") {
             div(classes = "media") {
                 div(classes = "media-figure") {
-                    img(src = "https://assets.perfectdreams.media/loritta/loritta-rich-heathecliff.png") {}
+                    img(src = "https://stuff.loritta.website/loritta-rich-heathecliff.png") {}
                 }
                 div(classes = "media-body") {
                     div {

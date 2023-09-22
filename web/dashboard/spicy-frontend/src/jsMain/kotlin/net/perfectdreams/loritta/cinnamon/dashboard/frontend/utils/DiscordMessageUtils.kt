@@ -1,14 +1,77 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils
 
+import kotlinx.browser.document
+import kotlinx.dom.createElement
+
 object DiscordMessageUtils {
     val showdown = ShowdownConverter().apply {
         setOption("simpleLineBreaks", true)
         setOption("strikethrough", true)
     }
 
-    private val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
+    val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
     // Yes the last \\ IS REQUIRED!! RegEx will complain that raw brackets are not allowed in unicode mode without the escaping!!!
-    private val Placeholder = Regex("\\{([A-z0-9@\\-]+)\\}")
+    private val Placeholder = Regex("\\{([A-z0-9@\\-.]+)\\}")
+
+    val BlockQuotePatch = Regex("^> .+\\n(?!>)", RegexOption.MULTILINE)
+    val MultiNewLinePatch = Regex("^\\n^", RegexOption.MULTILINE)
+
+    /**
+     * Patches block quotes to make them act like Discord's block quotes when parsed with Showdown
+     *
+     * Example:
+     * * > Loritta is cute!
+     * * This shouldn't be in the block quote
+     *
+     * Is parsed as:
+     * * > Loritta is cute!
+     * * > This shouldn't be in the block quote
+     *
+     * This function adds an extra new line IF the next line isn't a block quote.
+     */
+    fun patchBlockQuotes(input: String) = BlockQuotePatch.replace(input) {
+        "${it.value}\n"
+    }
+
+    /**
+     * Patches block quotes to make them act like Discord's block quotes when parsed with Showdown
+     *
+     * Example:
+     * * > Loritta is cute!
+     * * This shouldn't be in the block quote
+     *
+     * Is parsed as:
+     * * > Loritta is cute!
+     * * > This shouldn't be in the block quote
+     *
+     * This function adds an extra new line IF the next line isn't a block quote.
+     */
+    fun patchMultiNewLines(input: String) = MultiNewLinePatch.replace(input) {
+        "<br />"
+    }
+
+    /**
+     * Maskes special discord entities (such as emotes) from the input, to avoid them being recognized as HTML entities
+     *
+     * The input is masked by converting characters to characters in the private use unicode areas, so they SHOULDN'T be used in normal circumstances
+     *
+     * @see unmaskSpecialDiscordEntities
+     */
+    fun convertSpecialDiscordEntitiesIntoHTMLTags(
+        input: String
+    ) = DiscordEmote.replace(input) {
+        val animated = it.groupValues[1] == "a"
+        val emoteName = it.groupValues[2]
+        val emoteId = it.groupValues[3]
+
+        val d = document.createElement("discord-emoji") {
+            setAttribute("animated", animated.toString())
+            setAttribute("name", emoteName)
+            setAttribute("id", emoteId)
+        }
+
+        d.outerHTML
+    }
 
     /**
      * Parses the [text] to multiple drawable sections
@@ -83,7 +146,7 @@ object DiscordMessageUtils {
     /**
      * Parses placeholders to a string
      */
-    fun parsePlaceholdersToString(input: String, placeholders: List<MessagePlaceholder>): String {
+    fun parsePlaceholdersToString(input: String, placeholders: List<RenderableMessagePlaceholder>): String {
         val drawableSections = parseStringToDrawableSections(
             input,
             listOf(
@@ -96,7 +159,7 @@ object DiscordMessageUtils {
             for (section in drawableSections) {
                 when (section) {
                     is DrawablePlaceholder -> {
-                        val placeholder = placeholders.firstOrNull { it.name == section.placeholderName }
+                        val placeholder = placeholders.firstOrNull { it.placeholder.names.any { it.placeholder.name == section.placeholderName }}
 
                         if (placeholder != null) {
                             append(placeholder.replaceWith)
@@ -126,5 +189,10 @@ object DiscordMessageUtils {
         TEXT,
         PLACEHOLDER,
         DISCORD_EMOJI
+    }
+
+    enum class RenderDirection {
+        VERTICAL,
+        HORIZONTAL
     }
 }

@@ -4,14 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Resource
 import net.perfectdreams.loritta.serializable.config.GuildWelcomerConfig
 import net.perfectdreams.loritta.serializable.dashboard.requests.DashGuildScopedRequest
-import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
 import net.perfectdreams.loritta.serializable.dashboard.responses.DashGuildScopedResponse
-import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
 
 class WelcomerViewModel(
     m: LorittaDashboardFrontend,
@@ -22,40 +19,35 @@ class WelcomerViewModel(
     val configResource by _configResource
 
     init {
-        println("Initialized WelcomerViewModel")
+        println("Initialized ${this::class.simpleName}")
         fetchConfig()
     }
 
     private fun fetchConfig() {
-        scope.launch {
-            val response = m.makeRPCRequest<LorittaDashboardRPCResponse>(
-                LorittaDashboardRPCRequest.ExecuteDashGuildScopedRPCRequest(
-                    guildViewModel.guildId,
-                    DashGuildScopedRequest.GetGuildWelcomerConfigRequest
-                )
-            )
-
-            if (response is LorittaDashboardRPCResponse.ExecuteDashGuildScopedRPCResponse) {
-                when (val dashResponse = response.dashResponse) {
-                    is DashGuildScopedResponse.GetGuildWelcomerConfigResponse -> {
-                        guildViewModel._guildInfoResource.value = Resource.Success(dashResponse.guild)
-                        _configResource.value = Resource.Success(dashResponse)
-                    }
-                    DashGuildScopedResponse.InvalidDiscordAuthorization -> TODO()
-                    DashGuildScopedResponse.MissingPermission -> TODO()
-                    DashGuildScopedResponse.UnknownGuild -> TODO()
-                    DashGuildScopedResponse.UnknownMember -> TODO()
-
-                    else -> error("Unexpected response! ${dashResponse::class.simpleName}")
-                }
-            } else {
-                error("Whoops, ${response::class.simpleName}")
-            }
+        fetchConfigAndUpdate(m, this, guildViewModel, _configResource, DashGuildScopedRequest.GetGuildWelcomerConfigRequest) {
+            it.guild
         }
     }
 
     companion object {
         fun toMutableConfig(config: GuildWelcomerConfig) = MutableGuildWelcomerConfig(config)
+        fun toDataConfig(config: MutableGuildWelcomerConfig) = GuildWelcomerConfig(
+            config.tellOnJoin,
+            config.channelJoinId,
+            config.joinMessage,
+            config.deleteJoinMessagesAfter,
+
+            config.tellOnRemove,
+            config.channelRemoveId,
+            config.removeMessage,
+            config.deleteRemoveMessagesAfter,
+
+            config.tellOnPrivateJoin,
+            config.joinPrivateMessage,
+
+            config.tellOnBan,
+            config.bannedMessage
+        )
 
         class MutableGuildWelcomerConfig(config: GuildWelcomerConfig) {
             var _tellOnJoin = mutableStateOf(config.tellOnJoin)

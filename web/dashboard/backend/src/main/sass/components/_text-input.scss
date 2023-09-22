@@ -1,28 +1,35 @@
-input[type=text], textarea {
-    border: 1px solid #0000001f;
-    border-radius: 4px;
-    background-color: #0000000a;
+input[type=text], input[type=number], textarea {
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--first-level-border-radius);
+    background-color: var(--input-background-color);
     padding: 8px;
     width: 100%;
-    color: black;
+    color: var(--input-text-color);
     transition-duration: 0.25s;
     outline-color: rgba(var(--loritta-blue-rgb), 0.5);
+    // Avoids the textarea resize handle feeling sluggish
+    transition: height 0s, border-color 0.25s, outline 0.25s, background-color 0.25s;
 
-    &:focus {
-        background-color: white;
+    &:focus:not([disabled]) {
+        background-color: var(--input-background-color);
         outline: 2px solid rgba(var(--loritta-blue-rgb), 0.5);
         border-color: var(--loritta-blue);
     }
 
-    &:hover {
-        background-color: white;
+    &:hover:not([disabled]) {
+        background-color: var(--input-background-color);
         border-color: var(--loritta-blue);
         outline: 4px solid rgba(var(--loritta-blue-rgb), 0.5);
     }
 
-    &:focus-visible {
+    &:focus-visible:not([disabled]) {
         outline: 2px solid var(--loritta-blue);
         border-color: var(--loritta-blue);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 }
 
@@ -35,6 +42,4 @@ textarea {
     // Additional settings if it is a text area
     resize: vertical;
     min-height: 5em;
-    // Avoids the textarea resize handle feeling sluggish
-    transition: height 0s;
 }

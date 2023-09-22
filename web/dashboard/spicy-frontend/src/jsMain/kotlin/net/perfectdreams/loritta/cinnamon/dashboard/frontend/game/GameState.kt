@@ -131,13 +131,17 @@ class GameState(
                         queries.flatMap { document.querySelectorAll(it).asList() }
                             .filterIsInstance<HTMLElement>()
                             .forEach {
-                                val scrollLeft = document.documentElement!!.scrollLeft
-                                val scrollTop = document.documentElement!!.scrollTop
+                                // Ever since we changed the CSS to NOT use sticky, we don't need to check these anymore, because the bounding rect
+                                // now returns the correct value
+                                // val scrollLeft = document.documentElement!!.scrollLeft
+                                // val scrollTop = document.documentElement!!.scrollTop
 
                                 val boundingRect = it.getBoundingClientRect()
 
-                                val x = (scrollLeft + boundingRect.left).toInt()
-                                val y = (scrollTop + boundingRect.top).toInt()
+                                // val x = (scrollLeft + boundingRect.left).toInt()
+                                // val y = (scrollTop + boundingRect.top).toInt()
+                                val x = boundingRect.left.toInt()
+                                val y = boundingRect.top.toInt()
                                 val width = boundingRect.width.toInt()
                                 val height = boundingRect.height.toInt()
 

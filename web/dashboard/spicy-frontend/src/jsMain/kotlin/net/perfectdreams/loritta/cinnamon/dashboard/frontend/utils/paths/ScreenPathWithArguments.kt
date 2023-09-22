@@ -1,15 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths
 
 import net.perfectdreams.loritta.cinnamon.dashboard.common.ScreenPathElement
-import net.perfectdreams.loritta.cinnamon.dashboard.common.buildToKtorPath
-import net.perfectdreams.loritta.cinnamon.dashboard.common.buildToPath
+import net.perfectdreams.loritta.cinnamon.dashboard.common.buildToPathWithQueryArguments
 
-class ScreenPathWithArguments(val path: ScreenPath, val arguments: Map<String, String>) {
+class ScreenPathWithArguments(
+    val path: ScreenPath,
+    val pathArguments: Map<String, String>,
+    val queryArguments: Map<String, String>
+) {
     init {
         for (element in path.elements) {
             when (element) {
                 is ScreenPathElement.OptionPathElement -> {
-                    if (!arguments.containsKey(element.parameterId))
+                    if (!pathArguments.containsKey(element.parameterId))
                         error("Missing argument for parameter ${element.parameterId}!")
                 }
                 is ScreenPathElement.StringPathElement -> {}
@@ -17,5 +20,5 @@ class ScreenPathWithArguments(val path: ScreenPath, val arguments: Map<String, S
         }
     }
 
-    fun build() = path.elements.buildToPath(arguments)
+    fun build() = path.elements.buildToPathWithQueryArguments(pathArguments, queryArguments)
 }

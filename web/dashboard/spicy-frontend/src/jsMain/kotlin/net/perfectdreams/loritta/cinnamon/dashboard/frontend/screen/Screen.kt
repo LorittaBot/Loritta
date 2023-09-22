@@ -9,7 +9,6 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.NotEnoughSonhosErrorResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
@@ -73,11 +72,12 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
         var disablePurchaseButton by mutableStateOf(false)
         val sonhos = (m.globalState.userInfo as Resource.Success).value
 
-        m.globalState.openModal(
+        m.globalState.openModalWithCloseButton(
             i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Title),
+            true,
             {
                 Div(attrs = { style { textAlign("center") }}) {
-                    Img("https://assets.perfectdreams.media/loritta/lori-nota-fiscal.png") {
+                    Img("https://stuff.loritta.website/lori-nota-fiscal.png") {
                         attr("width", "300")
                     }
 
@@ -90,10 +90,7 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
                     }
                 }
             },
-            {
-                CloseModalButton(m.globalState)
-            },
-            {
+            { modal ->
                 DiscordButton(
                     DiscordButtonType.SUCCESS,
                     attrs = {
@@ -106,7 +103,7 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
                                 launch {
                                     val result = purchaseBlock.invoke()
 
-                                    m.globalState.activeModal = null
+                                    modal.close()
 
                                     when (result) {
                                         is T -> { onSuccess.invoke(result) }
@@ -132,14 +129,11 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
 
     fun openNotEnoughSonhosModal(i18nContext: I18nContext, sonhos: Long) {
         // Uh oh...
-        m.globalState.openModal(
+        m.globalState.openCloseOnlyModal(
             i18nContext.get(I18nKeysData.Website.Dashboard.YouDontHaveEnoughSonhosModal.Title),
-            {
-                LocalizedText(i18nContext, I18nKeysData.Website.Dashboard.YouDontHaveEnoughSonhosModal.Description(sonhos))
-            },
-            {
-                CloseModalButton(m.globalState)
-            }
-        )
+            true
+        ) {
+            LocalizedText(i18nContext, I18nKeysData.Website.Dashboard.YouDontHaveEnoughSonhosModal.Description(sonhos))
+        }
     }
 }

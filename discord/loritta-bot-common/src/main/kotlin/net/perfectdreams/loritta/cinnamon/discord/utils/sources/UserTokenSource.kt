@@ -4,7 +4,7 @@ import dev.kord.core.Kord
 import dev.kord.core.cache.data.MemberData
 import dev.kord.core.cache.data.UserData
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordUserAvatar
-import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 
 class UserTokenSource(
     private val kord: Kord,

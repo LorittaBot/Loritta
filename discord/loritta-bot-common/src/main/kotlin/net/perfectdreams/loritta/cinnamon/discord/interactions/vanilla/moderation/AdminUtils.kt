@@ -21,14 +21,13 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.MessageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.StaffTokenSource
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.UserTokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils

@@ -173,10 +173,10 @@ class BomDiaECia(val loritta: LorittaBot) {
 	}
 
 	val randomImages = listOf(
-		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-1.png",
-		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-2.png",
-		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-3.png",
-		"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-4.png"
+		"https://stuff.loritta.website/bom-dia-e-cia/bom-dia-e-cia-1.png",
+		"https://stuff.loritta.website/bom-dia-e-cia/bom-dia-e-cia-2.png",
+		"https://stuff.loritta.website/bom-dia-e-cia/bom-dia-e-cia-3.png",
+		"https://stuff.loritta.website/bom-dia-e-cia/bom-dia-e-cia-4.png"
 	)
 
 	init {

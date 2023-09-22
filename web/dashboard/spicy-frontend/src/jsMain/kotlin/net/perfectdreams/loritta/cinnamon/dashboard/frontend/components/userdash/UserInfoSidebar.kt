@@ -2,14 +2,17 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdas
 
 import androidx.compose.runtime.Composable
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordAvatar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-fun UserInfoSidebar(userIdentification: GetUserIdentificationResponse) {
+fun UserInfoSidebar(m: LorittaDashboardFrontend, userIdentification: GetUserIdentificationResponse) {
     Div(attrs = { classes("user-info") }) {
-        DiscordAvatar(userIdentification.id, userIdentification.discriminator, userIdentification.avatarId) {
+        DiscordAvatar(userIdentification.id, userIdentification.avatarId) {
             attr("width", "24")
             attr("height", "24")
         }
@@ -31,6 +34,19 @@ fun UserInfoSidebar(userIdentification: GetUserIdentificationResponse) {
                 Div(attrs = { classes("name") }) {
                     Text("@${userIdentification.username}")
                 }
+            }
+        }
+
+        Div {
+            DiscordButton(
+                DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
+                attrs = {
+                    onClick {
+                        m.globalState.openThemeSelectorModal(false)
+                    }
+                }
+            ) {
+                Text("Tema")
             }
         }
     }
