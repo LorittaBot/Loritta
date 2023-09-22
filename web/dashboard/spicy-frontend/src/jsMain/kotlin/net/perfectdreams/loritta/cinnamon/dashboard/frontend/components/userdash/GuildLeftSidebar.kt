@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.GuildScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.*
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPathWithArguments
-import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import org.jetbrains.compose.web.css.DisplayStyle

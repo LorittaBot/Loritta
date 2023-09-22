@@ -77,8 +77,8 @@ tasks {
         from("../../resources/") // Include folders from the resources web folder
 
         // We need to wait until the JS build finishes and the SASS files are generated
-        // dependsOn(jsBrowserDistribution)
-        // dependsOn(jsBrowserProductionWebpack)
+        dependsOn(jsBrowserDistribution)
+        dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
 
         // Copy the output from the frontend task to the backend resources
