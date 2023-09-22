@@ -27,6 +27,7 @@ private fun createGamePixiCanvas(): Application {
             this.height = height // height
             this.backgroundAlpha = 0
             this.resolution = devicePixelRatio
+            this.resizeTo = window
         }
     )
 }

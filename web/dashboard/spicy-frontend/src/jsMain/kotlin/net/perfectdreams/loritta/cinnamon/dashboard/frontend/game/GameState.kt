@@ -31,8 +31,9 @@ class GameState(
     val entities = mutableListOf<Entity>()
     val random = Random(getTimeMillis())
     // We don't use the app's width/height because that's not the *real* width/height of the screen, if the pixel resolution is not 1
-    val width = window.innerWidth
-    val height = window.innerHeight
+    // Can't be a fixed value because the screen can resize!
+    val width get() = window.innerWidth
+    val height get() = window.innerHeight
     val groundY: Int
         get() = height
 

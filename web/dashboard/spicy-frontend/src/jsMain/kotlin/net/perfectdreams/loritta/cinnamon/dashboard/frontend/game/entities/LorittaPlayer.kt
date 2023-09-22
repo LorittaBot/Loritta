@@ -58,7 +58,8 @@ class LorittaPlayer(
         y += gravity.toInt()
 
         x = x.coerceIn(0, m.width) // Can't leave screen
-
+        y = y.coerceAtMost(m.height) // Can't leave screen
+        
         val rects = m.isMultiGround(x, y)
         for (rect in rects) {
             if (rect.y >= previousY) {
