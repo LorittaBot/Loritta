@@ -79,7 +79,12 @@ website:
         - "Invoque a Loritta & Amigas para te fazerem companhia enquanto você configura o seu servidor! Ao invocar, elas ficarão perambulando pela sua tela, correndo e pulando feito doidinhas."
         - "Mas se elas começarem a te cansar, clique para limpar para mandar as pestinhas pras cucuias."
       spawnPlayer: "Invocar {name}"
-      cleanUp: "Limpar"
+      horizontalSize: "Tamanho Horizontal das Doidinhas"
+      verticalSize: "Tamanho Horizontal das Doidinhas"
+      defaultSize: "Tamanho Padrão"
+      modifiedSize: "Tamanho Modificado"
+
+      cleanUp: "Limpar Pestinhas"
       activityLevel:
         title: "Nível de Atividade"
         types:

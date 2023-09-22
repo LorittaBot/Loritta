@@ -58,6 +58,10 @@ class GameState(
 
     val activityLevelState = mutableStateOf(ActivityLevel.MEDIUM)
     var activityLevel by activityLevelState
+    val horizontalScaleState = mutableStateOf(1.0)
+    var horizontalScale by horizontalScaleState
+    val verticalScaleState = mutableStateOf(1.0)
+    var verticalScale by verticalScaleState
 
     init {
         // We need to manually add the font to the document body, if else, the font won't be loaded, because the font is only loaded if it is
@@ -95,6 +99,16 @@ class GameState(
         val activityLevelAsString = localStorage.getItem("dashboard.pocketLoritta.activityLevel")
         if (activityLevelAsString != null) {
             activityLevel = ActivityLevel.valueOf(activityLevelAsString)
+        }
+
+        // Get the size
+        val xScale = localStorage.getItem("dashboard.pocketLoritta.xScale")
+        if (xScale != null) {
+            horizontalScale = xScale.toDouble()
+        }
+        val yScale = localStorage.getItem("dashboard.pocketLoritta.yScale")
+        if (yScale != null) {
+            verticalScale = yScale.toDouble()
         }
 
         // Process the game world on each render
@@ -179,6 +193,7 @@ class GameState(
                         val re = when (it) {
                             is LorittaPlayer -> {
                                 RenderedLorittaPlayer(
+                                    this,
                                     textures,
                                     random.nextInt(0, 100),
                                     lorittaPetsContainer,
@@ -254,6 +269,8 @@ class GameState(
             localStorage.setItem("dashboard.pocketLoritta.${type.name.lowercase()}SpawnQuantity", count)
         }
         localStorage.setItem("dashboard.pocketLoritta.activityLevel", activityLevel.name)
+        localStorage.setItem("dashboard.pocketLoritta.xScale", horizontalScale.toString())
+        localStorage.setItem("dashboard.pocketLoritta.yScale", verticalScale.toString())
     }
 
     sealed class Rectangle {

@@ -1,10 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.render
 
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.GameState
 import net.perfectdreams.loritta.cinnamon.dashboard.utils.pixi.Container
-import net.perfectdreams.loritta.cinnamon.dashboard.utils.pixi.PixiSprite
 import net.perfectdreams.loritta.cinnamon.dashboard.utils.pixi.PixiTexture
 
 abstract class RenderedObject(
+    val m: GameState,
     val spriteContainer: Container,
     val nametagContainer: Container
 ) {

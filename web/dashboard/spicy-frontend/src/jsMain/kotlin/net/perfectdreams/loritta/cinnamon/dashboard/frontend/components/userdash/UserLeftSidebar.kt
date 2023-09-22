@@ -11,11 +11,9 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.*
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPathWithArguments
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import org.jetbrains.compose.web.attributes.step
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.A
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.P
-import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.*
 
 @Composable
 fun UserLeftSidebar(
@@ -121,6 +119,44 @@ fun UserLeftSidebar(
                                                     )
                                                 }
                                         )
+                                    }
+
+                                    FieldWrapper {
+                                        FieldLabel(i18nContext.get(I18nKeysData.Website.Dashboard.LorittaSpawner.HorizontalSize))
+
+                                        NumberInput(m.gameState.horizontalScale, min = 0.1, max = 8.0) {
+                                            step(0.1)
+
+                                            onInput {
+                                                m.gameState.horizontalScale = it.value!!.toDouble().coerceIn(0.1..8.0)
+                                            }
+                                        }
+                                    }
+
+                                    FieldWrapper {
+                                        FieldLabel(i18nContext.get(I18nKeysData.Website.Dashboard.LorittaSpawner.VerticalSize))
+
+                                        NumberInput(m.gameState.verticalScale, min = 0.1, max = 8.0) {
+                                            step(0.1)
+
+                                            onInput {
+                                                m.gameState.verticalScale = it.value!!.toDouble().coerceIn(0.1..8.0)
+                                            }
+                                        }
+                                    }
+
+                                    FieldWrapper {
+                                        Div(attrs = {
+                                            style {
+                                                textAlign("center")
+                                            }
+                                        }) {
+                                            if (m.gameState.horizontalScale == 1.0 && m.gameState.verticalScale == 1.0) {
+                                                Text(i18nContext.get(I18nKeysData.Website.Dashboard.LorittaSpawner.DefaultSize))
+                                            } else {
+                                                Text(i18nContext.get(I18nKeysData.Website.Dashboard.LorittaSpawner.ModifiedSize))
+                                            }
+                                        }
                                     }
                                 }
 

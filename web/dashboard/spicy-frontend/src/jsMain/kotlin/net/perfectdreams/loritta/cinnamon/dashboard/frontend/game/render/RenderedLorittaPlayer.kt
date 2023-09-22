@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.render
 
 import js.core.jso
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.GameState
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.GameTextures
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.entities.LorittaPlayer
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.entities.PlayerMovementState
@@ -10,12 +11,13 @@ import net.perfectdreams.loritta.cinnamon.dashboard.utils.pixi.PixiTexture
 import net.perfectdreams.loritta.cinnamon.dashboard.utils.pixi.Text
 
 class RenderedLorittaPlayer(
+    m: GameState,
     val textures: GameTextures,
     val animOffset: Int,
     spriteContainer: Container,
     nametagContainer: Container,
     entity: LorittaPlayer
-) : RenderedEntity<LorittaPlayer>(spriteContainer, nametagContainer, entity) {
+) : RenderedEntity<LorittaPlayer>(m, spriteContainer, nametagContainer, entity) {
     override val shouldBeRemoved: Boolean
         get() = entity.dead
 
@@ -97,9 +99,9 @@ class RenderedLorittaPlayer(
             0.42666666666
         } else {
             -0.42666666666
-        }
+        } * m.horizontalScale
 
-        sprite.scale.y = 0.42666666666
+        sprite.scale.y = 0.42666666666 * m.verticalScale
         sprite.anchor.x = 0.5
         sprite.anchor.y = 0.5
 
@@ -107,7 +109,7 @@ class RenderedLorittaPlayer(
         // println("DeltaMS: $deltaMS; Interpolation percentage: $interpolationPercentage")
 
         sprite.x = lerp(beginningX, targetX, interpolationPercentage)
-        sprite.y = lerp(beginningY, targetY, interpolationPercentage) - (128 / 2)
+        sprite.y = lerp(beginningY, targetY, interpolationPercentage) - ((128 * m.verticalScale) / 2)
         text.x = sprite.x
         text.y = sprite.y - 70
     }
