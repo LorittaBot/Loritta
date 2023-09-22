@@ -64,13 +64,13 @@
         // This can't have a z-index! If it has, then it breaks the pseudo element!
         position: absolute;
         top: 100%;
-        background-color: white;
+        background-color: var(--input-background-color);
         border-radius: 0px 0px var(--first-level-border-radius) var(--first-level-border-radius);
         border-left: 1px solid var(--input-border-color);
         border-right: 1px solid var(--input-border-color);
         border-bottom: 1px solid var(--input-border-color);
         width: 100%;
-        color: black;
+        color: var(--content-text-color);
         // This looks super ugly without "mix-blend-mode"
         // However we also need to use "z-index" to avoid content overlapping the dropdown, but "z-index" creates a new stacking context
         // and that breaks the "mix-blend-mode"!
