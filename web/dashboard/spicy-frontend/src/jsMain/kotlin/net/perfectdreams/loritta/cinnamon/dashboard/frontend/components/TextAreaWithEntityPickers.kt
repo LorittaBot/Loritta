@@ -824,6 +824,7 @@ fun getCursorXY(input: HTMLElement, selectionPoint: Int): CursorXY {
 
     div.style.setProperty("position", "absolute")
     div.style.setProperty("z-index", "10000")
+    div.style.setProperty("visibility", "hidden")
 
     // we need a character that will replace whitespace when filling our dummy element if it's a single line <input/>
     val swap = "."
@@ -866,7 +867,7 @@ fun getCursorXY(input: HTMLElement, selectionPoint: Int): CursorXY {
     val spanY = span.offsetTop
     // lastly, remove that dummy element
     // NOTE:: can comment this out for debugging purposes if you want to see where that span is rendered
-    // document.body?.removeChild(div)
+    document.body?.removeChild(div)
     // return an object with the x and y of the caret. account for input positioning so that you don't need to wrap the input
 
     // Power Changes: Subtract the scroll offset to the cursor position, fixes issues when the textarea scrolls
