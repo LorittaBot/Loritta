@@ -119,6 +119,13 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                         it.name
                     )
                 }
+            },
+            guild.emojis.map {
+                DiscordEmoji(
+                    it.idLong,
+                    it.name,
+                    it.isAnimated
+                )
             }
         )
 

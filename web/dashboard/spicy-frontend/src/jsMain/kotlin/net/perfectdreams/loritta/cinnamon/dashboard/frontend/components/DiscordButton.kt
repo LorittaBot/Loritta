@@ -36,15 +36,15 @@ fun DiscordButton(
 }, content)
 
 @Composable
-fun ButtonWithIconWrapper(
+fun TextWithIconWrapper(
     icon: SVGIconManager.SVGIcon,
     svgAttrs: AttrsScope<SVGElement>.() -> (Unit),
     content: ContentBuilder<HTMLDivElement>? = null
 ) = Div({
-    classes("button-with-icon-wrapper")
+    classes("text-with-icon-wrapper")
 }) {
     UIIcon(icon) {
-        classes("button-icon")
+        classes("text-icon")
         svgAttrs()
     }
 

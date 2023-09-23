@@ -10,6 +10,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrapper
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.*
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.DiscordCdn
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.Image
@@ -138,7 +139,7 @@ fun DiscordMessageEditor(
                     } else disabledWithSoundEffect(m)
                 }
             ) {
-                ButtonWithIconWrapper(SVGIconManager.bars, {}) {
+                TextWithIconWrapper(SVGIconManager.bars, {}) {
                     Text("Template de Mensagens")
                 }
             }
@@ -218,7 +219,7 @@ fun DiscordMessageEditor(
                         }
                     }
                 ) {
-                    ButtonWithIconWrapper(SVGIconManager.fileImport, {}) {
+                    TextWithIconWrapper(SVGIconManager.fileImport, {}) {
                         Text("Importar")
                     }
                 }
@@ -236,7 +237,7 @@ fun DiscordMessageEditor(
                         }
                     }
                 ) {
-                    ButtonWithIconWrapper(SVGIconManager.pencil, {}) {
+                    TextWithIconWrapper(SVGIconManager.pencil, {}) {
                         Text("Alterar modo de edição")
                     }
                 }
@@ -305,7 +306,7 @@ fun DiscordMessageEditor(
                         }
                     }
                 ) {
-                    ButtonWithIconWrapper(SVGIconManager.paperPlane, {}) {
+                    TextWithIconWrapper(SVGIconManager.paperPlane, {}) {
                         Text("Testar Mensagem")
                     }
                 }
@@ -325,7 +326,7 @@ fun DiscordMessageEditor(
                         }
                     }
                 ) {
-                    ButtonWithIconWrapper(SVGIconManager.diagramNext, {
+                    TextWithIconWrapper(SVGIconManager.diagramNext, {
                         if (m.globalState.messageEditorRenderDirection == DiscordMessageUtils.RenderDirection.VERTICAL)
                             attr("style", "transform: rotate(270deg);")
                         else
@@ -351,7 +352,7 @@ fun DiscordMessageEditor(
                         } else disabledWithSoundEffect(m)
                     }
                 ) {
-                    ButtonWithIconWrapper(SVGIconManager.sparkles, {}) {
+                    TextWithIconWrapper(SVGIconManager.sparkles, {}) {
                         Text("Formatar JSON")
                     }
                 }
@@ -425,12 +426,9 @@ fun DiscordMessageEditor(
                         FieldWrapper {
                             FieldLabel("Conteúdo da Mensagem")
 
-                            TextArea {
-                                value(mutableMessage.content)
-                                onInput {
-                                    mutableMessage.content = it.value
-                                    mutableMessage.triggerUpdate()
-                                }
+                            TextAreaWithEntityPickers(targetGuild, mutableMessage.content) {
+                                mutableMessage.content = it
+                                mutableMessage.triggerUpdate()
                             }
                         }
 
@@ -587,11 +585,9 @@ fun DiscordMessageEditor(
                                 FieldWrapper {
                                     FieldLabel("Título")
 
-                                    TextInput(embed.title ?: "") {
-                                        onInput {
-                                            embed.title = it.value.ifEmpty { null }
-                                            mutableMessage.triggerUpdate()
-                                        }
+                                    TextAreaWithEntityPickers(targetGuild, embed.title ?: "") {
+                                        embed.title = it.ifEmpty { null }
+                                        mutableMessage.triggerUpdate()
                                     }
                                 }
 
@@ -609,11 +605,9 @@ fun DiscordMessageEditor(
                                 FieldWrapper {
                                     FieldLabel("Descrição")
 
-                                    TextArea(embed.description ?: "") {
-                                        onInput {
-                                            mutableMessage.embed?.description = it.value.ifEmpty { null }
-                                            mutableMessage.triggerUpdate()
-                                        }
+                                    TextAreaWithEntityPickers(targetGuild, embed.description ?: "") {
+                                        embed.description = it.ifEmpty { null }
+                                        mutableMessage.triggerUpdate()
                                     }
                                 }
 
@@ -628,7 +622,7 @@ fun DiscordMessageEditor(
                                         )
                                     }) {
                                         for ((index, field) in embed.fields.withIndex()) {
-                                            Div(attrs = {
+                                            FieldWrappers(attrs = {
                                                 attr(
                                                     "style", "border: 1px solid var(--input-border-color);\n" +
                                                             "  border-radius: var(--first-level-border-radius);\n" +
@@ -639,22 +633,18 @@ fun DiscordMessageEditor(
                                                 Div {
                                                     FieldLabel("Nome")
 
-                                                    TextInput(field.name) {
-                                                        onInput {
-                                                            field.name = it.value
-                                                            mutableMessage.triggerUpdate()
-                                                        }
+                                                    TextAreaWithEntityPickers(targetGuild, field.name) {
+                                                        field.name = it
+                                                        mutableMessage.triggerUpdate()
                                                     }
                                                 }
 
                                                 Div {
                                                     FieldLabel("Valor")
 
-                                                    TextArea(field.value) {
-                                                        onInput {
-                                                            field.value = it.value
-                                                            mutableMessage.triggerUpdate()
-                                                        }
+                                                    TextAreaWithEntityPickers(targetGuild, field.value) {
+                                                        field.name = it
+                                                        mutableMessage.triggerUpdate()
                                                     }
                                                 }
 
@@ -864,6 +854,7 @@ fun DiscordMessageEditor(
                                 message.message,
                                 null,
                                 targetGuild.channels,
+                                targetGuild.roles,
                                 placeholders,
                             )
                         }
@@ -875,6 +866,7 @@ fun DiscordMessageEditor(
                                 parsedMessage,
                                 null,
                                 targetGuild.channels,
+                                targetGuild.roles,
                                 placeholders,
                             )
                         } else {
@@ -887,6 +879,7 @@ fun DiscordMessageEditor(
                                 ),
                                 null,
                                 targetGuild.channels,
+                                targetGuild.roles,
                                 placeholders
                             )
                         }
@@ -897,6 +890,7 @@ fun DiscordMessageEditor(
                                 message.message,
                                 null,
                                 targetGuild.channels,
+                                targetGuild.roles,
                                 placeholders,
                             )
                         }

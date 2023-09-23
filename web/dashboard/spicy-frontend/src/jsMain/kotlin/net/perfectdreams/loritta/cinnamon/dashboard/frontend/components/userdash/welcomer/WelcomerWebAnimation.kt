@@ -14,7 +14,7 @@ fun WelcomerWebAnimation() {
         classes("welcomer-web-animation")
     }) {
         EtherealGambiImg(src = "https://stuff.loritta.website/loritta-welcomer-heathecliff.png", sizes = "350px") {
-            attr("style", "height: 100%;")
+            attr("style", "height: 100%; width: 100%;")
         }
 
         Span(attrs = {

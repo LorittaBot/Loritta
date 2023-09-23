@@ -1,5 +1,9 @@
 @use "../placeholders/reset-button-styling";
 
+a:has(.discord-button) {
+  text-decoration: none;
+}
+
 .discord-button {
     @extend %reset-button-styling;
     color: white;
@@ -10,6 +14,9 @@
     opacity: 1;
     background-color: #757575;
     border: 1px solid var(--soft-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &.disabled {
         opacity: 0.5;
@@ -18,18 +25,6 @@
 
     &:hover {
         background-color: darken(#757575, 10%);
-    }
-
-    .button-with-icon-wrapper {
-        display: flex;
-        gap: 0.5em;
-        align-items: center;
-        justify-content: center;
-
-        .button-icon {
-            height: 1em;
-            flex-shrink: 0; // Don't shrink if the button width is too smol
-        }
     }
 
     &:disabled {

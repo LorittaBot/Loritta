@@ -55,6 +55,8 @@ $mobile-version: 1279px;
     --loritta-blue: #{$loritta-blue};
     --loritta-blue-rgb: 41, 166, 254;
     --input-background-color: rgb(244, 244, 244);
+    // Used when we need to fallback to the original color after the variable has already been changed
+    --OG-input-background-color: rgb(244, 244, 244);
     --input-secondary-element-background-color: rgb(255, 255, 255);
     --input-text-color: black;
     --input-border-color: rgb(204, 204, 204);
@@ -83,6 +85,7 @@ $mobile-version: 1279px;
     --user-info-wrapper-background-color: #232428;
     --content-text-color: #b5bac1;
     --input-text-color: white;
+    --OG-input-background-color: rgb(24, 24, 24);
     --input-background-color: rgb(24, 24, 24);
     --input-secondary-element-background-color: var(--input-background-color);
     --input-border-color: rgb(4, 4, 4);
@@ -428,7 +431,10 @@ section#right-sidebar {
         .hero-wrapper {
             display: grid;
             align-items: center;
-            grid-template-columns: 70fr 30fr;
+            // wow
+            // such specific value
+            // much perfectionism
+            grid-template-columns: 64fr 36fr;
 
             .hero-image {
                 text-align: center;
@@ -634,5 +640,16 @@ aside#that-wasnt-very-cash-money-of-you-reserved-space {
 
     @media screen and (max-width: 1024px) {
         grid-template-columns: 1fr;
+    }
+}
+
+.text-with-icon-wrapper {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    .text-icon {
+        height: 1em;
+        flex-shrink: 0; // Don't shrink if the button width is too smol
     }
 }

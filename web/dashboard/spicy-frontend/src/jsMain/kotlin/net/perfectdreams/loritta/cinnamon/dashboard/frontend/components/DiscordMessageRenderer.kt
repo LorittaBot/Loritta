@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.common.utils.placeholders.MessagePlaceholder
 import net.perfectdreams.loritta.serializable.DiscordChannel
+import net.perfectdreams.loritta.serializable.DiscordRole
 import net.perfectdreams.loritta.serializable.DiscordUser
 import org.jetbrains.compose.web.attributes.href
 import org.jetbrains.compose.web.dom.*
@@ -30,13 +31,14 @@ fun DiscordMessageRenderer(
     message: DiscordMessage,
     additionalMessageData: AdditionalMessageData?,
     channels: List<DiscordChannel>,
+    roles: List<DiscordRole>,
     placeholders: List<RenderableMessagePlaceholder>
 ) {
     DiscordMessageStyle {
         DiscordMessageBlock(author.name, author.avatarUrl, author.bot) {
             // ===[ MESSAGE CONTENT ]===
             Div {
-                TransformedDiscordText(message.content, channels, placeholders)
+                TransformedDiscordText(message.content, channels, roles, placeholders)
             }
 
             val embed = message.embed
@@ -81,13 +83,13 @@ fun DiscordMessageRenderer(
                                     href(titleUrl)
                                     classes("discord-embed-title")
                                 }) {
-                                    TransformedDiscordText(title, channels, placeholders)
+                                    TransformedDiscordText(title, channels, roles, placeholders)
                                 }
                             } else {
                                 Div(attrs = {
                                     classes("discord-embed-title")
                                 }) {
-                                    TransformedDiscordText(title, channels, placeholders)
+                                    TransformedDiscordText(title, channels, roles, placeholders)
                                 }
                             }
                         }
@@ -96,7 +98,7 @@ fun DiscordMessageRenderer(
                         val description = embed.description
                         if (description != null)
                             DiscordEmbedDescription {
-                                TransformedDiscordText(description, channels, placeholders)
+                                TransformedDiscordText(description, channels, roles, placeholders)
                             }
 
                         if (embed.fields.isNotEmpty()) {
@@ -169,13 +171,13 @@ fun DiscordMessageRenderer(
                                                 Div(attrs = {
                                                     classes("discord-embed-field-name")
                                                 }) {
-                                                    TransformedDiscordText(field.name, channels, placeholders)
+                                                    TransformedDiscordText(field.name, channels, roles, placeholders)
                                                 }
 
                                                 Div(attrs = {
                                                     classes("discord-embed-field-value")
                                                 }) {
-                                                    TransformedDiscordText(field.value, channels, placeholders)
+                                                    TransformedDiscordText(field.value, channels, roles, placeholders)
                                                 }
                                             }
                                             fieldIndex++
@@ -525,6 +527,7 @@ fun DiscordLinkButton(content: ContentBuilder<HTMLElement>) {
 private fun TransformedDiscordText(
     input: String,
     channels: List<DiscordChannel>,
+    roles: List<DiscordRole>,
     placeholders: List<RenderableMessagePlaceholder>,
 ) {
     // We DON'T strip the HTML, because that would trigger issues with animated emojis getting stripped out
@@ -559,12 +562,22 @@ private fun TransformedDiscordText(
                 for (section in sections) {
                     when (section) {
                         is DiscordMessageUtils.DrawableDiscordEmote -> error("Drawable Discord Emote found, but this shouldn't happen!")
+                        is DiscordMessageUtils.DrawableDiscordRole -> {
+                            val role = roles.firstOrNull { it.id == section.roleId }
+                            if (role != null) {
+                                val color = if (role.color != 0x1FFFFFFF) Color(role.color) else null
+
+                                InlineDiscordMention("@${role.name}", color)
+                            } else {
+                                InlineDiscordMention("@Cargo Desconhecido", Color(237, 66, 69))
+                            }
+                        }
                         is DiscordMessageUtils.DrawableDiscordChannel -> {
                             val channel = channels.firstOrNull { it.id == section.channelId }
                             if (channel != null) {
                                 InlineDiscordMention("#${channel.name}")
                             } else {
-                                InlineDiscordMention("#Desconhecido", Color(237, 66, 69))
+                                InlineDiscordMention("#Canal Desconhecido", Color(237, 66, 69))
                             }
                         }
                         is DiscordMessageUtils.DrawableText -> Text(section.text)

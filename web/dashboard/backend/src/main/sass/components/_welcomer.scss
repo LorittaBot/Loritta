@@ -4,6 +4,9 @@
     aspect-ratio: 2384/1890;
     margin: auto;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .welcome-wumpus-message {

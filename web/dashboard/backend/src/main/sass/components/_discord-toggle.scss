@@ -25,6 +25,11 @@
     .toggleable-content {
         padding: 10px 20px 20px 20px;
     }
+
+    // Used in position: absolute; divs to reset the input to their default color
+    .reset-theme-variables {
+        --input-background-color: var(--OG-input-background-color);
+    }
 }
 
 label.toggle-wrapper {

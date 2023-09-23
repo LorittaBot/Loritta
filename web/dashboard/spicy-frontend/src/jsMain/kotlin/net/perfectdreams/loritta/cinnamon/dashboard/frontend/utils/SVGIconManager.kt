@@ -49,6 +49,10 @@ object SVGIconManager {
     val coloredFolder by lazy { register(svgColoredFolder) }
     val coloredStar by lazy { register(svgColoredStar) }
     val code by lazy { register(svgCode, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val discordTextChannel by lazy { register(svgDiscordTextChannel, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val discordNewsChannel by lazy { register(svgDiscordNewsChannel, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val faceSmile by lazy { register(svgFaceSmile, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val roleShield by lazy { register(svgRoleShield, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
 
     /**
      * Loads and registers a SVG with [name] and [path]
@@ -261,3 +265,19 @@ external val svgColoredStar: dynamic
 @JsModule("./icons/fontawesome6/solid/code.svg")
 @JsNonModule
 external val svgCode: dynamic
+
+@JsModule("./icons/fontawesome6/solid/face-smile.svg")
+@JsNonModule
+external val svgFaceSmile: dynamic
+
+@JsModule("./icons/discord/text-channel.svg")
+@JsNonModule
+external val svgDiscordTextChannel: dynamic
+
+@JsModule("./icons/discord/news-channel.svg")
+@JsNonModule
+external val svgDiscordNewsChannel: dynamic
+
+@JsModule("./icons/discord/role-shield.svg")
+@JsNonModule
+external val svgRoleShield: dynamic

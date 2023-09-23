@@ -3,9 +3,10 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdas
 import androidx.compose.runtime.Composable
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.ButtonWithIconWrapper
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.AScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.TextWithIconWrapper
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.ResourceChecker
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.EditGuildCustomCommandScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
@@ -33,16 +34,29 @@ fun EditGuildCustomCommand(
         guildViewModel.guildInfoResource,
         configViewModel.configResource
     ) { guild, customCommandsResponse ->
-        DiscordButton(
-            DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
-            attrs = {
-                onClick {
-                    m.routingManager.switchBasedOnPath(i18nContext, ScreenPathWithArguments(ScreenPath.ConfigureGuildCustomCommandsPath, mapOf("guildId" to screen.guildId.toString()), mapOf()).build(), false)
-                }
-            }
+        AScreen(
+            m,
+            ScreenPathWithArguments(ScreenPath.ConfigureGuildCustomCommandsPath, mapOf("guildId" to screen.guildId.toString()), mapOf())
         ) {
-            ButtonWithIconWrapper(SVGIconManager.chevronLeft, {}) {
-                Text("Voltar para a lista de comandos personalizados")
+            DiscordButton(
+                DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
+                attrs = {
+                    onClick {
+                        m.routingManager.switchBasedOnPath(
+                            i18nContext,
+                            ScreenPathWithArguments(
+                                ScreenPath.ConfigureGuildCustomCommandsPath,
+                                mapOf("guildId" to screen.guildId.toString()),
+                                mapOf()
+                            ).build(),
+                            false
+                        )
+                    }
+                }
+            ) {
+                TextWithIconWrapper(SVGIconManager.chevronLeft, {}) {
+                    Text("Voltar para a lista de comandos personalizados")
+                }
             }
         }
 
