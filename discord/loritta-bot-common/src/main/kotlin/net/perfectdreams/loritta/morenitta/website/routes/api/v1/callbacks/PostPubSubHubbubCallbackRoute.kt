@@ -2,28 +2,25 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.common.cache.CacheBuilder
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import kotlinx.coroutines.*
+import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SentYouTubeVideoIds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.YouTubeEventSubEvents
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.bytesToHex
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import io.ktor.server.application.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.server.request.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SentYouTubeVideoIds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
@@ -111,6 +108,13 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
 
 			if (loritta.isMainInstance) {
+				// Insert to track the event data
+				loritta.newSuspendedTransaction {
+					YouTubeEventSubEvents.insert {
+						it[YouTubeEventSubEvents.event] = response
+					}
+				}
+
 				val wasAlreadySent = loritta.newSuspendedTransaction {
 					SentYouTubeVideoIds.select {
 						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
@@ -133,6 +137,12 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			}
 
 			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
+
+			if (System.currentTimeMillis() - 86_400_000 > publishedEpoch) {
+				logger.warn { "Notification of video $lastVideoTitle ($videoId) of $channelId was sent more than one day ago! (epoch: $publishedEpoch) Ignoring notification..." }
+				call.respondJson(jsonObject())
+				return
+			}
 
 			val trackedAccounts = loritta.newSuspendedTransaction {
 				TrackedYouTubeAccounts.select {
