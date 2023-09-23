@@ -314,8 +314,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                             mutableWelcomerConfig.joinMessage
                                 ?: ""
                         ) {
-                            mutableWelcomerConfig.joinMessage =
-                                it
+                            mutableWelcomerConfig.joinMessage = it
                         }
                     }
                 }

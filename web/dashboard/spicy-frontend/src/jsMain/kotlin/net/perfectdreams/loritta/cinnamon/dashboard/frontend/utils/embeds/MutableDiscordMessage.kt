@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.embeds
 
 import kotlinx.serialization.encodeToString
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.JsonForDiscordMessages
 import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
 import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.JsonForDiscordMessages
 
 class MutableDiscordMessage(
     source: DiscordMessage,
@@ -20,11 +20,11 @@ class MutableDiscordMessage(
             }
         }
 
-        private fun transformIntoData(component: MutableDiscordComponent): DiscordComponent {
+        private fun transformToData(component: MutableDiscordComponent): DiscordComponent {
             return when (component) {
                 is MutableDiscordComponent.MutableActionRow -> DiscordComponent.DiscordActionRow(
                     components = component.components.map {
-                        transformIntoData(it)
+                        transformToData(it)
                     }
                 )
                 is MutableDiscordComponent.MutableButton -> DiscordComponent.DiscordButton(
@@ -40,44 +40,42 @@ class MutableDiscordMessage(
     var embed = source.embed?.let { MutableDiscordEmbed(it) }
     val components = source.components?.map { transformIntoMutable(it) }?.toMutableList() ?: mutableListOf()
 
+    fun transformToData() = DiscordMessage(
+        content,
+        embed = embed?.let {
+            DiscordEmbed(
+                author = it.author?.let {
+                    DiscordEmbed.Author(it.name!!, it.url, it.iconUrl)
+                },
+                title = it.title,
+                url = it.url,
+                description = it.description,
+                color = it.color,
+                fields = it.fields.map {
+                    DiscordEmbed.Field(
+                        it.name,
+                        it.value,
+                        it.inline
+                    )
+                },
+                image = it.imageUrl?.let { DiscordEmbed.EmbedUrl(it) },
+                thumbnail = it.thumbnailUrl?.let { DiscordEmbed.EmbedUrl(it) },
+                footer = it.footer?.let {
+                    DiscordEmbed.Footer(it.text!!, it.iconUrl)
+                }
+            )
+        },
+        components = components.map {
+            transformToData(it)
+        }
+    )
+
     /**
      * Transforms the current [MutableDiscordMessage] into a [DiscordMessage], encodes it in JSON, and invokes [onMessageContentChange]
      */
     fun triggerUpdate() {
         try {
-            onMessageContentChange.invoke(
-                JsonForDiscordMessages.encodeToString(
-                    DiscordMessage(
-                        content,
-                        embed = embed?.let {
-                            DiscordEmbed(
-                                author = it.author?.let {
-                                    DiscordEmbed.Author(it.name!!, it.url, it.iconUrl)
-                                },
-                                title = it.title,
-                                url = it.url,
-                                description = it.description,
-                                color = it.color,
-                                fields = it.fields.map {
-                                    DiscordEmbed.Field(
-                                        it.name,
-                                        it.value,
-                                        it.inline
-                                    )
-                                },
-                                image = it.imageUrl?.let { DiscordEmbed.EmbedUrl(it) },
-                                thumbnail = it.thumbnailUrl?.let { DiscordEmbed.EmbedUrl(it) },
-                                footer = it.footer?.let {
-                                    DiscordEmbed.Footer(it.text!!, it.iconUrl)
-                                }
-                            )
-                        },
-                        components = components.map {
-                            transformIntoData(it)
-                        }
-                    )
-                )
-            )
+            onMessageContentChange.invoke(JsonForDiscordMessages.encodeToString(transformToData()))
         } catch (e: Exception) {
             e.printStackTrace()
         }

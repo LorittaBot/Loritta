@@ -505,6 +505,7 @@ fun DiscordLinkButton(content: ContentBuilder<HTMLElement>) {
             }
 
             UIIcon(SVGIconManager.arrowUpRightFromSquare) {
+                attr("style", "width: 1em; height: 1em;")
                 classes("button-icon")
             }
         }

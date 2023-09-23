@@ -32,102 +32,100 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (content: String) -> (Unit)) {
-    var textAreaWrapper by remember { mutableStateOf<TextAreaWithEntityPickers?>(null) }
-
-    SideEffect {
-        // Update content when recomposed, this is required when the user clicks the "Reset" config option
-        textAreaWrapper?.textArea?.value = content
+    // This needs to be remembered across compositions!
+    val textAreaWrapper by remember {
+        mutableStateOf(TextAreaWithEntityPickers(guild, onChange))
     }
 
-    TextArea {
-        defaultValue(content)
+    // Update the area in our uncontrolled input
+    SideEffect {
+        textAreaWrapper.updateData(guild, onChange)
+    }
 
+    TextArea(content) {
         ref {
-            textAreaWrapper = TextAreaWithEntityPickers(it, guild, onChange)
+            textAreaWrapper.mountIn(it)
             onDispose {
-                textAreaWrapper?.unmount()
-                textAreaWrapper = null
+                textAreaWrapper.unmount()
             }
         }
     }
 
     val hackyTextAreaX = textAreaWrapper
-    if (hackyTextAreaX != null) {
-        val cursorXY = hackyTextAreaX.cursorXY
-        val typeaheadMatches = textAreaWrapper?.matches
-        if (cursorXY != null && typeaheadMatches != null) {
-            Div(attrs = {
-                attr("style", "position: absolute; left: ${cursorXY.x}px; top: ${cursorXY.y}px;")
-                classes("message-config-tooltip", "reset-theme-variables")
-            }) {
-                when (typeaheadMatches) {
-                    is TextAreaWithEntityPickers.TypeaheadMatches.DiscordChannelMatches -> {
-                        typeaheadMatches.channels.forEachIndexed { index, channel ->
-                            Div(attrs = {
-                                classes("message-config-tooltip-entry")
-                                if (index == typeaheadMatches.index.value)
-                                    classes("selected")
+    val cursorXY = hackyTextAreaX.cursorXY
+    val typeaheadMatches = textAreaWrapper.matches
+    if (cursorXY != null && typeaheadMatches != null) {
+        Div(attrs = {
+            attr("style", "position: absolute; left: ${cursorXY.x}px; top: ${cursorXY.y}px;")
+            classes("message-config-tooltip", "reset-theme-variables")
+        }) {
+            when (typeaheadMatches) {
+                is TextAreaWithEntityPickers.TypeaheadMatches.DiscordChannelMatches -> {
+                    typeaheadMatches.channels.forEachIndexed { index, channel ->
+                        Div(attrs = {
+                            classes("message-config-tooltip-entry")
+                            if (index == typeaheadMatches.index.value)
+                                classes("selected")
 
-                                onClick {
-                                    hackyTextAreaX.selectChannel(typeaheadMatches, channel)
-                                }
+                            onClick {
+                                hackyTextAreaX.selectChannel(typeaheadMatches, channel)
+                            }
+                        }) {
+                            TextWithIconWrapper(DiscordUtils.getIconForChannel(channel), svgAttrs = {
+                                attr("style", "height: 1em; width: 1em;")
                             }) {
-                                TextWithIconWrapper(DiscordUtils.getIconForChannel(channel), svgAttrs = {
-                                    attr("style", "height: 1em; width: 1em;")
-                                }) {
-                                    Text(channel.name)
-                                }
+                                Text(channel.name)
                             }
                         }
                     }
-                    is TextAreaWithEntityPickers.TypeaheadMatches.DiscordRoleMatches -> {
-                        typeaheadMatches.roles.forEachIndexed { index, role ->
-                            Div(attrs = {
-                                classes("message-config-tooltip-entry")
-                                if (index == typeaheadMatches.index.value)
-                                    classes("selected")
+                }
+                is TextAreaWithEntityPickers.TypeaheadMatches.DiscordRoleMatches -> {
+                    typeaheadMatches.roles.forEachIndexed { index, role ->
+                        Div(attrs = {
+                            classes("message-config-tooltip-entry")
+                            if (index == typeaheadMatches.index.value)
+                                classes("selected")
 
-                                onClick {
-                                    hackyTextAreaX.selectRole(typeaheadMatches, role)
+                            onClick {
+                                hackyTextAreaX.selectRole(typeaheadMatches, role)
+                            }
+                        }) {
+                            TextWithIconWrapper(SVGIconManager.roleShield, svgAttrs = {
+                                val color = if (role.color != 0x1FFFFFFF) Color(role.color) else null
+
+                                style {
+                                    width(1.em)
+                                    height(1.em)
+                                    if (color != null)
+                                        color(rgb(color.red, color.green, color.blue))
                                 }
                             }) {
-                                TextWithIconWrapper(SVGIconManager.roleShield, svgAttrs = {
-                                    val color = if (role.color != 0x1FFFFFFF) Color(role.color) else null
-
-                                    style {
-                                        width(1.em)
-                                        height(1.em)
-                                        if (color != null)
-                                            color(rgb(color.red, color.green, color.blue))
-                                    }
-                                }) {
-                                    Text(role.name)
-                                }
+                                Text(role.name)
                             }
                         }
                     }
-                    is TextAreaWithEntityPickers.TypeaheadMatches.DiscordEmojiMatches -> {
-                        typeaheadMatches.emojis.forEachIndexed { index, emoji ->
-                            Div(attrs = {
-                                classes("message-config-tooltip-entry", "emoji-entry")
-                                if (index == typeaheadMatches.index.value)
-                                    classes("selected")
+                }
+                is TextAreaWithEntityPickers.TypeaheadMatches.DiscordEmojiMatches -> {
+                    typeaheadMatches.emojis.forEachIndexed { index, emoji ->
+                        Div(attrs = {
+                            classes("message-config-tooltip-entry", "emoji-entry")
+                            if (index == typeaheadMatches.index.value)
+                                classes("selected")
 
-                                onClick {
-                                    hackyTextAreaX.selectEmoji(typeaheadMatches, emoji)
-                                }
-                            }) {
-                                Img(DiscordCdn.emoji(emoji.id.toULong()).toUrl {
-                                    format = if (emoji.animated) Image.Format.GIF else Image.Format.PNG
-                                }) {
-                                    attr("width", "24")
-                                    attr("height", "24")
-                                }
-
-                                Text(":")
-                                Text(emoji.name)
-                                Text(":")
+                            onClick {
+                                hackyTextAreaX.selectEmoji(typeaheadMatches, emoji)
                             }
+                        }) {
+                            Img(DiscordCdn.emoji(emoji.id.toULong()).toUrl {
+                                format = if (emoji.animated) Image.Format.GIF else Image.Format.PNG
+                            }) {
+                                attr("width", "24")
+                                attr("height", "24")
+                            }
+
+                            Text(":")
+                            Text(emoji.name)
+                            Text(":")
                         }
                     }
                 }
@@ -207,12 +205,12 @@ fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (c
                                 Div(attrs = {
                                     classes("message-config-channel-list-entry")
                                     onClick {
-                                        val textArea = textAreaWrapper?.textArea ?: return@onClick
+                                        val textArea = textAreaWrapper.textArea
 
                                         val selectionStart = textArea.selectionStart ?: 0
                                         val selectionEnd = textArea.selectionEnd ?: 0
 
-                                        textAreaWrapper!!.replaceText(selectionStart, selectionEnd, "<#${channel.id}>")
+                                        textAreaWrapper.replaceText(selectionStart, selectionEnd, "<#${channel.id}>")
                                         onChange.invoke(textArea.value)
 
                                         // Only close the menu if the shift key is not being held
@@ -468,7 +466,8 @@ fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (c
 /**
  * A text area with Discord entity pickers
  */
-private class TextAreaWithEntityPickers(val textArea: HTMLTextAreaElement, val guild: DiscordGuild, val onChange: (String) -> (Unit)) {
+private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private var onChange: (String) -> (Unit)) {
+    lateinit var textArea: HTMLTextAreaElement
     var cursorXY by mutableStateOf<CursorXY?>(null)
     private val updateCursorListener = object: EventListener {
         override fun handleEvent(event: Event) {
@@ -574,7 +573,7 @@ private class TextAreaWithEntityPickers(val textArea: HTMLTextAreaElement, val g
                 }
 
                 if (char == '@') {
-                    // Discord Emoji
+                    // Discord Role Mention
                     controlIndexFromEnd = index
                     type = TypeaheadType.ROLE
                     break
@@ -658,6 +657,12 @@ private class TextAreaWithEntityPickers(val textArea: HTMLTextAreaElement, val g
     }
 
     init {
+        println("Initialized TextAreaWithEntityPickers")
+    }
+
+    fun mountIn(textArea: HTMLTextAreaElement) {
+        println("Mounted TextAreaWithEntityPickers")
+        this.textArea = textArea
         textArea.addEventListener("click", updateCursorListener)
         textArea.addEventListener("selectionchange", updateCursorListener)
         textArea.addEventListener("input", updateCursorListener)
@@ -674,6 +679,7 @@ private class TextAreaWithEntityPickers(val textArea: HTMLTextAreaElement, val g
     }
 
     fun unmount() {
+        println("Unmounted TextAreaWithEntityPickers")
         textArea.removeEventListener("click", updateCursorListener)
         textArea.removeEventListener("selectionchange", updateCursorListener)
         textArea.removeEventListener("input", updateCursorListener)
@@ -689,8 +695,13 @@ private class TextAreaWithEntityPickers(val textArea: HTMLTextAreaElement, val g
         textArea.removeEventListener("blur", blurListener)
     }
 
-    fun updateCursor() {
+    private fun updateCursor() {
         cursorXY = getCursorXY(textArea, textArea.selectionEnd ?: 0)
+    }
+
+    fun updateData(guild: DiscordGuild, onChange: (content: String) -> Unit) {
+        this.guild = guild
+        this.onChange = onChange
     }
 
     fun selectChannel(match: TypeaheadMatches.DiscordChannelMatches, channel: DiscordChannel) {
