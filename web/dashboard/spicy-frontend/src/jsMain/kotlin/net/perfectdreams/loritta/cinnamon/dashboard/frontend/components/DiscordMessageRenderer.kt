@@ -490,27 +490,15 @@ fun DiscordActionRow(component: DiscordComponent.DiscordActionRow) {
 }
 
 @Composable
-private fun DiscordLinkButton(component: DiscordComponent.DiscordButton) {
-    DiscordButton(DiscordButtonType.SECONDARY) {
-        Div({
-            classes("button-with-icon-wrapper")
-        }) {
-            Div {
-                Text(component.label)
-            }
-
-            UIIcon(SVGIconManager.arrowUpRightFromSquare) {
-                classes("button-icon")
-            }
-        }
-    }
+private fun DiscordLinkButton(component: DiscordComponent.DiscordButton) = DiscordLinkButton {
+    Text(component.label)
 }
 
 @Composable
 fun DiscordLinkButton(content: ContentBuilder<HTMLElement>) {
     DiscordButton(DiscordButtonType.SECONDARY) {
         Div({
-            classes("button-with-icon-wrapper")
+            classes("text-with-icon-wrapper")
         }) {
             Div {
                 content()
