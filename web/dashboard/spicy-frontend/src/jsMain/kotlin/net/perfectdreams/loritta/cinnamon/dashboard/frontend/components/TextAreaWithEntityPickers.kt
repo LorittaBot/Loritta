@@ -302,12 +302,12 @@ fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (c
                                 Div(attrs = {
                                     classes("message-config-role-list-entry")
                                     onClick {
-                                        val textArea = textAreaWrapper?.textArea ?: return@onClick
+                                        val textArea = textAreaWrapper.textArea
 
                                         val selectionStart = textArea.selectionStart ?: 0
                                         val selectionEnd = textArea.selectionEnd ?: 0
 
-                                        textAreaWrapper!!.replaceText(selectionStart, selectionEnd, "<@&${role.id}>")
+                                        textAreaWrapper.replaceText(selectionStart, selectionEnd, "<@&${role.id}>")
                                         onChange.invoke(textArea.value)
 
                                         // Only close the menu if the shift key is not being held
@@ -414,12 +414,12 @@ fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (c
                                     Div(attrs = {
                                         attr("style", "cursor: pointer;")
                                         onClick {
-                                            val textArea = textAreaWrapper?.textArea ?: return@onClick
+                                            val textArea = textAreaWrapper.textArea ?: return@onClick
 
                                             val selectionStart = textArea.selectionStart ?: 0
                                             val selectionEnd = textArea.selectionEnd ?: 0
 
-                                            textAreaWrapper!!.replaceText(selectionStart, selectionEnd, buildString {
+                                            textAreaWrapper.replaceText(selectionStart, selectionEnd, buildString {
                                                 append("<")
                                                 if (emoji.animated)
                                                     append("a")
@@ -589,7 +589,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
                 val query = everythingBeforeSelEnd.drop(controlIndexFromBeginning)
 
                 if (type == TypeaheadType.CHANNEL) {
-                    val channels = guild.channels.filter { it.name.startsWith(query, true) }
+                    val channels = guild.channels.filter { it.name.contains(query, true) }
                         .take(10)
 
                     if (channels.isEmpty()) {
@@ -605,7 +605,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
                         channels
                     )
                 } else if (type == TypeaheadType.EMOJI) {
-                    val emojis = guild.emojis.filter { it.name.startsWith(query, true) }
+                    val emojis = guild.emojis.filter { it.name.contains(query, true) }
                         .take(10)
 
                     if (emojis.isEmpty()) {
@@ -621,7 +621,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
                         emojis
                     )
                 } else if (type == TypeaheadType.ROLE) {
-                    val roles = guild.roles.filter { it.name.startsWith(query, true) }
+                    val roles = guild.roles.filter { it.name.contains(query, true) }
                         .take(10)
 
                     if (roles.isEmpty()) {
