@@ -1,16 +1,17 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components
 
 import androidx.compose.runtime.*
-import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.CursorXY
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.DiscordUtils
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.DiscordCdn
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.Image
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.getCursorXY
 import net.perfectdreams.loritta.common.utils.Color
 import net.perfectdreams.loritta.serializable.DiscordChannel
 import net.perfectdreams.loritta.serializable.DiscordEmoji
@@ -19,12 +20,9 @@ import net.perfectdreams.loritta.serializable.DiscordRole
 import org.jetbrains.compose.web.attributes.autoFocus
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Img
-import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.dom.TextArea
-import org.jetbrains.compose.web.dom.TextInput
-import org.w3c.dom.*
+import org.jetbrains.compose.web.dom.*
+import org.w3c.dom.HTMLTextAreaElement
+import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.KeyboardEvent
@@ -147,314 +145,323 @@ fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (c
     Div(attrs = {
         attr("style", "display: flex; justify-content: flex-end; gap: 0.5em;")
     }) {
-        Div(attrs = {
-            attr("style", "position: relative; display: flex;")
-        }) {
-            var isMenuOpen by remember { mutableStateOf(false) }
-            var channelFilter by remember { mutableStateOf("") }
+        DiscordChannelEntityPickerButton(textAreaWrapper, guild.channels, onChange)
+        DiscordRoleEntityPickerButton(textAreaWrapper, guild.roles, onChange)
+        DiscordEmojiEntityPickerButton(textAreaWrapper, guild.emojis, onChange)
+    }
+}
 
-            DiscordButton(
-                DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
-                attrs = {
-                    onClick {
-                        isMenuOpen = !isMenuOpen
-                    }
-                }
-            ) {
-                TextWithIconWrapper(SVGIconManager.discordTextChannel, {
-                    attr("style", "height: 1em;")
-                }) {
-                    Text("Canais")
-                }
-            }
+@Composable
+private fun DiscordChannelEntityPickerButton(textAreaWrapper: TextAreaWithEntityPickers, channels: List<DiscordChannel>, onChange: (content: String) -> Unit) {
+    Div(attrs = {
+        attr("style", "position: relative; display: flex;")
+    }) {
+        var isMenuOpen by remember { mutableStateOf(false) }
+        var channelFilter by remember { mutableStateOf("") }
 
-            if (isMenuOpen) {
-                var onClickCallback by remember {
-                    mutableStateOf<EventListener?>(null)
-                }
-
-                Div(attrs = {
-                    classes("message-config-popover", "reset-theme-variables")
-
-                    ref {
-                        onClickCallback = object: EventListener {
-                            override fun handleEvent(event: Event) {
-                                if (it.contains(event.target as Node))
-                                    return
-
-                                isMenuOpen = false
-                            }
-                        }
-                        window.addEventListener("click", onClickCallback)
-
-                        onDispose {
-                            window.removeEventListener("click", onClickCallback)
-                            onClickCallback = null
-                        }
-                    }
-                }) {
-                    FieldWrappers(attrs = {
-                        classes("message-config-popover-content")
-                    }) {
-                        FieldLabel("Adicionar menção de canal")
-
-                        Div(attrs = {
-                            classes("message-config-channel-list")
-                        }) {
-                            for (channel in guild.channels.filter { it.name.contains(channelFilter.removePrefix("#"), true) }) {
-                                Div(attrs = {
-                                    classes("message-config-channel-list-entry")
-                                    onClick {
-                                        val textArea = textAreaWrapper.textArea
-
-                                        val selectionStart = textArea.selectionStart ?: 0
-                                        val selectionEnd = textArea.selectionEnd ?: 0
-
-                                        textAreaWrapper.replaceText(selectionStart, selectionEnd, "<#${channel.id}>")
-                                        onChange.invoke(textArea.value)
-
-                                        // Only close the menu if the shift key is not being held
-                                        if (!it.shiftKey)
-                                            isMenuOpen = false
-                                    }
-                                }) {
-                                    UIIcon(DiscordUtils.getIconForChannel(channel)) {
-                                        attr("style", "height: 1em;")
-                                    }
-
-                                    Text(channel.name)
-                                }
-                            }
-                        }
-                    }
-
-                    Div(attrs = {
-                        classes("message-config-popover-filter-input-wrapper")
-                    }) {
-                        TextInput(channelFilter) {
-                            autoFocus()
-                            placeholder("Filtrar canais")
-
-                            onInput {
-                                channelFilter = it.value
-                            }
-                        }
-                    }
+        DiscordButton(
+            DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
+            attrs = {
+                onClick {
+                    isMenuOpen = !isMenuOpen
                 }
             }
-        }
-
-        Div(attrs = {
-            attr("style", "position: relative; display: flex;")
-        }) {
-            var isMenuOpen by remember { mutableStateOf(false) }
-            var roleFilter by remember { mutableStateOf("") }
-
-            DiscordButton(
-                DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
-                attrs = {
-                    onClick {
-                        isMenuOpen = !isMenuOpen
-                    }
-                }
-            ) {
-                TextWithIconWrapper(SVGIconManager.roleShield, {
-                    attr("style", "height: 1em;")
-                }) {
-                    Text("Cargos")
-                }
-            }
-
-            if (isMenuOpen) {
-                var onClickCallback by remember {
-                    mutableStateOf<EventListener?>(null)
-                }
-
-                Div(attrs = {
-                    classes("message-config-popover", "reset-theme-variables")
-
-                    ref {
-                        onClickCallback = object: EventListener {
-                            override fun handleEvent(event: Event) {
-                                if (it.contains(event.target as Node))
-                                    return
-
-                                isMenuOpen = false
-                            }
-                        }
-                        window.addEventListener("click", onClickCallback)
-
-                        onDispose {
-                            window.removeEventListener("click", onClickCallback)
-                            onClickCallback = null
-                        }
-                    }
-                }) {
-                    FieldWrappers(attrs = {
-                        classes("message-config-popover-content")
-                    }) {
-                        FieldLabel("Adicionar menção de cargo")
-
-                        Div(attrs = {
-                            classes("message-config-role-list")
-                        }) {
-                            for (role in guild.roles.filter { it.name.contains(roleFilter.removePrefix("@"), true) }) {
-                                Div(attrs = {
-                                    classes("message-config-role-list-entry")
-                                    onClick {
-                                        val textArea = textAreaWrapper.textArea
-
-                                        val selectionStart = textArea.selectionStart ?: 0
-                                        val selectionEnd = textArea.selectionEnd ?: 0
-
-                                        textAreaWrapper.replaceText(selectionStart, selectionEnd, "<@&${role.id}>")
-                                        onChange.invoke(textArea.value)
-
-                                        // Only close the menu if the shift key is not being held
-                                        if (!it.shiftKey)
-                                            isMenuOpen = false
-                                    }
-                                }) {
-                                    UIIcon(SVGIconManager.roleShield) {
-                                        val color = if (role.color != 0x1FFFFFFF) Color(role.color) else null
-
-                                        style {
-                                            width(1.em)
-                                            height(1.em)
-                                            if (color != null)
-                                                color(rgb(color.red, color.green, color.blue))
-                                        }
-                                    }
-
-                                    Text(role.name)
-                                }
-                            }
-                        }
-                    }
-
-                    Div(attrs = {
-                        classes("message-config-popover-filter-input-wrapper")
-                    }) {
-                        TextInput(roleFilter) {
-                            autoFocus()
-                            placeholder("Filtrar cargos")
-
-                            onInput {
-                                roleFilter = it.value
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Div(attrs = {
-            attr("style", "display: flex; justify-content: flex-end;")
-        }) {
-            Div(attrs = {
-                attr("style", "position: relative")
+        ) {
+            TextWithIconWrapper(SVGIconManager.discordTextChannel, {
+                attr("style", "height: 1em;")
             }) {
-                var isMenuOpen by remember { mutableStateOf(false) }
-                var emojiFilter by remember { mutableStateOf("") }
+                Text("Canais")
+            }
+        }
 
-                DiscordButton(
-                    DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
-                    attrs = {
-                        onClick {
-                            isMenuOpen = !isMenuOpen
+        if (isMenuOpen) {
+            var onClickCallback by remember {
+                mutableStateOf<EventListener?>(null)
+            }
+
+            Div(attrs = {
+                classes("message-config-popover", "reset-theme-variables")
+
+                ref {
+                    onClickCallback = object: EventListener {
+                        override fun handleEvent(event: Event) {
+                            if (it.contains(event.target as Node))
+                                return
+
+                            isMenuOpen = false
                         }
                     }
-                ) {
-                    TextWithIconWrapper(SVGIconManager.faceSmile, {
-                        attr("style", "height: 1em;")
+                    window.addEventListener("click", onClickCallback)
+
+                    onDispose {
+                        window.removeEventListener("click", onClickCallback)
+                        onClickCallback = null
+                    }
+                }
+            }) {
+                FieldWrappers(attrs = {
+                    classes("message-config-popover-content")
+                }) {
+                    FieldLabel("Adicionar menção de canal")
+
+                    Div(attrs = {
+                        classes("message-config-list")
                     }) {
-                        Text("Emojis")
+                        for (channel in channels.filter { it.name.contains(channelFilter.removePrefix("#"), true) }) {
+                            Div(attrs = {
+                                classes("message-config-list-entry")
+                                onClick {
+                                    val textArea = textAreaWrapper.textArea
+
+                                    val selectionStart = textArea.selectionStart ?: 0
+                                    val selectionEnd = textArea.selectionEnd ?: 0
+
+                                    textAreaWrapper.replaceText(selectionStart, selectionEnd, "<#${channel.id}>")
+                                    onChange.invoke(textArea.value)
+
+                                    // Only close the menu if the shift key is not being held
+                                    if (!it.shiftKey)
+                                        isMenuOpen = false
+                                }
+                            }) {
+                                UIIcon(DiscordUtils.getIconForChannel(channel)) {
+                                    attr("style", "height: 1em;")
+                                }
+
+                                Text(channel.name)
+                            }
+                        }
                     }
                 }
 
-                if (isMenuOpen) {
-                    var onClickCallback by remember {
-                        mutableStateOf<EventListener?>(null)
+                Div(attrs = {
+                    classes("message-config-popover-filter-input-wrapper")
+                }) {
+                    TextInput(channelFilter) {
+                        autoFocus()
+                        placeholder("Filtrar canais")
+
+                        onInput {
+                            channelFilter = it.value
+                        }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DiscordRoleEntityPickerButton(textAreaWrapper: TextAreaWithEntityPickers, roles: List<DiscordRole>, onChange: (content: String) -> Unit) {
+    Div(attrs = {
+        attr("style", "position: relative; display: flex;")
+    }) {
+        var isMenuOpen by remember { mutableStateOf(false) }
+        var roleFilter by remember { mutableStateOf("") }
+
+        DiscordButton(
+            DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
+            attrs = {
+                onClick {
+                    isMenuOpen = !isMenuOpen
+                }
+            }
+        ) {
+            TextWithIconWrapper(SVGIconManager.roleShield, {
+                attr("style", "height: 1em;")
+            }) {
+                Text("Cargos")
+            }
+        }
+
+        if (isMenuOpen) {
+            var onClickCallback by remember {
+                mutableStateOf<EventListener?>(null)
+            }
+
+            Div(attrs = {
+                classes("message-config-popover", "reset-theme-variables")
+
+                ref {
+                    onClickCallback = object: EventListener {
+                        override fun handleEvent(event: Event) {
+                            if (it.contains(event.target as Node))
+                                return
+
+                            isMenuOpen = false
+                        }
+                    }
+                    window.addEventListener("click", onClickCallback)
+
+                    onDispose {
+                        window.removeEventListener("click", onClickCallback)
+                        onClickCallback = null
+                    }
+                }
+            }) {
+                FieldWrappers(attrs = {
+                    classes("message-config-popover-content")
+                }) {
+                    FieldLabel("Adicionar menção de cargo")
 
                     Div(attrs = {
-                        classes("message-config-popover", "reset-theme-variables")
-
-                        ref {
-                            onClickCallback = object: EventListener {
-                                override fun handleEvent(event: Event) {
-                                    if (it.contains(event.target as Node))
-                                        return
-
-                                    isMenuOpen = false
-                                }
-                            }
-                            window.addEventListener("click", onClickCallback)
-
-                            onDispose {
-                                window.removeEventListener("click", onClickCallback)
-                                onClickCallback = null
-                            }
-                        }
+                        classes("message-config-list")
                     }) {
-                        FieldWrappers(attrs = {
-                            classes("message-config-popover-content")
-                        }) {
-                            FieldLabel("Adicionar emoji")
-
+                        for (role in roles.filter { it.name.contains(roleFilter.removePrefix("@"), true) }) {
                             Div(attrs = {
-                                classes("message-config-emoji-grid")
+                                classes("message-config-list-entry")
+                                onClick {
+                                    val textArea = textAreaWrapper.textArea
+
+                                    val selectionStart = textArea.selectionStart ?: 0
+                                    val selectionEnd = textArea.selectionEnd ?: 0
+
+                                    textAreaWrapper.replaceText(selectionStart, selectionEnd, "<@&${role.id}>")
+                                    onChange.invoke(textArea.value)
+
+                                    // Only close the menu if the shift key is not being held
+                                    if (!it.shiftKey)
+                                        isMenuOpen = false
+                                }
                             }) {
-                                for (emoji in guild.emojis.filter {
-                                    it.name.contains(
-                                        emojiFilter.removePrefix(":").removeSuffix(":"),
-                                        true
-                                    )
-                                }.sortedBy { it.name }) {
-                                    Div(attrs = {
-                                        attr("style", "cursor: pointer;")
-                                        onClick {
-                                            val textArea = textAreaWrapper.textArea ?: return@onClick
+                                UIIcon(SVGIconManager.roleShield) {
+                                    val color = if (role.color != 0x1FFFFFFF) Color(role.color) else null
 
-                                            val selectionStart = textArea.selectionStart ?: 0
-                                            val selectionEnd = textArea.selectionEnd ?: 0
-
-                                            textAreaWrapper.replaceText(selectionStart, selectionEnd, buildString {
-                                                append("<")
-                                                if (emoji.animated)
-                                                    append("a")
-                                                append(":")
-                                                append(emoji.name)
-                                                append(":")
-                                                append(emoji.id)
-                                                append(">")
-                                            })
-                                            onChange.invoke(textArea.value)
-
-                                            // Only close the menu if the shift key is not being held
-                                            if (!it.shiftKey)
-                                                isMenuOpen = false
-                                        }
-                                    }) {
-                                        Img(DiscordCdn.emoji(emoji.id.toULong()).toUrl {
-                                            format = if (emoji.animated) Image.Format.GIF else Image.Format.PNG
-                                        })
+                                    style {
+                                        width(1.em)
+                                        height(1.em)
+                                        if (color != null)
+                                            color(rgb(color.red, color.green, color.blue))
                                     }
                                 }
+
+                                Text(role.name)
                             }
                         }
+                    }
+                }
 
-                        Div(attrs = {
-                            classes("message-config-popover-filter-input-wrapper")
-                        }) {
-                            TextInput(emojiFilter) {
-                                autoFocus()
-                                placeholder("Filtrar emojis")
+                Div(attrs = {
+                    classes("message-config-popover-filter-input-wrapper")
+                }) {
+                    TextInput(roleFilter) {
+                        autoFocus()
+                        placeholder("Filtrar cargos")
 
-                                onInput {
-                                    emojiFilter = it.value
+                        onInput {
+                            roleFilter = it.value
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DiscordEmojiEntityPickerButton(textAreaWrapper: TextAreaWithEntityPickers, emojis: List<DiscordEmoji>, onChange: (content: String) -> Unit) {
+    Div(attrs = {
+        attr("style", "position: relative; display: flex;")
+    }) {
+        var isMenuOpen by remember { mutableStateOf(false) }
+        var emojiFilter by remember { mutableStateOf("") }
+
+        DiscordButton(
+            DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
+            attrs = {
+                onClick {
+                    isMenuOpen = !isMenuOpen
+                }
+            }
+        ) {
+            TextWithIconWrapper(SVGIconManager.faceSmile, {
+                attr("style", "height: 1em;")
+            }) {
+                Text("Emojis")
+            }
+        }
+
+        if (isMenuOpen) {
+            var onClickCallback by remember {
+                mutableStateOf<EventListener?>(null)
+            }
+
+            Div(attrs = {
+                classes("message-config-popover", "reset-theme-variables")
+
+                ref {
+                    onClickCallback = object: EventListener {
+                        override fun handleEvent(event: Event) {
+                            if (it.contains(event.target as Node))
+                                return
+
+                            isMenuOpen = false
+                        }
+                    }
+                    window.addEventListener("click", onClickCallback)
+
+                    onDispose {
+                        window.removeEventListener("click", onClickCallback)
+                        onClickCallback = null
+                    }
+                }
+            }) {
+                FieldWrappers(attrs = {
+                    classes("message-config-popover-content")
+                }) {
+                    FieldLabel("Adicionar emoji")
+
+                    Div(attrs = {
+                        classes("message-config-emoji-grid")
+                    }) {
+                        for (emoji in emojis.filter {
+                            it.name.contains(
+                                emojiFilter.removePrefix(":").removeSuffix(":"),
+                                true
+                            )
+                        }.sortedBy { it.name }) {
+                            Div(attrs = {
+                                attr("style", "cursor: pointer;")
+                                onClick {
+                                    val textArea = textAreaWrapper.textArea
+
+                                    val selectionStart = textArea.selectionStart ?: 0
+                                    val selectionEnd = textArea.selectionEnd ?: 0
+
+                                    textAreaWrapper.replaceText(selectionStart, selectionEnd, buildString {
+                                        append("<")
+                                        if (emoji.animated)
+                                            append("a")
+                                        append(":")
+                                        append(emoji.name)
+                                        append(":")
+                                        append(emoji.id)
+                                        append(">")
+                                    })
+                                    onChange.invoke(textArea.value)
+
+                                    // Only close the menu if the shift key is not being held
+                                    if (!it.shiftKey)
+                                        isMenuOpen = false
                                 }
+                            }) {
+                                Img(DiscordCdn.emoji(emoji.id.toULong()).toUrl {
+                                    format = if (emoji.animated) Image.Format.GIF else Image.Format.PNG
+                                })
                             }
+                        }
+                    }
+                }
+
+                Div(attrs = {
+                    classes("message-config-popover-filter-input-wrapper")
+                }) {
+                    TextInput(emojiFilter) {
+                        autoFocus()
+                        placeholder("Filtrar emojis")
+
+                        onInput {
+                            emojiFilter = it.value
                         }
                     }
                 }
@@ -579,63 +586,67 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
                     break
                 }
 
-                // Can't be a valid selection
+                // Can't be a valid selection (unless if it is a role)
                 if (char == ' ' && (type != null || type == TypeaheadType.CHANNEL || type == TypeaheadType.EMOJI))
                     break
             }
 
-            if (controlIndexFromEnd != null) {
+            if (controlIndexFromEnd != null && type != null) {
                 val controlIndexFromBeginning = everythingBeforeSelEnd.length - controlIndexFromEnd
                 val query = everythingBeforeSelEnd.drop(controlIndexFromBeginning)
 
-                if (type == TypeaheadType.CHANNEL) {
-                    val channels = guild.channels.filter { it.name.contains(query, true) }
-                        .take(10)
+                when (type) {
+                    TypeaheadType.CHANNEL -> {
+                        val channels = guild.channels.filter { it.name.contains(query, true) }
+                            .take(10)
 
-                    if (channels.isEmpty()) {
-                        matches = null
-                        return
+                        if (channels.isEmpty()) {
+                            matches = null
+                            return
+                        }
+
+                        // The -1 is because we ignore the #
+                        matches = TypeaheadMatches.DiscordChannelMatches(
+                            controlIndexFromBeginning - 1,
+                            controlIndexFromBeginning + query.length,
+                            mutableStateOf(0),
+                            channels
+                        )
                     }
+                    TypeaheadType.EMOJI -> {
+                        val emojis = guild.emojis.filter { it.name.contains(query, true) }
+                            .take(10)
 
-                    // The -1 is because we ignore the #
-                    matches = TypeaheadMatches.DiscordChannelMatches(
-                        controlIndexFromBeginning - 1,
-                        controlIndexFromBeginning + query.length,
-                        mutableStateOf(0),
-                        channels
-                    )
-                } else if (type == TypeaheadType.EMOJI) {
-                    val emojis = guild.emojis.filter { it.name.contains(query, true) }
-                        .take(10)
+                        if (emojis.isEmpty()) {
+                            matches = null
+                            return
+                        }
 
-                    if (emojis.isEmpty()) {
-                        matches = null
-                        return
+                        // The -1 is because we ignore the #
+                        matches = TypeaheadMatches.DiscordEmojiMatches(
+                            controlIndexFromBeginning - 1,
+                            controlIndexFromBeginning + query.length,
+                            mutableStateOf(0),
+                            emojis
+                        )
                     }
+                    TypeaheadType.ROLE -> {
+                        val roles = guild.roles.filter { it.name.contains(query, true) }
+                            .take(10)
 
-                    // The -1 is because we ignore the #
-                    matches = TypeaheadMatches.DiscordEmojiMatches(
-                        controlIndexFromBeginning - 1,
-                        controlIndexFromBeginning + query.length,
-                        mutableStateOf(0),
-                        emojis
-                    )
-                } else if (type == TypeaheadType.ROLE) {
-                    val roles = guild.roles.filter { it.name.contains(query, true) }
-                        .take(10)
+                        if (roles.isEmpty()) {
+                            matches = null
+                            return
+                        }
 
-                    if (roles.isEmpty()) {
-                        matches = null
-                        return
+                        // The -1 is because we ignore the #
+                        matches = TypeaheadMatches.DiscordRoleMatches(
+                            controlIndexFromBeginning - 1,
+                            controlIndexFromBeginning + query.length,
+                            mutableStateOf(0),
+                            roles
+                        )
                     }
-
-                    // The -1 is because we ignore the #
-                    matches = TypeaheadMatches.DiscordRoleMatches(
-                        controlIndexFromBeginning - 1,
-                        controlIndexFromBeginning + query.length,
-                        mutableStateOf(0),
-                        roles
-                    )
                 }
             }
         }
@@ -809,80 +820,3 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
         ROLE
     }
 }
-
-/**
- * returns x, y coordinates for absolute positioning of a span within a given text input
- * at a given selection point
- * @param {object} input - the input element to obtain coordinates for
- * @param {number} selectionPoint - the selection point for the input
- */
-// https://jh3y.medium.com/how-to-where-s-the-caret-getting-the-xy-position-of-the-caret-a24ba372990a
-fun getCursorXY(input: HTMLElement, selectionPoint: Int): CursorXY {
-    val inputX = input.offsetLeft
-    val inputY = input.offsetTop
-
-    // create a dummy element that will be a clone of our input
-    document.querySelector("#hacky")?.remove()
-    val div = document.createElement("div") as HTMLElement
-    div.id = "hacky"
-
-    // get the computed style of the input and clone it onto the dummy element
-    val copyStyle = window.getComputedStyle(input)
-
-    for (prop in copyStyle.asList()) {
-        div.style.setProperty(prop, copyStyle.getPropertyValue(prop))
-    }
-
-    div.style.setProperty("position", "absolute")
-    div.style.setProperty("z-index", "10000")
-    div.style.setProperty("visibility", "hidden")
-
-    // we need a character that will replace whitespace when filling our dummy element if it's a single line <input/>
-    val swap = "."
-    val inputValue = when (input) {
-        is HTMLInputElement -> {
-            input.value.replace(" ", swap)
-        }
-
-        is HTMLTextAreaElement -> {
-            input.value
-        }
-
-        else -> error("Unsupported element $input")
-    }
-
-    // set the div content to that of the textarea up until selection
-    val textContent = inputValue.substring(0, selectionPoint)
-    // set the text content of the dummy element div
-    div.textContent = textContent
-
-    if (input.tagName == "TEXTAREA") {
-        div.style.height = "auto"
-    }
-
-    // if a single line input then the div needs to be single line and not break out like a text area
-    if (input.tagName == "INPUT") {
-        div.style.width = "auto"
-    }
-
-    // create a marker element to obtain caret position
-    val span = document.createElement("span") as HTMLElement
-    // give the span the textContent of remaining content so that the recreated dummy element is as close as possible
-    span.textContent = inputValue.substring(selectionPoint).ifEmpty { "." }
-    // append the span marker to the div
-    div.appendChild(span)
-    // append the dummy element to the body
-    document.body?.appendChild(div)
-    // get the marker position, this is the caret position top and left relative to the input
-    val spanX = span.offsetLeft
-    val spanY = span.offsetTop
-    // lastly, remove that dummy element
-    // NOTE:: can comment this out for debugging purposes if you want to see where that span is rendered
-    document.body?.removeChild(div)
-    // return an object with the x and y of the caret. account for input positioning so that you don't need to wrap the input
-
-    // Power Changes: Subtract the scroll offset to the cursor position, fixes issues when the textarea scrolls
-    return CursorXY(inputX + spanX - input.scrollLeft.toInt(), inputY + spanY - input.scrollTop.toInt())
-}
-
-data class CursorXY(val x: Int, val y: Int)
