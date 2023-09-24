@@ -21,14 +21,6 @@ class PostLorittaDashboardRpcProcessorRoute(private val m: LorittaDashboardBacke
                 m.processors.getUserGuildsProcessor.process(call, request)
             }
 
-            is LorittaDashboardRPCRequest.GetGuildGamerSaferConfigRequest -> {
-                m.processors.getGuildGamerSaferConfigProcessor.process(call, request)
-            }
-
-            is LorittaDashboardRPCRequest.UpdateGuildGamerSaferConfigRequest -> {
-                m.processors.updateGuildGamerSaferConfigProcessor.process(call, request)
-            }
-
             is LorittaDashboardRPCRequest.PutPowerStreamClaimedFirstSonhosRewardRequest -> {
                 m.processors.putPowerStreamClaimedFirstSonhosRewardProcessor.process(call, request)
             }

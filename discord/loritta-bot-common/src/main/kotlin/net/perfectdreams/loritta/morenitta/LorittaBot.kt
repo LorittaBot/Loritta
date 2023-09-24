@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
@@ -60,7 +59,6 @@ import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDecla
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
-import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
@@ -89,31 +87,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
-import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
-import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
-import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CollectedEaster2023Eggs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CreatedEaster2023Baskets
-import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
-import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
-import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
-import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
-import net.perfectdreams.loritta.common.commands.ApplicationCommandType
-import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
@@ -138,7 +119,6 @@ import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
-import net.perfectdreams.loritta.morenitta.utils.gamersafer.GamerSaferRoleCheckerUpdater
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
@@ -1562,7 +1542,6 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaRaffleTask::class.simpleName!!, 1.seconds, action = LorittaRaffleTask(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
 		scheduleCoroutineAtFixedRate(ActivityUpdater::class.simpleName!!, 1.minutes, action = activityUpdater)
-		scheduleCoroutineAtFixedRate(GamerSaferRoleCheckerUpdater::class.simpleName!!, 1.minutes, action = GamerSaferRoleCheckerUpdater(this))
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {

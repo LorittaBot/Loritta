@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -61,14 +62,12 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTu
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.GamerSaferCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
@@ -130,7 +129,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(UserInfoUserCommand())
 
         // ===[ MODERATION ]===
-        register(GamerSaferCommand(loritta))
         register(BanInfoCommand(loritta))
         register(DashboardCommand(loritta))
 

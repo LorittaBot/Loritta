@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.serializable.dashboard.requests
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig
 
 @Serializable
 sealed class LorittaDashboardRPCRequest {
@@ -14,12 +13,6 @@ sealed class LorittaDashboardRPCRequest {
 
     @Serializable
     class GetUserGuildsRequest : LorittaDashboardRPCRequest()
-
-    @Serializable
-    class GetGuildGamerSaferConfigRequest(val guildId: Long) : LorittaDashboardRPCRequest()
-
-    @Serializable
-    class UpdateGuildGamerSaferConfigRequest(val guildId: Long, val config: GuildGamerSaferConfig) : LorittaDashboardRPCRequest()
 
     @Serializable
     class PutPowerStreamClaimedLimitedTimeSonhosRewardRequest(

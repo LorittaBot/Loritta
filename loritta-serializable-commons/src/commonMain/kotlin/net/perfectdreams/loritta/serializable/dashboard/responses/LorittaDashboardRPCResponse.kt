@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import net.perfectdreams.loritta.serializable.PublicLorittaCluster
-import net.perfectdreams.loritta.serializable.config.GuildGamerSaferConfig
 
 @Serializable
 sealed class LorittaDashboardRPCResponse {
@@ -32,36 +31,6 @@ sealed class LorittaDashboardRPCResponse {
             val permissions: Long,
             val features: List<String>
         )
-    }
-
-    @Serializable
-    sealed class GetGuildGamerSaferConfigResponse : LorittaDashboardRPCResponse() {
-        @Serializable
-        class Success(val config: GuildGamerSaferConfig) : GetGuildGamerSaferConfigResponse()
-
-        @Serializable
-        class UnknownGuild : GetGuildGamerSaferConfigResponse(), UnknownGuildError
-
-        @Serializable
-        class UnknownMember : GetGuildGamerSaferConfigResponse(), UnknownMemberError
-
-        @Serializable
-        class MissingPermission : GetGuildGamerSaferConfigResponse(), MissingPermissionError
-    }
-
-    @Serializable
-    sealed class UpdateGuildGamerSaferConfigResponse : LorittaDashboardRPCResponse() {
-        @Serializable
-        class Success : UpdateGuildGamerSaferConfigResponse()
-
-        @Serializable
-        class UnknownGuild : UpdateGuildGamerSaferConfigResponse(), UnknownGuildError
-
-        @Serializable
-        class UnknownMember : UpdateGuildGamerSaferConfigResponse(), UnknownMemberError
-
-        @Serializable
-        class MissingPermission : UpdateGuildGamerSaferConfigResponse(), MissingPermissionError
     }
 
     @Serializable

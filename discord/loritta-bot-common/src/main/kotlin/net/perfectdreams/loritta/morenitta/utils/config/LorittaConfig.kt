@@ -34,7 +34,6 @@ data class LorittaConfig(
     val openWeatherMap: OpenWeatherMapConfig,
     val googleVision: GoogleVisionConfig,
     val googleRecaptcha: GoogleRecaptchaConfig,
-    val gamerSafer: GamerSaferConfig,
     val turnstileCaptchas: TurnstileCaptchas,
     val voteWebsites: VotingWebsites,
     val messageEncryption: MessageEncryptionConfig,
@@ -202,14 +201,6 @@ data class LorittaConfig(
     data class GoogleRecaptchaConfig(
         val serverVoteToken: String,
         val reputationToken: String
-    )
-
-    @Serializable
-    data class GamerSaferConfig(
-        val provider: String,
-        val secretKey: String,
-        val endpointUrl: String,
-        val webhookSecret: String
     )
 
     @Serializable
