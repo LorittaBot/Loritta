@@ -80,7 +80,7 @@ website:
         - "Mas se elas começarem a te cansar, clique para limpar para mandar as pestinhas pras cucuias."
       spawnPlayer: "Invocar {name}"
       horizontalSize: "Tamanho Horizontal das Doidinhas"
-      verticalSize: "Tamanho Horizontal das Doidinhas"
+      verticalSize: "Tamanho Vertical das Doidinhas"
       defaultSize: "Tamanho Padrão"
       modifiedSize: "Tamanho Modificado"
 
