@@ -643,7 +643,7 @@ fun DiscordMessageEditor(
                                                     FieldLabel("Valor")
 
                                                     TextAreaWithEntityPickers(targetGuild, field.value) {
-                                                        field.name = it
+                                                        field.value = it
                                                         mutableMessage.triggerUpdate()
                                                     }
                                                 }
