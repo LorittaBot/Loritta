@@ -71,7 +71,8 @@
         }
 
         .message-config-tooltip {
-            background-color: white;
+            background-color: var(--background-color);
+            color: var(--content-text-color);
             padding: 0.5em;
             border-radius: var(--second-level-border-radius);
             box-shadow: 0px 0px 10px #00000059;
@@ -101,6 +102,13 @@
                     }
                 }
             }
+        }
+
+        .message-popover-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5em;
+            flex-wrap: wrap;
         }
 
         .message-config-popover {

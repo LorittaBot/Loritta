@@ -391,6 +391,8 @@ section#right-sidebar {
     // We don't use overflow here, to let the ad sidebar propagate scroll thru
     // The space used by the left sidebar, we NEED to do it that way because we cannot use overflow + sticky on the sidebar, because we want the sidebar ad to propagate scroll events thru
     margin-left: var(--left-sidebar-width);
+    // Workaround to avoid the save bar overflowing and causing white background below it
+    overflow: clip;
 
     @include bp('medium') {
         width: calc(100% - 160px);
@@ -413,8 +415,6 @@ section#right-sidebar {
         padding-right: 4em;
         padding-top: 1em;
         padding-bottom: 1em;
-        // Workaround to avoid the save bar overflowing and causing white background below it
-        overflow: clip;
 
         @media (max-width: 500px) {
             padding-left: 1em;

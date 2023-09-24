@@ -59,6 +59,7 @@
 .save-bar-fill-screen-height {
     height: 100%;
 }
+
 // Yes, both are the same animation BUT we need to do it this way for CSS to think that it is a different animation to actually play it
 @keyframes save-bar-has-changes-animation {
     0% {

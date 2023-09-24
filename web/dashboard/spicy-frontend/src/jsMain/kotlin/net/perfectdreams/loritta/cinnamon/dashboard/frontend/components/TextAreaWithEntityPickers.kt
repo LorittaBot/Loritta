@@ -143,7 +143,7 @@ fun TextAreaWithEntityPickers(guild: DiscordGuild, content: String, onChange: (c
     } */
 
     Div(attrs = {
-        attr("style", "display: flex; justify-content: flex-end; gap: 0.5em;")
+        classes("message-popover-buttons")
     }) {
         DiscordChannelEntityPickerButton(textAreaWrapper, guild.channels, onChange)
         DiscordRoleEntityPickerButton(textAreaWrapper, guild.roles, onChange)
