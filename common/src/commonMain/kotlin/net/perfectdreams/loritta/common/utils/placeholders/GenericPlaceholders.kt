@@ -54,6 +54,11 @@ object GenericPlaceholders {
         override val renderType = MessagePlaceholder.RenderType.TEXT
     }
 
+    abstract class GuildIconUrlPlaceholder(description: StringI18nData?) : GenericPlaceholder(description) {
+        override val names = listOf(Placeholders.GUILD_ICON_URL.toVisiblePlaceholder(), Placeholders.Deprecated.GUILD_ICON_URL.toHiddenPlaceholder())
+        override val renderType = MessagePlaceholder.RenderType.TEXT
+    }
+
     /**
      * Used to create placeholders dynamically
      */

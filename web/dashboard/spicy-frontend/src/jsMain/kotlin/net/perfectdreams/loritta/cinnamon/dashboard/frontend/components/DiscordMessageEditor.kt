@@ -390,6 +390,7 @@ fun DiscordMessageEditor(
                             JoinMessagePlaceholders.UserAvatarUrlPlaceholder -> avatarUrl
                             JoinMessagePlaceholders.GuildNamePlaceholder -> targetGuild.name
                             JoinMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
+                            JoinMessagePlaceholders.GuildIconUrlPlaceholder -> targetGuild.getIconUrl(512) ?: "" // TODO: Fix this!
                         }
                     )
                 }
@@ -408,6 +409,7 @@ fun DiscordMessageEditor(
                             LeaveMessagePlaceholders.UserAvatarUrlPlaceholder -> avatarUrl
                             LeaveMessagePlaceholders.GuildNamePlaceholder -> targetGuild.name
                             LeaveMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
+                            LeaveMessagePlaceholders.GuildIconUrlPlaceholder -> targetGuild.getIconUrl(512) ?: "" // TODO: Fix this!
                         }
                     )
                 }

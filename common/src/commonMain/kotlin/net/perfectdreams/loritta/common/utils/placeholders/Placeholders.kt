@@ -15,6 +15,7 @@ object Placeholders {
     val GUILD_NAME_SHORT = LorittaPlaceholder("guild")
     val GUILD_NAME = LorittaPlaceholder("guild.name")
     val GUILD_SIZE = LorittaPlaceholder("guild.size")
+    val GUILD_ICON_URL = LorittaPlaceholder("guild.icon")
 
     // ===[ EXPERIENCE ]===
     private const val EXPERIENCE_PREFIX = "experience"
@@ -68,6 +69,7 @@ object Placeholders {
         // ===[ GUILD ]===
         val GUILD_SIZE = LorittaPlaceholder("guild-size")
         val GUILD_SIZE_JOINED = LorittaPlaceholder("guildsize")
+        val GUILD_ICON_URL = LorittaPlaceholder("guild-icon-url")
     }
 
     /**

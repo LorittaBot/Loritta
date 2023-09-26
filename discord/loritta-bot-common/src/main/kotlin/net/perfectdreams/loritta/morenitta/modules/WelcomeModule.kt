@@ -35,6 +35,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 				JoinMessagePlaceholders.UserTagPlaceholder -> "@${user.name}"
 				JoinMessagePlaceholders.GuildNamePlaceholder -> guild.name
 				JoinMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
+				JoinMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
 				JoinMessagePlaceholders.UserAvatarUrlPlaceholder -> user.effectiveAvatarUrl
 				JoinMessagePlaceholders.UserIdPlaceholder -> user.idLong.toString()
 			}
@@ -48,6 +49,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 				LeaveMessagePlaceholders.UserTagPlaceholder -> "@${user.name}"
 				LeaveMessagePlaceholders.GuildNamePlaceholder -> guild.name
 				LeaveMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
+				LeaveMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
 				LeaveMessagePlaceholders.UserAvatarUrlPlaceholder -> user.effectiveAvatarUrl
 				LeaveMessagePlaceholders.UserIdPlaceholder -> user.idLong.toString()
 			}

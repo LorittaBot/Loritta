@@ -7,6 +7,7 @@ placeholders:
     userTag: "Mostra a tag (@NomeDeUsuário) do usuário"
     guildName: "Mostra o nome do servidor"
     guildSize: "Mostra a quantidade de membros no servidor"
+    guildIconUrl: "Mostra o ícone do servidor"
   joinMessage:
     userName: "Mostra o nome exibido, ou o nome de usuário, do usuário que entrou no servidor"
     userMention: "Menciona o usuário que entrou no servidor"

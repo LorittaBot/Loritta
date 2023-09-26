@@ -15,6 +15,7 @@ data object JoinMessagePlaceholders : SectionPlaceholders<JoinMessagePlaceholder
     object UserAvatarUrlPlaceholder : GenericPlaceholders.UserAvatarUrlPlaceholder(I18nKeysData.Placeholders.JoinMessage.UserAvatarUrl), JoinMessagePlaceholder
     object GuildNamePlaceholder : GenericPlaceholders.GuildNamePlaceholder(I18nKeysData.Placeholders.Generic.GuildName), JoinMessagePlaceholder
     object GuildSizePlaceholder : GenericPlaceholders.GuildSizePlaceholder(I18nKeysData.Placeholders.Generic.GuildSize), JoinMessagePlaceholder
+    object GuildIconUrlPlaceholder : GenericPlaceholders.GuildIconUrlPlaceholder(I18nKeysData.Placeholders.Generic.GuildIconUrl), JoinMessagePlaceholder
 
     override val placeholders = listOf<JoinMessagePlaceholder>(
         UserMentionPlaceholder,
@@ -24,6 +25,7 @@ data object JoinMessagePlaceholders : SectionPlaceholders<JoinMessagePlaceholder
         UserIdPlaceholder,
         UserAvatarUrlPlaceholder,
         GuildNamePlaceholder,
-        GuildSizePlaceholder
+        GuildSizePlaceholder,
+        GuildIconUrlPlaceholder
     )
 }
