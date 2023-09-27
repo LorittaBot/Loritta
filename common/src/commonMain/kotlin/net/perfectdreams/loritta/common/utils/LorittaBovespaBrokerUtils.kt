@@ -109,6 +109,11 @@ object LorittaBovespaBrokerUtils {
             CompanyCategory.FINANCE
         ),
         StockTickerInfo(
+            "ROXO34",
+            "Nubank",
+            CompanyCategory.FINANCE
+        ),
+        StockTickerInfo(
             "CIEL3",
             "Cielo",
             CompanyCategory.FINANCE
