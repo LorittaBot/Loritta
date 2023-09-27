@@ -35,9 +35,9 @@ class Color(rgb: Int) {
 
     fun toHex(): String {
         // Convert each component to its hexadecimal representation
-        val redHex = clampedRed.toString(16).padStart(2, '0')
-        val greenHex = clampedGreen.toString(16).padStart(2, '0')
-        val blueHex = clampedBlue.toString(16).padStart(2, '0')
+        val redHex = red.toString(16).padStart(2, '0')
+        val greenHex = green.toString(16).padStart(2, '0')
+        val blueHex = blue.toString(16).padStart(2, '0')
 
         // Combine the components into a single hexadecimal string
         val hex = "#$redHex$greenHex$blueHex"
