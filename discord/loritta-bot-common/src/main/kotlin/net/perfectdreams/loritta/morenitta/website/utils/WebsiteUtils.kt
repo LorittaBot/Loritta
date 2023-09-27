@@ -12,6 +12,7 @@ import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -19,7 +20,6 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
@@ -111,11 +111,11 @@ object WebsiteUtils {
 				setMetaProperty("og:site_name", "Loritta")
 				setMetaProperty("og:title", "Painel da Loritta")
 				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-				setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
+				setMetaProperty("og:image", "https://stuff.loritta.website/loritta-and-wumpus-dashboard-yafyr.png")
 				setMetaProperty("og:image:width", "320")
 				setMetaProperty("og:ttl", "660")
 				setMetaProperty("og:image:width", "320")
-				setMetaProperty("theme-color", "#7289da")
+				setMetaProperty("theme-color", LorittaColors.LorittaAqua.toHex())
 				meta("twitter:card", "summary_large_image")
 			}
 			body {

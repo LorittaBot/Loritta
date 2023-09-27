@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
@@ -8,9 +9,7 @@ import io.ktor.server.sessions.*
 import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.lorittaSession
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.*
 import net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -26,6 +25,11 @@ abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: Strin
     )
 
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
+        if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
+            call.respondText(WebsiteUtils.getDiscordCrawlerAuthenticationPage(), ContentType.Text.Html)
+            return
+        }
+
         if (m.config.userAuthenticationOverride.enabled) {
             onAuthenticatedRequest(
                 call,

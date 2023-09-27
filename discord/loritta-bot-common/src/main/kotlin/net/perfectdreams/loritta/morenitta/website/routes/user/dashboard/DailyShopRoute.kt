@@ -53,7 +53,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 							setMetaProperty("og:image:width", "320")
 							setMetaProperty("og:ttl", "660")
 							setMetaProperty("og:image:width", "320")
-							setMetaProperty("theme-color", "#7289da")
+							setMetaProperty("theme-color", LorittaColors.LorittaAqua.toHex())
 							meta("twitter:card", "summary_large_image")
 						}
 						body {
