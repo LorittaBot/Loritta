@@ -369,7 +369,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
-
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 				val profile = serverConfig.getUserDataIfExistsAsync(loritta, event.guild.idLong)
 
 				if (profile != null) {
@@ -387,7 +387,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					AutoroleModule.giveRoles(event.member, autoroleConfig)
 
 				if (welcomerConfig != null) // Está ativado?
-					loritta.welcomeModule.handleJoin(event, serverConfig, welcomerConfig)
+					loritta.welcomeModule.handleJoin(event, serverConfig, i18nContext, welcomerConfig)
 
 				val mute = loritta.newSuspendedTransaction {
 					Mute.find { (Mutes.guildId eq event.guild.idLong) and (Mutes.userId eq event.member.user.idLong) }.firstOrNull()
@@ -398,7 +398,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (mute != null) {
 					logger.debug { "${event.member} in guild ${event.guild} has a mute! Recreating timeout updater task!" }
 					val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-					MuteCommand.spawnTimeOutUpdaterThread(loritta, event.guild, locale, event.user, mute)
+					MuteCommand.spawnTimeOutUpdaterThread(loritta, event.guild, locale, i18nContext, event.user, mute)
 				}
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
@@ -427,7 +427,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					return@launch
 
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
-
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 				val profile = serverConfig.getUserDataIfExistsAsync(loritta, event.user.idLong)
 
 				if (profile != null) {
@@ -441,7 +441,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				val welcomerConfig = serverConfig.getCachedOrRetreiveFromDatabase<WelcomerConfig?>(loritta, ServerConfig::welcomerConfig)
 
 				if (welcomerConfig != null)
-					loritta.welcomeModule.handleLeave(event, serverConfig, welcomerConfig)
+					loritta.welcomeModule.handleLeave(event, serverConfig, i18nContext, welcomerConfig)
 			} catch (e: Exception) {
 				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
 			}
@@ -507,9 +507,10 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					logger.warn { "Guild ${mute.guildId} does not have a server configuration on shard ${event.jda.shardInfo.shardId}, skipping mute task setup..." }
 					continue
 				}
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
 				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-				MuteCommand.spawnTimeOutUpdaterThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), mute.userId, mute)
+				MuteCommand.spawnTimeOutUpdaterThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), i18nContext, mute.userId, mute)
 			}
 
 

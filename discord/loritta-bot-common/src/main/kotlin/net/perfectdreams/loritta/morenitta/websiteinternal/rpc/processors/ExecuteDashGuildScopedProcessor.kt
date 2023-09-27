@@ -248,7 +248,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                 val message = when (section) {
                     is JoinMessagePlaceholders -> generateMessage(section, WelcomeModule.buildJoinMessagePlaceholders(guild, user))
                     is LeaveMessagePlaceholders -> generateMessage(section, WelcomeModule.buildLeaveMessagePlaceholders(guild, user))
-                }!!
+                }
 
                 try {
                     channel.sendMessage(message).await()

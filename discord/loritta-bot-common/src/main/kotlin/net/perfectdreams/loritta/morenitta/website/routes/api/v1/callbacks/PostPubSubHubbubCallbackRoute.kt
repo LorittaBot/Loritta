@@ -11,6 +11,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.YouTubeEventSubEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -38,9 +39,9 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val streamingSince = CacheBuilder.newBuilder()
-				.expireAfterAccess(4, TimeUnit.HOURS)
-				.build<Long, Long>()
-				.asMap()
+			.expireAfterAccess(4, TimeUnit.HOURS)
+			.build<Long, Long>()
+			.asMap()
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
@@ -52,10 +53,10 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 		logger.trace { response }
 
 		val originalSignature = call.request.header("X-Hub-Signature")
-				?: throw WebsiteAPIException(
-						HttpStatusCode.Unauthorized,
-						WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
-				)
+			?: throw WebsiteAPIException(
+				HttpStatusCode.Unauthorized,
+				WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
+			)
 
 		val output = if (originalSignature.startsWith("sha1=")) {
 			val signingKey = SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
@@ -87,8 +88,8 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 		if (originalSignature != output)
 			throw WebsiteAPIException(
-					HttpStatusCode.Unauthorized,
-					WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
+				HttpStatusCode.Unauthorized,
+				WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
 			)
 
 		val type = call.parameters["type"]
@@ -169,21 +170,23 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 					message = "{link}"
 
 				val customTokens = mapOf(
-						"título" to lastVideoTitle,
-						"title" to lastVideoTitle,
-						"link" to "https://youtu.be/$videoId",
-						"video-id" to videoId
+					"título" to lastVideoTitle,
+					"title" to lastVideoTitle,
+					"link" to "https://youtu.be/$videoId",
+					"video-id" to videoId
 				)
 
-				val discordMessage = MessageUtils.generateMessage(
-						message,
-						listOf(guild),
-						guild,
-						customTokens
+				val discordMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+					loritta.languageManager.defaultI18nContext, // TODO: Load the server's i18nContext
+					message,
+					listOf(guild),
+					guild,
+					customTokens,
+					i18nKey = I18nKeysData.InvalidMessages.YouTubeNotification
 				) ?: continue
 
 				textChannel.sendMessage(discordMessage)
-						.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(loritta, canTalkGuildIds.size)
+					.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(loritta, canTalkGuildIds.size)
 
 				canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 			}

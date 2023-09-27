@@ -5,9 +5,11 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
@@ -58,7 +60,7 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				for (user in users)
-					ban(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
+					ban(loritta, context.i18nContext, settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
 				message?.delete()?.queue()
 
@@ -92,7 +94,7 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 
-		fun ban(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+		fun ban(loritta: LorittaBot, i18nContext: I18nContext, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && guild.isMember(user)) {
 					try {
@@ -119,19 +121,19 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 					val textChannel = guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
-						val message = MessageUtils.generateMessage(
+						val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+							i18nContext,
 							punishLogMessage,
 							listOf(user, guild),
 							guild,
 							mutableMapOf(
 								"duration" to locale["$LOCALE_PREFIX.mute.forever"]
 							) + AdminUtils.getStaffCustomTokens(punisher)
-									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.ban")
+									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.ban"),
+							i18nKey = I18nKeysData.InvalidMessages.MemberModerationBan
 						)
 
-						message?.let {
-							textChannel.sendMessage(it).queue()
-						}
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}

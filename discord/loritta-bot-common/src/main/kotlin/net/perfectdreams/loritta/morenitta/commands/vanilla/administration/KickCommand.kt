@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
@@ -48,10 +49,10 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 
 				if (member == null) {
 					context.reply(
-                            LorittaReply(
-                                    context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-                                    Emotes.LORI_HM
-                            )
+						LorittaReply(
+							context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
+							Emotes.LORI_HM
+						)
 					)
 					return
 				}
@@ -128,14 +129,16 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 					val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
-						val message = MessageUtils.generateMessage(
-								punishLogMessage,
-								listOf(user, context.guild),
-								context.guild,
-								mutableMapOf(
-										"duration" to locale["commands.command.mute.forever"]
-								) + AdminUtils.getStaffCustomTokens(context.userHandle)
-										+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.kick")
+						val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+							context.i18nContext,
+							punishLogMessage,
+							listOf(user, context.guild),
+							context.guild,
+							mutableMapOf(
+								"duration" to locale["commands.command.mute.forever"]
+							) + AdminUtils.getStaffCustomTokens(context.userHandle)
+									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.kick"),
+							i18nKey = I18nKeysData.InvalidMessages.MemberModerationKick
 						)
 
 						message?.let {
@@ -146,7 +149,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 			}
 
 			context.guild.kick(member, AdminUtils.generateAuditLogMessage(locale, context.userHandle, reason))
-					.queue()
+				.queue()
 		}
 	}
 }

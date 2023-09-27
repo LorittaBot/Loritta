@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.nashorn.NashornCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
@@ -330,15 +331,18 @@ class CommandManager(val loritta: LorittaBot) {
 					if (!enableBomDiaECia || (enableBomDiaECia && command !is LigarCommand)) {
 						if (serverConfig.warnIfBlacklisted) {
 							if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
-								val generatedMessage = MessageUtils.generateMessage(
+								val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+									i18nContext,
 									serverConfig.blacklistedWarning ?: "???",
 									listOf(ev.member, ev.textChannel, ev.guild),
-									ev.guild
+									ev.guild,
+									emptyMap(),
+									i18nKey = I18nKeysData.InvalidMessages.CommandDenylist
 								)
-								if (generatedMessage != null)
-									ev.textChannel.sendMessage(generatedMessage)
-										.referenceIfPossible(ev.message, serverConfig, true)
-										.await()
+
+								ev.textChannel.sendMessage(generatedMessage)
+									.referenceIfPossible(ev.message, serverConfig, true)
+									.await()
 							}
 						}
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)

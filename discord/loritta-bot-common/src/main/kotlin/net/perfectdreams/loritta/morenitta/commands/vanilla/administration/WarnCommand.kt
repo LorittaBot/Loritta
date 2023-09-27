@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Warns
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
@@ -88,19 +89,19 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 							val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 							if (textChannel != null && textChannel.canTalk()) {
-								val message = MessageUtils.generateMessage(
+								val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+									context.i18nContext,
 									punishLogMessage,
 									listOf(user, context.guild),
 									context.guild,
 									mutableMapOf(
 										"duration" to locale["$LOCALE_PREFIX.mute.forever"]
 									) + AdminUtils.getStaffCustomTokens(context.userHandle)
-											+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.warn")
+											+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.warn"),
+									i18nKey = I18nKeysData.InvalidMessages.MemberModerationWarn
 								)
 
-								message?.let {
-									textChannel.sendMessage(it).queue()
-								}
+								textChannel.sendMessage(message).queue()
 							}
 						}
 					}
@@ -115,7 +116,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 
 					loop@ for (punishment in punishments) {
 						when {
-							punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
+							punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, context.i18nContext, settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
 							member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(context, settings, locale, member, user, reason, isSilent)
 							member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
 								val metadata = punishment.metadata ?: continue@loop

@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.morenitta.commands.nashorn
 
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 
 /**
  * Comandos usando a Nashorn Engine
@@ -27,7 +28,8 @@ class NashornCommand(loritta: LorittaBot, label: String, val javaScriptCode: Str
 					)
 				}
 
-				val message = MessageUtils.generateMessage(
+				val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+					context.i18nContext,
 					javaScriptCode,
 					listOf(
 						context.handle,
@@ -35,8 +37,9 @@ class NashornCommand(loritta: LorittaBot, label: String, val javaScriptCode: Str
 						context.message.channel
 					),
 					context.guild,
-					customTokens = customTokens
-				) ?: return
+					customTokens = customTokens,
+					i18nKey = I18nKeysData.InvalidMessages.CustomCommand
+				)
 
 				context.sendMessage(message)
 			}

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
+import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.serialization.SerializationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -23,16 +24,18 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
-import net.perfectdreams.loritta.common.utils.format
 import net.perfectdreams.loritta.common.utils.placeholders.*
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
+import net.perfectdreams.loritta.morenitta.interactions.linkButton
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
 import net.perfectdreams.loritta.morenitta.utils.placeholders.RenderableMessagePlaceholder
@@ -127,7 +130,7 @@ object MessageUtils {
 		return jsonObject.toString()
 	}
 
-	fun <T : MessagePlaceholder> generateMessage(message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), safe: Boolean = true): MessageCreateData? {
+	fun <T : MessagePlaceholder> generateMessage(message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), safe: Boolean = true): MessageCreateData {
 		val customTokens = mutableListOf<RenderableMessagePlaceholder>()
 		section.placeholders.forEach {
 			val placeholderValue = customTokensBuilder.invoke(it)
@@ -136,7 +139,7 @@ object MessageUtils {
 		return generateMessage(message, guild, customTokens, safe)
 	}
 
-	fun generateMessage(message: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder> = listOf(), safe: Boolean = true): MessageCreateData? {
+	fun generateMessage(message: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder> = listOf(), safe: Boolean = true): MessageCreateData {
 		val originalDiscordMessage = try {
 			JsonIgnoreUnknownKeys.decodeFromString<DiscordMessage>(message)
 		} catch (e: SerializationException) {
@@ -146,14 +149,15 @@ object MessageUtils {
 		fun recursiveComponentReplacer(component: DiscordComponent): DiscordComponent {
 			return when (component) {
 				is DiscordComponent.DiscordActionRow -> {
-					with (component) {
+					with(component) {
 						component.copy(
 							components = this.components.map { recursiveComponentReplacer(it) }
 						)
 					}
 				}
+
 				is DiscordComponent.DiscordButton -> {
-					with (component) {
+					with(component) {
 						component.copy(
 							label = processStringAndReplaceTokens(this.label, 80, guild, customTokens),
 							url = replaceTokens(this.url, guild, customTokens)
@@ -168,22 +172,39 @@ object MessageUtils {
 			copy(
 				content = processStringAndReplaceTokens(content, 2000, guild, customTokens),
 				embed = embed?.let {
-					with (it) {
+					with(it) {
 						this.copy(
-							author = with (author) {
+							author = with(author) {
 								this?.copy(
 									name = processStringAndReplaceTokens(this.name, 256, guild, customTokens),
 									url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
-									iconUrl = processUrlIfNotNull(replaceTokensIfNotNull(iconUrl, guild, customTokens))
+									iconUrl = processUrlIfNotNull(
+										replaceTokensIfNotNull(
+											iconUrl,
+											guild,
+											customTokens
+										)
+									)
 								)
 							},
 							title = processStringAndReplaceTokensIfNotNull(title, 256, guild, customTokens),
-							description = processStringAndReplaceTokensIfNotNull(description, 4096, guild, customTokens),
+							description = processStringAndReplaceTokensIfNotNull(
+								description,
+								4096,
+								guild,
+								customTokens
+							),
 							url = processUrlIfNotNull(replaceTokensIfNotNull(url, guild, customTokens)),
 							footer = with(footer) {
 								this?.copy(
 									text = processStringAndReplaceTokens(text, 2048, guild, customTokens),
-									iconUrl = processImageUrlIfNotNull(replaceTokensIfNotNull(iconUrl, guild, customTokens))
+									iconUrl = processImageUrlIfNotNull(
+										replaceTokensIfNotNull(
+											iconUrl,
+											guild,
+											customTokens
+										)
+									)
 								)
 							},
 							image = with(image) {
@@ -244,6 +265,7 @@ object MessageUtils {
 					// ActionRows cannot have other ActionRows within them so whatever
 					ActionRow.of(component.components.map { recursiveComponentConverter(it) as ItemComponent })
 				}
+
 				is DiscordComponent.DiscordButton -> {
 					// We ONLY support link buttons
 					Button.of(
@@ -269,7 +291,7 @@ object MessageUtils {
 
 	// This is still used by "legacy" (let's be honest, it ain't legacy lmao) modules and commands
 	// Let's remap it to the new version!
-	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): MessageCreateData? {
+	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): MessageCreateData {
 		val tokens = mutableMapOf<String, String?>()
 		tokens.putAll(customTokens)
 
@@ -336,6 +358,122 @@ object MessageUtils {
 				)
 			}
 		)
+	}
+
+	// This is the refactored version
+	fun <T : MessagePlaceholder> generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), i18nKey: StringI18nData, safe: Boolean = true): MessageCreateData {
+		val customTokens = mutableListOf<RenderableMessagePlaceholder>()
+		section.placeholders.forEach {
+			val placeholderValue = customTokensBuilder.invoke(it)
+			customTokens.add(RenderableMessagePlaceholder(it, placeholderValue))
+		}
+		return generateMessageOrFallbackIfInvalid(
+			i18nContext,
+			message,
+			guild,
+			customTokens,
+			i18nKey,
+			safe
+		)
+	}
+
+	fun generateMessageOrFallbackIfInvalid(
+		i18nContext: I18nContext,
+		message: String,
+		guild: Guild?,
+		customTokens: List<RenderableMessagePlaceholder> = listOf(),
+		i18nKey: StringI18nData,
+		safe: Boolean = true
+	) = generateMessageOrFallbackIfInvalid(
+		i18nContext,
+		message,
+		guild,
+		customTokens,
+		i18nContext.get(i18nKey),
+		safe
+	)
+
+	fun generateMessageOrFallbackIfInvalid(
+		i18nContext: I18nContext,
+		message: String,
+		guild: Guild?,
+		customTokens: List<RenderableMessagePlaceholder> = listOf(),
+		generationErrorMessage: String,
+		safe: Boolean = true
+	): MessageCreateData {
+		return try {
+			generateMessage(
+				message,
+				guild,
+				customTokens,
+				safe
+			)
+		} catch (e: Exception) {
+			logger.warn(e) { "Something went wrong while trying to generate message! Falling back..." }
+			createFallbackMessage(i18nContext, generationErrorMessage)
+		}
+	}
+
+	// This is the legacy version
+	fun generateMessageOrFallbackIfInvalid(
+		i18nContext: I18nContext,
+		message: String,
+		sources: List<Any>?,
+		guild: Guild?,
+		customTokens: Map<String, String> = mutableMapOf(),
+		i18nKey: StringI18nData,
+		safe: Boolean = true
+	) = generateMessageOrFallbackIfInvalid(
+		i18nContext,
+		message,
+		sources,
+		guild,
+		customTokens,
+		i18nContext.get(i18nKey),
+		safe
+	)
+
+	fun generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), generationErrorMessage: String, safe: Boolean = true): MessageCreateData {
+		return try {
+			generateMessage(
+				message,
+				sources,
+				guild,
+				customTokens,
+				safe
+			)
+		} catch (e: Exception) {
+			logger.warn(e) { "Something went wrong while trying to generate message! Falling back..." }
+			createFallbackMessage(i18nContext, generationErrorMessage)
+		}
+	}
+
+	/**
+	 * Creates a fallback message for when [MessageUtils.generateMessage] fails to generate due to an error in the message
+	 */
+	private fun createFallbackMessage(i18nContext: I18nContext, generationErrorMessage: String): MessageCreateData {
+		return MessageCreate {
+			embed {
+				title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(I18nKeysData.InvalidMessages.InvalidMessage)}"
+				description = i18nContext.get(I18nKeysData.InvalidMessages.Base(generationErrorMessage))
+				color = LorittaColors.LorittaRed.rgb
+				footer(i18nContext.get(I18nKeysData.InvalidMessages.IsItTooLateNowToSaySorry))
+			}
+
+			actionRow(
+				linkButton(
+					GACampaigns.createUrlWithCampaign(
+						"https://loritta.website/dashboard",
+						"discord",
+						"loritta-info",
+						"loritta-info-links",
+						"dashboard"
+					).toString(),
+					i18nContext.get(I18nKeysData.Commands.Command.Loritta.Info.Dashboard),
+					net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+				)
+			)
+		}
 	}
 
 	private fun replaceTokens(text: String, guild: Guild?, customTokens: List<RenderableMessagePlaceholder>): String {

@@ -1,11 +1,5 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands
 
-import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ChannelInfoCommand
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
-import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -14,13 +8,20 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.api.commands.Command
-import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.api.commands.CommandException
-import net.perfectdreams.loritta.morenitta.api.commands.CommandMap
-import net.perfectdreams.loritta.morenitta.api.commands.SilentCommandException
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.LorittaPermission
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.api.commands.*
+import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.ClearCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.RenameChannelCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.RenameEmojiCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.UnwarnCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ChannelInfoCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.GuildBannerCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.RoleInfoCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
@@ -34,14 +35,13 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListT
 import net.perfectdreams.loritta.morenitta.commands.vanilla.roblox.RbGameCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.roblox.RbUserCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.locale.LocaleStringData
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.LorittaPermission
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
+import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import java.sql.Connection
@@ -296,15 +296,18 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					if (serverConfig.warnIfBlacklisted) {
 						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
-							val generatedMessage = MessageUtils.generateMessage(
+							val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+								i18nContext,
 								serverConfig.blacklistedWarning ?: "???",
-								listOf(ev.member, ev.textChannel),
-								ev.guild
+								listOf(ev.member, ev.textChannel, ev.guild),
+								ev.guild,
+								emptyMap(),
+								i18nKey = I18nKeysData.InvalidMessages.CommandDenylist
 							)
-							if (generatedMessage != null)
-								ev.textChannel.sendMessage(generatedMessage)
-									.referenceIfPossible(ev.message, serverConfig, true)
-									.await()
+
+							ev.textChannel.sendMessage(generatedMessage)
+								.referenceIfPossible(ev.message, serverConfig, true)
+								.await()
 						}
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)

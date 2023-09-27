@@ -10,9 +10,11 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.placeholders.JoinMessagePlaceholders
 import net.perfectdreams.loritta.common.utils.placeholders.LeaveMessagePlaceholders
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
@@ -155,7 +157,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 		}
 		.build<Long, CopyOnWriteArrayList<User>>()
 
-	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
+	suspend fun handleJoin(event: GuildMemberJoinEvent, serverConfig: ServerConfig, i18nContext: I18nContext, welcomerConfig: WelcomerConfig) {
 		val joinLeaveConfig = welcomerConfig
 		val tokens = mapOf(
 			"humanized-date" to event.member.timeJoined.humanize(loritta.localeManager.getLocaleById(serverConfig.localeId))
@@ -197,12 +199,14 @@ class WelcomeModule(val loritta: LorittaBot) {
 						logger.debug { "Member = ${event.member}, Sending join message \"$msg\" in $textChannel at $guild"}
 
 						textChannel.sendMessage(
-							MessageUtils.generateMessage(
+							MessageUtils.generateMessageOrFallbackIfInvalid(
+								i18nContext,
 								msg,
 								guild,
 								JoinMessagePlaceholders,
-								buildJoinMessagePlaceholders(event.guild, event.user)
-							)!!
+								buildJoinMessagePlaceholders(event.guild, event.user),
+								i18nKey = I18nKeysData.InvalidMessages.MemberJoin
+							)
 						).queue {
 							if (deleteJoinMessagesAfter != null && deleteJoinMessagesAfter != 0L)
 								it.delete().queueAfter(deleteJoinMessagesAfter, TimeUnit.SECONDS)
@@ -226,7 +230,8 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 				event.user.openPrivateChannel().queue {
 					it.sendMessage(
-						MessageUtils.generateMessage(
+						MessageUtils.generateMessageOrFallbackIfInvalid(
+							i18nContext,
 							MessageUtils.watermarkModuleMessage(
 								msg,
 								locale,
@@ -235,15 +240,16 @@ class WelcomeModule(val loritta: LorittaBot) {
 							),
 							event.guild,
 							JoinMessagePlaceholders,
-							buildJoinMessagePlaceholders(event.guild, event.user)
-						)!!
+							buildJoinMessagePlaceholders(event.guild, event.user),
+							i18nKey = I18nKeysData.InvalidMessages.MemberJoinDM
+						)
 					).queue() // Pronto!
 				}
 			}
 		}
 	}
 
-	suspend fun handleLeave(event: GuildMemberRemoveEvent, serverConfig: ServerConfig, welcomerConfig: WelcomerConfig) {
+	suspend fun handleLeave(event: GuildMemberRemoveEvent, serverConfig: ServerConfig, i18nContext: I18nContext, welcomerConfig: WelcomerConfig) {
 		val joinLeaveConfig = welcomerConfig
 
 		logger.trace { "User = ${event.user}, Member = ${event.member}, Guild ${event.guild} has tellOnLeave = ${joinLeaveConfig.tellOnRemove} and the leaveMessage is ${joinLeaveConfig.removeMessage}, canalLeaveId = ${joinLeaveConfig.channelRemoveId}" }
@@ -292,12 +298,14 @@ class WelcomeModule(val loritta: LorittaBot) {
 						logger.debug { "User = ${event.user}, Member = ${event.member}, Sending quit message \"$msg\" in $textChannel at $guild"}
 
 						textChannel.sendMessage(
-							MessageUtils.generateMessage(
+							MessageUtils.generateMessageOrFallbackIfInvalid(
+								i18nContext,
 								msg,
 								guild,
 								LeaveMessagePlaceholders,
-								buildLeaveMessagePlaceholders(guild, event.user)
-							)!!
+								buildLeaveMessagePlaceholders(guild, event.user),
+								i18nKey = I18nKeysData.InvalidMessages.MemberLeave
+							)
 						).queue {
 							if (deleteRemoveMessagesAfter != null && deleteRemoveMessagesAfter != 0L)
 								it.delete().queueAfter(deleteRemoveMessagesAfter, TimeUnit.SECONDS)

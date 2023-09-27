@@ -8,16 +8,18 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.HierarchyException
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
-import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -205,7 +207,8 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
-						val message = MessageUtils.generateMessage(
+						val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+							context.i18nContext,
 							punishLogMessage,
 							listOf(user, context.guild),
 							context.guild,
@@ -216,12 +219,11 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 									locale["commands.command.mute.forever"]
 								}
 							) + AdminUtils.getStaffCustomTokens(context.userHandle)
-									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.mute")
+									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.mute"),
+							I18nKeysData.InvalidMessages.MemberModerationMute
 						)
 
-						message?.let {
-							textChannel.sendMessage(it).queue()
-						}
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}
@@ -264,7 +266,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					}
 				}
 
-				spawnTimeOutUpdaterThread(context.loritta, context.guild, context.locale, user, mute)
+				spawnTimeOutUpdaterThread(context.loritta, context.guild, context.locale, context.i18nContext, user, mute)
 			} catch (e: HierarchyException) {
 				val reply = buildString {
 					this.append(context.locale[AdminUtils.ROLE_TOO_LOW_KEY])
@@ -289,12 +291,13 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 		fun getMutedRole(loritta: LorittaBot, guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["$LOCALE_PREFIX.mute.roleName"], false).getOrNull(0)
 
-		fun spawnTimeOutUpdaterThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, user: User, mute: Mute) = spawnTimeOutUpdaterThread(loritta, guild.idLong, locale, user.idLong, mute)
+		fun spawnTimeOutUpdaterThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, i18nContext: I18nContext, user: User, mute: Mute) = spawnTimeOutUpdaterThread(loritta, guild.idLong, locale, i18nContext, user.idLong, mute)
 
 		fun spawnTimeOutUpdaterThread(
 			loritta: LorittaBot,
 			guildId: Long,
 			locale: BaseLocale,
+			i18nContext: I18nContext,
 			userId: Long,
 			mute: Mute
 		) {
@@ -386,6 +389,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 						UnmuteCommand.unmute(
 							loritta,
+							i18nContext,
 							settings,
 							guild,
 							guild.selfMember.user,

@@ -362,15 +362,18 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
                 if (serverConfig.warnIfBlacklisted) {
                     if (serverConfig.blacklistedWarning?.isNotEmpty() == true && event.guild != null && event.member != null && event.textChannel != null) {
-                        val generatedMessage = MessageUtils.generateMessage(
+                        val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+                            i18nContext,
                             serverConfig.blacklistedWarning ?: "???",
                             listOf(event.member, event.textChannel, event.guild),
-                            event.guild
+                            event.guild,
+                            emptyMap(),
+                            i18nKey = I18nKeysData.InvalidMessages.CommandDenylist
                         )
-                        if (generatedMessage != null)
-                            event.textChannel.sendMessage(generatedMessage)
-                                .referenceIfPossible(event.message, serverConfig, true)
-                                .await()
+
+                        event.textChannel.sendMessage(generatedMessage)
+                            .referenceIfPossible(event.message, serverConfig, true)
+                            .await()
                     }
                 }
                 // Channel is blocked so let's bail out

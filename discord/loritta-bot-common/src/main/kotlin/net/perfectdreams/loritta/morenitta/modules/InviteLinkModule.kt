@@ -235,8 +235,13 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 						}
 					}
 
-					val toBeSent = MessageUtils.generateMessage(warnMessage, listOf(message.author, guild, message.channel), guild)
-							?: return true
+					val toBeSent = MessageUtils.generateMessageOrFallbackIfInvalid(
+						i18nContext,
+						warnMessage,
+						listOf(message.author, guild, message.channel),
+						guild,
+						i18nKey = I18nKeysData.InvalidMessages.InviteBlocked
+					)
 
 					message.guildChannel.sendMessage(toBeSent).queue()
 				}

@@ -62,7 +62,9 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                     context.locale["$LOCALE_PREFIX.giveaway.giveawayCreatedBy"]
                 )
 
-                val message = MessageUtils.generateMessage(watermarkedMessage, listOf(), context.guild, mapOf(), true)
+                val message = try {
+                    MessageUtils.generateMessage(watermarkedMessage, listOf(), context.guild, mapOf(), true)
+                } catch (e: Exception) { null }
 
                 if (message != null) {
                     context.reply(

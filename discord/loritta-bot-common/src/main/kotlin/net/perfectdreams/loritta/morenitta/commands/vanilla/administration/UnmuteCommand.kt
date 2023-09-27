@@ -1,24 +1,29 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
+import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", listOf("desmutar", "desilenciar", "desilenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unmute.description")
@@ -55,7 +60,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				for (user in users)
-					unmute(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent)
+					unmute(loritta, context.i18nContext, settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
@@ -92,7 +97,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 	}
 
 	companion object {
-		fun unmute(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
+		fun unmute(loritta: LorittaBot, i18nContext: I18nContext, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				val punishLogMessage = runBlocking {
 					AdminUtils.getPunishmentForMessage(
@@ -107,19 +112,19 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 					val textChannel = guild.getGuildMessageChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
-						val message = MessageUtils.generateMessage(
+						val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+							i18nContext,
 							punishLogMessage,
 							listOf(user, guild),
 							guild,
 							mutableMapOf(
 								"duration" to locale["commands.command.mute.forever"]
 							) + AdminUtils.getStaffCustomTokens(punisher)
-									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "commands.command.unmute")
+									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "commands.command.unmute"),
+							i18nKey = I18nKeysData.InvalidMessages.MemberModerationUnmute
 						)
 
-						message?.let {
-							textChannel.sendMessage(it).queue()
-						}
+						textChannel.sendMessage(message).queue()
 					}
 				}
 			}

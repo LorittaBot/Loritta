@@ -73,6 +73,7 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                         UnbanCommand.unban(
                             loritta,
+                            context.i18nContext,
                             settings,
                             guild,
                             context.user,
