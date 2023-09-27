@@ -8,6 +8,7 @@ import io.ktor.server.request.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
