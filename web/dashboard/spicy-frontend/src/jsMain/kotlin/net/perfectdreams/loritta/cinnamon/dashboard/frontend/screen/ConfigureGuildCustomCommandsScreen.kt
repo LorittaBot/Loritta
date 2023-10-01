@@ -14,7 +14,7 @@ class ConfigureGuildCustomCommandsScreen(m: LorittaDashboardFrontend, guildId: L
         mapOf()
     )
 
-    override fun createTitle() = I18nKeysData.Website.Dashboard.Welcomer.Title
+    override fun createTitle() = I18nKeysData.Website.Dashboard.CustomCommands.Title
 
     override fun onLoad() {}
 }
