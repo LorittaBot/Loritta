@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.twitch
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.channels.Channel
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
@@ -33,10 +32,21 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
         )
     }
 
-    private val mutex = Mutex()
+    // This will be used to...
+    // callTask() = Task is ran
+    // callTask() = Task is queued
+    // callTask() = Task is ignored because there is already a task being ran
+    // callTask() = Task is ignored because there is already a task being ran
+    // callTask() = Task is ignored because there is already a task being ran
+    private val channel = Channel<Unit>(Channel.CONFLATED)
 
-    suspend fun createSubscriptionsWithConcurrencyLock() {
-        mutex.withLock {
+    /**
+     * Requests the subscription task to be run
+     */
+    suspend fun requestSubscriptionCreation() = channel.send(Unit)
+
+    suspend fun createSubscriptionsLoop() {
+        for (unit in channel) {
             createSubscriptions()
         }
     }
@@ -106,10 +116,11 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                 }.toList().map { it[PremiumTrackTwitchAccounts.guildId] }
 
                 for (guildId in guildIds) {
-                    val valueOfTheDonationKeysEnabledOnThisGuild = DonationKey.find { DonationKeys.activeIn eq guildId and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
-                        .toList()
-                        .sumOf { it.value }
-                        .let { ceil(it) }
+                    val valueOfTheDonationKeysEnabledOnThisGuild =
+                        DonationKey.find { DonationKeys.activeIn eq guildId and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+                            .toList()
+                            .sumOf { it.value }
+                            .let { ceil(it) }
 
                     if (valueOfTheDonationKeysEnabledOnThisGuild >= 40.0)
                         return@newSuspendedTransaction TwitchAccountTrackState.PREMIUM_TRACK_USER

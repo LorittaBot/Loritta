@@ -1552,9 +1552,13 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaRaffleTask::class.simpleName!!, 1.seconds, action = LorittaRaffleTask(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
 		scheduleCoroutineAtFixedRateIfMainReplica(TwitchSubscriptionsHandler::class.simpleName!!, 15.minutes) {
-			twitchSubscriptionsHandler.createSubscriptionsWithConcurrencyLock()
+			// Just request it to be executed
+			twitchSubscriptionsHandler.requestSubscriptionCreation()
 		}
 		scheduleCoroutineAtFixedRate(ActivityUpdater::class.simpleName!!, 1.minutes, action = activityUpdater)
+		GlobalScope.launch {
+			twitchSubscriptionsHandler.createSubscriptionsLoop()
+		}
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {

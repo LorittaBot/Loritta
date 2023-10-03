@@ -108,7 +108,7 @@ class InternalWebServer(val m: LorittaBot) {
                     // TODO: Invoke the twitch subscription task
                     if (m.isMainInstance) {
                         GlobalScope.launch {
-                            m.twitchSubscriptionsHandler.createSubscriptionsWithConcurrencyLock()
+                            m.twitchSubscriptionsHandler.createSubscriptionsLoop()
                         }
                     }
                     LorittaInternalRPCResponse.UpdateTwitchSubscriptionsResponse
