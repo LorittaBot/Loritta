@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.twitch
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.AlwaysTrackTwitchAccounts
@@ -43,9 +44,13 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
     private suspend fun createSubscriptions() {
         logger.info { "Creating Twitch subscriptions..." }
 
+        val start = Clock.System.now()
+
         // Get all tracked account data
         val trackedAccounts = m.pudding.transaction {
-            TrackedTwitchAccounts.slice(TrackedTwitchAccounts.twitchUserId).selectAll()
+            TrackedTwitchAccounts.slice(TrackedTwitchAccounts.twitchUserId)
+                .selectAll()
+                .groupBy(TrackedTwitchAccounts.twitchUserId)
                 .toList()
         }
 
@@ -155,6 +160,6 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
             }
         }
 
-        logger.info { "Finished processing Twitch subscriptions!" }
+        logger.info { "Finished processing Twitch subscriptions! Took ${Clock.System.now() - start}" }
     }
 }
