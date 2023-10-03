@@ -42,6 +42,7 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
 
     private suspend fun createSubscriptions() {
         logger.info { "Creating Twitch subscriptions..." }
+
         // Get all tracked account data
         val trackedAccounts = m.pudding.transaction {
             TrackedTwitchAccounts.slice(TrackedTwitchAccounts.twitchUserId).selectAll()
@@ -149,8 +150,11 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                     }
                 }
             } else {
-                logger.info { "Skipping $twitchUserId because they are unauthorized..." }
+                // We don't log this because it ends up spamming the console way too much
+                // logger.info { "Skipping $twitchUserId because they are unauthorized..." }
             }
         }
+
+        logger.info { "Finished processing Twitch subscriptions!" }
     }
 }
