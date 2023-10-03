@@ -240,7 +240,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 						warnMessage,
 						listOf(message.author, guild, message.channel),
 						guild,
-						i18nKey = I18nKeysData.InvalidMessages.InviteBlocked
+						generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.InviteBlocked
 					)
 
 					message.guildChannel.sendMessage(toBeSent).queue()

@@ -26,7 +26,9 @@ class GetSpicyInfoProcessor(val m: LorittaDashboardBackend) : LorittaDashboardRp
                     it.maxShard,
                     it.websiteUrl
                 )
-            }
+            },
+            m.config.twitch.clientId,
+            m.config.twitch.redirectUri
         )
     }
 }

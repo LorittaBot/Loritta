@@ -249,7 +249,9 @@ data class LorittaConfig(
     @Serializable
     data class TwitchConfig(
         val clientId: String,
-        val clientSecret: String
+        val clientSecret: String,
+        val webhookUrl: String,
+        val webhookSecret: String
     )
 
     @Serializable

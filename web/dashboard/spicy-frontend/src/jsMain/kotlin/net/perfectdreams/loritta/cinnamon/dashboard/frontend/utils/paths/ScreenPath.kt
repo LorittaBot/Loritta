@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.*
 import org.w3c.dom.url.URLSearchParams
 
 sealed class ScreenPath(val elements: List<ScreenPathElement>) {
-    object ChooseAServerScreenPath : ScreenPath(RoutePaths.GUILDS) {
+    data object ChooseAServerScreenPath : ScreenPath(RoutePaths.GUILDS) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -17,7 +17,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ): Screen = ChooseAServerScreen(m)
     }
 
-    object ShipEffectsScreenPath : ScreenPath(RoutePaths.SHIP_EFFECTS) {
+    data object ShipEffectsScreenPath : ScreenPath(RoutePaths.SHIP_EFFECTS) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -26,7 +26,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ): Screen = ShipEffectsScreen(m)
     }
 
-    object SonhosShopScreenPath : ScreenPath(RoutePaths.SONHOS_SHOP) {
+    data object SonhosShopScreenPath : ScreenPath(RoutePaths.SONHOS_SHOP) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -35,7 +35,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ): Screen = SonhosShopScreen(m)
     }
 
-    object ConfigureGuildGamerSaferVerifyPath : ScreenPath(RoutePaths.GUILD_GAMERSAFER_CONFIG) {
+    data object ConfigureGuildGamerSaferVerifyPath : ScreenPath(RoutePaths.GUILD_GAMERSAFER_CONFIG) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -44,7 +44,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ) = ConfigureGuildGamerSaferVerifyScreen(m, parsedArguments["guildId"]!!.toLong())
     }
 
-    object ConfigureGuildWelcomerPath : ScreenPath(RoutePaths.GUILD_WELCOMER_CONFIG) {
+    data object ConfigureGuildWelcomerPath : ScreenPath(RoutePaths.GUILD_WELCOMER_CONFIG) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -53,7 +53,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ) = ConfigureGuildWelcomerScreen(m, parsedArguments["guildId"]!!.toLong())
     }
 
-    object ConfigureGuildStarboardPath : ScreenPath(RoutePaths.GUILD_STARBOARD_CONFIG) {
+    data object ConfigureGuildStarboardPath : ScreenPath(RoutePaths.GUILD_STARBOARD_CONFIG) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -62,7 +62,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ) = ConfigureGuildStarboardScreen(m, parsedArguments["guildId"]!!.toLong())
     }
 
-    object ConfigureGuildCustomCommandsPath : ScreenPath(RoutePaths.GUILD_CUSTOM_COMMANDS_CONFIG) {
+    data object ConfigureGuildCustomCommandsPath : ScreenPath(RoutePaths.GUILD_CUSTOM_COMMANDS_CONFIG) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -71,7 +71,7 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ) = ConfigureGuildCustomCommandsScreen(m, parsedArguments["guildId"]!!.toLong())
     }
 
-    object AddNewGuildCustomCommandPath : ScreenPath(RoutePaths.ADD_NEW_GUILD_CUSTOM_COMMAND_CONFIG) {
+    data object AddNewGuildCustomCommandPath : ScreenPath(RoutePaths.ADD_NEW_GUILD_CUSTOM_COMMAND_CONFIG) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
@@ -80,13 +80,44 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
         ) = AddNewGuildCustomCommandScreen(m, parsedArguments["guildId"]!!.toLong(), URLSearchParams(Url(path).encodedQuery).get("type")!!)
     }
 
-    object EditGuildCustomCommandPath : ScreenPath(RoutePaths.EDIT_GUILD_CUSTOM_COMMAND_CONFIG) {
+    data object EditGuildCustomCommandPath : ScreenPath(RoutePaths.EDIT_GUILD_CUSTOM_COMMAND_CONFIG) {
         override fun createScreen(
             m: LorittaDashboardFrontend,
             currentScreen: Screen?,
             path: String,
             parsedArguments: Map<String, String>
         ) = EditGuildCustomCommandScreen(m, parsedArguments["guildId"]!!.toLong(), parsedArguments["commandId"]!!.toLong())
+    }
+
+    data object ConfigureGuildTwitchPath : ScreenPath(RoutePaths.GUILD_TWITCH_CONFIG) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ) = ConfigureGuildTwitchScreen(m, parsedArguments["guildId"]!!.toLong())
+    }
+
+    data object AddNewGuildTwitchChannelPath : ScreenPath(RoutePaths.ADD_NEW_GUILD_TWITCH_CHANNEL_CONFIG) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ): AddNewGuildTwitchChannelScreen {
+            val urlSearchParams = URLSearchParams(Url(path).encodedQuery)
+
+            return AddNewGuildTwitchChannelScreen(m, parsedArguments["guildId"]!!.toLong(), urlSearchParams.get("userId")!!.toLong(), urlSearchParams.get("createPremiumTrack")?.toBoolean() ?: false)
+        }
+    }
+
+    object EditGuildTwitchChannelPath : ScreenPath(RoutePaths.EDIT_GUILD_TWITCH_CHANNEL_CONFIG) {
+        override fun createScreen(
+            m: LorittaDashboardFrontend,
+            currentScreen: Screen?,
+            path: String,
+            parsedArguments: Map<String, String>
+        ) = EditGuildTwitchChannelScreen(m, parsedArguments["guildId"]!!.toLong(), parsedArguments["trackedId"]!!.toLong())
     }
 
     fun matches(path: String): ScreenPathMatchResult {
@@ -134,7 +165,10 @@ sealed class ScreenPath(val elements: List<ScreenPathElement>) {
             ConfigureGuildStarboardPath,
             ConfigureGuildCustomCommandsPath,
             AddNewGuildCustomCommandPath,
-            EditGuildCustomCommandPath
+            EditGuildCustomCommandPath,
+            ConfigureGuildTwitchPath,
+            AddNewGuildTwitchChannelPath,
+            EditGuildTwitchChannelPath
         )
     }
 }

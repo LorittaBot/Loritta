@@ -41,6 +41,36 @@ sealed class DashGuildScopedRequest {
     data class DeleteGuildCustomCommandConfigRequest(val commandId: Long) : DashGuildScopedRequest()
 
     @Serializable
+    data object GetGuildTwitchConfigRequest : DashGuildScopedRequest()
+
+    @Serializable
+    data class CheckExternalGuildTwitchChannelRequest(val login: String) : DashGuildScopedRequest()
+
+    @Serializable
+    data class AddNewGuildTwitchChannelRequest(val userId: Long) : DashGuildScopedRequest()
+
+    @Serializable
+    data class EditGuildTwitchChannelRequest(val trackedId: Long) : DashGuildScopedRequest()
+
+    @Serializable
+    data class UpsertGuildTwitchChannelRequest(
+        val id: Long?,
+        val userId: Long,
+        val channelId: Long,
+        val message: String,
+        val createPremiumTrack: Boolean
+    ) : DashGuildScopedRequest()
+
+    @Serializable
+    data class DeleteGuildTwitchChannelRequest(val trackedId: Long) : DashGuildScopedRequest()
+
+    @Serializable
+    data class EnablePremiumTrackForTwitchChannelRequest(val userId: Long) : DashGuildScopedRequest()
+
+    @Serializable
+    data class DisablePremiumTrackForTwitchChannelRequest(val premiumTrackedId: Long) : DashGuildScopedRequest()
+
+    @Serializable
     data class SendMessageRequest(
         /**
          * The channel ID where the message will be sent
@@ -55,6 +85,18 @@ sealed class DashGuildScopedRequest {
         /**
          * The kind of placeholder section this message should use
          */
-        val placeholderSectionType: PlaceholderSectionType
-    ) : DashGuildScopedRequest()
+        val placeholderSectionType: PlaceholderSectionType,
+        /**
+         * Additional placeholders
+         */
+        val additionalPlaceholdersInfo: AdditionalPlaceholdersInfo?
+    ) : DashGuildScopedRequest() {
+        @Serializable
+        sealed class AdditionalPlaceholdersInfo {
+            @Serializable
+            data class TwitchStreamOnlinePlaceholderInfo(
+                val twitchLogin: String
+            ) : AdditionalPlaceholdersInfo()
+        }
+    }
 }

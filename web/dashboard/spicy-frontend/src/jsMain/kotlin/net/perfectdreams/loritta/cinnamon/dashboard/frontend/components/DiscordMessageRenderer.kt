@@ -576,6 +576,7 @@ private fun TransformedDiscordText(
                             // TODO: Add a hover tooltip when you hover a placeholder, to show what placeholder triggers it
                             if (placeholder != null) {
                                 when (placeholder.placeholder.renderType) {
+                                    // TODO: Convert text with URL
                                     MessagePlaceholder.RenderType.TEXT -> Text(placeholder.replaceWith)
                                     MessagePlaceholder.RenderType.MENTION -> InlineDiscordMention(placeholder.replaceWith)
                                 }

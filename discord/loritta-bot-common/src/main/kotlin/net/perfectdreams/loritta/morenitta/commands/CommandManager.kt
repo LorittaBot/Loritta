@@ -337,7 +337,7 @@ class CommandManager(val loritta: LorittaBot) {
 									listOf(ev.member, ev.textChannel, ev.guild),
 									ev.guild,
 									emptyMap(),
-									i18nKey = I18nKeysData.InvalidMessages.CommandDenylist
+									generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
 								)
 
 								ev.textChannel.sendMessage(generatedMessage)

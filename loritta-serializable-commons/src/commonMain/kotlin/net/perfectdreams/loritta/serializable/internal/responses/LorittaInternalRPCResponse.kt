@@ -7,10 +7,6 @@ import net.perfectdreams.loritta.serializable.dashboard.responses.DashGuildScope
 
 @Serializable
 sealed class LorittaInternalRPCResponse {
-    interface UnknownGuildError
-    interface UnknownMemberError
-    interface MissingPermissionError
-
     @Serializable
     class ExecuteDashGuildScopedRPCResponse(val response: DashGuildScopedResponse) : LorittaInternalRPCResponse()
 
@@ -24,4 +20,10 @@ sealed class LorittaInternalRPCResponse {
             val instances: List<LorittaCluster>
         ) : GetLorittaInfoResponse()
     }
+
+    @Serializable
+    data object UpdateTwitchSubscriptionsResponse : LorittaInternalRPCResponse()
+
+    @Serializable
+    data class TwitchStreamOnlineEventResponse(val notifiedGuilds: List<Long>) : LorittaInternalRPCResponse()
 }

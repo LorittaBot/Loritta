@@ -182,7 +182,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 					listOf(guild),
 					guild,
 					customTokens,
-					i18nKey = I18nKeysData.InvalidMessages.YouTubeNotification
+					generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.YouTubeNotification
 				) ?: continue
 
 				textChannel.sendMessage(discordMessage)

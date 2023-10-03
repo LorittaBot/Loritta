@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.DiscordUtils
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Toast
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.EditCustomCommandViewModel
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
-import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
+import net.perfectdreams.loritta.common.utils.placeholders.JoinMessagePlaceholders
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import net.perfectdreams.loritta.serializable.DiscordUser
@@ -62,7 +62,21 @@ fun CustomCommandEditor(
                 m,
                 i18nContext,
                 null,
-                PlaceholderSectionType.JOIN_MESSAGE,
+                JoinMessagePlaceholders,
+                {
+                    when (it) {
+                        JoinMessagePlaceholders.UserMentionPlaceholder -> "@${userInfo.globalName ?: userInfo.username}"
+                        JoinMessagePlaceholders.UserNamePlaceholder -> userInfo.globalName ?: userInfo.username
+                        JoinMessagePlaceholders.UserDiscriminatorPlaceholder -> userInfo.discriminator
+                        JoinMessagePlaceholders.UserTagPlaceholder -> "@${userInfo.username}"
+                        JoinMessagePlaceholders.UserIdPlaceholder -> userInfo.id.value.toString()
+                        JoinMessagePlaceholders.UserAvatarUrlPlaceholder -> DiscordUtils.getUserAvatarUrl(userInfo.id.value.toLong(), userInfo.avatarId)
+                        JoinMessagePlaceholders.GuildNamePlaceholder -> guild.name
+                        JoinMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
+                        JoinMessagePlaceholders.GuildIconUrlPlaceholder -> guild.getIconUrl(512) ?: "" // TODO: Fix this!
+                    }
+                },
+                null,
                 guild,
                 TargetChannelResult.ChannelNotSelected,
                 userInfo,

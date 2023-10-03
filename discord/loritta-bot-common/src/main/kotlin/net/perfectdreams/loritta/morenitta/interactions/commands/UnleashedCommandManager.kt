@@ -368,7 +368,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                             listOf(event.member, event.textChannel, event.guild),
                             event.guild,
                             emptyMap(),
-                            i18nKey = I18nKeysData.InvalidMessages.CommandDenylist
+                            generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
                         )
 
                         event.textChannel.sendMessage(generatedMessage)

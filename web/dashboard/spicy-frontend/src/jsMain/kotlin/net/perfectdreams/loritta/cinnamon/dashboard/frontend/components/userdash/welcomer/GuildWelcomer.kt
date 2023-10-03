@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.ResourceChecker
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ConfigureGuildWelcomerScreen
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.DiscordUtils
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Toast
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.GuildViewModel
@@ -18,7 +19,8 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.viewMode
 import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
 import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
-import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
+import net.perfectdreams.loritta.common.utils.placeholders.JoinMessagePlaceholders
+import net.perfectdreams.loritta.common.utils.placeholders.LeaveMessagePlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.config.GuildWelcomerConfig
 import net.perfectdreams.loritta.serializable.dashboard.requests.DashGuildScopedRequest
@@ -36,6 +38,7 @@ fun GuildWelcomer(
 ) {
     val userInfo = LocalUserIdentification.current
     val configViewModel = viewModel { WelcomerViewModel(m, it, guildViewModel) }
+    val avatarId = userInfo.avatarId
 
     ResourceChecker(
         i18nContext,
@@ -299,7 +302,21 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                             m,
                             i18nContext,
                             templates,
-                            PlaceholderSectionType.JOIN_MESSAGE,
+                            JoinMessagePlaceholders,
+                            {
+                                when (it) {
+                                    JoinMessagePlaceholders.UserMentionPlaceholder -> "@${userInfo.globalName ?: userInfo.username}"
+                                    JoinMessagePlaceholders.UserNamePlaceholder -> userInfo.globalName ?: userInfo.username
+                                    JoinMessagePlaceholders.UserDiscriminatorPlaceholder -> userInfo.discriminator
+                                    JoinMessagePlaceholders.UserTagPlaceholder -> "@${userInfo.username}"
+                                    JoinMessagePlaceholders.UserIdPlaceholder -> userInfo.id.value.toString()
+                                    JoinMessagePlaceholders.UserAvatarUrlPlaceholder -> DiscordUtils.getUserAvatarUrl(userInfo.id.value.toLong(), userInfo.avatarId)
+                                    JoinMessagePlaceholders.GuildNamePlaceholder -> guild.name
+                                    JoinMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
+                                    JoinMessagePlaceholders.GuildIconUrlPlaceholder -> guild.getIconUrl(512) ?: "" // TODO: Fix this!
+                                }
+                            },
+                            null,
                             guild,
                             mutableWelcomerConfig.channelJoinId?.let {
                                 TargetChannelResult.GuildMessageChannelTarget(
@@ -424,7 +441,21 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                             m,
                             i18nContext,
                             templates,
-                            PlaceholderSectionType.LEAVE_MESSAGE,
+                            LeaveMessagePlaceholders,
+                            {
+                                when (it) {
+                                    LeaveMessagePlaceholders.UserMentionPlaceholder -> "@${userInfo.globalName ?: userInfo.username}"
+                                    LeaveMessagePlaceholders.UserNamePlaceholder -> userInfo.globalName ?: userInfo.username
+                                    LeaveMessagePlaceholders.UserDiscriminatorPlaceholder -> userInfo.discriminator
+                                    LeaveMessagePlaceholders.UserTagPlaceholder -> "@${userInfo.username}"
+                                    LeaveMessagePlaceholders.UserIdPlaceholder -> userInfo.id.value.toString()
+                                    LeaveMessagePlaceholders.UserAvatarUrlPlaceholder -> DiscordUtils.getUserAvatarUrl(userInfo.id.value.toLong(), userInfo.avatarId)
+                                    LeaveMessagePlaceholders.GuildNamePlaceholder -> guild.name
+                                    LeaveMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
+                                    LeaveMessagePlaceholders.GuildIconUrlPlaceholder -> guild.getIconUrl(512) ?: "" // TODO: Fix this!
+                                }
+                            },
+                            null,
                             guild,
                             mutableWelcomerConfig.channelRemoveId?.let {
                                 TargetChannelResult.GuildMessageChannelTarget(
@@ -461,7 +492,21 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                                         m,
                                         i18nContext,
                                         null,
-                                        PlaceholderSectionType.LEAVE_MESSAGE,
+                                        LeaveMessagePlaceholders,
+                                        {
+                                            when (it) {
+                                                LeaveMessagePlaceholders.UserMentionPlaceholder -> "@${userInfo.globalName ?: userInfo.username}"
+                                                LeaveMessagePlaceholders.UserNamePlaceholder -> userInfo.globalName ?: userInfo.username
+                                                LeaveMessagePlaceholders.UserDiscriminatorPlaceholder -> userInfo.discriminator
+                                                LeaveMessagePlaceholders.UserTagPlaceholder -> "@${userInfo.username}"
+                                                LeaveMessagePlaceholders.UserIdPlaceholder -> userInfo.id.value.toString()
+                                                LeaveMessagePlaceholders.UserAvatarUrlPlaceholder -> DiscordUtils.getUserAvatarUrl(userInfo.id.value.toLong(), userInfo.avatarId)
+                                                LeaveMessagePlaceholders.GuildNamePlaceholder -> guild.name
+                                                LeaveMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
+                                                LeaveMessagePlaceholders.GuildIconUrlPlaceholder -> guild.getIconUrl(512) ?: "" // TODO: Fix this!
+                                            }
+                                        },
+                                        null,
                                         guild,
                                         mutableWelcomerConfig.channelRemoveId?.let {
                                             TargetChannelResult.GuildMessageChannelTarget(
@@ -500,7 +545,21 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                             m,
                             i18nContext,
                             null,
-                            PlaceholderSectionType.JOIN_MESSAGE,
+                            JoinMessagePlaceholders,
+                            {
+                                when (it) {
+                                    JoinMessagePlaceholders.UserMentionPlaceholder -> "@${userInfo.globalName ?: userInfo.username}"
+                                    JoinMessagePlaceholders.UserNamePlaceholder -> userInfo.globalName ?: userInfo.username
+                                    JoinMessagePlaceholders.UserDiscriminatorPlaceholder -> userInfo.discriminator
+                                    JoinMessagePlaceholders.UserTagPlaceholder -> "@${userInfo.username}"
+                                    JoinMessagePlaceholders.UserIdPlaceholder -> userInfo.id.value.toString()
+                                    JoinMessagePlaceholders.UserAvatarUrlPlaceholder -> DiscordUtils.getUserAvatarUrl(userInfo.id.value.toLong(), userInfo.avatarId)
+                                    JoinMessagePlaceholders.GuildNamePlaceholder -> guild.name
+                                    JoinMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
+                                    JoinMessagePlaceholders.GuildIconUrlPlaceholder -> guild.getIconUrl(512) ?: "" // TODO: Fix this!
+                                }
+                            },
+                            null,
                             guild,
                             TargetChannelResult.DirectMessageTarget,
                             userInfo,

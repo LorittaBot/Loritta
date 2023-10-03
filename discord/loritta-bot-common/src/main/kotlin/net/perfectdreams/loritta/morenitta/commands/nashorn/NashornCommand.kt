@@ -38,7 +38,7 @@ class NashornCommand(loritta: LorittaBot, label: String, val javaScriptCode: Str
 					),
 					context.guild,
 					customTokens = customTokens,
-					i18nKey = I18nKeysData.InvalidMessages.CustomCommand
+					generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CustomCommand
 				)
 
 				context.sendMessage(message)

@@ -14,5 +14,6 @@ data class RootConfig(
     val perfectPayments: PerfectPaymentsConfig,
     val userAuthenticationOverride: UserAuthenticationOverrideConfig,
     val pudding: PuddingConfig,
+    val twitch: TwitchConfig,
     val authorizationTokens: List<AuthorizationToken>
 )

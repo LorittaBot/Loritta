@@ -138,7 +138,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 								"duration" to locale["commands.command.mute.forever"]
 							) + AdminUtils.getStaffCustomTokens(context.userHandle)
 									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.kick"),
-							i18nKey = I18nKeysData.InvalidMessages.MemberModerationKick
+							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationKick
 						)
 
 						message?.let {

@@ -21,6 +21,7 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.HomeRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.LocalizedRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.SPARoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.TwitchCallbackRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetLanguageInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.PostLorittaDashboardRpcProcessorRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.economy.GetSonhosBundlesRoute
@@ -79,6 +80,12 @@ class LorittaDashboardBackend(
         SPARoute(this, RoutePaths.GUILD_CUSTOM_COMMANDS_CONFIG),
         SPARoute(this, RoutePaths.ADD_NEW_GUILD_CUSTOM_COMMAND_CONFIG),
         SPARoute(this, RoutePaths.EDIT_GUILD_CUSTOM_COMMAND_CONFIG),
+        SPARoute(this, RoutePaths.GUILD_TWITCH_CONFIG),
+        SPARoute(this, RoutePaths.ADD_NEW_GUILD_TWITCH_CHANNEL_CONFIG),
+        SPARoute(this, RoutePaths.EDIT_GUILD_TWITCH_CHANNEL_CONFIG),
+
+        // ===[ CALLBACKS ]===
+        TwitchCallbackRoute(this),
 
         // ===[ API ]===
         PostLorittaDashboardRpcProcessorRoute(this),
@@ -166,6 +173,7 @@ class LorittaDashboardBackend(
 
                             val locale = languageManager.getI18nContextById(localeId)
 
+                            println(call.request.queryString())
                             call.respondRedirect("/${locale.get(I18nKeysData.Website.Dashboard.LocalePathId)}${call.request.uri}")
                             return@get
                         }

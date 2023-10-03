@@ -55,6 +55,11 @@ object Placeholders {
 
     val LINK = LorittaPlaceholder("link")
 
+    // ===[ TWITCH ]===
+    val STREAM_TITLE = LorittaPlaceholder("stream.title")
+    val STREAM_URL = LorittaPlaceholder("stream.url")
+    val STREAM_GAME = LorittaPlaceholder("stream.game")
+
     object Deprecated {
         val USER_ID = LorittaPlaceholder("user-id")
         val USER_DISCRIMINATOR = LorittaPlaceholder("user-discriminator")

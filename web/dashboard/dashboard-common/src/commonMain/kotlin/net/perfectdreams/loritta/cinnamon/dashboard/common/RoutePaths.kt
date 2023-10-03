@@ -63,4 +63,27 @@ object RoutePaths {
         ScreenPathElement.OptionPathElement("commandId"),
         ScreenPathElement.StringPathElement("edit"),
     )
+
+    val GUILD_TWITCH_CONFIG = listOf(
+        ScreenPathElement.StringPathElement("guilds"),
+        ScreenPathElement.OptionPathElement("guildId"),
+        ScreenPathElement.StringPathElement("configure"),
+        ScreenPathElement.StringPathElement("twitch")
+    )
+
+    val ADD_NEW_GUILD_TWITCH_CHANNEL_CONFIG = listOf(
+        ScreenPathElement.StringPathElement("guilds"),
+        ScreenPathElement.OptionPathElement("guildId"),
+        ScreenPathElement.StringPathElement("configure"),
+        ScreenPathElement.StringPathElement("twitch"),
+        ScreenPathElement.StringPathElement("add")
+    )
+
+    val EDIT_GUILD_TWITCH_CHANNEL_CONFIG = listOf(
+        ScreenPathElement.StringPathElement("guilds"),
+        ScreenPathElement.OptionPathElement("guildId"),
+        ScreenPathElement.StringPathElement("configure"),
+        ScreenPathElement.StringPathElement("twitch"),
+        ScreenPathElement.OptionPathElement("trackedId")
+    )
 }

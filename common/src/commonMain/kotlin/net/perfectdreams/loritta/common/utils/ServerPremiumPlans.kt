@@ -5,6 +5,7 @@ interface ServerPremiumPlans {
 	val maxYouTubeChannels: Int
 	val maxTwitchChannels: Int
 	val maxTwitterAccounts: Int
+	val maxUnauthorizedTwitchChannels: Int
 	val hasCustomBadge: Boolean
 	val memberCounterCount: Int
 	val hasMusic: Boolean
@@ -27,6 +28,7 @@ interface ServerPremiumPlans {
 		override val maxYouTubeChannels = 5
 		override val maxTwitchChannels = maxYouTubeChannels
 		override val maxTwitterAccounts = maxYouTubeChannels
+		override val maxUnauthorizedTwitchChannels = 0
 		override val hasCustomBadge = false
 		override val memberCounterCount = 1
 		override val hasMusic = false
@@ -41,6 +43,7 @@ interface ServerPremiumPlans {
 		override val maxYouTubeChannels = 10
 		override val maxTwitchChannels = maxYouTubeChannels
 		override val maxTwitterAccounts = maxYouTubeChannels
+		override val maxUnauthorizedTwitchChannels = 1
 		override val hasCustomBadge = false
 		override val memberCounterCount = 3
 		override val hasMusic = true
@@ -55,6 +58,7 @@ interface ServerPremiumPlans {
 		override val maxYouTubeChannels = 25
 		override val maxTwitchChannels = maxYouTubeChannels
 		override val maxTwitterAccounts = maxYouTubeChannels
+		override val maxUnauthorizedTwitchChannels = 5
 		override val hasCustomBadge = true
 		override val memberCounterCount = 3
 		override val hasMusic = true
@@ -69,6 +73,7 @@ interface ServerPremiumPlans {
 		override val maxYouTubeChannels = 100
 		override val maxTwitchChannels = maxYouTubeChannels
 		override val maxTwitterAccounts = maxYouTubeChannels
+		override val maxUnauthorizedTwitchChannels = 10
 		override val hasCustomBadge = true
 		override val memberCounterCount = 3
 		override val hasMusic = true

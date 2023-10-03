@@ -121,7 +121,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 								"duration" to locale["commands.command.mute.forever"]
 							) + AdminUtils.getStaffCustomTokens(punisher)
 									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "commands.command.unmute"),
-							i18nKey = I18nKeysData.InvalidMessages.MemberModerationUnmute
+							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationUnmute
 						)
 
 						textChannel.sendMessage(message).queue()

@@ -18,7 +18,8 @@ class LazySoundEffect(val m: LorittaDashboardFrontend, val url: String) {
 
     fun play(
         volume: Double,
-        playbackRate: Double = 1.0
+        playbackRate: Double = 1.0,
+        onEnd: () -> (Unit) = {}
     ) {
         GlobalScope.launch {
             mutex.lock()
@@ -33,6 +34,9 @@ class LazySoundEffect(val m: LorittaDashboardFrontend, val url: String) {
                     this.volume = volume
                     this.playbackRate = playbackRate
                     this.asDynamic().preservesPitch = false
+                    this.onended = {
+                        onEnd.invoke()
+                    }
                 }.play()
                 return@launch
             } else {
@@ -52,6 +56,9 @@ class LazySoundEffect(val m: LorittaDashboardFrontend, val url: String) {
                     this.volume = volume
                     this.playbackRate = playbackRate
                     this.asDynamic().preservesPitch = false
+                    this.onended = {
+                        onEnd.invoke()
+                    }
                 }.play()
             }
         }

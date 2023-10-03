@@ -103,7 +103,7 @@ fun GuildLeftSidebar(
             SidebarEntryScreen(m, SVGIconManager.rightToBracket, i18nContext.get(I18nKeysData.Website.Dashboard.Welcomer.Title), ScreenPathWithArguments(ScreenPath.ConfigureGuildWelcomerPath, mapOf("guildId" to screen.guildId.toString()), emptyMap()))
             SidebarEntryLink(SVGIconManager.eye, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/event-log", "Event Log")
             SidebarEntryLink(SVGIconManager.youtube, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/youtube", "YouTube")
-            SidebarEntryLink(SVGIconManager.twitch, "${spicyInfo.legacyDashboardUrl}/guild/${screen.guildId}/configure/twitch", "Twitch")
+            SidebarEntryScreen(m, SVGIconManager.twitch, "Twitch", ScreenPathWithArguments(ScreenPath.ConfigureGuildTwitchPath, mapOf("guildId" to screen.guildId.toString()), emptyMap()))
         }
 
         SidebarDivider()

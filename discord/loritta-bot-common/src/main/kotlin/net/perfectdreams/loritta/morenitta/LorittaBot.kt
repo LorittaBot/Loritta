@@ -94,12 +94,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.*
-import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.dao.*
+import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
+import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
@@ -112,7 +113,9 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.raffles.LorittaRaffleTask
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
+import net.perfectdreams.loritta.morenitta.twitch.TwitchSubscriptionsHandler
 import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.config.*
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
@@ -125,11 +128,11 @@ import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.website.*
 import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
-import net.perfectdreams.loritta.serializable.Background
-import net.perfectdreams.loritta.serializable.BackgroundStorageType
-import net.perfectdreams.loritta.serializable.BackgroundVariation
-import net.perfectdreams.loritta.serializable.UserId
+import net.perfectdreams.loritta.serializable.*
+import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
+import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
+import net.perfectdreams.switchtwitch.SwitchTwitchAPI
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -287,6 +290,8 @@ class LorittaBot(
 	var newWebsiteThread: Thread? = null
 
 	var twitch = TwitchAPI(config.loritta.twitch.clientId, config.loritta.twitch.clientSecret)
+	var switchTwitch = SwitchTwitchAPI(config.loritta.twitch.clientId, config.loritta.twitch.clientSecret)
+	val twitchSubscriptionsHandler = TwitchSubscriptionsHandler(this)
 	val connectionManager = ConnectionManager(this)
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
@@ -492,6 +497,11 @@ class LorittaBot(
 	val lorittaCluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig
 		get() {
 			return config.loritta.clusters.instances.first { it.id == clusterId }
+		}
+
+	val lorittaMainCluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig
+		get() {
+			return config.loritta.clusters.instances.first { it.id == 1 }
 		}
 
 	val lorittaInternalApiKey: LorittaConfig.WebsiteConfig.AuthenticationKey
@@ -1541,6 +1551,9 @@ class LorittaBot(
 		scheduleCoroutineAtFixedRateIfMainReplica(CreateYouTubeWebhooksTask::class.simpleName!!, 1.minutes, action = CreateYouTubeWebhooksTask(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaRaffleTask::class.simpleName!!, 1.seconds, action = LorittaRaffleTask(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(BotVotesNotifier::class.simpleName!!, 1.minutes, action = BotVotesNotifier(this))
+		scheduleCoroutineAtFixedRateIfMainReplica(TwitchSubscriptionsHandler::class.simpleName!!, 15.minutes) {
+			twitchSubscriptionsHandler.createSubscriptionsWithConcurrencyLock()
+		}
 		scheduleCoroutineAtFixedRate(ActivityUpdater::class.simpleName!!, 1.minutes, action = activityUpdater)
 
 		// Update Fan Arts
@@ -1612,6 +1625,17 @@ class LorittaBot(
 			LocalTime.MIDNIGHT,
 			dailyTaxCollector
 		)
+	}
+
+	suspend inline fun <reified T : LorittaInternalRPCResponse> makeRPCRequest(
+		cluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig,
+		rpc: LorittaInternalRPCRequest
+	): T {
+		return Json.decodeFromString<LorittaInternalRPCResponse>(
+			http.post("${cluster.rpcUrl.removeSuffix("/")}/rpc") {
+				setBody(Json.encodeToString<LorittaInternalRPCRequest>(rpc))
+			}.bodyAsText()
+		) as T
 	}
 
 	/**

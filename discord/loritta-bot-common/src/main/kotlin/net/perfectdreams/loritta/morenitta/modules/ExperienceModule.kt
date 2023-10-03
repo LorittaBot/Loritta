@@ -270,7 +270,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 							)
 						)
 					},
-					i18nKey = I18nKeysData.InvalidMessages.UserExperienceLevelUp
+					generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.UserExperienceLevelUp
 				)
 
 				logger.info { "Message for notif is $message" }

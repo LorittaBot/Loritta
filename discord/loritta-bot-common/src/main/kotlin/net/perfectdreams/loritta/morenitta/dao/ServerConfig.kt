@@ -103,7 +103,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	fun getActiveDonationKeysNested() = DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 				.toList()
 
-	fun getActiveDonationKeysValueNested() = getActiveDonationKeysNested().sumByDouble { it.value }
+	fun getActiveDonationKeysValueNested() = getActiveDonationKeysNested().sumOf { it.value }
 
 	suspend fun getUserData(loritta: LorittaBot, id: Long, isInGuild: Boolean = true): GuildProfile {
 		val t = this

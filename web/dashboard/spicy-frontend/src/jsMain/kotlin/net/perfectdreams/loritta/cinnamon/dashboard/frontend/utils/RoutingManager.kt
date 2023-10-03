@@ -40,6 +40,8 @@ class RoutingManager(private val m: LorittaDashboardFrontend) {
                 println("Detected: ${availablePath::class.simpleName}")
                 // Here we WANT the full path
                 switch(i18nContext, availablePath.createScreen(m, currentScreen, path, result.parsedArguments), backInHistory)
+                // And then get out!
+                return
             }
         }
     }

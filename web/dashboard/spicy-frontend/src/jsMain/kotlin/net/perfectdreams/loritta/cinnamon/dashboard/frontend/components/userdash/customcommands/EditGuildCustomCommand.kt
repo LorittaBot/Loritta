@@ -39,20 +39,7 @@ fun EditGuildCustomCommand(
             ScreenPathWithArguments(ScreenPath.ConfigureGuildCustomCommandsPath, mapOf("guildId" to screen.guildId.toString()), mapOf())
         ) {
             DiscordButton(
-                DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
-                attrs = {
-                    onClick {
-                        m.routingManager.switchBasedOnPath(
-                            i18nContext,
-                            ScreenPathWithArguments(
-                                ScreenPath.ConfigureGuildCustomCommandsPath,
-                                mapOf("guildId" to screen.guildId.toString()),
-                                mapOf()
-                            ).build(),
-                            false
-                        )
-                    }
-                }
+                DiscordButtonType.NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT
             ) {
                 TextWithIconWrapper(SVGIconManager.chevronLeft, {}) {
                     Text("Voltar para a lista de comandos personalizados")

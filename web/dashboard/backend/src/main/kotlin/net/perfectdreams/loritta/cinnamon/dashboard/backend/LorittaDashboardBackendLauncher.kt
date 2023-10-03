@@ -80,7 +80,7 @@ object LorittaDashboardBackendLauncher {
 
                 return Json.decodeFromString<LorittaInternalRPCResponse>(
                     http.post("${rootConfig.lorittaMainRpcUrl.removeSuffix("/")}/rpc") {
-                        setBody(Json.encodeToString<LorittaInternalRPCRequest>(LorittaInternalRPCRequest.GetLorittaInfoRequest()))
+                        setBody(Json.encodeToString<LorittaInternalRPCRequest>(LorittaInternalRPCRequest.GetLorittaInfoRequest))
                     }.bodyAsText()
                 ) as LorittaInternalRPCResponse.GetLorittaInfoResponse.Success
             } catch (e: Exception) {

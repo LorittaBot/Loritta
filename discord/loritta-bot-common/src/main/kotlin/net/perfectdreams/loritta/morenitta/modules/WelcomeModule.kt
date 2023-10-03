@@ -205,7 +205,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 								guild,
 								JoinMessagePlaceholders,
 								buildJoinMessagePlaceholders(event.guild, event.user),
-								i18nKey = I18nKeysData.InvalidMessages.MemberJoin
+								generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberJoin
 							)
 						).queue {
 							if (deleteJoinMessagesAfter != null && deleteJoinMessagesAfter != 0L)
@@ -241,7 +241,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 							event.guild,
 							JoinMessagePlaceholders,
 							buildJoinMessagePlaceholders(event.guild, event.user),
-							i18nKey = I18nKeysData.InvalidMessages.MemberJoinDM
+							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberJoinDM
 						)
 					).queue() // Pronto!
 				}
@@ -304,7 +304,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 								guild,
 								LeaveMessagePlaceholders,
 								buildLeaveMessagePlaceholders(guild, event.user),
-								i18nKey = I18nKeysData.InvalidMessages.MemberLeave
+								generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberLeave
 							)
 						).queue {
 							if (deleteRemoveMessagesAfter != null && deleteRemoveMessagesAfter != 0L)

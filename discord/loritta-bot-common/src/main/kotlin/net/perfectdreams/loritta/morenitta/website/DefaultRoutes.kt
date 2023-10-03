@@ -70,6 +70,7 @@ object DefaultRoutes {
 		GetPubSubHubbubCallbackRoute(loritta),
 		PostDiscordBotsCallbackRoute(loritta),
 		PostPubSubHubbubCallbackRoute(loritta),
+		PostTwitchEventSubCallbackRoute(loritta),
 		PostPerfectPaymentsCallbackRoute(loritta),
 		CreateWebhookRoute(loritta),
 

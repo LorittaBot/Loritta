@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":web:dashboard:dashboard-common"))
     implementation(project(":pudding:client"))
     implementation(project(":temmie-discord-auth"))
+    implementation(project(":switch-twitch"))
 
     // Logging Stuff
     implementation(libs.logback.classic)

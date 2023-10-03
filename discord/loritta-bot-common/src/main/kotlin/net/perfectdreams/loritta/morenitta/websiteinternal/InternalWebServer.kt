@@ -7,18 +7,24 @@ import io.ktor.server.plugins.compression.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
+import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.RPCResponseException
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.Processors
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
+import org.jetbrains.exposed.sql.select
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
@@ -26,6 +32,10 @@ import java.io.PrintStream
  * A Web Server that provides debugging facilities and internal (not exposed to the outside world) RPC between Loritta instances
  */
 class InternalWebServer(val m: LorittaBot) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     val processors = Processors(this)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -92,6 +102,59 @@ class InternalWebServer(val m: LorittaBot) {
 
                 is LorittaInternalRPCRequest.ExecuteDashGuildScopedRPCRequest -> {
                     processors.executeDashGuildScopedProcessor.process(call, request)
+                }
+
+                is LorittaInternalRPCRequest.UpdateTwitchSubscriptionsRequest -> {
+                    // TODO: Invoke the twitch subscription task
+                    if (m.isMainInstance) {
+                        GlobalScope.launch {
+                            m.twitchSubscriptionsHandler.createSubscriptionsWithConcurrencyLock()
+                        }
+                    }
+                    LorittaInternalRPCResponse.UpdateTwitchSubscriptionsResponse
+                }
+
+                is LorittaInternalRPCRequest.TwitchStreamOnlineEventRequest -> {
+                    // Get all tracked guild accounts of this user
+                    val trackedTwitchAccounts = m.transaction {
+                        TrackedTwitchAccounts.select {
+                            TrackedTwitchAccounts.twitchUserId eq request.twitchUserId
+                        }.toList()
+                    }
+
+                    val notifiedGuilds = mutableListOf<Long>()
+                    for (trackedTwitchAccount in trackedTwitchAccounts) {
+                        val guild = m.lorittaShards.getGuildById(trackedTwitchAccount[TrackedTwitchAccounts.guildId]) ?: continue // This could be for other clusters, so let's just skip if the guild is null
+
+                        val channel = guild.getGuildMessageChannelById(trackedTwitchAccount[TrackedTwitchAccounts.channelId]) ?: continue // Channel does not exist! Bail out
+
+                        try {
+                            channel.sendMessage(
+                                MessageUtils.generateMessageOrFallbackIfInvalid(
+                                    m.languageManager.defaultI18nContext, // TODO: Load the language of the server
+                                    trackedTwitchAccount[TrackedTwitchAccounts.message],
+                                    guild,
+                                    TwitchStreamOnlineMessagePlaceholders,
+                                    {
+                                        when (it) {
+                                            TwitchStreamOnlineMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
+                                            TwitchStreamOnlineMessagePlaceholders.GuildNamePlaceholder -> guild.name
+                                            TwitchStreamOnlineMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
+                                            TwitchStreamOnlineMessagePlaceholders.StreamGamePlaceholder -> request.gameName
+                                            TwitchStreamOnlineMessagePlaceholders.StreamTitlePlaceholder -> request.title
+                                            TwitchStreamOnlineMessagePlaceholders.StreamUrlPlaceholder -> "https://twitch.tv/${request.twitchUserLogin}"
+                                        }
+                                    },
+                                    I18nKeysData.InvalidMessages.TwitchStreamOnlineNotification
+                                )
+                            ).await()
+                            notifiedGuilds.add(guild.idLong)
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Something went wrong while trying to send Twitch Stream Online notification on ${guild.idLong}!" }
+                        }
+                    }
+
+                    LorittaInternalRPCResponse.TwitchStreamOnlineEventResponse(notifiedGuilds)
                 }
             }
         } catch (e: RPCResponseException) {

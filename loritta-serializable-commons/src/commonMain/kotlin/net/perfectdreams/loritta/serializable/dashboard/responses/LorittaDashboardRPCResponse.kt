@@ -7,10 +7,6 @@ import net.perfectdreams.loritta.serializable.PublicLorittaCluster
 
 @Serializable
 sealed class LorittaDashboardRPCResponse {
-    interface UnknownGuildError
-    interface UnknownMemberError
-    interface MissingPermissionError
-
     @Serializable
     class ExecuteDashGuildScopedRPCResponse(val dashResponse: DashGuildScopedResponse) : LorittaDashboardRPCResponse()
 
@@ -76,7 +72,9 @@ sealed class LorittaDashboardRPCResponse {
             val clientId: Long,
             val environmentType: EnvironmentType,
             val maxShards: Int,
-            val instances: List<PublicLorittaCluster>
+            val instances: List<PublicLorittaCluster>,
+            val twitchClientId: String,
+            val twitchRedirectUri: String
         ) : GetSpicyInfoResponse()
     }
 }

@@ -27,6 +27,9 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.shipeffects.ShipEffectsOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.sonhosshop.SonhosShopOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.starboard.GuildStarboard
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.twitch.AddNewGuildTwitchChannel
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.twitch.EditGuildTwitchChannel
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.twitch.GuildTwitch
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.welcomer.GuildWelcomer
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.game.GameState
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.*
@@ -359,6 +362,33 @@ class LorittaDashboardFrontend(private val app: Application) {
 
                                                         is EditGuildCustomCommandScreen -> {
                                                             EditGuildCustomCommand(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is ConfigureGuildTwitchScreen -> {
+                                                            GuildTwitch(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is AddNewGuildTwitchChannelScreen -> {
+                                                            AddNewGuildTwitchChannel(
+                                                                this@LorittaDashboardFrontend,
+                                                                screen,
+                                                                i18nContext.value,
+                                                                vm
+                                                            )
+                                                        }
+
+                                                        is EditGuildTwitchChannelScreen -> {
+                                                            EditGuildTwitchChannel(
                                                                 this@LorittaDashboardFrontend,
                                                                 screen,
                                                                 i18nContext.value,

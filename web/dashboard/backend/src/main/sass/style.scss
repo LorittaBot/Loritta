@@ -31,12 +31,14 @@ $mobile-version: 1279px;
 @use "components/welcomer";
 @use "components/starboard";
 @use "components/custom-commands";
+@use "components/twitch";
 @use "components/discord-message-editor";
 @use "components/save-bar";
 @use "components/color-picker";
 @use "components/quick-magic";
 @use "components/theme-selector";
 @use "components/tag";
+@use "components/alerts";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
 

@@ -4,7 +4,8 @@ sealed interface SectionPlaceholders<T : MessagePlaceholder> {
     companion object {
         val sections = listOf<SectionPlaceholders<*>>(
             JoinMessagePlaceholders,
-            LeaveMessagePlaceholders
+            LeaveMessagePlaceholders,
+            TwitchStreamOnlineMessagePlaceholders
         )
 
         init {

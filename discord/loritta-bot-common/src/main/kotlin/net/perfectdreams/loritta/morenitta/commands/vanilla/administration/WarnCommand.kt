@@ -98,7 +98,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 										"duration" to locale["$LOCALE_PREFIX.mute.forever"]
 									) + AdminUtils.getStaffCustomTokens(context.userHandle)
 											+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.warn"),
-									i18nKey = I18nKeysData.InvalidMessages.MemberModerationWarn
+									generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationWarn
 								)
 
 								textChannel.sendMessage(message).queue()

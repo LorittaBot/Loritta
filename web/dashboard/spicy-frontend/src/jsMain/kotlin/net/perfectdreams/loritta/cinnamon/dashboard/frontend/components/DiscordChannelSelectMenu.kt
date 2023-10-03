@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.DiscordChannel
 import net.perfectdreams.loritta.serializable.GuildMessageChannel
 import org.jetbrains.compose.web.dom.P
-import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
@@ -31,9 +30,7 @@ fun DiscordChannelSelectMenu(
                             Text(it.name)
                             if (LorittaDashboardFrontend.shouldChannelSelectMenuPermissionCheckAlwaysFail || !it.canTalk) {
                                 Text(" ")
-                                Span(attrs = {
-                                    classes("tag", "warn")
-                                }) {
+                                TagWarn {
                                     Text(i18nContext.get(I18nKeysData.Website.Dashboard.ChannelNoTalkPermissionModal.Title))
                                 }
                             }

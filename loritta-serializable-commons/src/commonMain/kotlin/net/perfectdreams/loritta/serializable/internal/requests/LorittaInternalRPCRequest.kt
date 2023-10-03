@@ -13,5 +13,16 @@ sealed class LorittaInternalRPCRequest {
     ) : LorittaInternalRPCRequest()
 
     @Serializable
-    class GetLorittaInfoRequest : LorittaInternalRPCRequest()
+    data object GetLorittaInfoRequest : LorittaInternalRPCRequest()
+
+    @Serializable
+    data object UpdateTwitchSubscriptionsRequest : LorittaInternalRPCRequest()
+
+    @Serializable
+    data class TwitchStreamOnlineEventRequest(
+        val twitchUserId: Long,
+        val twitchUserLogin: String,
+        val title: String,
+        val gameName: String,
+    ) : LorittaInternalRPCRequest()
 }

@@ -361,7 +361,7 @@ object MessageUtils {
 	}
 
 	// This is the refactored version
-	fun <T : MessagePlaceholder> generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), i18nKey: StringI18nData, safe: Boolean = true): MessageCreateData {
+	fun <T : MessagePlaceholder> generateMessageOrFallbackIfInvalid(i18nContext: I18nContext, message: String, guild: Guild?, section: SectionPlaceholders<T>, customTokensBuilder: (T) -> (String), generationErrorMessageI18nKey: StringI18nData, safe: Boolean = true): MessageCreateData {
 		val customTokens = mutableListOf<RenderableMessagePlaceholder>()
 		section.placeholders.forEach {
 			val placeholderValue = customTokensBuilder.invoke(it)
@@ -372,7 +372,7 @@ object MessageUtils {
 			message,
 			guild,
 			customTokens,
-			i18nKey,
+			generationErrorMessageI18nKey,
 			safe
 		)
 	}
@@ -382,14 +382,14 @@ object MessageUtils {
 		message: String,
 		guild: Guild?,
 		customTokens: List<RenderableMessagePlaceholder> = listOf(),
-		i18nKey: StringI18nData,
+		generationErrorMessageI18nKey: StringI18nData,
 		safe: Boolean = true
 	) = generateMessageOrFallbackIfInvalid(
 		i18nContext,
 		message,
 		guild,
 		customTokens,
-		i18nContext.get(i18nKey),
+		i18nContext.get(generationErrorMessageI18nKey),
 		safe
 	)
 
@@ -421,7 +421,7 @@ object MessageUtils {
 		sources: List<Any>?,
 		guild: Guild?,
 		customTokens: Map<String, String> = mutableMapOf(),
-		i18nKey: StringI18nData,
+		generationErrorMessageI18nKey: StringI18nData,
 		safe: Boolean = true
 	) = generateMessageOrFallbackIfInvalid(
 		i18nContext,
@@ -429,7 +429,7 @@ object MessageUtils {
 		sources,
 		guild,
 		customTokens,
-		i18nContext.get(i18nKey),
+		i18nContext.get(generationErrorMessageI18nKey),
 		safe
 	)
 

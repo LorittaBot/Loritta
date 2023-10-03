@@ -80,4 +80,5 @@ include(":lorituber:server")
 
 // ===[ MISC ]===
 include(":temmie-discord-auth")
+include(":switch-twitch")
 include(":broker-tickers-updater")

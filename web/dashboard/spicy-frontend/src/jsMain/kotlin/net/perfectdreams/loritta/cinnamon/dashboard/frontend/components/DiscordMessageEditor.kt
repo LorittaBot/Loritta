@@ -18,9 +18,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.embeds.Mutabl
 import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
 import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
-import net.perfectdreams.loritta.common.utils.placeholders.JoinMessagePlaceholders
-import net.perfectdreams.loritta.common.utils.placeholders.LeaveMessagePlaceholders
-import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
+import net.perfectdreams.loritta.common.utils.placeholders.MessagePlaceholder
 import net.perfectdreams.loritta.common.utils.placeholders.SectionPlaceholders
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import net.perfectdreams.loritta.serializable.DiscordUser
@@ -38,11 +36,13 @@ val JsonForDiscordMessages = Json {
 }
 
 @Composable
-fun DiscordMessageEditor(
+fun <T : MessagePlaceholder> DiscordMessageEditor(
     m: LorittaDashboardFrontend,
     i18nContext: I18nContext,
     templates: List<LorittaMessageTemplate>?,
-    placeholderSectionType: PlaceholderSectionType,
+    section: SectionPlaceholders<T>,
+    customTokensBuilder: (T) -> (String),
+    additionalPlaceholdersInfo: DashGuildScopedRequest.SendMessageRequest.AdditionalPlaceholdersInfo?,
     targetGuild: DiscordGuild,
     targetChannel: TargetChannelResult,
     exampleUser: GetUserIdentificationResponse,
@@ -264,7 +264,8 @@ fun DiscordMessageEditor(
                                                     is TargetChannelResult.GuildMessageChannelTarget -> targetChannel.id
                                                 },
                                                 rawMessage, // the message is a raw JSON string, or a content
-                                                placeholderSectionType
+                                                section.type,
+                                                additionalPlaceholdersInfo
                                             )
                                         )
                                     ).dashResponse as DashGuildScopedResponse.SendMessageResponse
@@ -376,44 +377,10 @@ fun DiscordMessageEditor(
                 }
         }
 
-        val placeholders = when (val sectionPlaceholders = SectionPlaceholders.sections.first { it.type == placeholderSectionType }) {
-            is JoinMessagePlaceholders -> {
-                sectionPlaceholders.placeholders.map {
-                    RenderableMessagePlaceholder(
-                        it,
-                        when (it) {
-                            JoinMessagePlaceholders.UserMentionPlaceholder -> "@${exampleUser.globalName ?: exampleUser.username}"
-                            JoinMessagePlaceholders.UserNamePlaceholder -> exampleUser.globalName ?: exampleUser.username
-                            JoinMessagePlaceholders.UserDiscriminatorPlaceholder -> exampleUser.discriminator
-                            JoinMessagePlaceholders.UserTagPlaceholder -> "@${exampleUser.username}"
-                            JoinMessagePlaceholders.UserIdPlaceholder -> exampleUser.id.value.toString()
-                            JoinMessagePlaceholders.UserAvatarUrlPlaceholder -> avatarUrl
-                            JoinMessagePlaceholders.GuildNamePlaceholder -> targetGuild.name
-                            JoinMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
-                            JoinMessagePlaceholders.GuildIconUrlPlaceholder -> targetGuild.getIconUrl(512) ?: "" // TODO: Fix this!
-                        }
-                    )
-                }
-            }
-
-            is LeaveMessagePlaceholders -> {
-                sectionPlaceholders.placeholders.map {
-                    RenderableMessagePlaceholder(
-                        it,
-                        when (it) {
-                            LeaveMessagePlaceholders.UserMentionPlaceholder -> "@${exampleUser.globalName ?: exampleUser.username}"
-                            LeaveMessagePlaceholders.UserNamePlaceholder -> exampleUser.globalName ?: exampleUser.username
-                            LeaveMessagePlaceholders.UserDiscriminatorPlaceholder -> exampleUser.discriminator
-                            LeaveMessagePlaceholders.UserTagPlaceholder -> "@${exampleUser.username}"
-                            LeaveMessagePlaceholders.UserIdPlaceholder -> exampleUser.id.value.toString()
-                            LeaveMessagePlaceholders.UserAvatarUrlPlaceholder -> avatarUrl
-                            LeaveMessagePlaceholders.GuildNamePlaceholder -> targetGuild.name
-                            LeaveMessagePlaceholders.GuildSizePlaceholder -> "100" // TODO: Fix this!
-                            LeaveMessagePlaceholders.GuildIconUrlPlaceholder -> targetGuild.getIconUrl(512) ?: "" // TODO: Fix this!
-                        }
-                    )
-                }
-            }
+        val customTokens = mutableListOf<RenderableMessagePlaceholder>()
+        section.placeholders.forEach {
+            val placeholderValue = customTokensBuilder.invoke(it)
+            customTokens.add(RenderableMessagePlaceholder(it, placeholderValue))
         }
 
         Div(attrs = {
@@ -840,61 +807,63 @@ fun DiscordMessageEditor(
             Div(attrs = {
                 classes("message-preview-section")
             }) {
-                FieldLabel("Pré-visualização da Mensagem")
+                FieldWrapper {
+                    FieldLabel("Pré-visualização da Mensagem")
 
-                Div(attrs = {
-                    id("message-preview-wrapper-$rId")
-                    classes("message-preview-wrapper")
-                }) {
                     Div(attrs = {
-                        id("message-preview-$rId")
-                        classes("message-preview")
+                        id("message-preview-wrapper-$rId")
+                        classes("message-preview-wrapper")
                     }) {
-                        for (message in messagesToBeRenderedBeforeTargetMessage) {
-                            DiscordMessageRenderer(
-                                message.author,
-                                message.message,
-                                null,
-                                targetGuild.channels,
-                                targetGuild.roles,
-                                placeholders,
-                            )
-                        }
+                        Div(attrs = {
+                            id("message-preview-$rId")
+                            classes("message-preview")
+                        }) {
+                            for (message in messagesToBeRenderedBeforeTargetMessage) {
+                                DiscordMessageRenderer(
+                                    message.author,
+                                    message.message,
+                                    null,
+                                    targetGuild.channels,
+                                    targetGuild.roles,
+                                    customTokens,
+                                )
+                            }
 
-                        if (parsedMessage != null) {
-                            DiscordMessageRenderer(
-                                RenderableDiscordUser.fromDiscordUser(selfUser)
-                                    .copy(name = DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME),
-                                parsedMessage,
-                                null,
-                                targetGuild.channels,
-                                targetGuild.roles,
-                                placeholders,
-                            )
-                        } else {
-                            // If the message couldn't be parsed, render it as a normal message
-                            DiscordMessageRenderer(
-                                RenderableDiscordUser.fromDiscordUser(selfUser)
-                                    .copy(name = DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME),
-                                DiscordMessage(
-                                    content = rawMessage
-                                ),
-                                null,
-                                targetGuild.channels,
-                                targetGuild.roles,
-                                placeholders
-                            )
-                        }
+                            if (parsedMessage != null) {
+                                DiscordMessageRenderer(
+                                    RenderableDiscordUser.fromDiscordUser(selfUser)
+                                        .copy(name = DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME),
+                                    parsedMessage,
+                                    null,
+                                    targetGuild.channels,
+                                    targetGuild.roles,
+                                    customTokens,
+                                )
+                            } else {
+                                // If the message couldn't be parsed, render it as a normal message
+                                DiscordMessageRenderer(
+                                    RenderableDiscordUser.fromDiscordUser(selfUser)
+                                        .copy(name = DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME),
+                                    DiscordMessage(
+                                        content = rawMessage
+                                    ),
+                                    null,
+                                    targetGuild.channels,
+                                    targetGuild.roles,
+                                    customTokens
+                                )
+                            }
 
-                        for (message in messagesToBeRenderedAfterTargetMessage) {
-                            DiscordMessageRenderer(
-                                message.author,
-                                message.message,
-                                null,
-                                targetGuild.channels,
-                                targetGuild.roles,
-                                placeholders,
-                            )
+                            for (message in messagesToBeRenderedAfterTargetMessage) {
+                                DiscordMessageRenderer(
+                                    message.author,
+                                    message.message,
+                                    null,
+                                    targetGuild.channels,
+                                    targetGuild.roles,
+                                    customTokens,
+                                )
+                            }
                         }
                     }
                 }
@@ -921,7 +890,7 @@ fun DiscordMessageEditor(
                         }
 
                         Tbody {
-                            placeholders.forEach {
+                            customTokens.forEach {
                                 Tr {
                                     Td {
                                         var isFirst = true

@@ -9,4 +9,5 @@ class SoundEffects(val m: LorittaDashboardFrontend) {
     val toastNotificationWhoosh = LazySoundEffect(m, "${window.location.origin}/assets/snd/toast-notification-whoosh.ogg")
     val whoosh = LazySoundEffect(m, "${window.location.origin}/assets/snd/whoosh.ogg")
     val error = LazySoundEffect(m, "${window.location.origin}/assets/snd/error.ogg")
+    val xarolaRatinho = LazySoundEffect(m, "${window.location.origin}/assets/snd/xarola-ratinho.ogg")
 }

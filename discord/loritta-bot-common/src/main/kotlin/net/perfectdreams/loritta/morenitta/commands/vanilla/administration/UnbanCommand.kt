@@ -125,7 +125,7 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 								"duration" to locale["$LOCALE_PREFIX.mute.forever"]
 							) + AdminUtils.getStaffCustomTokens(punisher)
 									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.unban"),
-							i18nKey = I18nKeysData.InvalidMessages.MemberModerationUnban
+							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationUnban
 						)
 
 						textChannel.sendMessage(message).queue()

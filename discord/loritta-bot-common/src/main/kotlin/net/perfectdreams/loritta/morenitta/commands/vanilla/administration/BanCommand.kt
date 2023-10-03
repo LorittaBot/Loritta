@@ -130,7 +130,7 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 								"duration" to locale["$LOCALE_PREFIX.mute.forever"]
 							) + AdminUtils.getStaffCustomTokens(punisher)
 									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.ban"),
-							i18nKey = I18nKeysData.InvalidMessages.MemberModerationBan
+							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberModerationBan
 						)
 
 						textChannel.sendMessage(message).queue()
