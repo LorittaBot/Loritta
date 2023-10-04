@@ -78,9 +78,29 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
             }
         }
 
+        // Get all subscriptions
         val allTwitchUserIds = trackedAccounts.map { it[TrackedTwitchAccounts.twitchUserId] }
 
-        logger.info { "Currently there are ${allTwitchUserIds.size} tracked Twitch user IDs on the database, while ${streamersCurrentlyBeingTracked.size} subscriptions are registered on Twitch" }
+        // We retrieve all user IDs beforehand to avoid unnecessary roundtrips to the database
+        val (allAuthorizedUserIds, allAlwaysTrackUserIds, allPremiumTrackUserIdsAndGuildIds) = m.transaction {
+            val allAuthorizedUserIds = AuthorizedTwitchAccounts.slice(AuthorizedTwitchAccounts.userId).selectAll()
+                .map { it[AuthorizedTwitchAccounts.userId] }
+
+            val allAlwaysTrackUserIds = AlwaysTrackTwitchAccounts.slice(AlwaysTrackTwitchAccounts.userId).selectAll()
+                .map { it[AlwaysTrackTwitchAccounts.userId] }
+
+            val allPremiumTrackUserIdsAndGuildIds = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId, PremiumTrackTwitchAccounts.guildId)
+                .selectAll()
+                .map {
+                    Pair(it[PremiumTrackTwitchAccounts.twitchUserId], it[PremiumTrackTwitchAccounts.guildId])
+                }
+
+            Triple(allAuthorizedUserIds, allAlwaysTrackUserIds, allPremiumTrackUserIdsAndGuildIds)
+        }
+
+        val allPremiumTrackUserIds = allPremiumTrackUserIdsAndGuildIds.map { it.first }
+
+        logger.info { "Currently there are ${allTwitchUserIds.size} tracked Twitch user IDs on the database, ${streamersCurrentlyBeingTracked.size} subscriptions are registered on Twitch, ${allAuthorizedUserIds.size} are authorized, ${allAlwaysTrackUserIds.size} are always track and ${allPremiumTrackUserIdsAndGuildIds.size} are premium tracks" }
 
         for (twitchUserId in allTwitchUserIds) {
             // Some users are tracking this ID (bug?)
@@ -95,38 +115,30 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
             }
 
             // Let's check!
-            val state = m.newSuspendedTransaction {
-                val isAuthorized = AuthorizedTwitchAccounts.select {
-                    AuthorizedTwitchAccounts.userId eq twitchUserId
-                }.count() == 1L
+            val state = when (twitchUserId) {
+                in allAuthorizedUserIds -> TwitchAccountTrackState.AUTHORIZED
+                in allAlwaysTrackUserIds -> TwitchAccountTrackState.ALWAYS_TRACK_USER
+                in allPremiumTrackUserIds -> m.newSuspendedTransaction {
+                    // Validate if the premium track is actually valid
+                    // Get if the premium track is enabled for this account, we need to check if any of the servers has a premium key enabled too
+                    val guildIds = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.guildId).select {
+                        PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId
+                    }.toList().map { it[PremiumTrackTwitchAccounts.guildId] }
 
-                if (isAuthorized)
-                    return@newSuspendedTransaction TwitchAccountTrackState.AUTHORIZED
+                    for (guildId in guildIds) {
+                        val valueOfTheDonationKeysEnabledOnThisGuild =
+                            DonationKey.find { DonationKeys.activeIn eq guildId and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+                                .toList()
+                                .sumOf { it.value }
+                                .let { ceil(it) }
 
-                val isAlwaysTrack = AlwaysTrackTwitchAccounts.select {
-                    AlwaysTrackTwitchAccounts.userId eq twitchUserId
-                }.count() == 1L
+                        if (valueOfTheDonationKeysEnabledOnThisGuild >= 40.0)
+                            return@newSuspendedTransaction TwitchAccountTrackState.PREMIUM_TRACK_USER
+                    }
 
-                if (isAlwaysTrack)
-                    return@newSuspendedTransaction TwitchAccountTrackState.ALWAYS_TRACK_USER
-
-                // Get if the premium track is enabled for this account, we need to check if any of the servers has a premium key enabled too
-                val guildIds = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.guildId).select {
-                    PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId
-                }.toList().map { it[PremiumTrackTwitchAccounts.guildId] }
-
-                for (guildId in guildIds) {
-                    val valueOfTheDonationKeysEnabledOnThisGuild =
-                        DonationKey.find { DonationKeys.activeIn eq guildId and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
-                            .toList()
-                            .sumOf { it.value }
-                            .let { ceil(it) }
-
-                    if (valueOfTheDonationKeysEnabledOnThisGuild >= 40.0)
-                        return@newSuspendedTransaction TwitchAccountTrackState.PREMIUM_TRACK_USER
+                    return@newSuspendedTransaction TwitchAccountTrackState.UNAUTHORIZED
                 }
-
-                return@newSuspendedTransaction TwitchAccountTrackState.UNAUTHORIZED
+                else -> TwitchAccountTrackState.UNAUTHORIZED
             }
 
             if (state != TwitchAccountTrackState.UNAUTHORIZED) {
