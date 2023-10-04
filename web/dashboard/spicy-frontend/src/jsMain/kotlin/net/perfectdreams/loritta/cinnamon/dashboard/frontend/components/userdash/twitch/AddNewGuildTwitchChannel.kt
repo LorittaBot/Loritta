@@ -57,9 +57,7 @@ fun AddNewGuildTwitchChannel(
             }
         }
 
-        // This CAN BE NULL if the user does not exist
-        // TODO: Add proper checks
-        val twitchUser = twitchResponse.twitchUser!!
+        Hr {}
 
         TwitchChannelEditor(
             m,
@@ -67,7 +65,7 @@ fun AddNewGuildTwitchChannel(
             guild,
             userInfo,
             twitchResponse.selfUser,
-            twitchResponse.twitchUser!!,
+            twitchResponse.twitchUser!!, // TODO: Add proper checks
             defaultTrackedTwitchAccount,
             if (screen.createPremiumTrack) TwitchAccountTrackState.PREMIUM_TRACK_USER else twitchResponse.trackingState,
             screen.createPremiumTrack,

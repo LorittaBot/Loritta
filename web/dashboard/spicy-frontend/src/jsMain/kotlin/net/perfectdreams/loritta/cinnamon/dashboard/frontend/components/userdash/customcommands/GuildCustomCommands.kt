@@ -61,114 +61,108 @@ fun GuildCustomCommands(
 
         Hr {}
 
-        Div {
-            AScreen(
-                m,
-                screenPath = ScreenPathWithArguments(ScreenPath.AddNewGuildCustomCommandPath, mapOf("guildId" to screen.guildId.toString()), mapOf("type" to "text")),
-            ) {
-                DiscordButton(DiscordButtonType.PRIMARY) {
-                    Text("Criar Comando")
+        CardsWithHeader {
+            Div {
+                AScreen(
+                    m,
+                    screenPath = ScreenPathWithArguments(
+                        ScreenPath.AddNewGuildCustomCommandPath,
+                        mapOf("guildId" to screen.guildId.toString()),
+                        mapOf("type" to "text")
+                    ),
+                ) {
+                    DiscordButton(DiscordButtonType.PRIMARY) {
+                        Text("Criar Comando")
+                    }
                 }
             }
-        }
 
-        if (customCommands.isNotEmpty()) {
-            Div(attrs = {
-                attr("style", "display: flex; flex-direction: column; gap: 1em;")
-            }) {
-                for (command in customCommands.sortedBy { it.label }) {
-                    Div(attrs = {
-                        attr(
-                            "style", "background-color: var(--interactive-element-background-color);\n" +
-                                    "  display: flex;\n" +
-                                    "  flex-direction: column;\n" +
-                                    "  padding: 1em;\n" +
-                                    "  border-radius: 7px;\n" +
-                                    "  position: relative;\n" +
-                                    "  border: 1px solid var(--input-border-color);\n" +
-                                    "  flex-direction: row;\n" +
-                                    "  align-items: center;"
-                        )
-                    }) {
-                        Div(attrs = {
-                            attr("style", "flex-grow: 1;")
+            if (customCommands.isNotEmpty()) {
+                Cards {
+                    for (command in customCommands.sortedBy { it.label }) {
+                        Card(attrs = {
+                            attr("style", "flex-direction: row; align-items: center; gap: 0.5em;")
                         }) {
-                            Text(command.label)
-                        }
-
-                        Div(attrs = {
-                            attr("style", "display: grid;grid-template-columns: 1fr 1fr;grid-column-gap: 0.5em;")
-                        }) {
-                            Div {
-                                DiscordButton(
-                                    DiscordButtonType.DANGER,
-                                    attrs = {
-                                        onClick {
-                                            m.globalState.openModalWithCloseButton(
-                                                "Você tem certeza?",
-                                                true,
-                                                {
-                                                    Text("Você quer deletar meeeesmo?")
-                                                },
-                                                { modal ->
-                                                    DiscordButton(
-                                                        DiscordButtonType.DANGER,
-                                                        attrs = {
-                                                            onClick {
-                                                                GlobalScope.launch {
-                                                                    m.globalState.showToast(
-                                                                        Toast.Type.INFO,
-                                                                        "Deletando comando..."
-                                                                    )
-                                                                    // val config = WelcomerViewModel.toDataConfig(mutableWelcomerConfig)
-                                                                    m.makeGuildScopedRPCRequestWithGenericHandling<DashGuildScopedResponse.DeleteGuildCustomCommandConfigResponse>(
-                                                                        guild.id,
-                                                                        DashGuildScopedRequest.DeleteGuildCustomCommandConfigRequest(
-                                                                            command.id
-                                                                        ),
-                                                                        onSuccess = {
-                                                                            customCommands.remove(command)
-                                                                            modal.close()
-                                                                            m.globalState.showToast(
-                                                                                Toast.Type.SUCCESS,
-                                                                                "Comando deletado!"
-                                                                            )
-                                                                            m.soundEffects.configSaved.play(1.0)
-                                                                        },
-                                                                        onError = {
-                                                                            m.soundEffects.configError.play(1.0)
-                                                                        }
-                                                                    )
-                                                                }
-                                                            }
-                                                        }
-                                                    ) {
-                                                        Text("Excluir")
-                                                    }
-                                                }
-                                            )
-                                        }
-                                    }
-                                ) {
-                                    Text("Excluir")
-                                }
+                            Div(attrs = {
+                                attr("style", "flex-grow: 1;")
+                            }) {
+                                Text(command.label)
                             }
 
-                            Div {
+                            Div(attrs = {
+                                attr("style", "display: grid;grid-template-columns: 1fr 1fr;grid-column-gap: 0.5em;")
+                            }) {
                                 Div {
-                                    AScreen(
-                                        m,
-                                        screenPath = ScreenPathWithArguments(
-                                            ScreenPath.EditGuildCustomCommandPath,
-                                            mapOf(
-                                                "guildId" to screen.guildId.toString(),
-                                                "commandId" to command.id.toString()
-                                            ),
-                                            mapOf()
-                                        ),
+                                    DiscordButton(
+                                        DiscordButtonType.DANGER,
+                                        attrs = {
+                                            onClick {
+                                                m.globalState.openModalWithCloseButton(
+                                                    "Você tem certeza?",
+                                                    true,
+                                                    {
+                                                        Text("Você quer deletar meeeesmo?")
+                                                    },
+                                                    { modal ->
+                                                        DiscordButton(
+                                                            DiscordButtonType.DANGER,
+                                                            attrs = {
+                                                                onClick {
+                                                                    GlobalScope.launch {
+                                                                        m.globalState.showToast(
+                                                                            Toast.Type.INFO,
+                                                                            "Deletando comando..."
+                                                                        )
+                                                                        // val config = WelcomerViewModel.toDataConfig(mutableWelcomerConfig)
+                                                                        m.makeGuildScopedRPCRequestWithGenericHandling<DashGuildScopedResponse.DeleteGuildCustomCommandConfigResponse>(
+                                                                            guild.id,
+                                                                            DashGuildScopedRequest.DeleteGuildCustomCommandConfigRequest(
+                                                                                command.id
+                                                                            ),
+                                                                            onSuccess = {
+                                                                                customCommands.remove(command)
+                                                                                modal.close()
+                                                                                m.globalState.showToast(
+                                                                                    Toast.Type.SUCCESS,
+                                                                                    "Comando deletado!"
+                                                                                )
+                                                                                m.soundEffects.configSaved.play(1.0)
+                                                                            },
+                                                                            onError = {
+                                                                                m.soundEffects.configError.play(1.0)
+                                                                            }
+                                                                        )
+                                                                    }
+                                                                }
+                                                            }
+                                                        ) {
+                                                            Text("Excluir")
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        }
                                     ) {
-                                        DiscordButton(DiscordButtonType.PRIMARY) {
-                                            Text("Editar")
+                                        Text("Excluir")
+                                    }
+                                }
+
+                                Div {
+                                    Div {
+                                        AScreen(
+                                            m,
+                                            screenPath = ScreenPathWithArguments(
+                                                ScreenPath.EditGuildCustomCommandPath,
+                                                mapOf(
+                                                    "guildId" to screen.guildId.toString(),
+                                                    "commandId" to command.id.toString()
+                                                ),
+                                                mapOf()
+                                            ),
+                                        ) {
+                                            DiscordButton(DiscordButtonType.PRIMARY) {
+                                                Text("Editar")
+                                            }
                                         }
                                     }
                                 }
@@ -176,9 +170,9 @@ fun GuildCustomCommands(
                         }
                     }
                 }
+            } else {
+                EmptySection(i18nContext)
             }
-        } else {
-            EmptySection(i18nContext)
         }
 
         Hr {}

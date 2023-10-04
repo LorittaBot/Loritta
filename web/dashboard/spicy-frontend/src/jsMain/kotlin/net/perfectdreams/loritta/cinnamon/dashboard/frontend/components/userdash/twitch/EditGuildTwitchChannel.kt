@@ -48,9 +48,7 @@ fun EditGuildTwitchChannel(
             }
         }
 
-        // This CAN BE NULL if the user does not exist
-        // TODO: Add proper checks
-        val twitchUser = twitchResponse.twitchUser!!
+        Hr {}
 
         TwitchChannelEditor(
             m,
@@ -58,7 +56,7 @@ fun EditGuildTwitchChannel(
             guild,
             userInfo,
             twitchResponse.selfUser,
-            twitchResponse.twitchUser!!,
+            twitchResponse.twitchUser!!, // TODO: Add proper checks
             twitchResponse.trackedTwitchAccount,
             twitchResponse.trackingState,
             false,

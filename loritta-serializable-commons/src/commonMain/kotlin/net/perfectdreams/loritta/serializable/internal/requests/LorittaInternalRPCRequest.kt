@@ -22,7 +22,7 @@ sealed class LorittaInternalRPCRequest {
     data class TwitchStreamOnlineEventRequest(
         val twitchUserId: Long,
         val twitchUserLogin: String,
-        val title: String,
-        val gameName: String,
+        val title: String?,
+        val gameName: String?,
     ) : LorittaInternalRPCRequest()
 }

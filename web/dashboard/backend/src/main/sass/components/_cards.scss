@@ -4,8 +4,18 @@
     flex-direction: column;
 
     .card {
-        border-radius: 3px;
+        background-color: var(--interactive-element-background-color);
+        display: flex;
         padding: 1em;
-        border: 1px solid #e1e1e4;
+        border-radius: var(--first-level-border-radius);
+        position: relative;
+        border: 1px solid var(--input-border-color);
+        flex-direction: column;
     }
+}
+
+.cards-with-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
 }
