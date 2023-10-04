@@ -105,7 +105,6 @@ class InternalWebServer(val m: LorittaBot) {
                 }
 
                 is LorittaInternalRPCRequest.UpdateTwitchSubscriptionsRequest -> {
-                    // TODO: Invoke the twitch subscription task
                     if (m.isMainInstance) {
                         GlobalScope.launch {
                             m.twitchSubscriptionsHandler.requestSubscriptionCreation()
@@ -128,6 +127,7 @@ class InternalWebServer(val m: LorittaBot) {
 
                         val channel = guild.getGuildMessageChannelById(trackedTwitchAccount[TrackedTwitchAccounts.channelId]) ?: continue // Channel does not exist! Bail out
 
+                        val missingStreamInformationPlaceholder = "*${m.languageManager.defaultI18nContext.get(I18nKeysData.Modules.Twitch.CouldntGetLivestreamInformation)}*"
                         try {
                             channel.sendMessage(
                                 MessageUtils.generateMessageOrFallbackIfInvalid(
@@ -135,13 +135,13 @@ class InternalWebServer(val m: LorittaBot) {
                                     trackedTwitchAccount[TrackedTwitchAccounts.message],
                                     guild,
                                     TwitchStreamOnlineMessagePlaceholders,
-                                    {
+                                     {
                                         when (it) {
                                             TwitchStreamOnlineMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
                                             TwitchStreamOnlineMessagePlaceholders.GuildNamePlaceholder -> guild.name
                                             TwitchStreamOnlineMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
-                                            TwitchStreamOnlineMessagePlaceholders.StreamGamePlaceholder -> request.gameName
-                                            TwitchStreamOnlineMessagePlaceholders.StreamTitlePlaceholder -> request.title
+                                            TwitchStreamOnlineMessagePlaceholders.StreamGamePlaceholder -> request.gameName ?: missingStreamInformationPlaceholder
+                                            TwitchStreamOnlineMessagePlaceholders.StreamTitlePlaceholder -> request.title ?: missingStreamInformationPlaceholder
                                             TwitchStreamOnlineMessagePlaceholders.StreamUrlPlaceholder -> "https://twitch.tv/${request.twitchUserLogin}"
                                         }
                                     },
