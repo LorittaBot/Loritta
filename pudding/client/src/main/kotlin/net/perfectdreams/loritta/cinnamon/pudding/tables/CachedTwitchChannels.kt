@@ -5,7 +5,7 @@ import net.perfectdreams.exposedpowerutils.sql.jsonb
 import org.jetbrains.exposed.dao.id.IdTable
 
 object CachedTwitchChannels : IdTable<Long>() {
-	override val id = long("twitch_user_id").uniqueIndex().entityId()
+	override val id = long("twitch_user_id").entityId()
 	val userLogin = text("user_login").uniqueIndex()
 	val data = jsonb("data").nullable()
 	val queriedAt = timestampWithTimeZone("queried_at")
