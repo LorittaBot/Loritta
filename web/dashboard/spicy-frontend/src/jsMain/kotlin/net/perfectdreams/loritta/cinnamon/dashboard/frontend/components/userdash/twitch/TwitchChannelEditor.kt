@@ -161,7 +161,7 @@ fun TwitchChannelEditor(
                     Div(attrs = {
                         classes("alert", "alert-success")
                     }) {
-                        Text("O canal foi autorizada pelo dono, então você receberá notificações quando o canal entrar ao vivo!")
+                        Text("O canal foi autorizado pelo dono, então você receberá notificações quando o canal entrar ao vivo!")
                     }
                 }
                 TwitchAccountTrackState.ALWAYS_TRACK_USER -> {
@@ -182,7 +182,7 @@ fun TwitchChannelEditor(
                     Div(attrs = {
                         classes("alert", "alert-danger")
                     }) {
-                        Text("O canal não está autorizado! Você só receberá notificações quando o canal for autorizada na Loritta.")
+                        Text("O canal não está autorizado! Você só receberá notificações quando o canal for autorizado na Loritta.")
                         HorizontalList {
                             DiscordButton(
                                 DiscordButtonType.PRIMARY,
