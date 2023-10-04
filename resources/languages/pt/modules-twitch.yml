@@ -1,0 +1,3 @@
+modules:
+  twitch:
+    couldntGetLivestreamInformation: "Não foi possível pegar as informações da live" #Used for the stream title and stream game placeholders if Loritta failed to get the stream information

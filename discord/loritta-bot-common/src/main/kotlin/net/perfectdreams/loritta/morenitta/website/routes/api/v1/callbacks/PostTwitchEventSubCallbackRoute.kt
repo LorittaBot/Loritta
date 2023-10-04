@@ -10,6 +10,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TwitchEventSubEvents
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
@@ -105,8 +106,8 @@ class PostTwitchEventSubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api
 										LorittaInternalRPCRequest.TwitchStreamOnlineEventRequest(
 											broadcasterUserIdAsLong,
 											broadcasterUserLogin,
-											stream?.title ?: "???",
-											stream?.gameName ?: "???"
+											stream?.title,
+											stream?.gameName
 										)
 									)
 								}
