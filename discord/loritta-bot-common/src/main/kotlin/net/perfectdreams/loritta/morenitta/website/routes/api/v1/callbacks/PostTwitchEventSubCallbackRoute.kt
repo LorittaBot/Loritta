@@ -14,12 +14,14 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.sequins.ktor.BaseRoute
+import net.perfectdreams.switchtwitch.data.TwitchStream
 import net.perfectdreams.switchtwitch.data.VerificationRequest
 import net.perfectdreams.switchtwitch.data.events.TwitchEventRequest
 import net.perfectdreams.switchtwitch.data.events.TwitchStreamOnlineEventRequest
 import org.jetbrains.exposed.sql.insert
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import kotlin.time.Duration.Companion.seconds
 
 class PostTwitchEventSubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/twitch-eventsub") {
 	companion object {
@@ -72,8 +74,28 @@ class PostTwitchEventSubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api
 
 						// We only care about sending the data to other Loritta instances here
 						// But before we do that... Let's load the stream info!
-						val stream = loritta.switchTwitch.getStreamsByUserId(event.broadcasterUserId.toLong())
-							.firstOrNull()
+						var stream: TwitchStream? = null
+
+						// We are going to try up to 1 minute
+						// 12 * 5 = 60 seconds
+
+						for (index in 0 until 12) {
+							logger.info { "Querying ${broadcasterUserIdAsLong}'s Twitch stream info... Tries: $index" }
+							val streamInfo = loritta.switchTwitch.getStreamsByUserId(broadcasterUserIdAsLong)
+								.firstOrNull()
+
+							if (streamInfo != null) {
+								// Found it!
+								stream = streamInfo
+								break
+							}
+
+							logger.warn { "Couldn't find ${broadcasterUserIdAsLong}'s Twitch stream info! Trying again in 5s... Tries: $index" }
+
+							delay(5.seconds)
+						}
+
+						logger.info { "$broadcasterUserIdAsLong's Twitch stream info is $stream" }
 
 						val jobs = loritta.config.loritta.clusters.instances.map { cluster ->
 							cluster to GlobalScope.async {
