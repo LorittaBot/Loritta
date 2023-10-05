@@ -21,63 +21,76 @@ fun ActiveShipEffects(
     vm: ShipEffectsViewModel,
     i18nContext: I18nContext
 ) {
-    LocalizedH2(i18nContext, I18nKeysData.Website.Dashboard.ShipEffects.ActiveEffects.Title)
-
     when (val state = vm.shipEffects) {
         is Resource.Failure -> {}
         is Resource.Loading -> {
             LoadingSection(i18nContext)
         }
         is Resource.Success -> {
-            Cards {
-                val activeShipEffects = state.value.effects.filter { it.expiresAt > Clock.System.now() }.sortedByDescending { it.expiresAt }
-                if (activeShipEffects.isNotEmpty()) {
-                    val selfUser = LocalUserIdentification.current
-
-                    for (effect in activeShipEffects) {
-                        Card {
-                            // We will only show the user that has the effected applied, because we know that one of them will always be the self user
-                            // Based on the implementation, we also know that the user1 in the ship effect is always the self user, but we will check it ourselves because...
-                            // maybe the implementation may change some day?
-                            val user1 = state.value.resolvedUsers.firstOrNull { it.id == effect.user1 }
-                            val user2 = state.value.resolvedUsers.firstOrNull { it.id == effect.user2 }
-
-                            if (effect.user1 == effect.user2) {
-                                // Applied to self, so let's render the first user
-                                IconWithText(SVGIconManager.heart) {
-                                    InlineNullableUserDisplay(effect.user1, user1)
-                                }
-                            } else {
-                                // Now we do individual checks for each field
-                                // The reason we do it like this is... what if some day we let users apply effects to two different users? (Probably will never happen)
-                                if (selfUser.id != effect.user1) {
-                                    IconWithText(SVGIconManager.heart) {
-                                        InlineNullableUserDisplay(effect.user1, user1)
-                                    }
-                                }
-
-                                if (selfUser.id != effect.user2) {
-                                    IconWithText(SVGIconManager.heart) {
-                                        InlineNullableUserDisplay(effect.user2, user2)
-                                    }
-                                }
+            CardsWithHeader {
+                    CardHeader {
+                        CardHeaderInfo {
+                            CardHeaderTitle {
+                                Text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.ActiveEffects.Title))
                             }
 
-                            IconWithText(SVGIconManager.sparkles) {
-                                Div {
-                                    Text("${effect.editedShipValue}%")
-                                }
-                            }
-
-                            IconWithText(SVGIconManager.clock) {
-                                Div {
-                                    RelativeTimeStamp(i18nContext, effect.expiresAt)
-                                }
+                            CardHeaderDescription {
+                                Text(i18nContext.get(I18nKeysData.Website.Dashboard.ShipEffects.ActiveEffects.Effects(state.value.effects.size)))
                             }
                         }
                     }
-                } else {
-                    EmptySection(i18nContext)
+
+                Cards {
+                    val activeShipEffects = state.value.effects.filter { it.expiresAt > Clock.System.now() }
+                        .sortedByDescending { it.expiresAt }
+                    if (activeShipEffects.isNotEmpty()) {
+                        val selfUser = LocalUserIdentification.current
+
+                        for (effect in activeShipEffects) {
+                            Card {
+                                // We will only show the user that has the effected applied, because we know that one of them will always be the self user
+                                // Based on the implementation, we also know that the user1 in the ship effect is always the self user, but we will check it ourselves because...
+                                // maybe the implementation may change some day?
+                                val user1 = state.value.resolvedUsers.firstOrNull { it.id == effect.user1 }
+                                val user2 = state.value.resolvedUsers.firstOrNull { it.id == effect.user2 }
+
+                                if (effect.user1 == effect.user2) {
+                                    // Applied to self, so let's render the first user
+                                    IconWithText(SVGIconManager.heart) {
+                                        InlineNullableUserDisplay(effect.user1, user1)
+                                    }
+                                } else {
+                                    // Now we do individual checks for each field
+                                    // The reason we do it like this is... what if some day we let users apply effects to two different users? (Probably will never happen)
+                                    if (selfUser.id != effect.user1) {
+                                        IconWithText(SVGIconManager.heart) {
+                                            InlineNullableUserDisplay(effect.user1, user1)
+                                        }
+                                    }
+
+                                    if (selfUser.id != effect.user2) {
+                                        IconWithText(SVGIconManager.heart) {
+                                            InlineNullableUserDisplay(effect.user2, user2)
+                                        }
+                                    }
+                                }
+
+                                IconWithText(SVGIconManager.sparkles) {
+                                    Div {
+                                        Text("${effect.editedShipValue}%")
+                                    }
+                                }
+
+                                IconWithText(SVGIconManager.clock) {
+                                    Div {
+                                        RelativeTimeStamp(i18nContext, effect.expiresAt)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        EmptySection(i18nContext)
+                    }
                 }
             }
         }

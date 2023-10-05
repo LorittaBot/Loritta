@@ -13,6 +13,7 @@ website:
         newShipPercentage: "Nova porcentagem do ship"
       activeEffects:
         title: "Subornos Ativos"
+        effects: "{effectsCount,plural, =0 {# subornos} one {# suborno} other {# subornos}}"
       similarActiveEffect:
         title: "Você já tem um suborno similar!"
         description: "Você já tem um suborno similar ativo, então eu decidi te avisar para evitar que você gaste sonhos sem querer! Mas se mesmo assim você quiser subornar, quem sou eu para te impedir, né?"

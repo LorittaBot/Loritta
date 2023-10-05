@@ -2,3 +2,4 @@ website:
   dashboard:
     twitch:
       title: "Notificações da Twitch"
+      channels: "{channelCount,plural, =0 {# canais} one {# canal} other {# canais}}"

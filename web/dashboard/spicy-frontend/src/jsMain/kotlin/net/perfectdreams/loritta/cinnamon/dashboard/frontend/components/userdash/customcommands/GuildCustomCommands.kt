@@ -61,24 +61,36 @@ fun GuildCustomCommands(
 
         Hr {}
 
-        CardsWithHeader {
-            Div {
-                AScreen(
-                    m,
-                    screenPath = ScreenPathWithArguments(
-                        ScreenPath.AddNewGuildCustomCommandPath,
-                        mapOf("guildId" to screen.guildId.toString()),
-                        mapOf("type" to "text")
-                    ),
-                ) {
-                    DiscordButton(DiscordButtonType.PRIMARY) {
-                        Text("Criar Comando")
+        Cards {
+            CardsWithHeader {
+                CardHeader {
+                    CardHeaderInfo {
+                        CardHeaderTitle {
+                            Text("Comandos Criados")
+                        }
+
+                        CardHeaderDescription {
+                            Text(i18nContext.get(I18nKeysData.Website.Dashboard.CustomCommands.CreatedCommands(customCommands.size)))
+                        }
+                    }
+
+                    Div {
+                        AScreen(
+                            m,
+                            screenPath = ScreenPathWithArguments(
+                                ScreenPath.AddNewGuildCustomCommandPath,
+                                mapOf("guildId" to screen.guildId.toString()),
+                                mapOf("type" to "text")
+                            ),
+                        ) {
+                            DiscordButton(DiscordButtonType.PRIMARY) {
+                                Text("Criar Comando")
+                            }
+                        }
                     }
                 }
-            }
 
-            if (customCommands.isNotEmpty()) {
-                Cards {
+                if (customCommands.isNotEmpty()) {
                     for (command in customCommands.sortedBy { it.label }) {
                         Card(attrs = {
                             attr("style", "flex-direction: row; align-items: center; gap: 0.5em;")
@@ -169,49 +181,10 @@ fun GuildCustomCommands(
                             }
                         }
                     }
+                } else {
+                    EmptySection(i18nContext)
                 }
-            } else {
-                EmptySection(i18nContext)
             }
         }
-
-        Hr {}
-
-        /* var isSaving by remember { mutableStateOf(false) }
-
-        SaveBar(
-            m,
-            i18nContext,
-            startConfigState != CustomCommandsViewModel.toDataConfig(mutableCustomCommandsConfig),
-            isSaving,
-            onReset = {
-                mutableCustomCommandsConfig = CustomCommandsViewModel.toMutableConfig(startConfigState)
-            },
-            onSave = {
-                GlobalScope.launch {
-                    isSaving = true
-
-                    m.globalState.showToast(Toast.Type.INFO, "Salvando configuração...")
-                    val config = CustomCommandsViewModel.toDataConfig(mutableCustomCommandsConfig)
-                    val dashResponse =
-                        m.makeGuildScopedRPCRequestWithGenericHandling<DashGuildScopedResponse.UpdateGuildStarboardConfigResponse>(
-                            guild.id,
-                            DashGuildScopedRequest.UpdateGuildStarboardConfigRequest(config),
-                            onSuccess = {
-                                m.globalState.showToast(Toast.Type.SUCCESS, "Configuração salva!")
-                                m.soundEffects.configSaved.play(1.0)
-                                isSaving = false
-                                startConfigState = config
-                                m.globalState.activeSaveBar = false
-                            },
-                            onError = {
-                                m.soundEffects.configError.play(1.0)
-                                isSaving = false
-                                m.globalState.activeSaveBar = false
-                            }
-                        )
-                }
-            }
-        ) */
     }
 }

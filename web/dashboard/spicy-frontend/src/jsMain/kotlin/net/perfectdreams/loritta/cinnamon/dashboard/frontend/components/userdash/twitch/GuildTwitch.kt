@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.GuildVie
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.TwitchViewModel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.viewmodels.viewModel
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
 import net.perfectdreams.loritta.serializable.dashboard.requests.DashGuildScopedRequest
 import net.perfectdreams.loritta.serializable.dashboard.responses.DashGuildScopedResponse
@@ -64,7 +65,17 @@ fun GuildTwitch(
         Hr {}
 
         CardsWithHeader {
-            Div {
+            CardHeader {
+                CardHeaderInfo {
+                    CardHeaderTitle {
+                        Text("Canais que você está seguindo")
+                    }
+
+                    CardHeaderDescription {
+                        Text(i18nContext.get(I18nKeysData.Website.Dashboard.Twitch.Channels(trackedTwitchAccounts.size)))
+                    }
+                }
+
                 DiscordButton(
                     DiscordButtonType.PRIMARY,
                     {
@@ -442,87 +453,108 @@ fun GuildTwitch(
                 }
             }
 
-            Hr {}
+            CardsWithHeader {
+                CardHeader {
+                    CardHeaderInfo {
+                        CardHeaderTitle {
+                            Text("Canais com Acompanhamento Premium")
+                        }
 
-            if (premiumTrackTwitchAccounts.isNotEmpty()) {
-                Cards {
-                    for (premiumTrackTwitchAccount in premiumTrackTwitchAccounts) {
-                        Card(attrs = {
-                            attr("style", "flex-direction: row; align-items: center; gap: 0.5em;")
-                        }) {
-                            Img(src = premiumTrackTwitchAccount.twitchUser?.profileImageUrl ?: "") {
-                                attr("style", "width: 64px; height: 64px; border-radius: 100%;")
-                            }
+                        CardHeaderDescription {
+                            Text(i18nContext.get(I18nKeysData.Website.Dashboard.Twitch.Channels(premiumTrackTwitchAccounts.size)))
+                        }
+                    }
+                }
 
-                            Div(attrs = {
-                                attr("style", "flex-grow: 1;")
+                if (premiumTrackTwitchAccounts.isNotEmpty()) {
+                    Cards {
+                        for (premiumTrackTwitchAccount in premiumTrackTwitchAccounts) {
+                            Card(attrs = {
+                                attr("style", "flex-direction: row; align-items: center; gap: 0.5em;")
                             }) {
-                                Text("${premiumTrackTwitchAccount.twitchUser?.displayName} (${premiumTrackTwitchAccount.twitchUser?.login})")
-                            }
+                                Img(src = premiumTrackTwitchAccount.twitchUser?.profileImageUrl ?: "") {
+                                    attr("style", "width: 64px; height: 64px; border-radius: 100%;")
+                                }
 
-                            Div(attrs = {
-                                attr("style", "display: grid;grid-template-columns: 1fr;grid-column-gap: 0.5em;")
-                            }) {
-                                Div {
-                                    DiscordButton(
-                                        DiscordButtonType.DANGER,
-                                        attrs = {
-                                            onClick {
-                                                m.globalState.openModalWithCloseButton(
-                                                    "Você tem certeza?",
-                                                    true,
-                                                    {
-                                                        Text("Você quer deletar meeeesmo?")
-                                                    },
-                                                    { modal ->
-                                                        DiscordButton(
-                                                            DiscordButtonType.DANGER,
-                                                            attrs = {
-                                                                onClick {
-                                                                    GlobalScope.launch {
-                                                                        m.globalState.showToast(
-                                                                            Toast.Type.INFO,
-                                                                            "Deletando acompanhamento premium..."
-                                                                        )
-                                                                        // val config = WelcomerViewModel.toDataConfig(mutableWelcomerConfig)
-                                                                        m.makeGuildScopedRPCRequestWithGenericHandling<DashGuildScopedResponse.DisablePremiumTrackForTwitchChannelResponse>(
-                                                                            guild.id,
-                                                                            DashGuildScopedRequest.DisablePremiumTrackForTwitchChannelRequest(
-                                                                                premiumTrackTwitchAccount.trackedInfo.id
-                                                                            ),
-                                                                            onSuccess = {
-                                                                                premiumTrackTwitchAccounts.remove(premiumTrackTwitchAccount)
-                                                                                modal.close()
-                                                                                m.globalState.showToast(
-                                                                                    Toast.Type.SUCCESS,
-                                                                                    "Acompanhamento premium deletado!"
-                                                                                )
-                                                                                m.soundEffects.configSaved.play(1.0)
-                                                                            },
-                                                                            onError = {
-                                                                                m.soundEffects.configError.play(1.0)
-                                                                            }
-                                                                        )
+                                Div(attrs = {
+                                    attr("style", "flex-grow: 1;")
+                                }) {
+                                    Text("${premiumTrackTwitchAccount.twitchUser?.displayName} (${premiumTrackTwitchAccount.twitchUser?.login})")
+                                }
+
+                                Div(attrs = {
+                                    attr(
+                                        "style",
+                                        "display: grid;grid-template-columns: 1fr;grid-column-gap: 0.5em;"
+                                    )
+                                }) {
+                                    Div {
+                                        DiscordButton(
+                                            DiscordButtonType.DANGER,
+                                            attrs = {
+                                                onClick {
+                                                    m.globalState.openModalWithCloseButton(
+                                                        "Você tem certeza?",
+                                                        true,
+                                                        {
+                                                            Text("Você quer deletar meeeesmo?")
+                                                        },
+                                                        { modal ->
+                                                            DiscordButton(
+                                                                DiscordButtonType.DANGER,
+                                                                attrs = {
+                                                                    onClick {
+                                                                        GlobalScope.launch {
+                                                                            m.globalState.showToast(
+                                                                                Toast.Type.INFO,
+                                                                                "Deletando acompanhamento premium..."
+                                                                            )
+                                                                            // val config = WelcomerViewModel.toDataConfig(mutableWelcomerConfig)
+                                                                            m.makeGuildScopedRPCRequestWithGenericHandling<DashGuildScopedResponse.DisablePremiumTrackForTwitchChannelResponse>(
+                                                                                guild.id,
+                                                                                DashGuildScopedRequest.DisablePremiumTrackForTwitchChannelRequest(
+                                                                                    premiumTrackTwitchAccount.trackedInfo.id
+                                                                                ),
+                                                                                onSuccess = {
+                                                                                    premiumTrackTwitchAccounts.remove(
+                                                                                        premiumTrackTwitchAccount
+                                                                                    )
+                                                                                    modal.close()
+                                                                                    m.globalState.showToast(
+                                                                                        Toast.Type.SUCCESS,
+                                                                                        "Acompanhamento premium deletado!"
+                                                                                    )
+                                                                                    m.soundEffects.configSaved.play(
+                                                                                        1.0
+                                                                                    )
+                                                                                },
+                                                                                onError = {
+                                                                                    m.soundEffects.configError.play(
+                                                                                        1.0
+                                                                                    )
+                                                                                }
+                                                                            )
+                                                                        }
                                                                     }
                                                                 }
+                                                            ) {
+                                                                Text("Excluir")
                                                             }
-                                                        ) {
-                                                            Text("Excluir")
                                                         }
-                                                    }
-                                                )
+                                                    )
+                                                }
                                             }
+                                        ) {
+                                            Text("Excluir")
                                         }
-                                    ) {
-                                        Text("Excluir")
                                     }
                                 }
                             }
                         }
                     }
+                } else {
+                    EmptySection(i18nContext)
                 }
-            } else {
-                EmptySection(i18nContext)
             }
         }
     }
