@@ -453,6 +453,8 @@ fun GuildTwitch(
                 }
             }
 
+            Hr {}
+
             CardsWithHeader {
                 CardHeader {
                     CardHeaderInfo {

@@ -66,7 +66,7 @@ fun GuildCustomCommands(
                 CardHeader {
                     CardHeaderInfo {
                         CardHeaderTitle {
-                            Text("Comandos Criados")
+                            Text("Comandos personalizados do servidor")
                         }
 
                         CardHeaderDescription {

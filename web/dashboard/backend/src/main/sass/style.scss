@@ -552,7 +552,7 @@ aside#that-wasnt-very-cash-money-of-you-reserved-space {
 .field-wrappers {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 1em;
 }
 
 .field-wrapper {
@@ -653,5 +653,24 @@ aside#that-wasnt-very-cash-money-of-you-reserved-space {
     .text-icon {
         height: 1em;
         flex-shrink: 0; // Don't shrink if the button width is too smol
+    }
+}
+
+// We need to wrap if we want to set the "not-allowed" cursor
+.disableable-section-wrapper {
+    // Done it in this way to handle the transitions & stuff
+    &.disabled {
+        cursor: not-allowed;
+    }
+
+    .disableable-section {
+        transition: 0.25s;
+
+        &.disabled {
+            filter: blur(2px);
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.5;
+        }
     }
 }

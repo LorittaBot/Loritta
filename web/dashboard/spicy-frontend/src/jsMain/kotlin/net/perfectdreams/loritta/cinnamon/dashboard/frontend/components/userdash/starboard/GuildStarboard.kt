@@ -74,72 +74,72 @@ fun GuildStarboard(
 
         Hr {}
 
-        DiscordToggle("starboard-enabled", "Ativar módulo?", null, mutableStarboardConfig._enabled)
+        ToggleableSections {
+            ToggleableSection(
+                "starboard-enabled",
+                "Ativar Starboard",
+                null,
+                mutableStarboardConfig._enabled
+            ) {
+                FieldWrappers {
+                    FieldWrapper {
+                        FieldLabel(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.StarboardChannel))
+
+                        DiscordChannelSelectMenu(
+                            m,
+                            i18nContext,
+                            guild.channels,
+                            mutableStarboardConfig.starboardChannelId,
+                        ) {
+                            mutableStarboardConfig.starboardChannelId = it.id
+                        }
+                    }
+
+                    FieldWrapper {
+                        FieldLabel(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.MinimumReactCount))
+
+                        NumberInput(mutableStarboardConfig.requiredStars, min = 1) {
+                            step(1)
+
+                            onInput {
+                                mutableStarboardConfig.requiredStars = it.value?.toInt() ?: 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         Hr {}
-
-        Div(attrs = {
-            if (mutableStarboardConfig.enabled) {
-                attr("style", "")
-            } else {
-                attr("style", "filter: blur(4px); pointer-events: none; user-select: none;")
-            }
-        }) {
-            FieldWrappers {
-                FieldWrapper {
-                    FieldLabel(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.StarboardChannel))
-
-                    DiscordChannelSelectMenu(
-                        m,
-                        i18nContext,
-                        guild.channels,
-                        mutableStarboardConfig.starboardChannelId,
-                    ) {
-                        mutableStarboardConfig.starboardChannelId = it.id
-                    }
-                }
-
-                FieldWrapper {
-                    FieldLabel(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.MinimumReactCount))
-
-                    NumberInput(mutableStarboardConfig.requiredStars, min = 1) {
-                        step(1)
-
-                        onInput {
-                            mutableStarboardConfig.requiredStars = it.value?.toInt() ?: 1
-                        }
-                    }
-                }
-            }
-
-            Hr {}
-
+        
+        FieldWrappers {
             Div {
-            Div {
-                I {
-                    Text(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.MeanwhileInAChannel))
-                }
+                Div {
+                    I {
+                        Text(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.MeanwhileInAChannel))
+                    }
 
-                Div(attrs = { classes("message-preview-section") }) {
-                    Div(attrs = { classes("message-preview-wrapper") }) {
-                        Div(attrs = { classes("message-preview") }) {
-                            DiscordMessageStyle {
-                                DiscordMessageBlock(
-                                    i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.ArthTheRat),
-                                    "https://stuff.loritta.website/dj-arth.png",
-                                    false
-                                ) {
-                                    DiscordMessageAccessories {
-                                        DiscordMessageAttachments(listOf("https://stuff.loritta.website/commands/terminator_anime.png"))
+                    Div(attrs = { classes("message-preview-section") }) {
+                        Div(attrs = { classes("message-preview-wrapper") }) {
+                            Div(attrs = { classes("message-preview") }) {
+                                DiscordMessageStyle {
+                                    DiscordMessageBlock(
+                                        i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.ArthTheRat),
+                                        "https://stuff.loritta.website/dj-arth.png",
+                                        false
+                                    ) {
+                                        DiscordMessageAccessories {
+                                            DiscordMessageAttachments(listOf("https://stuff.loritta.website/commands/terminator_anime.png"))
 
-                                        DiscordMessageReactions {
-                                            DiscordMessageReaction {
-                                                UIIcon(SVGIconManager.coloredStar) {
-                                                    attr("style", "width: 1em; height: 1em;")
+                                            DiscordMessageReactions {
+                                                DiscordMessageReaction {
+                                                    UIIcon(SVGIconManager.coloredStar) {
+                                                        attr("style", "width: 1em; height: 1em;")
+                                                    }
+
+                                                    Text(" ")
+                                                    Text(mutableStarboardConfig.requiredStars.toString())
                                                 }
-
-                                                Text(" ")
-                                                Text(mutableStarboardConfig.requiredStars.toString())
                                             }
                                         }
                                     }
@@ -147,102 +147,101 @@ fun GuildStarboard(
                             }
                         }
                     }
-                }
 
-                val starboardChannel = guild.channels.firstOrNull { it.id == mutableStarboardConfig.starboardChannelId }
-                I {
-                    Text(
-                        i18nContext.get(
-                            I18nKeysData.Website.Dashboard.Starboard.Storytime.TheMessageHasXStars(
-                                mutableStarboardConfig.requiredStars
+                    val starboardChannel = guild.channels.firstOrNull { it.id == mutableStarboardConfig.starboardChannelId }
+                    I {
+                        Text(
+                            i18nContext.get(
+                                I18nKeysData.Website.Dashboard.Starboard.Storytime.TheMessageHasXStars(
+                                    mutableStarboardConfig.requiredStars
+                                )
                             )
                         )
-                    )
-                    Text(" ")
+                        Text(" ")
 
-                    if (starboardChannel != null) {
-                        TextReplaceControls(
-                            i18nContext,
-                            I18nKeys.Website.Dashboard.Starboard.Storytime.AndNowOnTheChannel,
-                            appendAsFormattedText(i18nContext, mapOf()),
-                        ) {
-                            when (it) {
-                                "channel" -> {
-                                    ComposableFunctionResult {
-                                        InlineDiscordMention("#${starboardChannel.name}")
-                                    }
-                                }
-
-                                else -> AppendControlAsIsResult
-                            }
-                        }
-                    } else {
-                        Text(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.AndNowOnTheNullChannel))
-                    }
-                }
-
-                Div(attrs = { classes("message-preview-section") }) {
-                    Div(attrs = { classes("message-preview-wrapper") }) {
-                        Div(attrs = { classes("message-preview") }) {
-                            DiscordMessageStyle {
-                                DiscordMessageBlock(
-                                    DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME,
-                                    DiscordUtils.getUserAvatarUrl(
-                                        starboardResponse.selfUser.id,
-                                        starboardResponse.selfUser.avatarId
-                                    ),
-                                    true
-                                ) {
-                                    Div {
-                                        UIIcon(SVGIconManager.coloredStar) {
-                                            classes("discord-inline-emoji")
-                                        }
-                                        Text(" ")
-                                        B {
-                                            Text("${mutableStarboardConfig.requiredStars}")
-                                        }
-                                        Text(" - ")
-                                        InlineDiscordMention("#" + i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.MemesOfDubiousQualityChannel))
-                                    }
-
-                                    DiscordMessageAccessories {
-                                        DiscordMessageEmbed(Color(255, 255, 135).rgb, null) {
-                                            DiscordAuthor(
-                                                null,
-                                                "https://stuff.loritta.website/dj-arth.png"
-                                            ) {
-                                                Text("${i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.ArthTheRat)} (351760430991147010)")
-                                            }
-
-                                            DiscordEmbedDescription {
-                                                UIIcon(SVGIconManager.coloredFolder) {
-                                                    classes("discord-inline-emoji")
-                                                }
-
-                                                Text(" ")
-
-                                                B {
-                                                    Text(i18nContext.get(I18nKeysData.Modules.Starboard.Files(1)))
-                                                }
-                                            }
-
-                                            DiscordEmbedImage("https://stuff.loritta.website/commands/terminator_anime.png")
-                                        }
-
-                                        DiscordComponents {
-                                            DiscordActionRow {
-                                                DiscordLinkButton {
-                                                    Text(i18nContext.get(I18nKeysData.Modules.Starboard.JumpToMessage))
-                                                }
-                                            }
+                        if (starboardChannel != null) {
+                            TextReplaceControls(
+                                i18nContext,
+                                I18nKeys.Website.Dashboard.Starboard.Storytime.AndNowOnTheChannel,
+                                appendAsFormattedText(i18nContext, mapOf()),
+                            ) {
+                                when (it) {
+                                    "channel" -> {
+                                        ComposableFunctionResult {
+                                            InlineDiscordMention("#${starboardChannel.name}")
                                         }
                                     }
+
+                                    else -> AppendControlAsIsResult
                                 }
                             }
+                        } else {
+                            Text(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.AndNowOnTheNullChannel))
+                        }
+                    }
+
+                    Div(attrs = { classes("message-preview-section") }) {
+                        Div(attrs = { classes("message-preview-wrapper") }) {
+                            Div(attrs = { classes("message-preview") }) {
+                                DiscordMessageStyle {
+                                    DiscordMessageBlock(
+                                        DiscordMessageUtils.LORITTA_MORENITTA_FANCY_NAME,
+                                        DiscordUtils.getUserAvatarUrl(
+                                            starboardResponse.selfUser.id,
+                                            starboardResponse.selfUser.avatarId
+                                        ),
+                                        true
+                                    ) {
+                                        Div {
+                                            UIIcon(SVGIconManager.coloredStar) {
+                                                classes("discord-inline-emoji")
+                                            }
+                                            Text(" ")
+                                            B {
+                                                Text("${mutableStarboardConfig.requiredStars}")
+                                            }
+                                            Text(" - ")
+                                            InlineDiscordMention("#" + i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.MemesOfDubiousQualityChannel))
+                                        }
+
+                                        DiscordMessageAccessories {
+                                            DiscordMessageEmbed(Color(255, 255, 135).rgb, null) {
+                                                DiscordAuthor(
+                                                    null,
+                                                    "https://stuff.loritta.website/dj-arth.png"
+                                                ) {
+                                                    Text("${i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.ArthTheRat)} (351760430991147010)")
+                                                }
+
+                                                DiscordEmbedDescription {
+                                                    UIIcon(SVGIconManager.coloredFolder) {
+                                                        classes("discord-inline-emoji")
+                                                    }
+
+                                                    Text(" ")
+
+                                                    B {
+                                                        Text(i18nContext.get(I18nKeysData.Modules.Starboard.Files(1)))
+                                                    }
+                                                }
+
+                                                DiscordEmbedImage("https://stuff.loritta.website/commands/terminator_anime.png")
+                                            }
+
+                                            DiscordComponents {
+                                                DiscordActionRow {
+                                                    DiscordLinkButton {
+                                                        Text(i18nContext.get(I18nKeysData.Modules.Starboard.JumpToMessage))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-            }
 
                 I {
                     Text(i18nContext.get(I18nKeysData.Website.Dashboard.Starboard.Storytime.TheMessageIsRecorded))
