@@ -343,7 +343,7 @@ fun GuildTwitch(
                             }
 
                             Div(attrs = {
-                                attr("style", "flex-grow: 1; display: flex; flex-direction: column;")
+                                attr("style", "flex-grow: 1; display: flex; flex-direction: column; word-break: break-word;")
                             }) {
                                 Div {
                                     Text("${trackedTwitchAccount.twitchUser?.displayName} (${trackedTwitchAccount.twitchUser?.login})")
@@ -533,7 +533,7 @@ fun GuildTwitch(
                                 }
 
                                 Div(attrs = {
-                                    attr("style", "flex-grow: 1;")
+                                    attr("style", "flex-grow: 1; word-break: break-word;")
                                 }) {
                                     Text("${premiumTrackTwitchAccount.twitchUser?.displayName} (${premiumTrackTwitchAccount.twitchUser?.login})")
                                 }
