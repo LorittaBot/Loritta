@@ -5,11 +5,12 @@ import net.perfectdreams.loritta.serializable.TwitchUser
 
 @Serializable
 data class GuildTwitchConfig(
-    val trackedTwitchAccounts: List<TrackedTwitchAccountWithTwitchUser>,
+    val trackedTwitchAccounts: List<TrackedTwitchAccountWithTwitchUserAndTrackingState>,
     val premiumTrackTwitchAccounts: List<PremiumTrackTwitchAccountWithTwitchUser>,
 ) {
     @Serializable
-    data class TrackedTwitchAccountWithTwitchUser(
+    data class TrackedTwitchAccountWithTwitchUserAndTrackingState(
+        val trackingState: TwitchAccountTrackState,
         val trackedInfo: TrackedTwitchAccount,
         val twitchUser: TwitchUser?
     )

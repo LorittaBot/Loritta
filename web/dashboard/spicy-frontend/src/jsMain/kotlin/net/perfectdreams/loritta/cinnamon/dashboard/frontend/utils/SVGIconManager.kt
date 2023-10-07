@@ -53,6 +53,7 @@ object SVGIconManager {
     val discordNewsChannel by lazy { register(svgDiscordNewsChannel, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val faceSmile by lazy { register(svgFaceSmile, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val roleShield by lazy { register(svgRoleShield, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val xmark by lazy { register(svgXmark, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
 
     /**
      * Loads and registers a SVG with [name] and [path]
@@ -269,6 +270,10 @@ external val svgCode: dynamic
 @JsModule("./icons/fontawesome6/solid/face-smile.svg")
 @JsNonModule
 external val svgFaceSmile: dynamic
+
+@JsModule("./icons/fontawesome6/solid/xmark.svg")
+@JsNonModule
+external val svgXmark: dynamic
 
 @JsModule("./icons/discord/text-channel.svg")
 @JsNonModule

@@ -402,11 +402,16 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                 val (twitchAccounts, premiumTrackTwitchAccounts, valueOfTheDonationKeysEnabledOnThisGuild) = m.newSuspendedTransaction {
                     val twitchAccounts = TrackedTwitchAccounts.select { TrackedTwitchAccounts.guildId eq guild.idLong }
                         .map {
-                            TrackedTwitchAccount(
-                                it[TrackedTwitchAccounts.id].value,
-                                it[TrackedTwitchAccounts.twitchUserId],
-                                it[TrackedTwitchAccounts.channelId],
-                                it[TrackedTwitchAccounts.message]
+                            val state = getTwitchAccountTrackState(it[TrackedTwitchAccounts.twitchUserId])
+
+                            Pair(
+                                state,
+                                TrackedTwitchAccount(
+                                    it[TrackedTwitchAccounts.id].value,
+                                    it[TrackedTwitchAccounts.twitchUserId],
+                                    it[TrackedTwitchAccounts.channelId],
+                                    it[TrackedTwitchAccounts.message]
+                                )
                             )
                         }
 
@@ -428,7 +433,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                 }
 
                 val accountsInfo = getCachedUsersInfoById(
-                    *((twitchAccounts.map { it.twitchUserId } + premiumTrackTwitchAccounts.map { it.twitchUserId }).toSet()).toLongArray()
+                    *((twitchAccounts.map { it.second.twitchUserId } + premiumTrackTwitchAccounts.map { it.twitchUserId }).toSet()).toLongArray()
                 )
 
                 DashGuildScopedResponse.GetGuildTwitchConfigResponse(
@@ -437,9 +442,10 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                     valueOfTheDonationKeysEnabledOnThisGuild,
                     GuildTwitchConfig(
                         twitchAccounts.map { trackedTwitchAccount ->
-                            GuildTwitchConfig.TrackedTwitchAccountWithTwitchUser(
-                                trackedTwitchAccount,
-                                accountsInfo.firstOrNull { it.id == trackedTwitchAccount.twitchUserId }?.let {
+                            GuildTwitchConfig.TrackedTwitchAccountWithTwitchUserAndTrackingState(
+                                trackedTwitchAccount.first,
+                                trackedTwitchAccount.second,
+                                accountsInfo.firstOrNull { it.id == trackedTwitchAccount.second.twitchUserId }?.let {
                                     TwitchUser(it.id, it.login, it.displayName, it.profileImageUrl)
                                 }
                             )

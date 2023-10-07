@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ConfigureGuildTwitchScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInfo
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Toast
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPathWithArguments
@@ -342,9 +343,62 @@ fun GuildTwitch(
                             }
 
                             Div(attrs = {
-                                attr("style", "flex-grow: 1;")
+                                attr("style", "flex-grow: 1; display: flex; flex-direction: column;")
                             }) {
-                                Text("${trackedTwitchAccount.twitchUser?.displayName} (${trackedTwitchAccount.twitchUser?.login})")
+                                Div {
+                                    Text("${trackedTwitchAccount.twitchUser?.displayName} (${trackedTwitchAccount.twitchUser?.login})")
+                                }
+
+                                Div(attrs = {
+                                    attr("style", "font-size: 0.8em; display: flex; flex-direction: row; gap: 0.25em; align-items: center;")
+                                }) {
+                                    when (trackedTwitchAccount.trackingState) {
+                                        TwitchAccountTrackState.AUTHORIZED -> {
+                                            Div(attrs = {
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white;")
+                                            }) {
+                                                UIIcon(SVGIconManager.check) {
+                                                    attr("style", "width: 0.75em; height: 0.75em;")
+                                                }
+                                            }
+
+                                            Text("Canal autorizado")
+                                        }
+                                        TwitchAccountTrackState.ALWAYS_TRACK_USER -> {
+                                            Div(attrs = {
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white;")
+                                            }) {
+                                                UIIcon(SVGIconManager.check) {
+                                                    attr("style", "width: 0.75em; height: 0.75em;")
+                                                }
+                                            }
+
+                                            Text("Canal famoso")
+                                        }
+                                        TwitchAccountTrackState.PREMIUM_TRACK_USER -> {
+                                            Div(attrs = {
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white;")
+                                            }) {
+                                                UIIcon(SVGIconManager.check) {
+                                                    attr("style", "width: 0.75em; height: 0.75em;")
+                                                }
+                                            }
+
+                                            Text("Acompanhamento premium")
+                                        }
+                                        TwitchAccountTrackState.UNAUTHORIZED -> {
+                                            Div(attrs = {
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #da373c; color: white;")
+                                            }) {
+                                                UIIcon(SVGIconManager.xmark) {
+                                                    attr("style", "width: 0.75em; height: 0.75em;")
+                                                }
+                                            }
+
+                                            Text("Canal não autorizado")
+                                        }
+                                    }
+                                }
                             }
 
                             Div(attrs = {
