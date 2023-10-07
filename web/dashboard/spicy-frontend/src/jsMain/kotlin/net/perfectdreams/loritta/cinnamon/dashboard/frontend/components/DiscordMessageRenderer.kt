@@ -532,9 +532,10 @@ private fun TransformedDiscordText(
     val maskedInput = DiscordMessageUtils.convertSpecialDiscordEntitiesIntoHTMLTags(input)
 
     val convertedFromMarkdown = parse(
-        DiscordMessageUtils.patchBlockQuotes(maskedInput),
+        DiscordMessageUtils.patchMultiNewLines(DiscordMessageUtils.patchBlockQuotes(maskedInput)),
         jso {
-            this.breaks = true
+            // We need to keep breaks as false because we use our own patch new lines function
+            this.breaks = false
         }
     )
 

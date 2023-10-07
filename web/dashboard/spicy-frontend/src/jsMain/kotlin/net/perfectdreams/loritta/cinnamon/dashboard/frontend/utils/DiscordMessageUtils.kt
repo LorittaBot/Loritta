@@ -13,9 +13,10 @@ object DiscordMessageUtils {
     private val Placeholder = Regex("\\{([A-z0-9@\\-.]+)\\}")
 
     val BlockQuotePatch = Regex("^> .+\\n(?!>)", RegexOption.MULTILINE)
+    val MultiNewLinePatch = Regex("\\n+", RegexOption.MULTILINE)
 
     /**
-     * Patches block quotes to make them act like Discord's block quotes when parsed with Showdown
+     * Patches block quotes to make them act like Discord's block quotes when parsed with marked.js
      *
      * Example:
      * * > Loritta is cute!
@@ -29,6 +30,18 @@ object DiscordMessageUtils {
      */
     fun patchBlockQuotes(input: String) = BlockQuotePatch.replace(input) {
         "${it.value}\n"
+    }
+
+    /**
+     * Patches multi lines to make them act like Discord's multi lines when parsed with marked.js
+     */
+    fun patchMultiNewLines(input: String) = MultiNewLinePatch.replace(input) {
+        buildString {
+            repeat(it.value.length) {
+                append("<br>")
+            }
+            append("\n\n")
+        }
     }
 
     /**
