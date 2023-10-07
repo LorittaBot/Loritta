@@ -68,12 +68,18 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
         val createdSubscriptions = m.switchTwitch.loadAllSubscriptions()
 
         val streamersCurrentlyBeingTracked = mutableSetOf<Long>()
+        val costlyStreams = mutableSetOf<Long>()
+        val twitchUserIdToSubId = mutableMapOf<Long, String>()
 
         createdSubscriptions.forEach {
             it.data.forEach {
                 if (it.type == "stream.online") {
+                    val broadcasterUserId = it.condition["broadcaster_user_id"]!!.toLong()
+                    twitchUserIdToSubId[broadcasterUserId] = it.id
                     if (it.status in VALID_STATUS)
-                        streamersCurrentlyBeingTracked.add(it.condition["broadcaster_user_id"]!!.toLong())
+                        streamersCurrentlyBeingTracked.add(broadcasterUserId)
+                    if (it.cost != 0)
+                        costlyStreams.add(broadcasterUserId)
                 }
             }
         }
@@ -109,7 +115,8 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                 continue
             }
 
-            if (streamersCurrentlyBeingTracked.contains(twitchUserId)) {
+            // If the tracked stream is "costly", we need to check if the subscription should stay active
+            if (streamersCurrentlyBeingTracked.contains(twitchUserId) && !costlyStreams.contains(twitchUserId)) {
                 logger.info { "Skipping $twitchUserId because they are already being tracked..." }
                 continue
             }
@@ -141,7 +148,19 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                 else -> TwitchAccountTrackState.UNAUTHORIZED
             }
 
-            if (state != TwitchAccountTrackState.UNAUTHORIZED) {
+            if (state == TwitchAccountTrackState.AUTHORIZED && costlyStreams.contains(twitchUserId)) {
+                // If the state is authorized, but the cost is 1, then it means that the account authorization has been revoked!
+                logger.warn { "Subscription for $twitchUserId is costly even tho their state is $state! Revoking authorization state and deleting subscription..." }
+
+                m.pudding.transaction {
+                    AuthorizedTwitchAccounts.deleteWhere {
+                        AuthorizedTwitchAccounts.userId eq twitchUserId
+                    }
+                }
+
+                // Delete the subscription!
+                m.switchTwitch.deleteSubscription(twitchUserIdToSubId[twitchUserId]!!)
+            } else if (state != TwitchAccountTrackState.UNAUTHORIZED) {
                 logger.info { "Creating subscription for $twitchUserId because their state is $state..." }
                 // If the state ain't authorized, then we can create the subscription!
                 val subscriptionResult = m.switchTwitch.createSubscription(
@@ -177,7 +196,7 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                         m.switchTwitch.deleteSubscription(subscriptionData.id)
                     }
                 }
-            } else {
+            } else if (costlyStreams.contains(twitchUserId)) {
                 // We don't log this because it ends up spamming the console way too much
                 // logger.info { "Skipping $twitchUserId because they are unauthorized..." }
             }
