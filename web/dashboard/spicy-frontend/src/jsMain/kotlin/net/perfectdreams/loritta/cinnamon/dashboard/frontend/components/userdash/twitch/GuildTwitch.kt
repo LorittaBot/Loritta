@@ -355,47 +355,40 @@ fun GuildTwitch(
                                     when (trackedTwitchAccount.trackingState) {
                                         TwitchAccountTrackState.AUTHORIZED -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white; flex-shrink: 0;")
+                                                classes("state-tip", "success")
                                             }) {
-                                                UIIcon(SVGIconManager.check) {
-                                                    attr("style", "width: 0.75em; height: 0.75em;")
-                                                }
+                                                UIIcon(SVGIconManager.check)
                                             }
 
-                                            Text("Canal autorizado")
+                                            Text("Notificações ativas — Canal autorizado pelo dono")
                                         }
                                         TwitchAccountTrackState.ALWAYS_TRACK_USER -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white; flex-shrink: 0;")
+                                                classes("state-tip", "success")
                                             }) {
-                                                UIIcon(SVGIconManager.check) {
-                                                    attr("style", "width: 0.75em; height: 0.75em;")
-                                                }
+                                                UIIcon(SVGIconManager.check)
                                             }
 
-                                            Text("Canal famoso")
+
+                                            Text("Notificações ativas — Canal famoso")
                                         }
                                         TwitchAccountTrackState.PREMIUM_TRACK_USER -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white; flex-shrink: 0;")
+                                                classes("state-tip", "success")
                                             }) {
-                                                UIIcon(SVGIconManager.check) {
-                                                    attr("style", "width: 0.75em; height: 0.75em;")
-                                                }
+                                                UIIcon(SVGIconManager.check)
                                             }
 
-                                            Text("Acompanhamento premium")
+                                            Text("Notificações ativas — Canal usando Acompanhamento Premium")
                                         }
                                         TwitchAccountTrackState.UNAUTHORIZED -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #da373c; color: white; flex-shrink: 0;")
+                                                classes("state-tip", "warn")
                                             }) {
-                                                UIIcon(SVGIconManager.xmark) {
-                                                    attr("style", "width: 0.75em; height: 0.75em;")
-                                                }
+                                                UIIcon(SVGIconManager.xmark)
                                             }
 
-                                            Text("Canal não autorizado")
+                                            Text("Notificações desativadas — Canal não autorizado")
                                         }
                                     }
                                 }

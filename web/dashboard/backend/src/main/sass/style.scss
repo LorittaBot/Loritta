@@ -39,6 +39,7 @@ $mobile-version: 1279px;
 @use "components/theme-selector";
 @use "components/tag";
 @use "components/alerts";
+@use "components/state-tip";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
 
@@ -56,6 +57,8 @@ $mobile-version: 1279px;
 :root {
     --loritta-blue: #{$loritta-blue};
     --loritta-blue-rgb: 41, 166, 254;
+    --loritta-red: #da373c;
+    --loritta-green: #298546;
     --input-background-color: rgb(244, 244, 244);
     // Used when we need to fallback to the original color after the variable has already been changed
     --OG-input-background-color: rgb(244, 244, 244);

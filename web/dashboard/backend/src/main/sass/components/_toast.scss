@@ -28,11 +28,11 @@
     }
 
     &.warn {
-        background-color: red;
+        background-color: var(--loritta-red);
     }
 
     &.success {
-        background-color: green;
+        background-color: var(--loritta-green);
     }
 
     .toast-title {
