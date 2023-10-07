@@ -355,7 +355,7 @@ fun GuildTwitch(
                                     when (trackedTwitchAccount.trackingState) {
                                         TwitchAccountTrackState.AUTHORIZED -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white;")
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white; flex-shrink: 0;")
                                             }) {
                                                 UIIcon(SVGIconManager.check) {
                                                     attr("style", "width: 0.75em; height: 0.75em;")
@@ -366,7 +366,7 @@ fun GuildTwitch(
                                         }
                                         TwitchAccountTrackState.ALWAYS_TRACK_USER -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white;")
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white; flex-shrink: 0;")
                                             }) {
                                                 UIIcon(SVGIconManager.check) {
                                                     attr("style", "width: 0.75em; height: 0.75em;")
@@ -377,7 +377,7 @@ fun GuildTwitch(
                                         }
                                         TwitchAccountTrackState.PREMIUM_TRACK_USER -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white;")
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #298546; color: white; flex-shrink: 0;")
                                             }) {
                                                 UIIcon(SVGIconManager.check) {
                                                     attr("style", "width: 0.75em; height: 0.75em;")
@@ -388,7 +388,7 @@ fun GuildTwitch(
                                         }
                                         TwitchAccountTrackState.UNAUTHORIZED -> {
                                             Div(attrs = {
-                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #da373c; color: white;")
+                                                attr("style", "width: 1em; height: 1em; display: flex; justify-content: center; align-items: center; border-radius: 100%; background-color: #da373c; color: white; flex-shrink: 0;")
                                             }) {
                                                 UIIcon(SVGIconManager.xmark) {
                                                     attr("style", "width: 0.75em; height: 0.75em;")
