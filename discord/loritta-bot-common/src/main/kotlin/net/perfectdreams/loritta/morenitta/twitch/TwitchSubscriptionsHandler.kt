@@ -148,57 +148,62 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                 else -> TwitchAccountTrackState.UNAUTHORIZED
             }
 
-            if (state == TwitchAccountTrackState.AUTHORIZED && costlyStreams.contains(twitchUserId)) {
-                // If the state is authorized, but the cost is 1, then it means that the account authorization has been revoked!
-                logger.warn { "Subscription for $twitchUserId is costly even tho their state is $state! Revoking authorization state and deleting subscription..." }
+            // If it is already being tracked...
+            if (streamersCurrentlyBeingTracked.contains(twitchUserId)) {
+                if (state == TwitchAccountTrackState.AUTHORIZED && costlyStreams.contains(twitchUserId)) {
+                    // If the state is authorized, but the cost is 1, then it means that the account authorization has been revoked!
+                    logger.warn { "Subscription for $twitchUserId is costly even tho their state is $state! Revoking authorization state and deleting subscription..." }
 
-                m.pudding.transaction {
-                    AuthorizedTwitchAccounts.deleteWhere {
-                        AuthorizedTwitchAccounts.userId eq twitchUserId
+                    m.pudding.transaction {
+                        AuthorizedTwitchAccounts.deleteWhere {
+                            AuthorizedTwitchAccounts.userId eq twitchUserId
+                        }
                     }
-                }
 
-                // Delete the subscription!
-                m.switchTwitch.deleteSubscription(twitchUserIdToSubId[twitchUserId]!!)
-            } else if (state != TwitchAccountTrackState.UNAUTHORIZED) {
-                logger.info { "Creating subscription for $twitchUserId because their state is $state..." }
-                // If the state ain't authorized, then we can create the subscription!
-                val subscriptionResult = m.switchTwitch.createSubscription(
-                    SubscriptionCreateRequest(
-                        "stream.online",
-                        "1",
-                        mapOf(
-                            "broadcaster_user_id" to twitchUserId.toString()
-                        ),
-                        SubTransportCreate(
-                            "webhook",
-                            m.config.loritta.twitch.webhookUrl,
-                            m.config.loritta.twitch.webhookSecret
+                    // Delete the subscription!
+                    m.switchTwitch.deleteSubscription(twitchUserIdToSubId[twitchUserId]!!)
+                }
+            } else {
+                if (state != TwitchAccountTrackState.UNAUTHORIZED) {
+                    logger.info { "Creating subscription for $twitchUserId because their state is $state..." }
+                    // If the state ain't authorized, then we can create the subscription!
+                    val subscriptionResult = m.switchTwitch.createSubscription(
+                        SubscriptionCreateRequest(
+                            "stream.online",
+                            "1",
+                            mapOf(
+                                "broadcaster_user_id" to twitchUserId.toString()
+                            ),
+                            SubTransportCreate(
+                                "webhook",
+                                m.config.loritta.twitch.webhookUrl,
+                                m.config.loritta.twitch.webhookSecret
+                            )
                         )
                     )
-                )
 
-                val subscriptionData = subscriptionResult.data.firstOrNull()
-                // Honestly, I don't know when the sub result can return more than one data
-                if (subscriptionData != null) {
-                    val cost = subscriptionData.cost
-                    if (state == TwitchAccountTrackState.AUTHORIZED && cost != 0) {
-                        logger.warn { "Subscription for $twitchUserId is costing $cost even tho their state is $state! Revoking authorization state and deleting subscription..." }
+                    val subscriptionData = subscriptionResult.data.firstOrNull()
+                    // Honestly, I don't know when the sub result can return more than one data
+                    if (subscriptionData != null) {
+                        val cost = subscriptionData.cost
+                        if (state == TwitchAccountTrackState.AUTHORIZED && cost != 0) {
+                            logger.warn { "Subscription for $twitchUserId is costing $cost even tho their state is $state! Revoking authorization state and deleting subscription..." }
 
-                        // If the state is authorized, but the cost is 0, then it means that the account authorization has been revoked!
-                        m.pudding.transaction {
-                            AuthorizedTwitchAccounts.deleteWhere {
-                                AuthorizedTwitchAccounts.userId eq twitchUserId
+                            // If the state is authorized, but the cost is 0, then it means that the account authorization has been revoked!
+                            m.pudding.transaction {
+                                AuthorizedTwitchAccounts.deleteWhere {
+                                    AuthorizedTwitchAccounts.userId eq twitchUserId
+                                }
                             }
-                        }
 
-                        // Delete the subscription!
-                        m.switchTwitch.deleteSubscription(subscriptionData.id)
+                            // Delete the subscription!
+                            m.switchTwitch.deleteSubscription(subscriptionData.id)
+                        }
                     }
+                } else if (costlyStreams.contains(twitchUserId)) {
+                    // We don't log this because it ends up spamming the console way too much
+                    // logger.info { "Skipping $twitchUserId because they are unauthorized..." }
                 }
-            } else if (costlyStreams.contains(twitchUserId)) {
-                // We don't log this because it ends up spamming the console way too much
-                // logger.info { "Skipping $twitchUserId because they are unauthorized..." }
             }
         }
 
