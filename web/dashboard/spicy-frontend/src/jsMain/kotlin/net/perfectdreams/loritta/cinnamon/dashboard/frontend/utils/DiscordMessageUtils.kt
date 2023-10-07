@@ -4,12 +4,6 @@ import kotlinx.browser.document
 import kotlinx.dom.createElement
 
 object DiscordMessageUtils {
-    val showdown = ShowdownConverter().apply {
-        setOption("simpleLineBreaks", true)
-        setOption("strikethrough", true)
-        setOption("simplifiedAutoLink", true)
-    }
-
     const val LORITTA_MORENITTA_FANCY_NAME = "Loritta Morenitta \uD83D\uDE18"
 
     val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
@@ -19,7 +13,6 @@ object DiscordMessageUtils {
     private val Placeholder = Regex("\\{([A-z0-9@\\-.]+)\\}")
 
     val BlockQuotePatch = Regex("^> .+\\n(?!>)", RegexOption.MULTILINE)
-    val MultiNewLinePatch = Regex("^\\n^", RegexOption.MULTILINE)
 
     /**
      * Patches block quotes to make them act like Discord's block quotes when parsed with Showdown
@@ -36,23 +29,6 @@ object DiscordMessageUtils {
      */
     fun patchBlockQuotes(input: String) = BlockQuotePatch.replace(input) {
         "${it.value}\n"
-    }
-
-    /**
-     * Patches block quotes to make them act like Discord's block quotes when parsed with Showdown
-     *
-     * Example:
-     * * > Loritta is cute!
-     * * This shouldn't be in the block quote
-     *
-     * Is parsed as:
-     * * > Loritta is cute!
-     * * > This shouldn't be in the block quote
-     *
-     * This function adds an extra new line IF the next line isn't a block quote.
-     */
-    fun patchMultiNewLines(input: String) = MultiNewLinePatch.replace(input) {
-        "<br />"
     }
 
     /**

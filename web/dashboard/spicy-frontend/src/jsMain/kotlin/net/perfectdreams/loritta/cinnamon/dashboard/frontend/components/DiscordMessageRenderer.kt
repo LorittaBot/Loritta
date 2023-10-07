@@ -1,11 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components
 
 import androidx.compose.runtime.Composable
+import js.core.jso
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.DiscordMessageUtils
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.RenderableMessagePlaceholder
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.DiscordCdn
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.Image
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.parse
 import net.perfectdreams.loritta.common.utils.Color
 import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
 import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
@@ -529,7 +531,12 @@ private fun TransformedDiscordText(
     // (such as animated emotes, due to <a:emote_name... being detected as a anchor link)
     val maskedInput = DiscordMessageUtils.convertSpecialDiscordEntitiesIntoHTMLTags(input)
 
-    val convertedFromMarkdown = DiscordMessageUtils.showdown.makeHtml(DiscordMessageUtils.patchMultiNewLines(DiscordMessageUtils.patchBlockQuotes(maskedInput)))
+    val convertedFromMarkdown = parse(
+        DiscordMessageUtils.patchBlockQuotes(maskedInput),
+        jso {
+            this.breaks = true
+        }
+    )
 
     val parsedToHTML = DOMParser().parseFromString(convertedFromMarkdown, "text/html")
 
@@ -694,6 +701,22 @@ private fun TransformedDiscordText(
                                 for (node in element.childNodes.asList()) {
                                     traverseNodesAndRender(node)
                                 }
+                            }
+                        }
+                    }
+                    // Lists
+                    "LI" -> {
+                        Li {
+                            for (node in element.childNodes.asList()) {
+                                traverseNodesAndRender(node)
+                            }
+                        }
+                    }
+                    // Lists
+                    "UL" -> {
+                        Ul {
+                            for (node in element.childNodes.asList()) {
+                                traverseNodesAndRender(node)
                             }
                         }
                     }
