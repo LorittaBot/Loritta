@@ -154,6 +154,15 @@ fun TwitchChannelEditor(
                         Text("Deusa Suprema")
                     }
                 }
+
+                // Easter Egg - XAROLA
+                if (twitchUser.id == 181743137L) {
+                    TagPrimary(attrs = {
+                        attr("style", "margin-left: 0.5em;")
+                    }) {
+                        Text("RATINHO")
+                    }
+                }
             }
 
             when (accountTrackState) {
