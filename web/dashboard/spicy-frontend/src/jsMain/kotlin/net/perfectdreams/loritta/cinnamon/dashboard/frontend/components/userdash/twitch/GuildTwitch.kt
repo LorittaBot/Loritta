@@ -360,7 +360,7 @@ fun GuildTwitch(
                                                 UIIcon(SVGIconManager.check)
                                             }
 
-                                            Text("Notificações ativas — Canal autorizado pelo dono")
+                                            Text("Notificações ativadas — Canal autorizado pelo dono")
                                         }
                                         TwitchAccountTrackState.ALWAYS_TRACK_USER -> {
                                             Div(attrs = {
@@ -370,7 +370,7 @@ fun GuildTwitch(
                                             }
 
 
-                                            Text("Notificações ativas — Canal famoso")
+                                            Text("Notificações ativadas — Canal famoso")
                                         }
                                         TwitchAccountTrackState.PREMIUM_TRACK_USER -> {
                                             Div(attrs = {
@@ -379,7 +379,7 @@ fun GuildTwitch(
                                                 UIIcon(SVGIconManager.check)
                                             }
 
-                                            Text("Notificações ativas — Canal usando Acompanhamento Premium")
+                                            Text("Notificações ativadas — Canal usando Acompanhamento Premium")
                                         }
                                         TwitchAccountTrackState.UNAUTHORIZED -> {
                                             Div(attrs = {
