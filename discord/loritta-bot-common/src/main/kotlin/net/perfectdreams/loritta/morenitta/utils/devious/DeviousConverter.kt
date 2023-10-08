@@ -16,6 +16,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 object DeviousConverter {
+    const val CACHE_VERSION = 1
     private val logger = KotlinLogging.logger {}
 
     /**

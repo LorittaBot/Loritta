@@ -710,6 +710,7 @@ class LorittaBot(
 									val sessionCacheFile = File(shardCacheFolder, "session.json")
 									val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
 									val versionFile = File(shardCacheFolder, "version")
+									val deviousConverterVersionFile = File(shardCacheFolder, "deviousconverter_version")
 
 									val guildIdsForReadyEvent =
 										jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
@@ -775,6 +776,9 @@ class LorittaBot(
 												)
 											)
 										)
+
+									// Write the current DeviousConverter version...
+									deviousConverterVersionFile.writeText(DeviousConverter.CACHE_VERSION.toString())
 
 									// Only write after everything has been successfully written
 									versionFile.writeText(connectionVersion.toString())

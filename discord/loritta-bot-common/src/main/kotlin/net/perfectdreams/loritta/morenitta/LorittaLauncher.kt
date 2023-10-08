@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
@@ -12,6 +11,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
@@ -106,9 +106,22 @@ object LorittaLauncher {
 					val sessionFile = File(shardCacheFolder, "session.json")
 					val extrasFile = File(shardCacheFolder, "extras.json")
 					val cacheVersionKeyFile = File(shardCacheFolder, "version")
+					val deviousConverterVersionKeyFile = File(shardCacheFolder, "deviousconverter_version")
+
 					// Does not exist, so bail out
 					if (!cacheVersionKeyFile.exists()) {
 						logger.warn("Couldn't load shard $shard cached data because the version file does not exist!")
+						continue
+					}
+
+					if (!deviousConverterVersionKeyFile.exists()) {
+						logger.warn("Couldn't load shard $shard cached data because the DeviousConverter version file does not exist!")
+						continue
+					}
+
+					val deviousConverterVersion = deviousConverterVersionKeyFile.readText().toInt()
+					if (deviousConverterVersion != DeviousConverter.CACHE_VERSION) {
+						logger.warn("Couldn't load shard $shard cached data because the DeviousConverter version does not match!")
 						continue
 					}
 
