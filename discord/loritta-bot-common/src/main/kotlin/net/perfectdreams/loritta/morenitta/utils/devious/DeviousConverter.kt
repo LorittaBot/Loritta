@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.channel.ChannelFlag
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.attribute.*
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel
-import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
@@ -147,22 +146,6 @@ object DeviousConverter {
                     if (channel is ISlowmodeChannel) {
                         put("rate_limit_per_user", channel.slowmode)
                     }
-                    if (channel is ThreadChannel) {
-                        putJsonArray("applied_tags") {
-                            for (tag in channel.appliedTags) {
-                                add(tag.idLong)
-                            }
-                        }
-                        put("total_message_sent", channel.totalMessageCount)
-                        putJsonObject("thread_metadata") {
-                            put("archived", channel.isArchived)
-                            put("auto_archive_duration", channel.autoArchiveDuration.minutes)
-                            put("archive_timestamp", formatIso(channel.timeArchiveInfoLastModified))
-                            put("locked", channel.isLocked)
-                            put("invitable", channel.isInvitable)
-                            put("create_timestamp", formatIso(channel.timeCreated))
-                        }
-                    }
                     if (channel is IThreadContainer) {
                         put("default_thread_rate_limit_per_user", channel.defaultThreadSlowmode)
                     }
@@ -218,7 +201,7 @@ object DeviousConverter {
                     put("owner_id", channel.ownerIdLong)
                     put("member_count", channel.memberCount)
                     put("message_count", channel.messageCount)
-                    put("total_message_count", channel.totalMessageCount)
+                    put("total_message_sent", channel.totalMessageCount)
                     put("last_message_id", channel.latestMessageIdLong)
                     put("rate_limit_per_user", channel.slowmode)
                     putJsonObject("thread_metadata") {
@@ -228,7 +211,7 @@ object DeviousConverter {
                             put("invitable", channel.isInvitable)
                         put("archive_timestamp", formatIso(channel.timeArchiveInfoLastModified))
                         put("create_timestamp", formatIso(channel.timeCreated))
-                        put("auto_archive_duration", channel.autoArchiveDuration?.minutes)
+                        put("auto_archive_duration", channel.autoArchiveDuration.minutes)
                     }
                 }
             }
