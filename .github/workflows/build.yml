@@ -65,7 +65,7 @@ jobs:
           arguments: |
             build
             publish
-            :discord:loritta-bot-common:jib
+            :loritta-bot-discord:jib
             :web:dashboard:backend:jib
             :web:showtime:backend:jib
             :broker-tickers-updater:jib

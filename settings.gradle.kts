@@ -55,7 +55,7 @@ include(":common")
 include(":loritta-serializable-commons")
 
 // ===[ LORITTA ]===
-include(":discord:loritta-bot-common")
+include(":loritta-bot-discord")
 
 // ===[ SPICY MORENITTA ]===
 include(":web:spicy-morenitta")

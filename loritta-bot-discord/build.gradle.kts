@@ -120,6 +120,12 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.12.2")
 }
 
+// This is required to workaround "org.gradle.api.internal.initialization.DefaultClassLoaderScope@29009529 must be locked before it can be used to compute a classpath!" issue
+// No, I don't know why this happens, this only happens if the module is...
+// :project (on the root directory)
+// :project:subprojectjs (on the child directory)
+evaluationDependsOn(":web:spicy-morenitta")
+
 val jsBrowserDistribution = tasks.getByPath(":web:spicy-morenitta:jsBrowserDistribution")
 val jsBrowserProductionWebpack = tasks.getByPath(":web:spicy-morenitta:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
