@@ -112,6 +112,17 @@ class PreStartGatewayEventReplayListener(
                             OnlineStatus.ONLINE,
                             runBlocking { loritta.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId) }
                         )
+
+                        logger.info { "Validating if all guilds has the self member information..." }
+                        for (guild in jdaImpl.guilds) {
+                            val hasSelfMember = try { guild.selfMember } catch (e: IllegalStateException) { null } != null
+
+                            if (hasSelfMember) {
+                                logger.info { "Self Member in Guild ${guild.name} (${guild.idLong}): OK" }
+                            } else {
+                                logger.warn { "Self Member in Guild ${guild.name} (${guild.idLong}): Missing! Something went wrong!!" }
+                            }
+                        }
                         return
                     }
 
