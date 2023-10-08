@@ -147,7 +147,7 @@ tasks.test {
 
 tasks {
     processResources {
-        from("../../resources/") // Include folders from the resources root folder
+        from("../resources/") // Include folders from the resources root folder
 
         // We need to wait until the JS build finishes and the SASS files are generated
         dependsOn(jsBrowserDistribution)
