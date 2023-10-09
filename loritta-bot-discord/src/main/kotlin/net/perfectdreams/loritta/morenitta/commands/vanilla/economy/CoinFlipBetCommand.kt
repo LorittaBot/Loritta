@@ -193,7 +193,7 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 								money,
 								locale["commands.command.flipcoin.tails"],
 								number,
-								tax
+								tax ?: 0L
 						],
 					Emotes.LORI_RICH,
 					mentionUser = false

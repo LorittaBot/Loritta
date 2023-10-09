@@ -59,7 +59,7 @@ class EmojiFight(
      */
     suspend fun start() {
         if (entryPrice != null) {
-            val tax = (entryPrice * (1.0 - UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
+            val tax = (entryPrice * (1.0 - SonhosUtils.getSpecialTotalCoinFlipReward(context.guild, UserPremiumPlans.Free.totalCoinFlipReward).value)).toLong()
 
             if (tax == 0L) {
                 context.reply(false) {
