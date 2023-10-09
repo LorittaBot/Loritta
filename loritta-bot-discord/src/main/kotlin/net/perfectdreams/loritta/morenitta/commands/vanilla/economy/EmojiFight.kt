@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
@@ -25,13 +24,13 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -421,7 +420,7 @@ class EmojiFight(
                 val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 
                 val winnerProfile = userProfiles[winner.key]!!
-                val taxPercentage = (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
+                val taxPercentage = (1.0.toBigDecimal() - SonhosUtils.getSpecialTotalCoinFlipReward(context.guild, selfPlan.totalCoinFlipReward).value.toBigDecimal()).toDouble() // Avoid rounding errors
                 val tax = (entryPrice * taxPercentage).toLong()
                 val taxedEntryPrice = entryPrice - tax
 

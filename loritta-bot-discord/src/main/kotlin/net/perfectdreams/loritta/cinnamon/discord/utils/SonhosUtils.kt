@@ -4,25 +4,27 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinLocalDateTime
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
-import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.serializable.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.select
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
@@ -206,5 +208,29 @@ object SonhosUtils {
             return true
         }
         return false
+    }
+
+    fun getSpecialTotalCoinFlipReward(guild: Guild, currentTax: Double): SpecialTotalCoinFlipReward {
+        // No need to change
+        if (currentTax == 1.0)
+            return SpecialTotalCoinFlipReward.NoChange(currentTax)
+
+        if (guild.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
+            val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
+            return if (today.dayOfWeek == DayOfWeek.SATURDAY || today.dayOfWeek == DayOfWeek.SUNDAY) {
+                // No tax during weekends poggies!!!
+                SpecialTotalCoinFlipReward.LorittaCommunity(1.0, true)
+            } else {
+                // 2.5% any other day
+                SpecialTotalCoinFlipReward.LorittaCommunity(0.975, false)
+            }
+        }
+
+        return SpecialTotalCoinFlipReward.NoChange(currentTax)
+    }
+
+    sealed class SpecialTotalCoinFlipReward(val value: Double) {
+        class LorittaCommunity(value: Double, val isWeekend: Boolean) : SpecialTotalCoinFlipReward(value)
+        class NoChange(value: Double) : SpecialTotalCoinFlipReward(value)
     }
 }

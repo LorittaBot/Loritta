@@ -1,10 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
-import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -12,25 +7,22 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.common.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.morenitta.utils.AccountUtils
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
-import net.perfectdreams.loritta.morenitta.utils.GenericReplies
-import net.perfectdreams.loritta.morenitta.utils.NumberUtils
-import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
-import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -81,10 +73,10 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
 			val hasNoTax: Boolean
 			val whoHasTheNoTaxReward: User?
-			val plan: UserPremiumPlans?
 			val tax: Long?
 			val taxPercentage: Double?
 			val quantityAfterTax: Long
+			var specialTotalRewardChange: SonhosUtils.SpecialTotalCoinFlipReward? = null
 			val money: Long
 
 			val number = NumberUtils.convertShortenedNumberToLong(args[1])
@@ -93,22 +85,20 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			if (selfPlan.totalCoinFlipReward == 1.0) {
 				whoHasTheNoTaxReward = discordMessage.author
 				hasNoTax = true
-				plan = selfPlan
 				taxPercentage = 0.0
 				tax = null
 				money = number
 			} else if (otherPlan.totalCoinFlipReward == 1.0) {
 				whoHasTheNoTaxReward = invitedUser
 				hasNoTax = true
-				plan = otherPlan
 				taxPercentage = 0.0
 				tax = null
 				money = number
 			} else {
 				whoHasTheNoTaxReward = null
 				hasNoTax = false
-				plan = UserPremiumPlans.Essential
-				taxPercentage = (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
+				specialTotalRewardChange = SonhosUtils.getSpecialTotalCoinFlipReward(guild, selfPlan.totalCoinFlipReward)
+				taxPercentage = (1.0.toBigDecimal() - specialTotalRewardChange.value.toBigDecimal()).toDouble() // Avoid rounding errors
 				tax = (number * taxPercentage).toLong()
 				money = number - tax
 			}
