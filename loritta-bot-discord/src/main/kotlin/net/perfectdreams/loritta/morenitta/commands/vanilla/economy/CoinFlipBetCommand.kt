@@ -73,7 +73,7 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
 			val hasNoTax: Boolean
 			val whoHasTheNoTaxReward: User?
-			val tax: Long?
+			var tax: Long? = null
 			val taxPercentage: Double?
 			val quantityAfterTax: Long
 			var specialTotalRewardChange: SonhosUtils.SpecialTotalCoinFlipReward? = null
@@ -86,13 +86,11 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 				whoHasTheNoTaxReward = discordMessage.author
 				hasNoTax = true
 				taxPercentage = 0.0
-				tax = null
 				money = number
 			} else if (otherPlan.totalCoinFlipReward == 1.0) {
 				whoHasTheNoTaxReward = invitedUser
 				hasNoTax = true
 				taxPercentage = 0.0
-				tax = null
 				money = number
 			} else {
 				whoHasTheNoTaxReward = null
@@ -102,6 +100,9 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 				tax = (number * taxPercentage).toLong()
 				money = number - tax
 			}
+
+			if (taxPercentage == 0.0)
+				tax = null
 
 			if (!hasNoTax && tax == 0L)
 				fail(locale["commands.command.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
