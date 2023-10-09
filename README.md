@@ -1,5 +1,8 @@
 <p align="center">
-<img height="250" src="https://cdn.discordapp.com/attachments/513405772911345664/916023991473430558/loritta_wave_small_opt3.gif" align="right">
+<img src="loritta-and-wumpus-yafyr.png">
+</p>
+
+<p align="center">
 
 <h1 align="center">✨ Loritta Morenitta ✨</h1>
 
