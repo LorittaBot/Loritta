@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
-import net.dv8tion.jda.api.utils.ImageProxy
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
@@ -431,28 +430,28 @@ fun User.asUserNameCodeBlockPreviewTag(
     stripLinksFromInput: Boolean = true
 ): String {
     val globalName = this.globalName
-    val previewName = globalName ?: name
+    var globalPreviewName = globalName
 
-    var previewNameStripped = previewName
-    if (stripCodeMarksFromInput)
-        previewNameStripped = previewNameStripped.stripCodeMarks()
-    if (stripLinksFromInput)
-        previewNameStripped = previewNameStripped.stripLinks()
-
-    val hasPomelo = this.discriminator == "0000"
-    var nameStripped = name
-    if (stripCodeMarksFromInput)
-        nameStripped = nameStripped.stripCodeMarks()
-    if (stripLinksFromInput)
-        nameStripped = nameStripped.stripLinks()
-
-    val nameDisplay = if (hasPomelo) {
-        "@$nameStripped"
-    } else {
-        "$nameStripped#${discriminator}"
+    // We only remove code marks and links from global names because usernames cannot have codemarks or links
+    // And because a lot of usernames have ".", this ends up borking and making the username blank, so we don't strip from those
+    if (globalPreviewName != null) {
+        if (stripCodeMarksFromInput)
+            globalPreviewName = globalPreviewName.stripCodeMarks()
+        if (stripLinksFromInput)
+            globalPreviewName = globalPreviewName.stripLinks()
     }
 
-    return "`$previewNameStripped` (`$nameDisplay` | `$id`)"
+    val previewName = globalPreviewName ?: name
+
+    val hasPomelo = this.discriminator == "0000"
+
+    val nameDisplay = if (hasPomelo) {
+        "@$name"
+    } else {
+        "$name#${discriminator}"
+    }
+
+    return "`$previewName` (`$nameDisplay` | `$id`)"
 }
 
 /**
