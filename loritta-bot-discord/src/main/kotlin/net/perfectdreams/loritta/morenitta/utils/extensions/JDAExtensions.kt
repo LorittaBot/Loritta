@@ -441,14 +441,15 @@ fun User.asUserNameCodeBlockPreviewTag(
             globalPreviewName = globalPreviewName.stripLinks()
     }
 
-    val previewName = globalPreviewName ?: name
-
     val hasPomelo = this.discriminator == "0000"
+
+    // We DO remove if they don't have pomelo tho
+    val previewName = globalPreviewName ?: if (hasPomelo) name else name.stripCodeMarks().stripLinks()
 
     val nameDisplay = if (hasPomelo) {
         "@$name"
     } else {
-        "$name#${discriminator}"
+        "$previewName#${discriminator}"
     }
 
     return "`$previewName` (`$nameDisplay` | `$id`)"
