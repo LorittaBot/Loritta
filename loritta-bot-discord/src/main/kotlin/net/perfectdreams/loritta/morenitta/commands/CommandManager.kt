@@ -123,7 +123,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(MoneyCommand(loritta))
 		commandMap.add(ColorInfoCommand(loritta))
 		commandMap.add(LembrarCommand(loritta))
-		commandMap.add(DicioCommand(loritta))
 		commandMap.add(TempoCommand(loritta))
 		commandMap.add(PackageInfoCommand(loritta))
 		commandMap.add(MorseCommand(loritta))
