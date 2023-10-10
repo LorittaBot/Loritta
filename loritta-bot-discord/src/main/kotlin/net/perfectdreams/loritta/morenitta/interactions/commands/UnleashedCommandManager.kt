@@ -62,6 +62,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTu
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.roblox.RobloxCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand
@@ -174,6 +175,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
         register(RoleplayCommand.RoleplayUserCommand(loritta))
+
+        // ===[ ROBLOX ]===
+        register(RobloxCommand(loritta))
     }
 
     /**

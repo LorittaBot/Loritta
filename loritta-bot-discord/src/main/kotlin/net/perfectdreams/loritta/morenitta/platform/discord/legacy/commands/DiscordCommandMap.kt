@@ -32,8 +32,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListC
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListStatusCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListTopCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListTopLocalCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.roblox.RbGameCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.roblox.RbUserCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
@@ -140,11 +138,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			AsciiCommand(loritta),
 			AtendenteCommand(loritta),
 			DrawnWordCommand(loritta),
-			EmojiMashupCommand(loritta),
-
-			// ===[ ROBLOX ]===
-			RbUserCommand(loritta),
-			RbGameCommand(loritta)
+			EmojiMashupCommand(loritta)
 		)
 	}
 

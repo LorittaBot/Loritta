@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AfkCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.GenderCommand
@@ -100,9 +99,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ UNDERTALE ]===
             register(UndertaleCommand(languageManager))
-
-            // ===[ ROBLOX ]===
-            register(RobloxCommand(languageManager))
         }
         return wrapper.commands
     }
