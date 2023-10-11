@@ -14,7 +14,6 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.XpRankExecutor
 import net.perfectdreams.loritta.cinnamon.discord.utils.ExperienceUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
@@ -321,8 +320,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         inner class Options : ApplicationCommandOptions() {
             val mode = string("mode", XP_TRANSFER_I18N_PREFIX.Options.Mode.Text) {
                 for (mode in XpTransferMode.values()) {
-                    choice(XP_TRANSFER_I18N_PREFIX.Options.Mode.Choice.Add, mode.name)
-                    choice(XP_TRANSFER_I18N_PREFIX.Options.Mode.Choice.Set, mode.name)
+                    choice(mode.shortName, mode.name)
                 }
             }
 
