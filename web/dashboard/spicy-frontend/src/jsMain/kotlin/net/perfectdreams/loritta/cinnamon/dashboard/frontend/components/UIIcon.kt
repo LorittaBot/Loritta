@@ -12,6 +12,10 @@ fun UIIcon(icon: SVGIconManager.SVGIcon, attrs: AttrBuilderContext<SVGElement>? 
     Svg(
         {
             ref { element ->
+                element.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+                // This is a STUPID HACKY WORKAROUND to fix the navbar icon in Safari
+                // https://stackoverflow.com/questions/71022435/svg-invisible-on-safari-without-height-attribute-but-issue-not-recreatable
+                element.setAttribute("height", "100%")
                 icon.element.children.asList().forEach {
                     element.appendChild(it.cloneNode(true))
                 }
