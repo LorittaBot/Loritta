@@ -59,7 +59,8 @@ class EmojiFight(
      */
     suspend fun start() {
         if (entryPrice != null) {
-            val tax = (entryPrice * (1.0 - SonhosUtils.getSpecialTotalCoinFlipReward(context.guild, UserPremiumPlans.Free.totalCoinFlipReward).value)).toLong()
+            // This always checks the FREE REWARD since other FREE REWARD users may join the emoji fight
+            val tax = (entryPrice * (1.0 - UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
 
             if (tax == 0L) {
                 context.reply(false) {
