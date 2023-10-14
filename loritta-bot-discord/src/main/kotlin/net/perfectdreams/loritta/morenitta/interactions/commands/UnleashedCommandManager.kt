@@ -226,7 +226,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
                     for (rootLabel in rootLabels) {
                         for (subcommandLabel in subcommandLabels) {
-                            commandPathToDeclaration["$rootLabel $subcommandLabel"] = declaration
+                            commandPathToDeclaration["$rootLabel $subcommandLabel"] = subcommand
                         }
                     }
 
@@ -251,7 +251,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         for (rootLabel in rootLabels) {
                             for (subcommandGroupLabel in subcommandGroupLabels) {
                                 for (subcommandLabel in subcommandLabels) {
-                                    commandPathToDeclaration["$rootLabel $subcommandLabel"] = declaration
+                                    commandPathToDeclaration["$rootLabel $subcommandLabel"] = subcommand
                                 }
                             }
                         }
