@@ -173,7 +173,7 @@ object SonhosUtils {
 
     suspend fun checkIfEconomyIsDisabled(context: UnleashedContext): Boolean {
         if (isEconomyDisabled(context.loritta)) {
-            context.reply(true) {
+            context.reply(context.wasInitiallyDeferredEphemerally ?: true) {
                 styled(
                     context.i18nContext.get(I18nKeysData.Commands.EconomyIsDisabled),
                     Emotes.LoriSob

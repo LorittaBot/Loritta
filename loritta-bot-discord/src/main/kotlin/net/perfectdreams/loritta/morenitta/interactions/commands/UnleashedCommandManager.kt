@@ -50,10 +50,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.BrokerCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.DailyCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.EmojiFightCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.EveryGroupHasCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.SadRealityCommand
@@ -154,6 +151,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ ECONOMY ]===
         register(DailyCommand(loritta))
+        register(CoinFlipBetCommand(loritta))
         register(EmojiFightCommand(loritta))
         register(RaffleCommand(loritta))
         register(BrokerCommand(loritta))
@@ -196,139 +194,108 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         var rootDeclaration: SlashCommandDeclaration? = null
         var slashDeclaration: SlashCommandDeclaration? = null
 
-        // If there's no root label, then it is impossible for us to check the results...
-        val level1Label = rawArguments.getOrNull(0)?.lowercase()?.normalize() ?: return false
-        val level2Label = rawArguments.getOrNull(1)?.lowercase()?.normalize()
-        val level3Label = rawArguments.getOrNull(2)?.lowercase()?.normalize()
-
         var argumentsToBeDropped = 0
 
         fun isDeclarationExecutable(declaration: SlashCommandDeclaration) = declaration.executor != null
 
-        // Because this is a message, we need to do all the label checks manually... *sigh*
-        // We want to check the label in every available language
-        fun checkIfDeclarationLabelMatches(label: String, commandDeclaration: SlashCommandDeclaration): Boolean {
-            for (i18nContext in languageManager.languageContexts.values) {
-                val vanillaLabelMatchResult = label == i18nContext.get(commandDeclaration.name)
-                    .normalize()
-                val alternativeLegacyLabelsMatchResult = label in commandDeclaration.alternativeLegacyLabels
-                    .map { it.normalize() }
-
-                if (vanillaLabelMatchResult || alternativeLegacyLabelsMatchResult)
-                    return true
-            }
-            return false
-        }
-
-        fun checkIfDeclarationLabelMatches(label: String, commandDeclaration: net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandGroupDeclaration): Boolean {
-            for (i18nContext in languageManager.languageContexts.values) {
-                val vanillaLabelMatchResult = label == i18nContext.get(commandDeclaration.name)
-                    .normalize()
-                val alternativeLegacyLabelsMatchResult = label in commandDeclaration.alternativeLegacyLabels.map { it.normalize() }
-
-                if (vanillaLabelMatchResult || alternativeLegacyLabelsMatchResult)
-                    return true
-            }
-            return false
-        }
-
-        for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
-            if (checkIfDeclarationLabelMatches(level1Label, declaration)) {
-                // Found something, but let's keep going because there may be subcommands
-                // There's a bunch of declaration.executor != null checks here because we only want to use the command IF there's an executor bound to the declaration
-                // To avoid slash commands like "+raffle" declaration being used, when it reality it should fall back to the configured absolute command
-                if (isDeclarationExecutable(declaration)) {
-                    slashDeclaration = declaration
-                    rootDeclaration = declaration
-                    argumentsToBeDropped = 1
-                }
-
-                // Check root subcommands
-                if (level2Label != null) {
-                    // "/name subcommand"
-                    val foundDeclaration = declaration.subcommands.firstOrNull { checkIfDeclarationLabelMatches(level2Label, it) }
-                    if (foundDeclaration != null && isDeclarationExecutable(foundDeclaration)) {
-                        slashDeclaration = declaration.subcommands.firstOrNull { checkIfDeclarationLabelMatches(level2Label, it) }
-                        rootDeclaration = declaration
-                        argumentsToBeDropped = 2
-                    }
-
-                    if (level3Label != null) {
-                        // "/name subcommandGroup subcommand"
-                        val foundDeclaration = declaration.subcommandGroups.firstOrNull {
-                            checkIfDeclarationLabelMatches(level2Label, it)
-                        }
-                            ?.subcommands
-                            ?.firstOrNull {
-                                checkIfDeclarationLabelMatches(level3Label, it)
-                            }
-
-                        if (foundDeclaration != null && isDeclarationExecutable(foundDeclaration)) {
-                            slashDeclaration = foundDeclaration
-                            rootDeclaration = declaration
-                            argumentsToBeDropped = 3
-                        }
-                        break
-                    }
-                }
-                break
-            }
-        }
-
         // No match? Check all executor's absolute paths
-        if (rootDeclaration == null || slashDeclaration == null) {
-            val declarations = mutableListOf<SlashCommandDeclaration>()
+        val commandPathToDeclaration = mutableMapOf<String, SlashCommandDeclaration>()
 
-            // Get all executors that have enable legacy message support enabled
-            for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
-                if (isDeclarationExecutable(declaration))
-                    declarations.add(declaration)
+        // Get all executors that have enabled legacy message support enabled and add them to the command path
+        for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
+            val rootLabels = languageManager.languageContexts.values.map {
+                i18nContext.get(declaration.name)
+            } + declaration.alternativeLegacyLabels
 
-                declaration.subcommands.forEach {
-                    if (isDeclarationExecutable(it))
-                        declarations.add(it)
+            if (isDeclarationExecutable(declaration)) {
+                for (rootLabel in rootLabels) {
+                    commandPathToDeclaration[rootLabel] = declaration
                 }
 
-                declaration.subcommandGroups.forEach {
-                    it.subcommands.forEach {
-                        if (isDeclarationExecutable(it))
-                            declarations.add(it)
-                    }
+                // And add the absolute commands!
+                for (absolutePath in declaration.alternativeLegacyAbsoluteCommandPaths) {
+                    commandPathToDeclaration[absolutePath] = declaration
                 }
             }
 
-            var bestMatch: SlashCommandDeclaration? = null
-            var absolutePathSize = 0
+            declaration.subcommands.forEach { subcommand ->
+                if (isDeclarationExecutable(subcommand)) {
+                    val subcommandLabels = languageManager.languageContexts.values.map {
+                        i18nContext.get(subcommand.name)
+                    } + subcommand.alternativeLegacyLabels
 
-            for (declaration in declarations) {
-                absolutePathLoop@for (absolutePath in declaration.alternativeLegacyAbsoluteCommandPaths) {
-                    argumentsToBeDropped = 0
-
-                    val absolutePathSplit = absolutePath.split(" ")
-
-                    if (absolutePathSize > absolutePathSplit.size)
-                        continue@absolutePathLoop // Too smol, the current command is a better match
-
-                    for ((index, pathSection) in absolutePathSplit.withIndex()) {
-                        val rawArgument = rawArguments.getOrNull(index)?.lowercase()?.normalize() ?: continue@absolutePathLoop
-
-                        if (pathSection.normalize() == rawArgument) {
-                            argumentsToBeDropped++
-                        } else {
-                            continue@absolutePathLoop
+                    for (rootLabel in rootLabels) {
+                        for (subcommandLabel in subcommandLabels) {
+                            commandPathToDeclaration["$rootLabel $subcommandLabel"] = declaration
                         }
                     }
 
-                    bestMatch = declaration
-                    absolutePathSize = argumentsToBeDropped
+                    // And add the absolute commands!
+                    for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
+                        commandPathToDeclaration[absolutePath] = subcommand
+                    }
                 }
             }
 
-            if (bestMatch != null) {
-                rootDeclaration = bestMatch
-                slashDeclaration = bestMatch
-                argumentsToBeDropped = absolutePathSize
+            declaration.subcommandGroups.forEach { group ->
+                val subcommandGroupLabels = languageManager.languageContexts.values.map {
+                    i18nContext.get(group.name)
+                } + group.alternativeLegacyLabels
+
+                group.subcommands.forEach { subcommand ->
+                    if (isDeclarationExecutable(subcommand)) {
+                        val subcommandLabels = languageManager.languageContexts.values.map {
+                            i18nContext.get(subcommand.name)
+                        } + subcommand.alternativeLegacyLabels
+
+                        for (rootLabel in rootLabels) {
+                            for (subcommandGroupLabel in subcommandGroupLabels) {
+                                for (subcommandLabel in subcommandLabels) {
+                                    commandPathToDeclaration["$rootLabel $subcommandLabel"] = declaration
+                                }
+                            }
+                        }
+
+                        // And add the absolute commands!
+                        for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
+                            commandPathToDeclaration[absolutePath.normalize()] = subcommand
+                        }
+                    }
+                }
             }
+        }
+
+        var bestMatch: SlashCommandDeclaration? = null
+        var absolutePathSize = 0
+
+        commandDeclarationsLoop@for ((nonNormalizedCommandPath, declaration) in commandPathToDeclaration) {
+            val commandPath = nonNormalizedCommandPath.normalize()
+            argumentsToBeDropped = 0
+            println("Checking $commandPath... Current  best match is ${bestMatch?.executor}")
+
+            val absolutePathSplit = commandPath.split(" ")
+
+            if (absolutePathSize > absolutePathSplit.size)
+                continue // Too smol, the current command is a better match
+
+            for ((index, pathSection) in absolutePathSplit.withIndex()) {
+                val rawArgument = rawArguments.getOrNull(index)?.lowercase()?.normalize() ?: continue@commandDeclarationsLoop
+
+                if (pathSection.normalize() == rawArgument) {
+                    argumentsToBeDropped++
+                } else {
+                    continue@commandDeclarationsLoop
+                }
+            }
+
+            bestMatch = declaration
+            absolutePathSize = argumentsToBeDropped
+        }
+
+        if (bestMatch != null) {
+            rootDeclaration = bestMatch
+            slashDeclaration = bestMatch
+            argumentsToBeDropped = absolutePathSize
         }
 
         // No match, bail out!
