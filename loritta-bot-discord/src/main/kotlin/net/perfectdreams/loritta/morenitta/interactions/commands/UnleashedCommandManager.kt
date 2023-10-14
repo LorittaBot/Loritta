@@ -80,6 +80,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     // Application Commands have their label/descriptions in English
     val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
 
+    private var commandPathToDeclarations = mutableMapOf<String, SlashCommandDeclaration>()
+
     fun register(declaration: SlashCommandDeclarationWrapper) {
         val builtDeclaration = declaration.command().build()
 
@@ -116,6 +118,79 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
     fun register(declaration: MessageCommandDeclarationWrapper) {
         messageCommands += declaration.command().build()
+    }
+
+    private fun updateCommandPathToDeclarations() {
+        fun isDeclarationExecutable(declaration: SlashCommandDeclaration) = declaration.executor != null
+
+        // No match? Check all executor's absolute paths
+        val commandPathToDeclarations = mutableMapOf<String, SlashCommandDeclaration>()
+
+        // Get all executors that have enabled legacy message support enabled and add them to the command path
+        for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
+            val rootLabels = languageManager.languageContexts.values.map {
+                it.get(declaration.name)
+            } + declaration.alternativeLegacyLabels
+
+            if (isDeclarationExecutable(declaration)) {
+                for (rootLabel in rootLabels) {
+                    commandPathToDeclarations[rootLabel] = declaration
+                }
+
+                // And add the absolute commands!
+                for (absolutePath in declaration.alternativeLegacyAbsoluteCommandPaths) {
+                    commandPathToDeclarations[absolutePath] = declaration
+                }
+            }
+
+            declaration.subcommands.forEach { subcommand ->
+                if (isDeclarationExecutable(subcommand)) {
+                    val subcommandLabels = languageManager.languageContexts.values.map {
+                        it.get(subcommand.name)
+                    } + subcommand.alternativeLegacyLabels
+
+                    for (rootLabel in rootLabels) {
+                        for (subcommandLabel in subcommandLabels) {
+                            commandPathToDeclarations["$rootLabel $subcommandLabel"] = subcommand
+                        }
+                    }
+
+                    // And add the absolute commands!
+                    for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
+                        commandPathToDeclarations[absolutePath] = subcommand
+                    }
+                }
+            }
+
+            declaration.subcommandGroups.forEach { group ->
+                val subcommandGroupLabels = languageManager.languageContexts.values.map {
+                    it.get(group.name)
+                } + group.alternativeLegacyLabels
+
+                group.subcommands.forEach { subcommand ->
+                    if (isDeclarationExecutable(subcommand)) {
+                        val subcommandLabels = languageManager.languageContexts.values.map {
+                            it.get(subcommand.name)
+                        } + subcommand.alternativeLegacyLabels
+
+                        for (rootLabel in rootLabels) {
+                            for (subcommandGroupLabel in subcommandGroupLabels) {
+                                for (subcommandLabel in subcommandLabels) {
+                                    commandPathToDeclarations["$rootLabel $subcommandLabel"] = subcommand
+                                }
+                            }
+                        }
+
+                        // And add the absolute commands!
+                        for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
+                            commandPathToDeclarations[absolutePath.normalize()] = subcommand
+                        }
+                    }
+                }
+            }
+        }
+
+        this.commandPathToDeclarations = commandPathToDeclarations
     }
 
     init {
@@ -177,6 +252,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ ROBLOX ]===
         register(RobloxCommand(loritta))
+
+        // After registering everything, the command path must be updated!
+        updateCommandPathToDeclarations()
     }
 
     /**
@@ -196,79 +274,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         var argumentsToBeDropped = 0
 
-        fun isDeclarationExecutable(declaration: SlashCommandDeclaration) = declaration.executor != null
-
-        // No match? Check all executor's absolute paths
-        val commandPathToDeclaration = mutableMapOf<String, SlashCommandDeclaration>()
-
-        // Get all executors that have enabled legacy message support enabled and add them to the command path
-        for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
-            val rootLabels = languageManager.languageContexts.values.map {
-                i18nContext.get(declaration.name)
-            } + declaration.alternativeLegacyLabels
-
-            if (isDeclarationExecutable(declaration)) {
-                for (rootLabel in rootLabels) {
-                    commandPathToDeclaration[rootLabel] = declaration
-                }
-
-                // And add the absolute commands!
-                for (absolutePath in declaration.alternativeLegacyAbsoluteCommandPaths) {
-                    commandPathToDeclaration[absolutePath] = declaration
-                }
-            }
-
-            declaration.subcommands.forEach { subcommand ->
-                if (isDeclarationExecutable(subcommand)) {
-                    val subcommandLabels = languageManager.languageContexts.values.map {
-                        i18nContext.get(subcommand.name)
-                    } + subcommand.alternativeLegacyLabels
-
-                    for (rootLabel in rootLabels) {
-                        for (subcommandLabel in subcommandLabels) {
-                            commandPathToDeclaration["$rootLabel $subcommandLabel"] = subcommand
-                        }
-                    }
-
-                    // And add the absolute commands!
-                    for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
-                        commandPathToDeclaration[absolutePath] = subcommand
-                    }
-                }
-            }
-
-            declaration.subcommandGroups.forEach { group ->
-                val subcommandGroupLabels = languageManager.languageContexts.values.map {
-                    i18nContext.get(group.name)
-                } + group.alternativeLegacyLabels
-
-                group.subcommands.forEach { subcommand ->
-                    if (isDeclarationExecutable(subcommand)) {
-                        val subcommandLabels = languageManager.languageContexts.values.map {
-                            i18nContext.get(subcommand.name)
-                        } + subcommand.alternativeLegacyLabels
-
-                        for (rootLabel in rootLabels) {
-                            for (subcommandGroupLabel in subcommandGroupLabels) {
-                                for (subcommandLabel in subcommandLabels) {
-                                    commandPathToDeclaration["$rootLabel $subcommandLabel"] = subcommand
-                                }
-                            }
-                        }
-
-                        // And add the absolute commands!
-                        for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
-                            commandPathToDeclaration[absolutePath.normalize()] = subcommand
-                        }
-                    }
-                }
-            }
-        }
-
         var bestMatch: SlashCommandDeclaration? = null
         var absolutePathSize = 0
 
-        commandDeclarationsLoop@for ((nonNormalizedCommandPath, declaration) in commandPathToDeclaration) {
+        commandDeclarationsLoop@for ((nonNormalizedCommandPath, declaration) in commandPathToDeclarations) {
             val commandPath = nonNormalizedCommandPath.normalize()
             argumentsToBeDropped = 0
             println("Checking $commandPath... Current  best match is ${bestMatch?.executor}")
