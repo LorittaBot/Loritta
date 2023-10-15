@@ -67,8 +67,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManag
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
-import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosPackageInfoUpdater
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
 import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
@@ -244,7 +242,6 @@ class LorittaBot(
 			}
 		}
 	)
-	val correiosClient = CorreiosClient()
 	val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(config.loritta.randomRoleplayPictures.url)
 	val falatronModelsManager = FalatronModelsManager().also {
 		it.startUpdater()
@@ -1549,7 +1546,6 @@ class LorittaBot(
 	}
 
 	private fun startTasks() {
-		scheduleCoroutineAtFixedRateIfMainReplica(CorreiosPackageInfoUpdater::class.simpleName!!, 15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(CreateYouTubeWebhooksTask::class.simpleName!!, 1.minutes, action = CreateYouTubeWebhooksTask(this@LorittaBot))

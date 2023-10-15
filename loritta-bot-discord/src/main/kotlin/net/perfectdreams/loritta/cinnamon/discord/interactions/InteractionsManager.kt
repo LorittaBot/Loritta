@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class InteractionsManager(
@@ -56,12 +55,6 @@ class InteractionsManager(
         // ===[ VIDEOS ]===
 
         // ===[ UTILS ]===
-        register(FollowPackageButtonClickExecutor(loritta, loritta.correiosClient))
-        register(UnfollowPackageButtonClickExecutor(loritta, loritta.correiosClient))
-        register(SelectPackageSelectMenuExecutor(loritta))
-
-        register(GoBackToPackageListButtonClickExecutor(loritta, loritta.correiosClient))
-        register(TrackPackageButtonClickExecutor(loritta, loritta.correiosClient))
 
         // ===[ ECONOMY ]===
         register(ChangeTransactionPageButtonClickExecutor(loritta))

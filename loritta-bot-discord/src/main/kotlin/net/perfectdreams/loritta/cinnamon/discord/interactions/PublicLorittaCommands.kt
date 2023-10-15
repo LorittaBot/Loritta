@@ -80,7 +80,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(MoneyCommand(languageManager))
             register(MorseCommand(languageManager))
             register(ChooseCommand(languageManager))
-            register(PackageCommand(languageManager))
             register(ColorInfoCommand(languageManager))
             register(NotificationsCommand(languageManager))
             register(TranslateCommand(languageManager))
