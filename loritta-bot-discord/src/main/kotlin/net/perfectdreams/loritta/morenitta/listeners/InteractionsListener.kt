@@ -72,7 +72,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 }
 
                 logger.info { "We have ${registeredCommands.size} registered commands, converting it into command mentions..." }
-                
+
                 loritta.commandMentions = CommandMentions(registeredCommands)
             }
         }

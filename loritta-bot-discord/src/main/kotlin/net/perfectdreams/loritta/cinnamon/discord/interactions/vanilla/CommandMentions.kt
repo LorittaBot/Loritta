@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla
 
-import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.perfectdreams.loritta.morenitta.interactions.commands.DiscordCommand
 
 /**
@@ -17,9 +15,6 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val sonhosRank = commandMention("sonhos rank")
 
     val ban = commandMention("ban")
-
-    val packageTrack = commandMention("package track")
-    val packageList = commandMention("package list")
 
     val brokerInfo = commandMention("broker info")
     val brokerBuy = commandMention("broker buy")
