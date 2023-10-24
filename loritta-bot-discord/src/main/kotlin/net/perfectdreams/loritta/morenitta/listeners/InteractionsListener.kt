@@ -4,7 +4,6 @@ import dev.minn.jda.ktx.interactions.commands.updateCommands
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -72,6 +71,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     }.complete()
                 }
 
+                logger.info { "We have ${registeredCommands.size} registered commands, converting it into command mentions..." }
+                
                 loritta.commandMentions = CommandMentions(registeredCommands)
             }
         }
@@ -87,6 +88,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                                 addCommands(*commands.toTypedArray())
                             }.complete()
                         }
+
+                        logger.info { "We have ${registeredCommands.size} registered commands, converting it into command mentions..." }
 
                         loritta.commandMentions = CommandMentions(registeredCommands)
                     }
