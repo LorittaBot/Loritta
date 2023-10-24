@@ -280,7 +280,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         commandDeclarationsLoop@for ((nonNormalizedCommandPath, declaration) in commandPathToDeclarations) {
             val commandPath = nonNormalizedCommandPath.normalize()
             argumentsToBeDropped = 0
-            println("Checking $commandPath... Current  best match is ${bestMatch?.executor}")
 
             val absolutePathSplit = commandPath.split(" ")
 
