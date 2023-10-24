@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta
 
+import com.sun.management.HotSpotDiagnosticMXBean
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.serialization.SerializationException
@@ -17,8 +18,11 @@ import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import java.io.File
+import java.lang.management.ManagementFactory
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.imageio.ImageIO
+
 
 /**
  * Loritta's Launcher
@@ -69,6 +73,24 @@ object LorittaLauncher {
 
 		val lorittaCluster = config.loritta.clusters.instances.first { it.id == clusterId }
 		logger.info { "Loritta's Cluster ID: $clusterId (${lorittaCluster.name})" }
+
+		// Set heap dump path with Loritta's Cluster ID and the current time
+		val heapPath = System.getProperty("loritta.heapDumpPath")
+
+		if (heapPath != null) {
+			val date: String = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
+			val fileName = "${heapPath.removeSuffix("/")}/java_cluster${lorittaCluster.id}_" + date + ".hprof"
+
+			val bean = ManagementFactory.newPlatformMXBeanProxy(
+				ManagementFactory.getPlatformMBeanServer(),
+				"com.sun.management:type=HotSpotDiagnostic",
+				HotSpotDiagnosticMXBean::class.java
+			)
+
+			bean.setVMOption("HeapDumpPath", fileName)
+
+			logger.info { "Custom heap dump path set! The heap dump path is ${fileName}..." }
+		}
 
 		Prometheus.registerJFRExports()
 		InteractionsMetrics.registerInteractions()
