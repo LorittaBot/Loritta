@@ -111,6 +111,9 @@ dependencies {
     implementation("net.perfectdreams.galleryofdreams:common:1.0.11")
     implementation("net.perfectdreams.galleryofdreams:client:1.0.11")
 
+    // Used for logs - MojangStyleFileAppenderAndRollover
+    implementation("com.github.luben:zstd-jni:1.5.5-6")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")
