@@ -8,6 +8,8 @@ import ch.qos.logback.core.spi.ContextAwareBase
 import ch.qos.logback.core.status.ErrorStatus
 import ch.qos.logback.core.status.WarnStatus
 import ch.qos.logback.core.util.FileUtil
+import com.github.luben.zstd.Zstd
+import com.github.luben.zstd.ZstdOutputStream
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -17,6 +19,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.Future
+import java.util.zip.GZIPOutputStream
 
 
 /**
