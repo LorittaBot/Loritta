@@ -112,9 +112,7 @@ kotlin {
             dependencies {
                 api(kotlin("stdlib-jdk8"))
 
-                // Async Appender is broken in alpha5
-                // https://stackoverflow.com/questions/58742485/logback-error-no-attached-appenders-found
-                api("ch.qos.logback:logback-classic:1.3.0-alpha4")
+                api("ch.qos.logback:logback-classic:1.4.11")
 
                 // Used for caching
                 api("com.github.ben-manes.caffeine:caffeine:3.0.1")

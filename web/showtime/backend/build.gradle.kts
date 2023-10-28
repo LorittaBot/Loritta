@@ -17,9 +17,6 @@ dependencies {
     // Logging Stuff
     implementation(libs.logback.classic)
 
-    // Logback GELF, used for Graylog logging
-    implementation("de.siegmar:logback-gelf:3.0.0")
-
     // Ktor
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-html-builder:${Versions.KTOR}")

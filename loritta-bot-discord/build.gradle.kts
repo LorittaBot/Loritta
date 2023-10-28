@@ -95,9 +95,6 @@ dependencies {
     implementation("com.github.salomonbrys.kotson:kotson:2.5.0")
     implementation("com.vladsch.flexmark:flexmark-all:0.62.2")
 
-    // Graylog GELF (Logback)
-    implementation("de.siegmar:logback-gelf:3.0.0")
-
     // Prometheus
     implementation("io.prometheus:simpleclient:0.9.0")
     implementation("io.prometheus:simpleclient_hotspot:0.9.0")

@@ -15,9 +15,6 @@ dependencies {
     implementation(libs.exposed.javatime)
     implementation("pw.forst", "exposed-upsert", "1.1.0")
     implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
-
-    // Logback GELF, used for Graylog logging
-    implementation("de.siegmar:logback-gelf:3.0.0")
 }
 
 tasks.test {

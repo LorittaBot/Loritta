@@ -16,7 +16,7 @@ dependencyResolutionManagement {
             val jib = version("jib", "3.2.1")
             val exposed = version("exposed", "0.41.1")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
-            val logback = version("logback", "1.4.1")
+            val logback = version("logback", "1.4.11")
             val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
 
             library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version(kotlinxCoroutines)
