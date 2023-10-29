@@ -104,6 +104,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 					}
 
 					val now = Instant.now()
+					val sqlTimestampOfNow = Timestamp.from(now)
 
 					// This is an optimization: batchInsert ends up using a LOT of memory because it keeps everything in the "data" ArrayList
 					// For this, this is unviable, because if someone buys a lot of tickets (800k+), Loritta crashes and burns (uses 500MB+ memory!) trying to process it
@@ -117,7 +118,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 						// Add batch data
 						preparedStatement.setLong(1, userId)
 						preparedStatement.setLong(2, currentRaffle[Raffles.id].value)
-						preparedStatement.setTimestamp(3, Timestamp.from(now))
+						preparedStatement.setTimestamp(3, sqlTimestampOfNow)
 						preparedStatement.addBatch()
 					}
 
