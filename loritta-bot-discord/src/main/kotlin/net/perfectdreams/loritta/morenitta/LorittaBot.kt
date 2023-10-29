@@ -28,6 +28,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
@@ -391,6 +392,9 @@ class LorittaBot(
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
 	var isActive = true
+
+	// Used to lock raffle ticket purchases and raffle results
+	val raffleResultsMutex = Mutex()
 
 	init {
 		FOLDER = config.loritta.folders.root

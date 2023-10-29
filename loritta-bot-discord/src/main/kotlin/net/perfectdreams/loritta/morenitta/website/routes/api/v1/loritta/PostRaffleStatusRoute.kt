@@ -1,14 +1,11 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
@@ -18,11 +15,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleTick
 import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.*
-import java.sql.Connection
 import java.time.Instant
 
 class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
@@ -39,85 +35,90 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 		val invokedAt = Instant.ofEpochMilli(json["invokedAt"].long)
 		val type = RaffleType.valueOf(json["type"].string)
 
-		// Serializable is used because REPEATABLE READ will cause issues if someone buys raffle tickets when the LorittaRaffleTask is processing the current raffle winners
-		val response = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
-			// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
-			// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
-			val currentRaffle = Raffles.select {
-				Raffles.raffleType eq type and (Raffles.endedAt.isNull()) and (Raffles.endsAt greaterEq invokedAt) and (Raffles.startedAt lessEq invokedAt)
-			}.firstOrNull()
+		// Before, we used TRANSACTION_SERIALIZABLE because REPEATABLE READ will cause issues if someone buys raffle tickets when the LorittaRaffleTask is processing the current raffle winners
+		// However, SERIALIZABLE is also a bit bad since we need to fully run the transaction separetely from everything
+		// To workaround this, we will use a coroutine mutex, yay!
+		// This way, we don't block all transactions, while still letting other transactions work
+		val response = loritta.raffleResultsMutex.withLock {
+			loritta.transaction {
+				// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
+				// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
+				val currentRaffle = Raffles.select {
+					Raffles.raffleType eq type and (Raffles.endedAt.isNull()) and (Raffles.endsAt greaterEq invokedAt) and (Raffles.startedAt lessEq invokedAt)
+				}.firstOrNull()
 
-			// The raffle hasn't been created yet! The LorittaRaffleTask on the main instance should *hopefully* create the new raffle soon...
-			if (currentRaffle == null) {
-				return@transaction jsonObject(
-					"status" to RaffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA.toString()
-				)
-			}
+				// The raffle hasn't been created yet! The LorittaRaffleTask on the main instance should *hopefully* create the new raffle soon...
+				if (currentRaffle == null) {
+					return@transaction jsonObject(
+						"status" to RaffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA.toString()
+					)
+				}
 
-			// Get how many tickets the user has in the current raffle
-			val currentUserTicketQuantity = RaffleTickets.select {
-				RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq userId)
-			}.count()
+				// Get how many tickets the user has in the current raffle
+				val currentUserTicketQuantity = RaffleTickets.select {
+					RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq userId)
+				}.count()
 
-			val maxTicketsByUserPerRoundForThisRaffleType = currentRaffle[Raffles.raffleType].maxTicketsByUserPerRound.toLong()
+				val maxTicketsByUserPerRoundForThisRaffleType = currentRaffle[Raffles.raffleType].maxTicketsByUserPerRound.toLong()
 
-			if (currentUserTicketQuantity + quantity > maxTicketsByUserPerRoundForThisRaffleType) {
-				return@transaction if (currentUserTicketQuantity == maxTicketsByUserPerRoundForThisRaffleType) {
-					jsonObject(
-						"status" to RaffleCommand.BuyRaffleTicketStatus.THRESHOLD_EXCEEDED.toString()
+				if (currentUserTicketQuantity + quantity > maxTicketsByUserPerRoundForThisRaffleType) {
+					return@transaction if (currentUserTicketQuantity == maxTicketsByUserPerRoundForThisRaffleType) {
+						jsonObject(
+							"status" to RaffleCommand.BuyRaffleTicketStatus.THRESHOLD_EXCEEDED.toString()
+						)
+					} else {
+						jsonObject(
+							"status" to RaffleCommand.BuyRaffleTicketStatus.TOO_MANY_TICKETS.toString(),
+							"ticketCount" to currentUserTicketQuantity
+						)
+					}
+				}
+
+				val requiredCount = quantity.toLong() * RaffleType.ORIGINAL.ticketPrice
+				logger.info("$userId irá comprar $quantity tickets por ${requiredCount}!")
+
+				val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
+
+				if (lorittaProfile.money >= requiredCount) {
+					lorittaProfile.takeSonhosAndAddToTransactionLogNested(
+						requiredCount,
+						SonhosPaymentReason.RAFFLE
+					)
+
+					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+						it[user] = userId
+						it[timestamp] = Instant.now()
+					}
+
+					RaffleTicketsSonhosTransactionsLog.insert {
+						it[timestampLog] = transactionLogId
+						it[sonhos] = requiredCount
+						it[raffle] = currentRaffle[Raffles.id]
+						it[ticketQuantity] = quantity.toLong()
+					}
+
+					val now = Instant.now()
+
+					// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
+					// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
+					// tickets purchases be VERY fast
+					RaffleTickets.batchInsert(0 until quantity, shouldReturnGeneratedValues = false) {
+						this[RaffleTickets.userId] = userId
+						this[RaffleTickets.raffle] = currentRaffle[Raffles.id]
+						this[RaffleTickets.boughtAt] = now
+					}
+
+					logger.info { "$userId bought $quantity tickets for ${requiredCount}! (Before they had ${lorittaProfile.money + requiredCount}) sonhos!)" }
+
+					return@transaction jsonObject(
+						"status" to RaffleCommand.BuyRaffleTicketStatus.SUCCESS.toString()
 					)
 				} else {
-					jsonObject(
-						"status" to RaffleCommand.BuyRaffleTicketStatus.TOO_MANY_TICKETS.toString(),
-						"ticketCount" to currentUserTicketQuantity
+					return@transaction jsonObject(
+						"status" to RaffleCommand.BuyRaffleTicketStatus.NOT_ENOUGH_MONEY.toString(),
+						"canOnlyPay" to requiredCount - lorittaProfile.money
 					)
 				}
-			}
-
-			val requiredCount = quantity.toLong() * RaffleType.ORIGINAL.ticketPrice
-			logger.info("$userId irá comprar $quantity tickets por ${requiredCount}!")
-
-			val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
-
-			if (lorittaProfile.money >= requiredCount) {
-				lorittaProfile.takeSonhosAndAddToTransactionLogNested(
-					requiredCount,
-					SonhosPaymentReason.RAFFLE
-				)
-
-				val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-					it[user] = userId
-					it[timestamp] = Instant.now()
-				}
-
-				RaffleTicketsSonhosTransactionsLog.insert {
-					it[timestampLog] = transactionLogId
-					it[sonhos] = requiredCount
-					it[raffle] = currentRaffle[Raffles.id]
-					it[ticketQuantity] = quantity.toLong()
-				}
-
-				val now = Instant.now()
-
-				// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
-				// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
-				// tickets purchases be VERY fast
-				RaffleTickets.batchInsert(0 until quantity, shouldReturnGeneratedValues = false) {
-					this[RaffleTickets.userId] = userId
-					this[RaffleTickets.raffle] = currentRaffle[Raffles.id]
-					this[RaffleTickets.boughtAt] = now
-				}
-
-				logger.info { "$userId bought $quantity tickets for ${requiredCount}! (Before they had ${lorittaProfile.money + requiredCount}) sonhos!)" }
-
-				return@transaction jsonObject(
-					"status" to RaffleCommand.BuyRaffleTicketStatus.SUCCESS.toString()
-				)
-			} else {
-				return@transaction jsonObject(
-					"status" to RaffleCommand.BuyRaffleTicketStatus.NOT_ENOUGH_MONEY.toString(),
-					"canOnlyPay" to requiredCount - lorittaProfile.money
-				)
 			}
 		}
 

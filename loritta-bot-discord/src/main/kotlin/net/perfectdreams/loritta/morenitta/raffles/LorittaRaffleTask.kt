@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.raffles
 
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.FileUpload
@@ -16,12 +17,11 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.io.File
-import java.sql.Connection
 import java.time.Instant
 import kotlin.time.toJavaDuration
 
@@ -35,164 +35,169 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
         val locale = m.localeManager.getLocaleById("default")
         val i18nContext = m.languageManager.defaultI18nContext
 
-        // Serializable is used because REPEATABLE READ will cause issues if someone buys raffle tickets when the LorittaRaffleTask is processing the current raffle winners
-        val dmsToBeSent = m.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
-            val dmsToBeSent = mutableListOf<RaffleDM>()
+        // Before, we used TRANSACTION_SERIALIZABLE because REPEATABLE READ will cause issues if someone buys raffle tickets when the LorittaRaffleTask is processing the current raffle winners
+        // However, SERIALIZABLE is also a bit bad since we need to fully run the transaction separetely from everything
+        // To workaround this, we will use a coroutine mutex, yay!
+        // This way, we don't block all transactions, while still letting other transactions work
+        val dmsToBeSent = m.raffleResultsMutex.withLock {
+            m.transaction {
+                val dmsToBeSent = mutableListOf<RaffleDM>()
 
-            val now = Instant.now()
+                val now = Instant.now()
 
-            // Get current active raffles
-            val currentRaffles = Raffles.select {
-                Raffles.endedAt.isNull()
-            }.orderBy(Raffles.endsAt, SortOrder.DESC)
-                .toList()
+                // Get current active raffles
+                val currentRaffles = Raffles.select {
+                    Raffles.endedAt.isNull()
+                }.orderBy(Raffles.endsAt, SortOrder.DESC)
+                    .toList()
 
-            for (currentRaffle in currentRaffles) {
-                // Check if the current (not expired) raffle should have already ended
-                if (now >= currentRaffle[Raffles.endsAt]) {
-                    // Get all tickets
-                    val tickets = RaffleTickets.select {
-                        RaffleTickets.raffle eq currentRaffle[Raffles.id]
-                    }.toList()
+                for (currentRaffle in currentRaffles) {
+                    // Check if the current (not expired) raffle should have already ended
+                    if (now >= currentRaffle[Raffles.endsAt]) {
+                        // Get all tickets
+                        val tickets = RaffleTickets.select {
+                            RaffleTickets.raffle eq currentRaffle[Raffles.id]
+                        }.toList()
 
-                    // Check if there are at least any ticket on the raffle and, if it is, then we process and get the winner
-                    var winnerTicketId: Long? = null
-                    var paidOutPrize: Long? = null
-                    var paidOutPrizeAfterTax: Long? = null
-                    var tax: Long? = null
-                    var taxPercentage: Double? = null
+                        // Check if there are at least any ticket on the raffle and, if it is, then we process and get the winner
+                        var winnerTicketId: Long? = null
+                        var paidOutPrize: Long? = null
+                        var paidOutPrizeAfterTax: Long? = null
+                        var tax: Long? = null
+                        var taxPercentage: Double? = null
 
-                    if (tickets.isNotEmpty()) {
-                        // Get the winner of this raffle...
-                        val winnerTicket = tickets[LorittaBot.RANDOM.nextInt(tickets.size)]
-                        val winnerId = winnerTicket[RaffleTickets.userId]
-                        winnerTicketId = winnerTicket[RaffleTickets.id].value
+                        if (tickets.isNotEmpty()) {
+                            // Get the winner of this raffle...
+                            val winnerTicket = tickets[LorittaBot.RANDOM.nextInt(tickets.size)]
+                            val winnerId = winnerTicket[RaffleTickets.userId]
+                            winnerTicketId = winnerTicket[RaffleTickets.id].value
 
-                        // Okay, so we found out who won the raffle
-                        val currentActiveDonations = m.getActiveMoneyFromDonations(winnerId)
-                        val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
+                            // Okay, so we found out who won the raffle
+                            val currentActiveDonations = m.getActiveMoneyFromDonations(winnerId)
+                            val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
 
-                        val moneyWithoutTaxes = tickets.size * 250
-                        paidOutPrize = moneyWithoutTaxes.toLong()
+                            val moneyWithoutTaxes = tickets.size * 250
+                            paidOutPrize = moneyWithoutTaxes.toLong()
 
-                        val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
+                            val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
 
-                        val lorittaProfile = m.getOrCreateLorittaProfile(winnerId)
-                        logger.info { "${winnerId} won $money sonhos ($moneyWithoutTaxes without taxes; before they had ${lorittaProfile.money} sonhos) in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})!" }
+                            val lorittaProfile = m.getOrCreateLorittaProfile(winnerId)
+                            logger.info { "${winnerId} won $money sonhos ($moneyWithoutTaxes without taxes; before they had ${lorittaProfile.money} sonhos) in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})!" }
 
-                        val totalTicketsBoughtByTheUser = tickets.count { it[RaffleTickets.userId] == winnerId }
-                        val totalTickets = tickets.size
-                        val totalUsersInTheRaffle = tickets.map { it[RaffleTickets.userId] }.distinct().size
+                            val totalTicketsBoughtByTheUser = tickets.count { it[RaffleTickets.userId] == winnerId }
+                            val totalTickets = tickets.size
+                            val totalUsersInTheRaffle = tickets.map { it[RaffleTickets.userId] }.distinct().size
 
-                        paidOutPrizeAfterTax = money.toLong()
+                            paidOutPrizeAfterTax = money.toLong()
 
-                        tax = paidOutPrize - paidOutPrizeAfterTax
-                        taxPercentage = (1.0.toBigDecimal() - plan.totalLoraffleReward.toBigDecimal()).toDouble() // Avoid rounding errors
+                            tax = paidOutPrize - paidOutPrizeAfterTax
+                            taxPercentage = (1.0.toBigDecimal() - plan.totalLoraffleReward.toBigDecimal()).toDouble() // Avoid rounding errors
 
-                        lorittaProfile.addSonhosAndAddToTransactionLogNested(
-                            paidOutPrizeAfterTax,
-                            SonhosPaymentReason.RAFFLE
-                        )
-
-                        val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-                            it[user] = winnerId
-                            it[timestamp] = Instant.now()
-                        }
-
-                        RaffleRewardSonhosTransactionsLog.insert {
-                            it[timestampLog] = transactionLogId
-                            it[raffle] = currentRaffle[Raffles.id]
-                        }
-
-                        dmsToBeSent.add(
-                            RaffleDM.WonTheRaffle(
-                                winnerId,
-                                currentRaffle[Raffles.raffleType],
-                                money,
-                                totalTicketsBoughtByTheUser,
-                                totalUsersInTheRaffle,
-                                totalTickets
+                            lorittaProfile.addSonhosAndAddToTransactionLogNested(
+                                paidOutPrizeAfterTax,
+                                SonhosPaymentReason.RAFFLE
                             )
-                        )
 
-                        // Get everyone that asked to be notified about this raffle (EXCEPT THE WINNER)
-                        UserAskedRaffleNotifications.select {
-                            UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id] and (UserAskedRaffleNotifications.userId neq winnerId)
-                        }.toList()
-                            .forEach {
-                                dmsToBeSent.add(
-                                    RaffleDM.LostTheRaffle(
-                                        it[UserAskedRaffleNotifications.userId],
-                                        currentRaffle[Raffles.raffleType],
-                                        winnerId,
-                                        money,
-                                        totalTicketsBoughtByTheUser,
-                                        totalUsersInTheRaffle,
-                                        totalTickets
+                            val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+                                it[user] = winnerId
+                                it[timestamp] = Instant.now()
+                            }
+
+                            RaffleRewardSonhosTransactionsLog.insert {
+                                it[timestampLog] = transactionLogId
+                                it[raffle] = currentRaffle[Raffles.id]
+                            }
+
+                            dmsToBeSent.add(
+                                RaffleDM.WonTheRaffle(
+                                    winnerId,
+                                    currentRaffle[Raffles.raffleType],
+                                    money,
+                                    totalTicketsBoughtByTheUser,
+                                    totalUsersInTheRaffle,
+                                    totalTickets
+                                )
+                            )
+
+                            // Get everyone that asked to be notified about this raffle (EXCEPT THE WINNER)
+                            UserAskedRaffleNotifications.select {
+                                UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id] and (UserAskedRaffleNotifications.userId neq winnerId)
+                            }.toList()
+                                .forEach {
+                                    dmsToBeSent.add(
+                                        RaffleDM.LostTheRaffle(
+                                            it[UserAskedRaffleNotifications.userId],
+                                            currentRaffle[Raffles.raffleType],
+                                            winnerId,
+                                            money,
+                                            totalTicketsBoughtByTheUser,
+                                            totalUsersInTheRaffle,
+                                            totalTickets
+                                        )
                                     )
-                                )
-                            }
-                    } else {
-                        logger.info { "No one participated in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})..." }
-
-                        // Get everyone that asked to be notified about this raffle
-                        UserAskedRaffleNotifications.select {
-                            UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id]
-                        }.toList()
-                            .forEach {
-                                dmsToBeSent.add(
-                                    RaffleDM.LostTheRaffleNoOneBoughtTickets(it[UserAskedRaffleNotifications.userId], currentRaffle[Raffles.raffleType])
-                                )
-                            }
-                    }
-
-                    // Update the raffle to set its end time
-                    Raffles.update({ Raffles.id eq currentRaffle[Raffles.id] }) {
-                        it[Raffles.winnerTicket] = winnerTicketId
-                        it[Raffles.endedAt] = now
-                        it[Raffles.paidOutPrize] = paidOutPrize
-                        it[Raffles.paidOutPrizeAfterTax] = paidOutPrizeAfterTax
-
-                        if (tax != null) {
-                            it[Raffles.tax] = tax
-                            it[Raffles.taxPercentage] = taxPercentage
+                                }
                         } else {
+                            logger.info { "No one participated in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})..." }
+
+                            // Get everyone that asked to be notified about this raffle
+                            UserAskedRaffleNotifications.select {
+                                UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id]
+                            }.toList()
+                                .forEach {
+                                    dmsToBeSent.add(
+                                        RaffleDM.LostTheRaffleNoOneBoughtTickets(it[UserAskedRaffleNotifications.userId], currentRaffle[Raffles.raffleType])
+                                    )
+                                }
+                        }
+
+                        // Update the raffle to set its end time
+                        Raffles.update({ Raffles.id eq currentRaffle[Raffles.id] }) {
+                            it[Raffles.winnerTicket] = winnerTicketId
+                            it[Raffles.endedAt] = now
+                            it[Raffles.paidOutPrize] = paidOutPrize
+                            it[Raffles.paidOutPrizeAfterTax] = paidOutPrizeAfterTax
+
+                            if (tax != null) {
+                                it[Raffles.tax] = tax
+                                it[Raffles.taxPercentage] = taxPercentage
+                            } else {
+                                it[Raffles.tax] = null
+                                it[Raffles.taxPercentage] = null
+                            }
+                        }
+
+                        // Now that the previous raffle has ended, let's create a new raffle of this type!
+                        Raffles.insert {
+                            it[Raffles.raffleType] = currentRaffle[Raffles.raffleType]
+                            it[Raffles.startedAt] = now
+                            it[Raffles.endsAt] = (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
+                            it[Raffles.endedAt] = null
+                            it[Raffles.winnerTicket] = null
+                            it[Raffles.paidOutPrize] = null
                             it[Raffles.tax] = null
                             it[Raffles.taxPercentage] = null
                         }
                     }
+                }
 
-                    // Now that the previous raffle has ended, let's create a new raffle of this type!
-                    Raffles.insert {
-                        it[Raffles.raffleType] = currentRaffle[Raffles.raffleType]
-                        it[Raffles.startedAt] = now
-                        it[Raffles.endsAt] = (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
-                        it[Raffles.endedAt] = null
-                        it[Raffles.winnerTicket] = null
-                        it[Raffles.paidOutPrize] = null
-                        it[Raffles.tax] = null
-                        it[Raffles.taxPercentage] = null
+                for (type in RaffleType.values()) {
+                    val hasRaffleTypeCreated = currentRaffles.any { it[Raffles.raffleType] == type }
+
+                    if (!hasRaffleTypeCreated) {
+                        // Create new raffle for this type!
+                        Raffles.insert {
+                            it[Raffles.raffleType] = type
+                            it[Raffles.startedAt] = now
+                            it[Raffles.endsAt] = (now + type.raffleDuration.toJavaDuration())
+                            it[Raffles.endedAt] = null
+                            it[Raffles.winnerTicket] = null
+                            it[Raffles.paidOutPrize] = null
+                        }
                     }
                 }
+
+                return@transaction dmsToBeSent
             }
-
-            for (type in RaffleType.values()) {
-                val hasRaffleTypeCreated = currentRaffles.any { it[Raffles.raffleType] == type }
-
-                if (!hasRaffleTypeCreated) {
-                    // Create new raffle for this type!
-                    Raffles.insert {
-                        it[Raffles.raffleType] = type
-                        it[Raffles.startedAt] = now
-                        it[Raffles.endsAt] = (now + type.raffleDuration.toJavaDuration())
-                        it[Raffles.endedAt] = null
-                        it[Raffles.winnerTicket] = null
-                        it[Raffles.paidOutPrize] = null
-                    }
-                }
-            }
-
-            return@transaction dmsToBeSent
         }
 
         for (raffleDM in dmsToBeSent) {
