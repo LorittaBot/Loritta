@@ -106,24 +106,41 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 					val now = Instant.now()
 					val sqlTimestampOfNow = Timestamp.from(now)
 
+					// This is even a BETTER optimization: This... is to go... even further beyond! https://youtu.be/8TGalu36BHA
+					// Because we are always inserting the same data over and over, we can go even further beyond!
+					// Instead of using batch inserts and inserting the same data, we can use generate_series!
+					val jdbcConnection = (this.connection as JdbcConnectionImpl).connection
+
+					// The generate_series mean that $quantity values will be inserted into the database!
+					// Yes, we need to use SELECT instead of VALUES
+					val insertSQL = "INSERT INTO ${RaffleTickets.tableName} (\"${RaffleTickets.userId.name}\", \"${RaffleTickets.raffle.name}\", \"${RaffleTickets.boughtAt.name}\") SELECT ?, ?, ? FROM generate_series(1, $quantity)"
+
+					val preparedStatement = jdbcConnection.prepareStatement(insertSQL)
+					preparedStatement.setLong(1, userId)
+					preparedStatement.setLong(2, currentRaffle[Raffles.id].value)
+					preparedStatement.setTimestamp(3, sqlTimestampOfNow)
+
+					// Execute the statement
+					preparedStatement.execute()
+
 					// This is an optimization: batchInsert ends up using a LOT of memory because it keeps everything in the "data" ArrayList
 					// For this, this is unviable, because if someone buys a lot of tickets (800k+), Loritta crashes and burns (uses 500MB+ memory!) trying to process it
 					// As a workaround, we will fully skip the batchInsert and manually insert the data via JDBC
-					val jdbcConnection = (this.connection as JdbcConnectionImpl).connection
+					// val jdbcConnection = (this.connection as JdbcConnectionImpl).connection
 
-					val insertSQL = "INSERT INTO ${RaffleTickets.tableName} (\"${RaffleTickets.userId.name}\", \"${RaffleTickets.raffle.name}\", \"${RaffleTickets.boughtAt.name}\") VALUES (?, ?, ?)"
-					val preparedStatement = jdbcConnection.prepareStatement(insertSQL)
+					// val insertSQL = "INSERT INTO ${RaffleTickets.tableName} (\"${RaffleTickets.userId.name}\", \"${RaffleTickets.raffle.name}\", \"${RaffleTickets.boughtAt.name}\") VALUES (?, ?, ?)"
+					// val preparedStatement = jdbcConnection.prepareStatement(insertSQL)
 
-					repeat(quantity) {
-						// Add batch data
-						preparedStatement.setLong(1, userId)
-						preparedStatement.setLong(2, currentRaffle[Raffles.id].value)
-						preparedStatement.setTimestamp(3, sqlTimestampOfNow)
-						preparedStatement.addBatch()
-					}
+					// repeat(quantity) {
+					// 	  // Add batch data
+					// 	  preparedStatement.setLong(1, userId)
+					// 	  preparedStatement.setLong(2, currentRaffle[Raffles.id].value)
+					// 	  preparedStatement.setTimestamp(3, sqlTimestampOfNow)
+					// 	  preparedStatement.addBatch()
+					// }
 
 					// Execute the batch insert
-					preparedStatement.executeBatch()
+					// preparedStatement.executeBatch()
 
 					// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
 					// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
