@@ -9,6 +9,7 @@ class Reminder(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<Reminder>(Reminders)
 
 	var userId by Reminders.userId
+	var guildId by Reminders.guildId
 	var channelId by Reminders.channelId
 	var remindAt by Reminders.remindAt
 	var content by Reminders.content

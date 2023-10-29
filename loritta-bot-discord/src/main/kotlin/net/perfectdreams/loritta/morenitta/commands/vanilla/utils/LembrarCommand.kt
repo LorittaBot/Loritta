@@ -1,30 +1,31 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.utils
 
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.dao.Reminder
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
-import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.dao.Reminder
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
+import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import java.awt.Color
 import java.time.Instant
 import java.time.ZonedDateTime
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+	override fun canUseInPrivateChannel() = false // The commandnever worked in private channels anyway
+
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
 	override fun getDescriptionKey() = LocaleKeyData("${LOCALE_PREFIX}.description")
@@ -89,6 +90,7 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 		loritta.newSuspendedTransaction {
 			Reminder.new {
 				userId = context.userHandle.idLong
+				guildId = context.guild.idLong
 				channelId = context.message.textChannel.idLong
 				remindAt = (zonedDateTime.toEpochSecond() * 1000)
 				content = messageContent

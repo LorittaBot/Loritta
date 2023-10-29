@@ -1,26 +1,21 @@
 package net.perfectdreams.loritta.morenitta.threads
 
 import kotlinx.coroutines.runBlocking
-import net.perfectdreams.loritta.morenitta.dao.Reminder
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.escapeMentions
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Reminder
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.deleteWhere
 import java.util.*
+import kotlin.collections.remove
 
 /*
 * Thread to check user reminders
@@ -58,16 +53,31 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
 
             val notifiedReminders = mutableListOf<Reminder>()
 
+            logger.info { "Retrieved ${reminders.size} reminders from the database!" }
+
             for (reminder in reminders) {
                 if (reminder.id.value !in remindersThatFailedToDelete) {
                     try {
-                        val channel = loritta.lorittaShards.getGuildMessageChannelById(reminder.channelId.toString())
+                        val guildId = reminder.guildId // Not all reminders has the guild ID set! This is a new field :3
+                        val channel = if (guildId != null) {
+                            // ...buuuuut if it ain't null, it is better for us! Because we avoid multiple cache hits if this reminder is NOT for us
+                            // The advantage is that...
+                            // If the guild is present but the channel doesn't exist, we do (guild cache + all channels cache)
+                            // If the guild is present and it is a text channel, we do (guild cache + one channel cache)
+                            // If the guild ID is not present, we do (all channels cache)
+                            val guild = loritta.lorittaShards.getGuildById(reminder.channelId) ?: continue // Not for us, or guild isn't loaded yet, skip!
 
-                        val reminderText =
-                            "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${
-                                reminder.content.stripCodeMarks().escapeMentions().substringIfNeeded(0..1000)
-                            }`\n" +
-                                    "🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
+                            // Now that we know that the guild exists, we will attmept to get the channel
+                            guild.getGuildMessageChannelById(reminder.channelId)
+                        } else {
+                            // Get the channel directly if we don't know the guild
+                            loritta.lorittaShards.getGuildMessageChannelById(reminder.channelId.toString())
+                        }
+
+                        val reminderText = "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${
+                            reminder.content.stripCodeMarks().escapeMentions().substringIfNeeded(0..1000)
+                        }`\n" +
+                                "🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
 
                         if (channel != null && channel.canTalk()) {
                             channel.sendMessage(
@@ -80,9 +90,21 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                             }
 
                             notifiedReminders += reminder
+                        } else if (System.currentTimeMillis() - reminder.remindAt >= Constants.ONE_WEEK_IN_MILLISECONDS) {
+                            // Look, I will be honest with you
+                            // If we couldn't find the channel of this reminder after 1 week, the channel was probably deleted (or I can't talk in it!) and we should consider that we notified the user
+                            logger.warn { "We weren't able to notify ${reminder.id} (user ID: ${reminder.userId}, channel ID: ${reminder.channelId}, guild ID: ${reminder.guildId}) for a long time, so we will pretend that this notification was notified and remove it..." }
+                            notifiedReminders += reminder
                         }
                     } catch (e: Exception) {
                         logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
+
+                        if (System.currentTimeMillis() - reminder.remindAt  >= Constants.ONE_WEEK_IN_MILLISECONDS) {
+                            // Look, I will be honest with you
+                            // If we couldn't find the channel of this reminder after 1 week, the channel was probably deleted (or I can't talk in it!) and we should consider that we notified the user
+                            logger.warn { "We weren't able to notify ${reminder.id} (user ID: ${reminder.userId}, channel ID: ${reminder.channelId}, guild ID: ${reminder.guildId}) for a long time, so we will pretend that this notification was notified and remove it..." }
+                            notifiedReminders += reminder
+                        }
                     }
                 } else {
                     notifiedReminders += reminder
@@ -117,6 +139,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                 loritta.newSuspendedTransaction {
                     Reminder.new {
                         userId = reminder.userId
+                        guildId = reminder.guildId
                         channelId = reminder.channelId
                         remindAt = newReminderTime
                         content = reminder.content
@@ -161,6 +184,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             loritta.newSuspendedTransaction {
                 Reminder.new {
                     userId = reminder.userId
+                    guildId = reminder.guildId
                     channelId = reminder.channelId
                     remindAt = inMillis
                     content = reminder.content

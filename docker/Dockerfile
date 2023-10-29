@@ -1,4 +1,4 @@
-FROM eclipse-temurin:20-jammy
+FROM eclipse-temurin:21-jammy
 ARG NODE_MAJOR=18
 
 # Install required dependencies
