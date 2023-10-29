@@ -58,7 +58,7 @@ jib {
     }
 
     from {
-        image = "eclipse-temurin:17-focal"
+        image = "eclipse-temurin:21-jammy"
     }
 }
 
