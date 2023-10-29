@@ -18,8 +18,14 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCo
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
+import java.sql.Timestamp
 import java.time.Instant
+
 
 class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	companion object {
@@ -99,14 +105,33 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 
 					val now = Instant.now()
 
+					// This is an optimization: batchInsert ends up using a LOT of memory because it keeps everything in the "data" ArrayList
+					// For this, this is unviable, because if someone buys a lot of tickets (800k+), Loritta crashes and burns (uses 500MB+ memory!) trying to process it
+					// As a workaround, we will fully skip the batchInsert and manually insert the data via JDBC
+					val jdbcConnection = (this.connection as JdbcConnectionImpl).connection
+
+					val insertSQL = "INSERT INTO ${RaffleTickets.tableName} (\"${RaffleTickets.userId.name}\", \"${RaffleTickets.raffle.name}\", \"${RaffleTickets.boughtAt.name}\") VALUES (?, ?, ?)"
+					val preparedStatement = jdbcConnection.prepareStatement(insertSQL)
+
+					repeat(quantity) {
+						// Add batch data
+						preparedStatement.setLong(1, userId)
+						preparedStatement.setLong(2, currentRaffle[Raffles.id].value)
+						preparedStatement.setTimestamp(3, Timestamp.from(now))
+						preparedStatement.addBatch()
+					}
+
+					// Execute the batch insert
+					preparedStatement.executeBatch()
+
 					// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
 					// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
 					// tickets purchases be VERY fast
-					RaffleTickets.batchInsert(0 until quantity, shouldReturnGeneratedValues = false) {
-						this[RaffleTickets.userId] = userId
-						this[RaffleTickets.raffle] = currentRaffle[Raffles.id]
-						this[RaffleTickets.boughtAt] = now
-					}
+					// RaffleTickets.batchInsert(0 until quantity, shouldReturnGeneratedValues = false) {
+					// 	  this[RaffleTickets.userId] = userId
+					// 	  this[RaffleTickets.raffle] = currentRaffle[Raffles.id]
+					// 	  this[RaffleTickets.boughtAt] = now
+					// }
 
 					logger.info { "$userId bought $quantity tickets for ${requiredCount}! (Before they had ${lorittaProfile.money + requiredCount}) sonhos!)" }
 
