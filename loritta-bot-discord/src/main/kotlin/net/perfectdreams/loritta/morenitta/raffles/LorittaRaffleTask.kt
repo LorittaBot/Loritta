@@ -54,21 +54,30 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                 for (currentRaffle in currentRaffles) {
                     // Check if the current (not expired) raffle should have already ended
                     if (now >= currentRaffle[Raffles.endsAt]) {
-                        // Get all tickets
-                        val tickets = RaffleTickets.select {
+                        // Get all tickets on the current raffle
+                        val totalTickets = RaffleTickets.select {
                             RaffleTickets.raffle eq currentRaffle[Raffles.id]
-                        }.toList()
+                        }.count()
 
-                        // Check if there are at least any ticket on the raffle and, if it is, then we process and get the winner
                         var winnerTicketId: Long? = null
                         var paidOutPrize: Long? = null
                         var paidOutPrizeAfterTax: Long? = null
                         var tax: Long? = null
                         var taxPercentage: Double? = null
 
-                        if (tickets.isNotEmpty()) {
+                        if (totalTickets != 0L) {
+                            // Generate a random number
+                            val skipTickets = m.random.nextLong(0, totalTickets)
+
+                            // Now here's the magic:
+                            // Get the winner ticket
+                            val winnerTicket = RaffleTickets.select {
+                                RaffleTickets.raffle eq currentRaffle[Raffles.id]
+                            }.orderBy(RaffleTickets.id, SortOrder.ASC).limit(1, skipTickets)
+                                .first()
+
+                            // Check if there are at least any ticket on the raffle and, if it is, then we process and get the winner
                             // Get the winner of this raffle...
-                            val winnerTicket = tickets[LorittaBot.RANDOM.nextInt(tickets.size)]
                             val winnerId = winnerTicket[RaffleTickets.userId]
                             winnerTicketId = winnerTicket[RaffleTickets.id].value
 
@@ -76,7 +85,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             val currentActiveDonations = m.getActiveMoneyFromDonations(winnerId)
                             val plan = UserPremiumPlans.getPlanFromValue(currentActiveDonations)
 
-                            val moneyWithoutTaxes = tickets.size * 250
+                            val moneyWithoutTaxes = totalTickets * 250
                             paidOutPrize = moneyWithoutTaxes.toLong()
 
                             val money = (moneyWithoutTaxes * plan.totalLoraffleReward).toInt()
@@ -84,9 +93,10 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             val lorittaProfile = m.getOrCreateLorittaProfile(winnerId)
                             logger.info { "${winnerId} won $money sonhos ($moneyWithoutTaxes without taxes; before they had ${lorittaProfile.money} sonhos) in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})!" }
 
-                            val totalTicketsBoughtByTheUser = tickets.count { it[RaffleTickets.userId] == winnerId }
-                            val totalTickets = tickets.size
-                            val totalUsersInTheRaffle = tickets.map { it[RaffleTickets.userId] }.distinct().size
+                            val totalTicketsBoughtByTheUser = RaffleTickets.select { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }.count()
+                            val countUserDistinct = RaffleTickets.userId.countDistinct()
+                            val totalUsersInTheRaffle = RaffleTickets.slice(countUserDistinct).select { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }
+                                .first()[countUserDistinct]
 
                             paidOutPrizeAfterTax = money.toLong()
 
@@ -113,9 +123,9 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                                     winnerId,
                                     currentRaffle[Raffles.raffleType],
                                     money,
-                                    totalTicketsBoughtByTheUser,
-                                    totalUsersInTheRaffle,
-                                    totalTickets
+                                    totalTicketsBoughtByTheUser.toInt(),
+                                    totalUsersInTheRaffle.toInt(),
+                                    totalTickets.toInt()
                                 )
                             )
 
@@ -130,9 +140,9 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                                             currentRaffle[Raffles.raffleType],
                                             winnerId,
                                             money,
-                                            totalTicketsBoughtByTheUser,
-                                            totalUsersInTheRaffle,
-                                            totalTickets
+                                            totalTicketsBoughtByTheUser.toInt(),
+                                            totalUsersInTheRaffle.toInt(),
+                                            totalTickets.toInt()
                                         )
                                     )
                                 }

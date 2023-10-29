@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -344,7 +345,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val dailyReward = AccountUtils.getUserTodayDailyReward(loritta, loritta.getOrCreateLorittaProfile(context.user.idLong))
 
-            if (dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
+            if (false && dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
                 context.reply(false) {
                     styled(
                         context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
