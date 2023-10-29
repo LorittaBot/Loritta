@@ -29,7 +29,7 @@ abstract class UnleashedContext(
     var lorittaUser: LorittaUser,
     val locale: BaseLocale,
     val i18nContext: I18nContext,
-    val discordGuildLocale: DiscordLocale,
+    val discordGuildLocale: DiscordLocale?,
     val discordUserLocale: DiscordLocale,
     val jda: JDA,
     val mentions: UnleashedMentions,
