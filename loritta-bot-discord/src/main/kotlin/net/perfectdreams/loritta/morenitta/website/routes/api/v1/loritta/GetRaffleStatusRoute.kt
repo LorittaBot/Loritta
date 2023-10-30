@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 import io.ktor.server.application.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.common.utils.RaffleType
@@ -14,6 +12,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.countDistinct
 import org.jetbrains.exposed.sql.select
 import java.sql.Connection
 
@@ -37,7 +36,11 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 
 			val currentTickets = RaffleTickets.select {
 				RaffleTickets.raffle eq currentRaffle[Raffles.id]
-			}.toList()
+			}.count()
+
+			val countUserDistinct = RaffleTickets.userId.countDistinct()
+			val totalUsersInTheRaffle = RaffleTickets.slice(countUserDistinct).select { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
+				.first()[countUserDistinct]
 
 			if (previousRaffle != null) {
 				val winnerTicketId = previousRaffle[Raffles.winnerTicket]
@@ -54,8 +57,8 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 
 					return@transaction RaffleStatus(
 						userId,
-						currentTickets.size,
-						currentTickets.map { it[RaffleTickets.userId] }.distinct().size,
+						currentTickets.toInt(),
+						totalUsersInTheRaffle.toInt(),
 						currentRaffle[Raffles.endsAt].toEpochMilli(),
 						prize,
 						prizeAfterTax,
@@ -66,8 +69,8 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 
 			return@transaction RaffleStatus(
 				null,
-				currentTickets.size,
-				currentTickets.map { it[RaffleTickets.userId] }.distinct().size,
+				currentTickets.toInt(),
+				totalUsersInTheRaffle.toInt(),
 				currentRaffle[Raffles.endsAt].toEpochMilli(),
 				null,
 				null,

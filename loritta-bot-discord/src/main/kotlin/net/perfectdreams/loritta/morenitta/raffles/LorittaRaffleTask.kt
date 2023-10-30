@@ -95,7 +95,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
 
                             val totalTicketsBoughtByTheUser = RaffleTickets.select { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }.count()
                             val countUserDistinct = RaffleTickets.userId.countDistinct()
-                            val totalUsersInTheRaffle = RaffleTickets.slice(countUserDistinct).select { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }
+                            val totalUsersInTheRaffle = RaffleTickets.slice(countUserDistinct).select { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
                                 .first()[countUserDistinct]
 
                             paidOutPrizeAfterTax = money.toLong()
