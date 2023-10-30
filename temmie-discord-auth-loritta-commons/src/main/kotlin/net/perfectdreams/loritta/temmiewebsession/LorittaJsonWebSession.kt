@@ -83,6 +83,8 @@ data class LorittaJsonWebSession(
         )
     }
 
+    suspend fun getUserIdentificationAndDiscordAuth(applicationId: Long, clientSecret: String, call: ApplicationCall): Pair<UserIdentification?, TemmieDiscordAuth?> = getUserIdentificationAndDiscordAuth(applicationId.toString(), clientSecret, call)
+
     suspend fun getUserIdentificationAndDiscordAuth(applicationId: String, clientSecret: String, call: ApplicationCall): Pair<UserIdentification?, TemmieDiscordAuth?> = Pair(getUserIdentification(applicationId, clientSecret, call), getDiscordAuth(applicationId, clientSecret, call))
 
     private fun convertToJson(discordAuth: TemmieDiscordAuth): String {

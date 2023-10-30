@@ -38,7 +38,7 @@ interface LorittaDashboardRpcProcessor<Req: LorittaDashboardRPCRequest, Res: Lor
         try {
             // TODO: Fix and improve
             val session = call.lorittaSession
-            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth("x", "y", call)
+            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth(loritta.lorittaInfo.clientId, loritta.lorittaInfo.clientSecret, call)
 
             if (discordAuth == null || userIdentification == null)
                 return DiscordAccountInformationResult.InvalidDiscordAuthorization

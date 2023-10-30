@@ -41,7 +41,7 @@ abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path
         } else {
             // TODO: Fix and improve
             val session = call.lorittaSession
-            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth("x", "y", call)
+            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth(m.lorittaInfo.clientId, m.lorittaInfo.clientSecret, call)
 
             if (discordAuth == null || userIdentification == null) {
                 call.respondText("", status = HttpStatusCode.Unauthorized)

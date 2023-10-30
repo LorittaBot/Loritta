@@ -15,6 +15,7 @@ class GetLorittaInfoProcessor(val m: LorittaBot) : LorittaInternalRpcProcessor<L
     ): LorittaInternalRPCResponse.GetLorittaInfoResponse {
         return LorittaInternalRPCResponse.GetLorittaInfoResponse.Success(
             m.config.loritta.discord.applicationId.toLong(),
+            m.config.loritta.discord.clientSecret,
             m.config.loritta.environment,
             m.config.loritta.discord.maxShards,
             m.config.loritta.clusters.instances.map {

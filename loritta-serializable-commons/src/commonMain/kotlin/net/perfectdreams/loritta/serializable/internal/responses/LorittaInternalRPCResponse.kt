@@ -15,6 +15,7 @@ sealed class LorittaInternalRPCResponse {
         @Serializable
         class Success(
             val clientId: Long,
+            val clientSecret: String,
             val environmentType: EnvironmentType,
             val maxShards: Int,
             val instances: List<LorittaCluster>

@@ -52,7 +52,7 @@ abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: Strin
         } else {
             // TODO: Fix and improve
             val session = call.lorittaSession
-            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth("x", "y", call)
+            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth(m.lorittaInfo.clientId, m.lorittaInfo.clientSecret, call)
 
             if (discordAuth == null || userIdentification == null) {
                 logger.info { "Clearing any set sessions and redirecting request to unauthorized redirect URL... Json Web Session? $session; Is Discord Auth null? ${discordAuth == null}; Is User Identification null? ${userIdentification == null}" }
