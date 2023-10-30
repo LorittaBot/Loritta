@@ -3,6 +3,9 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
@@ -10,7 +13,6 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.EmojiFight
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -18,6 +20,9 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.innerJoin
+import org.jetbrains.exposed.sql.select
 
 class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -44,6 +49,15 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
         subcommand(I18N_PREFIX.Emoji.Label, I18N_PREFIX.Emoji.Description) {
             executor = EmojiFightChangeEmojiExecutor()
+        }
+
+        subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description) {
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("emojifight bet stats")
+                add("emotefight bet stats")
+            }
+
+            executor = EmojiFightBetStatsExecutor()
         }
     }
 
@@ -152,13 +166,15 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 }
 
                 // Only allow users to participate in a emoji fight bet if the user got their daily reward today
-                AccountUtils.getUserTodayDailyReward(loritta, selfUserProfile)
-                    ?: context.fail(true) {
-                        styled(
-                            context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
-                            Constants.ERROR
-                        )
-                    }
+                if (false) {
+                    AccountUtils.getUserTodayDailyReward(loritta, selfUserProfile)
+                        ?: context.fail(true) {
+                            styled(
+                                context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+                                Constants.ERROR
+                            )
+                        }
+                }
 
                 // Self user check
                 run {
@@ -284,5 +300,100 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 options.emoji to args.joinToString(" ")
             )
         }
+    }
+
+    inner class EmojiFightBetStatsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val user = optionalUser(
+                "user",
+                I18N_PREFIX.Stats.Options.User.Text
+            )
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val user = args[options.user]?.user ?: context.user
+
+            val result = loritta.transaction {
+                // This super globby mess is here because Exposed can't behave and select the correct columns
+                val innerJoin = EmojiFightParticipants.innerJoin(EmojiFightMatches.innerJoin(EmojiFightMatchmakingResults, { EmojiFightMatches.id }, { EmojiFightMatchmakingResults.match }), { EmojiFightParticipants.match }, { EmojiFightMatches.id })
+
+                // This is a bit harder than coinflip bet
+                // The EmojiFightParticipants only includes matches that DID end up happening, matches that failed to be executed (like one player matches) are not included
+                val matchesPlayed = EmojiFightParticipants.select { EmojiFightParticipants.user eq user.idLong }.count()
+                val matchesWon = innerJoin.select {
+                    // Yes, it looks wonky, but it is correct
+                    EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id)
+                }.count()
+                // Kinda obvious tbh
+                val matchesLost = matchesPlayed - matchesWon
+
+                // This is a biiiit harder to figure out due to the lack of proper information on the tables
+                var sonhosEarned = 0L
+                var sonhosLost = 0L
+                var sonhosLostToTaxes = 0L
+
+                for (row in innerJoin.select { EmojiFightParticipants.user eq user.idLong }) {
+                    val didWeWinThisMatch = row[EmojiFightParticipants.user].value == user.idLong && row[EmojiFightParticipants.id] == row[EmojiFightMatchmakingResults.winner]
+                    if (didWeWinThisMatch) {
+                        sonhosEarned += row[EmojiFightMatchmakingResults.entryPriceAfterTax]
+                        val tax = row[EmojiFightMatchmakingResults.tax]
+                        if (tax != null)
+                            sonhosLostToTaxes += tax
+                    } else {
+                        // We always pay the full value if the lost
+                        sonhosLost += row[EmojiFightMatchmakingResults.entryPrice]
+                    }
+                }
+                val totalSonhos = sonhosEarned - sonhosLost
+
+                // Taxes is also a bit tricky
+                QueryResult(
+                    matchesPlayed,
+                    matchesWon,
+                    matchesLost,
+                    sonhosEarned,
+                    sonhosLost,
+                    sonhosLostToTaxes,
+                    totalSonhos
+                )
+            }
+
+            context.reply(false) {
+                if (context.user == user) {
+                    styled(context.i18nContext.get(I18N_PREFIX.Stats.YourStats), Emotes.LORI_RICH)
+                } else {
+                    styled(context.i18nContext.get(I18N_PREFIX.Stats.StatsOfUser(user.asMention)), Emotes.LORI_RICH)
+                }
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.PlayedMatches(result.matchesPlayed)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.WonMatches((result.matchesWon / result.matchesPlayed).toDouble(), result.matchesWon)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostMatches((result.matchesLost / result.matchesPlayed).toDouble(), result.matchesLost)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.WonSonhos(result.sonhosEarned)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhos(result.sonhosLost)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhosToTaxes(result.sonhosLostToTaxes)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.TotalSonhos(result.totalSonhos)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.ProbabilityExplanation), Emotes.LORI_COFFEE)
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?> {
+            val userAndMember = context.getUserAndMember(0)
+
+            return mapOf(options.user to userAndMember)
+        }
+
+        inner class QueryResult(
+            val matchesPlayed: Long,
+            val matchesWon: Long,
+            val matchesLost: Long,
+            val sonhosEarned: Long,
+            val sonhosLost: Long,
+            val sonhosLostToTaxes: Long,
+            val totalSonhos: Long
+        )
     }
 }

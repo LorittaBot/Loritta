@@ -19,6 +19,24 @@ emoji:
     emoji:
       text: "O novo emoji que você irá usar nas rinhas de emoji"
 
+stats:
+  label: "stats"
+  description: "Mostra as suas estatísticas na rinha de emoji"
+  lostMatches: "**Derrotas ({percentage,number,#.##%}):** {matchesLost,number}"
+  lostSonhos: "**Sonhos perdidos:** {sonhosLost,number}"
+  lostSonhosToTaxes: "**Sonhos taxados pelo governo:** {sonhosLostToTaxes,number}"
+  playedMatches: "**Partidas Jogadas:** {matchesPlayed,number}"
+  playerHasNeverPlayed: "O usuário nunca jogou uma partida de aposta em rinha de emojis!"
+  probabilityExplanation: "De acordo com estatísticas, quanto menos pessoas em uma partida de rinha de emoji, maior a sua chance de ganhar. Se apenas duas pessoas estiverem no emoji fight bet, a chance de você ganhar é de 50%."
+  statsOfUser: "**Estatísticas de {userMention}**"
+  totalSonhos: "**Total de sonhos:** {sonhosTotal,number}"
+  wonMatches: "**Vitórias ({percentage,number,#.##%}):** {matchesWon,number}"
+  wonSonhos: "**Sonhos ganhos:** {sonhosWon,number}"
+  yourStats: "**Suas Estatísticas**"
+  options:
+    user:
+      text: "O usuário que você deseja ver as estatísticas dele"
+
 joinTheEmojiFight: "Participar"
 startTheEmojiFight: "Iniciar"
 
