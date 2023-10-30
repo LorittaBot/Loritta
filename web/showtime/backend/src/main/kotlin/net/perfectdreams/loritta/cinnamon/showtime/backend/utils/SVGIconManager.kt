@@ -58,6 +58,8 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
     val headphones = register("headphones", "fontawesome5/solid/headphones.svg")
     val shirt = register("shirt", "fontawesome5/solid/tshirt.svg")
     val smallDiamond = register("small-diamond", "twemoji-master/1f539.svg", SVGOptions.REMOVE_FILLS)
+    val xmark = register("check", "fontawesome6/solid/xmark.svg")
+    val check = register("xmark", "fontawesome6/solid/check.svg")
 
     // https://thenounproject.com/ahmadpp4/collection/emoticons/
     val owo = register("owo", "loritta/owo.svg")

@@ -2,29 +2,18 @@ package net.perfectdreams.spicymorenitta.routes
 
 import kotlinx.browser.document
 import kotlinx.html.InputType
-import kotlinx.html.TD
-import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.dom.create
 import kotlinx.html.h2
 import kotlinx.html.h3
-import kotlinx.html.i
-import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.input
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.p
-import kotlinx.html.stream.appendHTML
 import kotlinx.html.style
-import kotlinx.html.table
-import kotlinx.html.td
-import kotlinx.html.th
-import kotlinx.html.tr
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale
@@ -33,170 +22,9 @@ import net.perfectdreams.spicymorenitta.views.dashboard.ServerConfig
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.get
-import kotlin.collections.set
 
 class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
-    companion object {
-        const val LOCALE_PREFIX = "website.donate"
-    }
-
     override fun onRender(call: ApplicationCall) {
-        val plansTable = page.getElementById("plans-features") as HTMLDivElement
-
-        val rewards = listOf(
-            DonationReward("ignore_me", 0.0, false),
-            DonationReward("ignore_me", 99.99, false),
-
-            // ===[ RECOMMENDED ]===
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.exclusiveProfileBadge"], 39.99, false),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.customProfileBackground"], 39.99, false),
-
-            // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.reducedCooldown"], 39.99, false),
-
-            // ===[  COMPLETE  ]===
-
-            // ===[   NUMBERS  ]===
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.everyMinuteSonhos"], 39.99, false, callback = { column ->
-                when {
-                    column >= 99.99 -> +"10"
-                    column >= 39.99 -> +"4"
-                    column >= 19.99 -> +"2"
-                    else -> +"0"
-                }
-            }),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.dailyMultiplier"], 19.99, false, callback = { column ->
-                + (ServerPremiumPlans.getPlanFromValue(column).dailyMultiplier.toString() + "x")
-            }),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.maxLevelUpRoles"], 19.99, false, callback = { column ->
-                + ServerPremiumPlans.getPlanFromValue(column).maxLevelUpRoles.toString()
-            }),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.maxMemberCounters"], 19.99, false, callback = { column ->
-                + ServerPremiumPlans.getPlanFromValue(column).memberCounterCount.toString()
-            }),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.maxSocialAccountsRelay"], 19.99, false, callback = { column ->
-                + ServerPremiumPlans.getPlanFromValue(column).maxYouTubeChannels.toString()
-            }),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.maxDailyLimit"], 39.99, false, callback = { column ->
-                + UserPremiumPlans.getPlanFromValue(column).maxDreamsInDaily.toString()
-            }),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.giveBackRepChange"], 39.99, false, callback = { column ->
-                + (UserPremiumPlans.getPlanFromValue(column).loriReputationRetribution.toString() + "%")
-            }),
-            DonationReward(locale["${LOCALE_PREFIX}.rewards.globalExperienceMultiplier"], 99.99, false, callback = { column ->
-                + (ServerPremiumPlans.getPlanFromValue(column).globalXpMultiplier.toString() + "x")
-            })
-        )
-
-        plansTable.appendBuilder(
-            StringBuilder().appendHTML(true).table(classes = "fancy-table centered-text") {
-                style = "margin: 0 auto;"
-
-                val rewardColumn = mutableListOf<Double>()
-                tr {
-                    th { +"" }
-                    rewards.asSequence()
-                        .map { it.minimumDonation }
-                        .distinct()
-                        .filter { it == 0.0 || it == 19.99 || it == 39.99 || it == 99.99 }
-                        .sortedBy { it }.toList().forEach {
-                            th {
-                                val titlePrefix = when (it) {
-                                    0.0 -> locale["${LOCALE_PREFIX}.plans.free"]
-                                    19.99 -> locale["${LOCALE_PREFIX}.plans.essential"]
-                                    39.99 -> locale["${LOCALE_PREFIX}.plans.recommended"]
-                                    99.99 -> locale["${LOCALE_PREFIX}.plans.complete"]
-                                    else -> "???"
-                                }
-
-                                if (it == 0.0) {
-                                    style = "opacity: 0.7; font-size: 0.9em;"
-                                }
-
-                                if (it == 39.99) {
-                                    style = "background-color: #83ff836b; font-size: 1.3em;"
-                                }
-
-                                +("$titlePrefix (R$" + it.toString().replace(".", ",") + ")")
-                            }
-                            rewardColumn.add(it)
-                        }
-                }
-
-                for (reward in rewards.filterNot { it.doNotDisplayInPlans }.filter { it.name != "ignore_me" }) {
-                    tr {
-                        td {
-                            attributes["style"] = "font-weight: 800;"
-                            +reward.name
-                        }
-                        for (column in rewardColumn) {
-                            td {
-                                if (column == 0.0) {
-                                    style = "opacity: 0.7; font-size: 0.8em;"
-                                }
-
-                                if (column == 39.99) {
-                                    style = "background-color: #83ff836b;"
-                                }
-                                reward.callback.invoke(this, column)
-                            }
-                        }
-                    }
-                }
-
-                tr {
-                    // =====[ PREMIUM PLANS ]=====
-                    td {
-                        + ""
-                    }
-
-                    val needsToLogin = m.userIdentification == null
-                    val url = "https://discordapp.com/oauth2/authorize?redirect_uri=https://loritta.website%2Fdashboard&scope=identify%20guilds%20email&response_type=code&client_id=297153970613387264"
-
-                    td {
-                    }
-
-                    fun TD.createBuyPlanButton(buttonPlanId: String, isBigger: Boolean) {
-                        if (isBigger)
-                            style = "background-color: #83ff836b;"
-
-                        if (needsToLogin) {
-                            a(href = url) {
-                                div(classes = "button-discord button-discord-info pure-button") {
-                                    if (isBigger)
-                                        style = "font-size: 1.2em;"
-
-                                    i(classes = "fas fa-gift") {}
-                                    +" ${locale["${LOCALE_PREFIX}.buyPlan"]}"
-                                }
-                            }
-                        } else {
-                            div(classes = "button-discord button-discord-info pure-button") {
-                                id = buttonPlanId
-                                if (isBigger)
-                                    style = "font-size: 1.2em;"
-
-                                i(classes = "fas fa-gift") {}
-                                +" ${locale["${LOCALE_PREFIX}.buyPlan"]}"
-                            }
-                        }
-                    }
-
-                    td {
-                        createBuyPlanButton("donate-button-plan1", false)
-                    }
-
-                    td {
-                        createBuyPlanButton("donate-button-plan2", true)
-                    }
-
-                    td {
-                        createBuyPlanButton("donate-button-plan3", false)
-                    }
-                }
-            }
-        )
-
         (document.getElementById("donate-button-plan1") as HTMLDivElement?)?.onclick = {
             showPaymentSelectionModal(19.99)
         }
@@ -346,12 +174,4 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
             }
         )
     }
-
-    data class DonationReward(val name: String, val minimumDonation: Double, val doNotDisplayInPlans: Boolean, val callback: TD.(Double) -> Unit = { column ->
-        if (column >= minimumDonation) {
-            i("fas fa-check") {}
-        } else {
-            i("fas fa-times") {}
-        }
-    })
 }

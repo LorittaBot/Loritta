@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.profiles.AnimatedProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.profiles.StaticProfileCreator
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream

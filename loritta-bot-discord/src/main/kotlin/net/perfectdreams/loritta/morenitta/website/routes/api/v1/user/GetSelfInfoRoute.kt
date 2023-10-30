@@ -6,6 +6,7 @@ import io.ktor.server.sessions.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -14,13 +15,13 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.networkbans.ApplyBansTask
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.serializable.BackgroundWithVariations
 import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.loritta.serializable.UserIdentification
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -39,7 +40,7 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 		if (sections == null) {
 			val session = call.sessions.get<LorittaJsonWebSession>()
 
-			val userIdentification = session?.getDiscordAuthFromJson(loritta, call)?.getUserIdentification()
+			val userIdentification = session?.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)?.getUserIdentification()
 				?: throw WebsiteAPIException(HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
 						loritta,
@@ -89,7 +90,7 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 		} else {
 			val session = call.sessions.get<LorittaJsonWebSession>()
 
-			val userIdentification = session?.getUserIdentification(loritta, call)
+			val userIdentification = session?.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
 				?: throw WebsiteAPIException(HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
 						loritta,

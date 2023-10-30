@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
 
 class UserReputationView(

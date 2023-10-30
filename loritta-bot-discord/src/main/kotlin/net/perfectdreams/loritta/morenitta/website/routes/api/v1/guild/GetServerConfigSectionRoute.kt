@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 

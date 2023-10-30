@@ -2,12 +2,15 @@ package net.perfectdreams.loritta.morenitta.website.routes
 
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
-import net.perfectdreams.loritta.morenitta.dao.DonationKey
+import io.ktor.server.application.*
+import kotlinx.html.TD
+import kotlinx.html.i
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import io.ktor.server.application.ApplicationCall
-import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.DonateView
@@ -17,7 +20,7 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 	override val isMainClusterOnlyRoute = true
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
-		val userIdentification = call.lorittaSession.getUserIdentification(loritta, call)
+		val userIdentification = call.lorittaSession.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
 
 		val keys = jsonArray()
 
@@ -51,4 +54,12 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 			).generateHtml()
 		)
 	}
+
+	data class DonationReward(val name: String, val minimumDonation: Double, val doNotDisplayInPlans: Boolean, val callback: TD.(Double) -> Unit = { column ->
+		if (column >= minimumDonation) {
+			i("fas fa-check") {}
+		} else {
+			i("fas fa-times") {}
+		}
+	})
 }

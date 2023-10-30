@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleGuildDashboardRawHtmlView

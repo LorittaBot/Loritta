@@ -13,7 +13,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.and
 
 class UserDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer {

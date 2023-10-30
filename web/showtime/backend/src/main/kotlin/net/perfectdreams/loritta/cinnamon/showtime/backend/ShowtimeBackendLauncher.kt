@@ -1,20 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend
 
 import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.etherealgambi.client.EtherealGambiClient
-import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
-import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.EtherealGambiImages
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.config.RootConfig
-import net.perfectdreams.loritta.serializable.ApplicationCommandInfo
-import net.perfectdreams.loritta.serializable.CommandInfo
+import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
+import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import java.util.*
 
 object ShowtimeBackendLauncher {
@@ -41,7 +35,7 @@ object ShowtimeBackendLauncher {
         logger.info { "Started Pudding client!" }
 
         logger.info { "Loading image informations from EtherealGambi..." }
-        val etherealGambiClient = EtherealGambiClient(rootConfig.etherealGambi.url)
+        val etherealGambiClient = EtherealGambiClient(rootConfig.etherealGambi.apiUrl)
         val etherealGambiImages = EtherealGambiImages(etherealGambiClient)
         etherealGambiImages.loadImagesInfo()
 

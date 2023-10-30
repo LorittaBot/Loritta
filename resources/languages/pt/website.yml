@@ -83,3 +83,7 @@ website:
       title: "Informações para usuários que foram banidos de usarem a Loritta"
       description: "Se você está lendo as diretrizes da Loritta pois você foi banido, veja como fazer um apelo de ban para você ter a chance de ser desbanido {clickHere}!"
       clickHere: "clicando aqui"
+  donate:
+    rewards:
+      twitchPremiumTrack: "Acompanhamentos Premium de Contas da Twitch"
+      youTubeChannelTrack: "Máximo de contas de notificações do YouTube"

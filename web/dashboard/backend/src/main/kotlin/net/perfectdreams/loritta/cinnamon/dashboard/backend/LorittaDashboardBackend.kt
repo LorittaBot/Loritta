@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.PutShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.rpc.processors.Processors
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRouteManager
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.PerfectPaymentsClient
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.config.RootConfig
@@ -43,6 +42,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.LorittaCluster
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import java.util.*
 
 class LorittaDashboardBackend(

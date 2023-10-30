@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EtherealGambiConfig(
-    val url: String
+    val url: String,
+    val apiUrl: String
 )

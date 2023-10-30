@@ -27,7 +27,7 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.ConfigTransformer
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.codec.digest.DigestUtils

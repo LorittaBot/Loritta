@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":loritta-serializable-commons"))
     implementation(project(":pudding:client"))
     implementation(project(":temmie-discord-auth"))
+    implementation(project(":temmie-discord-auth-loritta-commons"))
     implementation(project(":switch-twitch"))
 
     // Kotlin Serialization

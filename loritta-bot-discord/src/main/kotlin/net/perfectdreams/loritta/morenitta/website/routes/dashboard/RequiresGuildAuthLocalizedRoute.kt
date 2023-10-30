@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AddBotURL
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString

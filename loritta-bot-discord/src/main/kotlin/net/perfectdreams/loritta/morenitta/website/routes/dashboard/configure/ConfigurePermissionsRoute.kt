@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleGuildDashboardRawHtmlView

@@ -6,11 +6,11 @@ import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetShipEffectsResponse
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.serializable.ShipEffect
 import net.perfectdreams.loritta.serializable.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
 

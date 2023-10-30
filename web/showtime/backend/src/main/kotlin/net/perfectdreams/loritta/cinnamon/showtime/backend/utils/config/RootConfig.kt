@@ -5,6 +5,9 @@ import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 
 @Serializable
 data class RootConfig(
+    val sessionHex: String,
+    val sessionName: String,
+    val sessionDomain: String,
     val loritta: LorittaConfig,
     val discord: LorittaDiscordConfig,
     val etherealGambi: EtherealGambiConfig,

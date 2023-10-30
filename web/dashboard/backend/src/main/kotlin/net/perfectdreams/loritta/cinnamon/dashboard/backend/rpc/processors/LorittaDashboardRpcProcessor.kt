@@ -4,11 +4,10 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.lorittaSession
 import net.perfectdreams.loritta.serializable.dashboard.requests.LorittaDashboardRPCRequest
 import net.perfectdreams.loritta.serializable.dashboard.responses.LorittaDashboardRPCResponse
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.lorittaSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 interface LorittaDashboardRpcProcessor<Req: LorittaDashboardRPCRequest, Res: LorittaDashboardRPCResponse> {
@@ -37,11 +36,9 @@ interface LorittaDashboardRpcProcessor<Req: LorittaDashboardRPCRequest, Res: Lor
         }
 
         try {
+            // TODO: Fix and improve
             val session = call.lorittaSession
-            val webSession = LorittaWebSession(loritta, session)
-
-            val discordAuth = webSession.getDiscordAuthFromJson()
-            val userIdentification = webSession.getUserIdentification(call)
+            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth("x", "y", call)
 
             if (discordAuth == null || userIdentification == null)
                 return DiscordAccountInformationResult.InvalidDiscordAuthorization

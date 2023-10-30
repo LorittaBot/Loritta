@@ -15,5 +15,6 @@ data class RootConfig(
     val userAuthenticationOverride: UserAuthenticationOverrideConfig,
     val pudding: PuddingConfig,
     val twitch: TwitchConfig,
-    val authorizationTokens: List<AuthorizationToken>
+    val authorizationTokens: List<AuthorizationToken>,
+    val discord: LorittaDiscordConfig
 )

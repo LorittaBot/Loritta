@@ -28,10 +28,12 @@ dependencyResolutionManagement {
             library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinXSerialization)
             library("kotlinx-serialization-protobuf", "org.jetbrains.kotlinx", "kotlinx-serialization-protobuf").versionRef(kotlinXSerialization)
             library("kotlinx-serialization-hocon", "org.jetbrains.kotlinx", "kotlinx-serialization-hocon").versionRef(kotlinXSerialization)
+            library("ktor-server-core", "io.ktor", "ktor-server-core").versionRef(ktor)
             library("ktor-server-netty", "io.ktor", "ktor-server-netty").versionRef(ktor)
             library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef(ktor)
             library("ktor-client-js", "io.ktor", "ktor-client-js").versionRef(ktor)
             library("ktor-client-cio", "io.ktor", "ktor-client-cio").versionRef(ktor)
+            library("ktor-server-sessions", "io.ktor", "ktor-server-sessions").versionRef(ktor)
 
             library("exposed-core", "org.jetbrains.exposed", "exposed-core").versionRef(exposed)
             library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
@@ -80,5 +82,6 @@ include(":lorituber:server")
 
 // ===[ MISC ]===
 include(":temmie-discord-auth")
+include(":temmie-discord-auth-loritta-commons")
 include(":switch-twitch")
 include(":broker-tickers-updater")

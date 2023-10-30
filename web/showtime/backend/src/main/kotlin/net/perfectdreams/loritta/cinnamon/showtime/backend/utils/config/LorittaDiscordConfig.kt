@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LorittaDiscordConfig(
-    val applicationId: Long
+    val applicationId: Long,
+    val clientSecret: String
 )

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.website.utils.extensions
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.toJsonArray
 import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 fun TemmieDiscordAuth.toJson(): String {

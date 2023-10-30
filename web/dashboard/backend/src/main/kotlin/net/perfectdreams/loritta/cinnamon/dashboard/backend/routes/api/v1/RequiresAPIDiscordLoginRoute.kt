@@ -6,9 +6,8 @@ import io.ktor.server.response.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.lorittaSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.lorittaSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path: String) : BaseRoute(path) {
@@ -42,9 +41,7 @@ abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path
         } else {
             // TODO: Fix and improve
             val session = call.lorittaSession
-            val webSession = LorittaWebSession(m, session)
-            val discordAuth = webSession.getDiscordAuthFromJson()
-            val userIdentification = LorittaWebSession(m, session).getUserIdentification(call, true)
+            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth("x", "y", call)
 
             if (discordAuth == null || userIdentification == null) {
                 call.respondText("", status = HttpStatusCode.Unauthorized)

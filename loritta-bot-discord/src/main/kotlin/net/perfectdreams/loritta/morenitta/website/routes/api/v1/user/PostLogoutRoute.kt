@@ -6,7 +6,7 @@ import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.sessions
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.sequins.ktor.BaseRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
 class PostLogoutRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/logout") {

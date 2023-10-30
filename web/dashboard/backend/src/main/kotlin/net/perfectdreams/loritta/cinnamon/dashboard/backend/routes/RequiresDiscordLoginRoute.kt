@@ -9,8 +9,11 @@ import io.ktor.server.sessions.*
 import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.*
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.Constants
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.WebsiteUtils
 import net.perfectdreams.loritta.common.utils.LorittaDiscordOAuth2AuthorizeScopeURL
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.lorittaSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: String) : LocalizedRoute(m, path) {
@@ -49,9 +52,7 @@ abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: Strin
         } else {
             // TODO: Fix and improve
             val session = call.lorittaSession
-            val webSession = LorittaWebSession(m, session)
-            val discordAuth = webSession.getDiscordAuthFromJson()
-            val userIdentification = LorittaWebSession(m, session).getUserIdentification(call, true)
+            val (userIdentification, discordAuth) = session.getUserIdentificationAndDiscordAuth("x", "y", call)
 
             if (discordAuth == null || userIdentification == null) {
                 logger.info { "Clearing any set sessions and redirecting request to unauthorized redirect URL... Json Web Session? $session; Is Discord Auth null? ${discordAuth == null}; Is User Identification null? ${userIdentification == null}" }

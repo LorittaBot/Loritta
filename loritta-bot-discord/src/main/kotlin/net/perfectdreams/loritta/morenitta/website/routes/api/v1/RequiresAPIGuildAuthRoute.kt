@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString

@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

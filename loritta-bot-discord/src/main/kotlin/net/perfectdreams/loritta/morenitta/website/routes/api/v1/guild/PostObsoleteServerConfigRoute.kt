@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlock
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.morenitta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth

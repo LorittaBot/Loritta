@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationConfig
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.util.*

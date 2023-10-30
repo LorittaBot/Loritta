@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.http.HttpStatusCode
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update

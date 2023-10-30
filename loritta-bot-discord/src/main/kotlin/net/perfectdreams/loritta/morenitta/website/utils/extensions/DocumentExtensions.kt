@@ -12,7 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import org.w3c.dom.Document
 import java.io.StringWriter

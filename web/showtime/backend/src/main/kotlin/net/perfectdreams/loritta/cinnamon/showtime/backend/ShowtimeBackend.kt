@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension
 import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.html.HtmlRenderer
@@ -19,6 +18,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import io.ktor.util.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -27,16 +27,16 @@ import mu.KotlinLogging
 import net.perfectdreams.etherealgambi.client.EtherealGambiClient
 import net.perfectdreams.etherealgambi.data.api.responses.ImageVariantsResponse
 import net.perfectdreams.loritta.api.utils.format
-import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.cinnamon.showtime.backend.content.ContentBase
 import net.perfectdreams.loritta.cinnamon.showtime.backend.content.MultilanguageContent
 import net.perfectdreams.loritta.cinnamon.showtime.backend.routes.LocalizedRoute
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.*
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.config.RootConfig
-import net.perfectdreams.loritta.serializable.ApplicationCommandInfo
-import net.perfectdreams.loritta.serializable.CommandInfo
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.serializable.UserIdentification
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.nio.file.Files
@@ -102,6 +102,17 @@ class ShowtimeBackend(
         val server = embeddedServer(Netty, port = 8080) {
             // Enables gzip and deflate compression
             install(Compression)
+
+            install(Sessions) {
+                val secretHashKey = hex(rootConfig.sessionHex)
+
+                cookie<LorittaJsonWebSession>(rootConfig.sessionName) {
+                    cookie.path = "/"
+                    cookie.domain = rootConfig.sessionDomain
+                    cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
+                    transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
+                }
+            }
 
             // Enables caching for the specified types in the typesToCache list
             install(CachingHeaders) {

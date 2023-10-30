@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonElement
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 object GuildInfoTransformer : ConfigTransformer {
     override val payloadType: String = "guildinfo"

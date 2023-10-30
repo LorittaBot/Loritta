@@ -25,11 +25,11 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.Processors
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.*
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.Error404View
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
@@ -53,19 +53,6 @@ class LorittaWebsite(
 		val versionPrefix = "/v2"
 		private val logger = KotlinLogging.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
-
-		/**
-		 * The default on token change behavior used in [TemmieDiscordAuth]
-		 */
-		val ON_TOKEN_CHANGE_BEHAVIOR: (ApplicationCall, TemmieDiscordAuth) -> (Unit) = { call, auth ->
-			val session = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
-
-			call.sessions.set(
-				session.copy(
-					base64StoredDiscordAuthTokens = Base64.getEncoder().encode(auth.toJson().toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
-				)
-			)
-		}
 
 		lateinit var ENGINE: PebbleEngine
 		lateinit var FOLDER: String

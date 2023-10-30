@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users
 
 import io.ktor.server.application.*
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.serializable.UserId
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class GetSelfUserInfoRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRoute(m, "/api/v1/users/@me") {

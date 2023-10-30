@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -19,10 +20,11 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaDiscordOAuth2AuthorizeScopeURL
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.UserBannedView
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
+import net.perfectdreams.loritta.temmiewebsession.LorittaTemmieDiscordAuth
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
 import java.util.*
@@ -45,7 +47,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 			println("Dashboard Auth Route")
 			val session: LorittaJsonWebSession = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
-			val discordAuth = session.getDiscordAuthFromJson(loritta, call)
+			val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
 
 			// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
 			// Se o parâmetro exista, vamos redirecionar!
@@ -58,7 +60,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 					}
 				}
 			} else {
-				val storedUserIdentification = session.getUserIdentification(loritta, call)
+				val storedUserIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
 
 				val userIdentification = if (code == "from_master") {
 					// Veio do master cluster, vamos apenas tentar autenticar com os dados existentes!
@@ -68,15 +70,13 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 						redirect(LorittaDiscordOAuth2AuthorizeScopeURL(loritta, "$scheme://$hostHeader" + call.request.path()).toString(), false)
 					}
 				} else {
-					val auth = TemmieDiscordAuth(
+					val auth = LorittaTemmieDiscordAuth(
+						call,
 						loritta.config.loritta.discord.applicationId.toString(),
 						loritta.config.loritta.discord.clientSecret,
 						code,
 						"$scheme://$hostHeader/dashboard",
-						listOf("identify", "guilds", "email"),
-						onTokenChange = {
-							LorittaWebsite.ON_TOKEN_CHANGE_BEHAVIOR(call, it)
-						}
+						listOf("identify", "guilds", "email")
 					)
 
 					auth.doTokenExchange()
@@ -286,10 +286,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 		logger.info { "Time to get session: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		val discordAuth = session.getDiscordAuthFromJson(loritta, call)
+		val discordAuth = session.getDiscordAuth(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
 		logger.info { "Time to get Discord Auth: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
-		val userIdentification = session.getUserIdentification(loritta, call)
+		val userIdentification = session.getUserIdentification(loritta.config.loritta.discord.applicationId.toLong(), loritta.config.loritta.discord.clientSecret, call)
 		logger.info { "Time to get User Identification: ${System.currentTimeMillis() - start}" }
 
 		if (discordAuth == null || userIdentification == null) {
