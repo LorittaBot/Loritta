@@ -336,7 +336,7 @@ class EmojiFight(
                     return EmojiFightJoinState.NotEnoughMoney(profile.money, entryPrice)
 
                 // If the user didn't get daily today, they can't participate in the event
-                if (false && AccountUtils.getUserTodayDailyReward(loritta, profile) == null)
+                if (AccountUtils.getUserTodayDailyReward(loritta, profile) == null)
                     return EmojiFightJoinState.DidntGetDailyReward
 
                 val epochMillis = user.timeCreated.toEpochSecond() * 1000

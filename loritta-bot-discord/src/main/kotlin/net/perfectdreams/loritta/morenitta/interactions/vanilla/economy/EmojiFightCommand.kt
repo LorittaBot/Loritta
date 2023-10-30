@@ -166,15 +166,13 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 }
 
                 // Only allow users to participate in a emoji fight bet if the user got their daily reward today
-                if (false) {
-                    AccountUtils.getUserTodayDailyReward(loritta, selfUserProfile)
-                        ?: context.fail(true) {
-                            styled(
-                                context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
-                                Constants.ERROR
-                            )
-                        }
-                }
+                AccountUtils.getUserTodayDailyReward(loritta, selfUserProfile)
+                    ?: context.fail(true) {
+                        styled(
+                            context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+                            Constants.ERROR
+                        )
+                    }
 
                 // Self user check
                 run {
