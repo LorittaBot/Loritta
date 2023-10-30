@@ -65,7 +65,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                             // If the guild is present but the channel doesn't exist, we do (guild cache + all channels cache)
                             // If the guild is present and it is a text channel, we do (guild cache + one channel cache)
                             // If the guild ID is not present, we do (all channels cache)
-                            val guild = loritta.lorittaShards.getGuildById(reminder.channelId) ?: continue // Not for us, or guild isn't loaded yet, skip!
+                            val guild = loritta.lorittaShards.getGuildById(reminder.guildId) ?: continue // Not for us, or guild isn't loaded yet, skip!
 
                             // Now that we know that the guild exists, we will attmept to get the channel
                             guild.getGuildMessageChannelById(reminder.channelId)
