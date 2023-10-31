@@ -37,7 +37,7 @@ fun GamerSaferVerifyOverview(m: LorittaDashboardFrontend, screen: ConfigureGuild
                 }
             }
         ) {
-            A(href = "https://discord.com/api/oauth2/authorize?client_id=1037108339538153584&permissions=19132334996726&redirect_uri=https%3A%2F%2Fgsdefender.gamersafer.com%2F&response_type=code&scope=identify%20applications.commands%20bot") {
+            A(href = "https://discord.com/api/oauth2/authorize?client_id=1037108339538153584&permissions=8&redirect_uri=https%3A%2F%2Fdefender.gamersafer.com%2Fapi%2Fauth%2Fsignin%3Fsource%3Dloritta&response_type=code&scope=identify%20applications.commands%20bot") {
                 DiscordButton(
                     DiscordButtonType.PRIMARY
                 ) {
