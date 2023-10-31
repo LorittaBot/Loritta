@@ -575,7 +575,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                     loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Verificação de Daily") {
                         it.event.message.delete().await()
 
-                        builder.needsToGetDailyBeforeParticipating = true
+                        builder.needsToGetDailyBeforeParticipating = !builder.needsToGetDailyBeforeParticipating
 
                         getSpecialLorittaCommunityExclusiveFeatures(context, locale, builder)
                     },
