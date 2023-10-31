@@ -18,6 +18,10 @@ giveaway:
     missingRolesOr: "Você não tem permissão para participar deste sorteio! Para participar, você precisa ter pelo ou menos um dos seguintes cargos: {roles}"
     blockedRolesAnd: "Você não tem permissão para participar deste sorteio! Para participar, você não pode ter os seguintes cargos: {roles}"
     blockedRolesOr: "Você não tem permissão para participar deste sorteio! Para participar, você não pode ter qualquer um dos seguintes cargos: {roles}"
+    youNeedToGetTheDailyRewardBeforeParticipating: "Você precisa pegar a recompensa diária da Loritta antes de poder participar deste sorteio!"
+    youNeedToWinMoreEmojiFightBets: "Você precisa ganhar {matches,plural, =0 {# apostas em partidas de rinha de emoji} one {# aposta em partida de rinha de emoji} other {# apostas em partidas de rinha de emoji}} para participar do sorteio! Atualmente você ganhou {currentMatches,plural, =0 {# apostas} one {# aposta} other {# apostas}}."
+    youNeedToLoseMoreEmojiFightBets: "Eu sei que parece idiota falar isso... mas você precisa perder {matches,plural, =0 {# apostas em partidas de rinha de emoji} one {# aposta em partida de rinha de emoji} other {# apostas em partidas de rinha de emoji}} para participar do sorteio! Atualmente você perdeu {currentMatches,plural, =0 {# apostas} one {# aposta} other {# apostas}}."
+    needsMoreMessages: "Você precisa enviar mais mensagens no servidor para participar do sorteio!"
     youAreNowParticipating: "Você agora está participando do sorteio, boa sorte!"
 
   giveawayParticipants:

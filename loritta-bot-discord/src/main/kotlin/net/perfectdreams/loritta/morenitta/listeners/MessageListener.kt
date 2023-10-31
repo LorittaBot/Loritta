@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SentMessages
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
@@ -38,6 +39,8 @@ import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.apache.commons.text.similarity.LevenshteinDistance
+import org.jetbrains.exposed.sql.insert
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -247,6 +250,18 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						}
 					}
 					logIfEnabled(enableProfiling) { "Checking self mention for help took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+
+					// Track sent message
+					start = System.nanoTime()
+					loritta.transaction {
+						SentMessages.insert {
+							it[SentMessages.guildId] = event.guild.idLong
+							it[SentMessages.channelId] = event.channel.idLong
+							it[SentMessages.userId] = event.author.idLong
+							it[SentMessages.sentAt] = Instant.now()
+						}
+					}
+					logIfEnabled(enableProfiling) { "Tracking sent message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 					start = System.nanoTime()
 					val lorittaMessageEvent = LorittaMessageEvent(

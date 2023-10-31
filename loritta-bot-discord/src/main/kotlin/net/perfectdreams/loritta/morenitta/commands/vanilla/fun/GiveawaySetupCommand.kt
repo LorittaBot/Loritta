@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import java.awt.Color
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
     companion object {
@@ -523,6 +524,156 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                     loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.SECONDARY, label = "Continuar") {
                         it.event.message.delete().await()
 
+                        if (context.guild.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID || context.guild.idLong == 268353819409252352L || context.guild.idLong == 320248230917046282) {
+                            getSpecialLorittaCommunityExclusiveFeatures(context, locale, builder)
+                        } else {
+                            getGiveawayWinningRoles(context, locale, builder)
+                        }
+                    }
+                )
+            }
+        ).await()
+    }
+
+    private suspend fun getSpecialLorittaCommunityExclusiveFeatures(context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+        context.discordMessage.channel.sendMessage(
+            MessageCreate {
+                allowedMentionTypes = EnumSet.of(Message.MentionType.EMOJI)
+
+                styled(
+                    "Funcionalidades Exclusivas & Especiais para o Servidor da Loritta",
+                    "\uD83E\uDD14"
+                )
+
+                val needsToGetDailyBeforeParticipating = builder.needsToGetDailyBeforeParticipating
+                if (needsToGetDailyBeforeParticipating) {
+                    styled("Precisa ter pego daily para participar do sorteio")
+                }
+                val emojiFightBetVictories = builder.selfServerEmojiFightBetVictories
+                if (emojiFightBetVictories != null) {
+                    styled("Precisa ter ganhado $emojiFightBetVictories emoji fight bets no servidor desde o ínicio do sorteio")
+                }
+                val emojiFightBetLosses = builder.selfServerEmojiFightBetLosses
+                if (emojiFightBetLosses != null) {
+                    styled("Precisa ter perdido $emojiFightBetLosses emoji fight bets no servidor desde o ínicio do sorteio")
+                }
+                val messagesTimeThreshold = builder.messagesTimeThreshold
+                if (builder.messagesRequired != null && messagesTimeThreshold != null) {
+                    var time = messagesTimeThreshold
+                    val days = TimeUnit.MILLISECONDS.toDays(time)
+                    time -= TimeUnit.DAYS.toMillis(days)
+                    val hours = TimeUnit.MILLISECONDS.toHours(time)
+                    time -= TimeUnit.HOURS.toMillis(hours)
+                    val minutes = TimeUnit.MILLISECONDS.toMinutes(time)
+                    time -= TimeUnit.MINUTES.toMillis(minutes)
+                    val seconds = TimeUnit.MILLISECONDS.toSeconds(time)
+
+                    styled("Precisa ter enviado ${builder.messagesRequired} mensagens nos últimos ${days} dias, ${hours} horas, ${minutes} minutos, ${seconds} segundos (sem filtro de canais)")
+                }
+
+                actionRow(
+                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Verificação de Daily") {
+                        it.event.message.delete().await()
+
+                        builder.needsToGetDailyBeforeParticipating = true
+
+                        getSpecialLorittaCommunityExclusiveFeatures(context, locale, builder)
+                    },
+                )
+
+                actionRow(
+                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Ter ganhado X vezes no Emoji Fight Bet no servidor") {
+                        it.event.message.delete().await()
+
+                        val message = context.discordMessage.channel.sendMessage(
+                            MessageCreate {
+                                styled(
+                                    "Quantas vezes a pessoa precisa ter ganhado desde o ínicio do sorteio? Para desativar, escreva qualquer baboseira que não seja um número.",
+                                    "\uD83E\uDD14"
+                                )
+
+                                addCancelOption(context)
+                            }
+                        ).await()
+
+                        message.onResponseByAuthor(context) {
+                            message.delete().await()
+
+                            builder.selfServerEmojiFightBetVictories = it.message.contentRaw.toIntOrNull()
+
+                            getSpecialLorittaCommunityExclusiveFeatures(context, locale, builder)
+                        }
+                    },
+                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Ter perdido X vezes no Emoji Fight Bet no servidor") {
+                        it.event.message.delete().await()
+
+                        val message = context.discordMessage.channel.sendMessage(
+                            MessageCreate {
+                                styled(
+                                    "Quantas vezes a pessoa precisa ter perdido desde o ínicio do sorteio? Para desativar, escreva qualquer baboseira que não seja um número.",
+                                    "\uD83E\uDD14"
+                                )
+
+                                addCancelOption(context)
+                            }
+                        ).await()
+
+                        message.onResponseByAuthor(context) {
+                            message.delete().await()
+
+                            builder.selfServerEmojiFightBetLosses = it.message.contentRaw.toIntOrNull()
+
+                            getSpecialLorittaCommunityExclusiveFeatures(context, locale, builder)
+                        }
+                    }
+                )
+
+                actionRow(
+                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Ter enviado X mensagens") {
+                        it.event.message.delete().await()
+
+                        val message = context.discordMessage.channel.sendMessage(
+                            MessageCreate {
+                                styled(
+                                    "Quantas mensagens?",
+                                    "\uD83E\uDD14"
+                                )
+
+                                addCancelOption(context)
+                            }
+                        ).await()
+
+                        message.onResponseByAuthor(context) {
+                            message.delete().await()
+
+                            builder.messagesRequired = it.message.contentRaw.toIntOrNull()
+
+                            val message2 = context.discordMessage.channel.sendMessage(
+                                MessageCreate {
+                                    styled(
+                                        "E a duração?",
+                                        "\uD83E\uDD14"
+                                    )
+
+                                    addCancelOption(context)
+                                }
+                            ).await()
+
+                            message2.onResponseByAuthor(context) {
+                                message2.delete().await()
+
+                                builder.messagesTimeThreshold = TimeUtils.convertToMillisDurationRelative(it.message.contentRaw).toMillis()
+
+                                getSpecialLorittaCommunityExclusiveFeatures(context, locale, builder)
+                            }
+                        }
+                    }
+                )
+
+                actionRow(
+                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.SECONDARY, label = "Continuar") {
+                        it.event.message.delete().await()
+
                         getGiveawayWinningRoles(context, locale, builder)
                     }
                 )
@@ -688,7 +839,12 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
             builder.customGiveawayMessage,
             builder.roleIds,
             builder.allowedRoles,
-            builder.deniedRoles
+            builder.deniedRoles,
+            builder.needsToGetDailyBeforeParticipating,
+            builder.selfServerEmojiFightBetVictories,
+            builder.selfServerEmojiFightBetLosses,
+            builder.messagesRequired,
+            builder.messagesTimeThreshold
         )
     }
 
@@ -720,5 +876,10 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
         var roleIds: List<String>? = null
         var allowedRoles: GiveawayRoles? = null
         var deniedRoles: GiveawayRoles? = null
+        var needsToGetDailyBeforeParticipating = false
+        var selfServerEmojiFightBetVictories: Int? = null
+        var selfServerEmojiFightBetLosses: Int? = null
+        var messagesRequired: Int? = null
+        var messagesTimeThreshold: Long? = null
     }
 }

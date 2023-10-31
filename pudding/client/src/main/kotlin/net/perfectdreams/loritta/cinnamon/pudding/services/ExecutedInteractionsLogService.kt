@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ExecutedApplicationCommandsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 

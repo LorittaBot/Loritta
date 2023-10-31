@@ -397,6 +397,7 @@ class EmojiFight(
             // Cinnamon emoji fight match stats
             val emojiFightMatch = EmojiFightMatches.insertAndGetId {
                 it[EmojiFightMatches.createdBy] = context.user.idLong
+                it[EmojiFightMatches.guild] = context.guildId
                 it[EmojiFightMatches.createdAt] = startedAt
                 it[EmojiFightMatches.finishedAt] = now
                 it[EmojiFightMatches.maxPlayers] = this@EmojiFight.maxPlayers

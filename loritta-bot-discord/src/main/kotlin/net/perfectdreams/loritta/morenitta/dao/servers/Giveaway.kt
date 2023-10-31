@@ -25,6 +25,11 @@ class Giveaway(id: EntityID<Long>) : LongEntity(id) {
     var roleIds by Giveaways.roleIds
     var allowedRoles by Giveaways.allowedRoles
     var deniedRoles by Giveaways.deniedRoles
+    var needsToGetDailyBeforeParticipating by Giveaways.needsToGetDailyBeforeParticipating
+    var selfServerEmojiFightBetVictories by Giveaways.selfServerEmojiFightBetVictories
+    var selfServerEmojiFightBetLosses by Giveaways.selfServerEmojiFightBetLosses
+    var messagesRequired by Giveaways.messagesRequired
+    var messagesTimeThreshold by Giveaways.messagesTimeThreshold
     var finished by Giveaways.finished
 
     var version by Giveaways.version

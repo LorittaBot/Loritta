@@ -6,16 +6,15 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.serializable.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Daily
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -30,9 +29,20 @@ object AccountUtils {
      * @return the last received daily reward, if it exists
      */
     suspend fun getUserLastDailyRewardReceived(loritta: LorittaBot, profile: Profile, afterTime: Long = Long.MIN_VALUE): Daily? {
+        return getUserLastDailyRewardReceived(loritta, profile.id.value, afterTime)
+    }
+
+    /**
+     * Gets the user's last received daily reward
+     *
+     * @param profile   the user's profile
+     * @param afterTime allows filtering dailies by time, only dailies [afterTime] will be retrieven
+     * @return the last received daily reward, if it exists
+     */
+    suspend fun getUserLastDailyRewardReceived(loritta: LorittaBot, userId: Long, afterTime: Long = Long.MIN_VALUE): Daily? {
         return loritta.newSuspendedTransaction {
             val dailyResult = Dailies.select {
-                Dailies.receivedById eq profile.id.value and (Dailies.receivedAt greaterEq afterTime)
+                Dailies.receivedById eq userId and (Dailies.receivedAt greaterEq afterTime)
             }
                 .orderBy(Dailies.receivedAt, SortOrder.DESC)
                 .firstOrNull()
@@ -49,7 +59,15 @@ object AccountUtils {
      * @param profile the user's profile
      * @return the last received daily reward, if it exists
      */
-    suspend fun getUserTodayDailyReward(loritta: LorittaBot, profile: Profile) = getUserDailyRewardInTheLastXDays(loritta, profile, 0)
+    suspend fun getUserTodayDailyReward(loritta: LorittaBot, profile: Profile) = getUserTodayDailyReward(loritta, profile.id.value)
+
+    /**
+     * Gets the user's received daily reward from today, or null, if the user didn't get the daily reward today
+     *
+     * @param profile the user's profile
+     * @return the last received daily reward, if it exists
+     */
+    suspend fun getUserTodayDailyReward(loritta: LorittaBot, userId: Long) = getUserDailyRewardInTheLastXDays(loritta, userId, 0)
 
     /**
      * Gets the user's received daily reward from the last [dailyInThePreviousDays] days, or null, if the user didn't get the daily reward in the specified threshold
@@ -59,6 +77,17 @@ object AccountUtils {
      * @return the last received daily reward, if it exists
      */
     suspend fun getUserDailyRewardInTheLastXDays(loritta: LorittaBot, profile: Profile, dailyInThePreviousDays: Long): Daily? {
+        return getUserDailyRewardInTheLastXDays(loritta, profile.id.value, dailyInThePreviousDays)
+    }
+
+    /**
+     * Gets the user's received daily reward from the last [dailyInThePreviousDays] days, or null, if the user didn't get the daily reward in the specified threshold
+     *
+     * @param profile the user's profile
+     * @param dailyInThePreviousDays the daily minimum days threshold
+     * @return the last received daily reward, if it exists
+     */
+    suspend fun getUserDailyRewardInTheLastXDays(loritta: LorittaBot, userId: Long, dailyInThePreviousDays: Long): Daily? {
         val dayAtMidnight = Instant.now()
             .atZone(Constants.LORITTA_TIMEZONE)
             .toOffsetDateTime()
@@ -69,9 +98,8 @@ object AccountUtils {
             .toInstant()
             .toEpochMilli()
 
-        return getUserLastDailyRewardReceived(loritta, profile, dayAtMidnight)
+        return getUserLastDailyRewardReceived(loritta, userId, dayAtMidnight)
     }
-
 
     suspend fun checkAndSendMessageIfUserIsBanned(loritta: LorittaBot, context: UnleashedContext, user: User)
             = checkAndSendMessageIfUserIsBanned(loritta, context, user.idLong)

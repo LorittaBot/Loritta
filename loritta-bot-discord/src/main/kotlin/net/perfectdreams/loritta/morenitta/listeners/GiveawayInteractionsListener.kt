@@ -1,14 +1,12 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import dev.minn.jda.ktx.generics.getChannel
-import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -19,9 +17,14 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SentMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
@@ -99,6 +102,56 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         }
                     }
 
+                    // Check if the user has got their daily reward today
+                    val needsToGetDailyBeforeParticipating = giveaway[Giveaways.needsToGetDailyBeforeParticipating] ?: false
+                    if (needsToGetDailyBeforeParticipating) {
+                        val gotTodaysDailyReward = AccountUtils.getUserTodayDailyReward(m, event.user.idLong) != null
+
+                        if (!gotTodaysDailyReward)
+                            return@transaction GiveawayState.NeedsToGetDailyRewardBeforeParticipating
+                    }
+
+                    // This super globby mess is here because Exposed can't behave and select the correct columns
+                    val innerJoin = EmojiFightParticipants.innerJoin(EmojiFightMatches.innerJoin(EmojiFightMatchmakingResults, { EmojiFightMatches.id }, { EmojiFightMatchmakingResults.match }), { EmojiFightParticipants.match }, { EmojiFightMatches.id })
+
+                    val selfServerEmojiFightBetVictories = giveaway[Giveaways.selfServerEmojiFightBetVictories]
+                    if (selfServerEmojiFightBetVictories != null && selfServerEmojiFightBetVictories > 0) {
+                        val matchesWon = innerJoin.select {
+                            // Yes, it looks wonky, but it is correct
+                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id)
+                        }.count()
+
+                        if (selfServerEmojiFightBetVictories > matchesWon) {
+                            return@transaction GiveawayState.NeedsToWinMoreEmojiFightBets(selfServerEmojiFightBetVictories, matchesWon)
+                        }
+                    }
+
+                    val selfServerEmojiFightBetLosses = giveaway[Giveaways.selfServerEmojiFightBetLosses]
+                    if (selfServerEmojiFightBetLosses != null && selfServerEmojiFightBetLosses > 0) {
+                        val matchesLost = innerJoin.select {
+                            // Yes, it looks wonky, but it is correct
+                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id)
+                        }.count()
+
+                        if (selfServerEmojiFightBetLosses > matchesLost) {
+                            return@transaction GiveawayState.NeedsToLoseMoreEmojiFightBets(selfServerEmojiFightBetLosses, matchesLost)
+                        }
+                    }
+
+                    val messagesRequired = giveaway[Giveaways.messagesRequired]
+                    val messagesTimeThreshold = giveaway[Giveaways.messagesTimeThreshold]
+                    if (messagesRequired != null && messagesTimeThreshold != null) {
+                        val nowMinusRelativeTime = Instant.now()
+                            .minusMillis(messagesTimeThreshold)
+                        val messagesSentInTheGuild = SentMessages.select {
+                            SentMessages.guildId eq guild.idLong and (SentMessages.userId eq event.user.idLong) and (SentMessages.sentAt greaterEq nowMinusRelativeTime)
+                        }.count()
+
+                        if (messagesRequired > messagesSentInTheGuild) {
+                            return@transaction GiveawayState.NeedsMoreMessages
+                        }
+                    }
+
                     GiveawayParticipants.insert {
                         it[GiveawayParticipants.userId] = event.user.idLong
                         it[GiveawayParticipants.giveawayId] = dbId
@@ -156,7 +209,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                                             // Delete the user's entry...
                                             GiveawayParticipants.deleteWhere {
-                                                GiveawayParticipants.userId eq event.user.idLong and (GiveawayParticipants.giveawayId eq dbId)
+                                                userId eq event.user.idLong and (giveawayId eq dbId)
                                             }
 
                                             // Get all participants...
@@ -272,6 +325,50 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         }
                     }
 
+                    is GiveawayState.NeedsToGetDailyRewardBeforeParticipating -> {
+                        deferredReply.editOriginal(
+                            MessageEdit {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouNeedToGetTheDailyRewardBeforeParticipating),
+                                    Emotes.LoriSob
+                                )
+                            })
+                            .await()
+                    }
+
+                    is GiveawayState.NeedsToWinMoreEmojiFightBets -> {
+                        deferredReply.editOriginal(
+                            MessageEdit {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouNeedToWinMoreEmojiFightBets(state.matchesRequired, state.matchesAlreadyWon)),
+                                    Emotes.LoriSob
+                                )
+                            })
+                            .await()
+                    }
+
+                    is GiveawayState.NeedsToLoseMoreEmojiFightBets -> {
+                        deferredReply.editOriginal(
+                            MessageEdit {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouNeedToLoseMoreEmojiFightBets(state.matchesRequired, state.matchesAlreadyLost)),
+                                    Emotes.LoriSob
+                                )
+                            })
+                            .await()
+                    }
+
+                    is GiveawayState.NeedsMoreMessages -> {
+                        deferredReply.editOriginal(
+                            MessageEdit {
+                                styled(
+                                    i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.NeedsMoreMessages),
+                                    Emotes.LoriSob
+                                )
+                            })
+                            .await()
+                    }
+
                     is GiveawayState.Success -> {
                         val giveaway = state.giveaway
 
@@ -370,6 +467,10 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
         object UnknownGiveaway : GiveawayState()
         object AlreadyFinished : GiveawayState()
         object AlreadyParticipating : GiveawayState()
+        object NeedsToGetDailyRewardBeforeParticipating : GiveawayState()
+        class NeedsToWinMoreEmojiFightBets(val matchesRequired: Int, val matchesAlreadyWon: Long) : GiveawayState()
+        class NeedsToLoseMoreEmojiFightBets(val matchesRequired: Int, val matchesAlreadyLost: Long) : GiveawayState()
+        object NeedsMoreMessages : GiveawayState()
         class MissingRoles(val allowedRoles: GiveawayRoles) : GiveawayState()
         class BlockedRoles(val deniedRoles: GiveawayRoles) : GiveawayState()
         class Success(val giveaway: ResultRow, val participants: Long, val allowedRoles: GiveawayRoles?, val deniedRoles: GiveawayRoles?) : GiveawayState()

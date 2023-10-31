@@ -19,15 +19,14 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
@@ -39,6 +38,7 @@ import java.awt.Color
 import java.sql.Connection
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
 
 class GiveawayManager(val loritta: LorittaBot) {
     companion object {
@@ -193,7 +193,12 @@ class GiveawayManager(val loritta: LorittaBot) {
         customMessage: String?,
         roleIds: List<String>?,
         allowedRoles: GiveawayRoles?,
-        deniedRoles: GiveawayRoles?
+        deniedRoles: GiveawayRoles?,
+        needsToGetDailyBeforeParticipating: Boolean,
+        selfServerEmojiFightBetVictories: Int?,
+        selfServerEmojiFightBetLosses: Int?,
+        messagesRequired: Int?,
+        messagesTimeThreshold: Long?
     ): Giveaway {
         logger.debug { "Spawning Giveaway! locale = $locale, i18nContext = $i18nContext, channel = $channel, reason = $reason, description = $description, reason = $reason, epoch = $epoch, numberOfWinners = $numberOfWinners, customMessage = $customMessage, roleIds = $roleIds" }
 
@@ -240,6 +245,13 @@ class GiveawayManager(val loritta: LorittaBot) {
                     this.allowedRoles = Json.encodeToString(allowedRoles)
                 if (deniedRoles != null)
                     this.deniedRoles = Json.encodeToString(deniedRoles)
+                this.needsToGetDailyBeforeParticipating = needsToGetDailyBeforeParticipating
+                this.selfServerEmojiFightBetVictories = selfServerEmojiFightBetVictories
+                this.selfServerEmojiFightBetLosses = selfServerEmojiFightBetLosses
+                if (messagesRequired != null && messagesTimeThreshold != null) {
+                    this.messagesRequired = messagesRequired
+                    this.messagesTimeThreshold = messagesTimeThreshold
+                }
                 this.finished = false
 
                 this.version = 2

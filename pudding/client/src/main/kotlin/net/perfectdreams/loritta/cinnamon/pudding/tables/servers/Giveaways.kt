@@ -23,6 +23,11 @@ object Giveaways : LongIdTable() {
 	val roleIds = array<String>("roles", TextColumnType()).nullable()
 	val allowedRoles = jsonb("allowed_roles").nullable()
 	var deniedRoles = jsonb("denied_roles").nullable()
+	var needsToGetDailyBeforeParticipating = bool("needs_to_get_daily_before_participating").nullable() // Can be nullable due to old giveaways
+	var selfServerEmojiFightBetVictories = integer("self_server_emoji_fight_bet_victories").nullable()
+	var selfServerEmojiFightBetLosses = integer("self_server_emoji_fight_bet_losses").nullable()
+	var messagesRequired = integer("messages_required").nullable()
+	var messagesTimeThreshold = long("messages_time_threshold").nullable()
 
 	val finished = bool("finished").default(false).index()
 

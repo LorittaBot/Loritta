@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 object TimeUtils {
     private val TIME_PATTERN = "(([01]?\\d|2[0-3]):([0-5]\\d?)(:([0-5]\\d))?) ?(am|pm)?".toPattern()
@@ -85,37 +87,44 @@ object TimeUtils {
                     .plusDays(1)
         }
 
+        val duration = convertToMillisDurationRelative(content)
+        localDateTime = localDateTime.plus(duration)
+
+        return localDateTime
+    }
+
+    /**
+     * Converts a [content] into a [Duration]
+     */
+    fun convertToMillisDurationRelative(content: String): Duration {
+        var duration = Duration.ZERO
+
         val yearsMatcher = YEAR_PATTERN.matcher(content)
         if (yearsMatcher.find()) {
             val addYears = yearsMatcher.group(1).toLongOrNull() ?: 0
-            localDateTime = localDateTime
-                    .plusYears(addYears)
+            duration = duration.plus(addYears, ChronoUnit.YEARS)
         }
         val monthMatcher = MONTH_PATTERN.matcher(content)
         var foundMonths = false
         if (monthMatcher.find()) {
             foundMonths = true
             val addMonths = monthMatcher.group(1).toLongOrNull() ?: 0
-            localDateTime = localDateTime
-                    .plusMonths(addMonths)
+            duration = duration.plus(addMonths, ChronoUnit.MONTHS)
         }
         val weekMatcher = WEEK_PATTERN.matcher(content)
         if (weekMatcher.find()) {
             val addWeeks = weekMatcher.group(1).toLongOrNull() ?: 0
-            localDateTime = localDateTime
-                    .plusWeeks(addWeeks)
+            duration = duration.plus(addWeeks, ChronoUnit.WEEKS)
         }
         val dayMatcher = DAY_PATTERN.matcher(content)
         if (dayMatcher.find()) {
             val addDays = dayMatcher.group(1).toLongOrNull() ?: 0
-            localDateTime = localDateTime
-                    .plusDays(addDays)
+            duration = duration.plus(addDays, ChronoUnit.DAYS)
         }
         val hourMatcher = HOUR_PATTERN.matcher(content)
         if (hourMatcher.find()) {
             val addHours = hourMatcher.group(1).toLongOrNull() ?: 0
-            localDateTime = localDateTime
-                    .plusHours(addHours)
+            duration = duration.plus(addHours, ChronoUnit.HOURS)
         }
 
         // This check is needed due to the month pattern also checking for "m"
@@ -127,8 +136,7 @@ object TimeUtils {
             if (minuteMatcher.find()) {
                 foundMinutes = true
                 val addMinutes = minuteMatcher.group(1).toLongOrNull() ?: 0
-                localDateTime = localDateTime
-                        .plusMinutes(addMinutes)
+                duration = duration.plus(addMinutes, ChronoUnit.MINUTES)
             }
         }
 
@@ -136,18 +144,16 @@ object TimeUtils {
             val minuteMatcher = MINUTE_PATTERN.matcher(content)
             if (minuteMatcher.find()) {
                 val addMinutes = minuteMatcher.group(1).toLongOrNull() ?: 0
-                localDateTime = localDateTime
-                        .plusMinutes(addMinutes)
+                duration = duration.plus(addMinutes, ChronoUnit.MINUTES)
             }
         }
 
         val secondsMatcher = SECONDS_PATTERN.matcher(content)
         if (secondsMatcher.find()) {
             val addSeconds = secondsMatcher.group(1).toLongOrNull() ?: 0
-            localDateTime = localDateTime
-                    .plusSeconds(addSeconds)
+            duration = duration.plus(addSeconds, ChronoUnit.SECONDS)
         }
 
-        return localDateTime
+        return duration
     }
 }

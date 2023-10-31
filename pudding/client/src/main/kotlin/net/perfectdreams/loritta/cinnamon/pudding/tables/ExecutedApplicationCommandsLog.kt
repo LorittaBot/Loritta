@@ -1,9 +1,8 @@
-package net.perfectdreams.loritta.cinnamon.pudding.tables.transactions
+package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
-import net.perfectdreams.loritta.cinnamon.pudding.tables.LongIdTableWithoutOverriddenPrimaryKey
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey() {
