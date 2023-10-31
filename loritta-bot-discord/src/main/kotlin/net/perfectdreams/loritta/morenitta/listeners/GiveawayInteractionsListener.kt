@@ -118,7 +118,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     if (selfServerEmojiFightBetVictories != null && selfServerEmojiFightBetVictories > 0) {
                         val matchesWon = innerJoin.select {
                             // Yes, it looks wonky, but it is correct
-                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0)
+                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong)
                         }.count()
 
                         if (selfServerEmojiFightBetVictories > matchesWon) {
@@ -130,7 +130,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     if (selfServerEmojiFightBetLosses != null && selfServerEmojiFightBetLosses > 0) {
                         val matchesLost = innerJoin.select {
                             // Yes, it looks wonky, but it is correct
-                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0)
+                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong)
                         }.count()
 
                         if (selfServerEmojiFightBetLosses > matchesLost) {
