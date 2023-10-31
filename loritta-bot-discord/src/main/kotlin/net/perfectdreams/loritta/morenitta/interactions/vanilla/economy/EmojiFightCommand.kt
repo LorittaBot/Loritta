@@ -335,14 +335,29 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 var sonhosLost = 0L
                 var sonhosLostToTaxes = 0L
 
-                for (row in innerJoin.select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }) {
+                val matchesThatWeParticipated = innerJoin.select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }.toList()
+                val matchCountColumn = EmojiFightParticipants.match.count()
+                // We need to do this like this to :sparkles: optimize the query :sparkles:, if not then it is TOO SLOW
+                val allParticipantsOfTheMatchesThatWeParticipated = EmojiFightParticipants
+                    .slice(EmojiFightParticipants.match, matchCountColumn)
+                    .select { EmojiFightParticipants.match inList matchesThatWeParticipated.map { it[EmojiFightMatches.id] } }
+                    .groupBy(EmojiFightParticipants.match)
+                    .toList()
+
+                for (row in matchesThatWeParticipated) {
                     val didWeWinThisMatch = row[EmojiFightParticipants.user].value == user.idLong && row[EmojiFightParticipants.id] == row[EmojiFightMatchmakingResults.winner]
                     if (didWeWinThisMatch) {
                         // We need to multiply by the amount of (players - 1) that participated in the match!
-                        sonhosEarned += (row[EmojiFightMatchmakingResults.entryPriceAfterTax] * (EmojiFightParticipants.select { EmojiFightParticipants.match eq row[EmojiFightMatches.id] }.count() - 1))
-                        val tax = row[EmojiFightMatchmakingResults.tax]
-                        if (tax != null)
-                            sonhosLostToTaxes += tax
+                        val participantCount = allParticipantsOfTheMatchesThatWeParticipated.firstOrNull { it[EmojiFightParticipants.match] == row[EmojiFightMatches.id] }
+                            ?.get(matchCountColumn)
+
+                        // Should NEVER be null, but...
+                        if (participantCount != null) {
+                            sonhosEarned += (row[EmojiFightMatchmakingResults.entryPriceAfterTax] * (participantCount - 1))
+                            val tax = row[EmojiFightMatchmakingResults.tax]
+                            if (tax != null)
+                                sonhosLostToTaxes += tax
+                        }
                     } else {
                         // We always pay the full value if the lost
                         sonhosLost += row[EmojiFightMatchmakingResults.entryPrice]
