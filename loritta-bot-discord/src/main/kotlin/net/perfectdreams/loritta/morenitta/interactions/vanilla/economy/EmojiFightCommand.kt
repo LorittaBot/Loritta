@@ -319,7 +319,8 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
                 // This is a bit harder than coinflip bet
                 // The EmojiFightParticipants only includes matches that DID end up happening, matches that failed to be executed (like one player matches) are not included
-                val matchesPlayed = EmojiFightParticipants.select { EmojiFightParticipants.user eq user.idLong }.count()
+                // We use the innerJoin variable BECAUSE we want to get ONLY matches that had sonhos involved
+                val matchesPlayed = innerJoin.select { EmojiFightParticipants.user eq user.idLong }.count()
                 val matchesWon = innerJoin.select {
                     // Yes, it looks wonky, but it is correct
                     EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id)
