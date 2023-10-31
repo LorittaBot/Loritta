@@ -30,6 +30,7 @@ class Giveaway(id: EntityID<Long>) : LongEntity(id) {
     var selfServerEmojiFightBetLosses by Giveaways.selfServerEmojiFightBetLosses
     var messagesRequired by Giveaways.messagesRequired
     var messagesTimeThreshold by Giveaways.messagesTimeThreshold
+    var createdAt by Giveaways.createdAt
     var finished by Giveaways.finished
 
     var version by Giveaways.version

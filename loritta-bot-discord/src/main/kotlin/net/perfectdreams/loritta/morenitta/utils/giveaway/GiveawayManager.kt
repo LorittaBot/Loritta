@@ -252,6 +252,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                     this.messagesRequired = messagesRequired
                     this.messagesTimeThreshold = messagesTimeThreshold
                 }
+                this.createdAt = Instant.now()
                 this.finished = false
 
                 this.version = 2

@@ -114,11 +114,12 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     // This super globby mess is here because Exposed can't behave and select the correct columns
                     val innerJoin = EmojiFightParticipants.innerJoin(EmojiFightMatches.innerJoin(EmojiFightMatchmakingResults, { EmojiFightMatches.id }, { EmojiFightMatchmakingResults.match }), { EmojiFightParticipants.match }, { EmojiFightMatches.id })
 
+                    val giveawayCreatedAt = giveaway[Giveaways.createdAt]
                     val selfServerEmojiFightBetVictories = giveaway[Giveaways.selfServerEmojiFightBetVictories]
-                    if (selfServerEmojiFightBetVictories != null && selfServerEmojiFightBetVictories > 0) {
+                    if (selfServerEmojiFightBetVictories != null && selfServerEmojiFightBetVictories > 0 && giveawayCreatedAt != null) {
                         val matchesWon = innerJoin.select {
                             // Yes, it looks wonky, but it is correct
-                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong)
+                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
                         }.count()
 
                         if (selfServerEmojiFightBetVictories > matchesWon) {
@@ -127,10 +128,10 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     }
 
                     val selfServerEmojiFightBetLosses = giveaway[Giveaways.selfServerEmojiFightBetLosses]
-                    if (selfServerEmojiFightBetLosses != null && selfServerEmojiFightBetLosses > 0) {
+                    if (selfServerEmojiFightBetLosses != null && selfServerEmojiFightBetLosses > 0 && giveawayCreatedAt != null) {
                         val matchesLost = innerJoin.select {
                             // Yes, it looks wonky, but it is correct
-                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong)
+                            EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
                         }.count()
 
                         if (selfServerEmojiFightBetLosses > matchesLost) {
