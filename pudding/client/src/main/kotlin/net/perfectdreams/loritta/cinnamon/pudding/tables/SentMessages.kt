@@ -6,6 +6,7 @@ object SentMessages : LongIdTableWithoutOverriddenPrimaryKey() {
     val userId = long("user").index()
     val guildId = long("guild").index().nullable()
     val channelId = long("channel").index()
+    val messageId = long("message")
     val sentAt = timestampWithTimeZone("sent_at").index()
 
     // Sent At must be a primary key because it is used as a partition key
