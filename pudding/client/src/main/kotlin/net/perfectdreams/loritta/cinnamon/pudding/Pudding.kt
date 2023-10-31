@@ -360,7 +360,7 @@ class Pudding(
                 xactLockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
                 xactLockStatement.execute()
 
-                if (!System.getProperty("loritta.skipSchemaVersion").toBoolean() && checkIfTableExists(SchemaVersion)) {
+                if (checkIfTableExists(SchemaVersion)) {
                     val schemaVersion =
                         SchemaVersion.slice(SchemaVersion.version).select { SchemaVersion.id eq SCHEMA_ID }
                             .firstOrNull()
