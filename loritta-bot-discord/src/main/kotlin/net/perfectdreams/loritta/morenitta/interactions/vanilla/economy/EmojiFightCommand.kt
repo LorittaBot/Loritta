@@ -339,7 +339,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     val didWeWinThisMatch = row[EmojiFightParticipants.user].value == user.idLong && row[EmojiFightParticipants.id] == row[EmojiFightMatchmakingResults.winner]
                     if (didWeWinThisMatch) {
                         // We need to multiply by the amount of (players - 1) that participated in the match!
-                        sonhosEarned += (row[EmojiFightMatchmakingResults.entryPriceAfterTax] * (EmojiFightParticipants.select { EmojiFightParticipants.match eq EmojiFightMatches.id }.count() - 1))
+                        sonhosEarned += (row[EmojiFightMatchmakingResults.entryPriceAfterTax] * (EmojiFightParticipants.select { EmojiFightParticipants.match eq row[EmojiFightMatches.id] }.count() - 1))
                         val tax = row[EmojiFightMatchmakingResults.tax]
                         if (tax != null)
                             sonhosLostToTaxes += tax
