@@ -258,7 +258,8 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 							it[SentMessages.guildId] = event.guild.idLong
 							it[SentMessages.channelId] = event.channel.idLong
 							it[SentMessages.userId] = event.author.idLong
-							it[SentMessages.sentAt] = Instant.now()
+							it[SentMessages.messageId] = event.messageIdLong
+							it[SentMessages.sentAt] = event.message.timeCreated.toInstant()
 						}
 					}
 					logIfEnabled(enableProfiling) { "Tracking sent message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
