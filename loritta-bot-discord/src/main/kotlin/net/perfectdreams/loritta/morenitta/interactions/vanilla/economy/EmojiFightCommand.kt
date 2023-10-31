@@ -365,8 +365,8 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     styled(context.i18nContext.get(I18N_PREFIX.Stats.StatsOfUser(user.asMention)), Emotes.LORI_RICH)
                 }
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.PlayedMatches(result.matchesPlayed)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.WonMatches((result.matchesWon / result.matchesPlayed).toDouble(), result.matchesWon)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostMatches((result.matchesLost / result.matchesPlayed).toDouble(), result.matchesLost)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.WonMatches((result.matchesWon / result.matchesPlayed.toDouble()), result.matchesWon)))
+                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostMatches((result.matchesLost / result.matchesPlayed.toDouble()), result.matchesLost)))
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.WonSonhos(result.sonhosEarned)))
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhos(result.sonhosLost)))
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhosToTaxes(result.sonhosLostToTaxes)))
