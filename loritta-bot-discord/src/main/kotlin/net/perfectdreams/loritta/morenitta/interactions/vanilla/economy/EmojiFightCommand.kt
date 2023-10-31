@@ -318,10 +318,14 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 // This is a bit harder than coinflip bet
                 // The EmojiFightParticipants only includes matches that DID end up happening, matches that failed to be executed (like one player matches) are not included
                 // We use the innerJoin variable BECAUSE we want to get ONLY matches that had sonhos involved
-                val matchesPlayed = innerJoin.select { EmojiFightParticipants.user eq user.idLong }.count()
+                // 0 entry price = just for fun, and we don't want to include these!
+                val matchesPlayed = innerJoin.select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }.count()
+                if (matchesPlayed == 0L)
+                    return@transaction QueryResult.NotFound
+
                 val matchesWon = innerJoin.select {
                     // Yes, it looks wonky, but it is correct
-                    EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id)
+                    EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0)
                 }.count()
                 // Kinda obvious tbh
                 val matchesLost = matchesPlayed - matchesWon
@@ -331,10 +335,11 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 var sonhosLost = 0L
                 var sonhosLostToTaxes = 0L
 
-                for (row in innerJoin.select { EmojiFightParticipants.user eq user.idLong }) {
+                for (row in innerJoin.select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }) {
                     val didWeWinThisMatch = row[EmojiFightParticipants.user].value == user.idLong && row[EmojiFightParticipants.id] == row[EmojiFightMatchmakingResults.winner]
                     if (didWeWinThisMatch) {
-                        sonhosEarned += row[EmojiFightMatchmakingResults.entryPriceAfterTax]
+                        // We need to multiply by the amount of (players - 1) that participated in the match!
+                        sonhosEarned += (row[EmojiFightMatchmakingResults.entryPriceAfterTax] * (EmojiFightParticipants.select { EmojiFightParticipants.match eq EmojiFightMatches.id }.count() - 1))
                         val tax = row[EmojiFightMatchmakingResults.tax]
                         if (tax != null)
                             sonhosLostToTaxes += tax
@@ -346,14 +351,13 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 val totalSonhos = sonhosEarned - sonhosLost
                 val emojiCount = EmojiFightParticipants.emoji.count()
                 val bestBichano = innerJoin.slice(EmojiFightParticipants.emoji, emojiCount)
-                    .select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) }
+                    .select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) }
                     .groupBy(EmojiFightParticipants.emoji)
                     .orderBy(emojiCount, SortOrder.DESC)
                     .limit(1)
                     .firstOrNull()?.get(EmojiFightParticipants.emoji)
 
-                // Taxes is also a bit tricky
-                QueryResult(
+                QueryResult.Success(
                     matchesPlayed,
                     matchesWon,
                     matchesLost,
@@ -365,23 +369,35 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 )
             }
 
-            context.reply(false) {
-                if (context.user == user) {
-                    styled(context.i18nContext.get(I18N_PREFIX.Stats.YourStats), Emotes.LORI_RICH)
-                } else {
-                    styled(context.i18nContext.get(I18N_PREFIX.Stats.StatsOfUser(user.asMention)), Emotes.LORI_RICH)
+            when (result) {
+                QueryResult.NotFound -> {
+                    context.reply(false) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Stats.PlayerHasNeverPlayed),
+                            Emotes.LORI_CRYING
+                        )
+                    }
                 }
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.PlayedMatches(result.matchesPlayed)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.WonMatches((result.matchesWon / result.matchesPlayed.toDouble()), result.matchesWon)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostMatches((result.matchesLost / result.matchesPlayed.toDouble()), result.matchesLost)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.WonSonhos(result.sonhosEarned)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhos(result.sonhosLost)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhosToTaxes(result.sonhosLostToTaxes)))
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.TotalSonhos(result.totalSonhos)))
-                if (result.bestBichano != null) {
-                    styled(context.i18nContext.get(I18N_PREFIX.Stats.BestEmoji(result.bestBichano)))
+                is QueryResult.Success -> {
+                    context.reply(false) {
+                        if (context.user == user) {
+                            styled(context.i18nContext.get(I18N_PREFIX.Stats.YourStats), Emotes.LORI_RICH)
+                        } else {
+                            styled(context.i18nContext.get(I18N_PREFIX.Stats.StatsOfUser(user.asMention)), Emotes.LORI_RICH)
+                        }
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.PlayedMatches(result.matchesPlayed)))
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.WonMatches((result.matchesWon / result.matchesPlayed.toDouble()), result.matchesWon)))
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.LostMatches((result.matchesLost / result.matchesPlayed.toDouble()), result.matchesLost)))
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.WonSonhos(result.sonhosEarned)))
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhos(result.sonhosLost)))
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhosToTaxes(result.sonhosLostToTaxes)))
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.TotalSonhos(result.totalSonhos)))
+                        if (result.bestBichano != null) {
+                            styled(context.i18nContext.get(I18N_PREFIX.Stats.BestEmoji(result.bestBichano)))
+                        }
+                        styled(context.i18nContext.get(I18N_PREFIX.Stats.ProbabilityExplanation), Emotes.LORI_COFFEE)
+                    }
                 }
-                styled(context.i18nContext.get(I18N_PREFIX.Stats.ProbabilityExplanation), Emotes.LORI_COFFEE)
             }
         }
 
@@ -393,8 +409,10 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             return mapOf(options.user to userAndMember)
         }
+    }
 
-        inner class QueryResult(
+    sealed class QueryResult {
+        class Success(
             val matchesPlayed: Long,
             val matchesWon: Long,
             val matchesLost: Long,
@@ -403,6 +421,8 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             val sonhosLostToTaxes: Long,
             val totalSonhos: Long,
             val bestBichano: String?
-        )
+        ) : QueryResult()
+
+        object NotFound : QueryResult()
     }
 }
