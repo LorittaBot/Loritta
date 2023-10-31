@@ -40,7 +40,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.insert
-import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
