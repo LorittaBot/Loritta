@@ -309,6 +309,8 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+            
             val user = args[options.user]?.user ?: context.user
 
             val result = loritta.transaction {
