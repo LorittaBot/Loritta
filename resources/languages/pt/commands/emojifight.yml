@@ -33,6 +33,7 @@ stats:
   wonMatches: "**Vitórias ({percentage,number,#.##%}):** {matchesWon,number}"
   wonSonhos: "**Sonhos ganhos:** {sonhosWon,number}"
   yourStats: "**Suas Estatísticas**"
+  bestEmoji: "**O bichano que te deu mais sorte:** {emoji}"
   options:
     user:
       text: "O usuário que você deseja ver as estatísticas dele"

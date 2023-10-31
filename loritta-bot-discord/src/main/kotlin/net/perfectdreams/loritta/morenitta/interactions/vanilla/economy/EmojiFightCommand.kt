@@ -20,9 +20,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.innerJoin
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 
 class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -346,6 +344,13 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     }
                 }
                 val totalSonhos = sonhosEarned - sonhosLost
+                val emojiCount = EmojiFightParticipants.emoji.count()
+                val bestBichano = innerJoin.slice(EmojiFightParticipants.emoji, emojiCount)
+                    .select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) }
+                    .groupBy(EmojiFightParticipants.emoji)
+                    .orderBy(emojiCount, SortOrder.DESC)
+                    .limit(1)
+                    .firstOrNull()?.get(EmojiFightParticipants.emoji)
 
                 // Taxes is also a bit tricky
                 QueryResult(
@@ -355,7 +360,8 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     sonhosEarned,
                     sonhosLost,
                     sonhosLostToTaxes,
-                    totalSonhos
+                    totalSonhos,
+                    bestBichano
                 )
             }
 
@@ -372,6 +378,9 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhos(result.sonhosLost)))
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.LostSonhosToTaxes(result.sonhosLostToTaxes)))
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.TotalSonhos(result.totalSonhos)))
+                if (result.bestBichano != null) {
+                    styled(context.i18nContext.get(I18N_PREFIX.Stats.BestEmoji(result.bestBichano)))
+                }
                 styled(context.i18nContext.get(I18N_PREFIX.Stats.ProbabilityExplanation), Emotes.LORI_COFFEE)
             }
         }
@@ -392,7 +401,8 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             val sonhosEarned: Long,
             val sonhosLost: Long,
             val sonhosLostToTaxes: Long,
-            val totalSonhos: Long
+            val totalSonhos: Long,
+            val bestBichano: String?
         )
     }
 }
