@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.servers
 
+import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.array
 import org.jetbrains.exposed.dao.id.LongIdTable
@@ -28,6 +29,7 @@ object Giveaways : LongIdTable() {
 	var selfServerEmojiFightBetLosses = integer("self_server_emoji_fight_bet_losses").nullable()
 	var messagesRequired = integer("messages_required").nullable()
 	var messagesTimeThreshold = long("messages_time_threshold").nullable()
+	val createdAt = timestampWithTimeZone("created_at").nullable() // Can be nullable due to old giveaways
 
 	val finished = bool("finished").default(false).index()
 
