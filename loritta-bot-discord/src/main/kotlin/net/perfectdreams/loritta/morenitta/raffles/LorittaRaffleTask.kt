@@ -54,10 +54,14 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                 for (currentRaffle in currentRaffles) {
                     // Check if the current (not expired) raffle should have already ended
                     if (now >= currentRaffle[Raffles.endsAt]) {
+                        logger.info { "Getting the results of the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})" }
+
                         // Get all tickets on the current raffle
                         val totalTickets = RaffleTickets.select {
                             RaffleTickets.raffle eq currentRaffle[Raffles.id]
                         }.count()
+
+                        logger.info { "Raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]}) has $totalTickets tickets!" }
 
                         var winnerTicketId: Long? = null
                         var paidOutPrize: Long? = null
@@ -71,10 +75,36 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
 
                             // Now here's the magic:
                             // Get the winner ticket
+
+                            // Using DESC is WAY FASTER than ASC, since using DESC PostgreSQL filters the table backwards
+                            // loritta=# explain analyze select * from RaffleTickets where raffle = 21415 order by id desc limit 1;
+                            //                                                                         QUERY PLAN
+                            // -------------------------------------------------------------------------------------------------------------------------------------------------------------
+                            //  Limit  (cost=0.57..164.60 rows=1 width=32) (actual time=0.198..0.199 rows=1 loops=1)
+                            //    ->  Index Scan Backward using raffletickets_pkey on raffletickets  (cost=0.57..13591837.22 rows=82862 width=32) (actual time=0.198..0.198 rows=1 loops=1)
+                            //          Filter: (raffle = 21415)
+                            //          Rows Removed by Filter: 1740
+                            //  Planning Time: 0.057 ms
+                            //  Execution Time: 0.205 ms
+                            // (6 rows)
+                            //
+                            // loritta=# explain analyze select * from RaffleTickets where raffle = 21415 order by id asc limit 1;
+                            //                                                                         QUERY PLAN
+                            // ------------------------------------------------------------------------------------------------------------------------------------------------------------
+                            //  Limit  (cost=0.57..164.60 rows=1 width=32) (actual time=56413.256..56413.257 rows=1 loops=1)
+                            //    ->  Index Scan using raffletickets_pkey on raffletickets  (cost=0.57..13591837.22 rows=82862 width=32) (actual time=56413.255..56413.256 rows=1 loops=1)
+                            //          Filter: (raffle = 21415)
+                            //          Rows Removed by Filter: 485757618
+                            //  Planning Time: 0.040 ms
+                            //  Execution Time: 56413.265 ms
+                            // (6 rows)
                             val winnerTicket = RaffleTickets.select {
                                 RaffleTickets.raffle eq currentRaffle[Raffles.id]
-                            }.orderBy(RaffleTickets.id, SortOrder.ASC).limit(1, skipTickets)
+                            }.orderBy(RaffleTickets.id, SortOrder.DESC)
+                                .limit(1, skipTickets)
                                 .first()
+
+                            logger.info { "Raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]}) winner ticket is ticket ${winnerTicket[RaffleTickets.id]} by ${winnerTicket[RaffleTickets.userId]}!" }
 
                             // Check if there are at least any ticket on the raffle and, if it is, then we process and get the winner
                             // Get the winner of this raffle...
