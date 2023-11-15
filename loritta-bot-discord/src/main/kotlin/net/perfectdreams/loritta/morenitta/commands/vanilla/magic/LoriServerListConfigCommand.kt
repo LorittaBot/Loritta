@@ -9,9 +9,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
@@ -133,7 +133,10 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				)
 				return
 			}
+		}
 
+		// Sub-comandos que o dono e os Supervisores de Lori podem usar
+		if (context.loritta.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
 			if (arg0 == "generate_payment" && arg1 != null && arg2 != null) {
 				loritta.pudding.transaction {
 					Payment.new {
@@ -149,9 +152,9 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-                        LorittaReply(
-                                "Pagamento criado com sucesso!"
-                        )
+					LorittaReply(
+						"Pagamento criado com sucesso!"
+					)
 				)
 				return
 			}
@@ -166,16 +169,13 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-                        LorittaReply(
-                                "Key criada com sucesso!"
-                        )
+					LorittaReply(
+						"Key criada com sucesso!"
+					)
 				)
 				return
 			}
-		}
-
-		// Sub-comandos que o dono e os Supervisores de Lori podem usar
-		if (context.loritta.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+			
 			if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
 				loritta.pudding.transaction {
