@@ -609,7 +609,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
                                 val premiumTracksOfTheGuildCount =
                                     PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
-                                        PremiumTrackTwitchAccounts.guildId eq PremiumTrackTwitchAccounts.guildId
+                                        PremiumTrackTwitchAccounts.guildId eq guild.idLong
                                     }.orderBy(
                                         PremiumTrackTwitchAccounts.addedAt,
                                         SortOrder.ASC
