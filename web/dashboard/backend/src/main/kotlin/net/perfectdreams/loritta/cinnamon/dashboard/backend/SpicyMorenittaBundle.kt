@@ -15,9 +15,11 @@ interface SpicyMorenittaBundle {
 }
 
 class SpicyMorenittaProductionBundle(private val content: String) : SpicyMorenittaBundle {
+    private val cachedMd5Hash: String = DigestUtils.md5Hex(content)
+
     override fun content() = content
 
-    override fun hash() = DigestUtils.md5Hex(content)
+    override fun hash() = cachedMd5Hash
 }
 
 class SpicyMorenittaDevelopmentBundle(private val spicyMorenittaJsPath: String) : SpicyMorenittaBundle {
