@@ -175,7 +175,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				)
 				return
 			}
-			
+
 			if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
 				loritta.pudding.transaction {

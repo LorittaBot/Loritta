@@ -126,6 +126,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // No match? Check all executor's absolute paths
         val commandPathToDeclarations = mutableMapOf<String, SlashCommandDeclaration>()
 
+        fun putNormalized(key: String, value: SlashCommandDeclaration) {
+            commandPathToDeclarations[key.normalize()] = value
+        }
+
         // Get all executors that have enabled legacy message support enabled and add them to the command path
         for (declaration in slashCommands.filter { it.enableLegacyMessageSupport }) {
             val rootLabels = languageManager.languageContexts.values.map {
@@ -134,12 +138,12 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
             if (isDeclarationExecutable(declaration)) {
                 for (rootLabel in rootLabels) {
-                    commandPathToDeclarations[rootLabel] = declaration
+                    putNormalized(rootLabel, declaration)
                 }
 
                 // And add the absolute commands!
                 for (absolutePath in declaration.alternativeLegacyAbsoluteCommandPaths) {
-                    commandPathToDeclarations[absolutePath] = declaration
+                    putNormalized(absolutePath, declaration)
                 }
             }
 
@@ -151,13 +155,13 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
                     for (rootLabel in rootLabels) {
                         for (subcommandLabel in subcommandLabels) {
-                            commandPathToDeclarations["$rootLabel $subcommandLabel"] = subcommand
+                            putNormalized("$rootLabel $subcommandLabel", subcommand)
                         }
                     }
 
                     // And add the absolute commands!
                     for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
-                        commandPathToDeclarations[absolutePath] = subcommand
+                        putNormalized(absolutePath, subcommand)
                     }
                 }
             }
@@ -176,14 +180,14 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         for (rootLabel in rootLabels) {
                             for (subcommandGroupLabel in subcommandGroupLabels) {
                                 for (subcommandLabel in subcommandLabels) {
-                                    commandPathToDeclarations["$rootLabel $subcommandLabel"] = subcommand
+                                    putNormalized("$rootLabel $subcommandLabel", subcommand)
                                 }
                             }
                         }
 
                         // And add the absolute commands!
                         for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
-                            commandPathToDeclarations[absolutePath.normalize()] = subcommand
+                            putNormalized(absolutePath.normalize(), subcommand)
                         }
                     }
                 }
@@ -277,8 +281,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         var bestMatch: SlashCommandDeclaration? = null
         var absolutePathSize = 0
 
-        commandDeclarationsLoop@for ((nonNormalizedCommandPath, declaration) in commandPathToDeclarations) {
-            val commandPath = nonNormalizedCommandPath.normalize()
+        commandDeclarationsLoop@for ((commandPath, declaration) in commandPathToDeclarations) {
             argumentsToBeDropped = 0
 
             val absolutePathSplit = commandPath.split(" ")
