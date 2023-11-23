@@ -233,9 +233,9 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 }
             }
 
-            val newEmojiAsString = args[options.emoji]
+            val emojiInput = args[options.emoji]
 
-            if (newEmojiAsString == null) {
+            if (emojiInput == null) {
                 loritta.newSuspendedTransaction {
                     loritta.getOrCreateLorittaProfile(context.user.idLong)
                         .settings
@@ -250,12 +250,12 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 return
             }
 
-            val discordEmoji = Emoji.fromFormatted(newEmojiAsString) as? CustomEmoji
+            val discordEmoji = Emoji.fromFormatted(emojiInput) as? CustomEmoji
 
             val newEmoji = if (discordEmoji != null) {
                 discordEmoji.asMention
             } else {
-                val match = loritta.unicodeEmojiManager.regex.find(newEmojiAsString)
+                val match = loritta.unicodeEmojiManager.regex.find(emojiInput)
                     ?: context.fail(true) {
                         styled(
                             "Não encontrei nenhum emoji na sua mensagem..."
@@ -268,7 +268,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             loritta.newSuspendedTransaction {
                 loritta.getOrCreateLorittaProfile(context.user.idLong)
                     .settings
-                    .emojiFightEmoji = newEmojiAsString
+                    .emojiFightEmoji = newEmoji
             }
 
             if (discordEmoji == null)
