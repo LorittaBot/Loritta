@@ -60,6 +60,9 @@ object Placeholders {
     val STREAM_URL = LorittaPlaceholder("stream.url")
     val STREAM_GAME = LorittaPlaceholder("stream.game")
 
+    // ===[ YOUTUBE ]===
+    val VIDEO_THUMBNAIL = LorittaPlaceholder("video.thumbnail")
+
     object Deprecated {
         val USER_ID = LorittaPlaceholder("user-id")
         val USER_DISCRIMINATOR = LorittaPlaceholder("user-discriminator")

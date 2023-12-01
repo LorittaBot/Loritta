@@ -11,6 +11,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.YouTubeEventSubEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
@@ -173,7 +174,8 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 					"título" to lastVideoTitle,
 					"title" to lastVideoTitle,
 					"link" to "https://youtu.be/$videoId",
-					"video-id" to videoId
+					"video-id" to videoId,
+					Placeholders.VIDEO_THUMBNAIL.name to "https://img.youtube.com/vi/${videoId}/maxresdefault.jpg"
 				)
 
 				val discordMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
