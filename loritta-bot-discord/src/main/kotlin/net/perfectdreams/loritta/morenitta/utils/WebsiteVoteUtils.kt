@@ -21,7 +21,7 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 object WebsiteVoteUtils {
-	const val SONHOS_AMOUNT = 1200L
+	const val SONHOS_AMOUNT = 5_000L
 
 	// This is used to avoid issues with top.gg's retry vote feature
 	//

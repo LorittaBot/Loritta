@@ -1,24 +1,24 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
+import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 
 class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
@@ -98,7 +98,7 @@ class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", cate
 
 						loritta.bomDiaECia.available = false
 
-						val randomPrize = RANDOM.nextInt(450, 701)
+						val randomPrize = RANDOM.nextInt(5_000, 10_001)
 							.toLong()
 						val guild = context.guild
 						val user = context.userHandle
