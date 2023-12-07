@@ -341,6 +341,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 rootDeclaration,
                 slashDeclaration
             )
+            val guild = context.guildOrNull
 
             if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
                 if (serverConfig.warnIfBlacklisted) {
@@ -372,7 +373,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 return true
             }
 
-            if (rootDeclaration.isGuildOnly && context.guildOrNull == null) {
+            if (rootDeclaration.isGuildOnly && guild == null) {
                 // Matched, but it is guild only
                 context.reply(true) {
                     styled(
@@ -384,7 +385,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             }
 
             // Are we in a guild?
-            if (context.guildOrNull != null) {
+            if (guild != null) {
+                // Check if guild is banned
+                if (LorittaUtils.isGuildOwnerBanned(loritta, lorittaUser._profile, guild) || LorittaUtils.isGuildBanned(loritta, guild))
+                    return true
+
                 // Get the permissions
                 // To mimick how slash commands work, we only check the root declaration permissions
                 val requiredPermissionsRaw = rootDeclaration.defaultMemberPermissions?.permissionsRaw
