@@ -82,9 +82,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushCl
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
@@ -98,7 +95,6 @@ import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.dao.*
-import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
@@ -120,7 +116,6 @@ import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
@@ -136,7 +131,6 @@ import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.jetbrains.exposed.sql.*
-import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -517,8 +511,6 @@ class LorittaBot(
 
 	val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-	val analyticHandlers = mutableListOf<EventAnalyticsTask.AnalyticHandler>()
-	val cinnamonTasks = CinnamonTasks(this)
 	val tasksScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	private val starboardModule = StarboardModule(this)
@@ -608,8 +600,7 @@ class LorittaBot(
 			shardManager
 		)
 
-		logger.info { "Starting Cinnamon tasks..." }
-		cinnamonTasks.start()
+		logger.info { "Starting Loritta tasks..." }
 		startTasks()
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
@@ -1334,11 +1325,6 @@ class LorittaBot(
 		userId,
 		builder
 	)
-
-	/**
-	 * Adds an analytic handler, used for debugging logs on the [EventAnalyticsTask]
-	 */
-	fun addAnalyticHandler(handler: EventAnalyticsTask.AnalyticHandler) = analyticHandlers.add(handler)
 
 	/**
 	 * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay]
