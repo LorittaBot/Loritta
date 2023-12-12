@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.languages.GetLanguageInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitch.GetTwitchInfoRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitter.GetShowTwitterUserRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.youtube.GetChannelInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRoute
@@ -117,9 +116,6 @@ object DefaultRoutes {
 
 		// Twitch
 		GetTwitchInfoRoute(loritta),
-
-		// Twitter
-		GetShowTwitterUserRoute(loritta),
 
 		// User
 		GetMutualGuildsRoute(loritta),

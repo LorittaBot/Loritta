@@ -14,9 +14,9 @@ dependencyResolutionManagement {
             val kotlinXSerialization = version("kotlinx-serialization", "1.6.0")
             val ktor = version("ktor", "2.0.3")
             val jib = version("jib", "3.2.1")
-            val exposed = version("exposed", "0.41.1")
+            val exposed = version("exposed", "0.45.0")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
-            val logback = version("logback", "1.4.11")
+            val logback = version("logback", "1.4.14")
             val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
 
             library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version(kotlinxCoroutines)
@@ -42,7 +42,7 @@ dependencyResolutionManagement {
 
             library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
 
-            library("hikaricp", "com.zaxxer", "HikariCP").version("5.0.1")
+            library("hikaricp", "com.zaxxer", "HikariCP").version("5.1.0")
         }
     }
 }

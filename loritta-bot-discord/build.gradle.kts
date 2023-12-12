@@ -29,15 +29,14 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Versions.KOTLIN_COROUTINES}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${Versions.KOTLIN_COROUTINES}")
 
-    implementation("com.google.guava:guava:31.1-jre")
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
-    implementation("org.twitter4j:twitter4j-core:4.0.7")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
+    implementation("com.google.guava:guava:32.1.3-jre")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.10.1")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
     // Discord
     implementation("com.github.LorittaBot:DeviousJDA:6644ac5cb9")
     implementation("com.github.MinnDevelopment:jda-ktx:9370cb13cc")
-    implementation("club.minnced:discord-webhooks:0.8.2")
+    implementation("club.minnced:discord-webhooks:0.8.4")
 
     // Used to serialize state on components
     implementation("io.github.netvl.ecoji:ecoji:1.0.0")
@@ -49,8 +48,8 @@ dependencies {
     implementation("dev.kord:kord-voice:0.8.x-lori-fork-20221109.172532-15")
 
     // Exposed & Databases
-    implementation("org.postgresql:postgresql:42.5.0")
-    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.postgresql:postgresql:42.7.1")
+    implementation("com.zaxxer:HikariCP:5.1.0")
     api(libs.exposed.core)
     api(libs.exposed.jdbc)
     api(libs.exposed.javatime)
@@ -61,10 +60,10 @@ dependencies {
     // DreamStorageService
     implementation("net.perfectdreams.dreamstorageservice:client:2.0.2")
 
-    implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("commons-codec:commons-codec:1.15")
-    implementation("commons-io:commons-io:2.11.0")
-    implementation("org.apache.commons:commons-text:1.9")
+    implementation("org.apache.commons:commons-lang3:3.14.0")
+    implementation("commons-codec:commons-codec:1.16.0")
+    implementation("commons-io:commons-io:2.15.1")
+    implementation("org.apache.commons:commons-text:1.11.0")
     implementation("org.apache.commons:commons-collections4:4.4")
 
     // Ktor
@@ -79,9 +78,9 @@ dependencies {
     implementation("io.ktor:ktor-server-sessions:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
 
-    implementation("com.google.code.gson:gson:2.9.1")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation("io.pebbletemplates:pebble:3.1.4")
-    implementation("org.jsoup:jsoup:1.15.3")
+    implementation("org.jsoup:jsoup:1.17.1")
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Jackson
