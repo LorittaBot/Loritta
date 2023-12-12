@@ -61,7 +61,7 @@ object RankingGenerator {
 			val member = loritta.lorittaShards.retrieveUserInfoById(profile.userId) ?: onNullUser?.invoke(profile.userId)
 
 			if (member != null) {
-				val rankBackground = loritta.getUserProfileBackground(member.id)
+				val rankBackground = loritta.profileDesignManager.getUserProfileBackground(member.id)
 				graphics.drawImage(rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
 					.getSubimage(0, idx * 104, 800, 106), 0, currentY, null)
 

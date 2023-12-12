@@ -1,18 +1,10 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import kotlinx.coroutines.*
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
-import net.perfectdreams.loritta.morenitta.dao.Mute
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.modules.AutoroleModule
-import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
-import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import dev.minn.jda.ktx.messages.MessageCreate
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
@@ -20,6 +12,8 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.events.channel.ChannelCreateEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent
@@ -32,18 +26,29 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MemberCounterChannelConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
+import net.perfectdreams.loritta.morenitta.dao.Mute
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MemberCounterChannelConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.CustomGuildCommands
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MemberCounterChannelConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
-import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
+import net.perfectdreams.loritta.morenitta.modules.AutoroleModule
+import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
+import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import okio.Buffer
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
@@ -166,6 +171,19 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).await()
 			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 		}
+
+		private val FUNNY_FIRST_EMOJIS = listOf(
+			Emotes.LoriCoffee,
+			Emotes.LoriHappy,
+			Emotes.LoriSmile,
+			Emotes.LoriSunglasses,
+			Emotes.LoriUwU,
+			Emotes.LoriWow,
+			Emotes.LoriStonks,
+			Emotes.LoriKiss,
+			Emotes.LoriLick,
+			Emotes.LoriFlushed
+		)
 	}
 
 	override fun onHttpRequest(event: HttpRequestEvent) {
@@ -524,6 +542,33 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			}
 
 			logger.info { "Done! ${guildIds.size} guilds were set up for shard ${event.jda.shardInfo.shardId}! Let's roll!! Took ${Clock.System.now() - start}ms" }
+		}
+	}
+
+	override fun onChannelCreate(event: ChannelCreateEvent) {
+		// This should only be sent in a guild text channel
+		val channel = event.channel
+		if (channel is GuildMessageChannel) {
+			GlobalScope.launch(loritta.coroutineDispatcher) {
+				val miscellaneousConfig = loritta.transaction {
+					MiscellaneousConfigs.innerJoin(ServerConfigs).selectFirstOrNull {
+						ServerConfigs.id eq event.guild.idLong
+					}
+				} ?: return@launch
+
+				if (!miscellaneousConfig[MiscellaneousConfigs.enableQuirky])
+					return@launch
+
+				DiscordGatewayEventsProcessorMetrics.firstTriggered
+					.labels(event.guild.id)
+					.inc()
+
+				channel.sendMessage(
+					MessageCreate {
+						content = "First! ${FUNNY_FIRST_EMOJIS.random()}"
+					}
+				).await()
+			}
 		}
 	}
 }

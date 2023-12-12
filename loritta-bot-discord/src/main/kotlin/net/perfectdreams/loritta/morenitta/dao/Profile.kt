@@ -218,7 +218,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 		)
 	}
 
-	suspend fun getProfileBackground(loritta: LorittaBot) = loritta.getUserProfileBackground(userId)
+	suspend fun getProfileBackground(loritta: LorittaBot) = loritta.profileDesignManager.getUserProfileBackground(userId)
 
 	class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
 }

@@ -522,18 +522,12 @@ class LorittaBot(
 	val tasksScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	private val starboardModule = StarboardModule(this)
-	private val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
-	private val debugGatewayModule = DebugGatewayModule(this)
-	private val owoGatewayModule = OwOGatewayModule(this)
 	private val afkModule = AFKModule(this)
 
 	// This is executed sequentially!
 	val modules = listOf(
 		afkModule,
-		addFirstToNewChannelsModule,
-		starboardModule,
-		owoGatewayModule,
-		debugGatewayModule
+		starboardModule
 	)
 
 	// Inicia a Loritta
@@ -834,155 +828,6 @@ class LorittaBot(
 	}
 
 	/**
-	 * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
-	 *
-	 * To avoid exceeding the available memory, profiles are loaded from the "cropped_profiles" folder,
-	 * which has all the images in 800x600 format.
-	 *
-	 * @param background the user's background
-	 * @return the background image
-	 */
-	suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
-		val backgroundUrl = getUserProfileBackgroundUrl(profile)
-		val response = this.http.get(backgroundUrl) {
-			userAgent(lorittaCluster.getUserAgent(this@LorittaBot))
-		}
-
-		val bytes = response.readBytes()
-
-		return readImage(bytes.inputStream())
-	}
-
-	/**
-	 * Gets an user's profile background URL
-	 *
-	 * This does *not* crop the profile background
-	 *
-	 * @param profile the user's profile
-	 * @return the background image
-	 */
-	suspend fun getUserProfileBackgroundUrl(profile: Profile): String {
-		val settingsId = this.newSuspendedTransaction { profile.settings.id.value }
-		val activeProfileDesignInternalName = this.newSuspendedTransaction { profile.settings.activeProfileDesignInternalName }?.value
-		val activeBackgroundInternalName = this.newSuspendedTransaction { profile.settings.activeBackgroundInternalName }?.value
-		return getUserProfileBackgroundUrl(profile.userId, settingsId, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
-	}
-
-	/**
-	 * Gets an user's profile background URL
-	 *
-	 * This does *not* crop the profile background
-	 *
-	 * @param profile the user's profile
-	 * @return the background image
-	 */
-	suspend fun getUserProfileBackgroundUrl(profile: PuddingUserProfile): String {
-		val profileSettings = profile.getProfileSettings()
-		val activeProfileDesignInternalName = profileSettings.activeProfileDesign
-		val activeBackgroundInternalName = profileSettings.activeBackground
-		// TODO: Fix default profile design ID
-		return getUserProfileBackgroundUrl(profile.id.value.toLong(), profileSettings.id, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
-	}
-
-	/**
-	 * Gets an user's profile background URL
-	 *
-	 * This does *not* crop the profile background
-	 *
-	 * @param profile the user's profile
-	 * @return the background image
-	 */
-	suspend fun getUserProfileBackgroundUrl(
-		userId: Long,
-		settingsId: Long,
-		activeProfileDesignInternalName: String,
-		activeBackgroundInternalName: String
-	): String {
-		val defaultBlueBackground = this.pudding.backgrounds.getBackground(Background.DEFAULT_BACKGROUND_ID)!!
-		var background = pudding.backgrounds.getBackground(activeBackgroundInternalName) ?: defaultBlueBackground
-
-		if (background.id == Background.RANDOM_BACKGROUND_ID) {
-			// If the user selected a random background, we are going to get all the user's backgrounds and choose a random background from the list
-			val allBackgrounds = mutableListOf(defaultBlueBackground)
-
-			allBackgrounds.addAll(
-				this.newSuspendedTransaction {
-					(BackgroundPayments innerJoin Backgrounds).select {
-						BackgroundPayments.userId eq userId
-					}.map {
-						val data = Background.fromRow(it)
-						PuddingBackground(
-							pudding,
-							data
-						)
-					}
-				}
-			)
-
-			background = allBackgrounds.random()
-		}
-
-		if (background.id == Background.CUSTOM_BACKGROUND_ID) {
-			// Custom background
-			val donationValue = this.getActiveMoneyFromDonations(userId)
-			val plan = UserPremiumPlans.getPlanFromValue(donationValue)
-
-			if (plan.customBackground) {
-				val dssNamespace = this.dreamStorageService.getCachedNamespaceOrRetrieve()
-				val resultRow = this.newSuspendedTransaction {
-					CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq settingsId }
-						.firstOrNull()
-				}
-
-				// If the path exists, then the background (probably!) exists
-				if (resultRow != null) {
-					val file = resultRow[net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings.file]
-					val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings.preferredMediaType])
-					return "${this.config.loritta.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(userId, file).join()}.$extension"
-				}
-			}
-
-			// If everything fails, change the background to the default blue background
-			// This is required because the current background is "CUSTOM", so Loritta will try getting the default variation of the custom background...
-			// but that doesn't exist!
-			background = defaultBlueBackground
-		}
-
-		val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
-		val variation = background.getVariationForProfileDesign(activeProfileDesignInternalName)
-		return when (variation.storageType) {
-			BackgroundStorageType.DREAM_STORAGE_SERVICE -> getDreamStorageServiceBackgroundUrlWithCropParameters(this.config.loritta.dreamStorageService.url, dssNamespace, variation)
-			BackgroundStorageType.ETHEREAL_GAMBI -> getEtherealGambiBackgroundUrl(variation)
-		}
-	}
-
-	private fun getDreamStorageServiceBackgroundUrl(
-		dreamStorageServiceUrl: String,
-		namespace: String,
-		background: BackgroundVariation
-	): String {
-		val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
-		return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(background.file).join()}.$extension"
-	}
-
-	private fun getDreamStorageServiceBackgroundUrlWithCropParameters(
-		dreamStorageServiceUrl: String,
-		namespace: String,
-		variation: BackgroundVariation
-	): String {
-		var url = getDreamStorageServiceBackgroundUrl(dreamStorageServiceUrl, namespace, variation)
-		val crop = variation.crop
-		if (crop != null)
-			url += "?crop_x=${crop.x}&crop_y=${crop.y}&crop_width=${crop.width}&crop_height=${crop.height}"
-		return url
-	}
-
-	private fun getEtherealGambiBackgroundUrl(background: BackgroundVariation): String {
-		val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
-		return config.loritta.etherealGambiService.url.removeSuffix("/") + "/" + background.file + ".$extension"
-	}
-
-	/**
 	 * Loads an specific fan art artist
 	 */
 	private fun loadFanArtArtist(inputStream: InputStream): FanArtArtist = Constants.HOCON_MAPPER.readValue(inputStream)
@@ -1107,15 +952,6 @@ class LorittaBot(
 	suspend fun <T> suspendedTransactionAsync(statement: suspend Transaction.() -> T) = GlobalScope.async(coroutineDispatcher) {
 		newSuspendedTransaction(statement = statement)
 	}
-
-
-	/**
-	 * Gets an user's profile background
-	 *
-	 * @param id the user's ID
-	 * @return the background image
-	 */
-	suspend fun getUserProfileBackground(id: Long) = getUserProfileBackground(getOrCreateLorittaProfile(id))
 
 	/**
 	 * Loads the server configuration of a guild
@@ -1644,26 +1480,6 @@ class LorittaBot(
 				setBody(Json.encodeToString<LorittaInternalRPCRequest>(rpc))
 			}.bodyAsText()
 		) as T
-	}
-
-	/**
-	 * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
-	 *
-	 * To avoid exceeding the available memory, profiles are loaded from the "cropped_profiles" folder,
-	 * which has all the images in 800x600 format.
-	 *
-	 * @param background the user's background
-	 * @return the background image
-	 */
-	suspend fun getUserProfileBackground(profile: PuddingUserProfile): BufferedImage {
-		val backgroundUrl = getUserProfileBackgroundUrl(profile)
-		val response = http.get(backgroundUrl) {
-			userAgent(lorittaCluster.getUserAgent(this@LorittaBot))
-		}
-
-		val bytes = response.readBytes()
-
-		return net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage(bytes.inputStream())
 	}
 
 	suspend fun loadActivity(): ActivityUpdater.ActivityWrapper? {
