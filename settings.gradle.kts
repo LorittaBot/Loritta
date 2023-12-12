@@ -43,6 +43,7 @@ dependencyResolutionManagement {
             library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
 
             library("hikaricp", "com.zaxxer", "HikariCP").version("5.1.0")
+            library("postgresqljdbcdriver", "org.postgresql", "postgresql").version("42.7.1")
         }
     }
 }

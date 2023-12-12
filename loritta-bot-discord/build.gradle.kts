@@ -48,8 +48,8 @@ dependencies {
     implementation("dev.kord:kord-voice:0.8.x-lori-fork-20221109.172532-15")
 
     // Exposed & Databases
-    implementation("org.postgresql:postgresql:42.7.1")
-    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation(libs.postgresqljdbcdriver)
+    implementation(libs.hikaricp)
     api(libs.exposed.core)
     api(libs.exposed.jdbc)
     api(libs.exposed.javatime)
