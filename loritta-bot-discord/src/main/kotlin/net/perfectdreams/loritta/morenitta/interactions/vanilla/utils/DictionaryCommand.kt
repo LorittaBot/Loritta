@@ -104,9 +104,8 @@ class DictionaryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             }
 
             // Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
-            if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text()
-                    .startsWith("Ainda não temos o significado de")
-            )
+            val descriptionQuery = jsoup.select("p.significado")
+            if (descriptionQuery.isEmpty())
                 context.fail(true) {
                     styled(
                         context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
@@ -114,10 +113,9 @@ class DictionaryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     )
                 }
 
-            val description = jsoup.select("p[itemprop = description]")[0]
-
+            val description = descriptionQuery[0]
             val type = description.getElementsByTag("span")[0]
-            val word = jsoup.select("h1[itemprop = name]")
+            val word = jsoup.select("h1").first()!!
             val what = description.getElementsByTag("span").getOrNull(1)
             val etim = description.getElementsByClass("etim").firstOrNull()
 
