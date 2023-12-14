@@ -10,8 +10,9 @@ import kotlinx.coroutines.withContext
 import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
-import net.perfectdreams.exposedpowerutils.sql.upsert
-import net.perfectdreams.loritta.cinnamon.pudding.tables.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -35,6 +36,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import pw.forst.exposed.insertOrUpdate
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -197,7 +199,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.file)
 
 				if (newPath != null && preferredMediaType != null) {
-					CustomBackgroundSettings.upsert(CustomBackgroundSettings.settings) {
+					CustomBackgroundSettings.insertOrUpdate(CustomBackgroundSettings.settings) {
 						it[settings] = profileSettings.id
 						it[file] = newPath
 						it[CustomBackgroundSettings.preferredMediaType] = preferredMediaType

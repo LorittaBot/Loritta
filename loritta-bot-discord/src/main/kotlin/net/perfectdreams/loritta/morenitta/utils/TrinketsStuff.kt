@@ -5,7 +5,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
@@ -16,6 +15,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
+import pw.forst.exposed.insertOrUpdate
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.util.*
@@ -88,11 +88,11 @@ object TrinketsStuff {
                     return@transaction
                 }
 
-                ProfileDesignGroups.upsert(ProfileDesignGroups.id) {
+                ProfileDesignGroups.insertOrUpdate(ProfileDesignGroups.id) {
                     it[ProfileDesignGroups.id] = CENTER_RIGHT_FOCUS_DESIGN
                 }
 
-                ProfileDesignGroups.upsert(ProfileDesignGroups.id) {
+                ProfileDesignGroups.insertOrUpdate(ProfileDesignGroups.id) {
                     it[ProfileDesignGroups.id] = CENTER_TOP_FOCUS_DESIGN
                 }
 
@@ -101,7 +101,7 @@ object TrinketsStuff {
                     ProfileDesignGroupEntries.profileDesignGroup eq CENTER_RIGHT_FOCUS_DESIGN and (ProfileDesignGroupEntries.profileDesign notInList centerRightFocusDesigns)
                 }
                 for (profileDesign in centerRightFocusDesigns) {
-                    ProfileDesignGroupEntries.upsert(
+                    ProfileDesignGroupEntries.insertOrUpdate(
                         ProfileDesignGroupEntries.profileDesign,
                         ProfileDesignGroupEntries.profileDesignGroup
                     ) {
@@ -114,7 +114,7 @@ object TrinketsStuff {
                     ProfileDesignGroupEntries.profileDesignGroup eq CENTER_TOP_FOCUS_DESIGN and (ProfileDesignGroupEntries.profileDesign notInList topFocusDesigns)
                 }
                 for (profileDesign in topFocusDesigns) {
-                    ProfileDesignGroupEntries.upsert(
+                    ProfileDesignGroupEntries.insertOrUpdate(
                         ProfileDesignGroupEntries.profileDesign,
                         ProfileDesignGroupEntries.profileDesignGroup
                     ) {
@@ -1022,7 +1022,7 @@ object TrinketsStuff {
         availableToBuyViaMoney: Boolean = false,
         variantBuilder: VariantBuilder.() -> (Unit) = {}
     ) {
-        Backgrounds.upsert(Backgrounds.id) {
+        Backgrounds.insertOrUpdate(Backgrounds.id) {
             it[Backgrounds.id] = id
             it[Backgrounds.enabled] = enabled
             it[Backgrounds.rarity] = rarity

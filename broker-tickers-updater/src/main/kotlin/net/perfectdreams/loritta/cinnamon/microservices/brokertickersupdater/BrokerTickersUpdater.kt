@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.tradingviewscraper.TradingViewAPI
 import org.jetbrains.exposed.sql.update
-import org.jetbrains.exposed.sql.upsert
+import pw.forst.exposed.insertOrUpdate
 import java.time.Instant
 
 class BrokerTickersUpdater(val config: RootConfig, val services: Pudding, val http: HttpClient) {
@@ -91,7 +91,7 @@ class BrokerTickersUpdater(val config: RootConfig, val services: Pudding, val ht
                             val priceInSonhos = (cachedCurrentPrice * 100).toLong()
 
                             services.transaction {
-                                TickerPrices.upsert(TickerPrices.ticker) {
+                                TickerPrices.insertOrUpdate(TickerPrices.ticker) {
                                     it[TickerPrices.ticker] = tickerId
                                     it[TickerPrices.value] = priceInSonhos
                                     it[TickerPrices.dailyPriceVariation] = cachedDailyPriceVariation
