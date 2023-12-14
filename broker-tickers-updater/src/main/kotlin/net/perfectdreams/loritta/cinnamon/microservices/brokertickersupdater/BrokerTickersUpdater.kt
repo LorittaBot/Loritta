@@ -8,13 +8,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
+import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.tradingviewscraper.TradingViewAPI
 import org.jetbrains.exposed.sql.update
-import org.jetbrains.exposed.sql.upsert
 import java.time.Instant
 
 class BrokerTickersUpdater(val config: RootConfig, val services: Pudding, val http: HttpClient) {
