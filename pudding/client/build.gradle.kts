@@ -17,9 +17,9 @@ dependencies {
     api(libs.exposed.javatime)
     api(libs.postgresqljdbcdriver)
     implementation(libs.hikaricp)
-    api("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.3.0")
-    api("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.3.0")
-    api("net.perfectdreams.exposedpowerutils:postgres-java-time:1.3.0")
+    api("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.2.1")
+    api("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.2.1")
+    api("net.perfectdreams.exposedpowerutils:postgres-java-time:1.2.1")
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")

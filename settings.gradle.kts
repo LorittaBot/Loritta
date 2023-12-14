@@ -14,7 +14,9 @@ dependencyResolutionManagement {
             val kotlinXSerialization = version("kotlinx-serialization", "1.6.0")
             val ktor = version("ktor", "2.0.3")
             val jib = version("jib", "3.2.1")
-            val exposed = version("exposed", "0.45.0")
+            // DO NOT UPDATE UNTIL WE FIX UPSERT IN EXPOSEDPOWERUTILS!!!
+            // Exposed has changed how "prepareSQL" works, and you can't call super.prepareSQL, which completely borks our upsert impl
+            val exposed = version("exposed", "0.41.1")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
             val logback = version("logback", "1.4.14")
             val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
