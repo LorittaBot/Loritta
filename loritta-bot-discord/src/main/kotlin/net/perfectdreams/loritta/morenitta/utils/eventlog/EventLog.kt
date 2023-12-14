@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.Webhook
 import net.dv8tion.jda.api.entities.WebhookType
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
+import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -34,7 +35,6 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogCon
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import org.json.JSONException
-import pw.forst.exposed.insertOrUpdate
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -127,7 +127,7 @@ object EventLog {
 
 					withContext(Dispatchers.IO) {
 						loritta.pudding.transaction {
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+							CachedDiscordWebhooks.upsert(CachedDiscordWebhooks.id) {
 								it[id] = channelId
 								// We don't replace the webhook token here... there is no pointing in replacing it.
 								it[state] = WebhookState.MISSING_PERMISSION
@@ -164,7 +164,7 @@ object EventLog {
 				guildWebhookFromDatabase = withContext(Dispatchers.IO) {
 					loritta.pudding.transaction {
 						CachedDiscordWebhook.wrapRow(
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+							CachedDiscordWebhooks.upsert(CachedDiscordWebhooks.id) {
 								it[id] = channelId
 								it[webhookId] = webhook.idLong
 								it[webhookToken] = webhook.token!! // I doubt that the token can be null so let's just force null, heh
@@ -179,7 +179,7 @@ object EventLog {
 
 				withContext(Dispatchers.IO) {
 					loritta.pudding.transaction {
-						CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+						CachedDiscordWebhooks.upsert(CachedDiscordWebhooks.id) {
 							it[id] = channelId
 							// We don't replace the webhook token here... there is no pointing in replacing it.
 							it[state] = WebhookState.MISSING_PERMISSION
