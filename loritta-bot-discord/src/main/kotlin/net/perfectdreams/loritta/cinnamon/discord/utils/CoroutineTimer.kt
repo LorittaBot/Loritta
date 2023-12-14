@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -12,13 +15,13 @@ import kotlin.time.Duration
 fun scheduleCoroutineAtFixedRate(taskName: String, scope: CoroutineScope, period: Duration, initialDelay: Duration = Duration.ZERO, action: RunnableCoroutine) {
     val logger = KotlinLogging.logger(taskName)
 
-    scope.launch {
+    scope.launch(CoroutineName("$taskName Scheduler")) {
         delay(initialDelay)
 
         val mutex = Mutex()
 
         while (true) {
-            launch {
+            launch(CoroutineName("$taskName Task")) {
                 logger.info { "Preparing to run task - Is mutex locked? ${mutex.isLocked}" }
                 mutex.withLock {
                     logger.info { "Running task..." }

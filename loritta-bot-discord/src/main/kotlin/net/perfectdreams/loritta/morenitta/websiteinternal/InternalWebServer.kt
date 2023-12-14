@@ -109,7 +109,7 @@ class InternalWebServer(val m: LorittaBot) {
                 is LorittaInternalRPCRequest.UpdateTwitchSubscriptionsRequest -> {
                     if (m.isMainInstance) {
                         GlobalScope.launch {
-                            m.twitchSubscriptionsHandler.requestSubscriptionCreation()
+                            m.twitchSubscriptionsHandler.requestSubscriptionCreation("Update Twitch Subscriptions Request")
                         }
                     }
                     LorittaInternalRPCResponse.UpdateTwitchSubscriptionsResponse
