@@ -10,9 +10,7 @@ import kotlinx.coroutines.withContext
 import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
