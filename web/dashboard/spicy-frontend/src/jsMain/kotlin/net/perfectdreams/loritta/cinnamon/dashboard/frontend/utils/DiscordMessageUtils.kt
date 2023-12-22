@@ -9,6 +9,8 @@ object DiscordMessageUtils {
     val DiscordEmote = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
     val DiscordChannel = Regex("<#([0-9]+)>")
     val DiscordRole = Regex("<@&([0-9]+)>")
+    val DiscordEveryone = Regex("@everyone")
+    val DiscordHere = Regex("@here")
     // Yes the last \\ IS REQUIRED!! RegEx will complain that raw brackets are not allowed in unicode mode without the escaping!!!
     private val Placeholder = Regex("\\{([A-z0-9@\\-.]+)\\}")
 
@@ -97,6 +99,17 @@ object DiscordMessageUtils {
                 .forEach {
                     matches.add(DiscordRoleRegexMatch(it))
                 }
+
+            // TODO: Move this to a separate drawable type
+            DiscordEveryone.findAll(text)
+                .forEach {
+                    matches.add(DiscordRawMentionRegexMatch(it))
+                }
+
+            DiscordHere.findAll(text)
+                .forEach {
+                    matches.add(DiscordRawMentionRegexMatch(it))
+                }
         }
 
         if (DrawableType.PLACEHOLDER in allowedDrawableTypes) {
@@ -141,6 +154,10 @@ object DiscordMessageUtils {
                 is DiscordRoleRegexMatch -> {
                     val roleId = matchResult.groupValues[1]
                     sections.add(DrawableDiscordRole(roleId.toLong()))
+                }
+
+                is DiscordRawMentionRegexMatch -> {
+                    sections.add(DrawableDiscordRawMention(matchResult.groupValues[0]))
                 }
             }
 
@@ -199,6 +216,7 @@ object DiscordMessageUtils {
     private class DiscordEmoteRegexMatch(match: MatchResult) : RegexMatch(match)
     private class DiscordChannelRegexMatch(match: MatchResult) : RegexMatch(match)
     private class DiscordRoleRegexMatch(match: MatchResult) : RegexMatch(match)
+    private class DiscordRawMentionRegexMatch(match: MatchResult) : RegexMatch(match)
 
     sealed class DrawableSection
     data class DrawableText(val text: String) : DrawableSection()
@@ -206,6 +224,7 @@ object DiscordMessageUtils {
     data class DrawableDiscordEmote(val emoteId: Long, val animated: Boolean) : DrawableSection()
     data class DrawableDiscordChannel(val channelId: Long) : DrawableSection()
     data class DrawableDiscordRole(val roleId: Long) : DrawableSection()
+    data class DrawableDiscordRawMention(val text: String) : DrawableSection()
 
     enum class DrawableType {
         TEXT,

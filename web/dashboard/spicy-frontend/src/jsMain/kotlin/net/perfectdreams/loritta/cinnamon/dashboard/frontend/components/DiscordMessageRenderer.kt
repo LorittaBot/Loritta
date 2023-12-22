@@ -593,6 +593,9 @@ private fun TransformedDiscordText(
                                 InlineDiscordMention("Placeholder inválido!", Color(237, 66, 69))
                             }
                         }
+                        is DiscordMessageUtils.DrawableDiscordRawMention -> {
+                            InlineDiscordMention(section.text) // The "section.text" already includes the @
+                        }
                     }
                 }
             }

@@ -307,7 +307,7 @@ private fun DiscordRoleEntityPickerButton(textAreaWrapper: TextAreaWithEntityPic
                     Div(attrs = {
                         classes("message-config-list")
                     }) {
-                        for (role in roles.filter { it.name.contains(roleFilter.removePrefix("@"), true) }) {
+                        for (role in roles.filter { it.name != "@everyone" && it.name.contains(roleFilter.removePrefix("@"), true) }) {
                             Div(attrs = {
                                 classes("message-config-list-entry")
                                 onClick {
@@ -631,7 +631,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
                         )
                     }
                     TypeaheadType.ROLE -> {
-                        val roles = guild.roles.filter { it.name.contains(query, true) }
+                        val roles = guild.roles.filter { it.name != "@everyone" && it.name.contains(query, true) }
                             .take(10)
 
                         if (roles.isEmpty()) {

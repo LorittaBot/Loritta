@@ -12,8 +12,6 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFro
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrapper
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.*
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.DiscordCdn
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.discordcdn.Image
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.embeds.MutableDiscordMessage
 import net.perfectdreams.loritta.common.utils.embeds.DiscordComponent
 import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
@@ -358,23 +356,6 @@ fun <T : MessagePlaceholder> DiscordMessageEditor(
                     }
                 }
             }
-        }
-
-
-        val avatarId = exampleUser.avatarId
-
-        val avatarUrl = if (avatarId != null) {
-            DiscordCdn.userAvatar(
-                exampleUser.id.value,
-                avatarId
-            )
-                .toUrl()
-        } else {
-            DiscordCdn.defaultAvatar(exampleUser.id.value)
-                .toUrl {
-                    format =
-                        Image.Format.PNG // For some weird reason, the default avatars aren't available in webp format (why?)
-                }
         }
 
         val customTokens = mutableListOf<RenderableMessagePlaceholder>()
