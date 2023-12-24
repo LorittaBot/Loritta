@@ -44,6 +44,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MemberCounterChannelConfig
+import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.morenitta.modules.AutoroleModule
 import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
@@ -275,6 +276,22 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						}
 					}
 				}
+			}
+		}
+
+		// TODO: Stop using GlobalScope
+		GlobalScope.launch(loritta.coroutineDispatcher) {
+			try {
+				// Starboard
+				val config = loritta.getOrCreateServerConfig(e.guild.idLong, true)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(config.localeId)
+				val starboardConfig = config.getCachedOrRetreiveFromDatabase<StarboardConfig?>(loritta, ServerConfig::starboardConfig)
+
+				if (starboardConfig != null && starboardConfig.enabled) {
+					loritta.starboardModule.handleStarboardReaction(i18nContext, e, starboardConfig)
+				}
+			} catch (exception: Exception) {
+				logger.error("[${e.guild.name}] Starboard ${e.member?.user?.name}", exception)
 			}
 		}
 	}

@@ -68,7 +68,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		christmasStuffModule,
 		dropEaster2023StuffModule,
 		experienceModule,
-		// afkModule,
+		afkModule,
 		bomDiaECiaModule,
 		checkBoostStatusModule,
 		addReactionForHeathecliffModule,

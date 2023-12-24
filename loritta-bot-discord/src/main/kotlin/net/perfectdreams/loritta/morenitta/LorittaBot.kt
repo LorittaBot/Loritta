@@ -62,7 +62,6 @@ import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclarat
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
-import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
@@ -99,6 +98,7 @@ import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
+import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
@@ -379,6 +379,7 @@ class LorittaBot(
 	val commandCooldownManager = CommandCooldownManager(this)
 	val giveawayManager = GiveawayManager(this)
 	val welcomeModule = WelcomeModule(this)
+	val starboardModule = StarboardModule(this)
 	val ecbManager = ECBManager()
 	val activityUpdater = ActivityUpdater(this)
 
@@ -512,15 +513,6 @@ class LorittaBot(
 	val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	val tasksScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
-	private val starboardModule = StarboardModule(this)
-	private val afkModule = AFKModule(this)
-
-	// This is executed sequentially!
-	val modules = listOf(
-		afkModule,
-		starboardModule
-	)
 
 	// Inicia a Loritta
 	@OptIn(ExperimentalTime::class, ExperimentalSerializationApi::class, ExperimentalSerializationApi::class,
@@ -1266,37 +1258,6 @@ class LorittaBot(
 				logger.warn { "Coroutine $job ($coroutineName) took too long to process! ${diff}ms - Module Durations: $durations" }
 			}
 		}
-	}
-
-	@OptIn(ExperimentalTime::class)
-	fun launchEventProcessorJob(context: GatewayEventContext) {
-		if (context.event != null) {
-			val coroutineName = "Event ${context.event::class.simpleName}"
-			launchEventJob(coroutineName, context.durations) {
-				try {
-					for (module in modules) {
-						val (result, duration) = measureTimedValue { module.processEvent(context) }
-						context.durations[module::class] = duration
-						DiscordGatewayEventsProcessorMetrics.executedModuleLatency
-							.labels(module::class.simpleName!!, context.event::class.simpleName!!)
-							.observe(duration.toDouble(DurationUnit.SECONDS))
-
-						when (result) {
-							ModuleResult.Cancel -> {
-								// Module asked us to stop processing the events
-								return@launchEventJob
-							}
-							ModuleResult.Continue -> {
-								// Module asked us to continue processing the events
-							}
-						}
-					}
-				} catch (e: Throwable) {
-					logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore..." }
-				}
-			}
-		} else
-			logger.warn { "Unknown Discord event received! We are going to ignore the event... kthxbye!" }
 	}
 
 	/**

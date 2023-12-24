@@ -1,45 +1,54 @@
 package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.dao.StarboardMessage
-import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
+import dev.minn.jda.ktx.messages.InlineEmbed
+import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.sticker.Sticker
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageEditData
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.StarboardMessage
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
-import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import org.jetbrains.exposed.sql.and
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
 class StarboardModule(val loritta: LorittaBot) {
-	private val logger = KotlinLogging.logger {}
+	companion object {
+		const val STAR_REACTION = "⭐"
+		private val logger = KotlinLogging.logger {}
+	}
+
 	private val mutexes = Caffeine.newBuilder()
 			.expireAfterAccess(60, TimeUnit.SECONDS)
 			.build<Long, Mutex>()
 			.asMap()
 
-	suspend fun handleStarboardReaction(e: GenericMessageReactionEvent, starboardConfig: StarboardConfig) {
-		// Não enviar mensagens para o starboard se o canal é NSFW
+	suspend fun handleStarboardReaction(i18nContext: I18nContext, e: GenericMessageReactionEvent, starboardConfig: StarboardConfig) {
 		val eventTextChannel = if (e.isFromType(ChannelType.TEXT)) e.channel.asTextChannel() else return
+		// Não enviar mensagens para o starboard se o canal é NSFW
 		if (eventTextChannel.isNSFW)
 			return
 
 		val guild = e.guild
 		val starboardId = starboardConfig.starboardChannelId
 
-		if (e.emoji.isEmote("⭐")) {
+		if (e.emoji.isEmote(STAR_REACTION)) {
 			val textChannel = guild.getGuildMessageChannelById(starboardId) ?: return
 
 			// Caso não tenha permissão para ver o histórico de mensagens, retorne!
@@ -50,11 +59,11 @@ class StarboardModule(val loritta: LorittaBot) {
 			val mutex = mutexes.getOrPut(e.guild.idLong) { Mutex() }
 
 			mutex.withLock {
-				val msg = eventTextChannel.retrieveMessageById(e.messageId).await() ?: return@withLock
+				val messageThatWasReactedTo = eventTextChannel.retrieveMessageById(e.messageId).await() ?: return@withLock
 
 				// Se algum "engracadinho" está enviando reações nas mensagens do starboard, apenas ignore.
 				// Também verifique se a Lori pode falar no canal!
-				if (textChannel == msg.textChannel || !textChannel.canTalk())
+				if (textChannel == messageThatWasReactedTo.textChannel || !textChannel.canTalk())
 					return@withLock
 
 				val starboardEmbedMessage = loritta.newSuspendedTransaction {
@@ -74,48 +83,16 @@ class StarboardModule(val loritta: LorittaBot) {
 					}
 				}
 
-				val embed = EmbedBuilder()
 				val count = e.reaction.retrieveUsers().await().size
-				val content = msg.contentRaw
+				val emoji = getStarEmojiForReactionCount(count)
 
-				embed.setAuthor("${msg.author.name}#${msg.author.discriminator} (${msg.author.id})", null, msg.author.effectiveAvatarUrl)
-				embed.setTimestamp(msg.timeCreated)
-				embed.setColor(Color(255, 255, Math.max(255 - (count * 15), 0)))
-				embed.addField("Ir para a mensagem", "[Clique aqui](https://discordapp.com/channels/${msg.guild.id}/${msg.channel.id}/${msg.id})", false)
-
-				var emoji = "⭐"
-
-				if (count >= 5) {
-					emoji = "\uD83C\uDF1F"
+				val starCountMessage = MessageCreate {
+					this.content = "$emoji **$count** - ${eventTextChannel.asMention}"
+					embed(createStarboardEmbed(i18nContext, messageThatWasReactedTo, count))
+					actionRow(
+						Button.of(ButtonStyle.LINK, messageThatWasReactedTo.jumpUrl, i18nContext.get(I18nKeysData.Modules.Starboard.JumpToMessage))
+					)
 				}
-				if (count >= 10) {
-					emoji = "\uD83C\uDF20"
-				}
-				if (count >= 15) {
-					emoji = "\uD83D\uDCAB"
-				}
-				if (count >= 20) {
-					emoji = "\uD83C\uDF0C"
-				}
-
-				var hasImage = false
-				if (msg.attachments.isNotEmpty()) { // Se tem attachments...
-					var fieldValue = ""
-					for (attach in msg.attachments) {
-						if (attach.isImage && !hasImage) { // Se é uma imagem...
-							embed.setImage(attach.url) // Então coloque isso como a imagem no embed!
-							hasImage = true
-						}
-						fieldValue += "\uD83D\uDD17 **|** [${attach.fileName}](${attach.url})\n"
-					}
-					embed.addField("Arquivos", fieldValue, false)
-				}
-
-				embed.setDescription(content)
-
-				val starCountMessage = MessageCreateBuilder()
-				starCountMessage.addContent("$emoji **$count** - ${eventTextChannel.asMention}")
-				starCountMessage.setEmbeds(embed.build())
 
 				if (starboardMessage != null) {
 					if (starboardConfig.requiredStars > count) { // Remover embed já que o número de stars é menos que o número necessário de estrelas
@@ -125,20 +102,62 @@ class StarboardModule(val loritta: LorittaBot) {
 						starboardMessage.delete().await() // Deletar a embed do canal de starboard
 					} else {
 						// Editar a mensagem com a nova mensagem!
-						starboardMessage.editMessage(MessageEditData.fromCreateData(starCountMessage.build())).await()
+						starboardMessage.editMessage(MessageEditData.fromCreateData(starCountMessage)).await()
 					}
 				} else if (count >= starboardConfig.requiredStars) {
-					starboardMessage = textChannel.sendMessage(starCountMessage.build()).await()
+					starboardMessage = textChannel.sendMessage(starCountMessage).await()
 
 					loritta.newSuspendedTransaction {
 						StarboardMessage.new {
 							this.guildId = e.guild.idLong
 							this.embedId = starboardMessage.idLong
-							this.messageId = msg.idLong
+							this.messageId = messageThatWasReactedTo.idLong
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private fun getStarEmojiForReactionCount(count: Int) = when {
+		count == 69 -> Emotes.LoriBonk.toString() // Easter Egg
+		count >= 20 -> "\uD83C\uDF0C"
+		count >= 15 -> "\uD83D\uDCAB"
+		count >= 10 -> "\uD83C\uDF20"
+		count >= 5 -> "\uD83C\uDF1F"
+		else -> STAR_REACTION
+	}
+
+	private fun createStarboardEmbed(
+		i18nContext: I18nContext,
+		message: Message,
+		reactionCount: Int,
+	): InlineEmbed.() -> (Unit) = {
+		author(
+			message.author.asGlobalNameOrLegacyTag + " (${message.author.id})",
+			null,
+			message.author.effectiveAvatarUrl
+		)
+
+		// Show the message's attachments in the embed
+		if (message.attachments.isNotEmpty()) {
+			field(
+				"${Emotes.FileFolder} ${i18nContext.get(I18nKeysData.Modules.Starboard.Files(message.attachments.size))}",
+				message.attachments.joinToString("\n") {
+					"[${it.fileName}](${it.url})"
+				}
+			)
+		}
+
+		// Cut if the message is too long
+		description = message.contentRaw.shortenWithEllipsis(2048)
+
+		// Set the embed's image to the first attachment in the message
+		image = message.attachments.firstOrNull { it.contentType in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES }?.url
+
+		thumbnail = message.stickers.firstOrNull { it.formatType == Sticker.StickerFormat.PNG || it.formatType == Sticker.StickerFormat.APNG || it.formatType == Sticker.StickerFormat.GIF }?.iconUrl
+
+		color = Color(255, 255, (255 - (reactionCount * 15)).coerceAtLeast(0)).rgb
+		timestamp = message.timeCreated
 	}
 }

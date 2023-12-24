@@ -1,19 +1,23 @@
 package net.perfectdreams.loritta.morenitta.modules
 
+import dev.minn.jda.ktx.messages.MessageCreate
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
-import net.perfectdreams.loritta.morenitta.utils.escapeMentions
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.stripZeroWidthSpace
-import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
@@ -36,59 +40,84 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 		locale: BaseLocale,
 		i18nContext: I18nContext
 	): Boolean {
+		val guild = event.guild ?: return true
+
+		val mentionedMembers = event.message.mentions.members
+		if (mentionedMembers.isEmpty())
+			return true
+
+		val mentionedMembersIds = mentionedMembers.map { it.idLong }
+
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
-		for (mention in event.message.mentions.members) {
-			val lorittaProfile = loritta.getLorittaProfile(mention.user.idLong)
+		// Bulk get all profiles
+		val profiles = loritta.transaction {
+			Profile.find {
+				Profiles.id inList mentionedMembersIds
+			}
+		}
 
-			if (lorittaProfile != null && lorittaProfile.isAfk) {
-				var reason = lorittaProfile.afkReason
+		for (afkMemberLorittaProfile in profiles) {
+			if (afkMemberLorittaProfile.isAfk) {
+				var reason = afkMemberLorittaProfile.afkReason
 
 				if (reason != null) {
 					if (MiscUtils.hasInvite(reason.stripZeroWidthSpace())) {
 						reason = "¯\\_(ツ)_/¯"
 					}
 				}
-				afkMembers.add(Pair(mention, reason))
+				afkMembers.add(mentionedMembers.first { it.idLong == afkMemberLorittaProfile.userId } to reason)
 			}
 		}
 
 		if (afkMembers.isNotEmpty()) {
-			if (afkMembers.size == 1) {
-				event.channel.sendMessage(
-						LorittaReply(
-                                message = locale["loritta.modules.afk.userIsAfk", "**" + afkMembers[0].first.effectiveName.escapeMentions().stripCodeMarks() + "**"] + if (afkMembers[0].second != null) {
-                                    " **" + locale["commands.category.moderation.punishmentReason"] + "** » `${afkMembers[0].second}`"
-                                } else {
-                                    ""
-                                },
-                                prefix = "\uD83D\uDE34"
-                        ).build(JDAUser(event.author))
-				).queue {
+			// Okay, so there are AFK members in the message!
+			event.channel.sendMessage(
+				MessageCreate {
+					if (afkMembers.size == 1) {
+						val (afkMemberId, afkReason) = afkMembers.first()
+
+						styled(
+							buildString {
+								append(i18nContext.get(I18nKeysData.Modules.Afk.UserIsAfk("<@${afkMemberId}>")))
+								if (afkReason != null) {
+									append(" ")
+									// To make things simpler, we will use empty set
+									append(i18nContext.get(I18nKeysData.Modules.Afk.AfkReason(cleanUpForOutput(loritta, guild.idLong, emptySet(), afkReason))))
+								}
+							},
+							Emotes.LoriSleeping
+						)
+					} else {
+						styled(
+							buildString {
+								append(i18nContext.get(I18nKeysData.Modules.Afk.UsersAreAfk(afkMembers.joinToString { "<@${it.first}>" })))
+
+								for ((afkMemberId, afkReason) in afkMembers) {
+									if (afkReason != null) {
+										append("\n")
+										append(
+											i18nContext.get(
+												I18nKeysData.Modules.Afk.AfkUserReason(
+													"<@${afkMemberId}>",
+													cleanUpForOutput(loritta, guild.idLong, emptySet(), afkReason)
+												)
+											)
+										)
+									}
+								}
+							},
+							Emotes.LoriSleeping
+						)
+					}
+
+					allowedMentionTypes = EnumSet.of(Message.MentionType.EMOJI)
+				}
+			).setMessageReference(event.messageId)
+				.failOnInvalidReply(false)
+				.queue {
 					it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
 				}
-			} else {
-				val replies = mutableListOf<LorittaReply>()
-				replies.add(
-                        LorittaReply(
-                                message = locale["loritta.modules.afk.usersAreAfk", afkMembers.joinToString(separator = ", ", transform = { "**" + it.first.effectiveName.escapeMentions().stripCodeMarks() + "**" })],
-                                prefix = "\uD83D\uDE34"
-                        )
-				)
-				for ((member, reason) in afkMembers.filter { it.second != null }) {
-					replies.add(
-                            LorittaReply(
-                                    message = "**" + member.effectiveName.escapeMentions().stripCodeMarks() + "** » `${reason!!.stripCodeMarks().replace("discord.gg", "")}`",
-                                    mentionUser = false
-                            )
-					)
-				}
-				event.channel.sendMessage(
-						replies.joinToString("\n") { it.build(JDAUser(event.author)) }
-				).queue {
-					it.delete().queueAfter(5000, TimeUnit.MILLISECONDS)
-				}
-			}
 		}
 
 		return false

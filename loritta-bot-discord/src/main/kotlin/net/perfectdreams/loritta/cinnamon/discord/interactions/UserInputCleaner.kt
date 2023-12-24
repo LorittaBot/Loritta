@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 
 /**
@@ -49,6 +49,32 @@ suspend fun cleanUpForOutput(
 ): String {
     val canBypassInviteBlocker = if (guildId != null && memberRoleIds != null)
         loritta.pudding.serverConfigs.hasLorittaPermission(guildId.value, memberRoleIds.map { it.value }, LorittaPermission.ALLOW_INVITES)
+    else
+        true // This is in a DM then, so let's allow the user to bypass the check
+
+    return cleanUpForOutput(
+        input,
+        canBypassInviteBlocker,
+        escapeMentions,
+        stripCodeBackticks,
+        stripInvites
+    )
+}
+
+/**
+ * Clean up and escape user input, useful when displaying user input
+ */
+suspend fun cleanUpForOutput(
+    loritta: LorittaBot,
+    guildId: Long?,
+    memberRoleIds: Set<Long>?,
+    input: String,
+    escapeMentions: Boolean = true,
+    stripCodeBackticks: Boolean = true,
+    stripInvites: Boolean = true
+): String {
+    val canBypassInviteBlocker = if (guildId != null && memberRoleIds != null)
+        loritta.pudding.serverConfigs.hasLorittaPermission(guildId.toULong(), memberRoleIds.map { it.toULong() }, LorittaPermission.ALLOW_INVITES)
     else
         true // This is in a DM then, so let's allow the user to bypass the check
 
