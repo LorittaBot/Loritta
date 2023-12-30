@@ -12,7 +12,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
@@ -23,7 +22,10 @@ import net.perfectdreams.loritta.lorituber.server.processors.Processors
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
 import net.perfectdreams.loritta.serializable.lorituber.requests.*
-import net.perfectdreams.loritta.serializable.lorituber.responses.*
+import net.perfectdreams.loritta.serializable.lorituber.responses.GetChannelsByCharacterResponse
+import net.perfectdreams.loritta.serializable.lorituber.responses.GetCharactersByOwnerResponse
+import net.perfectdreams.loritta.serializable.lorituber.responses.GetServerInfoResponse
+import net.perfectdreams.loritta.serializable.lorituber.responses.LoriTuberRPCResponse
 import org.jetbrains.exposed.sql.*
 import kotlin.concurrent.thread
 import kotlin.time.Duration
@@ -111,7 +113,9 @@ class LoriTuberServer(val pudding: Pudding) {
 
                 // This allows the game to "catch up"
                 while (beginProcessingTicksTime > lastUpdate + TICK_DELAY) {
-                    println("Current Tick: $currentTick - Last Update Time: $lastUpdate")
+                    val timeUpdateDiff = beginProcessingTicksTime - lastUpdate
+                    val ticksBehind = timeUpdateDiff / TICK_DELAY
+                    println("Current Tick: $currentTick - Last Update Time: $lastUpdate - Ticks Behind: $ticksBehind")
 
                     val start = System.currentTimeMillis()
 
