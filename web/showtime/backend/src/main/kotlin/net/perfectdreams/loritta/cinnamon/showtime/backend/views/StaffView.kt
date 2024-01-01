@@ -70,12 +70,6 @@ class StaffView(
                     socialNetworks.add(GitHubSocialNetwork("DanielaGC"))
                 }
 
-                user("joaoesteves10") {
-                    socialNetworks.add(DiscordSocialNetwork(214486492909666305))
-                    socialNetworks.add(TwitterSocialNetwork("joaoesteves10a5"))
-                    socialNetworks.add(GitHubSocialNetwork("joaoesteves10"))
-                }
-
                 user("PeterStark000") {
                     socialNetworks.add(DiscordSocialNetwork(361977144445763585))
                     socialNetworks.add(GitHubSocialNetwork("PeterStark000"))
