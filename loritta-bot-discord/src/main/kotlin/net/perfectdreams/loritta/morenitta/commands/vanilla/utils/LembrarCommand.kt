@@ -16,7 +16,6 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import java.awt.Color
@@ -91,7 +90,7 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 			Reminder.new {
 				userId = context.userHandle.idLong
 				guildId = context.guild.idLong
-				channelId = context.message.textChannel.idLong
+				channelId = context.message.guildChannel.idLong
 				remindAt = (zonedDateTime.toEpochSecond() * 1000)
 				content = messageContent
 			}

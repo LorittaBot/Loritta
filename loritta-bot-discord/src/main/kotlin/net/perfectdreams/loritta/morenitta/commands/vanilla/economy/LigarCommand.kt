@@ -138,7 +138,7 @@ class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", cate
 							)
 						)
 
-						loritta.bomDiaECia.announceWinner(context.message.textChannel, context.guild, context.userHandle)
+						loritta.bomDiaECia.announceWinner(context.message.guildChannel, context.guild, context.userHandle)
 					} else {
 						context.reply(
 							LorittaReply(

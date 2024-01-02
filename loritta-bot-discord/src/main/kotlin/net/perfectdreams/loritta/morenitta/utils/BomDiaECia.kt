@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -243,7 +244,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 	}
 
 	@Synchronized
-	fun announceWinner(channel: TextChannel, guild: Guild, user: User) {
+	fun announceWinner(channel: GuildMessageChannelUnion, guild: Guild, user: User) {
 		activeTextChannels.clear()
 
 		val validTextChannels = this.validTextChannels

@@ -160,7 +160,7 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
      */
     private suspend fun DiscordCommandContext.clear(messages: List<Message>) {
         unavailableGuilds.add(guild.idLong) // Adding the operation to the guild
-        discordMessage.textChannel.purgeMessages(messages)
+        discordMessage.guildChannel.purgeMessages(messages)
                 .map { it.asDeferred() }.joinAll() // Purging the messages and awaiting
 
         unavailableGuilds.remove(guild.idLong)

@@ -40,7 +40,6 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -412,7 +411,7 @@ class CommandManager(val loritta: LorittaBot) {
 				}
 
 				if (!context.canUseCommand()) {
-					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
+					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member!!.hasPermission(ev.message.guildChannel, it) }
 					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.getLocalizedName(i18nContext) + "`" })
 					context.reply(
 						LorittaReply(
@@ -487,7 +486,7 @@ class CommandManager(val loritta: LorittaBot) {
 
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.selfMember.hasPermission(ev.channel as GuildChannel, Permission.MESSAGE_MANAGE) && (serverConfig.deleteMessageAfterCommand)) {
-						ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+						ev.message.guildChannel.deleteMessageById(ev.messageId).queue({}, {
 							// We don't care if we weren't able to delete the message because it was already deleted
 						})
 					}

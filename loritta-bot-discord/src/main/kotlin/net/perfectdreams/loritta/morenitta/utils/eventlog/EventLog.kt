@@ -7,9 +7,6 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessage
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.dao.StoredMessage
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
@@ -17,22 +14,19 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
-import net.dv8tion.jda.api.entities.Webhook
-import net.dv8tion.jda.api.entities.WebhookType
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.dao.StoredMessage
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import org.json.JSONException
 import pw.forst.exposed.insertOrUpdate
 import java.awt.Color
@@ -292,7 +286,7 @@ object EventLog {
 					if (storedMessage != null && storedMessage.decryptContent(loritta) != message.contentRaw && eventLogConfig.messageEdited) {
 						val embed = WebhookEmbedBuilder()
 							.setColor(Color(238, 241, 0).rgb)
-							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.decryptContent(loritta), message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
+							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.decryptContent(loritta), message.contentRaw, message.guildChannel.asMention).joinToString("\n")}")
 							.setAuthor(WebhookEmbed.EmbedAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl))
 							.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", message.member?.user?.id], null))
 							.setTimestamp(Instant.now())

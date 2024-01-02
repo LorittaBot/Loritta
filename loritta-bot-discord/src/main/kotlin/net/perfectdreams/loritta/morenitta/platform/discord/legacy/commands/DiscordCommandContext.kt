@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands
 
 import com.github.kevinsawicki.http.HttpRequest
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
@@ -17,20 +15,20 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.api.commands.Command
-import net.perfectdreams.loritta.morenitta.messages.LorittaMessage
-import net.perfectdreams.loritta.common.utils.image.Image
-import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.image.Image
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.messages.LorittaMessage
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordMessage
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
-import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import org.jsoup.Jsoup
 import java.io.File
@@ -79,7 +77,7 @@ class DiscordCommandContext(
 	}
 
 	suspend fun sendMessage(message: MessageCreateData): Message {
-		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
+		if (isPrivateChannel || discordMessage.guildChannel.canTalk()) {
 			return discordMessage.channel.sendMessage(message)
 				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
@@ -210,7 +208,7 @@ class DiscordCommandContext(
 		}
 
 		// Nothing found? Try retrieving the replied message content
-		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.discordMessage.textChannel, Permission.MESSAGE_HISTORY)) {
+		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.discordMessage.guildChannel, Permission.MESSAGE_HISTORY)) {
 			val referencedMessage = discordMessage.referencedMessage
 			if (referencedMessage != null) {
 				for (embed in referencedMessage.embeds) {
