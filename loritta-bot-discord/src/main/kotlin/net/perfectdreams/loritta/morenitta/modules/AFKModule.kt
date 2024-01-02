@@ -54,7 +54,7 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 		val profiles = loritta.transaction {
 			Profile.find {
 				Profiles.id inList mentionedMembersIds
-			}
+			}.toList()
 		}
 
 		for (afkMemberLorittaProfile in profiles) {
