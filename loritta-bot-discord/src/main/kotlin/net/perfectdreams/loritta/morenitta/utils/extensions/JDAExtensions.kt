@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
+import net.perfectdreams.loritta.morenitta.utils.stripNewLines
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 
@@ -452,7 +453,7 @@ fun User.asUserNameCodeBlockPreviewTag(
         "$previewName#${discriminator}"
     }
 
-    return "`$previewName` (`$nameDisplay` | `$id`)"
+    return "${safeInlineCodeBlock(previewName)} (`${safeInlineCodeBlock(nameDisplay)}` | `$id`)"
 }
 
 /**
@@ -479,3 +480,12 @@ val User.asGlobalNameOrLegacyTag: String
  */
 val User.asPomeloOrLegacyTag
     get() = if (this.discriminator == "0000") { "@${this.name}" } else this.asTag
+
+/**
+ * Safely creates an inline code block with the following [input]
+ *
+ * Code marks (`) and new lines are stripped from the input, and if the content is blank, the result will be ` ` to avoid formatting issues
+ */
+fun safeInlineCodeBlock(input: String): String {
+    return "`${input.stripNewLines().stripCodeMarks().ifBlank { " " }}`"
+}

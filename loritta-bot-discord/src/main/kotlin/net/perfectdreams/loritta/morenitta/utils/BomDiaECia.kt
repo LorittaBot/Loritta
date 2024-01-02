@@ -1,8 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.threads.BomDiaECiaThread
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -12,13 +9,16 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
+import net.perfectdreams.loritta.morenitta.threads.BomDiaECiaThread
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.utils.locale.getPronoun
 import java.awt.Color
@@ -254,7 +254,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 		loritta.legacyLocales.forEach { localeId, locale ->
 			val message = MessageCreateBuilder()
 				.addContent("<:yudi:446394608256024597> **|** Parabéns ${user.asUserNameCodeBlockPreviewTag()} por ter ligado primeiro em `${guild.name.stripCodeMarks().stripLinks()}` (`${guild.id}`)!")
-
+				.setAllowedMentions(listOf(Message.MentionType.EMOJI))
 			messageForLocales[localeId] = message.build()
 		}
 
