@@ -13,10 +13,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity.ActivityType
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrowserFingerprints
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxNotifiedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -25,20 +28,16 @@ import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestions
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
 import net.perfectdreams.loritta.serializable.responses.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -239,7 +238,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         dailyPayout = (dailyPayout * multipliedBy!!).toInt()
                                     }
 
-                                    val id = userIdentification.id.toLong()
+                                    val userId = userIdentification.id.toLong()
                                     email!!
 
                                     val dailyPayoutWithoutAnyBonuses = dailyPayout
@@ -280,7 +279,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         }
 
                                         val dailyId = Dailies.insertAndGetId {
-                                            it[Dailies.receivedById] = id
+                                            it[Dailies.receivedById] = userId
                                             it[Dailies.receivedAt] = receivedDailyAt
                                             it[Dailies.ip] = ip
                                             it[Dailies.email] = email
@@ -289,7 +288,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         }
 
                                         val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-                                            it[SonhosTransactionsLog.user] = id
+                                            it[SonhosTransactionsLog.user] = userId
                                             it[SonhosTransactionsLog.timestamp] = Instant.ofEpochMilli(receivedDailyAt)
                                         }
 
@@ -299,13 +298,17 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             it[DailyRewardSonhosTransactionsLog.quantity] = dailyPayout.toLong()
                                         }
 
+                                        DailyTaxNotifiedUsers.deleteWhere {
+                                            DailyTaxNotifiedUsers.user eq userId
+                                        }
+
                                         lorittaProfile.addSonhosAndAddToTransactionLogNested(
                                             dailyPayout.toLong(),
                                             SonhosPaymentReason.DAILY
                                         )
                                     }
 
-                                    loritta.pudding.users.deleteSkipUserDailyTaxDirectMessageEntry(UserId(id))
+                                    loritta.pudding.users.deleteSkipUserDailyTaxDirectMessageEntry(UserId(userId))
 
                                     logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
 
