@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SentMessages
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -40,6 +41,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.update
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -164,13 +166,11 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 					start = System.nanoTime()
 					// We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
-					val rolesLorittaPermissions =
-						serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, event.guild)
+					val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, event.guild)
 					logIfEnabled(enableProfiling) { "Loading Loritta's role permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 					start = System.nanoTime()
-					val memberLorittaPermissions =
-						LorittaUser.convertRolePermissionsMapToMemberPermissionList(member, rolesLorittaPermissions)
+					val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(member, rolesLorittaPermissions)
 					logIfEnabled(enableProfiling) { "Converting Loritta's role permissions to member permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 					start = System.nanoTime()
@@ -260,8 +260,12 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 							it[SentMessages.messageId] = event.messageIdLong
 							it[SentMessages.sentAt] = event.message.timeCreated.toInstant()
 						}
+
+						if (lorittaProfile != null && lorittaProfile.isAfk) {
+							lorittaProfile.isAfk = false
+						}
 					}
-					logIfEnabled(enableProfiling) { "Tracking sent message took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
+					logIfEnabled(enableProfiling) { "Tracking sent message and update AFK state took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 					start = System.nanoTime()
 					val lorittaMessageEvent = LorittaMessageEvent(
@@ -290,8 +294,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 					for (module in messageReceivedModules) {
 						start = System.nanoTime()
-						if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext)
-						)
+						if (module.matches(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext) && module.handle(lorittaMessageEvent, lorittaUser, lorittaProfile, serverConfig, locale, i18nContext))
 							return@launchMessageJob
 						logIfEnabled(enableProfiling) { "Executing ${module::class.simpleName} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 					}
