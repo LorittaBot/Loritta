@@ -75,11 +75,11 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 			event.channel.sendMessage(
 				MessageCreate {
 					if (afkMembers.size == 1) {
-						val (afkMemberId, afkReason) = afkMembers.first()
+						val (afkMember, afkReason) = afkMembers.first()
 
 						styled(
 							buildString {
-								append(i18nContext.get(I18nKeysData.Modules.Afk.UserIsAfk("<@${afkMemberId}>")))
+								append(i18nContext.get(I18nKeysData.Modules.Afk.UserIsAfk(afkMember.asMention)))
 								if (afkReason != null) {
 									append(" ")
 									// To make things simpler, we will use empty set
@@ -93,13 +93,13 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 							buildString {
 								append(i18nContext.get(I18nKeysData.Modules.Afk.UsersAreAfk(afkMembers.joinToString { it.first.asMention })))
 
-								for ((afkMemberId, afkReason) in afkMembers) {
+								for ((afkMember, afkReason) in afkMembers) {
 									if (afkReason != null) {
 										append("\n")
 										append(
 											i18nContext.get(
 												I18nKeysData.Modules.Afk.AfkUserReason(
-													"<@${afkMemberId}>",
+													afkMember.asMention,
 													cleanUpForOutput(loritta, guild.idLong, emptySet(), afkReason)
 												)
 											)
