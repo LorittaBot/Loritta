@@ -29,7 +29,7 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
         locale: BaseLocale,
         i18nContext: I18nContext
     ): Boolean {
-		return event.textChannel?.canTalk() == true
+		return event.textChannel?.canTalk() == false
 	}
 
 	override suspend fun handle(
@@ -40,11 +40,11 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 		locale: BaseLocale,
 		i18nContext: I18nContext
 	): Boolean {
-		val guild = event.guild ?: return true
+		val guild = event.guild ?: return false
 
 		val mentionedMembers = event.message.mentions.members
 		if (mentionedMembers.isEmpty())
-			return true
+			return false
 
 		val mentionedMembersIds = mentionedMembers.map { it.idLong }
 
