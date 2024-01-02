@@ -126,7 +126,7 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
                                 now,
                                 plusXDaysAtMidnight
                             )
-                            
+
                             alreadyWarnedThatTheyAreGoingToBeTaxed.add(inactiveDailyUser.id)
                         }
                     }
