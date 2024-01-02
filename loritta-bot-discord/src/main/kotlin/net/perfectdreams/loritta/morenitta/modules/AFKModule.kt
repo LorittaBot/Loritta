@@ -29,7 +29,7 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
         locale: BaseLocale,
         i18nContext: I18nContext
     ): Boolean {
-		return event.textChannel?.canTalk() == false
+		return event.textChannel?.canTalk() == true
 	}
 
 	override suspend fun handle(
@@ -91,7 +91,7 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 					} else {
 						styled(
 							buildString {
-								append(i18nContext.get(I18nKeysData.Modules.Afk.UsersAreAfk(afkMembers.joinToString { "<@${it.first}>" })))
+								append(i18nContext.get(I18nKeysData.Modules.Afk.UsersAreAfk(afkMembers.joinToString { it.first.asMention })))
 
 								for ((afkMemberId, afkReason) in afkMembers) {
 									if (afkReason != null) {
