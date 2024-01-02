@@ -121,34 +121,13 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
                     DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.loritta.discord.applicationId, 1) { threshold, inactiveDailyUser ->
                         // Don't warn them about the tax if they were already taxed before
                         if (inactiveDailyUser.id !in alreadyWarnedThatTheyWereTaxed && inactiveDailyUser.id !in alreadyWarnedThatTheyAreGoingToBeTaxed) {
-                            logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax warn" }
-
-                            val userNotificationId = UserNotifications.insertAndGetId {
-                                it[UserNotifications.timestamp] = now.toJavaInstant()
-                                it[UserNotifications.user] = inactiveDailyUser.id
-                            }
-
-                            DailyTaxWarnUserNotifications.insert {
-                                it[DailyTaxWarnUserNotifications.timestampLog] = userNotificationId
-                                it[DailyTaxWarnUserNotifications.inactivityTaxTimeWillBeTriggeredAt] = plusXDaysAtMidnight.toJavaInstant()
-                                it[DailyTaxWarnUserNotifications.currentSonhos] = inactiveDailyUser.money
-                                it[DailyTaxWarnUserNotifications.howMuchWasRemoved] = inactiveDailyUser.moneyToBeRemoved
-                                it[DailyTaxWarnUserNotifications.maxDayThreshold] = threshold.maxDayThreshold
-                                it[DailyTaxWarnUserNotifications.minimumSonhosForTrigger] = threshold.minimumSonhosForTrigger
-                                it[DailyTaxWarnUserNotifications.tax] = threshold.tax
-                            }
-
-                            // insert ignore: "allows insert statements to be executed without throwing any ignorable errors."
-                            DailyTaxNotifiedUsers.insertIgnore {
-                                it[DailyTaxNotifiedUsers.notifiedAt] = now.toJavaInstant()
-                                it[DailyTaxNotifiedUsers.user] = inactiveDailyUser.id
-                            }
-
-                            DailyTaxUtils.insertImportantNotification(
+                            DailyTaxWarner.processDailyTaxWarning(
+                                threshold,
                                 inactiveDailyUser,
-                                userNotificationId.value
+                                now,
+                                plusXDaysAtMidnight
                             )
-
+                            
                             alreadyWarnedThatTheyAreGoingToBeTaxed.add(inactiveDailyUser.id)
                         }
                     }
