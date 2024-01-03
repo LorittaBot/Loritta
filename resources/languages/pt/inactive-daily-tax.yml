@@ -1,6 +1,7 @@
 ---
 inactiveDailyTax:
-  title: "Imposto de Inatividade no Prêmio Diário"
+  titleWarning: "Pegue o seu Prêmio Diário hoje ou você perderá sonhos!"
+  titleTaxed: "Imposto de Inatividade no Prêmio Diário"
   warn:
     - "Olá {user}! Como você tem mais de {sonhosTaxBracketThreshold,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e está há mais de {daysWithoutGettingDaily,plural,=0{# dias} one {# dia} other {# dias}} sem pegar a sua recompensa diária, o governo da LorittaLand está dando uma bizoiada nos seus {currentSonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e irão passar a mão em {howMuchWillBeRemoved,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (taxa de {taxPercentage, number,#.##%}) seus se você não pegar a recompensa diária até {inactivityTaxTimeWillBeTriggeredAt}!"
     - ""

@@ -11,28 +11,24 @@ import dev.kord.rest.json.request.MultipartMessageCreateRequest
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.route.Position
 import dev.kord.rest.service.RestClient
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.messages.InlineMessage
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.serializable.DailyTaxTaxedUserNotification
 import net.perfectdreams.loritta.serializable.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.serializable.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.*
@@ -195,7 +191,7 @@ object UserUtils {
         data: DailyTaxWarnUserNotification
     ): MessageBuilder.() -> Unit = {
         embed {
-            title = i18nContext.get(I18nKeysData.InactiveDailyTax.Title)
+            title = i18nContext.get(I18nKeysData.InactiveDailyTax.TitleWarning)
 
             description = i18nContext.get(
                 I18nKeysData.InactiveDailyTax.Warn(
@@ -238,7 +234,7 @@ object UserUtils {
         data: DailyTaxTaxedUserNotification
     ): MessageBuilder.() -> Unit = {
         embed {
-            title = i18nContext.get(I18nKeysData.InactiveDailyTax.Title)
+            title = i18nContext.get(I18nKeysData.InactiveDailyTax.TitleTaxed)
 
             description = i18nContext.get(
                 I18nKeysData.InactiveDailyTax.Taxed(
