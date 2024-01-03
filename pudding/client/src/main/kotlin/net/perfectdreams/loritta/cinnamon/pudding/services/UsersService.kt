@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -330,19 +329,6 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             CachedDiscordUsersDirectMessageChannels.deleteWhere {
                 CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong()
             }
-        }
-    }
-
-    suspend fun insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
-        DailyTaxUsersToSkipDirectMessages.insert {
-            it[DailyTaxUsersToSkipDirectMessages.userId] = userId.value.toLong()
-            it[DailyTaxUsersToSkipDirectMessages.timestamp] = java.time.Instant.now()
-        }
-    }
-
-    suspend fun deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
-        DailyTaxUsersToSkipDirectMessages.deleteWhere {
-            DailyTaxUsersToSkipDirectMessages.userId eq userId.value.toLong()
         }
     }
 }

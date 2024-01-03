@@ -229,7 +229,6 @@ class Pudding(
             DailyProfileShopItems,
             DailyShopItems,
             DailyShops,
-            DailyTaxUsersToSkipDirectMessages,
             DiscordLorittaApplicationCommandHashes,
             DonationKeys,
             CollectedEaster2023Eggs,

@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds.THRESHOLDS
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import org.jetbrains.exposed.sql.insert
@@ -89,22 +88,11 @@ object DailyTaxUtils {
     }
 
     fun insertImportantNotification(inactiveDailyUser: InactiveDailyUser, notificationId: Long) {
-        val shouldSkipDirectMessage = DailyTaxUsersToSkipDirectMessages.select {
-            DailyTaxUsersToSkipDirectMessages.userId eq inactiveDailyUser.id
-        }.count() == 1L
-
-        if (!shouldSkipDirectMessage) {
-            PendingImportantNotifications.insert {
-                it[PendingImportantNotifications.userId] = inactiveDailyUser.id
-                it[PendingImportantNotifications.state] = PendingImportantNotificationState.PENDING
-                it[PendingImportantNotifications.notification] = notificationId
-                it[PendingImportantNotifications.submittedAt] = Instant.now()
-            }
-
-            DailyTaxUsersToSkipDirectMessages.insert {
-                it[DailyTaxUsersToSkipDirectMessages.userId] = inactiveDailyUser.id
-                it[DailyTaxUsersToSkipDirectMessages.timestamp] = Instant.now()
-            }
+        PendingImportantNotifications.insert {
+            it[PendingImportantNotifications.userId] = inactiveDailyUser.id
+            it[PendingImportantNotifications.state] = PendingImportantNotificationState.PENDING
+            it[PendingImportantNotifications.notification] = notificationId
+            it[PendingImportantNotifications.submittedAt] = Instant.now()
         }
     }
 
