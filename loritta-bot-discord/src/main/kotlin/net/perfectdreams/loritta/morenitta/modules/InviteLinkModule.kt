@@ -29,6 +29,9 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 	}
 
+	/**
+	 * Checks if the given [event] matches the conditions for invite link blocking.
+	 */
 	override suspend fun matches(
 		event: LorittaMessageEvent,
 		lorittaUser: LorittaUser,
@@ -52,6 +55,9 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		return true
 	}
 
+	/**
+	 * Handles the invite link blocking logic for the given [event].
+	 */
 	override suspend fun handle(
 		event: LorittaMessageEvent,
 		lorittaUser: LorittaUser,
@@ -118,12 +124,12 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 			}
 		}
 
-		// Se existe algum link na mensagem...
+		// If there is no link in the message...
 		if (validMatchers.isEmpty())
 			return false
 
-		// Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
-		// necessário, e, ao pegar, vamos guardar no cache de invites
+		// To avoid using the Discord API to get the server invites every time, we will only get it if it is really necessary,
+		// and, when getting it, we will store it in the invites cache
 		val whitelisted = mutableListOf<String>()
 		if (inviteBlockerConfig.whitelistServerInvites) {
 			guild.vanityCode?.let { whitelisted.add(it) }
@@ -138,8 +144,6 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 				whitelisted.add(it)
 			}
 		}
-
-		// whitelisted.addAll(inviteBlockerConfig.whitelistedIds)
 
 		for (matcher in validMatchers) {
 			val urls = mutableSetOf<String>()
@@ -164,7 +168,6 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 				if (inviteBlockerConfig.tellUser && !warnMessage.isNullOrEmpty() && message.guildChannel.canTalk()) {
 					if (event.member != null && event.member.hasPermission(Permission.MANAGE_SERVER)) {
-						// Se a pessoa tiver permissão para ativar a permissão de convites, faça que a Loritta recomende que ative a permissão
 						val topRole = event.member.roles.sortedByDescending { it.position }.firstOrNull { !it.isPublicRole }
 
 						if (topRole != null) {
@@ -197,7 +200,6 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 									return@transaction true
 								}
 
-								// Update message updates the original interaction message, in this case, where the button is
 								deferredEdit.editOriginalComponents(ActionRow.of(context.event.component.asDisabled())).await()
 
 								context.reply(true) {
@@ -252,33 +254,40 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		return false
 	}
 
-	fun isYouTubeLink(content: String?): Boolean {
-		if (content.isNullOrBlank())
-			return false
+	/**
+	 * Checks if the given [content] contains a YouTube link.
+	 */
+	private fun isYouTubeLink(content: String?): Boolean {
+		if (content.isNullOrBlank()) return false
 
 		val pattern = Constants.URL_PATTERN
 		val matcher = pattern.matcher(content)
-		if (matcher.find()) {
-			val everything = matcher.group(0)
-			val afterSlash = matcher.group(1)
-			val uri = everything.replace(afterSlash, "")
-			return uri.endsWith("youtube.com") || uri.endsWith("youtu.be")
-		} else {
-			return false
-		}
+		return matcher.find() && matcher.group(0).endsWith("youtube.com") || matcher.group(0).endsWith("youtu.be")
 	}
 
-	fun getMatcherIfHasInviteLink(content: String?): Matcher? {
-		if (content.isNullOrBlank())
-			return null
+	/**
+	 * Retrieves a matcher for invite links in the given [content].
+	 */
+	private fun getMatcherIfHasInviteLink(content: String?): Matcher? {
+		content ?: return null
 
-		val pattern = Constants.URL_PATTERN
-		val matcher = pattern.matcher(content)
-		if (matcher.find()) {
-			matcher.reset()
-			return matcher
-		} else {
-			return null
-		}
+		val unicodePattern = buildUnicodePattern()
+		val pattern = "(?:https?://)?(?:www[.])?${unicodeLookalike("discord")}(?:[.]gg|app[.]com/invite)/[a-zA-Z0-9]+|\\\\[a-zA-Z0-9]+|$unicodePattern"
+
+		return Pattern.compile(pattern).matcher(content).takeIf(Matcher::find)
+	}
+
+	/**
+	 * Replaces characters in [input] with their Unicode look-alikes.
+	 */
+	private fun unicodeLookalike(input: String): String {
+		return input.map { unicodeLookalikes[it.toString().toLowerCase()]?.firstOrNull() ?: it.toString() }.joinToString("")
+	}
+
+	/**
+	 * Builds a Unicode pattern based on the provided Unicode look-alikes.
+	 */
+	private fun buildUnicodePattern(): String {
+		return unicodeLookalikes.flatMap { (key, values) -> values.map { "(?i:$key${it.replace("\\", "\\\\")})" } }.joinToString("|")
 	}
 }
