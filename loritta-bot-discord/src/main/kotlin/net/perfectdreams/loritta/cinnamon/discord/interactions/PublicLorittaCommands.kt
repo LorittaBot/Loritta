@@ -42,7 +42,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(SummonCommand(languageManager))
             register(TextTransformCommand(languageManager))
             register(JankenponCommand(languageManager))
-            register(HungerGamesCommand(languageManager))
             register(SoundboxCommand(languageManager))
 
             // ===[ IMAGES ]===

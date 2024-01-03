@@ -96,7 +96,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			GiveawayEndCommand(loritta),
 			GiveawayRerollCommand(loritta),
 			GiveawaySetupCommand(loritta),
-			HungerGamesCommand(loritta),
 
 			// ===[ IMAGES ]===
 			ArtCommand(loritta),
