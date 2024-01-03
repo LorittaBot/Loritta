@@ -268,17 +268,29 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		}
 	}
 
-	fun getMatcherIfHasInviteLink(content: String?): Matcher? {
-		if (content.isNullOrBlank())
-			return null
+ /**
+	 * Retrieves a matcher for invite links in the given [content].
+	 */
+	private fun getMatcherIfHasInviteLink(content: String?): Matcher? {
+		content ?: return null
 
-		val pattern = Constants.URL_PATTERN
-		val matcher = pattern.matcher(content)
-		if (matcher.find()) {
-			matcher.reset()
-			return matcher
-		} else {
-			return null
-		}
+		val unicodePattern = buildUnicodePattern()
+		val pattern = "(?:https?://)?(?:www[.])?$unicodePattern(?:[.]gg|app[.]com/invite)/[a-zA-Z0-9]+|\\\\[a-zA-Z0-9]+|$unicodePattern"
+
+		return Pattern.compile(pattern).matcher(content).takeIf(Matcher::find)
 	}
-}
+
+	/**
+	 * Replaces characters in [input] with their Unicode look-alikes.
+	 */
+	private fun unicodeLookalike(input: String): String {
+		return input.map { unicodeLookalikes[it.toString().toLowerCase()]?.firstOrNull() ?: it.toString() }.joinToString("")
+	}
+
+	/**
+	 * Builds a Unicode pattern based on the provided Unicode look-alikes.
+	 */
+	private fun buildUnicodePattern(): String {
+		return unicodeLookalikes.flatMap { (key, values) -> values.map { "(?i:$key${it.replace("\\", "\\\\")})" } }.joinToString("|")
+	}
+
