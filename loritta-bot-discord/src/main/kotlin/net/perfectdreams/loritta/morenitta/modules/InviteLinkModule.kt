@@ -28,6 +28,32 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 	companion object {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 	}
+/**
+ * Map of Unicode look-alikes for characters in invite links.
+ */
+private val unicodeLookalikes = mapOf(
+    "a" to listOf("\u0430", "\u00e0", "\u00e1", "\u1ea1", "\u0105"),
+    "c" to listOf("\u0441", "\u0188", "\u010b"),
+    "d" to listOf("\u0501", "\u0257"),
+    "e" to listOf("\u0435", "\u1eb9", "\u0117", "\u0117", "\u00e9", "\u00e8"),
+    "g" to listOf("\u0121"),
+    "h" to listOf("\u04bb"),
+    "i" to listOf("\u0456", "\u00ed", "\u00ec", "\u00ef"),
+    "j" to listOf("\u0458", "\u029d"),
+    "k" to listOf("\u03ba"),
+    "l" to listOf("\u04cf", "\u1e37"),
+    "n" to listOf("\u0578"),
+    "o" to listOf("\u043e", "\u03bf", "\u0585", "\u022f", "\u1ecd", "\u1ecf", "\u01a1", "\u00f6", "\u00f3", "\u00f2"),
+    "p" to listOf("\u0440"),
+    "q" to listOf("\u0566"),
+    "s" to listOf("\u0282"),
+    "u" to listOf("\u03c5", "\u057d", "\u00fc", "\u00fa", "\u00f9"),
+    "v" to listOf("\u03bd", "\u0475"),
+    "x" to listOf("\u0445", "\u04b3"),
+    "y" to listOf("\u0443", "\u00fd"),
+    "z" to listOf("\u0290", "\u017c")
+)
+
 
 	override suspend fun matches(
 		event: LorittaMessageEvent,
@@ -268,17 +294,29 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		}
 	}
 
-	fun getMatcherIfHasInviteLink(content: String?): Matcher? {
-		if (content.isNullOrBlank())
-			return null
+	/**
+	 * Retrieves a matcher for invite links in the given [content].
+	 */
+	private fun getMatcherIfHasInviteLink(content: String?): Matcher? {
+		content ?: return null
 
-		val pattern = Constants.URL_PATTERN
-		val matcher = pattern.matcher(content)
-		if (matcher.find()) {
-			matcher.reset()
-			return matcher
-		} else {
-			return null
-		}
+		val unicodePattern = buildUnicodePattern()
+		val pattern = "(?:https?://)?(?:www[.])?$unicodePattern(?:[.]gg|app[.]com/invite)/[a-zA-Z0-9]+|\\\\[a-zA-Z0-9]+|$unicodePattern"
+
+		return Pattern.compile(pattern).matcher(content).takeIf(Matcher::find)
 	}
-}
+
+	/**
+	 * Replaces characters in [input] with their Unicode look-alikes.
+	 */
+	private fun unicodeLookalike(input: String): String {
+		return input.map { unicodeLookalikes[it.toString().toLowerCase()]?.firstOrNull() ?: it.toString() }.joinToString("")
+	}
+
+	/**
+	 * Builds a Unicode pattern based on the provided Unicode look-alikes.
+	 */
+	private fun buildUnicodePattern(): String {
+		return unicodeLookalikes.flatMap { (key, values) -> values.map { "(?i:$key${it.replace("\\", "\\\\")})" } }.joinToString("|")
+	}
+
