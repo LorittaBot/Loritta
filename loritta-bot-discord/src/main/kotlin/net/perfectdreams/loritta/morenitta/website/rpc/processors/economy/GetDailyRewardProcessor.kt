@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
 import net.perfectdreams.loritta.serializable.responses.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
