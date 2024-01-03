@@ -308,8 +308,6 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         )
                                     }
 
-                                    loritta.pudding.users.deleteSkipUserDailyTaxDirectMessageEntry(UserId(userId))
-
                                     logger.info { "${lorittaProfile.userId} recebeu ${dailyPayout} (quantidade atual: ${lorittaProfile.money}) sonhos no Daily! Email: ${userIdentification.email} - IP: ${ip} - Patrocinado? ${sponsoredBy} ${multipliedBy}" }
 
                                     // Get current Loritta activity
