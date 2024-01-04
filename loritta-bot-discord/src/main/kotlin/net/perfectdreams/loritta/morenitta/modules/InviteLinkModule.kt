@@ -77,6 +77,8 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 				// (yes, two issues, wow)
 				// So we are going to replace all /+ to /, so https://discord.gg//loritta becomes https://discord.gg/loritta
 				.replace(Regex("/+"), "/")
+				// Fixes links like https://discord.com/../invite/sparklypower
+				.replace("../", "")
 
 		val validMatchers = mutableListOf<Matcher>()
 		val contentMatcher = getMatcherIfHasInviteLink(content)
