@@ -8,19 +8,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleTicketsSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.RaffleType
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.RaffleCommand
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredRaffleTicketsTransaction
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import java.sql.Timestamp
@@ -91,17 +90,14 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 						SonhosPaymentReason.RAFFLE
 					)
 
-					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-						it[user] = userId
-						it[timestamp] = Instant.now()
-					}
-
-					RaffleTicketsSonhosTransactionsLog.insert {
-						it[timestampLog] = transactionLogId
-						it[sonhos] = requiredCount
-						it[raffle] = currentRaffle[Raffles.id]
-						it[ticketQuantity] = quantity.toLong()
-					}
+					// Cinnamon transaction log
+					SimpleSonhosTransactionsLogUtils.insert(
+						userId,
+						Instant.now(),
+						TransactionType.RAFFLE,
+						requiredCount,
+						StoredRaffleTicketsTransaction(currentRaffle[Raffles.id].value, quantity)
+					)
 
 					val now = Instant.now()
 					val sqlTimestampOfNow = Timestamp.from(now)

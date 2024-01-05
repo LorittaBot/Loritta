@@ -11,14 +11,17 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleRewardSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.RaffleType
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredRaffleRewardTransaction
 import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.io.File
@@ -138,15 +141,14 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                                 SonhosPaymentReason.RAFFLE
                             )
 
-                            val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                it[user] = winnerId
-                                it[timestamp] = Instant.now()
-                            }
-
-                            RaffleRewardSonhosTransactionsLog.insert {
-                                it[timestampLog] = transactionLogId
-                                it[raffle] = currentRaffle[Raffles.id]
-                            }
+                            // Cinnamon transaction log
+                            SimpleSonhosTransactionsLogUtils.insert(
+                                winnerId,
+                                Instant.now(),
+                                TransactionType.RAFFLE,
+                                paidOutPrizeAfterTax,
+                                StoredRaffleRewardTransaction(currentRaffle[Raffles.id].value)
+                            )
 
                             dmsToBeSent.add(
                                 RaffleDM.WonTheRaffle(

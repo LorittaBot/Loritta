@@ -10,13 +10,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.DivineInterventionTransactionEntryAction
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.utils.isLorittaSupervisor
+import net.perfectdreams.loritta.serializable.StoredDivineInterventionSonhosTransaction
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -185,17 +186,18 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 						}
 					}
 
-					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-						it[SonhosTransactionsLog.user] = user.idLong
-						it[SonhosTransactionsLog.timestamp] = Instant.now()
-					}
-
-					DivineInterventionSonhosTransactionsLog.insert {
-						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
-						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
-						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.ADDED_SONHOS
-						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
-					}
+					// Cinnamon transaction system
+					SimpleSonhosTransactionsLogUtils.insert(
+						user.idLong,
+						Instant.now(),
+						TransactionType.DIVINE_INTERVENTION,
+						arg1.toLong(),
+						StoredDivineInterventionSonhosTransaction(
+							DivineInterventionTransactionEntryAction.ADDED_SONHOS,
+							context.userHandle.idLong,
+							null
+						)
+					)
 				}
 
 				context.reply(
@@ -215,17 +217,18 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 						}
 					}
 
-					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-						it[SonhosTransactionsLog.user] = user.idLong
-						it[SonhosTransactionsLog.timestamp] = Instant.now()
-					}
-
-					DivineInterventionSonhosTransactionsLog.insert {
-						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
-						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
-						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.REMOVED_SONHOS
-						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
-					}
+					// Cinnamon transaction system
+					SimpleSonhosTransactionsLogUtils.insert(
+						user.idLong,
+						Instant.now(),
+						TransactionType.DIVINE_INTERVENTION,
+						arg1.toLong(),
+						StoredDivineInterventionSonhosTransaction(
+							DivineInterventionTransactionEntryAction.REMOVED_SONHOS,
+							context.userHandle.idLong,
+							null
+						)
+					)
 				}
 
 				context.reply(

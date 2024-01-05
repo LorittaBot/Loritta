@@ -7,16 +7,21 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotesUserAvailableNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BotVoteSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LegacyWebsiteVoteSource
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.common.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.BotVote
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
-import org.jetbrains.exposed.sql.*
+import net.perfectdreams.loritta.serializable.StoredBotVoteSonhosTransaction
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
@@ -79,16 +84,14 @@ object WebsiteVoteUtils {
 					receivedBy = userId
 				)
 
-				val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-					it[SonhosTransactionsLog.user] = userId
-					it[SonhosTransactionsLog.timestamp] = Instant.now()
-				}
-
-				BotVoteSonhosTransactionsLog.insert {
-					it[BotVoteSonhosTransactionsLog.timestampLog] = transactionLogId
-					it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.common.utils.WebsiteVoteSource.TOP_GG
-					it[BotVoteSonhosTransactionsLog.sonhos] = SONHOS_AMOUNT
-				}
+				// Cinnamon transaction log
+				SimpleSonhosTransactionsLogUtils.insert(
+					userId,
+					Instant.now(),
+					TransactionType.BOT_VOTE,
+					SONHOS_AMOUNT,
+					StoredBotVoteSonhosTransaction(WebsiteVoteSource.TOP_GG)
+				)
 			}
 
 			val voteCount = loritta.newSuspendedTransaction {

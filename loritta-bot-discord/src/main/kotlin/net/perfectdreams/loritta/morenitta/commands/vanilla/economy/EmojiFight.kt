@@ -20,7 +20,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.EmojiFightSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -30,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredEmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -448,15 +451,13 @@ class EmojiFight(
                 )
 
                 // Cinnamon transaction system
-                val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                    it[SonhosTransactionsLog.user] = winnerProfile.id
-                    it[SonhosTransactionsLog.timestamp] = now
-                }
-
-                EmojiFightSonhosTransactionsLog.insert {
-                    it[EmojiFightSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
-                    it[EmojiFightSonhosTransactionsLog.matchmakingResult] = resultId
-                }
+                SimpleSonhosTransactionsLogUtils.insert(
+                    winnerProfile.id.value,
+                    now,
+                    TransactionType.EMOJI_FIGHT_BET,
+                    realAfterTaxesPrize,
+                    StoredEmojiFightBetSonhosTransaction(resultId.value)
+                )
 
                 for (loser in losers) {
                     val loserProfile = userProfiles[loser.key]!!
@@ -468,15 +469,13 @@ class EmojiFight(
                     )
 
                     // Cinnamon transaction system
-                    val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                        it[SonhosTransactionsLog.user] = loserProfile.id
-                        it[SonhosTransactionsLog.timestamp] = now
-                    }
-
-                    EmojiFightSonhosTransactionsLog.insert {
-                        it[CoinFlipBetSonhosTransactionsLog.timestampLog] = loserTransactionLogId
-                        it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = resultId
-                    }
+                    SimpleSonhosTransactionsLogUtils.insert(
+                        loserProfile.id.value,
+                        now,
+                        TransactionType.EMOJI_FIGHT_BET,
+                        entryPrice,
+                        StoredEmojiFightBetSonhosTransaction(resultId.value)
+                    )
                 }
 
                 DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize)

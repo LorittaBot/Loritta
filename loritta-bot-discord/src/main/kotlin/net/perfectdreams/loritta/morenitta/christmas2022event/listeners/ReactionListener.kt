@@ -16,10 +16,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Collected
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.christmas2022event.LorittaChristmas2022Event
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.serializable.StoredChristmas2022SonhosTransaction
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 
@@ -95,16 +98,14 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
 
                     when (reward) {
                         is LorittaChristmas2022Event.EventReward.SonhosReward -> {
-                            val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                it[user] = userId
-                                it[timestamp] = Instant.now()
-                            }
-
-                            Christmas2022SonhosTransactionsLog.insert {
-                                it[timestampLog] = transactionLogId
-                                it[sonhos] = reward.sonhos
-                                it[gifts] = reward.requiredPoints
-                            }
+                            // Cinnamon transactions log
+                            SimpleSonhosTransactionsLogUtils.insert(
+                                userId,
+                                Instant.now(),
+                                TransactionType.EVENTS,
+                                reward.sonhos,
+                                StoredChristmas2022SonhosTransaction(reward.requiredPoints)
+                            )
 
                             Profiles.update({ Profiles.id eq userId }) {
                                 with(SqlExpressionBuilder) {

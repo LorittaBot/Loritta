@@ -179,7 +179,27 @@ data class RaffleTicketsSonhosTransaction(
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
-    val ticketQuantity: Long
+    val ticketQuantity: Int
+) : SonhosTransaction()
+
+@Serializable
+data class PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val liveId: String,
+    val streamId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val liveId: String,
+    val streamId: Long
 ) : SonhosTransaction()
 
 @Serializable
