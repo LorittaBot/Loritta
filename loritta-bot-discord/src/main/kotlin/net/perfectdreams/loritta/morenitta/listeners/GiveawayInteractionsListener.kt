@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SentMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -153,20 +152,6 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                     selfServerEmojiFightBetLosses,
                                     matchesLost
                                 )
-                            }
-                        }
-
-                        val messagesRequired = giveaway[Giveaways.messagesRequired]
-                        val messagesTimeThreshold = giveaway[Giveaways.messagesTimeThreshold]
-                        if (messagesRequired != null && messagesTimeThreshold != null) {
-                            val nowMinusRelativeTime = Instant.now()
-                                .minusMillis(messagesTimeThreshold)
-                            val messagesSentInTheGuild = SentMessages.select {
-                                SentMessages.guildId eq guild.idLong and (SentMessages.userId eq event.user.idLong) and (SentMessages.sentAt greaterEq nowMinusRelativeTime)
-                            }.count()
-
-                            if (messagesRequired > messagesSentInTheGuild) {
-                                return@transaction GiveawayState.NeedsMoreMessages
                             }
                         }
 

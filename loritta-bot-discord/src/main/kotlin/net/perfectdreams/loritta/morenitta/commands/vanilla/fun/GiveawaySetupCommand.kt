@@ -571,6 +571,8 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                     styled("Precisa ter enviado ${builder.messagesRequired} mensagens nos últimos ${days} dias, ${hours} horas, ${minutes} minutos, ${seconds} segundos (sem filtro de canais)")
                 }
 
+                styled("A opção de requisito de mensagens está desativada por enquanto, sorry!!")
+
                 actionRow(
                     loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Verificação de Daily") {
                         it.event.message.delete().await()

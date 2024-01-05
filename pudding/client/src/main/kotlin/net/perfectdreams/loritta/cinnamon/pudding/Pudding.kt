@@ -343,7 +343,6 @@ class Pudding(
             UserSettings,
             UsersFollowingCorreiosPackages,
             YouTubeEventSubEvents,
-            SentMessages,
             DailyTaxNotifiedUsers,
             SimpleSonhosTransactionsLog
         )
@@ -404,7 +403,7 @@ class Pudding(
                     *schemas
                         .toMutableList()
                         // Partitioned tables
-                        .filter { it !in listOf(ExecutedApplicationCommandsLog, ExecutedComponentsLog, SentMessages) }
+                        .filter { it !in listOf(ExecutedApplicationCommandsLog, ExecutedComponentsLog) }
                         .toTypedArray()
                 )
 
@@ -413,8 +412,6 @@ class Pudding(
                     createPartitionedTable(ExecutedApplicationCommandsLog)
                 if (ExecutedComponentsLog in schemas)
                     createPartitionedTable(ExecutedComponentsLog)
-                if (SentMessages in schemas)
-                    createPartitionedTable(SentMessages)
 
                 logger.info { "Updating database schema version to $SCHEMA_VERSION..." }
 
