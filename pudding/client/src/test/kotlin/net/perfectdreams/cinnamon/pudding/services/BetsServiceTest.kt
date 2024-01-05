@@ -2,18 +2,19 @@ package net.perfectdreams.cinnamon.pudding.services
 
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.cinnamon.pudding.PuddingTestUtils
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.SimpleSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import org.junit.jupiter.api.Test
@@ -72,12 +73,10 @@ class BetsServiceTest {
             // At this point, a match should have happened, let's check!
             pudding.transaction {
                 val matchesCount = CoinFlipBetGlobalMatchmakingResults.selectAll().count()
-                val sonhosTransactionsCount = SonhosTransactionsLog.selectAll().count()
-                val coinFlipTransactionsCount = CoinFlipBetGlobalSonhosTransactionsLog.selectAll().count()
+                val sonhosTransactionsCount = SimpleSonhosTransactionsLog.select { SimpleSonhosTransactionsLog.type eq TransactionType.COINFLIP_BET_GLOBAL }.count()
 
                 require(matchesCount == 1L) { "There isn't a matchmaking result in the CoinFlipBetGlobalMatchmakingResults table!" }
                 require(sonhosTransactionsCount == 2L) { "There isn't two sonhos transactions (for $user1Id and $user2Id) in the SonhosTransactionsLog table!" }
-                require(coinFlipTransactionsCount == 2L) { "There isn't two sonhos coin flip bet global transactions in the CoinFlipBetGlobalSonhosTransactionsLog table!" }
 
                 // Also validate the matchmaking result
                 val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.selectAll().limit(1).first()
