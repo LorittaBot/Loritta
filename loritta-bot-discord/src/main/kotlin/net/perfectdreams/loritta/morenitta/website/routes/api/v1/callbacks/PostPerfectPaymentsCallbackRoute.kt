@@ -15,8 +15,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.Payment
@@ -24,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredSonhosBundlePurchaseTransaction
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -237,15 +240,16 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 							SonhosPaymentReason.BUNDLE_PURCHASE
 						)
 
-						val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-							it[SonhosTransactionsLog.user] = internalPayment.userId
-							it[SonhosTransactionsLog.timestamp] = Instant.now()
-						}
-
-						SonhosBundlePurchaseSonhosTransactionsLog.insert {
-							it[SonhosBundlePurchaseSonhosTransactionsLog.timestampLog] = transactionLogId
-							it[SonhosBundlePurchaseSonhosTransactionsLog.bundle] = bundle[SonhosBundles.id]
-						}
+						// Cinnamon transactions log
+						SimpleSonhosTransactionsLogUtils.insert(
+							internalPayment.userId,
+							Instant.now(),
+							TransactionType.SONHOS_BUNDLE_PURCHASE,
+							bundle[SonhosBundles.sonhos],
+							StoredSonhosBundlePurchaseTransaction(
+								bundle[SonhosBundles.id].value
+							)
+						)
 					}
 
 					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}support")

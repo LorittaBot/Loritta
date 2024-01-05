@@ -2,49 +2,22 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.*
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.entities.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.StarboardConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
+import net.perfectdreams.loritta.serializable.*
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.alias
 
 open class Service(private val pudding: Pudding) {
     fun PuddingUserProfile.Companion.fromRow(row: ResultRow) = PuddingUserProfile(
@@ -166,156 +139,6 @@ fun BackgroundVariation.Companion.fromRow(row: ResultRow): BackgroundVariation {
             crop,
             row[BackgroundVariations.storageType]
         )
-}
-
-fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
-    // "hasValue" does not work, because it only checks if the value is present on the table BUT it is always present! (but it is null)
-    return if (row.getOrNull(PaymentSonhosTransactionsLog.id) != null) {
-        PaymentSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            UserId(row[PaymentSonhosTransactionResults.givenBy].value),
-            UserId(row[PaymentSonhosTransactionResults.receivedBy].value),
-            row[PaymentSonhosTransactionResults.sonhos],
-        )
-    } else if (row.getOrNull(DailyRewardSonhosTransactionsLog.id) != null) {
-        DailyRewardSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[DailyRewardSonhosTransactionsLog.quantity]
-        )
-    } else if (row.getOrNull(BrokerSonhosTransactionsLog.id) != null) {
-        BrokerSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[BrokerSonhosTransactionsLog.action],
-            row[BrokerSonhosTransactionsLog.ticker].value,
-            row[BrokerSonhosTransactionsLog.sonhos],
-            row[BrokerSonhosTransactionsLog.stockPrice],
-            row[BrokerSonhosTransactionsLog.stockQuantity]
-        )
-    } else if (row.getOrNull(CoinFlipBetGlobalSonhosTransactionsLog.id) != null) {
-        CoinFlipBetGlobalSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            UserId(row[CoinFlipBetGlobalMatchmakingResults.winner].value),
-            UserId(row[CoinFlipBetGlobalMatchmakingResults.loser].value),
-            row[CoinFlipBetGlobalMatchmakingResults.quantity],
-            row[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax],
-            row[CoinFlipBetGlobalMatchmakingResults.tax],
-            row[CoinFlipBetGlobalMatchmakingResults.taxPercentage],
-            row[CoinFlipBetGlobalMatchmakingResults.timeOnQueue].toMillis(),
-        )
-    } else if (row.getOrNull(CoinFlipBetSonhosTransactionsLog.id) != null) {
-        CoinFlipBetSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            UserId(row[CoinFlipBetMatchmakingResults.winner].value),
-            UserId(row[CoinFlipBetMatchmakingResults.loser].value),
-            row[CoinFlipBetMatchmakingResults.quantity],
-            row[CoinFlipBetMatchmakingResults.quantityAfterTax],
-            row[CoinFlipBetMatchmakingResults.tax],
-            row[CoinFlipBetMatchmakingResults.taxPercentage]
-        )
-    } else if (row.getOrNull(RaffleTicketsSonhosTransactionsLog.id) != null) {
-        RaffleTicketsSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[RaffleTicketsSonhosTransactionsLog.sonhos],
-            row[RaffleTicketsSonhosTransactionsLog.ticketQuantity]
-        )
-    } else if (row.getOrNull(RaffleRewardSonhosTransactionsLog.id) != null) {
-        RaffleRewardSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[Raffles.alias("r1")[Raffles.paidOutPrize]] ?: -1,
-            row[Raffles.alias("r1")[Raffles.paidOutPrizeAfterTax]] ?: row[Raffles.alias("r1")[Raffles.paidOutPrize]] ?: -1,
-            row[Raffles.alias("r1")[Raffles.tax]],
-            row[Raffles.alias("r1")[Raffles.taxPercentage]],
-        )
-    } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
-        SparklyPowerLSXSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[SparklyPowerLSXSonhosTransactionsLog.action],
-            row[SparklyPowerLSXSonhosTransactionsLog.sonhos],
-            row[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos],
-            row[SparklyPowerLSXSonhosTransactionsLog.playerName],
-            row[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId].toString(),
-            row[SparklyPowerLSXSonhosTransactionsLog.exchangeRate]
-        )
-    } else if (row.getOrNull(DailyTaxSonhosTransactionsLog.id) != null) {
-        DailyTaxSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[DailyTaxSonhosTransactionsLog.sonhos],
-            row[DailyTaxSonhosTransactionsLog.maxDayThreshold],
-            row[DailyTaxSonhosTransactionsLog.minimumSonhosForTrigger]
-        )
-    } else if (row.getOrNull(SonhosBundlePurchaseSonhosTransactionsLog.id) != null) {
-        SonhosBundlePurchaseSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[SonhosBundles.sonhos]
-        )
-    } else if (row.getOrNull(DivineInterventionSonhosTransactionsLog.id) != null) {
-        DivineInterventionSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[DivineInterventionSonhosTransactionsLog.action],
-            row[DivineInterventionSonhosTransactionsLog.editedBy]?.let { UserId(it.value) },
-            row[DivineInterventionSonhosTransactionsLog.sonhos],
-            row[DivineInterventionSonhosTransactionsLog.reason]
-        )
-    } else if (row.getOrNull(ShipEffectSonhosTransactionsLog.id) != null) {
-        ShipEffectSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[ShipEffectSonhosTransactionsLog.sonhos]
-        )
-    } else if (row.getOrNull(BotVoteSonhosTransactionsLog.id) != null) {
-        BotVoteSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[BotVoteSonhosTransactionsLog.websiteSource],
-            row[BotVoteSonhosTransactionsLog.sonhos]
-        )
-    } else if (row.getOrNull(Christmas2022SonhosTransactionsLog.id) != null) {
-        Christmas2022SonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[Christmas2022SonhosTransactionsLog.sonhos],
-            row[Christmas2022SonhosTransactionsLog.gifts]
-        )
-    } else if (row.getOrNull(Easter2023SonhosTransactionsLog.id) != null) {
-        Easter2023SonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-            row[Easter2023SonhosTransactionsLog.sonhos],
-            row[Easter2023SonhosTransactionsLog.baskets]
-        )
-    } else {
-        UnknownSonhosTransaction(
-            row[SonhosTransactionsLog.id].value,
-            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-            UserId(row[SonhosTransactionsLog.user].value),
-        )
-    }
 }
 
 fun UserNotification.Companion.fromRow(row: ResultRow): UserNotification {

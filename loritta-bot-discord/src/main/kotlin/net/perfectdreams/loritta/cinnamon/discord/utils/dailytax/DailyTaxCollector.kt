@@ -11,7 +11,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.serializable.StoredDailyTaxSonhosTransaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.sql.Connection
@@ -60,18 +63,18 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
                             }
                         }
 
-                        val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-                            it[SonhosTransactionsLog.user] = inactiveDailyUser.id
-                            it[SonhosTransactionsLog.timestamp] = now.toJavaInstant()
-                        }
-
-                        DailyTaxSonhosTransactionsLog.insert {
-                            it[DailyTaxSonhosTransactionsLog.timestampLog] = timestampLogId
-                            it[DailyTaxSonhosTransactionsLog.sonhos] = inactiveDailyUser.moneyToBeRemoved
-                            it[DailyTaxSonhosTransactionsLog.maxDayThreshold] = threshold.maxDayThreshold
-                            it[DailyTaxSonhosTransactionsLog.minimumSonhosForTrigger] = threshold.minimumSonhosForTrigger
-                            it[DailyTaxSonhosTransactionsLog.tax] = threshold.tax
-                        }
+                        // Cinnamon transaction log
+                        SimpleSonhosTransactionsLogUtils.insert(
+                            inactiveDailyUser.id,
+                            now.toJavaInstant(),
+                            TransactionType.INACTIVE_DAILY_TAX,
+                            inactiveDailyUser.moneyToBeRemoved,
+                            StoredDailyTaxSonhosTransaction(
+                                threshold.maxDayThreshold,
+                                threshold.minimumSonhosForTrigger,
+                                threshold.tax
+                            )
+                        )
 
                         val userNotificationId = UserNotifications.insertAndGetId {
                             it[UserNotifications.timestamp] = now.toJavaInstant()

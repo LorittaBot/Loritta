@@ -4,9 +4,6 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.PagarCommand
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
@@ -14,17 +11,20 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.PagarCommand
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredPaymentSonhosTransaction
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
@@ -119,25 +119,29 @@ class PostTransferBalanceRoute(loritta: LorittaBot) : RequiresAPIAuthenticationR
 					it[PaymentSonhosTransactionResults.timestamp] = now
 				}
 
-				val giverTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-					it[SonhosTransactionsLog.user] = giverProfile.id.value
-					it[SonhosTransactionsLog.timestamp] = now
-				}
+				SimpleSonhosTransactionsLogUtils.insert(
+					receiverProfile.id.value,
+					now,
+					TransactionType.PAYMENT,
+					howMuch,
+					StoredPaymentSonhosTransaction(
+						giverProfile.id.value,
+						receiverProfile.id.value,
+						paymentResult.value
+					)
+				)
 
-				PaymentSonhosTransactionsLog.insert {
-					it[PaymentSonhosTransactionsLog.timestampLog] = giverTransactionLogId
-					it[PaymentSonhosTransactionsLog.paymentResult] = paymentResult
-				}
-
-				val receiverTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-					it[SonhosTransactionsLog.user] = receiverProfile.id.value
-					it[SonhosTransactionsLog.timestamp] = now
-				}
-
-				PaymentSonhosTransactionsLog.insert {
-					it[PaymentSonhosTransactionsLog.timestampLog] = receiverTransactionLogId
-					it[PaymentSonhosTransactionsLog.paymentResult] = paymentResult
-				}
+				SimpleSonhosTransactionsLogUtils.insert(
+					giverProfile.id.value,
+					now,
+					TransactionType.PAYMENT,
+					howMuch,
+					StoredPaymentSonhosTransaction(
+						giverProfile.id.value,
+						receiverProfile.id.value,
+						paymentResult.value
+					)
+				)
 			}
 
 			logger.info { "$giverId (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $howMuch (taxado!))" }

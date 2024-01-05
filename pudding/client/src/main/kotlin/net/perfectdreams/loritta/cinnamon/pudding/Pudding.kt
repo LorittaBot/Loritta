@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.SimpleSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
@@ -66,7 +67,7 @@ class Pudding(
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
         private val ISOLATION_LEVEL =
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-        private const val SCHEMA_VERSION = 10 // Bump this every time any table is added/updated!
+        private const val SCHEMA_VERSION = 12 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
 
         /**
@@ -343,7 +344,8 @@ class Pudding(
             UsersFollowingCorreiosPackages,
             YouTubeEventSubEvents,
             SentMessages,
-            DailyTaxNotifiedUsers
+            DailyTaxNotifiedUsers,
+            SimpleSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
@@ -395,6 +397,7 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
                 createOrUpdatePostgreSQLEnum(EasterEggColor.values())
                 createOrUpdatePostgreSQLEnum(RaffleType.values())
+                createOrUpdatePostgreSQLEnum(TransactionType.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

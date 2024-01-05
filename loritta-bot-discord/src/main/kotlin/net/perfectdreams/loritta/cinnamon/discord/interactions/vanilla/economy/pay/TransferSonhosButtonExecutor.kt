@@ -8,7 +8,6 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.ComponentContextHighLevelEditableMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.HighLevelEditableMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
@@ -17,15 +16,19 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.editMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
+import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.serializable.StoredPaymentSonhosTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
 
@@ -70,6 +73,7 @@ class TransferSonhosButtonExecutor(
                 }
 
                 // Insert transactions about it
+                // Cinnamon transaction log
                 val paymentResult = PaymentSonhosTransactionResults.insertAndGetId {
                     it[PaymentSonhosTransactionResults.givenBy] = giverProfile.id.value.toLong()
                     it[PaymentSonhosTransactionResults.receivedBy] = receiverProfile.id.value.toLong()
@@ -77,25 +81,29 @@ class TransferSonhosButtonExecutor(
                     it[PaymentSonhosTransactionResults.timestamp] = now.toJavaInstant()
                 }
 
-                val giverTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                    it[SonhosTransactionsLog.user] = giverProfile.id.value.toLong()
-                    it[SonhosTransactionsLog.timestamp] = now.toJavaInstant()
-                }
+                SimpleSonhosTransactionsLogUtils.insert(
+                    receiverProfile.id.value.toLong(),
+                    now.toJavaInstant(),
+                    TransactionType.PAYMENT,
+                    howMuch,
+                    StoredPaymentSonhosTransaction(
+                        giverProfile.id.value.toLong(),
+                        receiverProfile.id.value.toLong(),
+                        paymentResult.value
+                    )
+                )
 
-                PaymentSonhosTransactionsLog.insert {
-                    it[PaymentSonhosTransactionsLog.timestampLog] = giverTransactionLogId
-                    it[PaymentSonhosTransactionsLog.paymentResult] = paymentResult
-                }
-
-                val receiverTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                    it[SonhosTransactionsLog.user] = receiverProfile.id.value.toLong()
-                    it[SonhosTransactionsLog.timestamp] = now.toJavaInstant()
-                }
-
-                PaymentSonhosTransactionsLog.insert {
-                    it[PaymentSonhosTransactionsLog.timestampLog] = receiverTransactionLogId
-                    it[PaymentSonhosTransactionsLog.paymentResult] = paymentResult
-                }
+                SimpleSonhosTransactionsLogUtils.insert(
+                    giverProfile.id.value.toLong(),
+                    now.toJavaInstant(),
+                    TransactionType.PAYMENT,
+                    howMuch,
+                    StoredPaymentSonhosTransaction(
+                        giverProfile.id.value.toLong(),
+                        receiverProfile.id.value.toLong(),
+                        paymentResult.value
+                    )
+                )
 
                 // Delete interaction ID
                 loritta.pudding.interactionsData.deleteInteractionData(decodedGenericInteractionData.interactionDataId)

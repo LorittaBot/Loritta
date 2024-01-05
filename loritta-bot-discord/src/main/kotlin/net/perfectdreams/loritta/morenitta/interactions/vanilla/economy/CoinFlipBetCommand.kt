@@ -14,9 +14,11 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -30,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -422,25 +425,22 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 it[CoinFlipBetMatchmakingResults.taxPercentage] = totalRewardPercentage
                                             }
 
-                                            val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                                it[SonhosTransactionsLog.user] = selfUserProfile.id.value
-                                                it[SonhosTransactionsLog.timestamp] = now
-                                            }
+                                            // Cinnamon transaction log
+                                            SimpleSonhosTransactionsLogUtils.insert(
+                                                selfUserProfile.id.value,
+                                                now,
+                                                TransactionType.COINFLIP_BET,
+                                                money,
+                                                StoredCoinFlipBetTransaction(mmResult.value)
+                                            )
 
-                                            CoinFlipBetSonhosTransactionsLog.insert {
-                                                it[CoinFlipBetSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
-                                                it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
-                                            }
-
-                                            val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                                it[SonhosTransactionsLog.user] = invitedUserProfile.id.value
-                                                it[SonhosTransactionsLog.timestamp] = now
-                                            }
-
-                                            CoinFlipBetSonhosTransactionsLog.insert {
-                                                it[CoinFlipBetSonhosTransactionsLog.timestampLog] = loserTransactionLogId
-                                                it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
-                                            }
+                                            SimpleSonhosTransactionsLogUtils.insert(
+                                                invitedUserProfile.id.value,
+                                                now,
+                                                TransactionType.COINFLIP_BET,
+                                                number,
+                                                StoredCoinFlipBetTransaction(mmResult.value)
+                                            )
                                         }
                                     } else {
                                         winner = invitedUser
@@ -456,7 +456,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 receivedBy = invitedUserProfile.id.value
                                             )
 
-                                            // Cinnamon transaction system
                                             val mmResult = CoinFlipBetMatchmakingResults.insertAndGetId {
                                                 it[CoinFlipBetMatchmakingResults.timestamp] = Instant.now()
                                                 it[CoinFlipBetMatchmakingResults.winner] = invitedUserProfile.id.value
@@ -467,25 +466,22 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 it[CoinFlipBetMatchmakingResults.taxPercentage] = totalRewardPercentage
                                             }
 
-                                            val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                                it[SonhosTransactionsLog.user] = invitedUserProfile.id.value
-                                                it[SonhosTransactionsLog.timestamp] = now
-                                            }
+                                            // Cinnamon transaction log
+                                            SimpleSonhosTransactionsLogUtils.insert(
+                                                invitedUserProfile.id.value,
+                                                now,
+                                                TransactionType.COINFLIP_BET,
+                                                money,
+                                                StoredCoinFlipBetTransaction(mmResult.value)
+                                            )
 
-                                            CoinFlipBetSonhosTransactionsLog.insert {
-                                                it[CoinFlipBetSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
-                                                it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
-                                            }
-
-                                            val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                                it[SonhosTransactionsLog.user] = selfUserProfile.id.value
-                                                it[SonhosTransactionsLog.timestamp] = now
-                                            }
-
-                                            CoinFlipBetSonhosTransactionsLog.insert {
-                                                it[CoinFlipBetSonhosTransactionsLog.timestampLog] = loserTransactionLogId
-                                                it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
-                                            }
+                                            SimpleSonhosTransactionsLogUtils.insert(
+                                                selfUserProfile.id.value,
+                                                now,
+                                                TransactionType.COINFLIP_BET,
+                                                number,
+                                                StoredCoinFlipBetTransaction(mmResult.value)
+                                            )
                                         }
                                     }
 

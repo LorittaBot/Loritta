@@ -14,13 +14,13 @@ import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.NotEnoughSo
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.PutShipEffectsResponse
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ShipEffectSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.serializable.StoredShipEffectSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
 import kotlin.time.Duration.Companion.days
@@ -59,16 +59,14 @@ class PutShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginR
                 it[ShipEffects.expiresAt] = (now + 7.days).toEpochMilliseconds()
             }
 
-            val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-                it[SonhosTransactionsLog.user] = selfUserId
-                it[SonhosTransactionsLog.timestamp] = now.toJavaInstant()
-            }
-
-            ShipEffectSonhosTransactionsLog.insert {
-                it[ShipEffectSonhosTransactionsLog.timestampLog] = timestampLogId
-                it[ShipEffectSonhosTransactionsLog.effect] = shipEffectId
-                it[ShipEffectSonhosTransactionsLog.sonhos] = SHIP_EFFECT_COST
-            }
+            // Cinnamon transaction log
+            SimpleSonhosTransactionsLogUtils.insert(
+                selfUserId,
+                now.toJavaInstant(),
+                TransactionType.SHIP_EFFECT,
+                SHIP_EFFECT_COST,
+                StoredShipEffectSonhosTransaction(shipEffectId.value)
+            )
 
             // Remove the sonhos
             Profiles.update({ Profiles.id eq userIdentification.id.toLong() }) {

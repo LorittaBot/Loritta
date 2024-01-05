@@ -1,30 +1,20 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.toJavaInstant
-import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.serializable.StoredCoinFlipBetGlobalTransaction
+import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.avg
-import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.sum
-import org.jetbrains.exposed.sql.update
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.min
@@ -340,25 +330,22 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
 
                     if (quantity != 0L) {
                         // If the quantity is not zero, add them to the transactions log!
-                        val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                            it[SonhosTransactionsLog.user] = winnerAsLong
-                            it[SonhosTransactionsLog.timestamp] = now
-                        }
+                        // Cinnamon transaction log
+                        SimpleSonhosTransactionsLogUtils.insert(
+                            winnerAsLong,
+                            now,
+                            TransactionType.COINFLIP_BET_GLOBAL,
+                            quantityAfterTax,
+                            StoredCoinFlipBetGlobalTransaction(resultId.value)
+                        )
 
-                        CoinFlipBetGlobalSonhosTransactionsLog.insert {
-                            it[CoinFlipBetGlobalSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
-                            it[CoinFlipBetGlobalSonhosTransactionsLog.matchmakingResult] = resultId
-                        }
-
-                        val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                            it[SonhosTransactionsLog.user] = loserAsLong
-                            it[SonhosTransactionsLog.timestamp] = now
-                        }
-
-                        CoinFlipBetGlobalSonhosTransactionsLog.insert {
-                            it[CoinFlipBetGlobalSonhosTransactionsLog.timestampLog] = loserTransactionLogId
-                            it[CoinFlipBetGlobalSonhosTransactionsLog.matchmakingResult] = resultId
-                        }
+                        SimpleSonhosTransactionsLogUtils.insert(
+                            loserAsLong,
+                            now,
+                            TransactionType.COINFLIP_BET_GLOBAL,
+                            quantity,
+                            StoredCoinFlipBetGlobalTransaction(resultId.value)
+                        )
 
                         // Then add/remove the sonhos of the users
                         // Add sonhos to the winner

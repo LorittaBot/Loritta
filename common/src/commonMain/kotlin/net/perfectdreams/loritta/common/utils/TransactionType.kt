@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.common.utils
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
 enum class TransactionType(
@@ -74,6 +74,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.BotVote.Title,
         I18nKeysData.Commands.Command.Transactions.Types.BotVote.Description,
         Emotes.LoriShining,
+    ),
+    POWERSTREAM(
+        I18nKeysData.Commands.Command.Transactions.Types.Powerstream.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Powerstream.Description,
+        Emotes.LoriHi,
     ),
     EVENTS(
         I18nKeysData.Commands.Command.Transactions.Types.Events.Title,

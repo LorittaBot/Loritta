@@ -2,16 +2,17 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinInstant
+import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.Daily
-import net.perfectdreams.loritta.serializable.EmojiFightBetSonhosTransaction
-import net.perfectdreams.loritta.serializable.SonhosTransaction
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.SimpleSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.TransactionType
-import org.jetbrains.exposed.sql.*
+import net.perfectdreams.loritta.serializable.*
+import net.perfectdreams.loritta.serializable.SonhosTransaction
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import kotlin.time.Duration.Companion.days
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {
@@ -29,8 +30,14 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getUserTotalTransactions(
         userId: UserId,
         transactionTypeFilter: List<TransactionType>
-    ) = pudding.transaction {
-        userTransactionQuery(userId, transactionTypeFilter).count()
+    ): Long {
+        val userIdAsLong = userId.value.toLong()
+
+        return pudding.transaction {
+            SimpleSonhosTransactionsLog.select {
+                SimpleSonhosTransactionsLog.user eq userIdAsLong and (SimpleSonhosTransactionsLog.type inList transactionTypeFilter)
+            }.count()
+        }
     }
 
     suspend fun getUserTransactions(
@@ -39,135 +46,221 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         limit: Int,
         offset: Long
     ): List<SonhosTransaction> {
+        val userIdAsLong = userId.value.toLong()
+
         return pudding.transaction {
-            userTransactionQuery(userId, transactionTypeFilter)
-                .orderBy(SonhosTransactionsLog.id, SortOrder.DESC)
+            SimpleSonhosTransactionsLog.select {
+                SimpleSonhosTransactionsLog.user eq userIdAsLong and (SimpleSonhosTransactionsLog.type inList transactionTypeFilter)
+            }.orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
                 .limit(limit, offset)
                 .map {
-                    // ===[ SPECIAL CASES ]===
-                    // We need to query how many users lost the bet
-                    if (it.getOrNull(EmojiFightSonhosTransactionsLog.id) != null) {
-                        val usersInMatch = EmojiFightParticipants.select { EmojiFightParticipants.match eq it[EmojiFightParticipants.match] }
-                            .count()
-
-                        EmojiFightBetSonhosTransaction(
-                            it[SonhosTransactionsLog.id].value,
-                            it[SonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SonhosTransactionsLog.user].value),
-                            UserId(it[EmojiFightParticipants.user].value),
-                            usersInMatch,
-                            it[EmojiFightParticipants.emoji],
-                            it[EmojiFightMatchmakingResults.entryPrice],
-                            it[EmojiFightMatchmakingResults.entryPriceAfterTax],
-                            it[EmojiFightMatchmakingResults.tax],
-                            it[EmojiFightMatchmakingResults.taxPercentage]
+                    when (val stored = Json.decodeFromString<StoredSonhosTransaction>(it[SimpleSonhosTransactionsLog.metadata])) {
+                        is StoredShipEffectSonhosTransaction -> ShipEffectSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos]
                         )
-                    } else {
-                        SonhosTransaction.fromRow(it)
+
+                        is StoredDailyRewardSonhosTransaction -> DailyRewardSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos]
+                        )
+
+                        is StoredBotVoteSonhosTransaction -> BotVoteSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            stored.websiteSource,
+                            it[SimpleSonhosTransactionsLog.sonhos]
+                        )
+
+                        is StoredDivineInterventionSonhosTransaction -> DivineInterventionSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            stored.action,
+                            UserId(stored.editedBy),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.reason
+                        )
+
+                        is StoredDailyTaxSonhosTransaction -> DailyTaxSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.maxDayThreshold,
+                            stored.minimumSonhosForTrigger
+                        )
+
+                        is StoredPaymentSonhosTransaction -> PaymentSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            UserId(stored.givenBy),
+                            UserId(stored.receivedBy),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                        )
+
+                        is StoredBrokerSonhosTransaction -> BrokerSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            stored.action,
+                            stored.ticker,
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.stockPrice,
+                            stored.stockQuantity
+                        )
+
+                        is StoredRaffleRewardTransaction -> {
+                            val raffle = Raffles.select {
+                                Raffles.id eq stored.raffleId
+                            }.first()
+
+                            RaffleRewardSonhosTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                raffle[Raffles.paidOutPrize] ?: -1,
+                                raffle[Raffles.paidOutPrizeAfterTax] ?: raffle[Raffles.paidOutPrize] ?: -1,
+                                raffle[Raffles.tax],
+                                raffle[Raffles.taxPercentage]
+                            )
+                        }
+
+                        is StoredRaffleTicketsTransaction -> RaffleTicketsSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.ticketQuantity
+                        )
+
+                        is StoredSonhosBundlePurchaseTransaction -> SonhosBundlePurchaseSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos]
+                        )
+
+                        is StoredCoinFlipBetTransaction -> {
+                            val matchmakingResult = CoinFlipBetMatchmakingResults.select {
+                                CoinFlipBetMatchmakingResults.id eq stored.matchmakingResultId
+                            }.first()
+
+                            CoinFlipBetSonhosTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                UserId(matchmakingResult[CoinFlipBetMatchmakingResults.winner].value),
+                                UserId(matchmakingResult[CoinFlipBetMatchmakingResults.loser].value),
+                                matchmakingResult[CoinFlipBetMatchmakingResults.quantity],
+                                matchmakingResult[CoinFlipBetMatchmakingResults.quantityAfterTax],
+                                matchmakingResult[CoinFlipBetMatchmakingResults.tax],
+                                matchmakingResult[CoinFlipBetMatchmakingResults.taxPercentage]
+                            )
+                        }
+
+                        is StoredCoinFlipBetGlobalTransaction -> {
+                            val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.select {
+                                CoinFlipBetGlobalMatchmakingResults.id eq stored.matchmakingResultId
+                            }.first()
+
+                            CoinFlipBetGlobalSonhosTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                UserId(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.winner].value),
+                                UserId(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.loser].value),
+                                matchmakingResult[CoinFlipBetGlobalMatchmakingResults.quantity],
+                                matchmakingResult[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax],
+                                matchmakingResult[CoinFlipBetGlobalMatchmakingResults.tax],
+                                matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage],
+                                matchmakingResult[CoinFlipBetGlobalMatchmakingResults.timeOnQueue].toMillis()
+                            )
+                        }
+
+                        is StoredSparklyPowerLSXSonhosTransaction -> SparklyPowerLSXSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            stored.action,
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.sparklyPowerSonhos,
+                            stored.playerName,
+                            stored.playerUniqueId,
+                            stored.exchangeRate
+                        )
+
+                        is StoredChristmas2022SonhosTransaction -> Christmas2022SonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.gifts
+                        )
+
+                        is StoredEaster2023SonhosTransaction -> Easter2023SonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.baskets
+                        )
+
+                        is StoredPowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.liveId,
+                            stored.streamId
+                        )
+
+                        is StoredPowerStreamClaimedFirstSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.liveId,
+                            stored.streamId
+                        )
+
+                        is StoredEmojiFightBetSonhosTransaction -> {
+                            val emojiFightMatchmakingResults = EmojiFightMatchmakingResults.select {
+                                EmojiFightMatchmakingResults.id eq stored.emojiFightMatchmakingResultsId
+                            }.first()
+
+                            val emojiFightMatch = EmojiFightMatches.select { EmojiFightMatchmakingResults.match eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.match] }.first()
+                            val emojiFightMatchId = emojiFightMatch[EmojiFightMatchmakingResults.id]
+
+                            val winnerInMatch = EmojiFightParticipants.select { EmojiFightParticipants.id eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.winner] }
+                                .first()
+
+                            val usersInMatch = EmojiFightParticipants.select { EmojiFightParticipants.match eq emojiFightMatchId }
+                                .count()
+
+                            EmojiFightBetSonhosTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                UserId(winnerInMatch[EmojiFightParticipants.user].value),
+                                usersInMatch,
+                                winnerInMatch[EmojiFightParticipants.emoji],
+                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.entryPrice],
+                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.entryPriceAfterTax],
+                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.tax],
+                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.taxPercentage]
+                            )
+                        }
                     }
                 }
         }
     }
-
-    // If we want to filter for specific transactions, check if the table ID is null!
-    // Example: BrokerSonhosTransactionsLog.id isNotNull
-    private fun userTransactionQuery(
-        userId: UserId,
-        transactionTypeFilter: List<TransactionType>
-    ) = SonhosTransactionsLog.let {
-        if (TransactionType.PAYMENT in transactionTypeFilter)
-            it.leftJoin(PaymentSonhosTransactionsLog.leftJoin(PaymentSonhosTransactionResults))
-        else it
-    }.let {
-        if (TransactionType.DAILY_REWARD in transactionTypeFilter)
-            it.leftJoin(DailyRewardSonhosTransactionsLog.leftJoin(Dailies))
-        else it
-    }.let {
-        if (TransactionType.HOME_BROKER in transactionTypeFilter)
-            it.leftJoin(BrokerSonhosTransactionsLog)
-        else it
-    }.let {
-        if (TransactionType.COINFLIP_BET in transactionTypeFilter)
-            it.leftJoin(CoinFlipBetSonhosTransactionsLog.leftJoin(CoinFlipBetMatchmakingResults))
-        else it
-    }.let {
-        if (TransactionType.COINFLIP_BET_GLOBAL in transactionTypeFilter)
-            it.leftJoin(CoinFlipBetGlobalSonhosTransactionsLog.leftJoin(CoinFlipBetGlobalMatchmakingResults))
-        else it
-    }.let {
-        if (TransactionType.EMOJI_FIGHT_BET in transactionTypeFilter)
-            it.leftJoin(EmojiFightSonhosTransactionsLog.leftJoin(EmojiFightMatchmakingResults.leftJoin(EmojiFightParticipants)))
-        else it
-    }.let {
-        val r1 = Raffles.alias("r1")
-        val r2 = Raffles.alias("r2")
-
-        if (TransactionType.RAFFLE in transactionTypeFilter)
-            it.leftJoin(RaffleRewardSonhosTransactionsLog.leftJoin(r1, { RaffleRewardSonhosTransactionsLog.raffle }, { this[Raffles.id] }))
-                .leftJoin(RaffleTicketsSonhosTransactionsLog.leftJoin(r2, { RaffleTicketsSonhosTransactionsLog.raffle }, { this[Raffles.id] }))
-        else it
-    }.let {
-        if (TransactionType.SPARKLYPOWER_LSX in transactionTypeFilter)
-            it.leftJoin(SparklyPowerLSXSonhosTransactionsLog)
-        else it
-    }.let {
-        if (TransactionType.SONHOS_BUNDLE_PURCHASE in transactionTypeFilter)
-            it.leftJoin(SonhosBundlePurchaseSonhosTransactionsLog.leftJoin(SonhosBundles))
-        else it
-    }.let {
-        if (TransactionType.INACTIVE_DAILY_TAX in transactionTypeFilter)
-            it.leftJoin(DailyTaxSonhosTransactionsLog)
-        else it
-    }.let {
-        if (TransactionType.DIVINE_INTERVENTION in transactionTypeFilter)
-            it.leftJoin(DivineInterventionSonhosTransactionsLog)
-        else it
-    }.let {
-        if (TransactionType.BOT_VOTE in transactionTypeFilter)
-            it.leftJoin(BotVoteSonhosTransactionsLog)
-        else it
-    }.let {
-        if (TransactionType.SHIP_EFFECT in transactionTypeFilter)
-            it.leftJoin(ShipEffectSonhosTransactionsLog)
-        else it
-    }.let {
-        if (TransactionType.EVENTS in transactionTypeFilter)
-            it.leftJoin(Christmas2022SonhosTransactionsLog)
-                .leftJoin(Easter2023SonhosTransactionsLog)
-        else it
-    }
-        .select {
-            // Hacky!
-            // https://stackoverflow.com/questions/54361503/how-to-add-multiple-or-filter-conditions-based-on-incoming-parameters-using-expo
-            var cond = Op.build {
-                SonhosTransactionsLog.id neq SonhosTransactionsLog.id
-            }
-
-            for (type in transactionTypeFilter) {
-                cond = when (type) {
-                    TransactionType.PAYMENT -> cond.or(PaymentSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.DAILY_REWARD -> cond.or(DailyRewardSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.COINFLIP_BET -> cond.or(CoinFlipBetSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.EMOJI_FIGHT_BET -> cond.or(EmojiFightSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.RAFFLE -> cond
-                        .or(RaffleTicketsSonhosTransactionsLog.id.isNotNull())
-                        .or(RaffleRewardSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.SONHOS_BUNDLE_PURCHASE -> cond.or(SonhosBundlePurchaseSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.DIVINE_INTERVENTION -> cond.or(DivineInterventionSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.BOT_VOTE -> cond.or(BotVoteSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.SHIP_EFFECT -> cond.or(ShipEffectSonhosTransactionsLog.id.isNotNull())
-                    TransactionType.EVENTS -> cond
-                        .or(Christmas2022SonhosTransactionsLog.id.isNotNull())
-                        .or(Easter2023SonhosTransactionsLog.id.isNotNull())
-                }
-            }
-
-            (SonhosTransactionsLog.user eq userId.value.toLong()).and(cond)
-        }
 
     /**
      * Gets the user's last received daily reward

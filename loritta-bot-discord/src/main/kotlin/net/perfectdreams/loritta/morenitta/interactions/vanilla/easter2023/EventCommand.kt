@@ -23,8 +23,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Pl
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Easter2023SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -39,6 +41,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.serializable.StoredEaster2023SonhosTransaction
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import kotlin.math.ceil
@@ -330,16 +333,14 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                         when (reward) {
                             is LorittaEaster2023Event.EventReward.SonhosReward -> {
-                                val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-                                    it[user] = context.user.idLong
-                                    it[timestamp] = Instant.now()
-                                }
-
-                                Easter2023SonhosTransactionsLog.insert {
-                                    it[timestampLog] = transactionLogId
-                                    it[sonhos] = reward.sonhos
-                                    it[baskets] = reward.requiredPoints
-                                }
+                                // Cinnamon transactions log
+                                SimpleSonhosTransactionsLogUtils.insert(
+                                    context.user.idLong,
+                                    Instant.now(),
+                                    TransactionType.EVENTS,
+                                    reward.sonhos,
+                                    StoredEaster2023SonhosTransaction(reward.requiredPoints)
+                                )
 
                                 Profiles.update({ Profiles.id eq context.user.idLong }) {
                                     with(SqlExpressionBuilder) {

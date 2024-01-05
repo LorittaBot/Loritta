@@ -21,7 +21,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyRewardSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestions
@@ -32,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredDailyRewardSonhosTransaction
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
 import net.perfectdreams.loritta.serializable.responses.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -286,16 +289,14 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             it[Dailies.browserFingerprints] = fingerprintId
                                         }
 
-                                        val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-                                            it[SonhosTransactionsLog.user] = userId
-                                            it[SonhosTransactionsLog.timestamp] = Instant.ofEpochMilli(receivedDailyAt)
-                                        }
-
-                                        DailyRewardSonhosTransactionsLog.insert {
-                                            it[DailyRewardSonhosTransactionsLog.timestampLog] = timestampLogId
-                                            it[DailyRewardSonhosTransactionsLog.daily] = dailyId
-                                            it[DailyRewardSonhosTransactionsLog.quantity] = dailyPayout.toLong()
-                                        }
+                                        // Cinnamon transaction log
+                                        SimpleSonhosTransactionsLogUtils.insert(
+                                            userId,
+                                            Instant.ofEpochMilli(receivedDailyAt),
+                                            TransactionType.DAILY_REWARD,
+                                            dailyPayout.toLong(),
+                                            StoredDailyRewardSonhosTransaction(dailyId.value)
+                                        )
 
                                         DailyTaxNotifiedUsers.deleteWhere {
                                             DailyTaxNotifiedUsers.user eq userId
