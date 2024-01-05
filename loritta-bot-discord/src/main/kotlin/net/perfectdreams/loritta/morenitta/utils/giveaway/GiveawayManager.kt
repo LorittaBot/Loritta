@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils.giveaway
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
@@ -35,7 +36,6 @@ import net.perfectdreams.loritta.serializable.GiveawayRoles
 import net.perfectdreams.sequins.text.StringUtils
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
-import java.sql.Connection
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
@@ -49,8 +49,13 @@ class GiveawayManager(val loritta: LorittaBot) {
 
     var giveawayTasks = ConcurrentHashMap<Long, Job>()
     private val logger = KotlinLogging.logger {}
+    val giveawayUpdateMutexes = ConcurrentHashMap<Long, Mutex>()
     val giveawayMessageUpdateMutexes = ConcurrentHashMap<Long, Mutex>()
     val giveawayMessageUpdateJobs = ConcurrentHashMap<Long, Job>()
+
+    suspend inline fun <T> lockGiveaway(dbId: Long, action: () -> (T)): T {
+        return (giveawayUpdateMutexes[dbId] ?: error("Missing update mutex for giveaway $dbId!")).withLock(action = action)
+    }
 
     fun getReactionMention(reaction: String): String {
         if (reaction.startsWith("discord:"))
@@ -337,6 +342,10 @@ class GiveawayManager(val loritta: LorittaBot) {
     suspend fun createGiveawayJob(giveaway: Giveaway) {
         logger.info { "Creating giveaway ${giveaway.id.value} job..." }
 
+        // Create the mutexes once, this way we avoid .getOrPut() concurrency issues
+        giveawayMessageUpdateMutexes[giveaway.id.value] = Mutex()
+        giveawayUpdateMutexes[giveaway.id.value] = Mutex()
+
         // Vamos tentar pegar e ver se a guild ou o canal de texto existem
         getGiveawayGuildMessageChannel(giveaway, getGiveawayGuild(giveaway, false) ?: return, false) ?: return
 
@@ -390,6 +399,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
         giveawayMessageUpdateMutexes.remove(giveaway.id.value)
+        giveawayUpdateMutexes.remove(giveaway.id.value)
 
         if (deleteFromDatabase || forceDelete) {
             if (forceDelete || System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= giveaway.finishAt) { // Já se passaram uma semana?
@@ -407,11 +417,13 @@ class GiveawayManager(val loritta: LorittaBot) {
             val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
             val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-            val participantsIds = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
-                GiveawayParticipants.select {
-                    GiveawayParticipants.giveawayId eq giveaway.id.value
-                }.map { it[GiveawayParticipants.userId] }
-            }.toMutableList()
+            val participantsIds = lockGiveaway(giveaway.id.value) {
+                loritta.transaction {
+                    GiveawayParticipants.select {
+                        GiveawayParticipants.giveawayId eq giveaway.id.value
+                    }.map { it[GiveawayParticipants.userId] }
+                }.toMutableList()
+            }
 
             val winners = mutableListOf<Member>()
 
