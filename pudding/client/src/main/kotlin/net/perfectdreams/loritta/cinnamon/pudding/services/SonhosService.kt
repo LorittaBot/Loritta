@@ -235,13 +235,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                                 EmojiFightMatchmakingResults.id eq stored.emojiFightMatchmakingResultsId
                             }.first()
 
-                            val emojiFightMatch = EmojiFightMatches.select { EmojiFightMatchmakingResults.match eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.match] }.first()
-                            val emojiFightMatchId = emojiFightMatch[EmojiFightMatchmakingResults.id]
-
                             val winnerInMatch = EmojiFightParticipants.select { EmojiFightParticipants.id eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.winner] }
                                 .first()
 
-                            val usersInMatch = EmojiFightParticipants.select { EmojiFightParticipants.match eq emojiFightMatchId }
+                            val usersInMatch = EmojiFightParticipants.select { EmojiFightParticipants.match eq winnerInMatch[EmojiFightParticipants.match] }
                                 .count()
 
                             EmojiFightBetSonhosTransaction(
