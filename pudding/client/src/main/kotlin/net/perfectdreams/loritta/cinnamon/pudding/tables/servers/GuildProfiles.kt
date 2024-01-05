@@ -9,4 +9,8 @@ object GuildProfiles : LongIdTable() {
 	val quickPunishment = bool("quick_punishment")
 	val money = decimal("money", 12, 2).index()
 	val isInGuild = bool("is_in_guild").default(true).index()
+
+	init {
+		index(true, guildId, userId)
+	}
 }
