@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
@@ -120,7 +120,7 @@ class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 				?.toIntOrNull()
 				?.coerceIn(1..100)
 
-			loritta.giveawayManager.rollWinners(message, giveaway, numberOfWinnersOverride = rerollCount)
+			loritta.giveawayManager.rollWinners(message, giveaway, true, numberOfWinnersOverride = rerollCount)
 
 			context.reply(
 					LorittaReply(
