@@ -1,9 +1,6 @@
 package net.perfectdreams.temmiediscordauth
 
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -19,6 +16,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Duration.Companion.seconds
 
 class TemmieDiscordAuth(
 	val clientId: String,
@@ -254,9 +252,9 @@ class TemmieDiscordAuth(
 			val retryAfterHeader = response.headers["Retry-After"]
 
 			val retryAfter = if (retryAfterHeader != null) {
-				retryAfterHeader.toLong()
+				retryAfterHeader.toLong().seconds
 			} else if (asObject.has("retry_after")) {
-				asObject["retry_after"].long
+				asObject["retry_after"].double.seconds
 			} else null
 
 			if (retryAfter != null) {
