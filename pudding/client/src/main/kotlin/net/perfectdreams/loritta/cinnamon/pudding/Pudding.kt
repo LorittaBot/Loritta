@@ -5,7 +5,9 @@ import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import mu.KotlinLogging
@@ -69,6 +71,7 @@ class Pudding(
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
         private const val SCHEMA_VERSION = 15 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
+        var PERFORMANCE_DB_CHECK_PUDDING: Pudding? = null // TODO: btrfs-perfcheck Remove later
 
         /**
          * Creates a Pudding instance backed by a PostgreSQL database
@@ -496,22 +499,31 @@ class Pudding(
         return createTableSuffixed + indicesDDL + alter
     }
 
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T) = net.perfectdreams.exposedpowerutils.sql.transaction(
-        dispatcher,
-        database,
-        repetitions,
-        transactionIsolation,
-        {
-            PuddingMetrics.availablePermits
-                .labels(hikariDataSource.poolName)
-                .set(semaphore.availablePermits.toDouble())
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T) {
+        net.perfectdreams.exposedpowerutils.sql.transaction(
+            dispatcher,
+            database,
+            repetitions,
+            transactionIsolation,
+            {
+                PuddingMetrics.availablePermits
+                    .labels(hikariDataSource.poolName)
+                    .set(semaphore.availablePermits.toDouble())
 
-            semaphore.withPermit {
-                it.invoke()
+                semaphore.withPermit {
+                    it.invoke()
+                }
+            },
+            statement
+        )
+
+        val perfDbCheck = PERFORMANCE_DB_CHECK_PUDDING
+        if (perfDbCheck != null) {
+            GlobalScope.launch {
+                perfDbCheck.transaction(repetitions, transactionIsolation, statement)
             }
-        },
-        statement
-    )
+        }
+    }
 
     fun shutdown() {
         puddingTasks.shutdown()
