@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("maven-publish")
-    id("com.google.cloud.tools.jib") version libs.versions.jib
 }
 
 version = Versions.PUDDING
@@ -64,24 +63,5 @@ publishing {
             url = uri("https://repo.perfectdreams.net/")
             credentials(PasswordCredentials::class)
         }
-    }
-}
-
-jib {
-    container {
-        ports = listOf("8080")
-    }
-
-    to {
-        image = "ghcr.io/lorittabot/migrationstuff"
-
-        auth {
-            username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
-            password = System.getProperty("DOCKER_PASSWORD") ?: System.getenv("DOCKER_PASSWORD")
-        }
-    }
-
-    from {
-        image = "eclipse-temurin:21-jammy"
     }
 }
