@@ -101,10 +101,9 @@ object LorittaLauncher {
 		val languageManager = LorittaLanguageManager(LorittaBot::class)
 		val localeManager = LocaleManager(LorittaBot::class).also { it.loadLocales() }
 
-		val perfDbCheckAddress = System.getenv("PERFORMANCE_DB_CHECK_PUDDING_ADDRESS")
-		if (perfDbCheckAddress != null) {
+		if (System.getenv("PERFORMANCE_DB_CHECK_PUDDING") == "true") {
 			Pudding.PERFORMANCE_DB_CHECK_PUDDING = Pudding.createPostgreSQLPudding(
-				perfDbCheckAddress, // TODO: btrfs-perfcheck Remove later
+				config.loritta.pudding.address + "-perfcheck", // TODO: btrfs-perfcheck Remove later
 				config.loritta.pudding.database,
 				config.loritta.pudding.username,
 				config.loritta.pudding.password
