@@ -499,8 +499,8 @@ class Pudding(
         return createTableSuffixed + indicesDDL + alter
     }
 
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T): T {
-        val r = net.perfectdreams.exposedpowerutils.sql.transaction(
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T) {
+        net.perfectdreams.exposedpowerutils.sql.transaction(
             dispatcher,
             database,
             repetitions,
@@ -523,7 +523,6 @@ class Pudding(
                 perfDbCheck.transaction(repetitions, transactionIsolation, statement)
             }
         }
-        return r
     }
 
     fun shutdown() {
