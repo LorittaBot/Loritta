@@ -53,7 +53,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                 // We use a mutex here to avoid issues if someone spam clicks the button, or if the giveaway ends at the same time someone clicks on the button
                 // We could also use TRANSACTION_SERIALIZABLE, but it is a bit expensive since it needs to be executed... well, in serial
-                m.giveawayManager.lockGiveaway(dbId, false) {
+                m.giveawayManager.lockGiveaway(dbId) {
                     val state = m.transaction {
                         val giveaway = Giveaways.select { Giveaways.id eq dbId }
                             .firstOrNull() ?: return@transaction GiveawayState.UnknownGiveaway

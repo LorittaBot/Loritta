@@ -53,11 +53,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     val giveawayMessageUpdateMutexes = ConcurrentHashMap<Long, Mutex>()
     val giveawayMessageUpdateJobs = ConcurrentHashMap<Long, Job>()
 
-    suspend inline fun <T> lockGiveaway(dbId: Long, bypassMutex: Boolean, action: () -> (T)): T {
-        if (bypassMutex) {
-            return action.invoke()
-        }
-
+    suspend inline fun <T> lockGiveaway(dbId: Long, action: () -> (T)): T {
         return (giveawayUpdateMutexes[dbId] ?: error("Missing update mutex for giveaway $dbId!")).withLock(action = action)
     }
 
@@ -415,13 +411,13 @@ class GiveawayManager(val loritta: LorittaBot) {
         }
     }
 
-    suspend fun rollWinners(message: Message, giveaway: Giveaway, bypassMutex: Boolean, numberOfWinnersOverride: Int? = null) {
+    suspend fun rollWinners(message: Message, giveaway: Giveaway, numberOfWinnersOverride: Int? = null) {
         val numberOfWinners = numberOfWinnersOverride ?: giveaway.numberOfWinners
         if (giveaway.version == 2) {
             val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
             val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-            val participantsIds = lockGiveaway(giveaway.id.value, bypassMutex) {
+            val participantsIds = lockGiveaway(giveaway.id.value) {
                 loritta.transaction {
                     GiveawayParticipants.select {
                         GiveawayParticipants.giveawayId eq giveaway.id.value
@@ -668,7 +664,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {
         logger.info { "Finishing giveaway ${giveaway.id.value}, let's party! \uD83C\uDF89" }
 
-        rollWinners(message, giveaway, false)
+        rollWinners(message, giveaway)
 
         loritta.newSuspendedTransaction {
             giveaway.finished = true
