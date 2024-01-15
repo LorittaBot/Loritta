@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
 import io.ktor.server.application.*
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
@@ -14,13 +15,12 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.countDistinct
 import org.jetbrains.exposed.sql.select
-import java.sql.Connection
 
 class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val raffleType = call.parameters["type"]?.let { RaffleType.valueOf(it) } ?: RaffleType.ORIGINAL
 
-		val raffleStatus = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
+		val raffleStatus = loritta.raffleResultsMutex.withLock {
 			// Get current active raffle based on the selected raffle type
 			val currentRaffle = Raffles.select {
 				Raffles.endedAt.isNull() and (Raffles.raffleType eq raffleType)
@@ -55,7 +55,7 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 					val prizeAfterTax = previousRaffle[Raffles.paidOutPrizeAfterTax]
 					val userId = previousRaffleWinnerTicket[RaffleTickets.userId]
 
-					return@transaction RaffleStatus(
+					return@withLock RaffleStatus(
 						userId,
 						currentTickets.toInt(),
 						totalUsersInTheRaffle.toInt(),
@@ -67,7 +67,7 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 				}
 			}
 
-			return@transaction RaffleStatus(
+			return@withLock RaffleStatus(
 				null,
 				currentTickets.toInt(),
 				totalUsersInTheRaffle.toInt(),
