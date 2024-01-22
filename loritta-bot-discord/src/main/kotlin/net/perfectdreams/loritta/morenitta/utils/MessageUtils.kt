@@ -305,7 +305,7 @@ object MessageUtils {
 					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.discriminator
 					tokens[Placeholders.USER_ID.name] = source.id
 					tokens[Placeholders.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
-					tokens[Placeholders.USER_TAG.name] = "@${source.name}"
+					tokens[Placeholders.USER_TAG.name] = "@${source.name.escapeMentions()}"
 
 					tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.discriminator
 					tokens[Placeholders.Deprecated.USER_ID.name] = source.id
@@ -317,7 +317,7 @@ object MessageUtils {
 					tokens[Placeholders.USER_NAME.name] = source.user.globalName ?: source.user.name
 					tokens[Placeholders.USER_DISCRIMINATOR.name] = source.user.discriminator
 					tokens[Placeholders.USER_ID.name] = source.id
-					tokens[Placeholders.USER_TAG.name] = "@${source.user.name}"
+					tokens[Placeholders.USER_TAG.name] = "@${source.user.name.escapeMentions()}"
 					tokens[Placeholders.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
 					tokens[Placeholders.USER_NICKNAME.name] = source.effectiveName
 
