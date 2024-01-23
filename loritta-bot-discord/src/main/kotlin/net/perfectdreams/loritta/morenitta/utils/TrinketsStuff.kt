@@ -65,7 +65,7 @@ object TrinketsStuff {
 
     fun updateTrinkets(pudding: Pudding) {
         runBlocking {
-            pudding.transaction {
+            pudding.transaction(repetitions = Int.MAX_VALUE) {
                 // ===[ PROFILE GROUPS ]===
                 // Validate if the profile designs exist
                 if (
