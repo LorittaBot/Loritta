@@ -59,7 +59,10 @@ fun <T : MessagePlaceholder> DiscordMessageEditor(
             JsonForDiscordMessages.decodeFromString<DiscordMessage>(rawMessage)
         } catch (e: SerializationException) {
             null
+        } catch (e: IllegalStateException) {
+            null // This may be triggered when a message has invalid message components
         }
+
         val mutableMessage = MutableDiscordMessage(
             parsedMessage ?: DiscordMessage(
                 content = rawMessage

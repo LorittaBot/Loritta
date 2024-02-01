@@ -145,6 +145,8 @@ object MessageUtils {
 			JsonIgnoreUnknownKeys.decodeFromString<DiscordMessage>(message)
 		} catch (e: SerializationException) {
 			DiscordMessage(content = message) // If the message is null, use the message as the content!
+		} catch (e: IllegalStateException) {
+			DiscordMessage(content = message) // This may be triggered when a message has invalid message components
 		}
 
 		fun recursiveComponentReplacer(component: DiscordComponent): DiscordComponent {

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import io.ktor.http.*
 import io.ktor.server.application.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
