@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.author
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
 class TioDoPaveExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     // TODO: Localization
@@ -154,7 +154,7 @@ class TioDoPaveExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
         "Já imaginou se chovesse macarrão?\n\nIa ser massa demais.",
         "Eleição Presidencial 2018 no Brasil\n\nÉ isso, essa é a piada.",
         "O que diz o fungo Power Ranger?\n\nÉ HORA DE MOFAR",
-        "Cono se diz topless em chinês?\n\nShen shu tian.",
+        "Como se diz topless em chinês?\n\nShen shu tian.",
         "Por que o louco, quando joga futebol, só consegue marcar gol com os pés?\n\nPor que ele não bate bem de cabeça.",
         "O que o bispo foi fazer na sala de informática?\n\nConverter arquivos",
         "Bom mesmo é o site do cavalo:\n\nwww.cavalo.com.com.com.com.com.com",

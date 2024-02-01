@@ -157,7 +157,7 @@ class TioDoPaveCommand(loritta: LorittaBot) : AbstractCommand(loritta, "tiodopav
 				"Já imaginou se chovesse macarrão?\n\nIa ser massa demais.",
 				"Eleição Presidencial 2018 no Brasil\n\nÉ isso, essa é a piada.",
 				"O que diz o fungo Power Ranger?\n\nÉ HORA DE MOFAR",
-				"Cono se diz topless em chinês?\n\nShen shu tian.",
+				"Como se diz topless em chinês?\n\nShen shu tian.",
 				"Por que o louco, quando joga futebol, só consegue marcar gol com os pés?\n\nPor que ele não bate bem de cabeça.",
 				"O que o bispo foi fazer na sala de informática?\n\nConverter arquivos",
 				"Bom mesmo é o site do cavalo:\n\nwww.cavalo.com.com.com.com.com.com",
