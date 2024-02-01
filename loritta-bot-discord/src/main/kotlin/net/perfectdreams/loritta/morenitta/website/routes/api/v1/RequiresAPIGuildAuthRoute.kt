@@ -14,10 +14,10 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardPath: String) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
@@ -35,6 +35,19 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 			redirect("$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 		}
 
+		val id = userIdentification.id
+		val cacheKey = "$guildId#${id}"
+		val isCachedMissingHit = loritta.cachedFailedMemberQueryResults.containsKey(cacheKey)
+		if (isCachedMissingHit)
+			throw WebsiteAPIException(
+				HttpStatusCode.Forbidden,
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.FORBIDDEN,
+					"User $id doesn't have permission to edit ${guildId}'s config"
+				)
+			)
+
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
 			?: throw WebsiteAPIException(
 				HttpStatusCode.BadRequest,
@@ -47,7 +60,6 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 
 		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
-		val id = userIdentification.id
 		val member = jdaGuild.retrieveMemberById(id).await()
 		var canAccessDashboardViaPermission = false
 
@@ -59,6 +71,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 
 		val canBypass = loritta.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
+			loritta.cachedFailedMemberQueryResults[cacheKey] = true
 			throw WebsiteAPIException(
 				HttpStatusCode.Forbidden,
 				WebsiteUtils.createErrorPayload(

@@ -513,6 +513,13 @@ class LorittaBot(
 
 	val tasksScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+	// Used to workaround issues with users DoS'ing endpoints that require retrieveMember
+	// The key is "GuildId#UserId"
+	val cachedFailedMemberQueryResults = Caffeine.newBuilder()
+		.expireAfterWrite(5L, TimeUnit.SECONDS)
+		.build<String, Boolean>()
+		.asMap()
+
 	// Inicia a Loritta
 	@OptIn(ExperimentalTime::class, ExperimentalSerializationApi::class, ExperimentalSerializationApi::class,
 		ExperimentalSerializationApi::class

@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import io.ktor.http.*
 import io.ktor.server.application.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -54,7 +55,17 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
         val guild = m.lorittaShards.getGuildById(request.guildId) ?: throw RPCResponseException(LorittaInternalRPCResponse.ExecuteDashGuildScopedRPCResponse(DashGuildScopedResponse.UnknownGuild))
 
-        val member = guild.retrieveMemberOrNullById(request.memberIdToBePermissionCheckedAgainst) ?: throw RPCResponseException(LorittaInternalRPCResponse.ExecuteDashGuildScopedRPCResponse(DashGuildScopedResponse.UnknownMember))
+        val memberId = request.memberIdToBePermissionCheckedAgainst
+        val cacheKey = "${request.guildId}#${memberId}"
+        val isCachedMissingHit = m.cachedFailedMemberQueryResults.containsKey(cacheKey)
+        if (isCachedMissingHit)
+            throw RPCResponseException(LorittaInternalRPCResponse.ExecuteDashGuildScopedRPCResponse(DashGuildScopedResponse.UnknownMember))
+
+        val member = guild.retrieveMemberOrNullById(request.memberIdToBePermissionCheckedAgainst)
+        if (member == null) {
+            m.cachedFailedMemberQueryResults[cacheKey] = true
+            throw RPCResponseException(LorittaInternalRPCResponse.ExecuteDashGuildScopedRPCResponse(DashGuildScopedResponse.UnknownMember))
+        }
 
         val hasPermissionToAccessTheDashboard = member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR) || member.isOwner
 
@@ -392,7 +403,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
             is DashGuildScopedRequest.DeleteGuildCustomCommandConfigRequest -> {
                 m.newSuspendedTransaction {
                     CustomGuildCommands.deleteWhere {
-                        id eq dashRequest.commandId and (CustomGuildCommands.guild eq guild.idLong)
+                        CustomGuildCommands.id eq dashRequest.commandId and (CustomGuildCommands.guild eq guild.idLong)
                     }
                 }
                 DashGuildScopedResponse.DeleteGuildCustomCommandConfigResponse
@@ -657,7 +668,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
             is DashGuildScopedRequest.DeleteGuildTwitchChannelRequest -> {
                 m.newSuspendedTransaction {
                     TrackedTwitchAccounts.deleteWhere {
-                        id eq dashRequest.trackedId and (TrackedTwitchAccounts.guildId eq guild.idLong)
+                        TrackedTwitchAccounts.id eq dashRequest.trackedId and (TrackedTwitchAccounts.guildId eq guild.idLong)
                     }
                 }
                 DashGuildScopedResponse.DeleteGuildTwitchChannelResponse
