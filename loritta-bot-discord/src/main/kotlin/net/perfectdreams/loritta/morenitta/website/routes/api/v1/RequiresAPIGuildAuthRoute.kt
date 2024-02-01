@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
@@ -60,7 +60,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 
 		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
-		val member = jdaGuild.retrieveMemberById(id).await()
+		val member = jdaGuild.retrieveMemberOrNullById(id)
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {
