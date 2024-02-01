@@ -3,9 +3,10 @@ package net.perfectdreams.loritta.morenitta.website.utils.config.types
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 
 class AutoroleConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
@@ -19,7 +20,7 @@ class AutoroleConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
 
         return jsonObject(
                 "enabled" to (autoroleConfig?.enabled ?: false),
-                "roles" to (autoroleConfig?.roles ?: arrayOf()).toList().toJsonArray(),
+                "roles" to (autoroleConfig?.roles ?: arrayOf()).take(DiscordResourceLimits.Guild.Roles).toList().toJsonArray(),
                 "giveRolesAfter" to (autoroleConfig?.giveRolesAfter),
                 "giveOnlyAfterMessageWasSent" to (autoroleConfig?.giveOnlyAfterMessageWasSent ?: false)
         )
@@ -35,7 +36,7 @@ class AutoroleConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
             }
 
             autoroleConfig.enabled = payload["enabled"].bool
-            autoroleConfig.roles = payload["roles"].array.map { it.long }.toTypedArray()
+            autoroleConfig.roles = payload["roles"].array.take(DiscordResourceLimits.Guild.Roles).map { it.long }.toTypedArray()
             autoroleConfig.giveRolesAfter = payload["giveRolesAfter"].nullLong
             autoroleConfig.giveOnlyAfterMessageWasSent = payload["giveOnlyAfterMessageWasSent"].bool
 

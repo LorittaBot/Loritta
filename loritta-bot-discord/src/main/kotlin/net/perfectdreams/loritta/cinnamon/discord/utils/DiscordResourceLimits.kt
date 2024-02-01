@@ -1,6 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
 object DiscordResourceLimits {
+    object Guild {
+        val Channels = 500
+        val Roles = 250
+    }
+
     object Command {
         object Description {
             const val Length = 100

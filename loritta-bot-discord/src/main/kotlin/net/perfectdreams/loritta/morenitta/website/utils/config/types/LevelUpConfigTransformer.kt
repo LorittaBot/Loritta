@@ -93,7 +93,6 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 }
             }
 
-
             serverConfig.levelConfig = levelConfig // Yay!!
         }
     }
@@ -125,7 +124,7 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 rolesByExperienceArray.add(
                         jsonObject(
                                 "requiredExperience" to roleByExperience[RolesByExperience.requiredExperience].toString(),
-                                "roles" to roleByExperience[RolesByExperience.roles].map { it.toString() }.toList().toJsonArray()
+                                "roles" to roleByExperience[RolesByExperience.roles].take(100).map { it.toString() }.toList().toJsonArray()
                         )
                 )
             }
