@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
@@ -34,7 +33,7 @@ class DashboardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             val dashboardUrl = "${context.loritta.config.loritta.website.url}dashboard"
             var url = dashboardUrl
 
-            if (guild != null && guild.selfMember.hasPermission(Permission.MANAGE_SERVER))
+            if (guild != null && context.member.hasPermission(Permission.MANAGE_SERVER))
                 url = "${context.loritta.config.loritta.website.url}guild/${guild.idLong}/configure/"
 
             context.reply(true) {
