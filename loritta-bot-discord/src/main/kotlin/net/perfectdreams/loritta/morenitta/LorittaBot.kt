@@ -1436,25 +1436,43 @@ class LorittaBot(
 	}
 
 	suspend fun loadActivity(): ActivityUpdater.ActivityWrapper? {
-		// Create a new activity
-		val now = Instant.now()
-		val gatewayActivity = newSuspendedTransaction {
-			GatewayActivities.select {
-				GatewayActivities.startsAt lessEq Instant.now() and (GatewayActivities.endsAt greaterEq now)
-			}.orderBy(Pair(GatewayActivities.startsAt, SortOrder.DESC), Pair(GatewayActivities.priority, SortOrder.DESC))
-				.limit(1)
-				.firstOrNull()
-		} ?: return null
+		val currentActiveLorittaAvatarRR = transaction {
+			FanArtsExtravaganza.select {
+				FanArtsExtravaganza.active eq true and (FanArtsExtravaganza.enabled eq true)
+			}.firstOrNull()
+		}
 
-		val text = gatewayActivity[GatewayActivities.text]
-		val type = Activity.ActivityType.valueOf(gatewayActivity[GatewayActivities.type])
-		val streamUrl = gatewayActivity[GatewayActivities.streamUrl]
+		if (currentActiveLorittaAvatarRR == null) {
+			logger.warn { "There isn't a default avatar set for the Fan Art Extravaganza! Using default activity as a fallback... Please create a entry in the ${FanArtsExtravaganza.tableName} table with the \"${FanArtsExtravaganza.defaultAvatar.name}\" field set to true!" }
+		}
 
-		return ActivityUpdater.ActivityWrapper(
-			text,
-			type,
-			streamUrl
-		)
+		if (currentActiveLorittaAvatarRR == null || currentActiveLorittaAvatarRR[FanArtsExtravaganza.defaultAvatar]) {
+			// Default avatar, use the default activity
+			val now = Instant.now()
+			val gatewayActivity = newSuspendedTransaction {
+				GatewayActivities.select {
+					GatewayActivities.startsAt lessEq Instant.now() and (GatewayActivities.endsAt greaterEq now)
+				}.orderBy(Pair(GatewayActivities.startsAt, SortOrder.DESC), Pair(GatewayActivities.priority, SortOrder.DESC))
+					.limit(1)
+					.firstOrNull()
+			} ?: return null
+
+			val text = gatewayActivity[GatewayActivities.text]
+			val type = Activity.ActivityType.valueOf(gatewayActivity[GatewayActivities.type])
+			val streamUrl = gatewayActivity[GatewayActivities.streamUrl]
+
+			return ActivityUpdater.ActivityWrapper(
+				text,
+				type,
+				streamUrl
+			)
+		} else {
+			return ActivityUpdater.ActivityWrapper(
+				"\uD83C\uDFA8 Fan Art by ${currentActiveLorittaAvatarRR[FanArtsExtravaganza.artistName]}",
+				Activity.ActivityType.CUSTOM_STATUS,
+				null
+			)
+		}
 	}
 
 	fun createActivityText(activityText: String, shardId: Int) = "$activityText | Cluster ${lorittaCluster.id} [$shardId]"
