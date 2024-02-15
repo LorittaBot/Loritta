@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Icon
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.FanArtsExtravaganza
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
@@ -55,7 +56,9 @@ class ActivityUpdater(val loritta: LorittaBot) : RunnableCoroutine {
                         val fanArts = loritta.transaction {
                             FanArtsExtravaganza.select {
                                 FanArtsExtravaganza.enabled eq true and (FanArtsExtravaganza.defaultAvatar eq false)
-                            }.toList()
+                            }
+                                .orderBy(FanArtsExtravaganza.id, SortOrder.ASC)
+                                .toList()
                         }
 
                         if (fanArts.isNotEmpty()) {
