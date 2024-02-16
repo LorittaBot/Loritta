@@ -3,8 +3,10 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.so
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import io.ktor.client.plugins.*
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.entities.messages.editMessage
@@ -115,7 +117,17 @@ class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: F
         val result = generateTextAsOpusFrames(
             args[options.voice],
             args[options.text]
-        )
+        ) {
+            // TODO: This is nasty, don't use GlobalScope (we should really create a launch/async func in the CommandContext)
+            GlobalScope.launch {
+                message.editMessage {
+                    styled(
+                        "Pedindo para o Falatron gerar as vozes... Posição na fila: $it",
+                        Emotes.LoriLick
+                    )
+                }
+            }
+        }
 
         val opusFrames = when (result) {
             is FalatronVoiceResult.Success -> result.opusFrames
@@ -185,13 +197,15 @@ class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: F
 
     private suspend fun generateTextAsOpusFrames(
         voice: String,
-        text: String
+        text: String,
+        queuePositionCallback: (Int) -> (Unit)
     ): FalatronVoiceResult {
         // First: Request Falatron voice
         val generatedAudioInMP3Format = try {
             loritta.falatron.generate(
                 voice,
-                text
+                text,
+                queuePositionCallback
             )
         } catch (e: Exception) {
             if (e is IllegalStateException || e is HttpRequestTimeoutException) {
