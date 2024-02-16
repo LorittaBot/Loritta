@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
+import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object FanArtsExtravaganza : LongIdTable() {
@@ -9,4 +10,5 @@ object FanArtsExtravaganza : LongIdTable() {
 	val enabled = bool("enabled").index()
 	val defaultAvatar = bool("default_avatar").index()
 	val active = bool("active").index()
+	val addedAt = timestampWithTimeZone("added_at")
 }
