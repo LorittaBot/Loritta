@@ -15,7 +15,7 @@ data object LeaveMessagePlaceholders : SectionPlaceholders<LeaveMessagePlacehold
     object UserAvatarUrlPlaceholder : GenericPlaceholders.UserAvatarUrlPlaceholder(I18nKeysData.Placeholders.LeaveMessage.UserAvatarUrl), LeaveMessagePlaceholder
     object GuildNamePlaceholder : GenericPlaceholders.GuildNamePlaceholder(I18nKeysData.Placeholders.Generic.GuildName), LeaveMessagePlaceholder
     object GuildSizePlaceholder : GenericPlaceholders.GuildSizePlaceholder(I18nKeysData.Placeholders.Generic.GuildSize), LeaveMessagePlaceholder
-    object GuildIconUrlPlaceholder : GenericPlaceholders.GuildSizePlaceholder(I18nKeysData.Placeholders.Generic.GuildIconUrl), LeaveMessagePlaceholder
+    object GuildIconUrlPlaceholder : GenericPlaceholders.GuildIconUrlPlaceholder(I18nKeysData.Placeholders.Generic.GuildIconUrl), LeaveMessagePlaceholder
 
     override val placeholders = listOf<LeaveMessagePlaceholder>(
         UserMentionPlaceholder,
