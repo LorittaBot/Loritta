@@ -119,7 +119,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ UTILS ]=======
 		commandMap.add(TranslateCommand(loritta))
 		commandMap.add(WikipediaCommand(loritta))
-		commandMap.add(MoneyCommand(loritta))
 		commandMap.add(ColorInfoCommand(loritta))
 		commandMap.add(LembrarCommand(loritta))
 		commandMap.add(TempoCommand(loritta))

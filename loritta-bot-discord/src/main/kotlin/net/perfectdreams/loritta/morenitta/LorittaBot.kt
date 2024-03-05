@@ -254,6 +254,7 @@ class LorittaBot(
 	lateinit var lorittaShards: LorittaShards
 	val webhookExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Webhook Sender %d").build())
 	val webhookOkHttpClient = OkHttpClient()
+	val ecbManager = ECBManager()
 
 	val legacyCommandManager = CommandManager(this) // Nosso command manager
 	var messageInteractionCache = Caffeine.newBuilder().maximumSize(1000L).expireAfterAccess(3L, TimeUnit.MINUTES).build<Long, MessageInteractionFunctions>().asMap()
@@ -379,7 +380,6 @@ class LorittaBot(
 	val giveawayManager = GiveawayManager(this)
 	val welcomeModule = WelcomeModule(this)
 	val starboardModule = StarboardModule(this)
-	val ecbManager = ECBManager()
 	val activityUpdater = ActivityUpdater(this)
 
 	private val internalWebServer = InternalWebServer(this)

@@ -86,7 +86,7 @@ class NumberDiscordOptionReference<T>(
     }
 
     override fun get(option: OptionMapping): T {
-        return option.asLong as T
+        return option.asDouble as T
     }
 }
 

@@ -250,6 +250,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(OCRSlashCommand(loritta))
         register(OCRMessageCommand(loritta))
         register(DictionaryCommand(loritta))
+        register(MoneyCommand(loritta, loritta.ecbManager))
 
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
