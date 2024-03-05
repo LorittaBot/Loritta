@@ -61,7 +61,7 @@ interface CommandContext {
             .setColor(Constants.LORITTA_AQUA)
             .setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", jda.selfUser.effectiveAvatarUrl)
             .setTitle("${Emotes.LORI_HM} `$commandPrefix$fullLabel`")
-            .setFooter("${user.name + "#" + user.discriminator} • ${commandDeclaration.category.getLocalizedName(i18nContext)}", user.effectiveAvatarUrl)
+            .setFooter("${user.name} • ${commandDeclaration.category.getLocalizedName(i18nContext)}", user.effectiveAvatarUrl)
             .setTimestamp(Instant.now())
 
         val description = buildString {

@@ -365,7 +365,7 @@ class DiscordCommandContext(
 			.setColor(Constants.LORITTA_AQUA)
 			.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
 			.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
-			.setFooter("${user.name + "#" + user.discriminator} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
+			.setFooter("${user.name} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 			.setTimestamp(Instant.now())
 
 		val description = buildString {

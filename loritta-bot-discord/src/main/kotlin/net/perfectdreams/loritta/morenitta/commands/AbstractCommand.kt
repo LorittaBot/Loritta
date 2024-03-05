@@ -117,7 +117,7 @@ abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, 
 				.setColor(Constants.LORITTA_AQUA)
 				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
 				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
-				.setFooter("${user.name + "#" + user.discriminator} • ${this.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
+				.setFooter("${user.name} • ${this.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 				.setTimestamp(Instant.now())
 
 		val commandArguments = this.getUsage()
