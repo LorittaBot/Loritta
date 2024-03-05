@@ -42,3 +42,7 @@ currencies:
   sgd: "Dólar singapuriano (SGD)"
   thb: "Baht tailandês (THB)"
   zar: "Rand sul-africano (ZAR)"
+examples:
+  - "USD BRL |-| Mostra o valor atual do dólar (USD) em reais (BRL)"
+  - "USD BRL 9.99 |-| Mostra o valor atual de 9,99 dólares (USD) em reais (BRL). Olha, é o preço do Discord Nitro!"
+  - "EUR USD |-| Mostra o valor atual do euro (EUR) em dólares (USD)"
