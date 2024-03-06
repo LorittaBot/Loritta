@@ -185,6 +185,7 @@ object UserUtils {
      * Builds a daily tax message for the [data]
      */
     fun buildDailyTaxMessage(
+        loritta: LorittaBot,
         i18nContext: I18nContext,
         lorittaWebsiteUrl: String,
         userId: UserId,
@@ -220,7 +221,7 @@ object UserUtils {
 
             timestamp = data.timestamp
 
-            image = lorittaWebsiteUrl + "v3/assets/img/sonhos/loritta_sonhos_drool.png"
+            image = loritta.config.loritta.etherealGambiService.url.removeSuffix("/") + "/loritta-sonhos-drool-cooki.png"
         }
     }
 
@@ -228,6 +229,7 @@ object UserUtils {
      * Builds a daily tax message for the [data]
      */
     fun buildDailyTaxMessage(
+        loritta: LorittaBot,
         i18nContext: I18nContext,
         lorittaWebsiteUrl: String,
         userId: UserId,
@@ -262,7 +264,7 @@ object UserUtils {
 
             timestamp = data.timestamp
 
-            image = lorittaWebsiteUrl + "v3/assets/img/sonhos/loritta_sonhos_running.png"
+            image = loritta.config.loritta.etherealGambiService.url.removeSuffix("/") + "/loritta-sonhos-running-cooki.png"
         }
     }
 

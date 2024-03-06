@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.notifications
 
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.NotificationsCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotificationUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class NotificationsViewExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -29,6 +29,7 @@ class NotificationsViewExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
         context.sendEphemeralMessage {
             apply(
                 NotificationUtils.buildUserNotificationMessage(
+                    loritta,
                     context.i18nContext,
                     notification,
                     context.loritta.config.loritta.website.url
