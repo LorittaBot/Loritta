@@ -8,7 +8,11 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.concrete.*
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.exposedpowerutils.sql.batchUpsert
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedTwitchChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.CustomGuildCommands
@@ -16,12 +20,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.placeholders.*
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
@@ -252,6 +258,9 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                 // We are going to "map down" the placeholders into the customTokens map
                 val section = SectionPlaceholders.sections.first { it.type == dashRequest.placeholderSectionType }
 
+                val serverConfig = m.getOrCreateServerConfig(guild.idLong)
+                val i18nContext = m.languageManager.getI18nContextById(serverConfig.localeId)
+
                 // Just to skip all the cruft
                 fun <T : MessagePlaceholder> generateMessage(section: SectionPlaceholders<T>, builder: (T) -> (String)) = MessageUtils.generateMessage(
                     dashRequest.message,
@@ -277,8 +286,34 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                     }
                 }
 
+                // This is a bit crappy, but we need to create a builder from the already generated message
+                val patchedMessage = MessageCreateBuilder.from(message)
+                if (5 > patchedMessage.components.size) { // Below the component limit
+                    patchedMessage.addActionRow(
+                        m.interactivityManager.button(
+                            ButtonStyle.SECONDARY,
+                            i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
+                            {
+                                this.loriEmoji = Emotes.LoriCoffee
+                            }
+                        ) {
+                            it.reply(true) {
+                                styled(
+                                    i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user.asMention} [${user.asUserNameCodeBlockPreviewTag(true)}]")),
+                                    Emotes.LoriCoffee
+                                )
+
+                                styled(
+                                    i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
+                                    Emotes.LoriLurk
+                                )
+                            }
+                        }
+                    )
+                }
+
                 try {
-                    channel.sendMessage(message).await()
+                    channel.sendMessage(patchedMessage.build()).await()
                 } catch (e: Exception) {
                     return@run DashGuildScopedResponse.SendMessageResponse.FailedToSendMessage
                 }

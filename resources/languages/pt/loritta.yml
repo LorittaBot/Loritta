@@ -5,3 +5,7 @@ common:
     'false': "Não"
   disabled: "Desativado"
   unlimited: "Ilimitado"
+  testMessageWarning:
+    buttonLabel: "Mensagem enviada pelo painel"
+    messageWasTestedByUser: "A mensagem foi enviada pelo painel da Loritta pelo usuário {user} usando o botão de \"Testar Mensagem\""
+    dontWorryTheMessageWillOnlyShowUpWhileTesting: "Não se preocupe, este botão só irá aparecer ao testar a mensagem pelo painel!"
