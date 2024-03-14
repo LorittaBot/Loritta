@@ -1009,6 +1009,34 @@ object TrinketsStuff {
         createBackground("easter2023Loritta", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15), availableToBuyViaSonhos = false) {
             addDefaultVariant("easter2023-loritta", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("lorittaAndTheDreamers", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("loritta-and-the-dreamers", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-and-the-dreamers-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaAndTheDreamers", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("loritta-and-the-dreamers-tiled", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaBliss", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("loritta-bliss", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaMoonBeach", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("loritta-moon-beach", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-moon-beach-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaYouBringLightIn", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("loritta-you-bring-light-in", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-you-bring-light-in-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaCoolPose", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("loritta-cool-pose", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("powerRandomSketches", true, Rarity.UNCOMMON, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("power-random-sketches", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("captainBoykisser", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+            addDefaultVariant("captain-boykisser", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "captain-boykisser-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createBackground(
