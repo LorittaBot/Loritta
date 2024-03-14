@@ -62,7 +62,11 @@ object DeviousConverter {
         // Unused by JDA: large
         this.put("member_count", guild.memberCount)
         this.putJsonArray("members") {
-            for (member in guild.members) {
+            // Instead of storing all guild members, we will only store Loritta's self instance
+            // This way we avoid taking soooo damn long to save guild data, since we actually don't *need* to restore member data
+            val membersToBeSaved = listOf(guild.selfMember)
+
+            for (member in membersToBeSaved) {
                 addJsonObject {
                     putJsonObject("user") {
                         val user = member.user
