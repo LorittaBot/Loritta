@@ -30,13 +30,13 @@ object TrinketsStuff {
     /**
      * "Center Right Focus" Profile Group ID, background focus is in the center-right of the profile
      */
-    val CENTER_RIGHT_FOCUS_DESIGN = UUID.fromString("d77948dc-0263-49f9-9da0-60b76ca14af8")
+    private val CENTER_RIGHT_FOCUS_DESIGN = UUID.fromString("d77948dc-0263-49f9-9da0-60b76ca14af8")
     /**
      * "Center Top Focus" Profile Group ID, background focus is in the top-center of the profile
      */
-    val CENTER_TOP_FOCUS_DESIGN = UUID.fromString("bc4c8654-ddd2-48c6-8427-7e8c9f7426c0")
+    private val CENTER_TOP_FOCUS_DESIGN = UUID.fromString("bc4c8654-ddd2-48c6-8427-7e8c9f7426c0")
 
-    val centerRightFocusDesigns = listOf(
+    private val centerRightFocusDesigns = listOf(
         "defaultBlurple",
         "defaultRed",
         "defaultBlue",
@@ -49,7 +49,7 @@ object TrinketsStuff {
         "defaultEaster2023"
     )
 
-    val topFocusDesigns = listOf(
+    private val topFocusDesigns = listOf(
         "plainWhite",
         "plainOrange",
         "plainPurple",
@@ -63,9 +63,41 @@ object TrinketsStuff {
         "undertaleBattle"
     )
 
+    private val sets = setOf(
+        "cuteFoodFaces",
+        "sadCats",
+        "discord",
+        "shibas",
+        "stevenUniverse",
+        "akira",
+        "hamptonAndTheHampsters",
+        "gravityFalls",
+        "lorittaBirthday2020",
+        "lowPoly",
+        "landscapes",
+        "jojo",
+        "transformice",
+        "brawlStars",
+        "hollowKnight",
+        "devilMayCry",
+        "leagueOfLegends",
+        "adventureTime",
+        "amongUs"
+    )
+
     fun updateTrinkets(pudding: Pudding) {
         runBlocking {
             pudding.transaction(repetitions = Int.MAX_VALUE) {
+                // ===[ SETS ]===
+                for (set in sets) {
+                    Sets.insertIgnore {
+                        it[Sets.internalName] = set
+                    }
+                }
+
+                // ===[ PROFILE DESIGNS ]===
+                profileDesigns()
+
                 // ===[ PROFILE GROUPS ]===
                 // Validate if the profile designs exist
                 if (
@@ -132,6 +164,37 @@ object TrinketsStuff {
     // Looks like that, if you have a lot of functions in a single suspendable function, stuff breaks and explodes!
     // e: java.lang.StackOverflowError
     //        at org.jetbrains.kotlin.cfg.ControlFlowInformationProviderImpl.markImplicitReceiverOfSuspendLambda$dfs(ControlFlowInformationProviderImpl.kt:885)
+    private fun profileDesigns() {
+        createProfileDesign("defaultDark", true, Rarity.COMMON, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
+        createProfileDesign("debug", true, Rarity.COMMON, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
+        createProfileDesign("modernBlurple", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1))
+        createProfileDesign("msn", true, Rarity.RARE, LocalDate.of(0, 1, 1))
+        createProfileDesign("orkut", true, Rarity.RARE, LocalDate.of(0, 1, 1))
+        createProfileDesign("plainWhite", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("plainOrange", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("plainPurple", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("plainAqua", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("plainGreen", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("plainGreenHearts", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("cowboy", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("nextGenDark", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("peterstark000"))
+        createProfileDesign("monicaAta", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
+        createProfileDesign("loriAta", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim", "allouette"))
+        createProfileDesign("undertaleBattle", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("allouette"))
+        createProfileDesign("halloween2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1))
+        createProfileDesign("christmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1))
+        createProfileDesign("lorittaChristmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1))
+        createProfileDesign("defaultBlurple", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultRed", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultBlue", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultGreen", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultPurple", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultPink", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultYellow", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultOrange", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultEaster2023", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15))
+    }
+
     private fun backgrounds() {
         // ===[ INTERNAL BACKGROUNDS ]===
         // These do not require a default variant
@@ -1036,6 +1099,29 @@ object TrinketsStuff {
         createBackground("captainBoykisser", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
             addDefaultVariant("captain-boykisser", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "captain-boykisser-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+    }
+
+    private fun createProfileDesign(
+        id: String,
+        enabled: Boolean,
+        rarity: Rarity,
+        addedAt: LocalDate,
+        set: String? = null,
+        createdBy: Array<String> = arrayOf(),
+        availableToBuyViaSonhos: Boolean = true,
+        availableToBuyViaMoney: Boolean = false
+    ) {
+        ProfileDesigns.insertOrUpdate(ProfileDesigns.id) {
+            it[ProfileDesigns.id] = id
+            it[ProfileDesigns.enabled] = enabled
+            it[ProfileDesigns.rarity] = rarity
+            if (set != null)
+                it[ProfileDesigns.set] = EntityID(set, Sets)
+            it[ProfileDesigns.createdBy] = createdBy
+            it[ProfileDesigns.availableToBuyViaDreams] = availableToBuyViaSonhos
+            it[ProfileDesigns.availableToBuyViaMoney] = availableToBuyViaMoney
+            it[ProfileDesigns.addedAt] = addedAt.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
         }
     }
 
