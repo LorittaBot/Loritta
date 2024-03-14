@@ -1013,7 +1013,7 @@ object TrinketsStuff {
             addDefaultVariant("loritta-and-the-dreamers", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-and-the-dreamers-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaAndTheDreamers", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("lorittaAndTheDreamersTiled", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
             addDefaultVariant("loritta-and-the-dreamers-tiled", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("lorittaBliss", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
