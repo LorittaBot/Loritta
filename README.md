@@ -51,5 +51,5 @@ If you want to help Loritta financially, please purchase things in Loritta's web
 ___
 
 <p align="center">
-<img src="https://cdn.discordapp.com/attachments/708017680677863505/709834156145770534/lori_deitada.png">
+<img src="https://stuff.loritta.website/loritta-deitada-gabi.png">
 </p>
