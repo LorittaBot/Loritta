@@ -41,30 +41,4 @@ Open the cloned repository folder and open PowerShell or the terminal inside of 
 
 If the build is successful, then congratulations 🎉! You have successfully compiled Loritta!
 
-*You did it! Now... why not run her?* 🙃
-
-## 💫 Running Loritta
-
-This section is tailored to developers, *not* for users that only want to self-host Loritta and do not care about changing her code. Check out the [How to self-host Loritta](SELF-HOSTING.md) tutorial if you only plan to host Loritta without doing any changes to her source code!
-
-### 👷 Requirements
-
-* Everything from the "Compiling Loritta" section.
-* [JetBrains IntelliJ IDEA](https://www.jetbrains.com/pt-br/idea/)! The community edition is good enough, and it is free, so you don't need to be like "oh my god I need to *pay* for it". 😉
-* PostgreSQL 12+, latest recommended.
-
-### 🧹 Opening Loritta's project in IntelliJ IDEA
-
-Open IntelliJ IDEA, then File -> Open -> Select the folder where you cloned Loritta and click "OK". IDEA will ask if the project is trusted by you, click "Trust Project".
-
-After opening the project, wait until IDEA downloads all dependencies and indexes everything related to the project, this may take a long time, depending on your internet connection and your computers CPU and disk I/O speed.
-
-### 🏃‍♂️ Running Loritta within IntelliJ IDEA
-
-While it is possible to create a Docker image via Gradle, running Loritta within IntelliJ IDEA is easier and faster if you are changing code.
-
-Right-click the `LorittaLauncher` class and click on the "Run 'LorittaLauncher'" option.
-
-If this is the first time running Loritta, she will create a file named `loritta.conf` in your project's root folder. Open the `loritta.conf` and configure the `loritta.conf` file:
-
-Then run the `LorittaLauncher` class again! If everything goes well, Loritta will be up and running!
+*You did it!*
