@@ -47,6 +47,7 @@ permissions:
   messageAttachVoiceMessage: "Enviar mensagens de voz"
   voiceUseSoundboard: "Usar efeitos sonoros"
   voiceUseExternalSounds: "Usar sons externos"
+  voiceSetStatus: "Definir status do canal de voz"
   unknownPermission: "Permissão desconhecida"
 guildFeatures:
   inviteSplash: "Fundo de convite"

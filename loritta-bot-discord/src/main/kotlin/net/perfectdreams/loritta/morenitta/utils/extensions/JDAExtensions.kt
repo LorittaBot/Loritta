@@ -384,6 +384,7 @@ fun Permission.getI18nKey() = when (this) {
     MESSAGE_ATTACH_VOICE_MESSAGE -> I18nKeys.Permissions.MessageAttachVoiceMessage
     VOICE_USE_SOUNDBOARD -> I18nKeys.Permissions.VoiceUseSoundboard
     VOICE_USE_EXTERNAL_SOUNDS -> I18nKeys.Permissions.VoiceUseExternalSounds
+    VOICE_SET_STATUS -> I18nKeys.Permissions.VoiceSetStatus
     UNKNOWN -> I18nKeys.Permissions.UnknownPermission
 }
 
