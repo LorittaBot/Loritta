@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
@@ -27,6 +28,8 @@ class SlashCommandDeclarationBuilder(
     var alternativeLegacyAbsoluteCommandPaths = mutableListOf<String>()
     val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<SlashCommandGroupDeclarationBuilder>()
+    var integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL)
+    var interactionContexts = listOf(Command.InteractionContextType.GUILD, Command.InteractionContextType.BOT_DM, Command.InteractionContextType.PRIVATE_CHANNEL)
 
     fun subcommand(name: StringI18nData, description: StringI18nData, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands.add(
@@ -59,6 +62,8 @@ class SlashCommandDeclarationBuilder(
             enableLegacyMessageSupport,
             alternativeLegacyLabels,
             alternativeLegacyAbsoluteCommandPaths,
+            integrationTypes,
+            interactionContexts,
             executor,
             subcommands.map { it.build() },
             subcommandGroups.map { it.build() }
@@ -106,6 +111,8 @@ class UserCommandDeclarationBuilder(
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
     var isGuildOnly = false
+    var integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL)
+    var interactionContexts = listOf(Command.InteractionContextType.GUILD, Command.InteractionContextType.BOT_DM, Command.InteractionContextType.PRIVATE_CHANNEL)
 
     fun build(): UserCommandDeclaration {
         return UserCommandDeclaration(
@@ -113,6 +120,8 @@ class UserCommandDeclarationBuilder(
             category,
             defaultMemberPermissions,
             isGuildOnly,
+            integrationTypes,
+            interactionContexts,
             executor
         )
     }
@@ -129,6 +138,8 @@ class MessageCommandDeclarationBuilder(
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
     var isGuildOnly = false
+    var integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL)
+    var interactionContexts = listOf(Command.InteractionContextType.GUILD, Command.InteractionContextType.BOT_DM, Command.InteractionContextType.PRIVATE_CHANNEL)
 
     fun build(): MessageCommandDeclaration {
         return MessageCommandDeclaration(
@@ -136,6 +147,8 @@ class MessageCommandDeclarationBuilder(
             category,
             defaultMemberPermissions,
             isGuildOnly,
+            integrationTypes,
+            interactionContexts,
             executor
         )
     }

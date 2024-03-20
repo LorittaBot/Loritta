@@ -505,6 +505,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
             this.isGuildOnly = declaration.isGuildOnly
+            this.setInteractionContextTypes(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
+            this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
             forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
                 setNameLocalization(discordLocale, i18nContext.get(declaration.name))
@@ -574,6 +576,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
             this.isGuildOnly = declaration.isGuildOnly
+            this.setInteractionContextTypes(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
+            this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
             forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
                 setNameLocalization(discordLocale, i18nContext.get(declaration.name))
@@ -589,6 +593,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
             this.isGuildOnly = declaration.isGuildOnly
+            this.setInteractionContextTypes(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
+            this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
             forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
                 setNameLocalization(discordLocale, i18nContext.get(declaration.name))
