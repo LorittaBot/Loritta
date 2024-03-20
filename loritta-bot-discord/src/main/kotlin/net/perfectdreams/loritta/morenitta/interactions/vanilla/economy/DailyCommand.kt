@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import kotlinx.datetime.*
 import kotlinx.datetime.Instant
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -17,7 +18,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.serializable.Daily
 import net.perfectdreams.loritta.serializable.UserId
 import java.time.*
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -32,6 +32,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             add("diário")
             add("bolsafamília")
         }
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         executor = DailyExecutor()
     }

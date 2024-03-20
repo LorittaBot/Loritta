@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -65,6 +66,8 @@ class MoneyCommand(val loritta: LorittaBot, val ecbManager: ECBManager) : SlashC
             add("dinheiro")
             add("grana")
         }
+
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         examples = I18N_PREFIX.Examples
 

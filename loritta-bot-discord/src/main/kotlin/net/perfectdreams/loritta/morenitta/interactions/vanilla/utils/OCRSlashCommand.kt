@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -16,6 +17,8 @@ class OCRSlashCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
             add("ler")
             add("read")
         }
+
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         executor = OCRSlashExecutor()
     }

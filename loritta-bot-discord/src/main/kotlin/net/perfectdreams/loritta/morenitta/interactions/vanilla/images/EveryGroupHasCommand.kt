@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.UserUtils
 import net.perfectdreams.loritta.morenitta.utils.images.userAvatarCollage
+import net.perfectdreams.loritta.serializable.UserId
 import java.awt.Color
 
 class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
@@ -24,6 +25,7 @@ class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
         enableLegacyMessageSupport = true
         examples = I18N_PREFIX.Examples
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         executor = SadRealityExecutor()
     }

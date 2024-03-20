@@ -74,6 +74,52 @@ import org.jetbrains.exposed.sql.update
 import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
+    companion object {
+        // TODO: THIS IS A HACK, will be removed after all Discord InteraKTions commands are migrated do InteraKTions Unleashed
+        private val legacyInteraKTionsGuildAndUserInstallableCommandLabels = setOf(
+            "sonhos",
+            "rate",
+            "summon",
+            "text",
+            "achievements",
+            "afk",
+            "gender",
+            "undertale",
+            "colorinfo",
+            "choose",
+            "morse",
+            "translate",
+            "notifications",
+            "attackonheart",
+            "carlyaaah",
+            "chaves",
+            "fansexplaining",
+            "gigachad",
+            "art",
+            "bobburningpaper",
+            "brmemes",
+            "buckshirt",
+            "drake",
+            "drawnmask",
+            "getoverhere",
+            "invert",
+            "lorisign",
+            "markmeta",
+            "mememaker",
+            "discordping",
+            "passingpaper",
+            "pepedream",
+            "petpet",
+            "riptv",
+            "sonic",
+            "scared",
+            "terminatoranime",
+            "tobecontinued",
+            "trump",
+            "wolverineframe"
+        )
+    }
+
     val slashCommands = mutableListOf<SlashCommandDeclaration>()
     val userCommands = mutableListOf<UserCommandDeclaration>()
     val messageCommands = mutableListOf<MessageCommandDeclaration>()
@@ -647,6 +693,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                     val dmPermission = declaration.dmPermission
                     if (dmPermission != null)
                         isGuildOnly = !dmPermission
+
+                    // TODO: THIS IS A HACK, will be removed after all Discord InteraKTions commands are migrated do InteraKTions Unleashed
+                    if (declaration.name in legacyInteraKTionsGuildAndUserInstallableCommandLabels)
+                        this.setIntegrationTypes(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
                     // We can only have (subcommands OR subcommand groups) OR arguments
                     if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {

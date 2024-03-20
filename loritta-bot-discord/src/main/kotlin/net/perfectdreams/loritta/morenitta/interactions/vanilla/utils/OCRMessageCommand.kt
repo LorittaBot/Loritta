@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -12,7 +13,9 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.MessageCommandD
 import net.perfectdreams.loritta.morenitta.interactions.commands.messageCommand
 
 class OCRMessageCommand(val loritta: LorittaBot) : MessageCommandDeclarationWrapper {
-    override fun command() = messageCommand(OCRExecutor.I18N_PREFIX.ReadTextFromImage, CommandCategory.UTILS, OCRMessageExecutor())
+    override fun command() = messageCommand(OCRExecutor.I18N_PREFIX.ReadTextFromImage, CommandCategory.UTILS, OCRMessageExecutor()) {
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+    }
 
     inner class OCRMessageExecutor : LorittaMessageCommandExecutor() {
         override suspend fun execute(context: ApplicationCommandContext, message: Message) {

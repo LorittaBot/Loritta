@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation
 
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -23,6 +24,8 @@ class DashboardCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             add("configurar")
             add("config")
         }
+
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         executor = DashboardExecutor()
     }

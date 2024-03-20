@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft
 
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.gabrielaimageserver.data.MinecraftSkinLorittaSweatshirtRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -11,8 +12,11 @@ import net.perfectdreams.loritta.common.utils.URLUtils
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
@@ -26,6 +30,8 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     val mojang = MinecraftMojangAPI()
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */, CommandCategory.MINECRAFT) {
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+
         subcommandGroup(I18N_PREFIX.Player.Label, I18N_PREFIX.Player.Description) {
             subcommand(I18N_PREFIX.Player.Skin.Label, I18N_PREFIX.Player.Skin.Description) {
                 executor = McSkinExecutor()

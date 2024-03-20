@@ -1,18 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.string
-import dev.minn.jda.ktx.messages.InlineMessage
-import dev.minn.jda.ktx.messages.MessageEdit
-import kotlinx.datetime.Clock
-import kotlinx.datetime.toKotlinInstant
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.interactions.components.ItemComponent
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.utils.NotableUserIds
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -24,11 +14,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.UserAndMember
-import net.perfectdreams.loritta.morenitta.utils.ApplicationInfoUtils
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
-import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 
 class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -37,6 +23,7 @@ class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
         enableLegacyMessageSupport = true
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         subcommand(I18N_PREFIX.Avatar.Label, I18N_PREFIX.Avatar.Description) {
             alternativeLegacyAbsoluteCommandPaths.apply {

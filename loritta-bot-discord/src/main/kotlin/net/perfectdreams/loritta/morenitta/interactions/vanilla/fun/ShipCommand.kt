@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 
 import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.gabrielaimageserver.data.ShipRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -42,6 +43,8 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         this.alternativeLegacyLabels.apply {
             add("shippar")
         }
+
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         executor = ShipExecutor()
     }

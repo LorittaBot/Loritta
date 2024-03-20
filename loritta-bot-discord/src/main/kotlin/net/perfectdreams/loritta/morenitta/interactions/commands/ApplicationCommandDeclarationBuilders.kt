@@ -101,7 +101,8 @@ class SlashCommandGroupDeclarationBuilder(
 }
 
 // ===[ USER COMMANDS ]===
-fun userCommand(name: StringI18nData, category: CommandCategory, executor: LorittaUserCommandExecutor) = UserCommandDeclarationBuilder(name, category, executor)
+fun userCommand(name: StringI18nData, category: CommandCategory, executor: LorittaUserCommandExecutor, block: UserCommandDeclarationBuilder.() -> (Unit) = {}) = UserCommandDeclarationBuilder(name, category, executor)
+    .apply(block)
 
 @InteraKTionsUnleashedDsl
 class UserCommandDeclarationBuilder(
@@ -128,7 +129,8 @@ class UserCommandDeclarationBuilder(
 }
 
 // ===[ MESSAGE COMMANDS ]===
-fun messageCommand(name: StringI18nData, category: CommandCategory, executor: LorittaMessageCommandExecutor) = MessageCommandDeclarationBuilder(name, category, executor)
+fun messageCommand(name: StringI18nData, category: CommandCategory, executor: LorittaMessageCommandExecutor, block: MessageCommandDeclarationBuilder.() -> (Unit) = {}) = MessageCommandDeclarationBuilder(name, category, executor)
+    .apply(block)
 
 @InteraKTionsUnleashedDsl
 class MessageCommandDeclarationBuilder(

@@ -2,20 +2,19 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay
 
 import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
-import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
+import net.perfectdreams.loritta.serializable.UserId
 
 class RoleplayCommand {
     companion object {
@@ -86,6 +85,7 @@ class RoleplayCommand {
     class RoleplaySlashCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ROLEPLAY) {
             enableLegacyMessageSupport = true
+            this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
             subcommand(I18N_PREFIX.Hug.Label, I18N_PREFIX.Hug.Description) {
                 executor = RoleplayHugExecutor()
@@ -187,7 +187,9 @@ class RoleplayCommand {
     }
 
     class RoleplayUserCommand(val loritta: LorittaBot) : UserCommandDeclarationWrapper {
-        override fun command() = userCommand(I18N_PREFIX.DoRoleplayAction, CommandCategory.ROLEPLAY, RoleplayUserExecutor(loritta))
+        override fun command() = userCommand(I18N_PREFIX.DoRoleplayAction, CommandCategory.ROLEPLAY, RoleplayUserExecutor(loritta)) {
+            this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        }
 
         class RoleplayUserExecutor(val loritta: LorittaBot) : LorittaUserCommandExecutor() {
             override suspend fun execute(context: ApplicationCommandContext, user: User) {

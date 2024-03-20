@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -23,6 +24,8 @@ class AnagramCommand : SlashCommandDeclarationWrapper {
         alternativeLegacyLabels.apply {
             add("anagrama")
         }
+
+        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         examples = I18N_PREFIX.Examples
 
