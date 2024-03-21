@@ -1100,6 +1100,10 @@ object TrinketsStuff {
             addDefaultVariant("captain-boykisser", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "captain-boykisser-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("lorittaHeyHeyMyMyYoYo", true, Rarity.EPIC, LocalDate.of(2024, 3, 20)) {
+            addDefaultVariant("loritta-hey-hey-my-my-yo-yo", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-hey-hey-my-my-yo-yo-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createProfileDesign(
