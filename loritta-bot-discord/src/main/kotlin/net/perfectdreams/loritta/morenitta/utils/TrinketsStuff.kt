@@ -181,9 +181,9 @@ object TrinketsStuff {
         createProfileDesign("monicaAta", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim"))
         createProfileDesign("loriAta", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim", "allouette"))
         createProfileDesign("undertaleBattle", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("allouette"))
-        createProfileDesign("halloween2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1))
-        createProfileDesign("christmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1))
-        createProfileDesign("lorittaChristmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1))
+        createProfileDesign("halloween2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
+        createProfileDesign("christmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
+        createProfileDesign("lorittaChristmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
         createProfileDesign("defaultBlurple", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
         createProfileDesign("defaultRed", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
         createProfileDesign("defaultBlue", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
@@ -192,7 +192,7 @@ object TrinketsStuff {
         createProfileDesign("defaultPink", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
         createProfileDesign("defaultYellow", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
         createProfileDesign("defaultOrange", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultEaster2023", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15))
+        createProfileDesign("defaultEaster2023", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15), availableToBuyViaSonhos = false)
     }
 
     private fun backgrounds() {
