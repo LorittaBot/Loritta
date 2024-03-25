@@ -240,6 +240,18 @@ class SwitchTwitchAPI(
             setBody(TextContent(Json.encodeToString(subscriptionRequest), ContentType.Application.Json))
         }
 
+        if (!response.status.isSuccess()) {
+            val json = Json.parseToJsonElement(response.bodyAsText())
+                .jsonObject
+            val message = json["message"]?.jsonPrimitive?.content
+
+            if (message == "cannot create a subscription for a user that does not exist") {
+                throw SubscriptionCreateForUnknownUserException(json)
+            } else {
+                throw SubscriptionCreateException(json)
+            }
+        }
+
         return JsonIgnoreUnknownKeys.decodeFromString<SubscriptionCreateResponse>(response.bodyAsText())
     }
 
@@ -291,6 +303,8 @@ class SwitchTwitchAPI(
 
     class TokenUnauthorizedException(status: HttpStatusCode) : RuntimeException()
     class TokenExchangeException(message: String) : RuntimeException(message)
+    open class SubscriptionCreateException(json: kotlinx.serialization.json.JsonObject) : RuntimeException(json.toString())
+    class SubscriptionCreateForUnknownUserException(json: kotlinx.serialization.json.JsonObject) : SubscriptionCreateException(json)
     private class RateLimitedException : RuntimeException()
     private class NeedsRefreshException : RuntimeException()
 }

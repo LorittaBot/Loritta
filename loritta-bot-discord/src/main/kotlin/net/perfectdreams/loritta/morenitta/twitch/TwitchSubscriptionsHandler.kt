@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.T
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
+import net.perfectdreams.switchtwitch.SwitchTwitchAPI
 import net.perfectdreams.switchtwitch.data.SubTransportCreate
 import net.perfectdreams.switchtwitch.data.SubscriptionCreateRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -178,20 +179,36 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                     if (state != TwitchAccountTrackState.UNAUTHORIZED) {
                         logger.info { "Creating subscription for $twitchUserId because their state is $state..." }
                         // If the state ain't authorized, then we can create the subscription!
-                        val subscriptionResult = m.switchTwitch.createSubscription(
-                            SubscriptionCreateRequest(
-                                "stream.online",
-                                "1",
-                                mapOf(
-                                    "broadcaster_user_id" to twitchUserId.toString()
-                                ),
-                                SubTransportCreate(
-                                    "webhook",
-                                    m.config.loritta.twitch.webhookUrl,
-                                    m.config.loritta.twitch.webhookSecret
+                        val subscriptionResult = try {
+                            m.switchTwitch.createSubscription(
+                                SubscriptionCreateRequest(
+                                    "stream.online",
+                                    "1",
+                                    mapOf(
+                                        "broadcaster_user_id" to twitchUserId.toString()
+                                    ),
+                                    SubTransportCreate(
+                                        "webhook",
+                                        m.config.loritta.twitch.webhookUrl,
+                                        m.config.loritta.twitch.webhookSecret
+                                    )
                                 )
                             )
-                        )
+                        } catch (e: SwitchTwitchAPI.SubscriptionCreateForUnknownUserException) {
+                            logger.warn(e) { "Attempted to create a subscription for ${twitchUserId}, but that's an unknown user! Deleting data related to that channel and untracking..." }
+                            m.newSuspendedTransaction {
+                                AuthorizedTwitchAccounts.deleteWhere {
+                                    AuthorizedTwitchAccounts.userId eq twitchUserId
+                                }
+                                TrackedTwitchAccounts.deleteWhere {
+                                    TrackedTwitchAccounts.twitchUserId eq twitchUserId
+                                }
+                            }
+                            continue
+                        } catch (e: SwitchTwitchAPI.SubscriptionCreateException) {
+                            logger.warn(e) { "Something went wrong while trying to create a subscription for ${twitchUserId}! Skipping subscription..." }
+                            continue
+                        }
 
                         val subscriptionData = subscriptionResult.data.firstOrNull()
                         // Honestly, I don't know when the sub result can return more than one data
