@@ -4,7 +4,7 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 import net.perfectdreams.loritta.common.utils.text.TextUtils
 
-enum class Language(val code: String) {
+enum class GoogleTranslateLanguage(val code: String) {
     AUTO_DETECT("auto"), // Not a "real language"
     UNDETERMINED("und"),
     AFRIKAANS("af"),
@@ -20,7 +20,7 @@ enum class Language(val code: String) {
     BULGARIAN("bg"),
     CATALAN("ca"),
     CEBUANO("ceb"),
-    SIMPLIFIED_CHINESE("zh-CN"),
+    SIMPLIFIED_CHINESE("zh-CN"), // Google Translate uses "zh-CN" for simplified chinese, however Google Vision uses only "zh"
     TRADITIONAL_CHINESE("zh-TW"),
     CORSICAN("co"),
     CROATIAN("hr"),
@@ -123,6 +123,6 @@ enum class Language(val code: String) {
         get() = StringI18nData(StringI18nKey("commands.command.translate.languages.${TextUtils.snakeToLowerCamelCase(this.name.lowercase())}"), emptyMap())
 
     companion object {
-        fun fromLanguageCode(code: String) = Language.values().first { it.code == code }
+        fun fromLanguageCode(code: String) = GoogleTranslateLanguage.values().first { it.code == code }
     }
 }

@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.TranslateCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.google.Language
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleTranslateLanguage
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -20,11 +20,10 @@ class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
     val cinnamonAutocomplete: (AutocompleteContext, FocusedCommandOption, Boolean) -> (Map<String, String>) = { autocompleteContext, focusedCommandOption, includeAuto ->
         val value = focusedCommandOption.value
 
-        Language.values()
+        GoogleTranslateLanguage.values()
             .asSequence()
-            .filter { it != Language.UNDETERMINED }
             .filter {
-                if (!includeAuto) it != Language.AUTO_DETECT else true
+                if (!includeAuto) it != GoogleTranslateLanguage.AUTO_DETECT else true
             }
             .filter {
                 autocompleteContext.i18nContext.get(it.languageNameI18nKey).startsWith(value, true)
@@ -53,7 +52,7 @@ class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val from = try {
-            Language.fromLanguageCode(args[options.from])
+            GoogleTranslateLanguage.fromLanguageCode(args[options.from])
         } catch (e: NoSuchElementException) {
             context.failEphemerally {
                 styled(
@@ -64,7 +63,7 @@ class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
         }
 
         val to = try {
-            Language.fromLanguageCode(args[options.to])
+            GoogleTranslateLanguage.fromLanguageCode(args[options.to])
         } catch (e: NoSuchElementException) {
             context.failEphemerally {
                 styled(
@@ -74,7 +73,7 @@ class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
             }
         }
 
-        if (to == Language.AUTO_DETECT) {
+        if (to == GoogleTranslateLanguage.AUTO_DETECT) {
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(TranslateCommand.I18N_PREFIX.InvalidLanguage),

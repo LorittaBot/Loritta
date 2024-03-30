@@ -18,7 +18,7 @@ import kotlinx.serialization.json.jsonPrimitive
 class HackyGoogleTranslateClient {
     val http = HttpClient(CIO)
 
-    suspend fun translate(from: Language, to: Language, input: String) = translate(
+    suspend fun translate(from: GoogleTranslateLanguage, to: GoogleTranslateLanguage, input: String) = translate(
         from.code,
         to.code,
         input
@@ -45,7 +45,7 @@ class HackyGoogleTranslateClient {
         if (firstElementOnTheArray is JsonNull)
             return null
 
-        val detectedLanguage = Language.fromLanguageCode(response[2].jsonPrimitive.content)
+        val detectedLanguage = GoogleTranslateLanguage.fromLanguageCode(response[2].jsonPrimitive.content)
 
         val output = StringBuilder()
         firstElementOnTheArray.jsonArray.forEach {
@@ -65,6 +65,6 @@ class HackyGoogleTranslateClient {
 
     data class GoogleTranslateResponse(
         val output: String,
-        val sourceLanguage: Language
+        val sourceLanguage: GoogleTranslateLanguage
     )
 }

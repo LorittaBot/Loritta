@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.TranslateCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleAPIUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
-import net.perfectdreams.loritta.cinnamon.discord.utils.google.Language
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionLanguage
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedGoogleVisionOCRResults
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -21,41 +21,6 @@ import java.time.Instant
 
 object OCRExecutor {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Ocr
-
-    private val LOCALE_TO_LANGUAGE_MAP = DiscordLocale.values().map {
-        it to when (it) {
-            DiscordLocale.PORTUGUESE_BRAZILIAN -> Language.PORTUGUESE
-            DiscordLocale.BULGARIAN -> Language.BULGARIAN
-            DiscordLocale.CHINESE_CHINA -> Language.SIMPLIFIED_CHINESE
-            DiscordLocale.CHINESE_TAIWAN -> Language.SIMPLIFIED_CHINESE
-            DiscordLocale.CROATIAN -> Language.CROATIAN
-            DiscordLocale.CZECH -> Language.CZECH
-            DiscordLocale.DANISH -> Language.DANISH
-            DiscordLocale.DUTCH -> Language.DUTCH
-            DiscordLocale.FINNISH -> Language.FINNISH
-            DiscordLocale.FRENCH -> Language.FRENCH
-            DiscordLocale.GERMAN -> Language.GERMAN
-            DiscordLocale.GREEK -> Language.GREEK
-            DiscordLocale.HINDI -> Language.HINDI
-            DiscordLocale.HUNGARIAN -> Language.HUNGARIAN
-            DiscordLocale.ITALIAN -> Language.ITALIAN
-            DiscordLocale.JAPANESE -> Language.JAPANESE
-            DiscordLocale.KOREAN -> Language.KOREAN
-            DiscordLocale.LITHUANIAN -> Language.LITHUANIAN
-            DiscordLocale.NORWEGIAN -> Language.NORWEGIAN
-            DiscordLocale.POLISH -> Language.POLISH
-            DiscordLocale.ROMANIAN_ROMANIA -> Language.ROMANIAN
-            DiscordLocale.RUSSIAN -> Language.RUSSIAN
-            DiscordLocale.SPANISH -> Language.SPANISH
-            DiscordLocale.SWEDISH -> Language.SWEDISH
-            DiscordLocale.THAI -> Language.THAI
-            DiscordLocale.TURKISH -> Language.TURKISH
-            DiscordLocale.UKRAINIAN -> Language.UKRAINIAN
-            DiscordLocale.VIETNAMESE -> Language.VIETNAMESE
-            DiscordLocale.ENGLISH_UK -> Language.ENGLISH
-            else -> Language.ENGLISH
-        }
-    }.toMap()
 
     suspend fun handleOCRCommand(
         loritta: LorittaBot,
@@ -103,8 +68,8 @@ object OCRExecutor {
             }
 
         val ocrText = textAnnotations.description
-        val detectedOcrLanguageGoogle = textAnnotations.locale?.let { Language.fromLanguageCode(it) }
-        val detectedOcrLanguageJDA = LOCALE_TO_LANGUAGE_MAP.entries.firstOrNull { it.value == detectedOcrLanguageGoogle }
+        val detectedOcrLanguageGoogle = textAnnotations.locale?.let { GoogleVisionLanguage.fromLanguageCode(it) }
+        val detectedOcrLanguageJDA = GoogleAPIUtils.DISCORD_LOCALE_TO_LANGUAGE_MAP.entries.firstOrNull { it.value == detectedOcrLanguageGoogle }
             ?.key
         val userLocale = context.discordUserLocale
 
@@ -123,7 +88,7 @@ object OCRExecutor {
             }
 
             if (detectedOcrLanguageGoogle != null && detectedOcrLanguageJDA != null && detectedOcrLanguageJDA != userLocale) {
-                val userGoogleLocale = LOCALE_TO_LANGUAGE_MAP[userLocale]!!
+                val userGoogleLocale = GoogleAPIUtils.DISCORD_LOCALE_TO_LANGUAGE_MAP[userLocale]!!
 
                 actionRow(
                     loritta.interactivityManager.buttonForUser(
@@ -136,7 +101,7 @@ object OCRExecutor {
                     ) {
                         val deferred = it.deferChannelMessage(isEphemeral)
 
-                        val translated = loritta.googleTranslateClient.translate(detectedOcrLanguageGoogle, userGoogleLocale, ocrText)
+                        val translated = loritta.googleTranslateClient.translate(GoogleAPIUtils.fromVisionLanguageToTranslateLanguage(detectedOcrLanguageGoogle), GoogleAPIUtils.fromVisionLanguageToTranslateLanguage(userGoogleLocale), ocrText)
 
                         if (translated == null) {
                             deferred.editOriginal {
