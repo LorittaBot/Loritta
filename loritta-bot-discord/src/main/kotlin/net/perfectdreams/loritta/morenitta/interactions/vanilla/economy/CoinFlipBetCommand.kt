@@ -11,9 +11,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -26,16 +25,16 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import net.perfectdreams.loritta.morenitta.utils.AccountUtils
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.NumberUtils
-import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
 import java.time.Instant
+import java.time.LocalDateTime
 
 class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(I18nKeysData.Commands.Command.Coinflipbet.Label, I18nKeysData.Commands.Command.Coinflipbet.Description, CommandCategory.ECONOMY) {
@@ -387,6 +386,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                     val isTails = LorittaBot.RANDOM.nextBoolean()
                                     val prefix: String
                                     val message: String
+                                    var aprilFoolsWinnerBugMessage: String? = null
 
                                     if (isTails) {
                                         prefix = "<:coroa:412586257114464259>"
@@ -441,6 +441,17 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 number,
                                                 StoredCoinFlipBetTransaction(mmResult.value)
                                             )
+
+                                            if (AprilFools.isAprilFools()) {
+                                                aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.select {
+                                                    AprilFoolsCoinFlipBugs.userId eq selfUserProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
+                                                        Constants.LORITTA_TIMEZONE
+                                                    ).year)
+                                                }.limit(1)
+                                                    .orderBy(AprilFoolsCoinFlipBugs.beggedAt, SortOrder.DESC)
+                                                    .lastOrNull()
+                                                    ?.get(AprilFoolsCoinFlipBugs.bug)
+                                            }
                                         }
                                     } else {
                                         winner = invitedUser
@@ -482,6 +493,17 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 number,
                                                 StoredCoinFlipBetTransaction(mmResult.value)
                                             )
+
+                                            if (AprilFools.isAprilFools()) {
+                                                aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.select {
+                                                    AprilFoolsCoinFlipBugs.userId eq invitedUserProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
+                                                        Constants.LORITTA_TIMEZONE
+                                                    ).year)
+                                                }.limit(1)
+                                                    .orderBy(AprilFoolsCoinFlipBugs.beggedAt, SortOrder.DESC)
+                                                    .lastOrNull()
+                                                    ?.get(AprilFoolsCoinFlipBugs.bug)
+                                            }
                                         }
                                     }
 
@@ -507,6 +529,13 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             context.locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
                                             Emotes.LORI_RICH
                                         )
+
+                                        if (aprilFoolsWinnerBugMessage != null) {
+                                            styled(
+                                                "${winner.asMention} estava com o Bug do Coin Flip™ ativado! Bug: `${aprilFoolsWinnerBugMessage}` - Faça o seu bug também! ${loritta.commandMentions.coinFlipBetBug}",
+                                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriFire
+                                            )
+                                        }
                                     }
                                 } else {
                                     componentContext.deferAndEditOriginal {

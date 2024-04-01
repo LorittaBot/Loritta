@@ -1,0 +1,6 @@
+label: "coinflipbetbug"
+description: "Bug do Coin Flip, agora disponível para tudo e todes!"
+
+options:
+  code:
+    text: "Código para ativar o bug do coin flip"
