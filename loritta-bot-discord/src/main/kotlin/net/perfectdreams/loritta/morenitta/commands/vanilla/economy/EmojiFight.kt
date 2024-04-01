@@ -14,12 +14,10 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.EmojiFightSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.TransactionType
@@ -28,15 +26,19 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
+import net.perfectdreams.loritta.morenitta.utils.AprilFools
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredEmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
 
@@ -478,7 +480,18 @@ class EmojiFight(
                     )
                 }
 
-                DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize)
+                val aprilFoolsWinnerBugMessage = if (AprilFools.isAprilFools()) {
+                    AprilFoolsCoinFlipBugs.select {
+                        AprilFoolsCoinFlipBugs.userId eq winnerProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
+                            Constants.LORITTA_TIMEZONE
+                        ).year)
+                    }.limit(1)
+                        .orderBy(AprilFoolsCoinFlipBugs.beggedAt, SortOrder.DESC)
+                        .lastOrNull()
+                        ?.get(AprilFoolsCoinFlipBugs.bug)
+                } else null
+
+                DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize, aprilFoolsWinnerBugMessage)
             } else {
                 val resultId = EmojiFightMatchmakingResults.insertAndGetId {
                     it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key] ?: error("Participating user is null! This should never happen!!")
@@ -489,11 +502,11 @@ class EmojiFight(
                     it[EmojiFightMatchmakingResults.match] = emojiFightMatch
                 }
 
-                DbResponse(winner, losers, 0, 0)
+                DbResponse(winner, losers, 0, 0, null)
             }
         }
 
-        val (winner, losers, realPrize, taxedRealPrize) = result ?: run {
+        val (winner, losers, realPrize, taxedRealPrize, aprilFoolsWinnerBugMessage) = result ?: run {
             // Needs to use "reply" because if we use "fail", the exception is triggered on the onReactionAddByAuthor
             context.reply(false) {
                 styled(
@@ -533,6 +546,13 @@ class EmojiFight(
                     ],
                     Emotes.LORI_RICH.asMention,
                 )
+
+                if (aprilFoolsWinnerBugMessage != null) {
+                    styled(
+                        "${winner.key.asMention} estava com o Bug do Coin Flip™ ativado! Bug: `${aprilFoolsWinnerBugMessage}` - Faça o seu bug também! ${loritta.commandMentions.coinFlipBetBug}",
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriFire
+                    )
+                }
             }
         } else {
             context.reply(false) {
@@ -559,7 +579,8 @@ class EmojiFight(
         val winner: MutableMap.MutableEntry<User, String>,
         val losers: MutableSet<MutableMap.MutableEntry<User, String>>,
         val realPrize: Long,
-        val taxedPrize: Long
+        val taxedPrize: Long,
+        val aprilFoolsWinnerBugMessage: String?
     )
 
     sealed class EmojiFightJoinState {
