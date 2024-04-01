@@ -462,6 +462,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         return true
                     }
                 }
+
+                if (!loritta.discordSlashCommandScopeWorkaround.checkIfSlashCommandScopeIsEnabled(guild, context.member)) {
+                    context.reply(false, loritta.discordSlashCommandScopeWorkaround.unauthMessage(context.guild, context.member))
+                }
             }
 
             loritta.transaction {

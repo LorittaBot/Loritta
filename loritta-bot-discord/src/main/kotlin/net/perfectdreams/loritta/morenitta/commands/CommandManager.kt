@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands
 
+import dev.minn.jda.ktx.messages.MessageCreate
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -438,6 +439,13 @@ class CommandManager(val loritta: LorittaBot) {
 					locale,
 					lorittaUser.profile
 				)?.let { context.reply(it) }
+
+				val currentGuild = context.guildOrNull
+				if (currentGuild != null) {
+					if (!loritta.discordSlashCommandScopeWorkaround.checkIfSlashCommandScopeIsEnabled(currentGuild, context.handle)) {
+						context.sendMessage(MessageCreate { apply(loritta.discordSlashCommandScopeWorkaround.unauthMessage(currentGuild, context.handle)) })
+					}
+				}
 
 				if (!context.isPrivateChannel) {
 					val nickname = context.guild.selfMember.nickname

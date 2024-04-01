@@ -335,6 +335,7 @@ class LorittaBot(
 		config.loritta.dreamStorageService.token,
 		httpWithoutTimeout
 	)
+	val discordSlashCommandScopeWorkaround = DiscordSlashCommandScopeWorkaround(this)
 
 	val random = SecureRandom()
 	val gifsicle = Gifsicle(config.loritta.binaries.gifsicle)
