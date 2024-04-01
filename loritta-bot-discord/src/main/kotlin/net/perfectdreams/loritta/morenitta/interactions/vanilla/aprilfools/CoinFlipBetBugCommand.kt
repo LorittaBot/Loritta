@@ -105,7 +105,7 @@ class CoinFlipBetBugCommand(val loritta: LorittaBot) : SlashCommandDeclarationWr
                     )
                 }
 
-                delay(5_000)
+                delay(2_000)
 
                 context.reply(true) {
                     styled(
@@ -141,7 +141,7 @@ class CoinFlipBetBugCommand(val loritta: LorittaBot) : SlashCommandDeclarationWr
                     )
                 }
 
-                delay(5_000)
+                delay(3_000)
 
                 context.reply(true) {
                     styled(
@@ -165,7 +165,7 @@ class CoinFlipBetBugCommand(val loritta: LorittaBot) : SlashCommandDeclarationWr
                     )
                 }
 
-                delay(10_000)
+                delay(7_000)
 
                 context.reply(true) {
                     styled(
@@ -249,7 +249,7 @@ class CoinFlipBetBugCommand(val loritta: LorittaBot) : SlashCommandDeclarationWr
                     )
                 }
 
-                delay(10_000)
+                delay(7_000)
 
                 context.reply(true) {
                     styled(
