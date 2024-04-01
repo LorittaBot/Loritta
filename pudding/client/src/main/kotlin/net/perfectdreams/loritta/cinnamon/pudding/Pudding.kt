@@ -369,7 +369,7 @@ class Pudding(
                             .firstOrNull()
                             ?.get(SchemaVersion.version)
 
-                    if (false && schemaVersion == SCHEMA_VERSION) {
+                    if (schemaVersion == SCHEMA_VERSION) {
                         logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
                         return@transaction
                     } else {
