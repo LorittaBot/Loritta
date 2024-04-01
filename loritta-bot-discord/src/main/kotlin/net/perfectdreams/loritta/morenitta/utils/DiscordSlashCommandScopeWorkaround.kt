@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -15,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.insert
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -62,11 +64,16 @@ class DiscordSlashCommandScopeWorkaround(private val loritta: LorittaBot) {
     }
 
     fun unauthMessage(guild: Guild, member: Member): InlineMessage<MessageCreateData>.() -> (Unit) = {
+        allowedMentionTypes = EnumSet.of(
+            Message.MentionType.CHANNEL,
+            Message.MentionType.EMOJI,
+            Message.MentionType.SLASH_COMMAND
+        )
+
         styled(
             "**IMPORTANTE:** Em <t:1710803580:D> o Discord tinha suspendido, por erro deles, a Loritta. E, devido a um bug do Discord, quando ela teve a suspensão removida, alguns servidores ficaram sem slash commands (comandos por `/`).",
             Emotes.LoriSob
         )
-
 
         if (member.hasPermission(Permission.MANAGE_SERVER)) {
             styled(
@@ -84,6 +91,11 @@ class DiscordSlashCommandScopeWorkaround(private val loritta: LorittaBot) {
 
         styled(
             "Após reautorizar, os slash commands da Loritta estarão disponíveis novamente no servidor. Se precisar de mais ajuda, visite o servidor de suporte da Loritta! <https://discord.gg/lori>"
+        )
+
+        styled(
+            "Desculpe pela inconveniência, mas é que isso é um bug do próprio Discord que eles ainda não arrumaram, mesmo que este problema tenha sido causado por eles...",
+            Emotes.LoriSob
         )
     }
 }
