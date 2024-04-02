@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -40,8 +42,18 @@ class DiscordSlashCommandScopeWorkaround(private val loritta: LorittaBot) {
                 guild.retrieveCommands().await()
                 true
             } catch (e: Exception) {
-                // Scope not authorized, please reauthorize
-                false
+                logger.warn(e) { "Failed to retrieve guild ${guild.name} (${guild.idLong}) commands for slash command scope check" }
+                if (e is ErrorResponseException) {
+                    if (e.errorResponse == ErrorResponse.MISSING_ACCESS) {
+                        // Scope not authorized, please reauthorize
+                        false
+                    } else null
+                } else null
+            }
+
+            if (r == null) {
+                logger.warn { "Unknown slash command scope state for ${guild.name} (${guild.idLong}), falling back to authorized..." }
+                return@getOrPut true
             }
 
             loritta.transaction {
