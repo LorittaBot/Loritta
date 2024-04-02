@@ -282,7 +282,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(EmojiFightCommand(loritta))
         register(RaffleCommand(loritta))
         register(BrokerCommand(loritta))
-        register(CoinFlipBetBugCommand(loritta))
+        // April Fools
+        // register(CoinFlipBetBugCommand(loritta))
 
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
