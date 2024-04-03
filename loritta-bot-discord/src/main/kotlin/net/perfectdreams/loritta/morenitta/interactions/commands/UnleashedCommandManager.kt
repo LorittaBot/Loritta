@@ -539,7 +539,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             }
 
             for (group in declaration.subcommandGroups) {
-                for (subcommandDeclaration in declaration.subcommands) {
+                for (subcommandDeclaration in group.subcommands) {
                     if (subcommandDeclaration == endDeclaration)
                         return listOf(declaration, group, subcommandDeclaration)
                 }
