@@ -48,7 +48,6 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.aprilfools.CoinFlipBetBugCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
