@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.sticker.StickerItem
+import net.dv8tion.jda.api.exceptions.RateLimitedException
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -74,12 +75,21 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
 
                                 val parsedSticker = FileUpload.fromData(image, "sticker.${sticker.formatType.extension}")
 
-                                it.guild.createSticker(
-                                    sticker.name,
-                                    "None",
-                                    parsedSticker,
-                                    "None"
-                                ).submit(false).await()
+                                try {
+                                    it.guild.createSticker(
+                                        sticker.name,
+                                        "None",
+                                        parsedSticker,
+                                        "None"
+                                    ).submit(false).await()
+                                } catch (e: RateLimitedException) {
+                                    context.fail(true) {
+                                        styled(
+                                            context.i18nContext.get(I18nKeysData.Commands.Command.Guild.Sticker.Add.RateLimitExceeded),
+                                            Emotes.LORI_HMPF
+                                        )
+                                    }
+                                }
 
                                 it.reply(true) {
                                     styled(
