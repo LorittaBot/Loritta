@@ -529,13 +529,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             context.locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
                                             Emotes.LORI_RICH
                                         )
-
-                                        if (aprilFoolsWinnerBugMessage != null) {
-                                            styled(
-                                                "${winner.asMention} estava com o Bug do Coin Flip™ ativado! Bug: `${aprilFoolsWinnerBugMessage}` - Faça o seu bug também! ${loritta.commandMentions.coinFlipBetBug}",
-                                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriFire
-                                            )
-                                        }
                                     }
                                 } else {
                                     componentContext.deferAndEditOriginal {

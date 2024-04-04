@@ -546,13 +546,6 @@ class EmojiFight(
                     ],
                     Emotes.LORI_RICH.asMention,
                 )
-
-                if (aprilFoolsWinnerBugMessage != null) {
-                    styled(
-                        "${winner.key.asMention} estava com o Bug do Coin Flip™ ativado! Bug: `${aprilFoolsWinnerBugMessage}` - Faça o seu bug também! ${loritta.commandMentions.coinFlipBetBug}",
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriFire
-                    )
-                }
             }
         } else {
             context.reply(false) {
