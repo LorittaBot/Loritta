@@ -1,10 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
-import dev.kord.common.kColor
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEditBuilder
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.entities.sticker.GuildSticker
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake
@@ -15,7 +12,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 
 object GuildExpressionsManagerExecutor {
