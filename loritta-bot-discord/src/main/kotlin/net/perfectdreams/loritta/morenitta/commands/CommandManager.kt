@@ -133,8 +133,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(ServerInfoCommand(loritta))
 		commandMap.add(InviteCommand(loritta))
 		commandMap.add(InviteInfoCommand(loritta))
-		commandMap.add(AddEmojiCommand(loritta))
-		commandMap.add(RemoveEmojiCommand(loritta))
 		commandMap.add(EmojiInfoCommand(loritta))
 
 		// =======[ MINECRAFT ]========

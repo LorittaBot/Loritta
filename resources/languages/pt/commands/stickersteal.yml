@@ -1,0 +1,8 @@
+label: "stickersteal"
+description: "Pegue a figurinha que o seu amigo acabou de enviar sem ele saber!"
+getStickerFromMessage: "Ver figurinha da mensagem"
+thereIsntAnyStickerOnTheMessage: "Ei! Não tem figurinha nenhuma para eu ~~roubar~~ pegar aqui!"
+couldntDownloadTheSticker: "Não consegui baixar a figurinha... Talvez ela tenha sido apagada?"
+StickerAddedSuccessfully: "Figurinha adicionada com sucesso!"
+addStickerToTheServer: "Adicionar figurinha ao servidor"
+openInWeb: "Abrir no navegador"

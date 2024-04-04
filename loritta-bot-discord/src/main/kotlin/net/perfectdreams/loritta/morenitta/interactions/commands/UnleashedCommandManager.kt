@@ -226,7 +226,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         for (rootLabel in rootLabels) {
                             for (subcommandGroupLabel in subcommandGroupLabels) {
                                 for (subcommandLabel in subcommandLabels) {
-                                    putNormalized("$rootLabel $subcommandLabel", subcommand)
+                                    putNormalized("$rootLabel $subcommandGroupLabel $subcommandLabel", subcommand)
                                 }
                             }
                         }
@@ -248,6 +248,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(LorittaCommand())
         register(WebhookCommand(loritta))
         register(UserCommand(loritta))
+        register(MessageStickerCommand())
+        register(GuildCommand())
         register(UserAvatarUserCommand())
         register(UserInfoUserCommand())
 

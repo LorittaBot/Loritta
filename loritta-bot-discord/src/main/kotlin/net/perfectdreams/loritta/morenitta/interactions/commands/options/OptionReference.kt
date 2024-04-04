@@ -119,7 +119,7 @@ class ImageReference(
     private val dataValue: String?,
     private val attachment: Attachment?,
 ) {
-    suspend fun get(context: UnleashedContext): String {
+    suspend fun get(context: UnleashedContext, searchHistory: Boolean? = true): String {
         // Attachments take priority
         if (attachment != null) {
             val contentType = attachment.contentType
@@ -157,30 +157,32 @@ class ImageReference(
             }
         }
 
-        // If no image was found, we will try to find the first recent message in this chat
-        val channel = context.channelOrNull
-        val guild = context.guildOrNull
+        if (searchHistory == true) {
+            // If no image was found, we will try to find the first recent message in this chat
+            val channel = context.channelOrNull
+            val guild = context.guildOrNull
 
-        if (channel != null) {
-            val canQuery = if (guild != null && channel is GuildChannel) {
-                guild.selfMember.hasPermission(channel, Permission.MESSAGE_HISTORY, Permission.MESSAGE_SEND)
-            } else true
+            if (channel != null) {
+                val canQuery = if (guild != null && channel is GuildChannel) {
+                    guild.selfMember.hasPermission(channel, Permission.MESSAGE_HISTORY, Permission.MESSAGE_SEND)
+                } else true
 
-            if (canQuery) {
-                val messages = channel.history.retrievePast(100)
-                    .await()
+                if (canQuery) {
+                    val messages = channel.history.retrievePast(100)
+                            .await()
 
-                // Sort from the newest message to the oldest message
-                val attachmentUrl = messages.sortedByDescending { it.timeCreated }
-                    .flatMap { it.attachments }
-                    .firstOrNull {
-                        // Only get filenames ending with "image" extensions
-                        it.contentType != null && it.contentType in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES
-                    }?.url
+                    // Sort from the newest message to the oldest message
+                    val attachmentUrl = messages.sortedByDescending { it.timeCreated }
+                            .flatMap { it.attachments }
+                            .firstOrNull {
+                                // Only get filenames ending with "image" extensions
+                                it.contentType != null && it.contentType in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES
+                            }?.url
 
-                if (attachmentUrl != null) {
-                    // Found a valid URL, let's go!
-                    return attachmentUrl
+                    if (attachmentUrl != null) {
+                        // Found a valid URL, let's go!
+                        return attachmentUrl
+                    }
                 }
             }
         }
