@@ -31,6 +31,11 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         enableLegacyMessageSupport = true
         isGuildOnly = true
 
+        alternativeLegacyAbsoluteCommandPaths.apply {
+            add("checkban")
+            add("infoban")
+        }
+
         defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)
 
         examples = I18N_PREFIX.Examples
