@@ -6,11 +6,15 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
@@ -99,6 +103,47 @@ object LorittaUtils {
 		}
 
 		return null
+	}
+
+	data class CustomEmojiData(
+		val isAnimated: Boolean,
+		val name: String,
+		val id: Long,
+		val url: String,
+	)
+
+	fun retrieveEmoji(data: String): CustomEmojiData? {
+		val emojiMentionPattern = "<(a)?:[^:]+:\\d+>".toRegex()
+
+		return if (emojiMentionPattern.matches(data)) {
+			CustomEmojiData(
+				data.startsWith("<a:"),
+				data.substringAfter(":").substringBeforeLast(":"),
+				data.substringAfterLast(":").substringBefore(">").toLong(),
+				"https://cdn.discordapp.com/emojis/${data.substringAfterLast(":").substringBefore(">").toLong()}.${if (data.startsWith("<a:")) "gif" else "png"}"
+			)
+		} else {
+			null
+		}
+	}
+
+	fun convertImage(byteArray: ByteArray, outputFormat: String, isSticker: Boolean = false): ByteArray? {
+		return try {
+			if (isSticker) {
+				val image = ImageIO.read(ByteArrayInputStream(byteArray)).getResizedInstance(320, 320, InterpolationType.BILINEAR)
+				val output = ByteArrayOutputStream()
+				ImageIO.write(image, outputFormat, output)
+				output.toByteArray()
+			} else {
+				val image = ImageIO.read(ByteArrayInputStream(byteArray))
+				val output = ByteArrayOutputStream()
+				ImageIO.write(image, outputFormat, output)
+				output.toByteArray()
+			}
+		} catch (e: Exception) {
+			e.printStackTrace()
+			null
+		}
 	}
 
 	fun downloadFile(loritta: LorittaBot, url: String, timeout: Int): InputStream? {

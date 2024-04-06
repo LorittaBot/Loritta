@@ -119,7 +119,7 @@ class ImageReference(
     private val dataValue: String?,
     private val attachment: Attachment?,
 ) {
-    suspend fun get(context: UnleashedContext, searchHistory: Boolean? = true): String {
+    suspend fun get(context: UnleashedContext, searchHistory: Boolean = true): String {
         // Attachments take priority
         if (attachment != null) {
             val contentType = attachment.contentType
@@ -157,7 +157,7 @@ class ImageReference(
             }
         }
 
-        if (searchHistory == true) {
+        if (searchHistory) {
             // If no image was found, we will try to find the first recent message in this chat
             val channel = context.channelOrNull
             val guild = context.guildOrNull

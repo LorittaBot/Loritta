@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Icon
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.RateLimitedException
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -77,8 +78,8 @@ class GuildCommand : SlashCommandDeclarationWrapper {
     inner class GuildStickerAddExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val stickerName = string("sticker_name", I18N_PREFIX.Sticker.Add.Options.Name)
-            val stickerDescription = string("sticker_description", I18N_PREFIX.Sticker.Add.Options.Description)
             val stickerTags = string("sticker_tags", I18N_PREFIX.Sticker.Add.Options.Tags)
+            val stickerDescription = optionalString("sticker_description", I18N_PREFIX.Sticker.Add.Options.Description)
             val sticker = imageReferenceOrAttachment("sticker", I18N_PREFIX.Sticker.Add.Options.ImageData)
         }
 
@@ -142,14 +143,27 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                     )
                 }).readAllBytes()
 
-                val imageInfo = SimpleImageInfo(image)
-                val imageType = imageInfo.mimeType!!.split("/")[1]
+                val allowedImageTypes = setOf("png", "gif", "json", "jpeg", "jpg")
+                var imageInfo = SimpleImageInfo(image)
+                var imageType = imageInfo.mimeType!!.split("/")[1]
+
+                val imageData = if (imageType in allowedImageTypes) {
+                    when (imageType) {
+                        "jpeg", "jpg" -> LorittaUtils.convertImage(image, "png", true)
+                        else -> image
+                    }
+                } else {
+                    null
+                }!!
+
+                imageInfo = SimpleImageInfo(imageData)
+                imageType = imageInfo.mimeType!!.split("/")[1]
 
                 try {
                     context.guild.createSticker(
                         name,
                         description,
-                        FileUpload.fromData(image, "sticker.$imageType"),
+                        FileUpload.fromData(imageData, "sticker.$imageType"),
                         tags
                     ).submit(false).await()
                 } catch(e: RateLimitedException) {
@@ -240,6 +254,43 @@ class GuildCommand : SlashCommandDeclarationWrapper {
     }
 
     inner class GuildStickerRemoveExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val stickerName = string("sticker_name", I18N_PREFIX.Sticker.Remove.Options.Name) {
+                autocomplete { context ->
+                    val stickerName = context.event.focusedOption.value
+
+                    // There is no way that the guild could be null if the command is guild-only.
+                    // So... non-null asserted.
+                    val stickers = context.event.guild!!.stickers
+
+                    if (stickerName.isBlank()) {
+                        if (stickers.isEmpty()) {
+                            return@autocomplete mapOf(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Sticker.Remove.NoStickersAvailable
+                                ) to "empty"
+                            )
+                        } else {
+                            return@autocomplete stickers.associate { it.name to it.id }
+                        }
+                    } else {
+                        val filteredStickers = stickers.filter { it.name.contains(stickerName, true) }
+                        if (filteredStickers.isEmpty()) {
+                            return@autocomplete mapOf(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Sticker.Remove.StickerNotFound
+                                ) to stickerName
+                            )
+                        } else {
+                            return@autocomplete filteredStickers.associate { it.name to it.id }
+                        }
+                    }
+                }
+            }
+        }
+
+        override val options = Options()
+
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             if (!context.member.permissions.any { it == Permission.MANAGE_GUILD_EXPRESSIONS }) context.fail(true) {
                 styled(
@@ -250,25 +301,16 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 )
             }
 
-            val stickers = context.guild.stickers
+            val stickerId = args[options.stickerName]
 
-            if (stickers.isEmpty()) context.fail(true) {
-                styled(
-                    context.i18nContext.get(
-                        I18N_PREFIX.Sticker.Remove.NoStickersAvailable
-                    ),
-                    Emotes.Error
-                )
-            }
-
-            context.deferChannelMessage(false)
+            context.guild.deleteSticker(StickerSnowflake.fromId(stickerId)).submit(false).await()
 
             context.reply(false) {
-                apply(
-                    GuildExpressionsManagerExecutor.createRemoveStickerMessage(
-                            context,
-                            stickers
-                    )
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.Sticker.Remove.SuccessfullyRemovedStickerMessage
+                    ),
+                    Emotes.LoriHappyJumping
                 )
             }
         }
@@ -276,7 +318,21 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?> = mapOf()
+        ): Map<OptionReference<*>, Any?>? {
+            val name = args.getOrNull(0)
+
+            val stickers = context.guild.stickers
+
+            val stickerId = stickers.firstOrNull { it.name == name }?.id
+
+            if (name == null || stickerId == null) {
+                context.explain()
+            } else {
+                return mapOf(options.stickerName to stickerId)
+            }
+
+            return null
+        }
     }
 
     inner class GuildEmojiAddExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -305,30 +361,34 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 null
             }
 
-            if (data == null) context.fail(true) {
-                styled(
-                    context.i18nContext.get(
-                        I18nKeysData.Commands.NoValidImageFound
-                    ),
-                    Emotes.Error
-                )
-            }
-
             context.deferChannelMessage(false)
 
             try {
-                val image = LorittaUtils.downloadFile(context.loritta, data, 5000) ?: context.fail(true) {
-                    styled(
-                        context.i18nContext.get(
-                            I18N_PREFIX.Emoji.Add.InvalidUrl
-                        ),
-                        Emotes.Error
-                    )
+                val parsedEmoji = LorittaUtils.retrieveEmoji(name)
+
+                val image = try {
+                    LorittaUtils.downloadFile(context.loritta, parsedEmoji!!.url, 5000) ?: context.fail(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.Emoji.Add.InvalidUrl
+                            ),
+                            Emotes.Error
+                        )
+                    }
+                } catch (_: Exception) {
+                    data?.let { LorittaUtils.downloadFile(context.loritta, it, 5000) } ?: context.fail(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.Emoji.Add.InvalidUrl
+                            ),
+                            Emotes.Error
+                        )
+                    }
                 }
 
                 val addedEmoji = try {
                     context.guild.createEmoji(
-                        name,
+                        parsedEmoji?.name ?: name,
                         Icon.from(image)
                     ).submit(false).await()
                 } catch(e: RateLimitedException) {
@@ -350,6 +410,17 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 }
             } catch (e: ErrorResponseException) {
                 e.printStackTrace()
+
+                if (e.errorCode == 50138) {
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.Emoji.Add.FileUploadMaxSizeExceeded
+                            ),
+                            Emotes.Error
+                        )
+                    }
+                }
 
                 when (e.errorResponse) {
                     ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED -> context.fail(true) {
@@ -400,18 +471,43 @@ class GuildCommand : SlashCommandDeclarationWrapper {
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
             val name = args.getOrNull(0)
-            val data = args.getOrNull(1)
 
-            if (name == null || data == null) {
-                context.explain()
-            } else {
-                return mapOf(
-                    options.emojiName to name,
-                    options.emojiData to ImageReference(
-                        dataValue = data,
-                        attachment = context.event.message.attachments.firstOrNull()
+            if (name != null) {
+                if (context.event.message.mentions.customEmojis.find { it.asMention == name } != null) {
+                    val emoji = context.getEmoji(0) ?: context.fail(true) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Emoji.Add.InvalidEmoji
+                                ),
+                                Emotes.Error
+                            )
+                        }
+
+                    return mapOf(
+                        options.emojiName to emoji.name,
+                        options.emojiData to ImageReference(
+                            dataValue = emoji.imageUrl,
+                            attachment = null
+                        )
                     )
-                )
+                } else {
+                    val data = args.getOrNull(1) ?: context.event.message.attachments.firstOrNull()?.url
+
+                    if (data == null) {
+                        context.explain()
+                        return null
+                    }
+
+                    return mapOf(
+                        options.emojiName to name,
+                        options.emojiData to ImageReference(
+                            dataValue = data,
+                            attachment = context.event.message.attachments.firstOrNull()
+                        )
+                    )
+                }
+            } else {
+                context.explain()
             }
 
             return null
@@ -419,6 +515,11 @@ class GuildCommand : SlashCommandDeclarationWrapper {
     }
 
     inner class GuildEmojiRemoveExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val emojiName = string("emoji_name", I18N_PREFIX.Emoji.Remove.Options.Name)
+        }
+
+        override val options = Options()
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             if (!context.member.permissions.any { it == Permission.MANAGE_GUILD_EXPRESSIONS }) context.fail(true) {
                 styled(
@@ -429,22 +530,25 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 )
             }
 
-            val emojis = context.guild.emojis
-
-            if (emojis.isEmpty()) context.fail(true) {
-                styled(
-                    context.i18nContext.get(
-                        I18N_PREFIX.Emoji.Remove.NoEmojisAvailable
-                    ),
-                    Emotes.Error
-                )
-            }
-
             context.deferChannelMessage(false)
 
+            val emojis = context.guild.emojis
+            val selectedEmojis = args[options.emojiName].removeSurrounding(":").split(" ")
+            val fetchedEmojis = emojis.filter { it.asMention in selectedEmojis }
+            val removedEmojisSize = fetchedEmojis.size
+
+            fetchedEmojis.forEach {
+                if (it.guild == context.guild) {
+                    it.delete().queue()
+                }
+            }
+
             context.reply(false) {
-                apply(
-                    GuildExpressionsManagerExecutor.createRemoveEmojiMessage(context, emojis)
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.Emoji.Remove.SuccessfullyRemovedEmoji(removedEmojisSize)
+                    ),
+                    Emotes.LoriHappyJumping
                 )
             }
         }
@@ -452,6 +556,8 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?> = mapOf()
+        ): Map<OptionReference<*>, Any?> {
+            return mapOf(options.emojiName to args.joinToString(" "))
+        }
     }
 }

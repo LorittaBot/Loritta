@@ -123,4 +123,6 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-cache/0/deviousconverter_version
+
+# Loritta's Session Cache
+cache/
