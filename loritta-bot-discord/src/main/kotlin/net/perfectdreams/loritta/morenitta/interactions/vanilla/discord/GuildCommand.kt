@@ -271,7 +271,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                                 ) to "empty"
                             )
                         } else {
-                            return@autocomplete stickers.associate { it.name to it.id }
+                            return@autocomplete stickers.take(25).associate { it.name to it.id }
                         }
                     } else {
                         val filteredStickers = stickers.filter { it.name.contains(stickerName, true) }
