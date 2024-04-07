@@ -31,7 +31,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         isGuildOnly = true
 
         integrationTypes = listOf(
-                Command.IntegrationType.GUILD_INSTALL
+            Command.IntegrationType.GUILD_INSTALL
         )
 
         subcommandGroup(I18N_PREFIX.Sticker.Label, I18N_PREFIX.Sticker.Description) {
@@ -166,14 +166,66 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                         FileUpload.fromData(imageData, "sticker.$imageType"),
                         tags
                     ).submit(false).await()
-                } catch(e: RateLimitedException) {
-                    context.fail(true) {
-                        styled(
-                            context.i18nContext.get(
-                                I18N_PREFIX.Sticker.Add.RateLimitExceeded
-                            ),
-                            Emotes.Error
-                        )
+                } catch(e: Exception) {
+                    when (e) {
+                        is RateLimitedException -> {
+                            context.fail(true) {
+                                styled(
+                                    context.i18nContext.get(I18nKeysData.Commands.Command.Guild.Sticker.Add.RateLimitExceeded),
+                                    Emotes.LoriHmpf
+                                )
+                            }
+                        }
+
+                        is ErrorResponseException -> {
+                            when (e.errorResponse) {
+                                ErrorResponse.INVALID_FILE_UPLOADED -> {
+                                    context.fail(true) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Sticker.Add.InvalidUrl
+                                            ),
+                                            Emotes.LoriSob
+                                        )
+                                    }
+                                }
+
+                                ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED -> {
+                                    context.fail(true) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded
+                                            ),
+                                            Emotes.Error
+                                        )
+                                    }
+                                }
+                                ErrorResponse.MAX_STICKERS -> {
+                                    context.fail(true) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Sticker.Add.MaxStickersReached,
+                                            ),
+                                            Emotes.Error
+                                        )
+                                    }
+                                }
+                                else -> {
+                                    context.fail(true) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                I18nKeysData.Commands.ErrorWhileExecutingCommand(
+                                                    Emotes.LoriRage,
+                                                    Emotes.LoriSob,
+                                                    e.message!!
+                                                )
+                                            ),
+                                            Emotes.Error
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -185,44 +237,20 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                         Emotes.LoriHappyJumping
                     )
                 }
-            } catch (e: ErrorResponseException) {
+            } catch (e: OutOfMemoryError) {
                 e.printStackTrace()
 
-                when (e.errorResponse) {
-                    ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED -> {
-                        context.fail(true) {
-                            styled(
-                                context.i18nContext.get(
-                                    I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded
-                                ),
-                                Emotes.Error
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.ErrorWhileExecutingCommand(
+                                Emotes.LoriRage,
+                                Emotes.LoriSob,
+                                e.message!!
                             )
-                        }
-                    }
-                    ErrorResponse.MAX_STICKERS -> {
-                        context.fail(true) {
-                            styled(
-                                context.i18nContext.get(
-                                    I18N_PREFIX.Sticker.Add.MaxStickersReached,
-                                ),
-                                Emotes.Error
-                            )
-                        }
-                    }
-                    else -> {
-                        context.fail(true) {
-                            styled(
-                                context.i18nContext.get(
-                                    I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                                        Emotes.LoriRage,
-                                        Emotes.LoriSob,
-                                        e.message!!
-                                    )
-                                ),
-                                Emotes.Error
-                            )
-                        }
-                    }
+                        ),
+                        Emotes.Error
+                    )
                 }
             }
         }
@@ -271,7 +299,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                                 ) to "empty"
                             )
                         } else {
-                            return@autocomplete stickers.take(25).associate { it.name to it.id }
+                            return@autocomplete stickers.take(25).associate { "${it.name} (${it.id})" to it.id }
                         }
                     } else {
                         val filteredStickers = stickers.filter { it.name.contains(stickerName, true) }
@@ -282,7 +310,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                                 ) to stickerName
                             )
                         } else {
-                            return@autocomplete filteredStickers.associate { it.name to it.id }
+                            return@autocomplete filteredStickers.associate { "${it.name} (${it.id})" to it.id }
                         }
                     }
                 }
@@ -475,13 +503,13 @@ class GuildCommand : SlashCommandDeclarationWrapper {
             if (name != null) {
                 if (context.event.message.mentions.customEmojis.find { it.asMention == name } != null) {
                     val emoji = context.getEmoji(0) ?: context.fail(true) {
-                            styled(
-                                context.i18nContext.get(
-                                    I18N_PREFIX.Emoji.Add.InvalidEmoji
-                                ),
-                                Emotes.Error
-                            )
-                        }
+                        styled(
+                            context.i18nContext.get(
+                                I18N_PREFIX.Emoji.Add.InvalidEmoji
+                            ),
+                            Emotes.Error
+                        )
+                    }
 
                     return mapOf(
                         options.emojiName to emoji.name,

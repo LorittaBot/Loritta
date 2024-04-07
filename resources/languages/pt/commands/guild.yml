@@ -34,6 +34,7 @@ sticker:
     outOfBoundsName: "O nome da figurinha precisa ser de 2 à 30 caracteres!"
     outOfBoundsDescription: "A descrição da figurinha precisa ser de 2 à 100 caracteres!"
     invalidUrl: "A imagem está inválida."
+    errorWhileAdding: "Erro ao adicionar a figurinha."
     successfullyAdded: "Figurinha adicionada com sucesso!"
     defaultDescription: "Nenhuma descrição adicionada."
     rateLimitExceeded: "Você adicionou muitos emojis e eu fui bloqueada de adicionar figurinhas pelo Discord por um tempo... Tente novamente em uma hora!"
