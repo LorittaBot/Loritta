@@ -293,7 +293,7 @@ object RoleplayUtils {
 
                         for ((achievementReceiver, achievement) in achievementTargets) {
                             if (context.user.idLong == achievementReceiver)
-                                context.giveAchievementAndNotify(achievement)
+                                context.giveAchievementAndNotify(achievement, ephemeral = true)
                             else
                                 AchievementUtils.giveAchievementToUser(context.loritta, net.perfectdreams.loritta.serializable.UserId(achievementReceiver), achievement)
                         }

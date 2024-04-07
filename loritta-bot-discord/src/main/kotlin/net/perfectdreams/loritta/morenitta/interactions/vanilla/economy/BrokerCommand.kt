@@ -764,9 +764,9 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             if (isPositiveProfit)
-                context.giveAchievementAndNotify(AchievementType.STONKS)
+                context.giveAchievementAndNotify(AchievementType.STONKS, ephemeral = true)
             if (isNegativeProfit)
-                context.giveAchievementAndNotify(AchievementType.NOT_STONKS)
+                context.giveAchievementAndNotify(AchievementType.NOT_STONKS, ephemeral = true)
         }
 
         override suspend fun convertToInteractionsArguments(context: LegacyMessageCommandContext, args: List<String>): Map<OptionReference<*>, Any?>? {

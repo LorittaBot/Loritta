@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
@@ -530,6 +531,9 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             Emotes.LORI_RICH
                                         )
                                     }
+
+                                    context.giveAchievementAndNotify(winner, AchievementType.COIN_FLIP_BET_WIN, false)
+                                    context.giveAchievementAndNotify(loser, AchievementType.COIN_FLIP_BET_LOSE, false)
                                 } else {
                                     componentContext.deferAndEditOriginal {
                                         MessageEdit {

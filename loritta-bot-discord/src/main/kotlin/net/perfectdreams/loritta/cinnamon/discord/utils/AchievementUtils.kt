@@ -4,17 +4,15 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.BarebonesInteractionContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.serializable.UserId
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
-import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.serializable.UserId
 
 object AchievementUtils {
     /**
@@ -96,6 +94,7 @@ object AchievementUtils {
         i18nContext: I18nContext,
         userId: UserSnowflake,
         type: AchievementType,
+        ephemeral: Boolean,
         achievedAt: Instant = Clock.System.now()
     ) {
         val profile = loritta.pudding.users.getOrCreateUserProfile(UserId(userId.idLong))
@@ -105,7 +104,7 @@ object AchievementUtils {
         )
 
         if (wasAchievementGiven)
-            context.reply(true) {
+            context.reply(ephemeral) {
                 styled(
                     content = "**${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
                     prefix = Emotes.Sparkles

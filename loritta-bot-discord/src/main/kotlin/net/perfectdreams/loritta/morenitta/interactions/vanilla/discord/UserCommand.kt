@@ -74,7 +74,7 @@ class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             if (userAndMember.user.id == context.user.id)
-                context.giveAchievementAndNotify(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
+                context.giveAchievementAndNotify(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE, ephemeral = true)
         }
 
         override suspend fun convertToInteractionsArguments(

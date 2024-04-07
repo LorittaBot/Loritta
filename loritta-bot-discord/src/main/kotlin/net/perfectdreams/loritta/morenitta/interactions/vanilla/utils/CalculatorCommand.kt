@@ -122,7 +122,7 @@ class CalculatorCommand : SlashCommandDeclarationWrapper {
                 }
 
                 if (expression.replace(" ", "") == "1+1")
-                    context.giveAchievementAndNotify(AchievementType.ONE_PLUS_ONE_CALCULATION)
+                    context.giveAchievementAndNotify(AchievementType.ONE_PLUS_ONE_CALCULATION, ephemeral = true)
             } else {
                 // TODO: Fix stripCodeMarks
                 context.reply(true) {

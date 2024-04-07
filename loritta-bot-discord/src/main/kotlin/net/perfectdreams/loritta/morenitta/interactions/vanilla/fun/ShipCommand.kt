@@ -11,14 +11,12 @@ import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -26,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.serializable.UserId
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -301,21 +300,21 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             if (isNatural && isNatural100Ship)
-                context.giveAchievementAndNotify(AchievementType.NATURAL_100_SHIP)
+                context.giveAchievementAndNotify(AchievementType.NATURAL_100_SHIP, ephemeral = true)
             if (isNatural && isNatural0Ship)
-                context.giveAchievementAndNotify(AchievementType.NATURAL_0_SHIP)
+                context.giveAchievementAndNotify(AchievementType.NATURAL_0_SHIP, ephemeral = true)
             if (isNatural && isNatural69Ship)
-                context.giveAchievementAndNotify(AchievementType.NATURAL_69_SHIP)
+                context.giveAchievementAndNotify(AchievementType.NATURAL_69_SHIP, ephemeral = true)
             if (isMarried)
-                context.giveAchievementAndNotify(AchievementType.MARRIED_SHIP)
+                context.giveAchievementAndNotify(AchievementType.MARRIED_SHIP, ephemeral = true)
             if (isLoveYourself && isShipWithTheSelfUser)
-                context.giveAchievementAndNotify(AchievementType.LOVE_YOURSELF)
+                context.giveAchievementAndNotify(AchievementType.LOVE_YOURSELF, ephemeral = true)
             if (hasShipEffects)
-                context.giveAchievementAndNotify(AchievementType.FISHY_SHIP)
+                context.giveAchievementAndNotify(AchievementType.FISHY_SHIP, ephemeral = true)
             if (isLoritta && isShipWithTheSelfUser && !isLorittaWithShipEffects)
-                context.giveAchievementAndNotify(AchievementType.FRIENDZONED_BY_LORITTA)
+                context.giveAchievementAndNotify(AchievementType.FRIENDZONED_BY_LORITTA, ephemeral = true)
             if (isLorittaWithShipEffects && isShipWithTheSelfUser)
-                context.giveAchievementAndNotify(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
+                context.giveAchievementAndNotify(AchievementType.SABOTAGED_LORITTA_FRIENDZONE, ephemeral = true)
         }
 
         override suspend fun convertToInteractionsArguments(
