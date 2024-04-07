@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageRe
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
+import net.perfectdreams.loritta.morenitta.utils.readAllBytes
 
 class GuildCommand : SlashCommandDeclarationWrapper {
     companion object {
@@ -141,7 +142,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                         ),
                         Emotes.Error
                     )
-                }).readAllBytes()
+                }).readAllBytes(8_388_608)
 
                 val allowedImageTypes = setOf("png", "gif", "json", "jpeg", "jpg")
                 var imageInfo = SimpleImageInfo(image)
@@ -237,7 +238,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                         Emotes.LoriHappyJumping
                     )
                 }
-            } catch (e: OutOfMemoryError) {
+            } catch (e: Exception) {
                 e.printStackTrace()
 
                 context.fail(true) {
