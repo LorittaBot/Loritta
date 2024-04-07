@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -91,6 +92,8 @@ class LegacyMessageCommandContext(
                 .await()
         )
     }
+
+    suspend fun getEmoji(index: Int) = event.message.mentions.customEmojis.getOrNull(index)
 
     /**
      * Gets a [User] reference from the argument at the specified [index]

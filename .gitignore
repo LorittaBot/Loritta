@@ -123,3 +123,6 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Loritta's Session Cache
+cache/

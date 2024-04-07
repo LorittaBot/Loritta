@@ -1,0 +1,55 @@
+---
+label: "guild"
+description: "Comandos relacionados a servidores do Discord"
+emoji:
+  label: "emoji"
+  description: "Comandos relacionado ao gerenciamento de emojis do servidor"
+  add:
+    label: "add"
+    description: "Adicionar um emoji ao servidor"
+    invalidUrl: "A imagem está inválida."
+    invalidEmoji: "Emoji inválido!"
+    successfullyAdded: "Emoji adicionado com sucesso!"
+    fileUploadMaxSizeExceeded: "A imagem que você mandou atingiu o tamanho máximo de 256kb!"
+    maxStaticEmojisLimitReached: "Você atingiu o limite máximo de emojis estáticos no servidor!"
+    maxAnimatedEmojisLimitReached: "Você atingiu o limite máximo de emojis animados no servidor!"
+    rateLimitExceeded: "Você adicionou muitos emojis e eu fui bloqueada de adicionar emojis pelo Discord por um tempo... Tente novamente em uma hora!"
+    options:
+      name: "O nome do emoji"
+      imageData: "A imagem do emoji"
+  remove:
+    label: "remove"
+    description: "Remover um emoji do servidor"
+    noEmojisAvailable: "Não há emojis para remover neste servidor!"
+    invalidEmoji: "Emoji inválido!"
+    successfullyRemovedEmoji: "{emojiCount,plural, =1 {# Emoji removido} other {# Emojis removidos}} com sucesso!"
+    options:
+      name: "O(s) emoji(s) a ser(em) removido(s)"
+sticker:
+  label: "sticker"
+  description: "Comandos relacionado ao gerenciamento de figurinhas do servidor"
+  add:
+    label: "add"
+    description: "Adicionar uma figurinha ao servidor"
+    outOfBoundsName: "O nome da figurinha precisa ser de 2 à 30 caracteres!"
+    outOfBoundsDescription: "A descrição da figurinha precisa ser de 2 à 100 caracteres!"
+    invalidUrl: "A imagem está inválida."
+    successfullyAdded: "Figurinha adicionada com sucesso!"
+    defaultDescription: "Nenhuma descrição adicionada."
+    rateLimitExceeded: "Você adicionou muitos emojis e eu fui bloqueada de adicionar figurinhas pelo Discord por um tempo... Tente novamente em uma hora!"
+    fileUploadMaxSizeExceeded: "A imagem que você mandou atingiu o tamanho máximo de 512kb!"
+    maxStickersReached: "Você atingiu o limite máximo de figurinhas no servidor!"
+    options:
+      name: "O nome da figurinha"
+      description: "A descrição da figurinha"
+      tags: "As tags da figurinha"
+      imageData: "A imagem da figurinha."
+  remove:
+    label: "remove"
+    description: "Remover uma figurinha do servidor"
+    noStickersAvailable: "Não há figurinhas para remover neste servidor!"
+    typeStickerName: "Digite o nome de alguma figurinha!"
+    stickerNotFound: "Figurinha não encontrada!"
+    successfullyRemovedStickerMessage: "Figurinha removida com sucesso!"
+    options:
+      name: "O nome da figurinha"
