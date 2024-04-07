@@ -12,16 +12,16 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.*
 
-class GrassCutterBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
-	UUID.fromString("d8858fec-4075-4308-8494-e7692041cbfa"),
-	ProfileDesignManager.I18N_BADGES_PREFIX.Stonks.Title,
-	ProfileDesignManager.I18N_BADGES_PREFIX.Stonks.Description,
+class StonksBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
+	UUID.fromString("4c029e28-95ec-479e-9570-1ad9dab32816"),
+	ProfileDesignManager.I18N_BADGES_PREFIX.GrassCutter.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.GrassCutter.Description,
 	"stonks.png",
 	15
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return loritta.newSuspendedTransaction {
-			UserAchievements.select { UserAchievements.user eq user.id.toLong() and (UserAchievements.type eq AchievementType.STONKS) }
+			UserAchievements.select { UserAchievements.user eq user.id.toLong() and (UserAchievements.type eq AchievementType.GRASS_CUTTER) }
 				.count() == 1L
 		}
 	}

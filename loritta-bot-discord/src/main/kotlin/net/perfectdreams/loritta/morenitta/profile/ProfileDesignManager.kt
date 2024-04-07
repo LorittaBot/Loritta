@@ -144,6 +144,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(SparklyMemberBadge(loritta))
 		registerBadge(LorittaStaffBadge(loritta))
 		registerBadge(SparklyStaffBadge(loritta))
+		registerBadge(StonksBadge(loritta))
 	}
 
 	suspend fun createProfile(
