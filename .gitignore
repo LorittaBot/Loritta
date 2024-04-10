@@ -126,3 +126,7 @@ fabric.properties
 
 # Loritta's Session Cache
 cache/
+
+#Loritta's Config Files
+emotes.conf
+loritta.conf
