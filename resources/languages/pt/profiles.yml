@@ -84,3 +84,6 @@ profiles:
     sparklyStaff:
       title: "Equipe do SparklyPower"
       description: "Insígnia para pessoas que estão na equipe do SparklyPower"
+    stonks:
+      title: "Stonks!"
+      description: "Insígnia para quem conseguiu a conquista de Stonks! na Loritta"
