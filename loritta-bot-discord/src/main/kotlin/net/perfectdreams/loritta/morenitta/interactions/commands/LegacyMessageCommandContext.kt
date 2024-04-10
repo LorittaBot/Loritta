@@ -50,7 +50,10 @@ class LegacyMessageCommandContext(
     DiscordLocale.PORTUGUESE_BRAZILIAN,
     event.jda,
     UnleashedMentions(
-        event.message.mentions.users
+        event.message.mentions.users,
+        event.message.mentions.channels,
+        event.message.mentions.customEmojis,
+        event.message.mentions.roles
     ),
     event.author,
     event.member,

@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.common.utils.Emotes
 import org.apache.commons.lang3.ArrayUtils
+import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -57,6 +58,10 @@ fun String.isValidSnowflake(): Boolean {
 	} catch (e: NumberFormatException) {
 		return false
 	}
+}
+
+fun Color.toHexadecimalCode(): Int {
+	return this.rgb and 0xFFFFFF
 }
 
 object LorittaUtilsKotlin {

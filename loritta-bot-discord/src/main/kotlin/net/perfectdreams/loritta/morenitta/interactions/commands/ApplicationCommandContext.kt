@@ -26,7 +26,10 @@ class ApplicationCommandContext(
     locale,
     i18nContext,
     UnleashedMentions(
-        event.options.flatMap { it.mentions.users }
+        event.options.flatMap { it.mentions.users },
+        event.options.flatMap { it.mentions.channels },
+        event.options.flatMap { it.mentions.customEmojis },
+        event.options.flatMap { it.mentions.roles }
     ),
     event
 )

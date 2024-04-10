@@ -128,12 +128,12 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(LyricsCommand(loritta))
 
 		// =======[ DISCORD ]=======
-		commandMap.add(ServerIconCommand(loritta))
-		commandMap.add(EmojiCommand(loritta))
+		// commandMap.add(ServerIconCommand(loritta))
+		// commandMap.add(EmojiCommand(loritta))
 		commandMap.add(ServerInfoCommand(loritta))
 		commandMap.add(InviteCommand(loritta))
-		commandMap.add(InviteInfoCommand(loritta))
-		commandMap.add(EmojiInfoCommand(loritta))
+		// commandMap.add(InviteInfoCommand(loritta))
+		// commandMap.add(EmojiInfoCommand(loritta))
 
 		// =======[ MINECRAFT ]========
 		commandMap.add(OfflineUUIDCommand(loritta))

@@ -25,6 +25,6 @@ class ModalContext(
     locale: BaseLocale,
     i18nContext: I18nContext,
     val event: ModalInteraction
-) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList()), event) {
+) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList(), emptyList(), emptyList(), emptyList()), event) {
     suspend fun deferEdit() = UnleashedHook.InteractionHook(event.deferEdit().await())
 }

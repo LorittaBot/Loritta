@@ -99,7 +99,9 @@ interface CommandContext {
                             is LongDiscordOptionReference -> append("número inteiro")
                             is NumberDiscordOptionReference -> append("número")
                             is StringDiscordOptionReference -> append("texto")
+                            is ChannelDiscordOptionReference -> append("canal")
                             is UserDiscordOptionReference -> append("usuário")
+                            is RoleDiscordOptionReference -> append("cargo")
                             is AttachmentDiscordOptionReference -> append("arquivo")
                             is ImageReferenceOrAttachmentDiscordOptionReference -> append("referência de imagem")
                         }
