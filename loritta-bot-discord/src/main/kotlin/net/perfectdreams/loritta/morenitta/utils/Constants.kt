@@ -107,8 +107,7 @@ object Constants {
 	const val DONATION_ACTIVE_MILLIS = 2_764_800_000 // 32 dias
 
 	// ===[ COLORS ]===
-	val DISCORD_BLURPLE = Color(114, 137, 218)
-	val NEW_DISCORD_BURPLE = Color(84, 105, 236)
+	val DISCORD_BLURPLE = Color(84, 105, 236)
 	val LORITTA_AQUA = Color(41, 166, 254)
 	val ROBLOX_RED = Color(226, 35, 26)
 	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")

@@ -31,7 +31,7 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
             else
                 "✨"
 
-            color = Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+            color = Constants.DISCORD_BLURPLE.rgb
             title = "$emojiTitle ${context.i18nContext.get(I18N_PREFIX.Info.AboutEmoji)}"
             thumbnail = emoji.imageUrl
             field {
@@ -136,7 +136,7 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
 
                     context.reply(false) {
                         embed {
-                            color = Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+                            color = Constants.DISCORD_BLURPLE.rgb
                             title = "$emoji ${context.i18nContext.get(I18N_PREFIX.Info.AboutEmoji)}"
                             thumbnail = emojiUrl
 

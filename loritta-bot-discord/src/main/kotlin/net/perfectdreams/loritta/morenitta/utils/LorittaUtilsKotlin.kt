@@ -60,10 +60,6 @@ fun String.isValidSnowflake(): Boolean {
 	}
 }
 
-fun Color.toHexadecimalCode(): Int {
-	return this.rgb and 0xFFFFFF
-}
-
 object LorittaUtilsKotlin {
 	val logger = KotlinLogging.logger {}
 

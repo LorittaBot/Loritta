@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.toHexadecimalCode
 
 class InviteCommand : SlashCommandDeclarationWrapper {
     companion object {
@@ -89,7 +88,7 @@ class InviteCommand : SlashCommandDeclarationWrapper {
             context.reply(false) {
                 embed {
                     title = "${Emotes.Discord} ${invite.guild!!.name}"
-                    color = Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+                    color = Constants.DISCORD_BLURPLE.rgb
 
                     if (guild.iconId != null)
                         thumbnail = iconUrl

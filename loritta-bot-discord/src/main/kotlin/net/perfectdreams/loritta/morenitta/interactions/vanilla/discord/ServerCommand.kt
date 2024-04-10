@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
-import net.perfectdreams.loritta.morenitta.utils.toHexadecimalCode
 
 class ServerCommand : SlashCommandDeclarationWrapper {
     companion object {
@@ -101,7 +100,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
                 embed {
                     title = "${Emotes.Discord} ${context.guild.name}"
                     image = urlIcon
-                    color = Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+                    color = Constants.DISCORD_BLURPLE.rgb
                 }
 
                 actionRow(
@@ -138,7 +137,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
             context.reply(false) {
                 embed {
                     title = "${Emotes.Discord} ${context.guild.name}"
-                    color = Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+                    color = Constants.DISCORD_BLURPLE.rgb
                     image = bannerUrl
                 }
 
@@ -178,7 +177,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
                 embed {
                     title = "${Emotes.Discord} ${context.guild.name}"
                     image = urlIcon
-                    color = Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+                    color = Constants.DISCORD_BLURPLE.rgb
                 }
 
                 actionRow(
@@ -213,9 +212,9 @@ class ServerCommand : SlashCommandDeclarationWrapper {
                 embed {
                     title = "${Emotes.BriefCase} ${role.name}"
                     color = if (role.color != null)
-                        role.color?.toHexadecimalCode()
+                        role.color?.rgb
                     else
-                        Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+                        Constants.DISCORD_BLURPLE.rgb
 
                     if (role.icon != null) {
                         thumbnail = role.icon!!.iconUrl + "?size=2048"
@@ -332,7 +331,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
 
         fun sendChannelEmbed(context: UnleashedContext, channel: GuildChannel) = Embed {
             title = "${Emotes.Discord} ${channel.name}"
-            color = Constants.NEW_DISCORD_BURPLE.toHexadecimalCode()
+            color = Constants.DISCORD_BLURPLE.rgb
             description = if ((channel as? TextChannel) == null)
                 ""
             else "```${channel.topic}```"
