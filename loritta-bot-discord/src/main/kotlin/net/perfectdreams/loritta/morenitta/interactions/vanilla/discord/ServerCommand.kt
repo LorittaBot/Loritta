@@ -251,7 +251,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
 
                     if (role.color != null) field {
                         name = "${Emotes.Art} " + context.i18nContext.get(I18N_PREFIX.Role.Info.Color)
-                        value = "`#${Integer.toHexString(role.color?.rgb!!).uppercase()}`"
+                        value = "`#${Integer.toHexString(role.color?.rgb!!).uppercase().substring(2)}`"
 
                         inline = true
                     }
