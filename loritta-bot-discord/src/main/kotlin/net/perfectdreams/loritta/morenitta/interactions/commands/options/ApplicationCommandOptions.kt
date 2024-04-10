@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands.options
 
 import net.dv8tion.jda.api.entities.Message.Attachment
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
 open class ApplicationCommandOptions {
@@ -30,10 +32,22 @@ open class ApplicationCommandOptions {
     fun optionalDouble(name: String, description: StringI18nData, requiredRange: ClosedFloatingPointRange<Double>? = null) = NumberDiscordOptionReference<Double?>(name, description, false, requiredRange)
         .also { registeredOptions.add(it) }
 
+    fun channel(name: String, description: StringI18nData) = ChannelDiscordOptionReference<GuildChannel>(name, description, true)
+        .also { registeredOptions.add(it) }
+
+    fun optionalChannel(name: String, description: StringI18nData) = ChannelDiscordOptionReference<GuildChannel?>(name,description, false)
+        .also { registeredOptions.add(it) }
+
     fun user(name: String, description: StringI18nData) = UserDiscordOptionReference<UserAndMember>(name, description, true)
         .also { registeredOptions.add(it) }
 
     fun optionalUser(name: String, description: StringI18nData) = UserDiscordOptionReference<UserAndMember?>(name, description, false)
+        .also { registeredOptions.add(it) }
+
+    fun role(name: String, description: StringI18nData) = RoleDiscordOptionReference<Role>(name, description, true)
+        .also { registeredOptions.add(it) }
+
+    fun optionalRole(name: String, description: StringI18nData) = RoleDiscordOptionReference<Role?>(name, description, false)
         .also { registeredOptions.add(it) }
 
     fun attachment(name: String, description: StringI18nData) = AttachmentDiscordOptionReference<Attachment>(name, description, true)

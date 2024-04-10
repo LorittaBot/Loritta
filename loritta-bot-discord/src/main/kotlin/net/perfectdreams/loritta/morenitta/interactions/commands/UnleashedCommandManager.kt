@@ -249,7 +249,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(WebhookCommand(loritta))
         register(UserCommand(loritta))
         register(MessageStickerCommand())
-        register(GuildCommand())
+        register(GuildCommand()) // TODO: Merge with ServerCommand
+        register(ServerCommand())
+        register(EmojiCommand())
+        register(InviteCommand())
         register(UserAvatarUserCommand())
         register(UserInfoUserCommand())
 
@@ -842,9 +845,29 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         )
                     }
 
+                    is ChannelDiscordOptionReference -> {
+                        return listOf(
+                            Option<GuildChannel>(
+                                interaKTionsOption.name,
+                                description,
+                                interaKTionsOption.required
+                            )
+                        )
+                    }
+
                     is UserDiscordOptionReference -> {
                         return listOf(
                             Option<User>(
+                                interaKTionsOption.name,
+                                description,
+                                interaKTionsOption.required
+                            )
+                        )
+                    }
+
+                    is RoleDiscordOptionReference -> {
+                        return listOf(
+                            Option<Role>(
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required

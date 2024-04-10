@@ -21,9 +21,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.Clear
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.RenameChannelCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.RenameEmojiCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.UnwarnCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ChannelInfoCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.GuildBannerCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.RoleInfoCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
@@ -87,9 +84,9 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			DiscordBotListTopLocalCommand(loritta),
 
 			// ===[ DISCORD ]===
-			ChannelInfoCommand(loritta),
-			GuildBannerCommand(loritta),
-			RoleInfoCommand(loritta),
+			// ChannelInfoCommand(loritta),
+			// GuildBannerCommand(loritta),
+			// RoleInfoCommand(loritta),
 
 			// ===[ FUN ]===
 			GiveawayCommand(loritta),

@@ -1,9 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.EmojiCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.InviteCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.*
@@ -29,9 +26,9 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
         val wrapper = RegistryWrapper()
         with(wrapper) {
             // ===[ DISCORD ]===
-            register(ServerCommand(languageManager))
-            register(InviteCommand(languageManager))
-            register(EmojiCommand(languageManager))
+            // register(ServerCommand(languageManager))
+            // register(InviteCommand(languageManager))
+            // register(EmojiCommand(languageManager))
 
             // ===[ MODERATION ]===
             register(BanCommand(languageManager))

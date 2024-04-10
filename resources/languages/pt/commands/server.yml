@@ -44,6 +44,7 @@ role:
   label: "cargo"
   info:
     label: "info"
+    members: "Membros"
     description: "Mostra informações de um cargo no servidor"
     mention: "Menção"
     roleId: "ID do cargo"

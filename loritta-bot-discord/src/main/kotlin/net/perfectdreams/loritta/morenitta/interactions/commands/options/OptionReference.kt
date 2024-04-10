@@ -90,6 +90,14 @@ class NumberDiscordOptionReference<T>(
     }
 }
 
+class ChannelDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean) : DiscordOptionReference<T>(name, description, required) {
+    override fun get(option: OptionMapping): T = option.asChannel as T
+}
+
+class RoleDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean) : DiscordOptionReference<T>(name, description, required) {
+    override fun get(option: OptionMapping): T = option.asRole as T
+}
+
 class UserDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean) : DiscordOptionReference<T>(name, description, required) {
     override fun get(option: OptionMapping): T {
         val user = option.asUser

@@ -30,7 +30,7 @@ class ComponentContext(
     locale: BaseLocale,
     i18nContext: I18nContext,
     val event: ComponentInteraction
-) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList()), event) {
+) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList(), emptyList(), emptyList(), emptyList()), event) {
     suspend fun deferEdit(): InteractionHook = event.deferEdit().await()
 
     /**
