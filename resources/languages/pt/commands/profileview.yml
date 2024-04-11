@@ -5,6 +5,7 @@ examples:
   - "@Loritta |-| Veja o perfil da garota mais maravilhosa do Discord!"
   - "390927821997998081 |-| Mostra o perfil de um usuário pelo ID"
 changeAboutMe: "Alterar Sobre Mim"
+profileImageAltText: "Perfil do usuário {user}"
 options:
   user:
     text: "O usuário que você deseja ver o perfil social dele"

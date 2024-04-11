@@ -6,6 +6,7 @@ examples:
   - "Cremosa |-| Em vez de tentar conquistar a cremosa, se iluda pensando que você irá namorar com ela vendo o seu ship com ela!"
 description: "O amor está no ar! Verifique se o seu casal dos sonhos irá funcionar... ou não!"
 newCouple: "Hmmm, será que temos um novo casal aqui?"
+shipImageAltText: "Edição com o avatar dos usuários {user1} e {user2} dentro de círculos com uma barra de progresso em baixo deles, a barra de progresso está com valor de {shipPercentage,number,#.##%}"
 scoreImpossible:
   - "Isso é impossível, ok? Isso simplesmente não irá funcionar."
   - "Não, não. Absolutamente não."

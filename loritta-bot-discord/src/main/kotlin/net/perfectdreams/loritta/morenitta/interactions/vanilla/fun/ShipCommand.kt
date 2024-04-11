@@ -297,6 +297,7 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             """.trimMargin()
 
                 files += FileUpload.fromData(result.inputStream(), "ship.png")
+                    .setDescription(context.i18nContext.get(I18N_PREFIX.ShipImageAltText(user1Name, user2Name, (value / 100.0))))
             }
 
             if (isNatural && isNatural100Ship)

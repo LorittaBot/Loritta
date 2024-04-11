@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -22,7 +23,6 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -30,7 +30,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.and
@@ -48,6 +47,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             result: ProfileDesignManager.ProfileCreationResult
         ): suspend InlineMessage<*>.() -> (Unit) = {
             files += FileUpload.fromData(result.image.inputStream(), "profile.${result.imageFormat.extension}")
+                .setDescription(i18nContext.get(I18nKeysData.Commands.Command.Profileview.ProfileImageAltText(userToBeViewed.name)))
 
             if (userToBeViewed == sender) {
                 actionRow(
@@ -344,6 +344,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 val badgeImage = badge.getImage()
                 if (badgeImage != null)
                     files += FileUpload.fromData(badgeImage.toByteArray(ImageFormatType.PNG), "badge.png")
+                        .setDescription(context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgeImageAltText(context.i18nContext.get(badge.title))))
 
                 val components = mutableListOf(
                     loritta.interactivityManager.buttonForUser(
