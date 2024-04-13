@@ -106,7 +106,7 @@ object AchievementUtils {
         if (wasAchievementGiven)
             context.reply(ephemeral) {
                 styled(
-                    content = "**${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
+                    content = "${context.user.asMention} **${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
                     prefix = Emotes.Sparkles
                 )
 
@@ -147,7 +147,7 @@ object AchievementUtils {
         if (wasAchievementGiven)
             context.reply(true) {
                 styled(
-                    content = "**${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
+                    content = "${context.user.asMention} **${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
                     prefix = Emotes.Sparkles
                 )
 
