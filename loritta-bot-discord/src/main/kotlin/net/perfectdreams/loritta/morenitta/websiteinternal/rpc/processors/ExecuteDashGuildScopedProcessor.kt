@@ -725,7 +725,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                     val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
                     val premiumTracksOfTheGuildCount = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
-                        PremiumTrackTwitchAccounts.guildId eq PremiumTrackTwitchAccounts.guildId
+                        PremiumTrackTwitchAccounts.guildId eq guild.idLong
                     }.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
                         .count()
 
@@ -788,7 +788,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
             if (plan.maxUnauthorizedTwitchChannels != 0) {
                 // If the plan has a maxUnauthorizedTwitchChannels != 0, now we need to get ALL premium tracks of the guild...
                 val allPremiumTracksOfTheGuild = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
-                    PremiumTrackTwitchAccounts.guildId eq PremiumTrackTwitchAccounts.guildId
+                    PremiumTrackTwitchAccounts.guildId eq guildId
                 }.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
                     .limit(plan.maxUnauthorizedTwitchChannels) // Limited by the max unauthorized count...
                     .map { it[PremiumTrackTwitchAccounts.twitchUserId] } // Then we map by the twitch user ID...
