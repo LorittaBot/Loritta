@@ -14,9 +14,9 @@ import java.util.*
 
 class GrassCutterBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	UUID.fromString("d8858fec-4075-4308-8494-e7692041cbfa"),
-	ProfileDesignManager.I18N_BADGES_PREFIX.Stonks.Title,
-	ProfileDesignManager.I18N_BADGES_PREFIX.Stonks.Description,
-	"stonks.png",
+	ProfileDesignManager.I18N_BADGES_PREFIX.GrassCutter.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.GrassCutter.Description,
+	"grass_cutter.png",
 	15
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
