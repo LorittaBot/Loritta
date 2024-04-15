@@ -69,6 +69,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("removeemoji")
                     add("removeremoji")
+                    add("delemoji")
                 }
 
                 executor = GuildEmojiRemoveExecutor()
@@ -549,6 +550,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         }
 
         override val options = Options()
+
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             if (!context.member.permissions.any { it == Permission.MANAGE_GUILD_EXPRESSIONS }) context.fail(true) {
                 styled(
@@ -566,9 +568,20 @@ class GuildCommand : SlashCommandDeclarationWrapper {
             val fetchedEmojis = emojis.filter { it.asMention in selectedEmojis }
             val removedEmojisSize = fetchedEmojis.size
 
-            fetchedEmojis.forEach {
-                if (it.guild == context.guild) {
-                    it.delete().queue()
+            if (fetchedEmojis.isEmpty()) {
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18N_PREFIX.Emoji.Remove.NoEmojisFound
+                        ),
+                        Emotes.Error
+                    )
+                }
+            } else {
+                fetchedEmojis.forEach {
+                    if (it.guild == context.guild) {
+                        it.delete().queue()
+                    }
                 }
             }
 
@@ -585,8 +598,14 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?> {
-            return mapOf(options.emojiName to args.joinToString(" "))
+        ): Map<OptionReference<*>, Any?>? {
+            if (args.isEmpty()) {
+                context.explain()
+            } else {
+                return mapOf(options.emojiName to args.joinToString(" "))
+            }
+
+            return null
         }
     }
 }

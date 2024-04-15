@@ -23,6 +23,7 @@ emoji:
     noEmojisAvailable: "Não há emojis para remover neste servidor!"
     invalidEmoji: "Emoji inválido!"
     successfullyRemovedEmoji: "{emojiCount,plural, =1 {# Emoji removido} other {# Emojis removidos}} com sucesso!"
+    noEmojisFound: "Nenhum emoji encontrado!"
     options:
       name: "O(s) emoji(s) a ser(em) removido(s)"
 sticker:
