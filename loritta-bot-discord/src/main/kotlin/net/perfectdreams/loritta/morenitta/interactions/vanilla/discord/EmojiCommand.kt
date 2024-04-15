@@ -1,10 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
 import dev.minn.jda.ktx.messages.Embed
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -80,7 +78,28 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val emoji = args[options.emoji]
 
-            if (emoji.isValidSnowflake()) {
+            val emojis = context.guild.emojis
+
+            if (emojis.any { it.asMention == emoji || it.name == emoji }) {
+                // Search the emoji by name or mention...
+                val searchedEmoji = emojis.first { it.asMention == emoji || it.name == emoji }
+
+                if (searchedEmoji != null) {
+                    context.reply(false) {
+                        embeds.plusAssign(createDiscordCustomEmojiInfoEmbed(context, searchedEmoji))
+
+                        actionRow(
+                            Button.link(
+                                searchedEmoji.imageUrl + "?size=2048",
+                                context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
+                            )
+                        )
+                    }
+                }
+
+                return
+            } else if (emoji.isValidSnowflake()) {
+                // Search for the emoji by ID...
                 val searchedEmoji = context.loritta.lorittaShards.getEmoteById(emoji)
 
                 if (searchedEmoji != null) {
@@ -94,34 +113,14 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
                             )
                         )
                     }
-                } else {
-                    context.reply(true) {
-                        styled(
-                            context.i18nContext.get(I18N_PREFIX.Info.EmojiNotFound(emoji)),
-                            Emotes.LoriHm
-                        )
-                    }
-                    return
                 }
 
-                val foundEmoji = context.guild.getEmojisByName(emoji, true).firstOrNull()
-                if (foundEmoji != null) {
-                    context.reply(false) {
-                        embeds.plusAssign(createDiscordCustomEmojiInfoEmbed(context, foundEmoji))
-
-                        actionRow(
-                            Button.link(
-                                foundEmoji.imageUrl + "?size=2048",
-                                context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
-                            )
-                        )
-                    }
-                    return
-                }
+                return
             } else {
-                val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(emoji).find()
+                // If it's not an emoji ID or mention... Then it can be a unicode emoji!
+                val isUnicode = Constants.EMOJI_PATTERN.matcher(emoji).find()
 
-                if (isUnicodeEmoji) {
+                if (isUnicode) {
                     val codePoints = emoji.codePoints().toList().map { LorittaUtils.toUnicode(it).substring(2) }
 
                     val result = codePoints.joinToString(separator = "-")
@@ -165,6 +164,16 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
                             )
                         )
                     }
+
+                    return
+                }
+
+                // If none of the options works... fail it.
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Info.EmojiNotFound(emoji)),
+                        Emotes.LoriHm
+                    )
                 }
             }
         }
