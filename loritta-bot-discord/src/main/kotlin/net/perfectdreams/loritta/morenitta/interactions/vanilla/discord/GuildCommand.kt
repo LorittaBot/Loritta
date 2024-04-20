@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.newSticker
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.morenitta.utils.readAllBytes
@@ -136,124 +137,87 @@ class GuildCommand : SlashCommandDeclarationWrapper {
             context.deferChannelMessage(false)
 
             try {
-                val image = (LorittaUtils.downloadFile(context.loritta, sticker, 5000) ?: context.fail(true) {
-                    styled(
-                        context.i18nContext.get(
-                            I18N_PREFIX.Sticker.Add.InvalidUrl
-                        ),
-                        Emotes.Error
-                    )
-                }).readAllBytes(8_388_608)
-
-                val allowedImageTypes = setOf("png", "gif", "json", "jpeg", "jpg")
-                var imageInfo = SimpleImageInfo(image)
-                var imageType = imageInfo.mimeType!!.split("/")[1]
-
-                val imageData = if (imageType in allowedImageTypes) {
-                    when (imageType) {
-                        "jpeg", "jpg" -> LorittaUtils.convertImage(image, "png", true)
-                        else -> image
+                context.guild.newSticker(
+                    context,
+                    name,
+                    description,
+                    sticker,
+                    tags
+                )
+            } catch (e: Exception) {
+                when (e) {
+                    is CommandException -> throw e
+                    is RateLimitedException -> {
+                        context.reply(true) {
+                            styled(
+                                context.i18nContext.get(I18nKeysData.Commands.Command.Guild.Sticker.Add.RateLimitExceeded),
+                                Emotes.LoriHmpf
+                            )
+                        }
+                        return
                     }
-                } else {
-                    null
-                }!!
+                    is ErrorResponseException -> {
+                        when (e.errorResponse) {
+                            ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED -> {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(
+                                            I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded
+                                        ),
+                                        Emotes.Error
+                                    )
+                                }
+                                return
+                            }
 
-                imageInfo = SimpleImageInfo(imageData)
-                imageType = imageInfo.mimeType!!.split("/")[1]
+                            ErrorResponse.MAX_STICKERS -> {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(
+                                            I18N_PREFIX.Sticker.Add.MaxStickersReached
+                                        ),
+                                        Emotes.Error
+                                    )
+                                }
+                                return
+                            }
 
-                try {
-                    context.guild.createSticker(
-                        name,
-                        description,
-                        FileUpload.fromData(imageData, "sticker.$imageType"),
-                        tags
-                    ).submit(false).await()
-                } catch(e: Exception) {
-                    when (e) {
-                        is RateLimitedException -> {
-                            context.fail(true) {
+                            ErrorResponse.INVALID_FILE_UPLOADED, ErrorResponse.INVALID_FORM_BODY -> {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(
+                                            I18N_PREFIX.Sticker.Add.InvalidUrl
+                                        ),
+                                        Emotes.Error
+                                    )
+                                }
+                                return
+                            }
+
+                            else -> context.reply(true) {
                                 styled(
-                                    context.i18nContext.get(I18nKeysData.Commands.Command.Guild.Sticker.Add.RateLimitExceeded),
-                                    Emotes.LoriHmpf
+                                    context.i18nContext.get(
+                                        I18nKeysData.Commands.ErrorWhileExecutingCommand(
+                                            Emotes.LoriRage,
+                                            Emotes.LoriSob,
+                                            e
+                                        )
+                                    ),
+                                    Emotes.Error
                                 )
                             }
                         }
-
-                        is ErrorResponseException -> {
-                            when (e.errorResponse) {
-                                ErrorResponse.INVALID_FILE_UPLOADED -> {
-                                    context.fail(true) {
-                                        styled(
-                                            context.i18nContext.get(
-                                                I18N_PREFIX.Sticker.Add.InvalidUrl
-                                            ),
-                                            Emotes.LoriSob
-                                        )
-                                    }
-                                }
-
-                                ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED -> {
-                                    context.fail(true) {
-                                        styled(
-                                            context.i18nContext.get(
-                                                I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded
-                                            ),
-                                            Emotes.Error
-                                        )
-                                    }
-                                }
-                                ErrorResponse.MAX_STICKERS -> {
-                                    context.fail(true) {
-                                        styled(
-                                            context.i18nContext.get(
-                                                I18N_PREFIX.Sticker.Add.MaxStickersReached,
-                                            ),
-                                            Emotes.Error
-                                        )
-                                    }
-                                }
-                                else -> {
-                                    context.fail(true) {
-                                        styled(
-                                            context.i18nContext.get(
-                                                I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                                                    Emotes.LoriRage,
-                                                    Emotes.LoriSob,
-                                                    e.message!!
-                                                )
-                                            ),
-                                            Emotes.Error
-                                        )
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
+            }
 
-                context.reply(false) {
-                    styled(
-                        context.i18nContext.get(
-                            I18N_PREFIX.Sticker.Add.SuccessfullyAdded
-                        ),
-                        Emotes.LoriHappyJumping
-                    )
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-
-                context.fail(true) {
-                    styled(
-                        context.i18nContext.get(
-                            I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                                Emotes.LoriRage,
-                                Emotes.LoriSob,
-                                e.message!!
-                            )
-                        ),
-                        Emotes.Error
-                    )
-                }
+            context.reply(false) {
+                styled(
+                    context.i18nContext.get(
+                        I18N_PREFIX.Sticker.Add.SuccessfullyAdded
+                    ),
+                    Emotes.LoriHappyJumping
+                )
             }
         }
 

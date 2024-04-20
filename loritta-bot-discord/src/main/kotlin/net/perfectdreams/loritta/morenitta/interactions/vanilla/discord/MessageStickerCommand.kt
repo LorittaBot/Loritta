@@ -18,6 +18,8 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.newSticker
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.GuildCommand.Companion
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 
 class MessageStickerCommand : MessageCommandDeclarationWrapper {
@@ -86,22 +88,14 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                                 ButtonStyle.PRIMARY,
                                 context.i18nContext.get(I18N_PREFIX.AddStickerToTheServer)
                             ) {
-                                val image = (LorittaUtils.downloadFile(it.loritta, sticker.fixedIconUrl(2048), 5000) ?: it.fail(true) {
-                                    styled(
-                                        it.i18nContext.get(I18N_PREFIX.CouldntDownloadTheSticker),
-                                        Emotes.LoriHmpf
-                                    )
-                                }).readAllBytes()
-
-                                val parsedSticker = FileUpload.fromData(image, "sticker.${sticker.formatType.extension}")
-
                                 try {
-                                    it.guild.createSticker(
+                                    it.guild.newSticker(
+                                        context,
                                         sticker.name,
                                         "None",
-                                        parsedSticker,
-                                        "None"
-                                    ).submit(false).await()
+                                        sticker.fixedIconUrl(2048),
+                                        listOf("None")
+                                    )
                                 } catch (e: Exception) {
                                     it.deferAndEditOriginal {
                                         MessageEditBuilder {
@@ -112,41 +106,28 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                                                         I18N_PREFIX.OpenInWeb
                                                     )
                                                 ),
-                                                Button.danger("error-while-adding-sticker", it.i18nContext.get(GuildCommand.I18N_PREFIX.Sticker.Add.ErrorWhileAdding)).asDisabled()
+                                                Button.danger("-", it.i18nContext.get(GuildCommand.I18N_PREFIX.Sticker.Add.ErrorWhileAdding)).asDisabled()
                                             )
                                         }.build()
                                     }
 
                                     when (e) {
+                                        is CommandException -> throw e
                                         is RateLimitedException -> {
-                                            it.reply(true) {
+                                            context.reply(true) {
                                                 styled(
-                                                    it.i18nContext.get(I18nKeysData.Commands.Command.Guild.Sticker.Add.RateLimitExceeded),
+                                                    context.i18nContext.get(I18nKeysData.Commands.Command.Guild.Sticker.Add.RateLimitExceeded),
                                                     Emotes.LoriHmpf
                                                 )
                                             }
-
                                             return@buttonForUser
                                         }
-
                                         is ErrorResponseException -> {
                                             when (e.errorResponse) {
-                                                ErrorResponse.INVALID_FILE_UPLOADED -> {
-                                                    it.reply(true) {
-                                                        styled(
-                                                            it.i18nContext.get(
-                                                                GuildCommand.I18N_PREFIX.Sticker.Add.InvalidUrl
-                                                            ),
-                                                            Emotes.LoriSob
-                                                        )
-                                                    }
-
-                                                    return@buttonForUser
-                                                }
                                                 ErrorResponse.FILE_UPLOAD_MAX_SIZE_EXCEEDED -> {
                                                     it.reply(true) {
                                                         styled(
-                                                            it.i18nContext.get(
+                                                            context.i18nContext.get(
                                                                 GuildCommand.I18N_PREFIX.Sticker.Add.FileUploadMaxSizeExceeded
                                                             ),
                                                             Emotes.Error
@@ -154,31 +135,42 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                                                     }
                                                     return@buttonForUser
                                                 }
+
                                                 ErrorResponse.MAX_STICKERS -> {
                                                     it.reply(true) {
                                                         styled(
-                                                            it.i18nContext.get(
-                                                                GuildCommand.I18N_PREFIX.Sticker.Add.MaxStickersReached,
+                                                            context.i18nContext.get(
+                                                                GuildCommand.I18N_PREFIX.Sticker.Add.MaxStickersReached
                                                             ),
                                                             Emotes.Error
                                                         )
                                                     }
                                                     return@buttonForUser
                                                 }
-                                                else -> {
+
+                                                ErrorResponse.INVALID_FILE_UPLOADED, ErrorResponse.INVALID_FORM_BODY -> {
                                                     it.reply(true) {
                                                         styled(
-                                                            it.i18nContext.get(
-                                                                I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                                                                    Emotes.LoriRage,
-                                                                    Emotes.LoriSob,
-                                                                    e.message!!
-                                                                )
+                                                            context.i18nContext.get(
+                                                                GuildCommand.I18N_PREFIX.Sticker.Add.InvalidUrl
                                                             ),
                                                             Emotes.Error
                                                         )
                                                     }
                                                     return@buttonForUser
+                                                }
+
+                                                else -> it.reply(true) {
+                                                    styled(
+                                                        context.i18nContext.get(
+                                                            I18nKeysData.Commands.ErrorWhileExecutingCommand(
+                                                                Emotes.LoriRage,
+                                                                Emotes.LoriSob,
+                                                                e
+                                                            )
+                                                        ),
+                                                        Emotes.Error
+                                                    )
                                                 }
                                             }
                                         }
@@ -194,7 +186,7 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                                                     I18N_PREFIX.OpenInWeb
                                                 )
                                             ),
-                                            Button.success("successfully-add-sticker", it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully)).asDisabled()
+                                            Button.success("-", it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully)).asDisabled()
                                         )
                                     }.build()
                                 }
