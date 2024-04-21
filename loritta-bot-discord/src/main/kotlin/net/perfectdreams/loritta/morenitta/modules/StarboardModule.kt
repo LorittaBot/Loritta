@@ -24,7 +24,9 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.StarboardMessage
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
@@ -108,6 +110,12 @@ class StarboardModule(val loritta: LorittaBot) {
 					starboardMessage = textChannel.sendMessage(starCountMessage).await()
 
 					loritta.newSuspendedTransaction {
+						// Delete all previous starboard messages related to this message
+						// Avoid issues when, somehow, Loritta keeps resending a new message because she can't query the previous message (maybe it was deleted?)
+						StarboardMessages.deleteWhere {
+							(StarboardMessages.guildId eq e.guild.idLong) eq (StarboardMessages.messageId eq messageThatWasReactedTo.idLong)
+						}
+
 						StarboardMessage.new {
 							this.guildId = e.guild.idLong
 							this.embedId = starboardMessage.idLong
