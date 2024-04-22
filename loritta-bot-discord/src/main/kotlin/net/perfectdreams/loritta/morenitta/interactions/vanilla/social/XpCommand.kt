@@ -570,9 +570,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     it.deferAndEditOriginal {
                         val message = createMessage(loritta, context, guild, page - 1)
 
-                        MessageEdit {
-                            message()
-                        }
+                        message()
                     }
                 },
                 loritta.interactivityManager.buttonForUser(
@@ -586,9 +584,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     it.deferAndEditOriginal {
                         val message = createMessage(loritta, context, guild, page + 1)
 
-                        MessageEdit {
-                            message()
-                        }
+                        message()
                     }
                 }
             )

@@ -509,15 +509,13 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                     }
 
                                     componentContext.deferAndEditOriginal {
-                                        MessageEdit {
-                                            actionRow(
-                                                Button.of(
-                                                    ButtonStyle.PRIMARY,
-                                                    componentContext.event.componentId, // Reuse the same component
-                                                    context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
-                                                ).withEmoji(Emoji.fromUnicode("✅")).withDisabled(true)
-                                            )
-                                        }
+                                        actionRow(
+                                            Button.of(
+                                                ButtonStyle.PRIMARY,
+                                                componentContext.event.componentId, // Reuse the same component
+                                                context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
+                                            ).withEmoji(Emoji.fromUnicode("✅")).withDisabled(true)
+                                        )
                                     }
 
                                     context.reply(false) {
@@ -536,30 +534,26 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                     context.giveAchievementAndNotify(loser, AchievementType.COIN_FLIP_BET_LOSE, false)
                                 } else {
                                     componentContext.deferAndEditOriginal {
-                                        MessageEdit {
-                                            actionRow(
-                                                Button.of(
-                                                    ButtonStyle.PRIMARY,
-                                                    componentContext.event.componentId, // Reuse the same component
-                                                    context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
-                                                ).withEmoji(Emoji.fromUnicode("✅"))
-                                            )
-                                        }
+                                        actionRow(
+                                            Button.of(
+                                                ButtonStyle.PRIMARY,
+                                                componentContext.event.componentId, // Reuse the same component
+                                                context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
+                                            ).withEmoji(Emoji.fromUnicode("✅"))
+                                        )
                                     }
                                 }
                             } else {
                                 usersThatAcceptedTheBet.remove(componentContext.user)
 
                                 componentContext.deferAndEditOriginal {
-                                    MessageEdit {
-                                        actionRow(
-                                            Button.of(
-                                                ButtonStyle.PRIMARY,
-                                                componentContext.event.componentId,
-                                                context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
-                                            ).withEmoji(Emoji.fromUnicode("✅"))
-                                        )
-                                    }
+                                    actionRow(
+                                        Button.of(
+                                            ButtonStyle.PRIMARY,
+                                            componentContext.event.componentId,
+                                            context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
+                                        ).withEmoji(Emoji.fromUnicode("✅"))
+                                    )
                                 }
                             }
                         }
