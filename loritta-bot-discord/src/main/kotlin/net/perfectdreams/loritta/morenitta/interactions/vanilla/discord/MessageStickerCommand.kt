@@ -12,15 +12,12 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.requests.ErrorResponse
-import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.newSticker
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.GuildCommand.Companion
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 
 class MessageStickerCommand : MessageCommandDeclarationWrapper {
     companion object {

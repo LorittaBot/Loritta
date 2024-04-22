@@ -57,6 +57,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.SadRealit
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.ThanksFriendsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roblox.RobloxCommand
@@ -295,6 +296,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ MINECRAFT ]===
         register(MinecraftCommand(loritta))
+
+        // ===[ MISCELLANEOUS ]===
+        register(LanguageCommand(loritta))
 
         // ===[ UTILS ]===
         register(AnagramCommand())
