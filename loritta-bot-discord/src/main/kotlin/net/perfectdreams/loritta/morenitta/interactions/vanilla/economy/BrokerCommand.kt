@@ -127,88 +127,86 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     val categories = values.map { LorittaBovespaBrokerUtils.CompanyCategory.valueOf(it) }
                     val stockInformations = context.loritta.pudding.bovespaBroker.getAllTickers()
 
-                    MessageEdit {
-                        brokerEmbed(context) {
-                            title = "${Emotes.LoriStonks} ${context.i18nContext.get(I18N_PREFIX.Info.Embed.Title)}"
-                            description = context.i18nContext.get(
-                                I18N_PREFIX.Info.Embed.Explanation(
-                                    loriSob = Emotes.LoriSob,
-                                    tickerOutOfMarket = Emotes.DoNotDisturb,
-                                    openTime = LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
-                                    closingTime = LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP,
-                                    brokerBuyCommandMention = loritta.commandMentions.brokerBuy,
-                                    brokerSellCommandMention = loritta.commandMentions.brokerSell,
-                                    brokerPortfolioCommandMention = loritta.commandMentions.brokerPortfolio,
-                                )
-                            ).joinToString("\n")
+                    brokerEmbed(context) {
+                        title = "${Emotes.LoriStonks} ${context.i18nContext.get(I18N_PREFIX.Info.Embed.Title)}"
+                        description = context.i18nContext.get(
+                            I18N_PREFIX.Info.Embed.Explanation(
+                                loriSob = Emotes.LoriSob,
+                                tickerOutOfMarket = Emotes.DoNotDisturb,
+                                openTime = LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
+                                closingTime = LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP,
+                                brokerBuyCommandMention = loritta.commandMentions.brokerBuy,
+                                brokerSellCommandMention = loritta.commandMentions.brokerSell,
+                                brokerPortfolioCommandMention = loritta.commandMentions.brokerPortfolio,
+                            )
+                        ).joinToString("\n")
 
-                            for (stockInformation in stockInformations.sortedBy(BrokerTickerInformation::ticker)) {
-                                val stockData =
-                                    LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == stockInformation.ticker }
-                                if (stockData.category !in categories)
-                                    continue
+                        for (stockInformation in stockInformations.sortedBy(BrokerTickerInformation::ticker)) {
+                            val stockData =
+                                LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == stockInformation.ticker }
+                            if (stockData.category !in categories)
+                                continue
 
-                                val tickerId = stockInformation.ticker
-                                val tickerName = stockData.name
-                                val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(stockInformation.value)
-                                val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
-                                val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
-                                val changePercentage = stockInformation.dailyPriceVariation
+                            val tickerId = stockInformation.ticker
+                            val tickerName = stockData.name
+                            val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(stockInformation.value)
+                            val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
+                            val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
+                            val changePercentage = stockInformation.dailyPriceVariation
 
-                                val fieldTitle =
-                                    "`$tickerId` ($tickerName) | ${"%.2f".format(changePercentage)}%"
-                                val emojiStatus =
-                                    getEmojiStatusForTicker(stockInformation)
+                            val fieldTitle =
+                                "`$tickerId` ($tickerName) | ${"%.2f".format(changePercentage)}%"
+                            val emojiStatus =
+                                getEmojiStatusForTicker(stockInformation)
 
-                                if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(stockInformation.status)) {
-                                    field {
-                                        name = "$emojiStatus $fieldTitle"
-                                        value = context.i18nContext.get(
-                                            I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(
-                                                currentPrice
-                                            )
+                            if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(stockInformation.status)) {
+                                field {
+                                    name = "$emojiStatus $fieldTitle"
+                                    value = context.i18nContext.get(
+                                        I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(
+                                            currentPrice
                                         )
-                                        inline = true
-                                    }
-                                } else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(
-                                        stockInformation.lastUpdatedAt
                                     )
-                                ) {
-                                    field {
-                                        name = "$emojiStatus $fieldTitle"
-                                        value =
-                                            """${
-                                                context.i18nContext.get(
-                                                    I18N_PREFIX.Info.Embed.BuyPrice(
-                                                        buyingPrice
-                                                    )
+                                    inline = true
+                                }
+                            } else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(
+                                    stockInformation.lastUpdatedAt
+                                )
+                            ) {
+                                field {
+                                    name = "$emojiStatus $fieldTitle"
+                                    value =
+                                        """${
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Info.Embed.BuyPrice(
+                                                    buyingPrice
                                                 )
-                                            }
+                                            )
+                                        }
                                 |${context.i18nContext.get(I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
                             """.trimMargin()
-                                        inline = true
-                                    }
-                                } else {
-                                    field {
-                                        name = "$emojiStatus $fieldTitle"
-                                        value =
-                                            """${
-                                                context.i18nContext.get(
-                                                    I18N_PREFIX.Info.Embed.BuyPrice(
-                                                        buyingPrice
-                                                    )
+                                    inline = true
+                                }
+                            } else {
+                                field {
+                                    name = "$emojiStatus $fieldTitle"
+                                    value =
+                                        """${
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Info.Embed.BuyPrice(
+                                                    buyingPrice
                                                 )
-                                            }
+                                            )
+                                        }
                                 |${context.i18nContext.get(I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
                             """.trimMargin()
-                                        inline = true
-                                    }
+                                    inline = true
                                 }
                             }
                         }
-
-                        actionRow(selectCompanyCategoryMenu(context, categories.first()))
                     }
+
+                    actionRow(selectCompanyCategoryMenu(context, categories.first()))
                 }
             }
         }

@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
-import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.Embed
-import dev.minn.jda.ktx.messages.MessageEditBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.sticker.Sticker
@@ -12,15 +10,12 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.requests.ErrorResponse
-import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.newSticker
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.GuildCommand.Companion
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 
 class MessageStickerCommand : MessageCommandDeclarationWrapper {
     companion object {
@@ -98,17 +93,15 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                                     )
                                 } catch (e: Exception) {
                                     it.deferAndEditOriginal {
-                                        MessageEditBuilder {
-                                            actionRow(
-                                                Button.link(
-                                                    sticker.fixedIconUrl(2048),
-                                                    context.i18nContext.get(
-                                                        I18N_PREFIX.OpenInWeb
-                                                    )
-                                                ),
-                                                Button.danger("-", it.i18nContext.get(GuildCommand.I18N_PREFIX.Sticker.Add.ErrorWhileAdding)).asDisabled()
-                                            )
-                                        }.build()
+                                        actionRow(
+                                            Button.link(
+                                                sticker.fixedIconUrl(2048),
+                                                context.i18nContext.get(
+                                                    I18N_PREFIX.OpenInWeb
+                                                )
+                                            ),
+                                            Button.danger("-", it.i18nContext.get(GuildCommand.I18N_PREFIX.Sticker.Add.ErrorWhileAdding)).asDisabled()
+                                        )
                                     }
 
                                     when (e) {
@@ -178,17 +171,15 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                                 }
 
                                 it.deferAndEditOriginal {
-                                    MessageEditBuilder {
-                                        actionRow(
-                                            Button.link(
-                                                sticker.fixedIconUrl(2048),
-                                                context.i18nContext.get(
-                                                    I18N_PREFIX.OpenInWeb
-                                                )
-                                            ),
-                                            Button.success("-", it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully)).asDisabled()
-                                        )
-                                    }.build()
+                                    actionRow(
+                                        Button.link(
+                                            sticker.fixedIconUrl(2048),
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.OpenInWeb
+                                            )
+                                        ),
+                                        Button.success("-", it.i18nContext.get(I18N_PREFIX.StickerAddedSuccessfully)).asDisabled()
+                                    )
                                 }
 
                                 it.reply(true) {
