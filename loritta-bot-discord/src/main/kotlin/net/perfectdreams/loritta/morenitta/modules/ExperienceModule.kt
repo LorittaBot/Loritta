@@ -6,6 +6,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LevelAnnouncementConfigs
@@ -146,6 +147,11 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 			if (event.channel.idLong in noXpChannels)
 				return
+
+			// If this is a thread channel, check if the parent channel is set as "no XP" and, if it is, don't give XP!
+			if (event.channel is ThreadChannel)
+				if (event.channel.parentChannel.idLong in noXpChannels)
+					return
 		}
 
 		val (previousLevel, previousXp) = guildProfile.getCurrentLevel()
