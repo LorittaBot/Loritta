@@ -85,4 +85,9 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.Events.Description,
         Emotes.LoriYay,
     ),
+    LORI_COOL_CARDS(
+        I18nKeysData.Commands.Command.Transactions.Types.Loricoolcards.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Loricoolcards.Description,
+        Emotes.LoriCoolSticker,
+    ),
 }

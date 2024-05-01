@@ -11,17 +11,14 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.common.emotes.Emote
-import net.perfectdreams.loritta.common.emotes.UnicodeEmote
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 class InteractivityManager {
@@ -61,6 +58,15 @@ class InteractivityManager {
     ) = buttonForUser(targetUser.idLong, style, label, builder, callback)
 
     /**
+     * Creates an interactive button, the ID in the [button] will be replaced with a [UnleashedComponentId]
+     */
+    fun buttonForUser(
+        targetUser: User,
+        button: Button,
+        callback: suspend (ComponentContext) -> (Unit)
+    ) = buttonForUser(targetUser.idLong, button, callback)
+
+    /**
      * Creates an interactive button
      */
     fun buttonForUser(
@@ -88,6 +94,29 @@ class InteractivityManager {
     }
 
     /**
+     * Creates an interactive button, the ID in the [button] will be replaced with a [UnleashedComponentId]
+     */
+    fun buttonForUser(
+        targetUserId: Long,
+        button: Button,
+        callback: suspend (ComponentContext) -> (Unit)
+    ) = button(
+        button
+    ) {
+        if (targetUserId != it.user.idLong) {
+            it.reply(true) {
+                styled(
+                    it.i18nContext.get(I18nKeysData.Commands.YouArentTheUserSingleUser("<@$targetUserId>")),
+                    Emotes.LoriRage
+                )
+            }
+            return@button
+        }
+
+        callback.invoke(it)
+    }
+
+    /**
      * Creates an interactive button
      */
     fun button(
@@ -95,13 +124,25 @@ class InteractivityManager {
         label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {},
         callback: suspend (ComponentContext) -> (Unit)
+    ) = button(
+        UnleashedButton.of(style, label, null)
+            .let {
+                JDAButtonBuilder(it).apply(builder).button
+            },
+        callback
+    )
+
+    /**
+     * Creates an interactive button, the ID in the [button] will be replaced with a [UnleashedComponentId]
+     */
+    fun button(
+        button: Button,
+        callback: suspend (ComponentContext) -> (Unit)
     ): Button {
         val buttonId = UUID.randomUUID()
         buttonInteractionCallbacks[buttonId] = callback
-        return Button.of(style, UnleashedComponentId(buttonId).toString(), label)
-            .let {
-                JDAButtonBuilder(it).apply(builder).button
-            }
+        return button
+            .withId(UnleashedComponentId(buttonId).toString())
     }
 
     /**
@@ -184,14 +225,7 @@ class InteractivityManager {
             @Deprecated("", level = DeprecationLevel.ERROR) // Prevent Kotlin callers
             get() = throw UnsupportedOperationException()
             set(value) {
-                emoji = when (value) {
-                    is DiscordEmote -> Emoji.fromCustom(
-                        value.name,
-                        value.id,
-                        value.animated
-                    )
-                    is UnicodeEmote -> Emoji.fromUnicode(value.name)
-                }
+                emoji = value.toJDA()
             }
 
         var disabled

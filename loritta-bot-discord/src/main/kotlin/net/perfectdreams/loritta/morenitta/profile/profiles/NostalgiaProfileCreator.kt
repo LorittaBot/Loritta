@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -10,19 +9,14 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
-import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
 
 open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, val folderName: String) : StaticProfileCreator(loritta, internalName) {
 	class NostalgiaDarkProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultDark", "dark")
@@ -46,7 +40,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
         i18nContext: I18nContext,
         background: BufferedImage,
         aboutMe: String,
-        allowedDiscordEmojis: List<Snowflake>?
+        allowedDiscordEmojis: List<Long>?
 	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/nostalgia/profile_wrapper_$folderName.png")
 

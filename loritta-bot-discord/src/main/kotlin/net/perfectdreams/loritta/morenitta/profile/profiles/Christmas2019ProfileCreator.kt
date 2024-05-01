@@ -1,9 +1,7 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -19,16 +17,16 @@ import java.awt.image.BufferedImage
 
 class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "christmas2019") {
 	override suspend fun create(
-		sender: ProfileUserInfoData,
-		user: ProfileUserInfoData,
-		userProfile: Profile,
-		guild: ProfileGuildInfoData?,
-		badges: List<BufferedImage>,
-		locale: BaseLocale,
-		i18nContext: I18nContext,
-		background: BufferedImage,
-		aboutMe: String,
-		allowedDiscordEmojis: List<Snowflake>?
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: Profile,
+        guild: ProfileGuildInfoData?,
+        badges: List<BufferedImage>,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Long>?
 	): BufferedImage {
 		val latoBold = loritta.graphicsFonts.latoBold
 		val latoBlack = loritta.graphicsFonts.latoBlack

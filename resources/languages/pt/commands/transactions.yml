@@ -103,6 +103,11 @@ types:
     description: "Transações relacionadas as livestreams da Loritta"
     claimedLimitedTimeSonhosReward: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter pego a recompensa por tempo limitado na livestream"
     claimedFirstSonhosReward: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter pego o first na livestream"
+  loricoolcards:
+    title: "Figurittas da Loritta"
+    description: "Transações relacionadas aos eventos das Figurittas da Loritta"
+    boughtBoosterPack: "Comprou um pacotinho de figurinhas por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} nas Figurittas da Loritta"
+    finishedAlbum: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter acabado o álbum nas Figurittas da Loritta"
 
 options:
   user:

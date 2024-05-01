@@ -1,21 +1,16 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
 
 class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "nextGenDark") {
 	override suspend fun create(
@@ -28,7 +23,7 @@ class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
         i18nContext: I18nContext,
         background: BufferedImage,
         aboutMe: String,
-        allowedDiscordEmojis: List<Snowflake>?
+        allowedDiscordEmojis: List<Long>?
 	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/next_gen/profile_wrapper.png")
 

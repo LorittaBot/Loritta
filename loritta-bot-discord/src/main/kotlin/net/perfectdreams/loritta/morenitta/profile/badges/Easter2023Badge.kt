@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile.badges
 
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedChristmas2019Points
@@ -11,7 +12,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.select
 import java.util.*
 
-class Easter2023Badge(val loritta: LorittaBot) : Badge.LorittaBadge(
+class Easter2023Badge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("bacdf6ee-0279-4f15-a865-0cfc5fcbd720"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Easter2023.Title,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Easter2023.Description,
@@ -19,7 +20,7 @@ class Easter2023Badge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	100
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
-		return loritta.pudding.transaction {
+		return pudding.transaction {
 			CreatedEaster2023Baskets.select {
 				CreatedEaster2023Baskets.user eq profile.id
 			}.count() >= 10

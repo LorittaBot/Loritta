@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -27,7 +26,7 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
         i18nContext: I18nContext,
         background: BufferedImage,
         aboutMe: String,
-        allowedDiscordEmojis: List<Snowflake>?
+        allowedDiscordEmojis: List<Long>?
 	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/cowboy/profile_wrapper.png")
 

@@ -1,22 +1,16 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
 
 class LorittaChristmas2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(loritta, "lorittaChristmas2019") {
 	override suspend fun create(
@@ -29,7 +23,7 @@ class LorittaChristmas2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileC
         i18nContext: I18nContext,
         background: BufferedImage,
         aboutMe: String,
-        allowedDiscordEmojis: List<Snowflake>?
+        allowedDiscordEmojis: List<Long>?
 	): List<BufferedImage> {
 		val list = mutableListOf<BufferedImage>()
 

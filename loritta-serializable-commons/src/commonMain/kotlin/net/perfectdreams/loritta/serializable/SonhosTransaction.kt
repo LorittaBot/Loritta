@@ -203,6 +203,24 @@ data class PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class LoriCoolCardsBoughtBoosterPackSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val eventId: Long
+) : SonhosTransaction()
+
+@Serializable
+data class LoriCoolCardsFinishedAlbumSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val eventId: Long
+) : SonhosTransaction()
+
+@Serializable
 data class UnknownSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

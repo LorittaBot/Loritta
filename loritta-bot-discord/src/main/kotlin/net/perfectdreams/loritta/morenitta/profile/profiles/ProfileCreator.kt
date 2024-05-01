@@ -54,7 +54,7 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
         startY: Int,
         endX: Int,
         endY: Int,
-        allowedDiscordEmojis: List<Snowflake>?
+        allowedDiscordEmojis: List<Long>?
     ): Int {
         val sections = ImageUtils.parseStringToDrawableSections(loritta.unicodeEmojiManager, text)
 

@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.emotes.DiscordEmote
+import net.perfectdreams.loritta.common.emotes.Emote
+import net.perfectdreams.loritta.common.emotes.UnicodeEmote
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -489,4 +492,17 @@ val User.asPomeloOrLegacyTag
  */
 fun safeInlineCodeBlock(input: String): String {
     return "`${input.stripNewLines().stripCodeMarks().ifBlank { " " }}`"
+}
+
+/**
+ * Converts an [Emote] to a JDA [Emoji]
+ */
+fun Emote.toJDA() = when (this) {
+    is DiscordEmote -> Emoji.fromCustom(
+        this.name,
+        this.id,
+        this.animated
+    )
+
+    is UnicodeEmote -> Emoji.fromUnicode(this.name)
 }

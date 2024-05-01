@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.User.UserFlag
 import java.util.*
 
 data class ProfileUserInfoData(
-	val id: Snowflake,
+	val id: Long,
 	val name: String,
 	val discriminator: String,
 	val avatarUrl: String,

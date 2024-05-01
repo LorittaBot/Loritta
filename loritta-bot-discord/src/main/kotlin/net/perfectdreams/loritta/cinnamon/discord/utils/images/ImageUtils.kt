@@ -1,15 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.images
 
-import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.gabrielaimageserver.exceptions.ContentLengthTooLargeException
 import net.perfectdreams.gabrielaimageserver.exceptions.ImageTooLargeException
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
@@ -98,8 +97,8 @@ object ImageUtils {
                 is DiscordEmoteRegexMatch -> {
                     val animated = matchResult.groupValues[1] == "a"
                     val emoteName = matchResult.groupValues[2]
-                    val emoteId = matchResult.groupValues[3]
-                    sections.add(DrawableDiscordEmote(Snowflake(emoteId), animated))
+                    val emoteId = matchResult.groupValues[3].toLong()
+                    sections.add(DrawableDiscordEmote(emoteId, animated))
                 }
                 is UnicodeEmoteRegexMatch -> {
                     sections.add(DrawableUnicodeEmote(matchResult.value))
@@ -462,7 +461,7 @@ object ImageUtils {
 
     sealed class DrawableSection
     data class DrawableText(val text: String) : DrawableSection()
-    data class DrawableDiscordEmote(val emoteId: Snowflake, val animated: Boolean) : DrawableSection()
+    data class DrawableDiscordEmote(val emoteId: Long, val animated: Boolean) : DrawableSection()
     data class DrawableUnicodeEmote(val emoji: String) : DrawableSection()
 
     enum class DrawableType {

@@ -87,3 +87,6 @@ profiles:
     stonks:
       title: "Stonks!"
       description: "Insígnia para quem conseguiu a conquista de Stonks! na Loritta"
+    stickerFan:
+      title: "Fanático por Figurinhas"
+      description: "Insígnia para quem terminou um álbum das Figurittas da Loritta"

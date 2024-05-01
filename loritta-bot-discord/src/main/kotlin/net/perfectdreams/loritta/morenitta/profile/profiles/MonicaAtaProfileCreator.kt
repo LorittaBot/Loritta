@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
@@ -11,11 +10,9 @@ import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.io.File
 
 class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "monicaAta") {
 	override suspend fun create(
@@ -28,7 +25,7 @@ class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
         i18nContext: I18nContext,
         background: BufferedImage,
         aboutMe: String,
-        allowedDiscordEmojis: List<Snowflake>?
+        allowedDiscordEmojis: List<Long>?
 	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/monica_ata/profile_wrapper.png")
 

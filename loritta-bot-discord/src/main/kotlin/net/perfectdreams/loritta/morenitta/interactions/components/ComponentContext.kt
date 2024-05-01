@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.Component
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -37,12 +38,15 @@ class ComponentContext(
     /**
      * Defers the edit with [deferEdit] and edits the message with the result of the [action]
      */
-    suspend inline fun deferAndEditOriginal(action: InlineMessage<*>.() -> (Unit)): Message {
+    suspend inline fun deferAndEditOriginal(action: InlineMessage<*>.() -> (Unit)) = deferAndEditOriginal(MessageEditBuilder { apply(action) }.build())
+
+    /**
+     * Defers the edit with [deferEdit] and edits the message with the result of the [action]
+     */
+    suspend inline fun deferAndEditOriginal(messageEditData: MessageEditData): Message {
         val hook = deferEdit()
 
-        val result = MessageEditBuilder { apply(action) }.build()
-
-        return hook.editOriginal(result).await()
+        return hook.editOriginal(messageEditData).await()
     }
 
     /**

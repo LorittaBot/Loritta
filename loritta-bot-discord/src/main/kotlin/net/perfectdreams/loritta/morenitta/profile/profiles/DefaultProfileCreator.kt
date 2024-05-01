@@ -1,9 +1,7 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.drawText
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
@@ -15,12 +13,9 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromReso
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Font
 import java.awt.Graphics
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
 
 class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "modernBlurple") {
 	fun drawSection(graphics: Graphics, latoBlack20: Font, latoBold20: Font, title: String, subtext: String, x: Int, y: Int): Pair<Int, Int> {
@@ -32,16 +27,16 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 	}
 
 	override suspend fun create(
-		sender: ProfileUserInfoData,
-		user: ProfileUserInfoData,
-		userProfile: Profile,
-		guild: ProfileGuildInfoData?,
-		badges: List<BufferedImage>,
-		locale: BaseLocale,
-		i18nContext: I18nContext,
-		background: BufferedImage,
-		aboutMe: String,
-		allowedDiscordEmojis: List<Snowflake>?
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: Profile,
+        guild: ProfileGuildInfoData?,
+        badges: List<BufferedImage>,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Long>?
 	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/modern/profile_wrapper_blurple.png")
 		val profileWrapperOverlay = readImageFromResources("/profile/modern/profile_wrapper_blurple_overlay.png")

@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
-import java.awt.image.BufferedImage
+import java.awt.image.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
@@ -56,8 +56,8 @@ fun Graphics.drawText(loritta: LorittaBot, text: String, x: Int, y: Int, maxX: I
 fun Graphics.enableFontAntiAliasing(): Graphics2D {
 	this as Graphics2D
 	this.setRenderingHint(
-			RenderingHints.KEY_TEXT_ANTIALIASING,
-			RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+		RenderingHints.KEY_TEXT_ANTIALIASING,
+		RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 	return this
 }
 
@@ -173,6 +173,34 @@ object ImageUtils {
 
 		// Return the buffered image
 		return bimage
+	}
+
+	/**
+	 * Converts a given Image into a BufferedImage in [BufferedImage.TYPE_INT_ARGB] format
+	 *
+	 * @param img The Image to be converted
+	 * @return The converted BufferedImage
+	 */
+	fun copyToBufferedImageARGB(image: BufferedImage) = copyToBufferedImageWithType(image, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+
+	/**
+	 * Converts a given Image into a BufferedImage in [BufferedImage.TYPE_3BYTE_BGR] format
+	 *
+	 * @param img The Image to be converted
+	 * @return The converted BufferedImage
+	 */
+	fun copyToBufferedImageBGR(image: BufferedImage) = copyToBufferedImageWithType(image, java.awt.image.BufferedImage.TYPE_3BYTE_BGR)
+
+	/**
+	 * Converts a given Image into a BufferedImage in the given [BufferedImage] format
+	 *
+	 * @param img The Image to be converted
+	 * @return The converted BufferedImage
+	 */
+	fun copyToBufferedImageWithType(image: BufferedImage, type: Int): BufferedImage {
+		val new = BufferedImage(image.width, image.height, type)
+		new.createGraphics().drawImage(image, 0, 0, null)
+		return new
 	}
 
 	/**
@@ -400,5 +428,152 @@ object ImageUtils {
 
 		graphics.color = originalColor
 		graphics.drawString(text, x, y)
+	}
+
+	/**
+	 * Generates a gaussian blur kernel with [radius]
+	 */
+	fun generateGaussianBlurKernel(radius: Int): Kernel {
+		// Gaussian kernel
+		val size = radius * 2 + 1
+		val matrix = FloatArray(size * size)
+		val sigma = radius / 2.0f
+		var sum = 0f
+		for (i in -radius..radius) {
+			for (j in -radius..radius) {
+				val value = Math.exp((-(i * i + j * j) / (2 * sigma * sigma)).toDouble()).toFloat()
+				matrix[(i + radius) * size + (j + radius)] = value
+				sum += value
+			}
+		}
+		for (i in matrix.indices) {
+			matrix[i] /= sum
+		}
+		return Kernel(size, size, matrix)
+	}
+
+	/**
+	 * Applies Gaussian blur filter to the input BufferedImage
+	 *
+	 * If possible, use a cached [generateGaussianBlurKernel] result and [applyGaussianBlur]
+	 */
+	fun applyGaussianBlur(image: BufferedImage, radius: Int) = applyGaussianBlur(
+		image,
+		generateGaussianBlurKernel(radius)
+	)
+
+	/**
+	 * Applies Gaussian blur filter to the input BufferedImage
+	 */
+	fun applyGaussianBlur(image: BufferedImage, kernel: Kernel): BufferedImage {
+		// Apply ConvolveOp with the Gaussian kernel
+		val op = ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null)
+		return op.filter(image, null)
+	}
+
+	/**
+	 * Extends the border of the image by copying the pixels on the border edges into the new border
+	 */
+	fun extendBorder(originalImage: BufferedImage, extensionSize: Int): BufferedImage {
+		// Determine new dimensions
+		val width = originalImage.width + 2 * extensionSize
+		val height = originalImage.height + 2 * extensionSize
+
+		// Create a new BufferedImage
+		val extendedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+
+		// Get the graphics context of the new image
+		val g2d = extendedImage.createGraphics()
+
+		// Fill the background with white
+		g2d.color = Color.WHITE
+		g2d.fillRect(0, 0, width, height)
+
+		// Draw the original image onto the new image
+		g2d.drawImage(originalImage, extensionSize, extensionSize, null)
+
+		// Extend the border
+		extendBorderPixels(extendedImage, extensionSize)
+
+		// Dispose of the graphics context
+		g2d.dispose()
+		return extendedImage
+	}
+
+	private fun extendBorderPixels(image: BufferedImage, extensionSize: Int) {
+		val width = image.width
+		val height = image.height
+
+		// Iterate over the border regions
+		for (y in 0 until extensionSize) {
+			for (x in 0 until width) {
+				// Copy pixels from the top border
+				image.setRGB(x, y, image.getRGB(x, extensionSize))
+
+				// Copy pixels from the bottom border
+				image.setRGB(x, height - 1 - y, image.getRGB(x, height - 1 - extensionSize))
+			}
+		}
+		for (x in 0 until extensionSize) {
+			for (y in extensionSize until height - extensionSize) {
+				// Copy pixels from the left border
+				image.setRGB(x, y, image.getRGB(extensionSize, y))
+
+				// Copy pixels from the right border
+				image.setRGB(width - 1 - x, y, image.getRGB(width - 1 - extensionSize, y))
+			}
+		}
+	}
+
+	/**
+	 * Pack RGBA values into a single integer
+	 */
+	fun packRGBA(r: Int, g: Int, b: Int, a: Int): Int {
+		return a and 0xFF shl 24 or
+				(r and 0xFF shl 16) or
+				(g and 0xFF shl 8) or
+				(b and 0xFF)
+	}
+
+	/**
+	 * Unpack RGBA values from a single integer
+	 */
+	fun unpackRGBA(packedColor: Int): IntArray {
+		val rgba = IntArray(4)
+		rgba[0] = packedColor shr 16 and 0xFF // Red
+		rgba[1] = packedColor shr 8 and 0xFF // Green
+		rgba[2] = packedColor and 0xFF // Blue
+		rgba[3] = packedColor shr 24 and 0xFF // Alpha
+		return rgba
+	}
+
+	/**
+	 * Converts the [image] into a list of colors (also known as a palette)
+	 *
+	 * Color down sampling and quantization is not handled by this function!
+	 */
+	fun convertToPaletteList(image: BufferedImage): List<Color> {
+		return image.let {
+			val colors = mutableSetOf<Color>()
+			for (x in 0 until it.getWidth(null)) {
+				for (y in 0 until it.getHeight(null)) {
+					colors.add(Color(it.getRGB(x, y), true))
+				}
+			}
+			colors.toList()
+		}
+	}
+
+	/**
+	 * Converts a [image] to a [indexColorModel]
+	 */
+	fun convertToIndexedImage(image: BufferedImage, indexColorModel: IndexColorModel): BufferedImage {
+		// Map the image down to our palette
+		val indexedImage = BufferedImage(image.width, image.height, BufferedImage.TYPE_BYTE_INDEXED, indexColorModel)
+
+		val array = image.getRGB(0, 0, indexedImage.width, indexedImage.height, null, 0, indexedImage.width)
+		indexedImage.setRGB(0, 0, indexedImage.width, indexedImage.height, array, 0, indexedImage.width)
+
+		return indexedImage
 	}
 }

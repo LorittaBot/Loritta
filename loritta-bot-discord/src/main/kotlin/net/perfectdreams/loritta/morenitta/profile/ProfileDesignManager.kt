@@ -4,15 +4,12 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import dev.kord.common.entity.Snowflake
-import dev.kord.core.entity.Guild
-import dev.kord.core.entity.User
-import dev.kord.rest.Image
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
@@ -56,11 +53,11 @@ import javax.imageio.stream.FileImageOutputStream
 class ProfileDesignManager(val loritta: LorittaBot) {
 	companion object {
 		private val FREE_EMOJIS_GUILDS = listOf(
-			Snowflake(297732013006389252), // Apartamento da Loritta
-			Snowflake(320248230917046282), // SparklyPower
-			Snowflake(417061847489839106), // Rede Dark
-			Snowflake(769892417025212497), // Kuraminha's House
-			Snowflake(769030809159073795)  // Saddest of the Sads
+			297732013006389252L, // Apartamento da Loritta
+			320248230917046282L, // SparklyPower
+			417061847489839106L, // Rede Dark
+			769892417025212497L, // Kuraminha's House
+			769030809159073795L  // Saddest of the Sads
 		)
 
 		val I18N_BADGES_PREFIX = I18nKeysData.Profiles.Badges
@@ -113,6 +110,18 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerDesign(Halloween2019ProfileCreator(loritta))
 		registerDesign(Christmas2019ProfileCreator(loritta))
 		registerDesign(LorittaChristmas2019ProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedProfileCreator.LoriCoolCardsStickerReceivedCommonProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedProfileCreator.LoriCoolCardsStickerReceivedUncommonProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedProfileCreator.LoriCoolCardsStickerReceivedRareProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedProfileCreator.LoriCoolCardsStickerReceivedEpicProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedProfileCreator.LoriCoolCardsStickerReceivedLegendaryProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedProfileCreator.LoriCoolCardsStickerReceivedMythicProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedPlainProfileCreator.LoriCoolCardsStickerReceivedPlainCommonProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedPlainProfileCreator.LoriCoolCardsStickerReceivedPlainUncommonProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedPlainProfileCreator.LoriCoolCardsStickerReceivedPlainRareProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedPlainProfileCreator.LoriCoolCardsStickerReceivedPlainEpicProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedPlainProfileCreator.LoriCoolCardsStickerReceivedPlainLegendaryProfileCreator(loritta))
+		registerDesign(LoriCoolCardsStickerReceivedPlainProfileCreator.LoriCoolCardsStickerReceivedPlainMythicProfileCreator(loritta))
 
 		// ===[ DISCORD USER FLAGS BADGES ]===
 		registerBadge(DiscordUserFlagBadge.DiscordPartnerBadge())
@@ -126,25 +135,26 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerBadge(DiscordUserFlagBadge.DiscordModeratorProgramAlumniBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordStaffBadge())
 
-		registerBadge(DiscordNitroBadge(loritta))
+		registerBadge(DiscordNitroBadge(loritta.pudding))
 
 		registerBadge(ArtistBadge(loritta))
 
 		registerBadge(MerchBuyerBadge(loritta))
-		registerBadge(HalloweenBadge(loritta))
-		registerBadge(Christmas2019Badge(loritta))
-		registerBadge(Christmas2022Badge(loritta))
-		registerBadge(Easter2023Badge(loritta))
-		registerBadge(GabrielaBadge(loritta))
-		registerBadge(PantufaBadge(loritta))
+		registerBadge(HalloweenBadge(loritta.pudding))
+		registerBadge(Christmas2019Badge(loritta.pudding))
+		registerBadge(Christmas2022Badge(loritta.pudding))
+		registerBadge(Easter2023Badge(loritta.pudding))
+		registerBadge(GabrielaBadge(loritta.pudding))
+		registerBadge(PantufaBadge(loritta.pudding))
 		registerBadge(PremiumBadge(loritta))
 		registerBadge(SuperPremiumBadge(loritta))
-		registerBadge(MarriedBadge(loritta))
-		registerBadge(GrassCutterBadge(loritta))
+		registerBadge(MarriedBadge(loritta.pudding))
+		registerBadge(GrassCutterBadge(loritta.pudding))
 		registerBadge(SparklyMemberBadge(loritta))
 		registerBadge(LorittaStaffBadge(loritta))
 		registerBadge(SparklyStaffBadge(loritta))
-		registerBadge(StonksBadge(loritta))
+		registerBadge(StonksBadge(loritta.pudding))
+		registerBadge(StickerFanBadge(loritta.pudding))
 	}
 
 	suspend fun createProfile(
@@ -196,7 +206,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 						.map { Snowflake(it) }
 				}
 			} */
-			listOf<Snowflake>()
+			listOf<Long>()
 		}
 
 		val aboutMe = profileSettings.aboutMe ?: i18nContext.get(I18nKeysData.Profiles.DefaultAboutMe)
@@ -257,6 +267,20 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 				Pair(outputFile.readBytes(), ImageFormat.GIF)
 			}
+			is RawProfileCreator -> {
+				profileCreator.create(
+					sender,
+					userToBeViewed,
+					userProfile,
+					guild,
+					badges,
+					locale,
+					i18nContext,
+					getUserProfileBackground(userProfile),
+					modifiedAboutMe,
+					allowedDiscordEmojis
+				)
+			}
 			else -> error("Unsupported Profile Creator Type $profileCreator")
 		}
 
@@ -272,7 +296,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	}
 
 	fun transformUserToProfileUserInfoData(user: net.dv8tion.jda.api.entities.User) = ProfileUserInfoData(
-		Snowflake(user.idLong),
+		user.idLong,
 		user.name,
 		user.discriminator,
 		user.effectiveAvatarUrl,
@@ -280,21 +304,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		user.flags
 	)
 
-	fun transformUserToProfileUserInfoData(user: User) = ProfileUserInfoData(
-		user.id,
-		user.username,
-		user.discriminator,
-		user.effectiveAvatar
-			.cdnUrl
-			.toUrl {
-				this.format = Image.Format.PNG
-			},
-		user.isBot,
-		UserFlag.getFlags(user.publicFlags?.code ?: 0)
-	)
-
 	fun transformUserToProfileUserInfoData(cachedUserInfo: CachedUserInfo, profileSettings: ProfileSettings) = ProfileUserInfoData(
-		Snowflake(cachedUserInfo.id),
+		cachedUserInfo.id,
 		cachedUserInfo.name,
 		cachedUserInfo.discriminator,
 		cachedUserInfo.effectiveAvatarUrl,
@@ -302,16 +313,10 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		UserFlag.getFlags(profileSettings.discordAccountFlags),
 	)
 
-	fun transformGuildToProfileGuildInfoData(guild: net.dv8tion.jda.api.entities.Guild) = ProfileGuildInfoData(
-		Snowflake(guild.idLong),
-		guild.name,
-		guild.iconUrl,
-	)
-
 	fun transformGuildToProfileGuildInfoData(guild: Guild) = ProfileGuildInfoData(
-		guild.id,
+		guild.idLong,
 		guild.name,
-		guild.getIconUrl(Image.Format.PNG)
+		guild.iconUrl
 	)
 
 	/**
@@ -329,6 +334,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		mutualGuilds: Set<Long>,
 		failIfClusterIsOffline: Boolean = false
 	): List<BufferedImage> {
+		// TODO: This is slow, how could we fix this?
+		//  I think one of the ways is "dynamically" querying badges in the profile viewer, instead all badges directly
 		val userId = user.id.toLong()
 
 		val hasUpvoted = loritta.newSuspendedTransaction {
@@ -509,6 +516,14 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	/**
 	 * Gets an user's profile background URL
 	 *
+	 * @param userId the user's ID
+	 * @return the background image
+	 */
+	suspend fun getUserProfileBackgroundUrl(userId: Long) = getUserProfileBackgroundUrl(loritta.getOrCreateLorittaProfile(userId))
+
+	/**
+	 * Gets an user's profile background URL
+	 *
 	 * This does *not* crop the profile background
 	 *
 	 * @param profile the user's profile
@@ -645,7 +660,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val image: ByteArray,
 		val userProfile: Profile,
 		val profileSettings: ProfileSettings,
-		val allowedDiscordEmojis: List<Snowflake>?,
+		val allowedDiscordEmojis: List<Long>?,
 		val aboutMe: String,
 		val modifiedAboutMe: String,
 		val imageFormat: ImageFormat

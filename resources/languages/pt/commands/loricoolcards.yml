@@ -1,0 +1,47 @@
+label: "loricoolcards"
+description: "Colecione as Figurinhas dos Álbuns das Figurittas da Loritta!"
+
+buy:
+  label: "comprar"
+  description: "Compra um pacote de figurinhas"
+  buyAndOpenBoosterPack: "Comprar e Abrir Pacote ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+  nowYouHaveXStickersOfThisType: "Você agora tem {howManyCardsOfThisCardIdWeHave,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}} deste tipo"
+  albumProgress: "**Progresso do Álbum:** {totalAlbumCompletionCount,number}/{albumCardsCount,number} figurinhas"
+  nextSticker: "Próxima Figurinha ({currentCount,number}/{totalCount,number})"
+  viewSummary: "Ver Resumo"
+  stickStickers: "Colar Figurinhas"
+  buyStickerBoosterPack: "Comprar Pacote de Figurinhas"
+  summary: "Resumo"
+
+view:
+  label: "ver"
+  description: "Ver as informações de uma figurinha do álbum"
+  youHaveThisStickerInYourAlbum: "Você já tem esta figurinha no seu álbum!"
+  youDontHaveThisStickerInYourAlbum: "Você NÃO TEM tem esta figurinha no seu álbum!"
+  stickersInYourInventory: "**No seu inventário:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
+  stickersInCirculation: "**Em circulação:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
+  stickersStickedInAlbums: "**Coladas em Álbuns:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
+  stickersTotal: "**Total:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
+  stickerPage: "**Página:** Página {page,number}"
+  stickerFront: "Figurinha (Frente)"
+  stickerAnimated: "Figurinha (Animada)"
+
+stick:
+  label: "colar"
+  description: "Cola as figurinhas que você tem no seu inventário no seu álbum de figurinhas"
+
+album:
+  label: "album"
+  description: "Ver as páginas do seu álbum de figurinhas"
+
+give:
+  label: "dar"
+  description: "Dá uma figurinha que você tem no seu inventário para outra pessoa"
+
+stats:
+  label: "stats"
+  description: "Estatísticas sobre o Evento de Figurinhas"
+
+compare:
+  label: "comparar"
+  description: "Compara quais figurinhas você tem e que a outra pessoa precisa, e vice-versa"

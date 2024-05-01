@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CollectedEas
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CreatedEaster2023Baskets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
@@ -40,6 +41,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.components.ComponentType
+import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
@@ -67,7 +69,7 @@ class Pudding(
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
         private val ISOLATION_LEVEL =
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-        private const val SCHEMA_VERSION = 19 // Bump this every time any table is added/updated!
+        private const val SCHEMA_VERSION = 26 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
 
         /**
@@ -346,7 +348,13 @@ class Pudding(
             SimpleSonhosTransactionsLog,
             FanArtsExtravaganza,
             AprilFoolsCoinFlipBugs,
-            SlashCommandsScopeAuthorizations
+            SlashCommandsScopeAuthorizations,
+            LoriCoolCardsEvents,
+            LoriCoolCardsEventCards,
+            LoriCoolCardsSeenCards,
+            LoriCoolCardsUserOwnedCards,
+            LoriCoolCardsFinishedAlbumUsers,
+            LoriCoolCardsUserBoughtBoosterPacks
         )
 
         if (schemas.isNotEmpty())
@@ -399,6 +407,7 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(EasterEggColor.values())
                 createOrUpdatePostgreSQLEnum(RaffleType.values())
                 createOrUpdatePostgreSQLEnum(TransactionType.values())
+                createOrUpdatePostgreSQLEnum(CardRarity.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

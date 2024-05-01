@@ -97,3 +97,15 @@ data class StoredPowerStreamClaimedFirstSonhosRewardSonhosTransaction(
     val liveId: String,
     val streamId: Long
 ) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction(
+    val eventId: Long,
+    val boosterPackId: Long
+) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLoriCoolCardsFinishedAlbumSonhosTransaction(
+    val eventId: Long,
+    val completionId: Long
+) : StoredSonhosTransaction()

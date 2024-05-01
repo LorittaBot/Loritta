@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.images
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
 import java.awt.image.BufferedImage
 import java.util.*
@@ -16,7 +15,7 @@ class EmojiImageCache {
     private val discordEmojis = Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
 
     @OptIn(ExperimentalStdlibApi::class)
-    suspend fun getDiscordEmoji(emojiId: Snowflake, size: Image.Size): BufferedImage? {
+    suspend fun getDiscordEmoji(emojiId: Long, size: Image.Size): BufferedImage? {
         val imageUrl = "https://cdn.discordapp.com/emojis/${emojiId}.png?size=${size.maxRes}&quality=lossless"
         val cacheKey = "${emojiId}-${size}"
 

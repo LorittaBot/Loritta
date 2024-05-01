@@ -97,6 +97,7 @@ import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
+import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
 import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
@@ -382,6 +383,7 @@ class LorittaBot(
 	val welcomeModule = WelcomeModule(this)
 	val starboardModule = StarboardModule(this)
 	val activityUpdater = ActivityUpdater(this)
+	val loriCoolCardsManager = LoriCoolCardsManager(this.graphicsFonts)
 
 	private val internalWebServer = InternalWebServer(this)
 

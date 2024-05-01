@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.user
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.UserFlags
-import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
-import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.response.*
 import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.profiles.AnimatedProfileCreator
+import net.perfectdreams.loritta.morenitta.profile.profiles.RawProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.profiles.StaticProfileCreator
+import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -55,7 +55,7 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 		}
 
 		val senderUserData = ProfileUserInfoData(
-			Snowflake(userIdentification.id.toLong()),
+			userIdentification.id.toLong(),
 			userIdentification.username,
 			userIdentification.discriminator,
 			avatarUrl,
@@ -88,6 +88,33 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 				settings.aboutMe ?: "???",
 				listOf()
 			).first() // We only want the first frame of the list
+			is RawProfileCreator -> {
+				// TODO: We need to refactor RawProfileCreator to properly support this endpoint
+				// This is a special case because idk how we could support this endpoint with "RawProfileCreator"
+				val profileImageRawData = profileCreator.create(
+					senderUserData,
+					senderUserData,
+					profile,
+					null,
+					listOf(),
+					locale,
+					loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
+					BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
+					settings.aboutMe ?: "???",
+					listOf()
+				)
+
+				call.respondBytes(
+					profileImageRawData.first,
+					when (profileImageRawData.second) {
+						ImageFormat.PNG -> ContentType.Image.PNG
+						ImageFormat.JPG -> ContentType.Image.JPEG
+						ImageFormat.GIF -> ContentType.Image.GIF
+					},
+					HttpStatusCode.OK
+				)
+				return
+			}
 			else -> error("Unsupported Profile Creator Type $profileCreator")
 		}
 
