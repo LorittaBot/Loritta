@@ -18,7 +18,7 @@ view:
   description: "Ver as informações de uma figurinha do álbum"
   youHaveThisStickerInYourAlbum: "Você já tem esta figurinha no seu álbum!"
   youDontHaveThisStickerInYourAlbum: "Você NÃO TEM tem esta figurinha no seu álbum!"
-  stickersInYourInventory: "**No seu inventário:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
+  stickersInYourInventory: "**No seu inventário:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}} (podem ser trocadas)"
   stickersInCirculation: "**Em circulação:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
   stickersStickedInAlbums: "**Coladas em Álbuns:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
   stickersTotal: "**Total:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
