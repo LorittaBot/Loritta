@@ -387,10 +387,10 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val user = args[options.user]
+            val userThatWillReceiveTheSticker = args[options.user].user
             val fancyCardId = args[options.cardId]
 
-            if (context.user == user.user) {
+            if (context.user == userThatWillReceiveTheSticker) {
                 context.reply(true) {
                     styled(
                         "Você não pode dar figurinhas para você mesmo!"
@@ -449,17 +449,17 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                 is GiveStickerResult.Success -> {
                     context.reply(false) {
                         styled(
-                            "Você está prestes a transferir **`${result.givenCard[LoriCoolCardsEventCards.fancyCardId]} - ${result.givenCard[LoriCoolCardsEventCards.title]}`** para ${user.user.asMention}!",
+                            "Você está prestes a transferir **`${result.givenCard[LoriCoolCardsEventCards.fancyCardId]} - ${result.givenCard[LoriCoolCardsEventCards.title]}`** para ${userThatWillReceiveTheSticker.asMention}!",
                             Emotes.LoriCoolSticker
                         )
                         styled(
-                            "Para confirmar a transação, ${user.user.asMention} deve aceitar a transação",
+                            "Para confirmar a transação, ${userThatWillReceiveTheSticker.asMention} deve aceitar a transação",
                             Emotes.LoriZap
                         )
 
                         actionRow(
                             loritta.interactivityManager.buttonForUser(
-                                user.user,
+                                userThatWillReceiveTheSticker,
                                 ButtonStyle.PRIMARY,
                                 "Aceitar Transferência",
                                 {
@@ -502,7 +502,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                                     // Insert the new one
                                     LoriCoolCardsUserOwnedCards.insert {
                                         it[LoriCoolCardsUserOwnedCards.card] = ownedCard[LoriCoolCardsUserOwnedCards.card]
-                                        it[LoriCoolCardsUserOwnedCards.user] = args[options.user].user.idLong
+                                        it[LoriCoolCardsUserOwnedCards.user] = userThatWillReceiveTheSticker.idLong
                                         it[LoriCoolCardsUserOwnedCards.event] = event[LoriCoolCardsEvents.id]
                                         it[LoriCoolCardsUserOwnedCards.receivedAt] = now
                                         it[LoriCoolCardsUserOwnedCards.sticked] = false
@@ -510,14 +510,14 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
                                     // Have we already seen this card before?
                                     val haveWeAlreadySeenThisCardBefore = LoriCoolCardsSeenCards.select {
-                                        LoriCoolCardsSeenCards.card eq ownedCard[LoriCoolCardsUserOwnedCards.card] and (LoriCoolCardsSeenCards.user eq context.user.idLong)
+                                        LoriCoolCardsSeenCards.card eq ownedCard[LoriCoolCardsUserOwnedCards.card] and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
                                     }.count() != 0L
 
                                     // "Seen cards" just mean that the card won't be unknown (???) when the user looks it up, even if they give the card away
                                     if (!haveWeAlreadySeenThisCardBefore) {
                                         LoriCoolCardsSeenCards.insert {
                                             it[LoriCoolCardsSeenCards.card] = ownedCard[LoriCoolCardsUserOwnedCards.card]
-                                            it[LoriCoolCardsSeenCards.user] = context.user.idLong
+                                            it[LoriCoolCardsSeenCards.user] = userThatWillReceiveTheSticker.idLong
                                             it[LoriCoolCardsSeenCards.seenAt] = now
                                         }
                                     }
@@ -550,7 +550,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                                     is GiveStickerAcceptedTransactionResult.Success -> {
                                         it.reply(false) {
                                             styled(
-                                                "Transferência realizada com sucesso! ${user.user.asMention} recebeu **`${result.givenCard[LoriCoolCardsEventCards.fancyCardId]} - ${result.givenCard[LoriCoolCardsEventCards.title]}`**!",
+                                                "Transferência realizada com sucesso! ${userThatWillReceiveTheSticker.asMention} recebeu **`${result.givenCard[LoriCoolCardsEventCards.fancyCardId]} - ${result.givenCard[LoriCoolCardsEventCards.title]}`**!",
                                                 Emotes.LoriCoolSticker
                                             )
                                         }
