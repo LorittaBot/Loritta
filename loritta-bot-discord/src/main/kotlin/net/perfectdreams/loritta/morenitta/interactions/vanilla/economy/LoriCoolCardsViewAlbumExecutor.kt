@@ -102,12 +102,12 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                 val jumpToFirstButton = UnleashedButton.of(
                     ButtonStyle.PRIMARY,
-                    emoji = Emotes.MagnifyingGlassLeft // TODO: Change this!
+                    emoji = Emotes.ChevronSuperLeft
                 )
 
                 val jumpToLastButton = UnleashedButton.of(
                     ButtonStyle.PRIMARY,
-                    emoji = Emotes.Radio // TODO: Change this!
+                    emoji = Emotes.ChevronSuperRight
                 )
 
                 // Get the page that we want to render

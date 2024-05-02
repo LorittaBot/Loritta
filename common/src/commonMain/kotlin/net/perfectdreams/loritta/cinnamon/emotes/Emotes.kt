@@ -254,8 +254,9 @@ object Emotes {
     val Http = DiscordEmote(979202576878829628L, "http", false)
 
     val ChevronLeft = DiscordEmote(930922528715722782L, "chevron_left", false)
-    val ChevronRight =
-        DiscordEmote(930922702011773038L, "chevron_right", false)
+    val ChevronRight = DiscordEmote(930922702011773038L, "chevron_right", false)
+    val ChevronSuperLeft = DiscordEmote(1235418349857411124L, "chevron_super_left", false)
+    val ChevronSuperRight = DiscordEmote(1235418351862550598L, "chevron_super_right", false)
 
     val Online = DiscordEmote(516265733659951104L, "online", false)
     val Idle = DiscordEmote(516265836009357322L, "idle", false)
