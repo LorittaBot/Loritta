@@ -508,6 +508,20 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                                         it[LoriCoolCardsUserOwnedCards.sticked] = false
                                     }
 
+                                    // Have we already seen this card before?
+                                    val haveWeAlreadySeenThisCardBefore = LoriCoolCardsSeenCards.select {
+                                        LoriCoolCardsSeenCards.card eq ownedCard[LoriCoolCardsUserOwnedCards.card] and (LoriCoolCardsSeenCards.user eq context.user.idLong)
+                                    }.count() != 0L
+
+                                    // "Seen cards" just mean that the card won't be unknown (???) when the user looks it up, even if they give the card away
+                                    if (!haveWeAlreadySeenThisCardBefore) {
+                                        LoriCoolCardsSeenCards.insert {
+                                            it[LoriCoolCardsSeenCards.card] = ownedCard[LoriCoolCardsUserOwnedCards.card]
+                                            it[LoriCoolCardsSeenCards.user] = context.user.idLong
+                                            it[LoriCoolCardsSeenCards.seenAt] = now
+                                        }
+                                    }
+
                                     return@transaction GiveStickerAcceptedTransactionResult.Success(ownedCard)
                                 }
 
