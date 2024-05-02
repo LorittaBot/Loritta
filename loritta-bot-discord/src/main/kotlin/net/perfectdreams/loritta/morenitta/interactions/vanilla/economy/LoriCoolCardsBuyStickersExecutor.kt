@@ -84,7 +84,8 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
 
                             val result = loritta.transaction {
                                 // First we will get the active cards event
-                                val event = LoriCoolCardsEvents.select {
+                                // OPTIMIZATION: Only get the event ID, we don't need the rest of the things (like the template data) anyway
+                                val event = LoriCoolCardsEvents.slice(LoriCoolCardsEvents.id).select {
                                     LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                                 }.firstOrNull() ?: return@transaction BuyStickersResult.EventUnavailable
 
@@ -130,6 +131,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                 // To calculate it, we will first calculate which rarity we will be selecting, and then we will select a random card from the selected rarity
                                 // For now, we will only get a random rarity and then a random card from it
                                 val selectedCards = (0 until result.template.stickersInPack).map { cards.random() }
+                                val selectedStickersIds = selectedCards.map { it[LoriCoolCardsEventCards.id].value }
                                 val selectedCardsWithMetadata = mutableListOf<BuyStickersResult.Success.CardResult>()
 
                                 // TODO: This should consider stickers that are already sticked in the album
@@ -141,11 +143,22 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                     }.first()[cardDistinctField]
 
                                 // Now that we selected the cards, we will mark them as seen + owned
+                                // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
+                                val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers = LoriCoolCardsSeenCards.slice(LoriCoolCardsSeenCards.card).select {
+                                    LoriCoolCardsSeenCards.card inList selectedStickersIds and (LoriCoolCardsSeenCards.user eq context.user.idLong)
+                                }.map { it[LoriCoolCardsSeenCards.card] }
+
+                                // OPTIMIZATION: Don't get each sticker count in the loop, get all of them at once
+                                val stickerCount = LoriCoolCardsUserOwnedCards.card.count()
+                                val howManyStickersOfTheseStickersCardIdWeHave = LoriCoolCardsUserOwnedCards.slice(LoriCoolCardsUserOwnedCards.card, stickerCount).select {
+                                    LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.card inList selectedStickersIds)
+                                }.groupBy(LoriCoolCardsUserOwnedCards.card)
+                                    .associate { it[LoriCoolCardsUserOwnedCards.card].value to it[stickerCount] }
+                                    .toMutableMap()
+
                                 for (card in selectedCards) {
                                     // Have we already seen this card before?
-                                    val haveWeAlreadySeenThisCardBefore = LoriCoolCardsSeenCards.select {
-                                        LoriCoolCardsSeenCards.card eq card[LoriCoolCardsEventCards.id] and (LoriCoolCardsSeenCards.user eq context.user.idLong)
-                                    }.count() != 0L
+                                    val haveWeAlreadySeenThisCardBefore = card[LoriCoolCardsEventCards.id] in stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers
 
                                     LoriCoolCardsUserOwnedCards.insert {
                                         it[LoriCoolCardsUserOwnedCards.card] = card[LoriCoolCardsEventCards.id]
@@ -166,9 +179,8 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                     }
 
                                     // Count how many cards of this specific type we have
-                                    val howManyCardsOfThisCardIdWeHave = LoriCoolCardsUserOwnedCards.select {
-                                        LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.card eq card[LoriCoolCardsEventCards.id])
-                                    }.count()
+                                    val howManyCardsOfThisCardIdWeHave = (howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] ?: 0) + 1 // If not present, then it means we had 0 stickers (+1, because now we have one of them (yay))
+                                    howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] = howManyCardsOfThisCardIdWeHave // Update the map (required because there may be duplicate stickers)
 
                                     // We also need to calculate how many cards the user now has for each "step" of the journey
                                     val unmodifiableCount = LoriCoolCardsUserOwnedCards.slice(cardDistinctField)
