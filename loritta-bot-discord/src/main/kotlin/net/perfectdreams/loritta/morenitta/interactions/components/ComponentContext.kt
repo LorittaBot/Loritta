@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * Context of the executed command
@@ -47,6 +48,22 @@ class ComponentContext(
         val hook = deferEdit()
 
         return hook.editOriginal(messageEditData).await()
+    }
+
+    /**
+     * Edits the message in an async manner
+     *
+     * The edit is "async" because the job is submitted instead of awaited, useful if you want to edit the message while doing other work in parallel
+     */
+    inline fun editMessageAsync(action: InlineMessage<*>.() -> (Unit)) = editMessageAsync(MessageEditBuilder { apply(action) }.build())
+
+    /**
+     * Edits the message in an async manner
+     *
+     * The edit is "async" because the job is submitted instead of awaited, useful if you want to edit the message while doing other work in parallel
+     */
+    fun editMessageAsync(messageEditData: MessageEditData): CompletableFuture<InteractionHook> {
+        return event.editMessage(messageEditData).submit()
     }
 
     /**

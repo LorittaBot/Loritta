@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolC
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserOwnedCards
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
@@ -19,8 +19,12 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
 class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
+    companion object {
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Compare
+    }
+
     inner class Options : ApplicationCommandOptions() {
-        val user = user("user", TodoFixThisData)
+        val user = user("user", I18N_PREFIX.Options.User.Text)
     }
 
     override val options = Options()

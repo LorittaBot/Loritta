@@ -78,7 +78,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
     inner class LoriCoolCardsViewExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
-            val cardId = string("card_id", TodoFixThisData) {
+            val cardId = string("sticker_id", I18N_PREFIX.View.Options.Sticker.Text) {
                 autocomplete {
                     val now = Instant.now()
                     val focusedOptionValue = it.event.focusedOption.value
@@ -296,8 +296,8 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
     inner class LoriCoolCardsGiveStickersExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
-            val user = user("user", TodoFixThisData)
-            val cardId = string("card_id", TodoFixThisData) {
+            val user = user("user", I18N_PREFIX.Give.Options.User.Text)
+            val cardId = string("sticker_id", I18N_PREFIX.Give.Options.Sticker.Text) {
                 autocomplete {
                     val now = Instant.now()
                     val focusedOptionValue = it.event.focusedOption.value

@@ -6,6 +6,7 @@ import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -21,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
@@ -63,6 +65,12 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                 }
             }
             is BuyStickersPreResult.Success -> {
+                val buyBoosterPackButton = UnleashedButton.of(
+                    ButtonStyle.PRIMARY,
+                    context.i18nContext.get(I18N_PREFIX.BuyAndOpenBoosterPack(result.template.sonhosPrice)),
+                    Emotes.Scissors
+                )
+
                 context.reply(false) {
                     embed {
                         title = "${Emotes.LoriCoolSticker} Pacote de Figurinhas"
@@ -74,13 +82,15 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                     actionRow(
                         loritta.interactivityManager.buttonForUser(
                             context.user,
-                            ButtonStyle.PRIMARY,
-                            context.i18nContext.get(I18N_PREFIX.BuyAndOpenBoosterPack(result.template.sonhosPrice)),
-                            {
-                                this.loriEmoji = Emotes.Scissors
-                            }
+                            buyBoosterPackButton
                         ) {
-                            val hook = it.deferEdit()
+                            val future = it.editMessageAsync {
+                                actionRow(
+                                    buyBoosterPackButton
+                                        .withEmoji(LoadingEmojis.random().toJDA())
+                                        .asDisabled()
+                                )
+                            }
 
                             val result = loritta.transaction {
                                 // First we will get the active cards event
@@ -204,6 +214,8 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
 
                                 BuyStickersResult.Success(cards.size, unmodifiableCountBeforeAddingCards, selectedCardsWithMetadata, alreadyStickedCardsCount)
                             }
+
+                            val hook = future.await()
 
                             when (result) {
                                 BuyStickersResult.EventUnavailable -> {

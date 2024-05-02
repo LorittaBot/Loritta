@@ -25,6 +25,9 @@ view:
   stickerPage: "**Página:** Página {page,number}"
   stickerFront: "Figurinha (Frente)"
   stickerAnimated: "Figurinha (Animada)"
+  options:
+    sticker:
+      text: "A figurinha que você quer ver as informações sobre ela"
 
 stick:
   label: "colar"
@@ -34,9 +37,25 @@ album:
   label: "album"
   description: "Ver as páginas do seu álbum de figurinhas"
 
+  yourAlbum: "Seu Álbum de Figurinhas"
+  userAlbum: "Álbum de Figurinhas de {user}"
+  albumPages: "Páginas {pageLeft,number} e {pageRight,number}"
+  stickedStickers: "**Figurinhas Coladas:** {totalAlbumCompletionCount,number}/{albumCardsCount,number} figurinhas"
+
+  options:
+    page:
+      text: "A página do álbum de figurinhas que você quer ver"
+    user:
+      text: "O usuário que você quer ver o progresso do álbum de figurinhas dele"
+
 give:
   label: "dar"
   description: "Dá uma figurinha que você tem no seu inventário para outra pessoa"
+  options:
+    user:
+      text: "A pessoa que irá receber a figurinha que você quer dar"
+    sticker:
+      text: "A figurinha que será dada para a outra pessoa"
 
 stats:
   label: "stats"
@@ -45,3 +64,6 @@ stats:
 compare:
   label: "comparar"
   description: "Compara quais figurinhas você tem e que a outra pessoa precisa, e vice-versa"
+  options:
+    user:
+      text: "O usuário que você deseja comparar as suas figurinhas com as dele"

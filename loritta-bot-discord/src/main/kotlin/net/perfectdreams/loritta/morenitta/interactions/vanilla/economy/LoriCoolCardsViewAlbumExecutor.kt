@@ -4,15 +4,17 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.MarkdownUtil
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserOwnedCards
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -27,8 +29,13 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
 class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
+    companion object {
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Album
+    }
+
     inner class Options : ApplicationCommandOptions() {
-        val page = optionalLong("page", TodoFixThisData)
+        val page = optionalLong("page", I18N_PREFIX.Options.Page.Text)
+        val user = optionalUser("user", I18N_PREFIX.Options.User.Text)
     }
 
     override val options = Options()
@@ -37,10 +44,12 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
         context.deferChannelMessage(false)
 
         val pageLookup = args[options.page]?.toInt() ?: 1
+        val user = args[options.user]?.user ?: context.user
 
         viewAlbum(
             context,
             pageLookup,
+            user
         ) {
             context.reply(false) {
                 it.invoke(this)
@@ -51,6 +60,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
     suspend fun viewAlbum(
         context: UnleashedContext,
         pageLookup: Int,
+        userToBeViewed: User,
         targetAlbumEdit: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)
     ) {
         val now = Instant.now()
@@ -62,12 +72,18 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
             // First we need to check all cards that we have already sticked
             // We will inner join because we need that info when generating the album
+            val totalStickers = LoriCoolCardsEventCards.select {
+                (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
+            }.count()
+
+            // First we need to check all cards that we have already sticked
+            // We will inner join because we need that info when generating the album
             val alreadyStickedCards = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq userToBeViewed.idLong)
             }.toList()
 
             // The stickers will be sticked when the user clicks to stick the sticker
-            return@transaction ViewAlbumResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]), alreadyStickedCards)
+            return@transaction ViewAlbumResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]), alreadyStickedCards, totalStickers)
         }
 
         when (result) {
@@ -113,8 +129,30 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                 // Get the page that we want to render
                 val album = loritta.loriCoolCardsManager.generateAlbumPreview(template, result.alreadyStickedCards, pageCombo)
                 targetAlbumEdit.invoke {
-                    content = "Páginas ${pageCombo.pageLeft} e ${pageCombo.pageRight}"
-                    files += FileUpload.fromData(album, "album.png").setDescription("Página ${pageCombo.pageLeft} e ${pageCombo.pageRight} do Álbum de Figurinhas de ${context.user.name}")
+                    styled(
+                        MarkdownUtil.bold(
+                            context.i18nContext.get(
+                                if (context.user == userToBeViewed)
+                                    I18N_PREFIX.YourAlbum
+                                else
+                                    I18N_PREFIX.UserAlbum(userToBeViewed.asMention)
+                            )
+                        ),
+                        Emotes.LoriLurk
+                    )
+
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.AlbumPages(pageCombo.pageLeft, pageCombo.pageRight)),
+                        Emotes.LoriCoolSticker
+                    )
+
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.StickedStickers(result.alreadyStickedCards.size, result.totalStickers)),
+                        Emotes.LoriHanglooseRight
+                    )
+
+                    files += FileUpload.fromData(album, "album.png")
+                        .setDescription("Página ${pageCombo.pageLeft} e ${pageCombo.pageRight} do Álbum de Figurinhas de ${context.user.name}")
 
                     actionRow(
                         if (pageCombo.pageLeft != 1) {
@@ -139,7 +177,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, 1) {
+                                viewAlbum(it, 1, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -172,7 +210,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, pageLookup - 2) {
+                                viewAlbum(it, pageLookup - 2, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -205,7 +243,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, pageLookup + 2) {
+                                viewAlbum(it, pageLookup + 2, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -236,7 +274,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, template.pages.last().pageRight) {
+                                viewAlbum(it, template.pages.last().pageRight, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -255,6 +293,6 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
     sealed class ViewAlbumResult {
         data object EventUnavailable : ViewAlbumResult()
-        class Success(val template: StickerAlbumTemplate, val alreadyStickedCards: List<ResultRow>) : ViewAlbumResult()
+        class Success(val template: StickerAlbumTemplate, val alreadyStickedCards: List<ResultRow>, val totalStickers: Long) : ViewAlbumResult()
     }
 }
