@@ -34,8 +34,8 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
     }
 
     inner class Options : ApplicationCommandOptions() {
-        val page = optionalLong("page", I18N_PREFIX.Options.Page.Text)
         val user = optionalUser("user", I18N_PREFIX.Options.User.Text)
+        val page = optionalLong("page", I18N_PREFIX.Options.Page.Text)
     }
 
     override val options = Options()
