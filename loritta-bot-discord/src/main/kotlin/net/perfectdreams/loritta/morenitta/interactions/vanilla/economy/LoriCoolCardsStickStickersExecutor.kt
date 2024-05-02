@@ -117,7 +117,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                     // TODO: This causes issues if the interaction fails, because the sticker is removed from the list before it is sticked
                     // This should ONLY BE TRIGGERED on exceptional cases, because we do disable the button when there isn't any more stickers
                     val cardsToBeSticked = (0 until 5).mapNotNull { cards.removeFirstOrNull() }
-                    println("cardsToBeSticked: $cardsToBeSticked")
+               
                     if (cardsToBeSticked.isEmpty()) {
                         currentActiveContext.reply(true) {
                             styled(
