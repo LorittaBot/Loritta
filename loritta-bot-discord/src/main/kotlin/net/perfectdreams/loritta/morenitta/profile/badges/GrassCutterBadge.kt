@@ -21,7 +21,7 @@ class GrassCutterBadge(val pudding: Pudding) : Badge.LorittaBadge(
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return pudding.transaction {
-			UserAchievements.select { UserAchievements.user eq user.id.toLong() and (UserAchievements.type eq AchievementType.STONKS) }
+			UserAchievements.select { UserAchievements.user eq user.id.toLong() and (UserAchievements.type eq AchievementType.GRASS_CUTTER) }
 				.count() == 1L
 		}
 	}
