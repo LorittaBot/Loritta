@@ -33,6 +33,8 @@ stick:
   label: "colar"
   description: "Cola as figurinhas que você tem no seu inventário no seu álbum de figurinhas"
 
+  stickXStickers: "Colar +{stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
+
 album:
   label: "album"
   description: "Ver as páginas do seu álbum de figurinhas"

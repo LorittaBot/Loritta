@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -20,6 +21,7 @@ import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.math.Easings
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -34,6 +36,10 @@ import java.awt.Color
 import java.time.Instant
 
 class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
+    companion object {
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Stick
+    }
+
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
         stickStickers(context)
     }
@@ -113,11 +119,15 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
 
                 // We stick stickers in bulk because sticking each sticker manually, while cool when you have at most 20 stickers, gets very tiresome when
                 // you have 500+ stickers
-                suspend fun doStuff(currentActiveContext: UnleashedContext, target: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)) {
+                suspend fun doStuff(
+                    currentActiveContext: UnleashedContext,
+                    howManyStickersToStick: Int,
+                    target: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)
+                ) {
                     // TODO: This causes issues if the interaction fails, because the sticker is removed from the list before it is sticked
                     // This should ONLY BE TRIGGERED on exceptional cases, because we do disable the button when there isn't any more stickers
-                    val cardsToBeSticked = (0 until 5).mapNotNull { cards.removeFirstOrNull() }
-               
+                    val cardsToBeSticked = (0 until howManyStickersToStick).mapNotNull { cards.removeFirstOrNull() }
+
                     if (cardsToBeSticked.isEmpty()) {
                         currentActiveContext.reply(true) {
                             styled(
@@ -276,10 +286,25 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                     footer("Progresso do Álbum: ${alreadyStickedCards.size}/${result.totalEventCards} figurinhas coladas")
                                 }
 
-                                val nextStickerButton = UnleashedButton.of(
+                                val next5StickersButton = UnleashedButton.of(
                                     ButtonStyle.PRIMARY,
-                                    "Colar Mais Figurinhas",
+                                    if (cards.size == 0 || cards.size >= 5)
+                                        context.i18nContext.get(I18N_PREFIX.StickXStickers(5))
+                                    else
+                                        context.i18nContext.get(I18N_PREFIX.StickXStickers(cards.size)),
                                     Emotes.LoriCoolSticker
+                                )
+
+                                val next10StickersButton = UnleashedButton.of(
+                                    ButtonStyle.PRIMARY,
+                                    context.i18nContext.get(I18N_PREFIX.StickXStickers(10)),
+                                    Emotes.StickerRarityEpic
+                                )
+
+                                val next15StickersButton = UnleashedButton.of(
+                                    ButtonStyle.PRIMARY,
+                                    context.i18nContext.get(I18N_PREFIX.StickXStickers(15)),
+                                    Emotes.StickerRarityLegendary
                                 )
 
                                 if (stickResult.hasStickedAllAlbumCards) {
@@ -308,54 +333,95 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         }
                                     )
                                 } else {
-                                    if (cards.isNotEmpty()) {
-                                        actionRow(
-                                            loritta.interactivityManager.buttonForUser(
-                                                context.user,
-                                                nextStickerButton
-                                            ) {
-                                                // Same thing we did for the previous button
-                                                it.invalidateComponentCallback()
+                                    fun createNextStickersCallback(
+                                        buttonThatInvokedTheCallback: Button,
+                                        howManyStickersToStick: Int
+                                    ): suspend (ComponentContext) -> (Unit) = {
+                                        // Same thing we did for the previous button
+                                        it.invalidateComponentCallback()
 
-                                                val editJob2 = it.event.editMessage(
-                                                    MessageEdit {
-                                                        actionRow(
-                                                            nextStickerButton
-                                                                .withLabel("Procurando as Próximas Figurinhas...")
-                                                                .withEmoji(Emotes.LoriDerp.toJDA())
-                                                                .asDisabled(),
-                                                            buyStickerPackButton.asDisabled(),
-                                                        )
+                                        val editJob2 = it.event.editMessage(
+                                            MessageEdit {
+                                                actionRow(
+                                                    // TODO: I think this could be better
+                                                    if (buttonThatInvokedTheCallback == next5StickersButton) {
+                                                        next5StickersButton
+                                                            .withLabel("Procurando as Próximas Figurinhas...")
+                                                            .withEmoji(Emotes.LoriDerp.toJDA())
+                                                            .asDisabled()
+                                                    } else {
+                                                        next5StickersButton
+                                                            .asDisabled()
+                                                    },
+                                                    if (buttonThatInvokedTheCallback == next10StickersButton) {
+                                                        next10StickersButton
+                                                            .withLabel("Procurando as Próximas Figurinhas...")
+                                                            .withEmoji(Emotes.LoriDerp.toJDA())
+                                                            .asDisabled()
+                                                    } else {
+                                                        next10StickersButton
+                                                            .asDisabled()
+                                                    },
+                                                    if (buttonThatInvokedTheCallback == next15StickersButton) {
+                                                        next15StickersButton
+                                                            .withLabel("Procurando as Próximas Figurinhas...")
+                                                            .withEmoji(Emotes.LoriDerp.toJDA())
+                                                            .asDisabled()
+                                                    } else {
+                                                        next15StickersButton
+                                                            .asDisabled()
                                                     }
-                                                ).submit()
+                                                )
 
-                                                val hook2 = it.event.hook
+                                                actionRow(
+                                                    buyStickerPackButton.asDisabled()
+                                                )
+                                            }
+                                        ).submit()
 
-                                                doStuff(it) {
-                                                    editJob2.await()
-                                                    hook2.editOriginal(
-                                                        MessageEdit {
-                                                            it.invoke(this)
-                                                        }
-                                                    ).await()
+                                        val hook2 = it.event.hook
+
+                                        doStuff(it, howManyStickersToStick) {
+                                            editJob2.await()
+                                            hook2.editOriginal(
+                                                MessageEdit {
+                                                    it.invoke(this)
                                                 }
-                                            },
-                                            loritta.interactivityManager.buttonForUser(
-                                                context.user,
-                                                buyStickerPackButton,
-                                                buyStickerPackButtonCallback
-                                            )
-                                        )
-                                    } else {
-                                        actionRow(
-                                            nextStickerButton.asDisabled(),
-                                            loritta.interactivityManager.buttonForUser(
-                                                context.user,
-                                                buyStickerPackButton,
-                                                buyStickerPackButtonCallback
-                                            )
-                                        )
+                                            ).await()
+                                        }
                                     }
+
+                                    actionRow(
+                                        if (cards.size > 0) {
+                                            loritta.interactivityManager.buttonForUser(
+                                                context.user,
+                                                next5StickersButton,
+                                                createNextStickersCallback(next5StickersButton, 5)
+                                            )
+                                        } else next5StickersButton.asDisabled(),
+                                        if (cards.size >= 10) {
+                                            loritta.interactivityManager.buttonForUser(
+                                                context.user,
+                                                next10StickersButton,
+                                                createNextStickersCallback(next10StickersButton, 10)
+                                            )
+                                        } else next10StickersButton.asDisabled(),
+                                        if (cards.size >= 15) {
+                                            loritta.interactivityManager.buttonForUser(
+                                                context.user,
+                                                next15StickersButton,
+                                                createNextStickersCallback(next15StickersButton, 15)
+                                            )
+                                        } else next15StickersButton.asDisabled()
+                                    )
+
+                                    actionRow(
+                                        loritta.interactivityManager.buttonForUser(
+                                            context.user,
+                                            buyStickerPackButton,
+                                            buyStickerPackButtonCallback
+                                        )
+                                    )
                                 }
                             }
                         }
@@ -363,7 +429,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                 }
 
                 context.deferChannelMessage(false) // Defer response
-                doStuff(context) {
+                doStuff(context, 5) {
                     context.reply(false) {
                         it.invoke(this)
                     }
