@@ -107,7 +107,7 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 				graphics.font = latoBlack12
 				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 0, 165, 14), latoBlack12)
 				graphics.font = latoRegular16
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 16, 165, 18), latoRegular16)
+				ImageUtils.drawCenteredString(graphics, marriedWith.name, Rectangle(635, 16, 165, 18), latoRegular16)
 				graphics.font = latoBlack12
 				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(635, 16 + 18, 165, 14), latoBlack12)
 			}

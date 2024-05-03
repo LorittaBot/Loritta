@@ -88,7 +88,7 @@ class UndertaleProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 	suspend fun drawMarriageStatus(userProfile: Profile, locale: BaseLocale, graphics: Graphics) {
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val font = graphics.font
-			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
+			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}"
 
 			ImageUtils.drawCenteredString(graphics, marriedWithText, Rectangle(42, 543, 522, 47), font)
 		}

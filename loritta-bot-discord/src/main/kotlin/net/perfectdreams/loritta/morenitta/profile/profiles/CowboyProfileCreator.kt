@@ -57,7 +57,7 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
 			graphics.font = latoBold16
 			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(311, 0, 216, 14), latoBold16)
 			graphics.font = latoRegular20
-			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), latoRegular20)
+			ImageUtils.drawCenteredString(graphics, marriedWith.name, Rectangle(311, 0 + 18, 216, 18), latoRegular20)
 			graphics.font = latoBold16
 			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(311, 0 + 18 + 24, 216, 14), latoBold16)
 		}
