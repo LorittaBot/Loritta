@@ -143,7 +143,7 @@ class PreStartGatewayEventReplayListener(
                 WebSocketCode.INVALIDATE_SESSION -> {
                     // Session has been invalidated, clear out the replay cache
                     val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
-                    logger.info { "Session has been invalidated, clearing out ${replayCache.size} events... Took $diff since shard shutdown began to now" }
+                    logger.info { "Session of shard ${event.jda.shardInfo.shardId} has been invalidated, clearing out ${replayCache.size} events... Took $diff since shard shutdown began to now" }
                     state.value = ProcessorState.FINISHED
                     replayCache.clear()
                 }
