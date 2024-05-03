@@ -1,10 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import dev.minn.jda.ktx.interactions.components.asDisabled
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
@@ -23,8 +21,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDec
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import java.awt.Color
 import java.time.Instant
 
@@ -62,7 +62,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
         subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description) {
             // Give stickers
-            executor = LoriCoolCardsGiveStickersExecutor()
+            executor = LoriCoolCardsGiveStickersExecutor(loritta, this@LoriCoolCardsCommand)
         }
 
         subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description) {
@@ -294,276 +294,6 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
         }
     }
 
-    inner class LoriCoolCardsGiveStickersExecutor : LorittaSlashCommandExecutor() {
-        inner class Options : ApplicationCommandOptions() {
-            val user = user("user", I18N_PREFIX.Give.Options.User.Text)
-            val cardId = string("sticker_id", I18N_PREFIX.Give.Options.Sticker.Text) {
-                autocomplete {
-                    val now = Instant.now()
-                    val focusedOptionValue = it.event.focusedOption.value
-
-                    // We also let searchingByCardId = true if empty to make the autocomplete results be sorted from 0001 -> ... by default
-                    val searchingByCardId = focusedOptionValue.startsWith("#") || focusedOptionValue.isEmpty() || focusedOptionValue.toIntOrNull() != null
-
-                    return@autocomplete loritta.transaction {
-                        val event = LoriCoolCardsEvents.select {
-                            LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-                        }.firstOrNull() ?: return@transaction mapOf()
-
-                        val countField = LoriCoolCardsUserOwnedCards.card.count()
-
-                        val cardsThatTheUserHas = LoriCoolCardsUserOwnedCards.slice(LoriCoolCardsUserOwnedCards.card, countField).select {
-                            LoriCoolCardsUserOwnedCards.user eq it.event.user.idLong and (LoriCoolCardsUserOwnedCards.sticked eq false)
-                        }.groupBy(LoriCoolCardsUserOwnedCards.card)
-                            .having {
-                                countField greaterEq 1
-                            }
-                            .toList()
-                            .map { it[LoriCoolCardsUserOwnedCards.card] to it[countField] }
-                            .toMap()
-
-                        if (searchingByCardId) {
-                            var searchQuery = focusedOptionValue
-                            if (searchQuery.toIntOrNull() != null) {
-                                searchQuery = "#${searchQuery.toInt().toString().padStart(4, '0')}"
-                            }
-
-                            val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.select {
-                                LoriCoolCardsEventCards.fancyCardId.like(
-                                    "${searchQuery.replace("%", "")}%"
-                                ) and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsEventCards.id inList cardsThatTheUserHas.keys)
-                            }.limit(25).orderBy(LoriCoolCardsEventCards.fancyCardId, SortOrder.ASC).toList()
-
-                            val cardIds = cardEventCardsMatchingQuery.map { it[LoriCoolCardsEventCards.id] }
-
-                            val seenCards = LoriCoolCardsSeenCards.select {
-                                (LoriCoolCardsSeenCards.user eq it.event.user.idLong) and (LoriCoolCardsSeenCards.card inList cardIds)
-                            }.map { it[LoriCoolCardsSeenCards.card].value }
-
-                            val results = mutableMapOf<String, String>()
-                            for (card in cardEventCardsMatchingQuery) {
-                                if (card[LoriCoolCardsEventCards.id].value in seenCards) {
-                                    results["${card[LoriCoolCardsEventCards.fancyCardId]} - ${card[LoriCoolCardsEventCards.title]} (${cardsThatTheUserHas[card[LoriCoolCardsEventCards.id]]} figurinhas)"] =
-                                        card[LoriCoolCardsEventCards.fancyCardId]
-                                } else {
-                                    results["${card[LoriCoolCardsEventCards.fancyCardId]} - ???"] =
-                                        card[LoriCoolCardsEventCards.fancyCardId]
-                                }
-                            }
-                            results
-                        } else {
-                            val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.select {
-                                LoriCoolCardsEventCards.title.like(
-                                    "${
-                                        focusedOptionValue.replace(
-                                            "%",
-                                            ""
-                                        )
-                                    }%"
-                                ) and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsEventCards.id inList cardsThatTheUserHas.keys)
-                            }.limit(25).orderBy(LoriCoolCardsEventCards.title, SortOrder.ASC).toList()
-
-                            val cardIds = cardEventCardsMatchingQuery.map { it[LoriCoolCardsEventCards.id] }
-
-                            val seenCards = LoriCoolCardsSeenCards.select {
-                                (LoriCoolCardsSeenCards.user eq it.event.user.idLong) and (LoriCoolCardsSeenCards.card inList cardIds)
-                            }.map { it[LoriCoolCardsSeenCards.card].value }
-
-                            val results = mutableMapOf<String, String>()
-                            for (card in cardEventCardsMatchingQuery) {
-                                if (card[LoriCoolCardsEventCards.id].value in seenCards) {
-                                    results["${card[LoriCoolCardsEventCards.fancyCardId]} - ${card[LoriCoolCardsEventCards.title]} (${cardsThatTheUserHas[card[LoriCoolCardsEventCards.id]]} figurinhas)"] = card[LoriCoolCardsEventCards.fancyCardId]
-                                } else {
-                                    results["${card[LoriCoolCardsEventCards.fancyCardId]} - ???"] = card[LoriCoolCardsEventCards.fancyCardId]
-                                }
-                            }
-                            results
-                        }
-                    }
-                }
-            }
-        }
-
-        override val options = Options()
-
-        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val userThatWillReceiveTheSticker = args[options.user].user
-            val fancyCardId = args[options.cardId]
-
-            if (context.user == userThatWillReceiveTheSticker) {
-                context.reply(true) {
-                    styled(
-                        "Você não pode dar figurinhas para você mesmo!"
-                    )
-                }
-                return
-            }
-
-            context.deferChannelMessage(false)
-
-            val now = Instant.now()
-
-            val result = loritta.transaction {
-                val event = LoriCoolCardsEvents.select {
-                    LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-                }.firstOrNull() ?: return@transaction GiveStickerResult.EventUnavailable
-
-                val cardEventCard = LoriCoolCardsEventCards.select {
-                    LoriCoolCardsEventCards.fancyCardId eq fancyCardId and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
-                }.limit(1).firstOrNull() ?: return@transaction GiveStickerResult.UnknownCard
-
-                val ownedCard = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                    LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                    .limit(1)
-                    .firstOrNull()
-
-                if (ownedCard == null)
-                    return@transaction GiveStickerResult.NotEnoughCards
-
-                return@transaction GiveStickerResult.Success(ownedCard)
-            }
-
-            when (result) {
-                GiveStickerResult.EventUnavailable -> {
-                    context.reply(false) {
-                        styled(
-                            "Nenhum evento de figurinhas ativo"
-                        )
-                    }
-                }
-                GiveStickerResult.UnknownCard -> {
-                    context.reply(false) {
-                        styled(
-                            "Figurinha não existe"
-                        )
-                    }
-                }
-                GiveStickerResult.NotEnoughCards -> {
-                    context.reply(false) {
-                        styled(
-                            "Você não tem figurinhas suficientes!"
-                        )
-                    }
-                }
-                is GiveStickerResult.Success -> {
-                    context.reply(false) {
-                        styled(
-                            "Você está prestes a transferir **`${result.givenCard[LoriCoolCardsEventCards.fancyCardId]} - ${result.givenCard[LoriCoolCardsEventCards.title]}`** para ${userThatWillReceiveTheSticker.asMention}!",
-                            Emotes.LoriCoolSticker
-                        )
-                        styled(
-                            "Para confirmar a transação, ${userThatWillReceiveTheSticker.asMention} deve aceitar a transação",
-                            Emotes.LoriZap
-                        )
-
-                        actionRow(
-                            loritta.interactivityManager.buttonForUser(
-                                userThatWillReceiveTheSticker,
-                                ButtonStyle.PRIMARY,
-                                "Aceitar Transferência",
-                                {
-                                    loriEmoji = Emotes.Handshake
-                                }
-                            ) {
-                                it.invalidateComponentCallback()
-
-                                it.deferAndEditOriginal(
-                                    MessageEditBuilder.fromMessage(it.event.message)
-                                        .setComponents(it.event.message.components.asDisabled())
-                                        .build()
-                                )
-
-                                // Repeat the checks
-                                val finalResult = loritta.transaction {
-                                    val event = LoriCoolCardsEvents.select {
-                                        LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-                                    }.firstOrNull() ?: return@transaction GiveStickerAcceptedTransactionResult.EventUnavailable
-
-                                    val cardEventCard = LoriCoolCardsEventCards.select {
-                                        LoriCoolCardsEventCards.fancyCardId eq fancyCardId and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
-                                    }.limit(1).firstOrNull() ?: return@transaction GiveStickerAcceptedTransactionResult.UnknownCard
-
-                                    val ownedCard = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                                        LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                                    }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                                        .limit(1)
-                                        .firstOrNull()
-
-                                    if (ownedCard == null)
-                                        return@transaction GiveStickerAcceptedTransactionResult.NotEnoughCards
-
-                                    // Transfer
-                                    // Delete the old card
-                                    LoriCoolCardsUserOwnedCards.deleteWhere {
-                                        LoriCoolCardsUserOwnedCards.id eq ownedCard[LoriCoolCardsUserOwnedCards.id]
-                                    }
-
-                                    // Insert the new one
-                                    LoriCoolCardsUserOwnedCards.insert {
-                                        it[LoriCoolCardsUserOwnedCards.card] = ownedCard[LoriCoolCardsUserOwnedCards.card]
-                                        it[LoriCoolCardsUserOwnedCards.user] = userThatWillReceiveTheSticker.idLong
-                                        it[LoriCoolCardsUserOwnedCards.event] = event[LoriCoolCardsEvents.id]
-                                        it[LoriCoolCardsUserOwnedCards.receivedAt] = now
-                                        it[LoriCoolCardsUserOwnedCards.sticked] = false
-                                    }
-
-                                    // Have we already seen this card before?
-                                    val haveWeAlreadySeenThisCardBefore = LoriCoolCardsSeenCards.select {
-                                        LoriCoolCardsSeenCards.card eq ownedCard[LoriCoolCardsUserOwnedCards.card] and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
-                                    }.count() != 0L
-
-                                    // "Seen cards" just mean that the card won't be unknown (???) when the user looks it up, even if they give the card away
-                                    if (!haveWeAlreadySeenThisCardBefore) {
-                                        LoriCoolCardsSeenCards.insert {
-                                            it[LoriCoolCardsSeenCards.card] = ownedCard[LoriCoolCardsUserOwnedCards.card]
-                                            it[LoriCoolCardsSeenCards.user] = userThatWillReceiveTheSticker.idLong
-                                            it[LoriCoolCardsSeenCards.seenAt] = now
-                                        }
-                                    }
-
-                                    return@transaction GiveStickerAcceptedTransactionResult.Success(ownedCard)
-                                }
-
-                                when (finalResult) {
-                                    GiveStickerAcceptedTransactionResult.EventUnavailable -> {
-                                        context.reply(false) {
-                                            styled(
-                                                "Nenhum evento de figurinhas ativo"
-                                            )
-                                        }
-                                    }
-                                    GiveStickerAcceptedTransactionResult.UnknownCard -> {
-                                        context.reply(false) {
-                                            styled(
-                                                "Figurinha não existe"
-                                            )
-                                        }
-                                    }
-                                    GiveStickerAcceptedTransactionResult.NotEnoughCards -> {
-                                        context.reply(false) {
-                                            styled(
-                                                "Você não tem figurinhas suficientes!"
-                                            )
-                                        }
-                                    }
-                                    is GiveStickerAcceptedTransactionResult.Success -> {
-                                        it.reply(false) {
-                                            styled(
-                                                "Transferência realizada com sucesso! ${userThatWillReceiveTheSticker.asMention} recebeu **`${result.givenCard[LoriCoolCardsEventCards.fancyCardId]} - ${result.givenCard[LoriCoolCardsEventCards.title]}`**!",
-                                                Emotes.LoriCoolSticker
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     sealed class GetCardInfoResult {
         data object EventUnavailable : GetCardInfoResult()
         data object UnknownCard : GetCardInfoResult()
@@ -576,19 +306,5 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
             val cardsInCirculation: Long,
             val cardsInAlbums: Long
         ) : GetCardInfoResult()
-    }
-
-    sealed class GiveStickerResult {
-        data object EventUnavailable : GiveStickerResult()
-        data object UnknownCard : GiveStickerResult()
-        data object NotEnoughCards : GiveStickerResult()
-        data class Success(val givenCard: ResultRow) : GiveStickerResult()
-    }
-
-    sealed class GiveStickerAcceptedTransactionResult {
-        data object EventUnavailable : GiveStickerAcceptedTransactionResult()
-        data object UnknownCard : GiveStickerAcceptedTransactionResult()
-        data object NotEnoughCards : GiveStickerAcceptedTransactionResult()
-        data class Success(val givenCard: ResultRow) : GiveStickerAcceptedTransactionResult()
     }
 }

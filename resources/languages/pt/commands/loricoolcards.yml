@@ -53,11 +53,21 @@ album:
 give:
   label: "dar"
   description: "Dá uma figurinha que você tem no seu inventário para outra pessoa"
+  youCantGiveStickersToYourself: "Você não pode dar figurinhas para você mesmo, bobinho!"
+  invalidStickerId: "Você colocou um ID de figurinha inválido! Você deve passar o ID da figurinha no seguinte formato: `#0001`, se você quiser passar uma lista de figurinhas, elas devem estar separadas por vírgulas, `#0001, #0002, #0003`"
+  tooManyStickers: "Eu sei que você está caridoso e quer dar bastante figurinhas, mas você só pode dar 100 figurinhas por comando!"
+  tryingToGiveAnUnknownSticker: "Você está tentando dar uma figurinha que não existe!"
+  youDontHaveEnoughStickers: "Você não tem figurinhas suficientes para dar! **Figurinhas que estão faltando:** {stickerList}"
+  youAreGoingToTransfer: "Você está prestes a transferir **{stickerList}** (total: {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}) para {receiver}!"
+  confirmTheTransaction: "Para confirmar a transação, {receiver} deve aceitar a transação!"
+  successfullyTransferred: "Transferência realizada com sucesso! {receiver} recebeu **{stickerList}** (total: {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}})!"
+  acceptTransfer: "Aceitar Transferência"
+  stickerList: "Lista de Figurinhas: {stickerList}"
   options:
     user:
       text: "A pessoa que irá receber a figurinha que você quer dar"
-    sticker:
-      text: "A figurinha que será dada para a outra pessoa"
+    stickers:
+      text: "As figurinhas que você quer dar, você também pode usar uma lista de IDs de figurinhas"
 
 stats:
   label: "stats"
