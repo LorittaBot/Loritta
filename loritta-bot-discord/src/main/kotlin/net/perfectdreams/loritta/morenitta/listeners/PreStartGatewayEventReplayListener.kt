@@ -117,9 +117,7 @@ class PreStartGatewayEventReplayListener(
                         for (guild in jdaImpl.guilds) {
                             val hasSelfMember = try { guild.selfMember } catch (e: IllegalStateException) { null } != null
 
-                            if (hasSelfMember) {
-                                logger.info { "Self Member in Guild ${guild.name} (${guild.idLong}): OK" }
-                            } else {
+                            if (!hasSelfMember) {
                                 logger.warn { "Self Member in Guild ${guild.name} (${guild.idLong}): Missing! Something went wrong!!" }
                             }
                         }
