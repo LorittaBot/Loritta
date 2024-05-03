@@ -1,16 +1,19 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import java.awt.*
+import net.perfectdreams.loritta.morenitta.utils.*
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Image
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
 open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val folderName: String) : StaticProfileCreator(loritta, internalName) {
@@ -59,7 +62,7 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 			graphics.font = latoBlack12
 			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 350, 165, 14), latoBlack12)
 			graphics.font = latoRegular16
-			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), latoRegular16)
+			ImageUtils.drawCenteredString(graphics, marriedWith.name, Rectangle(635, 350 + 16, 165, 18), latoRegular16)
 			graphics.font = latoBlack12
 			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(635, 350 + 16 + 18, 165, 14), latoBlack12)
 		}
