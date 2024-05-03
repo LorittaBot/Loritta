@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
-import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
+import net.perfectdreams.loritta.morenitta.utils.*
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
@@ -137,7 +137,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
 		if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id.toLong()) {
+			val marriedWithId = if (marriage.user1 == user.id) {
 				marriage.user2
 			} else {
 				marriage.user1
@@ -153,7 +153,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 				graphics.font = latoBold16
 				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(545, 108, 256, 14), latoBold16)
 				graphics.font = latoRegular20
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), latoRegular20)
+				ImageUtils.drawCenteredString(graphics, marriedWith.name, Rectangle(545, 108 + 14, 256, 18), latoRegular20)
 				graphics.font = latoBold16
 				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(545, 108 + 14  + 18, 256, 14), latoBold16)
 			}
