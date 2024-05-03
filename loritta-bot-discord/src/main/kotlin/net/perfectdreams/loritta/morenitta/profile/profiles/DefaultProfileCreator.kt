@@ -1,19 +1,15 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.drawText
-import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
-import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
+import net.perfectdreams.loritta.morenitta.utils.*
 import java.awt.Font
 import java.awt.Graphics
 import java.awt.image.BufferedImage
@@ -126,7 +122,7 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 			val marrySection = readImageFromResources("/profile/modern/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
 
-			drawSection(graphics, latoBlack20, latoBold20, locale["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
+			drawSection(graphics, latoBlack20, latoBold20, locale["profile.marriedWith"], marriedWith.name, 562, 533)
 		}
 
 		graphics.font = latoRegular22
