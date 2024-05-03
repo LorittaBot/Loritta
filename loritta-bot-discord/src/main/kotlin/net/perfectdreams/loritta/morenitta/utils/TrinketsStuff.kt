@@ -60,7 +60,8 @@ object TrinketsStuff {
         "halloween2019",
         "christmas2019",
         "lorittaChristmas2019",
-        "undertaleBattle"
+        "undertaleBattle",
+        "msn"
     )
 
     private val sets = setOf(
