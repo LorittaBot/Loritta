@@ -619,6 +619,8 @@ class LorittaBot(
 		// Ou seja, agora a Loritta está funcionando, Yay!
 		Runtime.getRuntime().addShutdownHook(
 			thread(false) {
+				logger.info { "Shutting down Loritta... Bye bye!" }
+				
 				// Mark this as shutdown to avoid dispatching jobs
 				isActive = false
 
