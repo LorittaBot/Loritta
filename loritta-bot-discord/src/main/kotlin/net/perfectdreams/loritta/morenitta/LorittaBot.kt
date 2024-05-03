@@ -93,7 +93,6 @@ import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.dao.*
-import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
@@ -620,7 +619,7 @@ class LorittaBot(
 		Runtime.getRuntime().addShutdownHook(
 			thread(false) {
 				logger.info { "Shutting down Loritta... Bye bye!" }
-				
+
 				// Mark this as shutdown to avoid dispatching jobs
 				isActive = false
 
@@ -1009,7 +1008,8 @@ class LorittaBot(
 			return sqlProfile
 
 		val profileSettings = transaction {
-			ProfileSettings.new {
+			// This fully qualified import is here because IDEA gets confused and thinks that it cannot import the class
+			net.perfectdreams.loritta.morenitta.dao.ProfileSettings.new {
 				gender = net.perfectdreams.loritta.common.utils.Gender.UNKNOWN
 			}
 		}
