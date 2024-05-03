@@ -70,6 +70,8 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 				profile,
 				null,
 				listOf(),
+				listOf(),
+				null,
 				locale,
 				loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
 				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
@@ -82,6 +84,8 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 				profile,
 				null,
 				listOf(),
+				listOf(),
+				null,
 				locale,
 				loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
 				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
@@ -97,6 +101,8 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 					profile,
 					null,
 					listOf(),
+					listOf(),
+					null,
 					locale,
 					loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
 					BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background

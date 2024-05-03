@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
+import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
@@ -22,29 +23,21 @@ open class LoriCoolCardsStickerReceivedPlainProfileCreator(loritta: LorittaBot, 
 	class LoriCoolCardsStickerReceivedPlainMythicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainMythic", CardRarity.MYTHIC)
 
 	override suspend fun create(
-        sender: ProfileUserInfoData,
-        user: ProfileUserInfoData,
-        userProfile: Profile,
-        guild: ProfileGuildInfoData?,
-        badges: List<BufferedImage>,
-        locale: BaseLocale,
-        i18nContext: I18nContext,
-        background: BufferedImage,
-        aboutMe: String,
-        allowedDiscordEmojis: List<Long>?
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: Profile,
+		guild: ProfileGuildInfoData?,
+		badges: List<BufferedImage>,
+		badgesData: List<Badge>,
+		equippedBadge: Badge?,
+		locale: BaseLocale,
+		i18nContext: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Long>?
 	): Pair<ByteArray, ImageFormat> {
-		// TODO: The ProfileDesignManager should provide the badges data list to us instead of querying it here
-		val badgesData = loritta.profileDesignManager.getUserBadges(
-			user,
-			userProfile,
-			setOf(), // We don't need this
-			failIfClusterIsOffline = false // We also don't need this
-		)
-
 		// TODO: Avatar fallback
 		val avatar = ImageIO.read(URL(user.avatarUrl))
-		val activeBadgeUniqueId = loritta.transaction { userProfile.settings.activeBadge }
-		val equippedBadge = badgesData.firstOrNull { it.id == activeBadgeUniqueId }
 
 		val frontFacingStickerImage = loritta.loriCoolCardsManager.generateFrontFacingSticker(
 			LoriCoolCardsManager.CardGenData(

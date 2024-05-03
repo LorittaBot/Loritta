@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
+import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
@@ -34,16 +35,18 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 	class LoriCoolCardsStickerReceivedMythicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedMythic", CardRarity.MYTHIC)
 
 	override suspend fun create(
-        sender: ProfileUserInfoData,
-        user: ProfileUserInfoData,
-        userProfile: Profile,
-        guild: ProfileGuildInfoData?,
-        badges: List<BufferedImage>,
-        locale: BaseLocale,
-        i18nContext: I18nContext,
-        background: BufferedImage,
-        aboutMe: String,
-        allowedDiscordEmojis: List<Long>?
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: Profile,
+		guild: ProfileGuildInfoData?,
+		badges: List<BufferedImage>,
+		badgesData: List<Badge>,
+		equippedBadge: Badge?,
+		locale: BaseLocale,
+		i18nContext: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Long>?
 	): Pair<ByteArray, ImageFormat> {
 		val sectionTitleFont = loritta.graphicsFonts.latoBlack.deriveFont(20f)
 		val sectionSubtitleFont = loritta.graphicsFonts.latoBold.deriveFont(20f)
@@ -53,25 +56,14 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 		val profileRepsIconImage = readImageFromResources("/profile/loricoolcards_sticker_received/profile_reps_icon.png")
 			.getResizedInstance(38, 38, InterpolationType.BILINEAR)
 
-		// TODO: The ProfileDesignManager should provide the badges data list to us instead of querying it here
-		val badgesData = loritta.profileDesignManager.getUserBadges(
-			user,
-			userProfile,
-			setOf(), // We don't need this
-			failIfClusterIsOffline = false // We also don't need this
-		)
-
 		// TODO: Avatar fallback
 		val avatar = ImageIO.read(URL(user.avatarUrl))
-		val activeBadgeUniqueId = loritta.transaction { userProfile.settings.activeBadge }
 		val localProfile = if (guild != null) ProfileUtils.getLocalProfile(loritta, guild, user) else null
 		val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
 		val marriageInfo = ProfileUtils.getMarriageInfo(loritta, userProfile)
 		val marriagePartnerAvatar = marriageInfo?.let { LorittaUtils.downloadImage(loritta, marriageInfo.partner.getEffectiveAvatarUrl(ImageFormat.PNG, 64))?.getResizedInstance(38, 38, InterpolationType.BILINEAR) }
-
-		val equippedBadge = badgesData.firstOrNull { it.id == activeBadgeUniqueId }
 
 		val frontFacingStickerImage = loritta.loriCoolCardsManager.generateFrontFacingSticker(
 			LoriCoolCardsManager.CardGenData(

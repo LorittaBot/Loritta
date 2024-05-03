@@ -186,11 +186,21 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					.toSet()
 			}
 
+		// TODO: This should be removed, use the badgesData list below when all badges are migrated to the new system!
 		val badges = getUserBadgesImages(
 			userToBeViewed,
 			userProfile,
 			mutualGuildsInAllClusters
 		)
+
+		val badgesData = loritta.profileDesignManager.getUserBadges(
+			userToBeViewed,
+			userProfile,
+			setOf(), // We don't need this
+			failIfClusterIsOffline = false // We also don't need this
+		)
+
+		val equippedBadge = badgesData.firstOrNull { it.id == profileSettings.activeBadge }
 
 		val premiumPlan = UserPremiumPlans.getPlanFromValue(loritta.pudding.payments.getActiveMoneyFromDonations(UserId(userProfile.id.value)))
 
@@ -227,6 +237,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 						userProfile,
 						guild,
 						badges,
+						badgesData,
+						equippedBadge,
 						locale,
 						i18nContext,
 						getUserProfileBackground(userProfile),
@@ -243,6 +255,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					userProfile,
 					guild,
 					badges,
+					badgesData,
+					equippedBadge,
 					locale,
 					i18nContext,
 					getUserProfileBackground(userProfile),
@@ -274,6 +288,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					userProfile,
 					guild,
 					badges,
+					badgesData,
+					equippedBadge,
 					locale,
 					i18nContext,
 					getUserProfileBackground(userProfile),

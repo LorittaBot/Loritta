@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
@@ -17,16 +18,18 @@ import java.io.FileInputStream
 
 class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "msn") {
 	override suspend fun create(
-        sender: ProfileUserInfoData,
-        user: ProfileUserInfoData,
-        userProfile: Profile,
-        guild: ProfileGuildInfoData?,
-        badges: List<BufferedImage>,
-        locale: BaseLocale,
-        i18nContext: I18nContext,
-        background: BufferedImage,
-        aboutMe: String,
-        allowedDiscordEmojis: List<Long>?
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: Profile,
+		guild: ProfileGuildInfoData?,
+		badges: List<BufferedImage>,
+		badgesData: List<Badge>,
+		equippedBadge: Badge?,
+		locale: BaseLocale,
+		i18nContext: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Long>?
 	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/msn/profile_wrapper.png")
 
