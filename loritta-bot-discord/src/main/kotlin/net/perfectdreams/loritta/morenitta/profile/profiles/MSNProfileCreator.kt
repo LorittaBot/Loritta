@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
@@ -66,7 +66,7 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 
 		graphics.font = msnFont15
 		graphics.color = Color(255, 255, 255)
-		graphics.drawText(loritta, "${user.name}#${user.discriminator} <${user.id}>", 40, 27)
+		graphics.drawText(loritta, "${user.name} <${user.id}>", 40, 27)
 		graphics.font = latoRegular32
 		// OUTLINE
 		graphics.color = Color(51, 51, 51)
@@ -80,17 +80,17 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 		graphics.drawText(loritta, user.name, 269, 142)
 
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
-			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
-			val gameIcon = readImageFromResources("/profile/msn/game_icon.png")
-			graphics.drawImage(gameIcon, 0, 5, null)
+			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}"
+			val gameIcon = readImageFromResources("/profile/msn/msn_heart.png")
+			graphics.drawImage(gameIcon, 270, 150, 21, 21, null)
+
+			// GAME
 			graphics.font = msnFont24
 			graphics.color = Color(51, 51, 51)
 			graphics.drawText(loritta, marriedWithText, 294, 169)
 			graphics.drawText(loritta, marriedWithText, 296, 169)
 			graphics.drawText(loritta, marriedWithText, 295, 168)
 			graphics.drawText(loritta, marriedWithText, 295, 170)
-
-			// GAME
 			graphics.color = Color(255, 255, 255)
 			graphics.drawText(loritta, marriedWithText, 295, 169)
 		}
