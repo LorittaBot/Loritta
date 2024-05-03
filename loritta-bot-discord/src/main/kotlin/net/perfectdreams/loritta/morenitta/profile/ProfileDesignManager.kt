@@ -163,13 +163,11 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		locale: BaseLocale,
 		sender: ProfileUserInfoData,
 		userToBeViewed: ProfileUserInfoData,
-		guild: ProfileGuildInfoData?
+		guild: ProfileGuildInfoData?,
+		profileCreator: ProfileCreator
 	): ProfileCreationResult {
-		val userProfile = loritta.getOrCreateLorittaProfile(userToBeViewed.id.toLong())
+		val userProfile = loritta.getOrCreateLorittaProfile(userToBeViewed.id)
 		val profileSettings = loritta.newSuspendedTransaction { userProfile.settings }
-
-		val profileCreator = loritta.profileDesignManager.designs.firstOrNull { it.internalName == (profileSettings.activeProfileDesignInternalName?.value ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID) }
-			?: loritta.profileDesignManager.defaultProfileDesign
 
 		// We need the mutual guilds to retrieve the user's guild badges.
 		// However, because bots can be in a LOT of guilds (causing GC pressure), so we will just return an empty array.
@@ -181,7 +179,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		else
 			loritta.pudding.transaction {
 				GuildProfiles.slice(GuildProfiles.guildId)
-					.select { GuildProfiles.userId eq userToBeViewed.id.toLong() and (GuildProfiles.isInGuild eq true) }
+					.select { GuildProfiles.userId eq userToBeViewed.id and (GuildProfiles.isInGuild eq true) }
 					.map { it[GuildProfiles.guildId] }
 					.toSet()
 			}
@@ -228,6 +226,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				DateUtils.formatDiscordLikeRelativeDate(i18nContext, epochSecond * 1_000, System.currentTimeMillis())
 			}
 
+		val userProfileBackground = getUserProfileBackground(userProfile, profileCreator)
+
 		val (imageAsByteArray, imageFormat) = when (profileCreator) {
 			is StaticProfileCreator -> {
 				Pair(
@@ -241,7 +241,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 						equippedBadge,
 						locale,
 						i18nContext,
-						getUserProfileBackground(userProfile),
+						userProfileBackground,
 						modifiedAboutMe,
 						allowedDiscordEmojis
 					).toByteArray(ImageFormatType.PNG),
@@ -259,7 +259,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					equippedBadge,
 					locale,
 					i18nContext,
-					getUserProfileBackground(userProfile),
+					userProfileBackground,
 					modifiedAboutMe,
 					allowedDiscordEmojis
 				)
@@ -292,7 +292,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					equippedBadge,
 					locale,
 					i18nContext,
-					getUserProfileBackground(userProfile),
+					userProfileBackground,
 					modifiedAboutMe,
 					allowedDiscordEmojis
 				)
@@ -530,6 +530,27 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	}
 
 	/**
+	 * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
+	 *
+	 * To avoid exceeding the available memory, profiles are loaded from the "cropped_profiles" folder,
+	 * which has all the images in 800x600 format.
+	 *
+	 * @param background the user's background
+	 * @param profileCreator the profile creator being used, overrides the [ProfileSettings.activeProfileDesign] option
+	 * @return the background image
+	 */
+	suspend fun getUserProfileBackground(profile: Profile, profileCreator: ProfileCreator): BufferedImage {
+		val backgroundUrl = getUserProfileBackgroundUrl(profile, profileCreator)
+		val response = loritta.http.get(backgroundUrl) {
+			userAgent(loritta.lorittaCluster.getUserAgent(this@ProfileDesignManager.loritta))
+		}
+
+		val bytes = response.readBytes()
+
+		return readImage(bytes.inputStream())
+	}
+
+	/**
 	 * Gets an user's profile background URL
 	 *
 	 * @param userId the user's ID
@@ -556,6 +577,28 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		}
 
 		return getUserProfileBackgroundUrl(profile.userId, settingsId, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
+	}
+
+	/**
+	 * Gets an user's profile background URL
+	 *
+	 * This does *not* crop the profile background
+	 *
+	 * @param profile the user's profile
+	 * @param profileCreator the profile creator being used, overrides the [ProfileSettings.activeProfileDesign] option
+	 * @return the background image
+	 */
+	suspend fun getUserProfileBackgroundUrl(profile: Profile, profileCreator: ProfileCreator): String {
+		// This is bad
+		val (settingsId, _, activeBackgroundInternalName) = loritta.newSuspendedTransaction {
+			val settingsId = profile.settings.id.value
+			val activeProfileDesignInternalName = profile.settings.activeProfileDesignInternalName?.value
+			val activeBackgroundInternalName = profile.settings.activeBackgroundInternalName?.value
+
+			Triple(settingsId, activeProfileDesignInternalName, activeBackgroundInternalName)
+		}
+
+		return getUserProfileBackgroundUrl(profile.userId, settingsId, profileCreator.internalName, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
 	}
 
 	/**

@@ -9,3 +9,5 @@ profileImageAltText: "Perfil do usuário {user}"
 options:
   user:
     text: "O usuário que você deseja ver o perfil social dele"
+  profileDesign:
+    text: "Com qual design de perfil você quer usar para ver o perfil"

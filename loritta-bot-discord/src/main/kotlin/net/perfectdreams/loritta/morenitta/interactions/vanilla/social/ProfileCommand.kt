@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
@@ -23,6 +24,7 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -30,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
+import net.perfectdreams.loritta.morenitta.profile.profiles.ProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.and
@@ -44,6 +47,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             i18nContext: I18nContext,
             sender: User,
             userToBeViewed: User,
+            profileCreator: ProfileCreator,
             result: ProfileDesignManager.ProfileCreationResult
         ): suspend InlineMessage<*>.() -> (Unit) = {
             files += FileUpload.fromData(result.image.inputStream(), "profile.${result.imageFormat.extension}")
@@ -90,10 +94,11 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 it.locale,
                                 loritta.profileDesignManager.transformUserToProfileUserInfoData(it.user),
                                 loritta.profileDesignManager.transformUserToProfileUserInfoData(it.user),
-                                guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
+                                guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) },
+                                profileCreator
                             )
 
-                            val message = createMessage(loritta, it.i18nContext, it.user, it.user, result)
+                            val message = createMessage(loritta, it.i18nContext, it.user, it.user, profileCreator, result)
 
                             hook.jdaHook.editOriginal(
                                 MessageEdit {
@@ -151,12 +156,50 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     inner class ProfileViewExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val user = optionalUser("user", PROFILE_VIEW_I18N_PREFIX.Options.User.Text)
+            val profileDesign = optionalString("profile_design", PROFILE_VIEW_I18N_PREFIX.Options.ProfileDesign.Text) {
+                autocomplete {
+                    val focusedOptionValue = it.event.focusedOption.value
+
+                    // Get which profile designs the user owns (self, or the mentioned user)
+                    val matchedUserId = try {
+                        // Because this is an autocomplete function, we cannot use "asUser" because that fails with "Could not resolve User from option type USER" because
+                        // the user is only resolved after sending the command
+                        //
+                        // To work around this, we parse it as a string and convert to a long, because the option is just the user's ID (without the user object)
+                        it.event.getOption("user")?.asString?.toLongOrNull()
+                    } catch (e: IllegalStateException) {
+                        null
+                    } ?: it.event.user.idLong
+
+                    // Get bought profile designs
+                    val boughtDesignsInternalNames = loritta.pudding.transaction {
+                        ProfileDesignsPayments.slice(ProfileDesignsPayments.profile).select {
+                            ProfileDesignsPayments.userId eq matchedUserId
+                        }.toSet().map { it[ProfileDesignsPayments.profile].value }
+                    }.toMutableList()
+
+                    // Add the default profile design ID
+                    boughtDesignsInternalNames.add(0, ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
+
+                    val boughtDesignsToInternalNames = mutableMapOf<String, String>()
+
+                    // We could filter on the database itself instead of filtering it here... but whatever, it doesn't really matter
+                    for (boughtDesign in boughtDesignsInternalNames.filter { internalName ->
+                        it.locale["profileDesigns.$internalName.title"].startsWith(focusedOptionValue)
+                    }) {
+                        boughtDesignsToInternalNames[it.locale["profileDesigns.$boughtDesign.title"]] = boughtDesign
+                    }
+
+                    return@autocomplete boughtDesignsToInternalNames
+                }
+            }
         }
 
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val userToBeViewed = args[options.user]?.user ?: context.user
+            val profileDesignInternalName = args[options.profileDesign]
 
             if (AccountUtils.checkAndSendMessageIfUserIsBanned(loritta, context, userToBeViewed))
                 return
@@ -165,16 +208,55 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val guild = context.guildOrNull
 
+            val profileCreator = if (profileDesignInternalName == null) {
+                // If null, get the user's active profile design
+                val userProfile = loritta.getOrCreateLorittaProfile(userToBeViewed.id.toLong())
+                val profileSettings = loritta.newSuspendedTransaction { userProfile.settings }
+
+                loritta.profileDesignManager.designs.firstOrNull {
+                    it.internalName == (profileSettings.activeProfileDesignInternalName?.value ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
+                } ?: loritta.profileDesignManager.defaultProfileDesign
+            } else {
+                // If not null, we need to validate if the user has the selected profile design!
+                // Get bought profile designs
+                val boughtDesignsInternalNames = loritta.pudding.transaction {
+                    ProfileDesignsPayments.slice(ProfileDesignsPayments.profile).select {
+                        ProfileDesignsPayments.userId eq userToBeViewed.idLong
+                    }.toSet().map { it[ProfileDesignsPayments.profile].value }
+                }.toMutableList()
+
+                // Add the default profile design ID
+                boughtDesignsInternalNames.add(0, ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
+
+                // Bot owners (MrPowerGamerBR yay!!!) can use any profile design without having them in their inventory
+                if (loritta.isOwner(userToBeViewed.idLong) || profileDesignInternalName in boughtDesignsInternalNames) {
+                    loritta.profileDesignManager.designs.firstOrNull {
+                        it.internalName == profileDesignInternalName
+                    } ?: loritta.profileDesignManager.defaultProfileDesign
+                } else {
+                    // Fallback to the default
+                    loritta.profileDesignManager.defaultProfileDesign
+                }
+            }
+
             val result = loritta.profileDesignManager.createProfile(
                 loritta,
                 context.i18nContext,
                 context.locale,
                 loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
                 loritta.profileDesignManager.transformUserToProfileUserInfoData(userToBeViewed),
-                guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
+                guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) },
+                profileCreator
             )
 
-            val message = createMessage(loritta, context.i18nContext, context.user, userToBeViewed, result)
+            val message = createMessage(
+                loritta,
+                context.i18nContext,
+                context.user,
+                userToBeViewed,
+                profileCreator,
+                result
+            )
 
             context.reply(false) {
                 message()
