@@ -302,6 +302,8 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                                             leftButton.asDisabled(),
                                             rightButton.asDisabled(),
                                             jumpToLastButton.asDisabled()
+                                                .withEmoji(LoadingEmojis.random().toJDA())
+                                                .asDisabled()
                                         )
                                     }
                                 ).submit()
