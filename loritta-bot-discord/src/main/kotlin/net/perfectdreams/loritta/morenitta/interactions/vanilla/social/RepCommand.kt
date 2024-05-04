@@ -5,6 +5,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinTimeZone
 import kotlinx.datetime.toLocalDateTime
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
@@ -110,7 +111,7 @@ class RepCommand : SlashCommandDeclarationWrapper {
                         .associate { formatReputation(it, context) to it.id.toString() }
                         .filterKeys { it.contains(context.event.interaction.focusedOption.value, true) }
                         .entries
-                        .take(25)
+                        .take(DiscordResourceLimits.Command.Options.ChoicesCount)
                         .associate { it.key to it.value }
                 }
             }

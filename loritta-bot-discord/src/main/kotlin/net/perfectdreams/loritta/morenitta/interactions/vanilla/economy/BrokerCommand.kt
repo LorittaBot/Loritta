@@ -2,20 +2,15 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import dev.minn.jda.ktx.messages.InlineEmbed
 import dev.minn.jda.ktx.messages.InlineMessage
-import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.serializable.BrokerTickerInformation
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -28,6 +23,8 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.serializable.BrokerTickerInformation
+import net.perfectdreams.loritta.serializable.UserId
 import java.awt.Color
 import kotlin.math.abs
 
@@ -456,7 +453,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     return@autocomplete results.map {
                         "${it.name} (${it.ticker})" to it.ticker.uppercase()
-                    }.take(25).toMap()
+                    }.take(DiscordResourceLimits.Command.Options.ChoicesCount).toMap()
                 }
             }
 
@@ -607,7 +604,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     return@autocomplete results.map {
                         "${it.name} (${it.ticker})" to it.ticker
-                    }.take(25).toMap()
+                    }.take(DiscordResourceLimits.Command.Options.ChoicesCount).toMap()
                 }
             }
 

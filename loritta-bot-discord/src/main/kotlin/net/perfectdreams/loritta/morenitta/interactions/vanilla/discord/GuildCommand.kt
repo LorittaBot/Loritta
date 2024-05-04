@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -265,7 +266,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                                 ) to "empty"
                             )
                         } else {
-                            return@autocomplete stickers.take(25).associate { "${it.name} (${it.id})" to it.id }
+                            return@autocomplete stickers.take(DiscordResourceLimits.Command.Options.ChoicesCount).associate { "${it.name} (${it.id})" to it.id }
                         }
                     } else {
                         val filteredStickers = stickers.filter { it.name.contains(stickerName, true) }

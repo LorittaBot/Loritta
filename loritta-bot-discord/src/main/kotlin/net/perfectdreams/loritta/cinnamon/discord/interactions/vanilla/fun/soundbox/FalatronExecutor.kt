@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApp
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
@@ -39,7 +40,7 @@ class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: F
                     .sortedBy { it.name }
                     .filter {
                         it.name.startsWith(focused.value, true)
-                    }.take(25).associate {
+                    }.take(DiscordResourceLimits.Command.Options.ChoicesCount).associate {
                         "${it.name} (${it.category})" to it.name
                     }
             }

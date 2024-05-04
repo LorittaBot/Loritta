@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.TranslateCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleTranslateLanguage
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -28,7 +29,7 @@ class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
             .filter {
                 autocompleteContext.i18nContext.get(it.languageNameI18nKey).startsWith(value, true)
             }
-            .take(25)
+            .take(DiscordResourceLimits.Command.Options.ChoicesCount)
             .associate {
                 autocompleteContext.i18nContext.get(TranslateCommand.I18N_PREFIX.LanguageFormat(it.languageNameI18nKey, it.code)) to it.code
             }
