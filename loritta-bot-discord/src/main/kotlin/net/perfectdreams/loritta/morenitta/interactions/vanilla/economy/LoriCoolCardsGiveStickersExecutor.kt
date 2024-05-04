@@ -344,21 +344,21 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                             when (finalResult) {
                                 GiveStickerAcceptedTransactionResult.EventUnavailable -> {
-                                    context.reply(false) {
+                                    it.reply(false) {
                                         styled(
                                             "Nenhum evento de figurinhas ativo"
                                         )
                                     }
                                 }
                                 GiveStickerAcceptedTransactionResult.UnknownCard -> {
-                                    context.reply(false) {
+                                    it.reply(false) {
                                         styled(
                                             context.i18nContext.get(I18N_PREFIX.TryingToGiveAnUnknownSticker)
                                         )
                                     }
                                 }
                                 is GiveStickerAcceptedTransactionResult.NotEnoughCards -> {
-                                    context.reply(false) {
+                                    it.reply(false) {
                                         styled(
                                             context.i18nContext.get(I18N_PREFIX.YouDontHaveEnoughStickers(finalResult.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
                                         )
