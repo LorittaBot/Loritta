@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserOwnedCards
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -22,8 +23,11 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
@@ -82,8 +86,31 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                 LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq userToBeViewed.idLong)
             }.toList()
 
+            // Have we finished the album? If yes, in what position are we in?
+            val rankOverField = rank().over().orderBy(LoriCoolCardsFinishedAlbumUsers.finishedAt, SortOrder.ASC)
+            val albumRank = LoriCoolCardsFinishedAlbumUsers.select(
+                LoriCoolCardsFinishedAlbumUsers.user,
+                LoriCoolCardsFinishedAlbumUsers.finishedAt,
+                rankOverField
+            ).where {
+                // We cannot filter by user here, if we do an "eq userToBeViewed.idLong" here, the rank position will always be 1 (or null, if the user hasn't completed the album)
+                // So we filter it after the fact
+                LoriCoolCardsFinishedAlbumUsers.event eq event[LoriCoolCardsEvents.id]
+            }.firstOrNull { it[LoriCoolCardsFinishedAlbumUsers.user] == userToBeViewed.idLong }
+
             // The stickers will be sticked when the user clicks to stick the sticker
-            return@transaction ViewAlbumResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]), alreadyStickedCards, totalStickers)
+            return@transaction ViewAlbumResult.Success(
+                Json.decodeFromString(event[LoriCoolCardsEvents.template]),
+                alreadyStickedCards,
+                totalStickers,
+                albumRank?.let {
+                    ViewAlbumResult.Success.FinishedAlbumResult(
+                        it[rankOverField],
+                        it[LoriCoolCardsFinishedAlbumUsers.finishedAt]
+                    )
+                }
+
+            )
         }
 
         when (result) {
@@ -150,6 +177,13 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                         context.i18nContext.get(I18N_PREFIX.StickedStickers(result.alreadyStickedCards.size, result.totalStickers)),
                         Emotes.LoriHanglooseRight
                     )
+
+                    if (result.finishedStats != null) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.FinishedAlbumStats(userToBeViewed.asMention, result.finishedStats.finishedRank, DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(result.finishedStats.finishedAt))),
+                            Emotes.Sparkles
+                        )
+                    }
 
                     files += FileUpload.fromData(album, "album.png")
                         .setDescription("Página ${pageCombo.pageLeft} e ${pageCombo.pageRight} do Álbum de Figurinhas de ${context.user.name}")
@@ -293,6 +327,16 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
     sealed class ViewAlbumResult {
         data object EventUnavailable : ViewAlbumResult()
-        class Success(val template: StickerAlbumTemplate, val alreadyStickedCards: List<ResultRow>, val totalStickers: Long) : ViewAlbumResult()
+        class Success(
+            val template: StickerAlbumTemplate,
+            val alreadyStickedCards: List<ResultRow>,
+            val totalStickers: Long,
+            val finishedStats: FinishedAlbumResult?
+        ) : ViewAlbumResult() {
+            data class FinishedAlbumResult(
+                val finishedRank: Long,
+                val finishedAt: Instant
+            )
+        }
     }
 }

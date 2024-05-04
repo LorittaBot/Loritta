@@ -43,7 +43,7 @@ album:
   userAlbum: "Álbum de Figurinhas de {user}"
   albumPages: "Páginas {pageLeft,number} e {pageRight,number}"
   stickedStickers: "**Figurinhas Coladas:** {totalAlbumCompletionCount,number}/{albumCardsCount,number} figurinhas"
-
+  finishedAlbumStats: "**{user} acabou o álbum em {finishedPosition,number}º lugar em {date}**"
   options:
     page:
       text: "A página do álbum de figurinhas que você quer ver"
