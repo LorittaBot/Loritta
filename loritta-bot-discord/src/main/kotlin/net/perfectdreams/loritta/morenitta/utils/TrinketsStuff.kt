@@ -87,7 +87,7 @@ object TrinketsStuff {
 
     fun updateTrinkets(pudding: Pudding) {
         runBlocking {
-            pudding.transaction(repetitions = 1) {
+            pudding.transaction(repetitions = Int.MAX_VALUE) {
                 // ===[ SETS ]===
                 for (set in sets) {
                     Sets.insertIgnore {
