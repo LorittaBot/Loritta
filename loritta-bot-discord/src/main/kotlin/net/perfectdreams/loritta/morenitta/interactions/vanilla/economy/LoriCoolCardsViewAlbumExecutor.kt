@@ -180,7 +180,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                     if (result.finishedStats != null) {
                         styled(
-                            context.i18nContext.get(I18N_PREFIX.FinishedAlbumStats(userToBeViewed.asMention, result.finishedStats.finishedRank, DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(result.finishedStats.finishedAt))),
+                            context.i18nContext.get(I18N_PREFIX.FinishedAlbumStats(user = userToBeViewed.asMention, finishedPosition = result.finishedStats.finishedRank, date = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(result.finishedStats.finishedAt))),
                             Emotes.Sparkles
                         )
                     }
