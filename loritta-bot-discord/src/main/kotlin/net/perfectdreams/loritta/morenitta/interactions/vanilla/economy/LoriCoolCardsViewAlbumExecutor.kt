@@ -179,8 +179,13 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                     )
 
                     if (result.finishedStats != null) {
+                        val dateString = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(result.finishedStats.finishedAt)
+
                         styled(
-                            context.i18nContext.get(I18N_PREFIX.FinishedAlbumStats(user = userToBeViewed.asMention, finishedPosition = result.finishedStats.finishedRank, date = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(result.finishedStats.finishedAt))),
+                            if (context.user == userToBeViewed)
+                                context.i18nContext.get(I18N_PREFIX.FinishedAlbumStatsYou(finishedPosition = result.finishedStats.finishedRank, date = dateString))
+                            else
+                                context.i18nContext.get(I18N_PREFIX.FinishedAlbumStatsOtherUser(user = userToBeViewed.asMention, finishedPosition = result.finishedStats.finishedRank, date = dateString)),
                             Emotes.Sparkles
                         )
                     }
