@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
@@ -186,7 +187,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     // We could filter on the database itself instead of filtering it here... but whatever, it doesn't really matter
                     for (boughtDesign in boughtDesignsInternalNames.filter { internalName ->
                         it.locale["profileDesigns.$internalName.title"].startsWith(focusedOptionValue)
-                    }) {
+                    }.take(DiscordResourceLimits.Command.Options.ChoicesCount)) {
                         boughtDesignsToInternalNames[it.locale["profileDesigns.$boughtDesign.title"]] = boughtDesign
                     }
 

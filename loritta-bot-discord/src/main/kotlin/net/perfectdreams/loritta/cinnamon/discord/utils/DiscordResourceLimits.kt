@@ -12,6 +12,8 @@ object DiscordResourceLimits {
         }
 
         object Options {
+            val ChoicesCount = 25
+
             object Description {
                 const val Length = 100
             }
