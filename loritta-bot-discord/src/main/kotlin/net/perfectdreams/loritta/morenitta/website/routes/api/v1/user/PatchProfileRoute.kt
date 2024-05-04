@@ -34,7 +34,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import pw.forst.exposed.insertOrUpdate
+import org.jetbrains.exposed.sql.upsert
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -197,7 +197,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.file)
 
 				if (newPath != null && preferredMediaType != null) {
-					CustomBackgroundSettings.insertOrUpdate(CustomBackgroundSettings.settings) {
+					CustomBackgroundSettings.upsert(CustomBackgroundSettings.settings) {
 						it[settings] = profileSettings.id
 						it[file] = newPath
 						it[CustomBackgroundSettings.preferredMediaType] = preferredMediaType

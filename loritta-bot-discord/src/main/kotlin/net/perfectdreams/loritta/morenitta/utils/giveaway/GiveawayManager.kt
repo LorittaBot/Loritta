@@ -240,7 +240,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                 this.color = color?.let { String.format("#%02x%02x%02x", it.red, it.green, it.blue) }
                 this.customMessage = customMessage
                 this.locale = locale.id
-                this.roleIds = roleIds?.toTypedArray()
+                this.roleIds = roleIds
                 if (allowedRoles != null)
                     this.allowedRoles = Json.encodeToString(allowedRoles)
                 if (deniedRoles != null)

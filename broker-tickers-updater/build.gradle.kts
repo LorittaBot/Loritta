@@ -13,7 +13,6 @@ dependencies {
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.javatime)
-    implementation("pw.forst", "exposed-upsert", "1.1.0")
     implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
 }
 

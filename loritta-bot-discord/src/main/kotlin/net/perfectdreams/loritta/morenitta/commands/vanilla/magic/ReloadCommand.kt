@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteAssetsHashes
 import java.io.File
-import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -70,8 +70,8 @@ class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", ca
 					this.textChannelId = 532653936188850177L
 					this.messageId = 532654456878268433L
 					this.reaction = "331179879582269451"
-					this.roleIds = arrayOf("334734175531696128")
-					this.locks = arrayOf()
+					this.roleIds = listOf("334734175531696128")
+					this.locks = listOf()
 				}
 			}
 

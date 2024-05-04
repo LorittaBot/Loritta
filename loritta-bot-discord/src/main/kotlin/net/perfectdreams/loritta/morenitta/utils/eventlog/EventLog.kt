@@ -27,8 +27,8 @@ import net.perfectdreams.loritta.morenitta.dao.StoredMessage
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import org.jetbrains.exposed.sql.upsert
 import org.json.JSONException
-import pw.forst.exposed.insertOrUpdate
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -121,7 +121,7 @@ object EventLog {
 
 					withContext(Dispatchers.IO) {
 						loritta.pudding.transaction {
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+							CachedDiscordWebhooks.upsert(CachedDiscordWebhooks.id) {
 								it[id] = channelId
 								// We don't replace the webhook token here... there is no pointing in replacing it.
 								it[state] = WebhookState.MISSING_PERMISSION
@@ -158,7 +158,7 @@ object EventLog {
 				guildWebhookFromDatabase = withContext(Dispatchers.IO) {
 					loritta.pudding.transaction {
 						CachedDiscordWebhook.wrapRow(
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+							CachedDiscordWebhooks.upsert(CachedDiscordWebhooks.id) {
 								it[id] = channelId
 								it[webhookId] = webhook.idLong
 								it[webhookToken] = webhook.token!! // I doubt that the token can be null so let's just force null, heh
@@ -173,7 +173,7 @@ object EventLog {
 
 				withContext(Dispatchers.IO) {
 					loritta.pudding.transaction {
-						CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+						CachedDiscordWebhooks.upsert(CachedDiscordWebhooks.id) {
 							it[id] = channelId
 							// We don't replace the webhook token here... there is no pointing in replacing it.
 							it[state] = WebhookState.MISSING_PERMISSION
@@ -256,7 +256,7 @@ object EventLog {
 						authorId = message.author.idLong
 						channelId = message.channel.idLong
 						createdAt = System.currentTimeMillis()
-						storedAttachments = attachments.toTypedArray()
+						storedAttachments = attachments
 						this.encryptAndSetContent(loritta, message.contentRaw)
 					}
 				}

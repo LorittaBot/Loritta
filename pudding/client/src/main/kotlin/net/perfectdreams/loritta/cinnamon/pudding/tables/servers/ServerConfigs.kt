@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables.servers
 
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SnowflakeTable
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.array
 import org.jetbrains.exposed.sql.LongColumnType
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.TextColumnType
@@ -13,10 +12,10 @@ object ServerConfigs : SnowflakeTable() {
     val deleteMessageAfterCommand = bool("delete_message_after_command").default(false)
     val warnOnMissingPermission = bool("warn_on_missing_permission").default(false)
     val warnOnUnknownCommand = bool("warn_on_unknown_command").default(false)
-    val blacklistedChannels = array<Long>("blacklisted_channels", LongColumnType()).default(arrayOf())
+    val blacklistedChannels = array<Long>("blacklisted_channels", LongColumnType()).default(listOf())
     val warnIfBlacklisted = bool("warn_if_blacklisted").default(false)
     val blacklistedWarning = text("blacklisted_warning").nullable()
-    val disabledCommands = array<String>("disabled_commands", TextColumnType()).default(arrayOf())
+    val disabledCommands = array<String>("disabled_commands", TextColumnType()).default(listOf())
     // val donationKey = optReference("donation_key", DonationKeys)
     val donationConfig = optReference("donation_config", DonationConfigs, onDelete = ReferenceOption.CASCADE).index()
     val economyConfig = optReference("economy_config", EconomyConfigs, onDelete = ReferenceOption.CASCADE).index()

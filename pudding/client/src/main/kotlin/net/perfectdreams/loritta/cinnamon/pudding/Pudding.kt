@@ -140,12 +140,17 @@ class Pudding(
         }
 
         // Loritta (Legacy) uses this!
+        @OptIn(ExperimentalKeywordApi::class)
         fun connectToDatabase(dataSource: HikariDataSource): Database =
             Database.connect(
                 dataSource,
                 databaseConfig = DatabaseConfig {
                     defaultRepetitionAttempts = 5
                     defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
+                    // "A table that is created with a keyword identifier now logs a warning that the identifier's case may be lost when it is automatically quoted in generated SQL."
+                    // "DatabaseConfig now includes the property preserveKeywordCasing, which can be set to true to remove these warnings and to ensure that the identifier matches the exact case used."
+                    // Our tables are all in lowercase because that's what the default Exposed behavior was, so we need to set this to false
+                    preserveKeywordCasing = false
                 }
             )
     }

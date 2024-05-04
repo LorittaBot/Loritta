@@ -25,14 +25,14 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
         loritta.newSuspendedTransaction {
             val levelConfig = serverConfig.levelConfig ?: LevelConfig.new {
                 this.roleGiveType = RoleGiveType.STACK
-                this.noXpChannels = arrayOf()
-                this.noXpRoles = arrayOf()
+                this.noXpChannels = listOf()
+                this.noXpRoles = listOf()
             }
 
             // Main
             levelConfig.roleGiveType = RoleGiveType.valueOf(payload["roleGiveType"].string)
-            levelConfig.noXpChannels = payload["noXpChannels"].array.map { it.long }.toTypedArray()
-            levelConfig.noXpRoles = payload["noXpRoles"].array.map { it.long }.toTypedArray()
+            levelConfig.noXpChannels = payload["noXpChannels"].array.map { it.long }
+            levelConfig.noXpRoles = payload["noXpRoles"].array.map { it.long }
 
             // Announcements
             // Deletar todas que já existem
@@ -66,7 +66,7 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
 
             for (roleByExperience in rolesByExperience.map { it.obj }) {
                 val requiredExperience = roleByExperience["requiredExperience"].long
-                val roles = roleByExperience["roles"].array.map { it.long }.toTypedArray()
+                val roles = roleByExperience["roles"].array.map { it.long }
 
                 RolesByExperience.insert {
                     it[RolesByExperience.guildId] = serverConfig.guildId

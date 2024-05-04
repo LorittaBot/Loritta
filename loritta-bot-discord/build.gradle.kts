@@ -55,7 +55,6 @@ dependencies {
     api(libs.exposed.javatime)
     api(libs.exposed.dao)
     implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.2.1")
-    implementation("pw.forst:exposed-upsert:1.1.0")
 
     // DreamStorageService
     implementation("net.perfectdreams.dreamstorageservice:client:2.0.2")

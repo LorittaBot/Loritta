@@ -20,7 +20,7 @@ class AutoroleConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
 
         return jsonObject(
                 "enabled" to (autoroleConfig?.enabled ?: false),
-                "roles" to (autoroleConfig?.roles ?: arrayOf()).take(DiscordResourceLimits.Guild.Roles).toList().toJsonArray(),
+                "roles" to (autoroleConfig?.roles ?: listOf()).take(DiscordResourceLimits.Guild.Roles).toList().toJsonArray(),
                 "giveRolesAfter" to (autoroleConfig?.giveRolesAfter),
                 "giveOnlyAfterMessageWasSent" to (autoroleConfig?.giveOnlyAfterMessageWasSent ?: false)
         )
@@ -30,13 +30,13 @@ class AutoroleConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
         loritta.newSuspendedTransaction {
             val autoroleConfig = serverConfig.autoroleConfig ?: AutoroleConfig.new {
                 this.enabled = false
-                this.roles = arrayOf()
+                this.roles = listOf()
                 this.giveRolesAfter = null
                 this.giveOnlyAfterMessageWasSent = false
             }
 
             autoroleConfig.enabled = payload["enabled"].bool
-            autoroleConfig.roles = payload["roles"].array.take(DiscordResourceLimits.Guild.Roles).map { it.long }.toTypedArray()
+            autoroleConfig.roles = payload["roles"].array.take(DiscordResourceLimits.Guild.Roles).map { it.long }
             autoroleConfig.giveRolesAfter = payload["giveRolesAfter"].nullLong
             autoroleConfig.giveOnlyAfterMessageWasSent = payload["giveOnlyAfterMessageWasSent"].bool
 

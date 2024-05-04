@@ -19,9 +19,9 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlock
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.morenitta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
@@ -112,7 +112,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthR
 			val warnMessage = receivedPayload["warnMessage"].string
 			val whitelistedChannels = receivedPayload["whitelistedChannels"].array
 				.map { it.long }
-				.toTypedArray()
 
 			loritta.newSuspendedTransaction {
 				val inviteBlockerConfig = serverConfig.inviteBlockerConfig
@@ -167,7 +166,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthR
 		loritta.newSuspendedTransaction {
 			serverConfig.disabledCommands = receivedPayload["disabledCommands"].array
 				.map { it.string }
-				.toTypedArray()
 		}
 
 		return "${serverConfig.disabledCommands.size} comandos bloqueados!"

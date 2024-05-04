@@ -30,7 +30,7 @@ class GeneralConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
             serverConfig.deleteMessageAfterCommand = payload["deleteMessageAfterCommand"].bool
             serverConfig.warnOnUnknownCommand = payload["warnOnUnknownCommand"].bool
             serverConfig.warnIfBlacklisted = payload["warnIfBlacklisted"].bool
-            serverConfig.blacklistedChannels = payload["blacklistedChannels"].array.take(DiscordResourceLimits.Guild.Channels).map { it.long }.toTypedArray()
+            serverConfig.blacklistedChannels = payload["blacklistedChannels"].array.take(DiscordResourceLimits.Guild.Channels).map { it.long }
             serverConfig.blacklistedWarning = payload["blacklistedWarning"].nullString
         }
     }
