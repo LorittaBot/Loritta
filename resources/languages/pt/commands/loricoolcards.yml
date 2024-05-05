@@ -77,6 +77,9 @@ stats:
 compare:
   label: "comparar"
   description: "Compara quais figurinhas você tem e que a outra pessoa precisa, e vice-versa"
+  whatStickersYouNeedThatTheOtherUserHas: "**Figurinhas que você precisa e que {userToBeComparedTo} tem ({stickerCount,number}):** {stickerList}"
+  whatStickersYouHaveThatTheOtherUserNeeds: "**Figurinhas que {friend} precisa e você tem ({stickerCount,number}):** {stickerList}"
+  noStickersToBeCompared: "*Nenhuma Figurinha*"
   options:
     user:
       text: "O usuário que você deseja comparar as suas figurinhas com as dele"

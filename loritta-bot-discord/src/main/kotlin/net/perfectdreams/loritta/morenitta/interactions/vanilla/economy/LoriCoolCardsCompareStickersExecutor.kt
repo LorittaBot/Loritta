@@ -132,7 +132,12 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                             }
                         }
 
-                        description = "${Emotes.LoriHanglooseRight} **Figurinhas que você precisa e que ${userToBeComparedTo.user.asMention} tem:** ${yourStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }}\n\n${Emotes.PantufaHanglooseRight} **Figurinhas que ${userToBeComparedTo.user.asMention} precisa e você tem:** ${friendStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }}"
+                        description = buildString {
+                            append("${Emotes.LoriHanglooseRight} ${context.i18nContext.get(I18N_PREFIX.WhatStickersYouNeedThatTheOtherUserHas(userToBeComparedTo = userToBeComparedTo.user.asMention, yourStickersMissing.size, if (yourStickersMissing.isEmpty()) context.i18nContext.get(I18N_PREFIX.NoStickersToBeCompared) else yourStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }))}")
+                            append("\n\n")
+                            append("${Emotes.PantufaHanglooseRight} ${context.i18nContext.get(I18N_PREFIX.WhatStickersYouHaveThatTheOtherUserNeeds(friend = userToBeComparedTo.user.asMention, friendStickersMissing.size, if (friendStickersMissing.isEmpty()) context.i18nContext.get(I18N_PREFIX.NoStickersToBeCompared) else friendStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }))}")
+                        }
+
                         color = LorittaColors.LorittaAqua.rgb
                     }
                 }
