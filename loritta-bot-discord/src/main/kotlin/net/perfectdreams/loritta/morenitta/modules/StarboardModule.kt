@@ -70,12 +70,13 @@ class StarboardModule(val loritta: LorittaBot) {
 
 				val starboardEmbedMessage = loritta.newSuspendedTransaction {
 					StarboardMessage.find {
-						StarboardMessages.guildId eq e.guild.idLong and (StarboardMessages.messageId eq e.messageIdLong)
+						StarboardMessages.guildId eq e.guild.idLong and (StarboardMessages.messageId eq messageThatWasReactedTo.idLong)
 					}.firstOrNull()
 				}
 
 				val starboardEmbedMessageId = starboardEmbedMessage?.embedId
 
+				// Here we are getting the message on the starboard channel
 				var starboardMessage: Message? = starboardEmbedMessageId?.let {
 					try {
 						textChannel.retrieveMessageById(starboardEmbedMessageId).await()
@@ -113,7 +114,7 @@ class StarboardModule(val loritta: LorittaBot) {
 						// Delete all previous starboard messages related to this message
 						// Avoid issues when, somehow, Loritta keeps resending a new message because she can't query the previous message (maybe it was deleted?)
 						StarboardMessages.deleteWhere {
-							(StarboardMessages.guildId eq e.guild.idLong) eq (StarboardMessages.messageId eq messageThatWasReactedTo.idLong)
+							(StarboardMessages.guildId eq e.guild.idLong) and (StarboardMessages.messageId eq messageThatWasReactedTo.idLong)
 						}
 
 						StarboardMessage.new {
