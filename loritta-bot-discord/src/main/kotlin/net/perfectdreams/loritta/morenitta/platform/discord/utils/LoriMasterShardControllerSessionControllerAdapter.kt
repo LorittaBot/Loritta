@@ -5,7 +5,6 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
-import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ConcurrentLoginBuckets
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
@@ -13,6 +12,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.upsert
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue

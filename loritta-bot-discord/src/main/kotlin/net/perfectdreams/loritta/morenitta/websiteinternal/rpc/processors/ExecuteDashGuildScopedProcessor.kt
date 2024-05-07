@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.concrete.*
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
-import net.perfectdreams.exposedpowerutils.sql.batchUpsert
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedTwitchChannels
@@ -845,11 +844,11 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                     queriedUsers,
                     CachedTwitchChannels.id,
                     shouldReturnGeneratedValues = false
-                ) { it, item ->
-                    it[CachedTwitchChannels.id] = item.id
-                    it[CachedTwitchChannels.userLogin] = item.login
-                    it[CachedTwitchChannels.data] = Json.encodeToString(item)
-                    it[CachedTwitchChannels.queriedAt] = Instant.now()
+                ) { item ->
+                    this[CachedTwitchChannels.id] = item.id
+                    this[CachedTwitchChannels.userLogin] = item.login
+                    this[CachedTwitchChannels.data] = Json.encodeToString(item)
+                    this[CachedTwitchChannels.queriedAt] = Instant.now()
                 }
             }
         }
@@ -899,11 +898,11 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                     queriedUsers,
                     CachedTwitchChannels.id,
                     shouldReturnGeneratedValues = false
-                ) { it, item ->
-                    it[CachedTwitchChannels.id] = item.id
-                    it[CachedTwitchChannels.userLogin] = item.login
-                    it[CachedTwitchChannels.data] = Json.encodeToString(item)
-                    it[CachedTwitchChannels.queriedAt] = Instant.now()
+                ) { item ->
+                    this[CachedTwitchChannels.id] = item.id
+                    this[CachedTwitchChannels.userLogin] = item.login
+                    this[CachedTwitchChannels.data] = Json.encodeToString(item)
+                    this[CachedTwitchChannels.queriedAt] = Instant.now()
                 }
             }
         }

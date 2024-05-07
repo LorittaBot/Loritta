@@ -1,22 +1,21 @@
 package net.perfectdreams.loritta.morenitta.youtube
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.gson
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import mu.KotlinLogging
-import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.gson
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.upsert
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : RunnableCoroutine {

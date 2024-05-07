@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
-import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.BaseRoute
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.AuthorizedTwitchAccounts
 import net.perfectdreams.switchtwitch.SwitchTwitchAPI
+import org.jetbrains.exposed.sql.upsert
 import java.time.Instant
 
 class TwitchCallbackRoute(val m: LorittaDashboardBackend) : BaseRoute("/twitch-callback") {
