@@ -8,7 +8,6 @@ version = "1.0-SNAPSHOT"
 
 kotlin {
     jvm {
-        jvmToolchain(17)
         withJava()
     }
     js(IR) { // Use new, but experimental, compiler
