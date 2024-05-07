@@ -7,6 +7,7 @@ info:
   emojiName: "Nome do emoji"
   mention: "Menção"
   openEmojiInBrowser: "Abrir emoji no navegador" #Used in a button, when clicking the button, Discord opens the emoji in the user's browser
+  seeInformations: "Ver informações"
   emojiId: "ID do emoji"
   createdBy: "Criado por"
   createdAt: "Criado em"

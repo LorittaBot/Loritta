@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -13,46 +14,12 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
+import java.time.OffsetDateTime
 import kotlin.streams.toList
 
 class EmojiCommand : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Emoji
-
-        fun createDiscordCustomEmojiInfoEmbed(context: UnleashedContext, emoji: CustomEmoji) = Embed {
-            val cachedEmoji = context.loritta.lorittaShards.getEmoteById(emoji.id)
-            val canUse = cachedEmoji != null
-            val emojiCreatedAt = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(emoji.timeCreated)
-
-            val emojiTitle = if (canUse)
-                emoji.asMention
-            else
-                "✨"
-
-            color = Constants.DISCORD_BLURPLE.rgb
-            title = "$emojiTitle ${context.i18nContext.get(I18N_PREFIX.Info.AboutEmoji)}"
-            thumbnail = emoji.imageUrl
-            field {
-                name = "${Emotes.BookMark} ${context.i18nContext.get(I18N_PREFIX.Info.EmojiName)}"
-                value = "`${emoji.name}`"
-                inline = true
-            }
-            field {
-                name = "${Emotes.Computer} ${context.i18nContext.get(I18N_PREFIX.Info.EmojiId)}"
-                value = "`${emoji.id}`"
-                inline = true
-            }
-            field {
-                name = "${Emotes.Eyes} ${context.i18nContext.get(I18N_PREFIX.Info.Mention)}"
-                value = "`${emoji.asMention}`"
-                inline = true
-            }
-            field {
-                name = "${Emotes.Date} ${context.i18nContext.get(I18N_PREFIX.Info.CreatedAt)}"
-                value = emojiCreatedAt
-                inline = true
-            }
-        }
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.DISCORD) {
@@ -76,105 +43,164 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val emoji = args[options.emoji]
+            val emojiResolvable = args[options.emoji]
+            val firstEmoji = context.mentions.customEmojis.firstOrNull()
 
-            val emojis = context.guild.emojis
-
-            if (emojis.any { it.asMention == emoji || it.name == emoji }) {
-                // Search the emoji by name or mention...
-                val searchedEmoji = emojis.first { it.asMention == emoji || it.name == emoji }
-
-                if (searchedEmoji != null) {
-                    context.reply(false) {
-                        embeds.plusAssign(createDiscordCustomEmojiInfoEmbed(context, searchedEmoji))
-
-                        actionRow(
-                            Button.link(
-                                searchedEmoji.imageUrl + "?size=2048",
-                                context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
-                            )
-                        )
-                    }
-                }
-
+            if (emojiResolvable == firstEmoji?.asMention) {
+                sendEmojiMessage(context, firstEmoji)
                 return
-            } else if (emoji.isValidSnowflake()) {
-                // Search for the emoji by ID...
-                val searchedEmoji = context.loritta.lorittaShards.getEmoteById(emoji)
+            } else if (emojiResolvable.isValidSnowflake()) {
+                val emoji = context.loritta.lorittaShards.getEmoteById(emojiResolvable)
 
-                if (searchedEmoji != null) {
-                    context.reply(false) {
-                        embeds.plusAssign(createDiscordCustomEmojiInfoEmbed(context, searchedEmoji))
-
-                        actionRow(
-                            Button.link(
-                                searchedEmoji.imageUrl + "?size=2048",
-                                context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
-                            )
+                if (emoji != null) {
+                    sendEmojiMessage(context, emoji)
+                } else {
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Info.EmojiNotFound(emojiResolvable))
                         )
                     }
                 }
+            } else if (Constants.EMOJI_PATTERN.matcher(emojiResolvable).find()) {
+                val codePoints = emojiResolvable.codePoints().toList().map { LorittaUtils.toUnicode(it).substring(2) }
 
-                return
-            } else {
-                // If it's not an emoji ID or mention... Then it can be a unicode emoji!
-                val isUnicode = Constants.EMOJI_PATTERN.matcher(emoji).find()
+                val result = codePoints.joinToString(separator = "-")
+                val emojiUrl = "https://abs.twimg.com/emoji/v2/72x72/$result.png"
 
-                if (isUnicode) {
-                    val codePoints = emoji.codePoints().toList().map { LorittaUtils.toUnicode(it).substring(2) }
-
-                    val result = codePoints.joinToString(separator = "-")
-                    val emojiUrl = "https://abs.twimg.com/emoji/v2/72x72/$result.png"
-
-                    val names = mutableListOf<String>()
-                    emoji.codePoints().forEach {
-                        val name = Character.getName(it)
-                        if (name != null)
-                            names.add(name)
-                    }
-
-                    context.reply(false) {
-                        embed {
-                            color = Constants.DISCORD_BLURPLE.rgb
-                            title = "$emoji ${context.i18nContext.get(I18N_PREFIX.Info.AboutEmoji)}"
-                            thumbnail = emojiUrl
-
-                            if (names.isNotEmpty()) field {
-                                name = "${Emotes.BookMark} ${context.i18nContext.get(I18N_PREFIX.Info.EmojiName)}"
-                                value = "`${names.joinToString(" + ")}`"
-                                inline = true
-                            }
-
-                            field {
-                                name = "${Emotes.Eyes} ${context.i18nContext.get(I18N_PREFIX.Info.Mention)}"
-                                value = "`$emoji`"
-                                inline = true
-                            }
-                            field {
-                                name = "${Emotes.Computer} Unicode"
-                                value = "`${codePoints.joinToString("") { "\\$it" }}`"
-                                inline = true
-                            }
-                        }
-
-                        actionRow(
-                            Button.link(
-                                emojiUrl,
-                                context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
-                            )
-                        )
-                    }
-
-                    return
+                val names = mutableListOf<String>()
+                emojiResolvable.codePoints().forEach {
+                    val name = Character.getName(it)
+                    if (name != null)
+                        names.add(name)
                 }
 
-                // If none of the options works... fail it.
-                context.fail(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Info.EmojiNotFound(emoji)),
-                        Emotes.LoriHm
+                context.reply(false) {
+                    embed {
+                        title = "$emojiResolvable ${context.i18nContext.get(I18N_PREFIX.Info.AboutEmoji)}"
+                        color = Constants.DISCORD_BLURPLE.rgb
+                        image = emojiUrl
+                    }
+
+                    actionRow(
+                        Button.link(
+                            emojiUrl,
+                            context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
+                        ),
+                        context.loritta.interactivityManager
+                            .buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.Info.SeeInformations)) { info ->
+                                info.deferAndEditOriginal {
+                                    embed {
+                                        color = Constants.DISCORD_BLURPLE.rgb
+                                        title = "$emojiResolvable ${context.i18nContext.get(I18N_PREFIX.Info.AboutEmoji)}"
+                                        thumbnail = emojiUrl
+
+                                        if (names.isNotEmpty()) field {
+                                            name = "${Emotes.BookMark} ${context.i18nContext.get(I18N_PREFIX.Info.EmojiName)}"
+                                            value = "`${names.joinToString(" + ")}`"
+                                            inline = true
+                                        }
+
+                                        field {
+                                            name = "${Emotes.Eyes} ${context.i18nContext.get(I18N_PREFIX.Info.Mention)}"
+                                            value = "`$emojiResolvable`"
+                                            inline = true
+                                        }
+                                        field {
+                                            name = "${Emotes.Computer} Unicode"
+                                            value = "`${codePoints.joinToString("") { "\\$it" }}`"
+                                            inline = true
+                                        }
+                                    }
+
+                                    actionRow(
+                                        Button.link(
+                                            emojiUrl,
+                                            context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
+                                        )
+                                    )
+                                }
+                            }
                     )
                 }
+            } else {
+                val foundEmote = context.guild.getEmojisByName(emojiResolvable, true).firstOrNull()
+
+                if (foundEmote != null) {
+                    sendEmojiMessage(context, foundEmote)
+                } else {
+                    context.fail(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Info.EmojiNotFound(emojiResolvable))
+                        )
+                    }
+                }
+            }
+        }
+
+        private suspend fun sendEmojiMessage(context: UnleashedContext, emoji: CustomEmoji) {
+            val cachedEmoji = context.loritta.lorittaShards.getEmoteById(emoji.id)
+            val emojiCreatedAt = DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(emoji.timeCreated)
+
+            context.reply(false) {
+                embed {
+                    title = "\uD83D\uDDBC ${if (cachedEmoji != null) emoji.asMention else "✨"}"
+                    color = Constants.DISCORD_BLURPLE.rgb
+
+                    image = "${emoji.imageUrl}?size=2048"
+                }
+
+                actionRow(
+                    Button.link(
+                        "${emoji.imageUrl}?size=2048",
+                        context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
+                    ),
+                    context.loritta.interactivityManager
+                        .buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.Info.SeeInformations)) {
+                            try {
+                                it.deferAndEditOriginal {
+                                    embed {
+                                        title = "${if (cachedEmoji != null) emoji.asMention else "✨"} ${context.i18nContext.get(I18N_PREFIX.Info.AboutEmoji)}"
+                                        color = Constants.DISCORD_BLURPLE.rgb
+                                        thumbnail = emoji.imageUrl
+
+                                        field {
+                                            name = "${Emotes.BookMark} ${context.i18nContext.get(I18N_PREFIX.Info.EmojiName)}"
+                                            value = "`${emoji.name}`"
+                                            inline = true
+                                        }
+                                        field {
+                                            name = "${Emotes.Computer} ${context.i18nContext.get(I18N_PREFIX.Info.EmojiId)}"
+                                            value = "`${emoji.id}`"
+                                            inline = true
+                                        }
+                                        field {
+                                            name = "${Emotes.Eyes} ${context.i18nContext.get(I18N_PREFIX.Info.Mention)}"
+                                            value = "`${emoji.asMention}`"
+                                            inline = true
+                                        }
+                                        field {
+                                            name = "${Emotes.Date} ${context.i18nContext.get(I18N_PREFIX.Info.CreatedAt)}"
+                                            value = emojiCreatedAt
+                                            inline = true
+                                        }
+                                    }
+
+                                    actionRow(
+                                        Button.link(
+                                            "${emoji.imageUrl}?size=2048",
+                                            context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
+                                        )
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                it.reply(true) {
+                                    styled(
+                                        "Não foi possível pegar as informações desse emoji."
+                                    )
+                                }
+                            }
+                        }
+                )
             }
         }
 
@@ -183,24 +209,9 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
             val arg0 = args.getOrNull(0)
-            val firstEmote = context.mentions.customEmojis.firstOrNull()
+            if (arg0 != null) return mapOf(options.emoji to arg0)
 
-            when (arg0) {
-                null -> {
-                    context.explain()
-                    return null
-                }
-                firstEmote?.asMention -> return mapOf(options.emoji to firstEmote.id)
-                else -> {
-                    val emojiByName = context.guild.getEmojisByName(arg0, true).firstOrNull()
-
-                    return if (emojiByName != null) {
-                        mapOf(options.emoji to emojiByName.id)
-                    } else {
-                        mapOf(options.emoji to arg0)
-                    }
-                }
-            }
+            return null
         }
     }
 }
