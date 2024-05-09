@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
@@ -42,28 +41,28 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(SoundboxCommand(languageManager))
 
             // ===[ IMAGES ]===
-            register(DrakeCommand(languageManager))
-            register(SonicCommand(languageManager))
-            register(ArtCommand(languageManager))
-            register(BobBurningPaperCommand(languageManager))
-            register(BRMemesCommand(languageManager))
-            register(BuckShirtCommand(languageManager))
-            register(LoriSignCommand(languageManager))
-            register(PassingPaperCommand(languageManager))
-            register(PepeDreamCommand(languageManager))
-            register(PetPetCommand(languageManager))
-            register(WolverineFrameCommand(languageManager))
-            register(RipTvCommand(languageManager))
-            register(SustoCommand(languageManager))
-            register(GetOverHereCommand(languageManager))
-            register(NichijouYuukoPaperCommand(languageManager))
-            register(TrumpCommand(languageManager))
-            register(TerminatorAnimeCommand(languageManager))
-            register(ToBeContinuedCommand(languageManager))
-            register(InvertColorsCommand(languageManager))
-            register(MemeMakerCommand(languageManager))
-            register(MarkMetaCommand(languageManager))
-            register(DrawnMaskCommand(languageManager))
+            // register(DrakeCommand(languageManager))
+            // register(SonicCommand(languageManager))
+            // register(ArtCommand(languageManager))
+            // register(BobBurningPaperCommand(languageManager))
+            // register(BRMemesCommand(languageManager))
+            // register(BuckShirtCommand(languageManager))
+            // register(LoriSignCommand(languageManager))
+            // register(PassingPaperCommand(languageManager))
+            // register(PepeDreamCommand(languageManager))
+            // register(PetPetCommand(languageManager))
+            // register(WolverineFrameCommand(languageManager))
+            // register(RipTvCommand(languageManager))
+            // register(SustoCommand(languageManager))
+            // register(GetOverHereCommand(languageManager))
+            // register(NichijouYuukoPaperCommand(languageManager))
+            // register(TrumpCommand(languageManager))
+            // register(TerminatorAnimeCommand(languageManager))
+            // register(ToBeContinuedCommand(languageManager))
+            // register(InvertColorsCommand(languageManager))
+            // register(MemeMakerCommand(languageManager))
+            // register(MarkMetaCommand(languageManager))
+            // register(DrawnMaskCommand(languageManager))
 
             // ===[ VIDEOS ]===
             register(CarlyAaahCommand(languageManager))
