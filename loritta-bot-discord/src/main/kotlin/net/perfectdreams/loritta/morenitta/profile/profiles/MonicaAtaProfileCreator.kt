@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.LorittaImage
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
+import net.perfectdreams.loritta.morenitta.utils.*
 import java.awt.Color
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
@@ -127,6 +127,6 @@ class MonicaAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 			y += 14
 		}
 
-		return base.makeRoundedCorners(15)
+		return base
 	}
 }

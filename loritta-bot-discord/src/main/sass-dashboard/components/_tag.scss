@@ -1,0 +1,20 @@
+.tag {
+    background-color: #ED4245;
+    color: white;
+    font-weight: bold;
+    border-radius: 0.1875em;
+    font-size: 0.625em;
+    display: inline;
+    padding: 0.3em 0.5em;
+    text-transform: uppercase;
+    position: relative;
+    bottom: 0.15em;
+
+    &.primary {
+        background-color: var(--loritta-blue);
+    }
+
+    &.warn {
+        background-color: #ed4245;
+    }
+}

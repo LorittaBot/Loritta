@@ -1,13 +1,13 @@
 package net.perfectdreams.spicymorenitta
 
-import kotlinx.serialization.Serializable
-import net.perfectdreams.spicymorenitta.utils.onDOMReady
-import net.perfectdreams.spicymorenitta.utils.select
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLElement
 import kotlinx.browser.document
 import kotlinx.dom.addClass
 import kotlinx.dom.removeClass
+import kotlinx.serialization.Serializable
+import net.perfectdreams.spicymorenitta.utils.onDOMContentLoaded
+import net.perfectdreams.spicymorenitta.utils.select
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLElement
 
 object WebsiteThemeUtils {
 	fun changeWebsiteThemeTo(newTheme: WebsiteTheme, afterPageLoad: Boolean) {
@@ -33,7 +33,7 @@ object WebsiteThemeUtils {
 		}
 
 		if (afterPageLoad)
-			document.onDOMReady {
+			document.onDOMContentLoaded {
 				callback.invoke()
 			}
 		else

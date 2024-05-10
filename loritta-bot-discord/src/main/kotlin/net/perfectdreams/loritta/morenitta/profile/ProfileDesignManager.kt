@@ -689,7 +689,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		}
 	}
 
-	private fun getDreamStorageServiceBackgroundUrl(
+	fun getDreamStorageServiceBackgroundUrl(
 		dreamStorageServiceUrl: String,
 		namespace: String,
 		background: BackgroundVariation
@@ -698,7 +698,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(background.file).join()}.$extension"
 	}
 
-	private fun getDreamStorageServiceBackgroundUrlWithCropParameters(
+	fun getDreamStorageServiceBackgroundUrlWithCropParameters(
 		dreamStorageServiceUrl: String,
 		namespace: String,
 		variation: BackgroundVariation
@@ -710,7 +710,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		return url
 	}
 
-	private fun getEtherealGambiBackgroundUrl(background: BackgroundVariation): String {
+	fun getEtherealGambiBackgroundUrl(background: BackgroundVariation): String {
 		val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
 		return loritta.config.loritta.etherealGambiService.url.removeSuffix("/") + "/" + background.file + ".$extension"
 	}

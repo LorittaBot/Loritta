@@ -1,0 +1,21 @@
+// Quick Magic are rules that are similar to how Tailwind works: For components and things that we *really* don't need to create a whole rule just for them
+.qm {
+    &.vertical-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+    }
+
+    &.horizontal-list {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5em;
+        flex-wrap: wrap;
+    }
+
+    &.child-flex-grow {
+        &>* {
+            flex-grow: 1;
+        }
+    }
+}

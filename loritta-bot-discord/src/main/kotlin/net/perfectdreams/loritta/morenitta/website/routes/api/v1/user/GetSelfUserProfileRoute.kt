@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.user
 
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -11,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.profile.profiles.RawProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.profiles.StaticProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
+import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.awt.image.BufferedImage
@@ -26,6 +29,7 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 		}
 
 		val internalTypeName = call.parameters["type"] ?: "defaultDark"
+		val backgroundTypeName = call.parameters["background"]
 
 		val profileCreator = loritta.profileDesignManager.designs.first {
 			it.internalName == internalTypeName
@@ -54,6 +58,38 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 			"https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
 		}
 
+		val backgroundImage = if (backgroundTypeName == null) {
+			BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+		} else {
+			val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
+
+			val background = loritta.pudding.backgrounds.getBackground(backgroundTypeName)
+			if (background == null) {
+				call.respondText("", status = HttpStatusCode.NotFound)
+				return
+			}
+
+			val variation = background.getVariationForProfileDesign(internalTypeName)
+			val url = when (variation.storageType) {
+				BackgroundStorageType.DREAM_STORAGE_SERVICE -> loritta.profileDesignManager.getDreamStorageServiceBackgroundUrlWithCropParameters(
+					loritta.config.loritta.dreamStorageService.url,
+					dssNamespace,
+					variation
+				)
+
+				BackgroundStorageType.ETHEREAL_GAMBI -> loritta.profileDesignManager.getEtherealGambiBackgroundUrl(
+					variation
+				)
+			}
+
+			// We could just respondRedirect the URL, but we need to scale the image because some images don't have the proper aspect ratio
+			// (Yes, even tho the DreamStorageService has custom crops on the URL... it, for some reason, aren't actually correct?)
+			val backgroundImage = BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB)
+			val downloadedBackgroundImage = ImageIO.read(loritta.http.get(url).readBytes().inputStream()) // We hope this is a trusted image
+			backgroundImage.createGraphics().drawImage(downloadedBackgroundImage, 0, 0, 800, 600, null)
+			backgroundImage
+		}
+
 		val senderUserData = ProfileUserInfoData(
 			userIdentification.id.toLong(),
 			userIdentification.username,
@@ -74,7 +110,7 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 				null,
 				locale,
 				loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
-				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
+				backgroundImage, // Create profile with transparent background
 				settings.aboutMe ?: "???",
 				listOf()
 			)
@@ -88,7 +124,7 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 				null,
 				locale,
 				loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
-				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
+				backgroundImage, // Create profile with transparent background
 				settings.aboutMe ?: "???",
 				listOf()
 			).first() // We only want the first frame of the list
@@ -105,7 +141,7 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 					null,
 					locale,
 					loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
-					BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
+					backgroundImage, // Create profile with transparent background
 					settings.aboutMe ?: "???",
 					listOf()
 				)

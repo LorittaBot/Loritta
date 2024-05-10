@@ -1,8 +1,9 @@
 package net.perfectdreams.spicymorenitta.utils
 
+import kotlinx.browser.document
+import kotlinx.browser.window
 import org.w3c.dom.*
 import org.w3c.dom.events.Event
-import kotlinx.browser.window
 
 inline fun <T> ParentNode.select(query: String): T {
     return this.querySelector(query) as T
@@ -12,8 +13,16 @@ inline fun <T> ParentNode.selectAll(query: String): List<T> {
     return this.querySelectorAll(query).asList() as List<T>
 }
 
-fun Document.onDOMReady(callback: (Event) -> (Unit)) {
-    this.addEventListener("DOMContentLoaded", callback, false)
+// https://stackoverflow.com/a/59220393/7271796
+fun Document.onDOMContentLoaded(callback: () -> (Unit)) {
+    println("Current document readyState is ${document.readyState}")
+    if (document.readyState == DocumentReadyState.INTERACTIVE || document.readyState == DocumentReadyState.COMPLETE) {
+        // already fired, so run logic right away
+        callback.invoke()
+    } else {
+        // not fired yet, so let's listen for the event
+        this.addEventListener("DOMContentLoaded", { callback.invoke() }, false)
+    }
 }
 
 fun Element.onClick(callback: (Event) -> (Unit)) {

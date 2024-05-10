@@ -140,6 +140,12 @@ val sassLegacy = tasks.register<SassTask>("sass-legacy-style-scss") {
     this.outputSass.set(file("$buildDir/sass/style-legacy-scss"))
 }
 
+val sassDashboard = tasks.register<SassTask>("sass-dashboard-style-scss") {
+    this.inputSass.set(file("src/main/sass-dashboard/style.scss"))
+    this.inputSassFolder.set(file("src/main/sass-dashboard/"))
+    this.outputSass.set(file("$buildDir/sass/style-dashboard-scss"))
+}
+
 tasks.test {
     useJUnitPlatform()
 }
@@ -162,6 +168,9 @@ tasks {
         // Same thing with the SASS output
         from(sass) {
             into("static/v2/assets/css/")
+        }
+        from(sassDashboard) {
+            into("static/v3/assets/css/")
         }
         from(sassLegacy) {
             into("static/assets/css/")

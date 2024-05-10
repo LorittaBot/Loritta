@@ -1,0 +1,48 @@
+.payment-hero-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    @media (max-width: 700px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+}
+
+.payment-methods-wrapper {
+    display: flex;
+    gap: 1em;
+    flex-direction: column;
+    border-radius: 3px;
+    padding: 1em;
+    border: 1px solid var(--input-border-color);
+    height: 100%;
+
+    .payment-methods-title {
+        margin: 0;
+        text-align: center;
+        font-size: 1.5em;
+        color: var(--loritta-blue);
+        font-weight: bold;
+    }
+
+    .payment-methods {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        font-weight: bold;
+        gap: 1em;
+        height: 100%;
+
+        .payment-method {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            font-weight: bold;
+            justify-content: center;
+
+            img {
+                max-width: 100%;
+                height: 2em;
+            }
+        }
+    }
+}

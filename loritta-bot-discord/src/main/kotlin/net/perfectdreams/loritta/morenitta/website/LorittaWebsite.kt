@@ -275,6 +275,14 @@ class LorittaWebsite(
 					resources("static/v2/assets/css/")
 				}
 
+				static("/v3/assets/css/") {
+					resources("static/v3/assets/css/")
+				}
+
+				static("/v3/assets/snd/") {
+					resources("static/assets/snd/")
+				}
+
 				File("${config.websiteFolder}/static/").listFiles().filter { it.isFile }.forEach {
 					file(it.name, it)
 				}

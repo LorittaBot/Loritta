@@ -1,17 +1,7 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
-import kotlinx.html.HEAD
-import kotlinx.html.HTML
-import kotlinx.html.ScriptType
-import kotlinx.html.head
-import kotlinx.html.html
-import kotlinx.html.link
-import kotlinx.html.meta
-import kotlinx.html.script
+import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import kotlinx.html.styleLink
-import kotlinx.html.title
-import kotlinx.html.unsafe
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
@@ -28,6 +18,7 @@ abstract class BaseView(
     }
 
     open val useOldStyleCss = false
+    open val useDashboardStyleCss = false
 
     fun generateHtml(): String {
         val supportUrl = "https://loritta.website/support"
@@ -90,6 +81,14 @@ window.addEventListener('load', function () {
                             )
                         }"
                     )
+                } else if (useDashboardStyleCss) {
+                    styleLink(
+                        "/v3/assets/css/style.css?hash=${
+                            assetHashFromResources(
+                                "/v3/assets/css/style.css"
+                            )
+                        }"
+                    )
                 } else {
                     styleLink(
                         "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${
@@ -128,6 +127,8 @@ window.addEventListener('load', function () {
                 // App itself
                 script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {}
 
+                // htmx & hyperscript & other libs are included in the app.js bundle
+
                 // Google AdSense
                 script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}
 
@@ -159,6 +160,15 @@ window.addEventListener('load', function () {
                         attributes["href"] = "$websiteUrl/$websiteLocaleId/$path"
                     }
                 }
+
+                // We want to ALWAYS do a hard refresh when pressing the back button
+                // https://htmx.org/docs/#history
+                /* meta(
+                    name = "htmx-config",
+                    content = buildJsonObject {
+                        put("refreshOnHistoryMiss", true)
+                    }.toString()
+                ) */
 
                 generateMeta()
             }

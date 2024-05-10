@@ -136,7 +136,7 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
 
             entriesDiv.append {
                 div("loritta-items-list") {
-                    div(classes = "loritta-items-wrapper") {
+                    div(classes = "loritta-items-wrapper legacy-items-wrapper") {
                         for (background in backgrounds) {
                             div(classes = "shop-item-entry rarity-${background.rarity.name.toLowerCase()}") {
                                 div {

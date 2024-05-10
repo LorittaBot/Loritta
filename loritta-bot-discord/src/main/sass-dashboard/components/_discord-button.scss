@@ -1,0 +1,134 @@
+@use "../placeholders/reset-button-styling";
+
+a:has(.discord-button) {
+  text-decoration: none;
+}
+
+.discord-button {
+    @extend %reset-button-styling;
+    color: white;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0.25em 1em;
+    transition-duration: 0.25s;
+    opacity: 1;
+    background-color: #757575;
+    border: 1px solid var(--soft-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &.htmx-discord-like-loading-button {
+        .loading-text-wrapper {
+            display: none;
+        }
+
+        &.htmx-request {
+            div {
+                display: none;
+            }
+
+            .loading-text-wrapper {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+
+                img {
+                    height: 1em;
+                }
+            }
+        }
+    }
+
+    &:hover {
+        background-color: darken(#757575, 10%);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+
+        &:hover {
+            background-color: darken(#757575, 10%);
+        }
+    }
+
+    &.primary {
+        background-color: var(--loritta-blue);
+
+        &:hover {
+            background-color: darken(#29a6fe, 10%);
+        }
+    }
+
+    &.success {
+        background-color: #298546;
+
+        &:hover {
+            background-color: darken(#298546, 10%);
+        }
+    }
+
+    &.danger {
+        background-color: #da373c;
+
+        &:hover {
+            background-color: darken(#da373c, 10%);
+        }
+    }
+
+    &.no-background-light-text {
+        background-color: initial;
+        color: #ffffff;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-dark-text {
+        background-color: initial;
+        color: #000000;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-theme-dependent-light-text {
+        background-color: initial;
+        color: var(--button-no-background-light-text-color);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-theme-dependent-dark-text {
+        background-color: initial;
+        color: var(--button-no-background-dark-text-color);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+.modal-wrapper {
+    .buttons-wrapper {
+        .discord-button {
+            // Buttons in modals have bigger padding
+            padding: 0.5em 1em;
+
+            &.no-background {
+                // And the no background button has a black font
+                color: black;
+            }
+        }
+    }
+}

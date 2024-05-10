@@ -1,5 +1,6 @@
 package net.perfectdreams.spicymorenitta
 
+import decodeURIComponent
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.request.*
@@ -23,23 +24,26 @@ import kotlinx.html.p
 import kotlinx.html.span
 import kotlinx.html.stream.createHTML
 import kotlinx.html.style
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import loadEmbeddedLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.Language
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.modals.ModalManager
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
+import net.perfectdreams.spicymorenitta.toasts.ToastManager
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
 import kotlin.collections.set
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.js.Date
 import kotlin.js.Json
 
@@ -51,6 +55,8 @@ var navbarIsSetup = false
 val http = HttpClient(Js) {
 	expectSuccess = false // Não dar erro ao receber status codes 400-500
 }
+// Only used within the SpicyMorenitta instance
+private val _http = http
 
 lateinit var locale: BaseLocale
 lateinit var i18nContext: I18nContext
@@ -61,6 +67,10 @@ class SpicyMorenitta : Logging {
 		lateinit var INSTANCE: SpicyMorenitta
 	}
 
+	val http = _http
+	val modalManager = ModalManager(this)
+	val toastManager = ToastManager(this)
+	val soundEffects = SoundEffects(this)
 	val pageLoadLock = Mutex()
 	val routes = mutableListOf(
 		HomeRoute(),
@@ -88,7 +98,6 @@ class SpicyMorenitta : Logging {
 		BackgroundsListDashboardRoute(this),
 		AllBackgroundsListDashboardRoute(this),
 		ProfileDesignsListDashboardRoute(this),
-		DailyShopDashboardRoute(this),
 		Birthday2020Route(this),
 		Birthday2020StatsRoute(this),
 		ReputationRoute(),
@@ -155,31 +164,9 @@ class SpicyMorenitta : Logging {
 	val pageSpecificTasks = mutableListOf<Job>()
 	var currentPath: String? = null
 
-	val DEFAULT_COROUTINE_EXCEPTION_HANDLER = CoroutineExceptionHandler { _, exception ->
-		error("Coroutine error! $exception")
-		val dynamicException = exception.asDynamic()
-
-		console.log("Message: ${dynamicException.message}")
-		console.log("File Name: ${dynamicException.fileName}")
-		console.log("Line Number: ${dynamicException.lineNumber}")
-		console.log("Column Number: ${dynamicException.columnNumber}")
-		console.log("Stack: ${dynamicException.stack}")
-
-		ErrorTracker.processException(
-			this,
-			dynamicException.message as String,
-			dynamicException.fileName as String,
-			dynamicException.lineNumber as Int,
-			dynamicException.columnNumber as Int,
-			dynamicException
-		)
-		throw exception
-	}
-
+	@OptIn(ExperimentalEncodingApi::class)
 	fun start() {
 		INSTANCE = this
-
-		ErrorTracker.start(this)
 
 		info("HELLO FROM KOTLIN ${KotlinVersion.CURRENT.toString()}! :3")
 		info("SpicyMorenitta :3")
@@ -189,10 +176,8 @@ class SpicyMorenitta : Logging {
 		// Chromium easter egg
 		console.log("%c       ", "font-size: 64px; background: url(https://stuff.loritta.website/loritta-zz-heathecliff.png) no-repeat; background-size: 64px 64px;")
 
-		if (window.location.pathname == "/auth") { // Nós não precisamos processar o resto do código apenas para verificar o popup de auth
-			AuthUtils.handlePopup()
-			return
-		}
+		info("Initializing _hyperscript...")
+		browserInit()
 
 		// From old website
 		val darkThemeCookie = CookiesUtils.readCookie("darkTheme")
@@ -215,7 +200,7 @@ class SpicyMorenitta : Logging {
 
 		debug("Is using http? ${window.location.protocol == "http:"}")
 
-		document.onDOMReady {
+		document.onDOMContentLoaded {
 			debug("DOM is ready!")
 			debug("Loading deprecated locale from the body...")
 			loadEmbeddedLocale()
@@ -224,6 +209,63 @@ class SpicyMorenitta : Logging {
 
 			debug("Setting spicyMorenittaLoaded variable to true on the window object")
 			window.asDynamic().spicyMorenittaLoaded = true
+
+			// Register Jetpack Compose things
+			val modalElement = document.select<HTMLDivElement?>("#modal-list")
+			if (modalElement != null) {
+				modalManager.setupModalRendering(modalElement)
+			} else {
+				warn("Missing #modal-list element!")
+			}
+
+			val toastElement = document.select<HTMLDivElement?>("#toast-list")
+			if (toastElement != null) {
+				toastManager.setupToastRendering(toastElement)
+			} else {
+				warn("Missing #toast-list element!")
+			}
+
+			document.addEventListener("htmx:load", { elt ->
+				println("htmx:load")
+				val targetElement = elt.asDynamic().target as HTMLElement
+
+				processCustomComponents(targetElement)
+
+				// Render NitroPay ads
+				NitroPay.renderAds()
+			})
+
+			document.addEventListener("closeSpicyModal", { evt ->
+				modalManager.closeModal()
+			})
+
+			document.addEventListener("showSpicyToast", { evt ->
+				val eventValue = evt.asDynamic().detail.value as String
+
+				// We use decodeURIComponent because headers cannot have non-ASCII characters
+				// We also use decodeURIComponent instead of Base64 because technically headers in HTTP/2.0 are compressed, and URI components compress better than Base64
+				val embeddedSpicyToast = kotlinx.serialization.json.Json.decodeFromString<EmbeddedSpicyToast>(decodeURIComponent(eventValue))
+				toastManager.showToast(embeddedSpicyToast)
+			})
+
+			document.addEventListener("playSoundEffect", { evt ->
+				val eventValue = evt.asDynamic().detail.value
+				when (eventValue) {
+					"config-saved" -> {
+						soundEffects.configSaved.play(1.0)
+					}
+					"config-error" -> {
+						soundEffects.configError.play(1.0)
+					}
+					"cash" -> {
+						val cash = Audio("${loriUrl}assets/snd/css1_cash.wav")
+						cash.play()
+					}
+					else -> {
+						warn("Unknown sound effect \"$eventValue\"")
+					}
+				}
+			})
 
 			launch {
 				val currentRoute = getPageRouteForCurrentPath()
@@ -603,13 +645,7 @@ class SpicyMorenitta : Logging {
 			debug("Setting up login button events...")
 
 			loginButton?.onClick {
-				if (true) {
-					window.location.href = "${window.location.origin}/dashboard"
-				} else {
-					if (userIdentification == null) {
-						val popup = window.open("${window.location.origin}/auth", "popup", "height=700,width=400")
-					}
-				}
+				window.location.href = "${window.location.origin}/dashboard"
 			}
 
 			debug("Setting up theme changer button events...")
@@ -879,13 +915,13 @@ class SpicyMorenitta : Logging {
 	}
 
 	fun launch(block: suspend CoroutineScope.() -> Unit): Job {
-		val job = GlobalScope.launch(DEFAULT_COROUTINE_EXCEPTION_HANDLER, block = block)
+		val job = GlobalScope.launch(block = block)
 		pageSpecificTasks.add(job)
 		return job
 	}
 
 	fun <T> async(block: suspend CoroutineScope.() -> T): Deferred<T> {
-		val job = GlobalScope.async(DEFAULT_COROUTINE_EXCEPTION_HANDLER, block = block)
+		val job = GlobalScope.async(block = block)
 		pageSpecificTasks.add(job)
 		return job
 	}
@@ -917,5 +953,9 @@ class SpicyMorenitta : Logging {
 			kotlin.error("RPC response does not match expected type! Received type $rpcResponse")
 
 		return rpcResponse
+	}
+
+	fun processCustomComponents(targetElement: HTMLElement) {
+		// Nothing yet...
 	}
 }

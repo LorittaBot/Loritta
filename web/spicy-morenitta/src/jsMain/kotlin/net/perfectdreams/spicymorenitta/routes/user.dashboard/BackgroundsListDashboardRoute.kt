@@ -170,7 +170,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
             entriesDiv.append {
                 div("loritta-items-list") {
-                    div(classes = "loritta-items-wrapper") {
+                    div(classes = "loritta-items-wrapper legacy-items-wrapper") {
                         for ((background, variations) in backgrounds) {
                             div(classes = "shop-item-entry rarity-${background.rarity.name.lowercase()}") {
                                 div {

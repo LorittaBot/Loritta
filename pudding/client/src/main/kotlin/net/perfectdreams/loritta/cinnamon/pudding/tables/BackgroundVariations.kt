@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object BackgroundVariations : LongIdTable() {
-    val background = reference("background", Backgrounds)
+    val background = reference("background", Backgrounds).index()
     val profileDesignGroup = optReference("profile_design_group", ProfileDesignGroups)
     val file = text("file")
     val preferredMediaType = text("preferred_media_type")

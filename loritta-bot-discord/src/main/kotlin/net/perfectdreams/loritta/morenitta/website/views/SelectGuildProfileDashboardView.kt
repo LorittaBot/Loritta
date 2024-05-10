@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
-import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents.fillContentLoadingSection
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class SelectGuildProfileDashboardView(
@@ -17,18 +18,45 @@ class SelectGuildProfileDashboardView(
     locale: BaseLocale,
     path: String,
     legacyBaseLocale: LegacyBaseLocale,
-    private val userGuilds: List<TemmieDiscordAuth.Guild>
+    userIdentification: LorittaJsonWebSession.UserIdentification,
+    userPremiumPlan: UserPremiumPlans
 ) : ProfileDashboardView(
     loritta,
     i18nContext,
     locale,
     path,
     legacyBaseLocale,
+    userIdentification,
+    userPremiumPlan,
     "main"
 ) {
     override fun getTitle() = "Painel de Controle"
 
     override fun DIV.generateRightSidebarContents() {
+        p {
+            + "Antes de começar, leia as "
+            a(href = "/${locale.path}/guidelines") {
+                + "diretrizes de comunidades da Loritta"
+            }
+            + "!"
+        }
+
+        div(classes = "htmx-fill-content-loading-section") {
+            id = "user-guilds-wrapper"
+            attributes["hx-trigger"] = "load"
+            attributes["hx-target"] = "#user-guilds"
+            attributes["hx-get"] = ""
+            attributes["hx-indicator"] = "this"
+
+            div {
+                id = "user-guilds"
+            }
+
+            fillContentLoadingSection(i18nContext)
+        }
+    }
+
+    fun userGuilds(userGuilds: List<TemmieDiscordAuth.Guild>): FlowContent.() -> Unit = {
         if (userGuilds.isEmpty()) {
             div {
                 id = "no-server-found"
@@ -47,14 +75,7 @@ class SelectGuildProfileDashboardView(
                 }
             }
         } else {
-            p {
-                + "Antes de começar, leia as "
-                a(href = "/${locale.path}/guidelines") {
-                    + "diretrizes de comunidades da Loritta"
-                }
-                + "!"
-            }
-            div {
+            div(classes = "choose-your-server") {
                 id = "choose-your-server"
 
                 for (guild in userGuilds.sortedBy { it.name }) {
@@ -97,11 +118,15 @@ class SelectGuildProfileDashboardView(
                                 }
                             }
 
-                            a(
-                                classes = "discord-server-button loritta-blue",
-                                href = "/${locale.path}/guild/${guild.id}/configure"
-                            ) {
-                                +i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.Entry.ManageServer)
+                            div {
+                                style = "margin-left: auto;"
+
+                                a(href = "/${locale.path}/guild/${guild.id}/configure") {
+                                    button(classes = "discord-button primary") {
+                                        type = ButtonType.button
+                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.Entry.ManageServer))
+                                    }
+                                }
                             }
                         }
                     }

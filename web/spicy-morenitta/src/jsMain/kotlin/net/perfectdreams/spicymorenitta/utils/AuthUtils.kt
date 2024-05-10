@@ -11,7 +11,7 @@ import kotlinx.browser.window
 object AuthUtils {
     fun handlePopup() {
         if (window.opener != undefined && window.opener !== window) {
-            document.onDOMReady {
+            document.onDOMContentLoaded {
                 // Popup, close popup and change navbar
                 window.opener.asDynamic().authenticate(document.select<HTMLDivElement>("#hidden-auth-payload").innerHTML)
                 window.close() // Close
