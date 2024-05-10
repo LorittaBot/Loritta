@@ -52,9 +52,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.EveryGroupHasCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.SadRealityCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.ThanksFriendsCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
@@ -272,6 +270,28 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(HungerGamesCommand(loritta))
 
         // ===[ IMAGES ]==
+        register(ArtCommand(loritta.gabrielaImageServerClient))
+        register(BobBurningPaperCommand(loritta.gabrielaImageServerClient))
+        register(DrakeCommand(loritta.gabrielaImageServerClient))
+        register(BRMemesCommand(loritta.gabrielaImageServerClient))
+        register(BuckShirtCommand(loritta.gabrielaImageServerClient))
+        register(LoriSignCommand(loritta.gabrielaImageServerClient))
+        register(PassingPaperCommand(loritta.gabrielaImageServerClient))
+        register(PepeDreamCommand(loritta.gabrielaImageServerClient))
+        register(PetPetCommand(loritta.gabrielaImageServerClient))
+        register(WolverineFrameCommand(loritta.gabrielaImageServerClient))
+        register(RipTvCommand(loritta.gabrielaImageServerClient))
+        register(SustoCommand(loritta.gabrielaImageServerClient))
+        register(GetOverHereCommand(loritta.gabrielaImageServerClient))
+        register(NichijouYuukoPaperCommand(loritta.gabrielaImageServerClient))
+        register(TrumpCommand(loritta.gabrielaImageServerClient))
+        register(TerminatorAnimeCommand(loritta.gabrielaImageServerClient))
+        register(ToBeContinuedCommand(loritta.gabrielaImageServerClient))
+        register(InvertColorsCommand(loritta.gabrielaImageServerClient))
+        register(MemeMakerCommand(loritta.gabrielaImageServerClient))
+        register(MarkMetaCommand(loritta.gabrielaImageServerClient))
+        register(SonicCommand(loritta.gabrielaImageServerClient))
+        register(DrawnMaskCommand(loritta.gabrielaImageServerClient))
         register(SadRealityCommand())
         register(EveryGroupHasCommand())
         register(ThanksFriendsCommand())

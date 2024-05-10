@@ -96,7 +96,9 @@ class LegacyMessageCommandContext(
         )
     }
 
-    suspend fun getEmoji(index: Int) = event.message.mentions.customEmojis.getOrNull(index)
+    fun getImage(index: Int) = event.message.attachments.getOrNull(index)
+
+    fun getEmoji(index: Int) = event.message.mentions.customEmojis.getOrNull(index)
 
     /**
      * Gets a [User] reference from the argument at the specified [index]
