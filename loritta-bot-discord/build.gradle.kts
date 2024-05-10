@@ -170,7 +170,7 @@ tasks {
             into("static/v2/assets/css/")
         }
         from(sassDashboard) {
-            into("static/v3/assets/css/")
+            into("static/lori-slippy/assets/css/")
         }
         from(sassLegacy) {
             into("static/assets/css/")

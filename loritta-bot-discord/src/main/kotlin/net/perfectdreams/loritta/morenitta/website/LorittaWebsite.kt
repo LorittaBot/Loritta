@@ -275,11 +275,11 @@ class LorittaWebsite(
 					resources("static/v2/assets/css/")
 				}
 
-				static("/v3/assets/css/") {
-					resources("static/v3/assets/css/")
+				static("/lori-slippy/assets/css/") {
+					resources("static/lori-slippy/assets/css/")
 				}
 
-				static("/v3/assets/snd/") {
+				static("/lori-slippy/assets/snd/") {
 					resources("static/assets/snd/")
 				}
 
