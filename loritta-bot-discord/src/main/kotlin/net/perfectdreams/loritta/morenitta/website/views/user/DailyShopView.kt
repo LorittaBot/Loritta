@@ -9,6 +9,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -88,12 +89,12 @@ class DailyShopView(
                     div(classes = "shop-timer") {
                         div(classes = "shop-timer-date") {
                             id = "when-will-be-the-next-update"
-                            attributes["hx-get"] = ""
-                            attributes["hx-trigger"] = "every 1s"
-                            attributes["hx-vals"] = buildJsonObject {
-                                put("currentShopId", shopId)
-                            }.toString()
-                            text(getShopResetText())
+                            attributes["loritta-item-shop-timer"] = "true"
+                            attributes["loritta-item-shop-resets-at"] = getShopResetsEpochMilli().toString()
+                            attributes["loritta-item-shop-i18n-hours"] = i18nContext.language.textBundle.strings[I18nKeys.Time.Hours.key]!!
+                            attributes["loritta-item-shop-i18n-minutes"] = i18nContext.language.textBundle.strings[I18nKeys.Time.Minutes.key]!!
+                            attributes["loritta-item-shop-i18n-seconds"] = i18nContext.language.textBundle.strings[I18nKeys.Time.Seconds.key]!!
+                            text("...")
                         }
                         div(classes = "shop-timer-subtitle") {
                             +locale["website.dailyShop.untilTheNextShopUpdate"]
@@ -343,27 +344,12 @@ class DailyShopView(
         }
     }
 
-    fun getShopResetText(): String {
+    fun getShopResetsEpochMilli(): Long {
         val midnight = LocalTime.MIDNIGHT
         val today = LocalDate.now(ZoneOffset.UTC)
         val todayMidnight = LocalDateTime.of(today, midnight)
         val tomorrowMidnight = todayMidnight.plusDays(1)
-        val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
-        val timeInSeconds = diff / 1_000
-
-        val s = timeInSeconds % 60
-        val m = (timeInSeconds / 60) % 60
-        val h = (timeInSeconds / (60 * 60)) % 24
-
-        return buildString {
-            if (h != 0L) {
-                append("${h + 1} Horas")
-            } else if (m != 0L) {
-                append("$m Minutos")
-            } else if (s != 0L) {
-                append("$s Segundos")
-            }
-        }
+        return tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli()
     }
 
     inline fun FlowContent.lorittaBackgroundPreview(backgroundVariation: BackgroundVariation, crossinline block : DIV.() -> Unit = {}) {

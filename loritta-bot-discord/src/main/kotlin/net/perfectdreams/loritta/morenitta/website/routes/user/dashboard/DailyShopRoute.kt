@@ -137,18 +137,6 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 			boughtProfileDesigns
 		)
 
-		if (call.request.header("HX-Trigger") == "when-will-be-the-next-update") {
-			// See: "HTTP Headers & Caching"
-			// https://hypermedia.systems/more-htmx-patterns/
-			// When using a trigger on a same path, we need to bust the cache based on the trigger header, to avoid the back button
-			// going back to a partial view
-			call.response.header("Vary", "HX-Trigger")
-			if (call.parameters.getOrFail("currentShopId").toLong() != shopId)
-				call.response.header("HX-Trigger", "refreshItemShop") // If the timer item shop does not match the current ID, ask the client to refresh!
-			call.respondText(view.getShopResetText())
-			return
-		}
-
 		call.respondHtml(
 			view.generateHtml()
 		)

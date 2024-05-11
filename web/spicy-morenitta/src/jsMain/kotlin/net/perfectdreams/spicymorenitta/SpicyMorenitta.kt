@@ -28,6 +28,7 @@ import kotlinx.serialization.encodeToString
 import loadEmbeddedLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.Language
+import net.perfectdreams.i18nhelper.formatters.IntlMessageFormat
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
@@ -956,6 +957,85 @@ class SpicyMorenitta : Logging {
 	}
 
 	fun processCustomComponents(targetElement: HTMLElement) {
-		// Nothing yet...
+		targetElement.selectAll<HTMLDivElement>("[loritta-item-shop-timer]").forEach {
+			if (it.getAttribute("loritta-powered-up") != null)
+				return@forEach
+
+			it.setAttribute("loritta-powered-up", "")
+			val i18nHours = it.getAttribute("loritta-item-shop-i18n-hours")!!
+			val i18nMinutes = it.getAttribute("loritta-item-shop-i18n-minutes")!!
+			val i18nSeconds = it.getAttribute("loritta-item-shop-i18n-seconds")!!
+			val messageFormatHours = IntlMessageFormat(i18nHours, "pt")
+			val messageFormatMinutes = IntlMessageFormat(i18nMinutes, "pt")
+			val messageFormatSeconds = IntlMessageFormat(i18nSeconds, "pt")
+
+			val scope = CoroutineScope(Job())
+			val observer = MutationObserver { _, observer ->
+				if (!document.contains(it)) {
+					debug("Cancelling element's coroutine scope because it was removed from the DOM...")
+					console.log(it)
+					scope.cancel() // Cancel coroutine scope when element is removed
+					observer.disconnect() // Disconnect the observer to avoid leaks
+				}
+			}
+			observer.observe(document.body ?: throw IllegalStateException("Document has no body"), MutationObserverInit(childList = true, subtree = true))
+
+			val resetsAt = it.getAttribute("loritta-item-shop-resets-at")!!.toLong()
+
+			// TODO - htmx-adventures: Don't use GlobalScope!
+			//  (technically we are scoping this to the element nowadays...)
+			var previousText = ""
+			scope.launch {
+				while (isActive) {
+					val diff = resetsAt - (Date().getTime().toLong())
+					if (0 >= diff) {
+						// Trigger Item Shop refresh if the time is 0
+						trigger("body", "refreshItemShop", null)
+						return@launch
+					}
+
+					val timeInSeconds = diff / 1_000
+
+					val s = timeInSeconds % 60
+					val m = (timeInSeconds / 60) % 60
+					val h = (timeInSeconds / (60 * 60)) % 24
+
+					val newText = buildString {
+						if (h != 0L) {
+							append(
+								messageFormatHours.format(
+									jsObject {
+										this.unit = h + 1
+									}
+								)
+							)
+						} else if (m != 0L) {
+							append(
+								messageFormatMinutes.format(
+									jsObject {
+										this.unit = m
+									}
+								)
+							)
+						} else if (s != 0L) {
+							append(
+								messageFormatSeconds.format(
+									jsObject {
+										this.unit = s
+									}
+								)
+							)
+						}
+					}
+					if (newText != previousText) {
+						debug("Updating timer text to $newText")
+						it.innerText = newText
+						previousText = newText
+					}
+
+					delay(1_000)
+				}
+			}
+		}
 	}
 }
