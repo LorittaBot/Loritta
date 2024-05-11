@@ -115,7 +115,9 @@ class ToastManager(private val m: SpicyMorenitta) {
                                 Text(toastWithAnimationState.toast.title)
                             }
 
-                            Div {
+                            Div(attrs = {
+                                classes("toast-description")
+                            }) {
                                 toastWithAnimationState.toast.body.invoke()
                             }
                         }

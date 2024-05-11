@@ -39,6 +39,10 @@
         font-weight: bold;
     }
 
+    .toast-description {
+        font-size: 0.8em;
+    }
+
     &.added {
         animation: append-animate .25s ease-out;
     }
