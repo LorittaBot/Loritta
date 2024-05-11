@@ -39,6 +39,7 @@ mock:
 vemdezap:
   label: "vemdezap"
   description: "Bom dia catilangaiada! Vem de Zap bb, aplique o poder do zapzap na sua mensagem para mostrar como você é chave com as 9inhas do zapzap!" #In Brazil, this is a command referencing the Matheus Canella's Emojo meme and ZapZap memes, so it should use that meme as a base if possible, if not, just say it is a command that adds emojis to your message.
+  refreshIt: "Se o texto não saiu do jeito que você esperava, você pode apertar os botões mais vezes para gerar versões diferentes!"
   options:
     mood:
       text: "Qual será o seu humor do zap?" #In Brazil, this references WhatsApp "humor do zap"

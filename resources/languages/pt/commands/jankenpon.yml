@@ -10,5 +10,6 @@ win: "Parabéns, você ganhou!"
 lose: "Que pena... você perdeu, mas o que importa é que você pelo menos tentou!"
 maybeDraw: "Empate...?"
 draw: "Empate! Que tal uma revanche?"
+invalidChoice: "Que pena... você perdeu, dá próxima vez escolha algo que seja válido, ok?"
 options:
   action: "O objeto que você deseja usar nesta incrível luta"

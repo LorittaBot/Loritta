@@ -1,7 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import dev.kord.common.entity.Snowflake
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.serializable.UserId
 
@@ -40,6 +43,18 @@ object ContextStringToUserInfoConverter {
                 return cachedUserInfo
         }
 
+        return null
+    }
+
+    suspend fun convert(context: UnleashedContext, input: String): net.perfectdreams.loritta.morenitta.utils.CachedUserInfo? {
+        if (input.startsWith("<@") && input.endsWith(">")) {
+            val userId = input.removePrefix("<@")
+                .removePrefix("!")
+                .removeSuffix(">")
+                .toLongOrNull() ?: return null
+
+            return context.loritta.lorittaShards.retrieveUserInfoById(userId)
+        }
         return null
     }
 }

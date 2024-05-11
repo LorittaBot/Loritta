@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.modules
 
 import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
-import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.TioDoPaveCommand
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
@@ -14,6 +13,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.SummonCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
@@ -64,7 +64,7 @@ class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
         }
 
         if (config.tioDoPave.enabled && chance(config.tioDoPave.chance))
-            event.channel.sendMessage("${event.author.asMention} ${TioDoPaveCommand.PIADAS.random()} <:lori_ok_hand:426183783008698391>").queue()
+            event.channel.sendMessage("${event.author.asMention} ${SummonCommand.tioDoPaveJokes.random()} <:lori_ok_hand:426183783008698391>").queue()
 
         if ((event.message.contentRaw.contains("esta é uma mensagem do criador", true) && event.message.contentRaw.contains("se tornou muito lenta", true) && event.message.contentRaw.contains("que não enviarem essa mensagem dentro de duas semanas", true)) || (event.message.contentRaw.contains("deve fechar", true) && event.message.contentRaw.contains("Vamos enviar esta mensagem para ver se os membros", true) && event.message.contentRaw.contains("isto é de acordo com o criador", true)))
             event.channel.sendMessage("${event.author.asMention} agora me diga... porque você acha que o Discord ia avisar algo importante assim com uma CORRENTE? Isso daí é fake, se isso fosse verdade, o Discord iria colocar um aviso nas redes sociais e ao iniciar o Discord, apenas ignore tais mensagens... e por favor, pare de espalhar \uD83D\uDD17 correntes \uD83D\uDD17, não quero que aqui vire igual ao WhatsApp. <:smol_lori_putassa:395010059157110785>").queue()

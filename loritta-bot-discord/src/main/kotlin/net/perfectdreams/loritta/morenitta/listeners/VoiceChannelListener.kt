@@ -35,7 +35,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		if (event.guild.selfMember == event.member && channelLeft != null && channelJoined == null) {
 			// Clean up voice connection if Loritta disconnected and didn't join a new channel
 			GlobalScope.launch {
-				val guildId = Snowflake(channelLeft.guild.idLong)
+				val guildId = channelLeft.guild.idLong
 				logger.info { "Cleaning up Loritta's voice connection @ $guildId" }
 
 				loritta.voiceConnectionsManager.voiceConnectionsMutexes.getOrPut(guildId) { Mutex() }.withLock {

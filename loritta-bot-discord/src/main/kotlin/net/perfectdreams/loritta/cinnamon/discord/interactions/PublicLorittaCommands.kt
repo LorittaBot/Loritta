@@ -34,11 +34,11 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(PredefinedReasonsCommand(languageManager))
 
             // ===[ FUN ]===
-            register(RateCommand(languageManager))
-            register(SummonCommand(languageManager))
-            register(TextTransformCommand(languageManager))
-            register(JankenponCommand(languageManager))
-            register(SoundboxCommand(languageManager))
+            // register(RateCommand(languageManager))
+            // register(SummonCommand(languageManager))
+            // register(TextTransformCommand(languageManager))
+            // register(JankenponCommand(languageManager))
+            // register(SoundboxCommand(languageManager))
 
             // ===[ IMAGES ]===
             // register(DrakeCommand(languageManager))

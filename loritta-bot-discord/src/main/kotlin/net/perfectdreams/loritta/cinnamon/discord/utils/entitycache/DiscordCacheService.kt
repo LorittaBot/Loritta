@@ -139,6 +139,14 @@ class DiscordCacheService(
             ?.asVoiceChannel()
     }
 
+    fun getUserConnectedVoiceChannel(guildId: Long, userId: Long): VoiceChannel? {
+        return loritta.lorittaShards.getGuildById(guildId)
+            ?.getMemberById(userId)
+            ?.voiceState
+            ?.channel
+            ?.asVoiceChannel()
+    }
+
     data class PermissionsResult(
         val permissions: Permissions,
         val userNotInGuild: Boolean,
