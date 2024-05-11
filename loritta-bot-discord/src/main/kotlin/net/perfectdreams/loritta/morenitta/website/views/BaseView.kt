@@ -15,6 +15,20 @@ abstract class BaseView(
     companion object {
         val versionPrefix = "/v2"
         val websiteUrl = LorittaWebsite.INSTANCE.config.websiteUrl
+        val legacyBaseLocaleKeysUsedInTheFrontend = setOf(
+            "DASHBOARD_NoPermission",
+            "KEYWORD_STREAMER",
+            "RAFFLE_YouEarned",
+            "LORITTA_ADDED_ON_SERVER",
+            "DASHBOARD_RoleByIntegration",
+            "DASHBOARD_NoPermission",
+            "BAN_PunishName",
+            "KICK_PunishName",
+            "MUTE_PunishName",
+            "WARN_PunishName",
+            "UNBAN_PunishName",
+            "UNMUTE_PunishName"
+        )
     }
 
     open val useOldStyleCss = false

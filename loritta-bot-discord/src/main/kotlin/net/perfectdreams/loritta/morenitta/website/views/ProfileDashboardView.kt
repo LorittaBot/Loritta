@@ -36,10 +36,19 @@ abstract class ProfileDashboardView(
     override fun HTML.generateBody() {
         body {
             // TODO - htmx-adventures: Fix this! (this may be removed later, but there are still things in SpicyMorenitta that requires this)
+
             div(classes = "totallyHidden") {
                 style = "display:none;"
                 id = "locale-json"
-                + LorittaBot.GSON.toJson(legacyBaseLocale.strings)
+                // The full legacy base locale string is FAT and uses A LOT of precious kbs
+                // (daily shop)
+                // with super legacy locales: 43,03kb / 184,89kb
+                // with no locales: 8,34kb / 66,76kb
+                // So we will filter to only get the keys that the old frontend uses right now
+                + LorittaBot.GSON.toJson(
+                    legacyBaseLocale.strings
+                        .filterKeys { it in legacyBaseLocaleKeysUsedInTheFrontend }
+                )
             }
 
             // TODO - htmx-adventures: Remove this! This is used by the old SpicyMorenitta coded for loading screens
