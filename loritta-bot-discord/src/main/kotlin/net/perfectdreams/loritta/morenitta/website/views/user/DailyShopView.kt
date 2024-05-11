@@ -352,14 +352,6 @@ class DailyShopView(
         return tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli()
     }
 
-    inline fun FlowContent.lorittaBackgroundPreview(backgroundVariation: BackgroundVariation, crossinline block : DIV.() -> Unit = {}) {
-        div {
-            attributes["loritta-background-preview"] = ""
-            attributes["loritta-background-variation"] = EmbeddedSpicyModalUtils.encodeURIComponent(Json.encodeToString(backgroundVariation))
-            apply(block)
-        }
-    }
-
     override fun getTitle() = locale["website.dailyShop.title"]
 
     sealed class ShopItemWrapper {
