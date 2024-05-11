@@ -33,10 +33,6 @@ class SoundBoxCommand : SlashCommandDeclarationWrapper {
         subcommand(I18N_PREFIX.Falatron.Label, I18N_PREFIX.Falatron.Description) {
             executor = FalatronExecutor()
         }
-
-        subcommand(I18N_PREFIX.Board.Label, I18N_PREFIX.Board.Description) {
-            executor = SoundboardBoardExecutor()
-        }
     }
 
     inner class FalatronExecutor : LorittaSlashCommandExecutor() {
@@ -189,115 +185,6 @@ class SoundBoxCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    inner class SoundboardBoardExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            context.reply(true) {
-                styled(
-                    "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento! Ela ainda não está pronta e será melhorada com o passar do tempo... ou talvez até mesmo removida! ${Emotes.LoriSob}",
-                    Emotes.LoriMegaphone
-                )
-            }
-
-            val sounds = listOf(
-                SoundWrapper(
-                    "amogus",
-                    SoundboardAudio.AMONG_US_ROUND_START
-                ),
-                SoundWrapper(
-                    "rapaiz",
-                    SoundboardAudio.RAPAIZ
-                ),
-                SoundWrapper(
-                    "risadas",
-                    SoundboardAudio.CHAVES_RISADAS
-                ),
-                SoundWrapper(
-                    "Dança Gatinho Dança",
-                    SoundboardAudio.DANCE_CAT_DANCE
-                ),
-                SoundWrapper(
-                    "Esse é o meu patrão hehe",
-                    SoundboardAudio.ESSE_E_O_MEU_PATRAO_HEHE
-                )
-            )
-
-            val sounds2 = listOf(
-                SoundWrapper(
-                    "Xiiii",
-                    SoundboardAudio.XIII
-                ),
-                SoundWrapper(
-                    "Aplausos #1",
-                    SoundboardAudio.NICELY_DONE_CHEER
-                )
-            )
-
-            context.reply(true) {
-                content = "Clique em um som!"
-
-                actionRow(
-                    buildList {
-                        sounds.forEach {
-                            add(
-                                context.loritta.interactivityManager
-                                    .buttonForUser(context.user, ButtonStyle.PRIMARY, it.name) { buttonContext ->
-                                        handle(buttonContext, it.audio)
-                                    }
-                            )
-                        }
-                    }
-                )
-
-                actionRow(
-                    buildList {
-                        sounds2.forEach {
-                            add(
-                                context.loritta.interactivityManager
-                                    .buttonForUser(context.user, ButtonStyle.PRIMARY, it.name) { buttonContext ->
-                                        handle(buttonContext, it.audio)
-                                    }
-                            )
-                        }
-                    }
-                )
-            }
-        }
-    }
-
-    private suspend fun handle(
-        buttonContext: ComponentContext,
-        audio: SoundboardAudio
-    ) {
-        buttonContext.deferEdit()
-
-        when (val voiceStateResult = buttonContext.loritta.voiceConnectionsManager.validateVoiceState(buttonContext.guildId!!, buttonContext.user.idLong)) {
-            is LorittaVoiceConnectionManager.VoiceStateValidationResult.AlreadyPlayingInAnotherChannel -> buttonContext.fail(true) {
-                content = "Eu já estou tocando áudio em outro canal! <#${voiceStateResult.lorittaConnectedVoiceChannel}>"
-            }
-
-            is LorittaVoiceConnectionManager.VoiceStateValidationResult.LorittaDoesntHavePermissionToTalkOnChannel -> buttonContext.fail(true) {
-                content = "Desculpe, mas eu não tenho permissão para falar no canal <#${voiceStateResult.userConnectedVoiceChannel}>!"
-            }
-
-            is LorittaVoiceConnectionManager.VoiceStateValidationResult.UserNotConnectedToAVoiceChannel -> buttonContext.fail(true) {
-                content = "Você precisa estar conectado em um canal de voz!"
-            }
-
-            is LorittaVoiceConnectionManager.VoiceStateValidationResult.VoiceStateValidationData -> {
-                val voiceConnection = buttonContext.loritta.voiceConnectionsManager.getOrCreateVoiceConnection(buttonContext.guildId!!, voiceStateResult.userConnectedVoiceChannel)
-
-                val opusFrames = buttonContext.loritta.soundboard.getAudioClip(audio)
-
-                voiceConnection.queue(
-                    LorittaVoiceConnection.AudioClipInfo(
-                        opusFrames,
-                        voiceStateResult.userConnectedVoiceChannel
-                    )
-                )
-            }
-        }
-    }
-
     private suspend fun generateTextAsOpusFrames(
         context: UnleashedContext,
         voice: String,
@@ -373,9 +260,4 @@ class SoundBoxCommand : SlashCommandDeclarationWrapper {
         data object FalatronOffline : FalatronVoiceResult()
         class Success(val opusFrames: List<ByteArray>) : FalatronVoiceResult()
     }
-
-    data class SoundWrapper(
-        val name: String,
-        val audio: SoundboardAudio
-    )
 }
