@@ -179,9 +179,6 @@ class DailyShopView(
                                                             ) {
                                                                 style = "width: 400px; aspect-ratio: 4/3;"
                                                             }
-
-                                                            sparkle(0, "-5%", "-10%")
-                                                            sparkle(500, "85%", "70%")
                                                         }
                                                     }
 
@@ -269,9 +266,6 @@ class DailyShopView(
                                                             ) {
                                                                 style = "width: 400px; aspect-ratio: 4/3;"
                                                             }
-
-                                                            sparkle(0, "-5%", "-10%")
-                                                            sparkle(500, "85%", "70%")
                                                         }
                                                     }
 
@@ -363,49 +357,6 @@ class DailyShopView(
                     }
                 }
             }
-        }
-    }
-
-    private fun FlowContent.sparkle(initialDelay: Long, left: String, top: String) {
-        img {
-            attributes["_"] = """
-                init
-                    set finished to false
-                    wait ${initialDelay}ms
-                    repeat while finished is false
-                        for list in [[0, 1, 2, 3], [2, 1]]
-                            for x in list
-                                // log me
-                                if not document.contains(me)
-                                    set finished to true
-                                    break
-                                end
-                                if x is 0
-                                    set @src to ""
-                                    set my *opacity to 0.0
-                                end
-                                if x is 1
-                                    set @src to "https://stuff.loritta.website/animations/sparkles-1.png"
-                                    set my *opacity to 0.2
-                                end
-                                if x is 2
-                                    set @src to "https://stuff.loritta.website/animations/sparkles-2.png"
-                                    set my *opacity to 0.4
-                                end
-                                if x is 3
-                                    set @src to "https://stuff.loritta.website/animations/sparkles-3.png"
-                                    set my *opacity to 0.6
-                                end
-                                if x is 0
-                                    wait 200ms // wait more
-                                end
-                                wait 200ms
-                            end
-                        end
-                    end
-                end
-        """.trimIndent()
-            style = "position: absolute; left: $left; top: $top; transform: rotateY(-10deg); width: 100px; height: 100px; opacity: 0;"
         }
     }
 
