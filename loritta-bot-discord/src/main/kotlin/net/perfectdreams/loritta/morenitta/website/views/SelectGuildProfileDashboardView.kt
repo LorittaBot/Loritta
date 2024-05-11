@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
 import kotlinx.html.*
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -57,7 +59,7 @@ class SelectGuildProfileDashboardView(
         }
     }
 
-    fun userGuilds(userGuilds: List<TemmieDiscordAuth.Guild>): FlowContent.() -> Unit = {
+    fun userGuilds(userGuilds: List<TemmieDiscordAuth.Guild>, favoritedGuilds: Set<Long>): FlowContent.() -> Unit = {
         if (userGuilds.isEmpty()) {
             div {
                 id = "no-server-found"
@@ -79,7 +81,8 @@ class SelectGuildProfileDashboardView(
             div(classes = "choose-your-server") {
                 id = "choose-your-server"
 
-                for (guild in userGuilds.sortedBy { it.name }) {
+                for (guild in userGuilds.sortedWith(compareByDescending<TemmieDiscordAuth.Guild> { it.id.toLong() in favoritedGuilds }.thenBy { it.name })) {
+                    val guildId = guild.id.toLong()
                     val userPermissionLevel = LorittaWebsite.getUserPermissionLevel(guild)
 
                     div(classes = "discord-invite-wrapper") {
@@ -122,10 +125,16 @@ class SelectGuildProfileDashboardView(
                             div {
                                 style = "margin-left: auto;"
 
-                                a(href = "/${locale.path}/guild/${guild.id}/configure") {
-                                    button(classes = "discord-button primary") {
-                                        type = ButtonType.button
-                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.Entry.ManageServer))
+                                div {
+                                    style = "display: flex; gap: 8px; align-items: center;"
+
+                                    favoriteGuild(i18nContext, guildId, guildId in favoritedGuilds)
+
+                                    a(href = "/${locale.path}/guild/${guild.id}/configure") {
+                                        button(classes = "discord-button primary") {
+                                            type = ButtonType.button
+                                            text(i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.Entry.ManageServer))
+                                        }
                                     }
                                 }
                             }
@@ -142,6 +151,35 @@ class SelectGuildProfileDashboardView(
 
             etherealGambiImg(src = "https://stuff.loritta.website/loritta-deitada-gabi.png", sizes = "(max-width: 600px) 100vw, 600px") {
                 style = "max-width: 600px; width: 100%;"
+            }
+        }
+    }
+
+    companion object {
+        fun FlowContent.favoriteGuild(i18nContext: I18nContext, guildId: Long, alreadyFavorited: Boolean) {
+            button(classes = "favorite-guild-for-user-list-button") {
+                classes += if (alreadyFavorited) {
+                    "guild-already-favorited"
+                } else {
+                    "guild-not-favorited"
+                }
+
+                attributes["hx-indicator"] = "this"
+                attributes["hx-swap"] = "outerHTML settle:100ms"
+                attributes["hx-target"] = "this"
+                attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/favorite-guild"
+                attributes["hx-vals"] = buildJsonObject {
+                    put("guildId", guildId.toString())
+                    put("favorited", !alreadyFavorited)
+                }.toString()
+
+                if (alreadyFavorited) {
+                    attributes["aria-label"] = i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.RemoveServerFromFavorites)
+                    i(classes = "fa-solid fa-star")
+                } else {
+                    attributes["aria-label"] = i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.AddServerToFavorites)
+                    i(classes = "fa-regular fa-star")
+                }
             }
         }
     }

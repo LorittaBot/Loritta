@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitch.GetTwitc
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.youtube.GetChannelInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.PostFavoriteGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
@@ -33,6 +34,7 @@ object DefaultRoutes {
 
 		// Dashboard
 		DashboardRoute(loritta),
+		PostFavoriteGuildRoute(loritta),
 		ConfigureGeneralRoute(loritta),
 		AuditLogRoute(loritta),
 		ConfigureAutoroleRoute(loritta),

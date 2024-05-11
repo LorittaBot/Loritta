@@ -18,6 +18,15 @@ website:
         manager: "Gerenciador"
         member: "Membro"
         manageServer: "Configurar"
+      favoriteServer:
+        addServerToFavorites: "Adicionar servidor aos favoritos"
+        removeServerFromFavorites: "Remover servidor dos favoritos"
+        toast:
+          serverFavorited: "Servidor adicionado aos favoritos!"
+          serverUnfavorited: "Servidor removido dos favoritos!"
+          favoritesDescription: "Servidores adicionados aos favoritos aparecem no topo da sua lista de servidores no painel da Loritta"
+          tooManyFavorites: "Você chegou no limite de servidores favoritos!"
+          tooManyFavoritesDescription: "Remova outros servidores da sua lista de favoritos para adicionar novos servidores!"
 
     modal:
       close: "Fechar"
