@@ -9,6 +9,8 @@ import net.perfectdreams.gabrielaimageserver.exceptions.ImageTooLargeException
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
+import net.perfectdreams.loritta.morenitta.utils.readAllBytes
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
