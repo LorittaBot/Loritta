@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents.fillContentLoadingSection
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -131,6 +132,16 @@ class SelectGuildProfileDashboardView(
                         }
                     }
                 }
+            }
+        }
+
+        hr {}
+
+        div {
+            style = "display: flex; justify-content: center;"
+
+            etherealGambiImg(src = "https://stuff.loritta.website/loritta-deitada-gabi.png", sizes = "(max-width: 600px) 100vw, 600px") {
+                style = "max-width: 600px; width: 100%;"
             }
         }
     }

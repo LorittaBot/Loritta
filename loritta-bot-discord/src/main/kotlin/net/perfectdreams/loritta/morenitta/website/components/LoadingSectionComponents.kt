@@ -20,6 +20,16 @@ object LoadingSectionComponents {
      */
     fun FlowContent.loadingSection(i18nContext: I18nContext) {
         div(classes = "loading-section") {
+            // Set the img src to a random GIF when we aren't intersecting
+            attributes["_"] = """
+                on intersection(intersecting) having threshold 0.5
+                    if intersecting
+                    else
+                        set gifs to [${list.joinToString(",") { "\"$it\"" }}]
+                        set gif to random in gifs
+                        set x to the first <img/> in me
+                        set x's @src to gif
+                end""".trimIndent()
             img(src = list.random())
 
             div {
