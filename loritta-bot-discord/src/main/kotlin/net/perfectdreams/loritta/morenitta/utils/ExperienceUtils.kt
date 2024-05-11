@@ -17,6 +17,8 @@ object ExperienceUtils {
         return getLevelExperience(lvl) - currentExperience
     }
 
+    fun getCurrentLevelForXp(xp: Long) = (xp / 1000).toInt()
+
     suspend fun getExperienceCustomTokens(loritta: LorittaBot, config: ServerConfig, member: Member): Map<String, String> {
         val customTokens = mutableMapOf<String, String>()
 
