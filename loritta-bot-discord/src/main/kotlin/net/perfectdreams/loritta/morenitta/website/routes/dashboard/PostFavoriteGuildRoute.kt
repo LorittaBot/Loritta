@@ -112,7 +112,7 @@ class PostFavoriteGuildRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalize
 								"showSpicyToast",
 								EmbeddedSpicyModalUtils.encodeURIComponent(
 									Json.encodeToString(
-										EmbeddedSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerUnfavorited), i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.FavoritesDescription))
+										EmbeddedSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerUnfavorited), null)
 									)
 								)
 							)
