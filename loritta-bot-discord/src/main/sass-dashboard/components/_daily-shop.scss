@@ -231,9 +231,14 @@
   display: flex;
   flex-direction: column;
 
-  .canvas-preview-wrapper {
-    text-align: center;
-    animation: 8s linear infinite forwards loritta-item-preview-animation;
+  .canvas-preview-wrapper-wrapper {
+    display: flex;
+    justify-content: center;
+
+    .canvas-preview-wrapper {
+      width: fit-content;
+      animation: 8s linear infinite forwards loritta-item-preview-animation;
+    }
   }
 }
 

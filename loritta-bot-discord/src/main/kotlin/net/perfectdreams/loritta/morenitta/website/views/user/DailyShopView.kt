@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.views.user
 
 import kotlinx.html.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -16,12 +14,14 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
-import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.closeModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedConfirmPurchaseModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.website.views.ProfileDashboardView
-import net.perfectdreams.loritta.serializable.*
+import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
+import net.perfectdreams.loritta.serializable.DailyShopResult
+import net.perfectdreams.loritta.serializable.ProfileDesign
+import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -164,13 +164,24 @@ class DailyShopView(
                                             true,
                                             {
                                                 div(classes = "loritta-item-preview-wrapper") {
-                                                    div(classes = "canvas-preview-wrapper") {
-                                                        img(classes = "canvas-preview-only-bg", src = "/background/${shopItem.internalName}") {
-                                                            style = "width: 400px; aspect-ratio: 4/3;"
-                                                        }
+                                                    div(classes = "canvas-preview-wrapper-wrapper") {
+                                                        div(classes = "canvas-preview-wrapper") {
+                                                            img(
+                                                                classes = "canvas-preview-only-bg",
+                                                                src = "/background/${shopItem.internalName}"
+                                                            ) {
+                                                                style = "width: 400px; aspect-ratio: 4/3;"
+                                                            }
 
-                                                        img(classes = "canvas-preview", src = "/api/v1/users/@me/profile") {
-                                                            style = "width: 400px; aspect-ratio: 4/3;"
+                                                            img(
+                                                                classes = "canvas-preview",
+                                                                src = "/api/v1/users/@me/profile"
+                                                            ) {
+                                                                style = "width: 400px; aspect-ratio: 4/3;"
+                                                            }
+
+                                                            sparkle(0, "-5%", "-10%")
+                                                            sparkle(500, "85%", "70%")
                                                         }
                                                     }
 
@@ -243,13 +254,24 @@ class DailyShopView(
                                             true,
                                             {
                                                 div(classes = "loritta-item-preview-wrapper") {
-                                                    div(classes = "canvas-preview-wrapper") {
-                                                        img(classes = "canvas-preview-only-bg", src = "/api/v1/users/@me/profile?type=${shopItem.internalName}&background=${activeBackgroundId}") {
-                                                            style = "width: 400px; aspect-ratio: 4/3;"
-                                                        }
+                                                    div(classes = "canvas-preview-wrapper-wrapper") {
+                                                        div(classes = "canvas-preview-wrapper") {
+                                                            img(
+                                                                classes = "canvas-preview-only-bg",
+                                                                src = "/api/v1/users/@me/profile?type=${shopItem.internalName}&background=${activeBackgroundId}"
+                                                            ) {
+                                                                style = "width: 400px; aspect-ratio: 4/3;"
+                                                            }
 
-                                                        img(classes = "canvas-preview", src = "/api/v1/users/@me/profile?type=${shopItem.internalName}&background=${activeBackgroundId}") {
-                                                            style = "width: 400px; aspect-ratio: 4/3;"
+                                                            img(
+                                                                classes = "canvas-preview",
+                                                                src = "/api/v1/users/@me/profile?type=${shopItem.internalName}&background=${activeBackgroundId}"
+                                                            ) {
+                                                                style = "width: 400px; aspect-ratio: 4/3;"
+                                                            }
+
+                                                            sparkle(0, "-5%", "-10%")
+                                                            sparkle(500, "85%", "70%")
                                                         }
                                                     }
 
@@ -344,7 +366,50 @@ class DailyShopView(
         }
     }
 
-    fun getShopResetsEpochMilli(): Long {
+    private fun FlowContent.sparkle(initialDelay: Long, left: String, top: String) {
+        img {
+            attributes["_"] = """
+                init
+                    set finished to false
+                    wait ${initialDelay}ms
+                    repeat while finished is false
+                        for list in [[0, 1, 2, 3], [2, 1]]
+                            for x in list
+                                // log me
+                                if not document.contains(me)
+                                    set finished to true
+                                    break
+                                end
+                                if x is 0
+                                    set @src to ""
+                                    set my *opacity to 0.0
+                                end
+                                if x is 1
+                                    set @src to "https://stuff.loritta.website/animations/sparkles-1.png"
+                                    set my *opacity to 0.2
+                                end
+                                if x is 2
+                                    set @src to "https://stuff.loritta.website/animations/sparkles-2.png"
+                                    set my *opacity to 0.4
+                                end
+                                if x is 3
+                                    set @src to "https://stuff.loritta.website/animations/sparkles-3.png"
+                                    set my *opacity to 0.6
+                                end
+                                if x is 0
+                                    wait 200ms // wait more
+                                end
+                                wait 200ms
+                            end
+                        end
+                    end
+                end
+        """.trimIndent()
+            style = "position: absolute; left: $left; top: $top; transform: rotateY(-10deg); width: 100px; height: 100px; opacity: 0;"
+        }
+    }
+
+    private fun getShopResetsEpochMilli(): Long {
         val midnight = LocalTime.MIDNIGHT
         val today = LocalDate.now(ZoneOffset.UTC)
         val todayMidnight = LocalDateTime.of(today, midnight)
