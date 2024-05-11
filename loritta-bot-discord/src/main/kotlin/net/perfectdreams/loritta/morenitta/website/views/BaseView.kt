@@ -83,9 +83,9 @@ window.addEventListener('load', function () {
                     )
                 } else if (useDashboardStyleCss) {
                     styleLink(
-                        "/v3/assets/css/style.css?hash=${
+                        "/lori-slippy/assets/css/style.css?hash=${
                             assetHashFromResources(
-                                "/v3/assets/css/style.css"
+                                "/lori-slippy/assets/css/style.css"
                             )
                         }"
                     )
