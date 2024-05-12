@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.components
 
 import kotlinx.html.FlowContent
 import kotlinx.html.IMG
+import kotlinx.html.classes
 import kotlinx.html.img
 
 object EtherealGambiUtils {
@@ -17,7 +18,10 @@ object EtherealGambiUtils {
         ScaleDownToWidthImageVariantPreset("2560w", 2560)
     )
 
-    fun FlowContent.etherealGambiImg(src: String, alt: String = "", sizes: String, block: IMG.() -> (Unit)) = img {
+    fun FlowContent.etherealGambiImg(src: String, classes: String? = null, alt: String = "", sizes: String, block: IMG.() -> (Unit)) = img {
+        if (classes != null)
+            this.classes = classes.split(" ").toSet()
+
         // This is not "correct", as in: The right way is to load the data by requesting EtherealGambi what image variations are present
         // But whatever, this ain't a big deal
         val srcsets = mutableListOf<String>()
