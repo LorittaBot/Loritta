@@ -78,9 +78,11 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 							it[UserWebsiteSettings.favoritedGuilds] = Json.encodeToString(updatedFavoritedGuilds)
 						}
 					}
+
+					return@newSuspendedTransaction updatedFavoritedGuilds
 				}
 
-				favoritedGuilds
+				return@newSuspendedTransaction null
 			}
 
 			val guilds = userGuilds.filter { LorittaWebsite.canManageGuild(it) }
