@@ -650,6 +650,21 @@ class TextTransformCommand : SlashCommandDeclarationWrapper {
     inner class TextVemDeZapExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val text = string("text", VEMDEZAP_I18N_PREFIX.Options.Text)
+            val mood = optionalString("mood", VEMDEZAP_I18N_PREFIX.Options.Mood.Text) {
+                choice(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy, "happy")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Angry, "happy")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sassy, "happy")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sad, "happy")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sick, "happy")
+            }
+
+            val level = optionalString("level", VEMDEZAP_I18N_PREFIX.Options.Level.Text) {
+                choice(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level1, "1")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level2, "2")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level3, "3")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level4, "4")
+                choice(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level5, "5")
+            }
         }
 
         override val options = Options()
@@ -657,140 +672,177 @@ class TextTransformCommand : SlashCommandDeclarationWrapper {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val moods = listOf(
                 MoodWrapper(
+                    "happy",
                     context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy),
                     "\uD83D\uDE0A",
                     ZapZapMood.HAPPY
                 ),
                 MoodWrapper(
+                    "angry",
                     context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Angry),
                     "\uD83D\uDE20",
                     ZapZapMood.ANGRY
                 ),
                 MoodWrapper(
+                    "sassy",
                     context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sassy),
                     "\uD83D\uDE0F",
                     ZapZapMood.SASSY
                 ),
                 MoodWrapper(
+                    "sad",
                     context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sad),
                     "\uD83D\uDE22",
                     ZapZapMood.SAD
                 ),
                 MoodWrapper(
+                    "sick",
                     context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sick),
                     "\uD83E\uDD12",
                     ZapZapMood.SICK
                 )
             )
 
-            context.reply(false) {
-                styled(
-                    context.i18nContext.get(
-                        VEMDEZAP_I18N_PREFIX.Options.Mood.Text
+            val mood = args[options.mood]
+            val level = args[options.level]?.toLong()
+
+            if (mood != null && level != null) {
+                val moodWrapper = moods.first { it.id == mood }
+
+                val text = cleanUpForOutput(context, args[options.text])
+
+                val split = text.split(" ")
+
+                context.reply(false) {
+                    styled(
+                        generateVemDeZapText(
+                            context,
+                            moodWrapper,
+                            split,
+                            level.toInt()
+                        ),
+                        "✍"
                     )
-                )
+                }
+            } else {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(
+                            VEMDEZAP_I18N_PREFIX.Options.Mood.Text
+                        )
+                    )
 
-                actionRow(
-                    buildList {
-                        moods.forEach { mood ->
-                            this.add(
-                                context.loritta.interactivityManager
-                                    .buttonForUser(context.user, ButtonStyle.PRIMARY, mood.label, {
-                                        emoji = Emoji.fromUnicode(mood.unicode)
-                                    }) { moodSelectionContext ->
-                                        moodSelectionContext.deferAndEditOriginal {
-                                            styled(
-                                                moodSelectionContext.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Text)
-                                            )
+                    actionRow(
+                        buildList {
+                            moods.forEach { mood ->
+                                this.add(
+                                    context.loritta.interactivityManager
+                                        .buttonForUser(context.user, ButtonStyle.PRIMARY, mood.label, {
+                                            emoji = Emoji.fromUnicode(mood.unicode)
+                                        }) { moodSelectionContext ->
+                                            moodSelectionContext.deferAndEditOriginal {
+                                                styled(
+                                                    moodSelectionContext.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Text)
+                                                )
 
-                                            actionRow(
-                                                buildList {
-                                                    for (i in 1..5) {
-                                                        val levels = listOf(
-                                                            context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level1),
-                                                            context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level2),
-                                                            context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level3),
-                                                            context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level4),
-                                                            context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level5),
-                                                        )
+                                                actionRow(
+                                                    buildList {
+                                                        for (i in 1..5) {
+                                                            val levels = listOf(
+                                                                context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level1),
+                                                                context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level2),
+                                                                context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level3),
+                                                                context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level4),
+                                                                context.i18nContext.get(VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level5),
+                                                            )
 
-                                                        this.add(
-                                                            context.loritta.interactivityManager
-                                                            .buttonForUser(context.user, ButtonStyle.PRIMARY, levels[i-1]) {
-                                                                val text = cleanUpForOutput(context, args[options.text])
-                                                                val split = text.split(" ")
+                                                            this.add(
+                                                                context.loritta.interactivityManager
+                                                                    .buttonForUser(context.user, ButtonStyle.PRIMARY, levels[i-1]) {
+                                                                        val text = cleanUpForOutput(context, args[options.text])
+                                                                        val split = text.split(" ")
 
-                                                                var output = ""
-
-                                                                for (word in split) {
-                                                                    val lowerCaseWord = word.lowercase()
-                                                                    output += "$word "
-                                                                    var addedEmoji = false
-
-                                                                    for ((match, emojis) in fullMatch) {
-                                                                        if (lowerCaseWord == match) {
-                                                                            output += "${emojis.random()} "
-                                                                            addedEmoji = true
+                                                                        it.deferAndEditOriginal {
+                                                                            styled(
+                                                                                generateVemDeZapText(
+                                                                                    context,
+                                                                                    mood,
+                                                                                    split,
+                                                                                    i
+                                                                                ),
+                                                                                "✍"
+                                                                            )
+                                                                            styled(
+                                                                                it.i18nContext.get(VEMDEZAP_I18N_PREFIX.RefreshIt)
+                                                                            )
                                                                         }
                                                                     }
-
-                                                                    for ((match, emojis) in partialMatchAny) {
-                                                                        if (lowerCaseWord.contains(match, true)) {
-                                                                            output += "${emojis.random()} "
-                                                                            addedEmoji = true
-                                                                        }
-                                                                    }
-
-                                                                    for ((match, emojis) in partialMatchPrefix) {
-                                                                        if (lowerCaseWord.startsWith(match, true)) {
-                                                                            output += "${emojis.random()} "
-                                                                            addedEmoji = true
-                                                                        }
-                                                                    }
-
-                                                                    if (!addedEmoji) {
-                                                                        val upperBound = (5 - i) + 3
-                                                                        val randomInteger = context.loritta.random.nextLong(upperBound.toLong())
-
-                                                                        if (randomInteger == 0L) {
-                                                                            val moodEmojis = when (mood.zapMood) {
-                                                                                ZapZapMood.HAPPY -> happyEmojis
-                                                                                ZapZapMood.ANGRY -> angryEmojis
-                                                                                ZapZapMood.SASSY -> sassyEmojis
-                                                                                ZapZapMood.SAD -> sadEmojis
-                                                                                ZapZapMood.SICK -> sickEmojis
-                                                                            }
-
-                                                                            val addEmojis = context.loritta.random.nextLong(1, i.toLong() + 2)
-
-                                                                            for (j in 0 until addEmojis) {
-                                                                                output += "${moodEmojis.random()} "
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                it.deferAndEditOriginal {
-                                                                    styled(
-                                                                        output,
-                                                                        "✍"
-                                                                    )
-                                                                    styled(
-                                                                        it.i18nContext.get(VEMDEZAP_I18N_PREFIX.RefreshIt)
-                                                                    )
-                                                                }
-                                                            }
-                                                        )
+                                                            )
+                                                        }
                                                     }
-                                                }
-                                            )
+                                                )
+                                            }
                                         }
-                                }
-                            )
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+        }
+
+        private fun generateVemDeZapText(context: UnleashedContext, mood: MoodWrapper, splittedText: List<String>, level: Int): String {
+            var output = ""
+
+            for (word in splittedText) {
+                val lowerCaseWord = word.lowercase()
+                output += "$word "
+                var addedEmoji = false
+
+                for ((match, emojis) in fullMatch) {
+                    if (lowerCaseWord == match) {
+                        output += "${emojis.random()} "
+                        addedEmoji = true
+                    }
+                }
+
+                for ((match, emojis) in partialMatchAny) {
+                    if (lowerCaseWord.contains(match, true)) {
+                        output += "${emojis.random()} "
+                        addedEmoji = true
+                    }
+                }
+
+                for ((match, emojis) in partialMatchPrefix) {
+                    if (lowerCaseWord.startsWith(match, true)) {
+                        output += "${emojis.random()} "
+                        addedEmoji = true
+                    }
+                }
+
+                if (!addedEmoji) {
+                    val upperBound = (5 - level) + 3
+                    val randomInteger = context.loritta.random.nextLong(upperBound.toLong())
+
+                    if (randomInteger == 0L) {
+                        val moodEmojis = when (mood.zapMood) {
+                            ZapZapMood.HAPPY -> happyEmojis
+                            ZapZapMood.ANGRY -> angryEmojis
+                            ZapZapMood.SASSY -> sassyEmojis
+                            ZapZapMood.SAD -> sadEmojis
+                            ZapZapMood.SICK -> sickEmojis
+                        }
+
+                        val addEmojis = context.loritta.random.nextLong(1, level.toLong() + 2)
+
+                        for (j in 0 until addEmojis) {
+                            output += "${moodEmojis.random()} "
                         }
                     }
-                )
+                }
             }
+
+            return output
         }
 
         override suspend fun convertToInteractionsArguments(
@@ -809,6 +861,7 @@ class TextTransformCommand : SlashCommandDeclarationWrapper {
     }
 
     data class MoodWrapper(
+        val id: String, // used for slash commands
         val label: String,
         val unicode: String,
         val zapMood: ZapZapMood
