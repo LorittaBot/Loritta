@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.components.Ads
+import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents.fillContentLoadingSection
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.closeModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
@@ -260,7 +261,8 @@ abstract class ProfileDashboardView(
                                         aside {
                                             id = "loritta-snug"
 
-                                            img(src = "https://stuff.loritta.website/loritta-snuggle.png") {
+                                            // Always 160px because we use the --sidebar-ad-width CSS variable for its size, so if that variable changes, we need to change it here too!
+                                            etherealGambiImg(src = "https://stuff.loritta.website/loritta-snuggle.png", sizes = "160px") {
                                                 openEmbeddedModalOnClick(
                                                     i18nContext.get(I18nKeysData.Website.Dashboard.ThankYouMoneyModal.Title),
                                                     true,
