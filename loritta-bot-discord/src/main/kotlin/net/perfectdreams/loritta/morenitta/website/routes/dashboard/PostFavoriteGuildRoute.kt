@@ -12,20 +12,23 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserFavoritedGuilds
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
-import net.perfectdreams.loritta.morenitta.website.utils.FavoritedGuild
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.SelectGuildProfileDashboardView.Companion.favoriteGuild
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.upsert
+import java.time.Instant
 
 class PostFavoriteGuildRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/favorite-guild") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
@@ -34,13 +37,12 @@ class PostFavoriteGuildRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalize
 		val favorited = parameters.getOrFail("favorited").toBoolean()
 
 		val result = loritta.transaction {
-			val websiteSettings = UserWebsiteSettings.selectAll()
+			val userIdLong = userIdentification.id.toLong()
+			val currentlyFavoritedGuilds = UserFavoritedGuilds.selectAll()
 				.where {
-					UserWebsiteSettings.id eq userIdentification.id.toLong()
-				}.firstOrNull()
-
-			val currentlyFavoritedGuilds = websiteSettings?.get(UserWebsiteSettings.favoritedGuilds)
-				?.let { Json.decodeFromString<List<FavoritedGuild>>(it) } ?: listOf()
+					UserFavoritedGuilds.userId eq userIdLong
+				}
+				.map { it[UserFavoritedGuilds.guildId] }
 
 			val newFavoritedGuilds = currentlyFavoritedGuilds.toMutableSet()
 
@@ -49,15 +51,16 @@ class PostFavoriteGuildRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalize
 
 			if (favorited) {
 				// Only add to the favorites list if there isn't any matching guild ID
-				if (!newFavoritedGuilds.any { it.guildId == guildId })
-					newFavoritedGuilds.add(FavoritedGuild(guildId, kotlinx.datetime.Clock.System.now()))
+				if (!newFavoritedGuilds.any { it == guildId })
+					UserFavoritedGuilds.insert {
+						it[UserFavoritedGuilds.userId] = userIdLong
+						it[UserFavoritedGuilds.guildId] = guildId
+						it[UserFavoritedGuilds.favoritedAt] = Instant.now()
+					}
 			} else
-				newFavoritedGuilds.removeIf { it.guildId == guildId }
-
-			UserWebsiteSettings.upsert(UserWebsiteSettings.id) {
-				it[UserWebsiteSettings.id] = userIdentification.id.toLong()
-				it[UserWebsiteSettings.favoritedGuilds] = Json.encodeToString(newFavoritedGuilds)
-			}
+				UserFavoritedGuilds.deleteWhere {
+					UserFavoritedGuilds.userId eq userIdLong and (UserFavoritedGuilds.guildId eq guildId)
+				}
 
 			return@transaction Result.Success
 		}

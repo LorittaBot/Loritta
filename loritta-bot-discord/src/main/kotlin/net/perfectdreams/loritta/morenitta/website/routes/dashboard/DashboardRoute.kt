@@ -5,22 +5,22 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserFavoritedGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.utils.FavoritedGuild
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.SelectGuildProfileDashboardView
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import kotlin.collections.set
@@ -60,29 +60,19 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 					it[GuildProfiles.isInGuild] = false
 				}
 
-				val favoritedGuilds = UserWebsiteSettings.selectAll()
-					.where {
-						UserWebsiteSettings.id eq userIdentification.id.toLong()
-					}.firstOrNull()
-					?.get(UserWebsiteSettings.favoritedGuilds)
-					?.let { Json.decodeFromString<List<FavoritedGuild>>(it) }
-					?.map { it.guildId }
-					?.toSet()
-
 				// Remove all unknown guilds from the favorite guilds list, mostly to avoid users hitting the 200 favorited guilds limit
-				if (favoritedGuilds != null) {
-					val updatedFavoritedGuilds = favoritedGuilds.toMutableSet()
-					val requiresUpdate = updatedFavoritedGuilds.removeIf { it !in userGuildsIds }
-					if (requiresUpdate) {
-						UserWebsiteSettings.update({ UserWebsiteSettings.id eq userIdentification.id.toLong() }) {
-							it[UserWebsiteSettings.favoritedGuilds] = Json.encodeToString(updatedFavoritedGuilds)
-						}
-					}
-
-					return@newSuspendedTransaction updatedFavoritedGuilds
+				// We do this before querying to user's favorited guilds
+				UserFavoritedGuilds.deleteWhere {
+					UserFavoritedGuilds.userId eq userIdentification.id.toLong() and (UserFavoritedGuilds.guildId notInList userGuildsIds)
 				}
+				val favoritedGuilds = UserFavoritedGuilds.selectAll()
+					.where {
+						UserFavoritedGuilds.userId eq userIdentification.id.toLong()
+					}
+					.map { it[UserFavoritedGuilds.guildId] }
+					.toSet()
 
-				return@newSuspendedTransaction null
+				return@newSuspendedTransaction favoritedGuilds
 			}
 
 			val guilds = userGuilds.filter { LorittaWebsite.canManageGuild(it) }
