@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.misc
 
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -18,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 
 class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -58,6 +60,18 @@ class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     "Español"
                 )
             )
+
+            if (context.guildOrNull != null && !context.member.hasPermission(Permission.MANAGE_SERVER)) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.UserDoesntHavePermissionDiscord(Permission.MANAGE_SERVER.getLocalizedName(context.i18nContext))
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
+                return
+            }
 
             context.reply(true) {
                 embed {
