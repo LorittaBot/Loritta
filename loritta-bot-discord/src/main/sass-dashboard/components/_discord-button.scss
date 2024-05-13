@@ -23,7 +23,7 @@ a:has(.discord-button) {
         cursor: not-allowed;
     }
 
-    &.htmx-discord-like-loading-button {
+    .htmx-discord-like-loading-button {
         .loading-text-wrapper {
             display: none;
         }

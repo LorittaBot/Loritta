@@ -64,6 +64,9 @@ object DefaultRoutes {
 		// Profiles
 		ProfileListRoute(loritta),
 		ShipEffectsRoute(loritta),
+		PostShipEffectsRoute(loritta),
+		PostPreBuyShipEffectRoute(loritta),
+		PostBuyShipEffectRoute(loritta),
 		AvailableBundlesRoute(loritta),
 		BackgroundsListRoute(loritta),
 		AllBackgroundsListRoute(loritta),

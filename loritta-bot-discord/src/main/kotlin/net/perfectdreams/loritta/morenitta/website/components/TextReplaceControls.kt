@@ -1,8 +1,18 @@
 package net.perfectdreams.loritta.morenitta.website.components
 
 import kotlinx.html.FlowContent
+import net.perfectdreams.i18nhelper.core.I18nContext
 
 object TextReplaceControls {
+    fun FlowContent.appendAsFormattedText(i18nContext: I18nContext, map: Map<String, Any?>): (String) -> (Unit) = {
+        text(
+            i18nContext.formatter.format(
+                it,
+                map
+            )
+        )
+    }
+
     fun FlowContent.handleI18nString(
         text: String,
         onText: (String) -> (Unit),

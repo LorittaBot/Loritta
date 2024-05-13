@@ -21,23 +21,86 @@ object EmbeddedSpicyModalUtils {
         body: TagConsumer<String>.() -> (Unit),
         buttons: List<BUTTON.() -> (Unit)>
     ) {
+        openEmbeddedModalOnClick(
+            EmbeddedSpicyModal(
+                title,
+                canBeClosedByClickingOutsideTheWindow,
+                createHTML().apply(body).finalize(),
+                buttons.map {
+                    createHTML()
+                        .button(classes = "discord-button") {
+                            type = ButtonType.button
+                            apply(it)
+                        }
+                }
+            )
+        )
+    }
+
+    fun FlowContent.openEmbeddedModalOnClick(embeddedSpicyModal: EmbeddedSpicyModal) {
         attributes["hx-on:click"] = "window['spicy-morenitta'].openEmbeddedModal(this)"
         // We encode it using encodeURIComponent to avoid issues when nested modals breaking due to URL encoding (not really sure why they break tho)
         // While Base64 IS smaller than encodeURIComponent, encodeURIComponent compresses way better than Base64
-        attributes["loritta-embedded-spicy-modal"] = encodeURIComponent(
-            Json.encodeToString<EmbeddedSpicyModal>(
-                EmbeddedSpicyModal(
-                    title,
-                    canBeClosedByClickingOutsideTheWindow,
-                    createHTML().apply(body).finalize(),
-                    buttons.map {
-                        createHTML()
-                            .button(classes = "discord-button") {
-                                type = ButtonType.button
-                                apply(it)
-                            }
+        attributes["loritta-embedded-spicy-modal"] = encodeURIComponent(Json.encodeToString<EmbeddedSpicyModal>(embeddedSpicyModal))
+    }
+
+    fun createEmbeddedConfirmPurchaseModal(
+        i18nContext: I18nContext,
+        price: Long,
+        userSonhos: Long,
+        confirmPurchaseButtonBehavior: BUTTON.() -> (Unit)
+    ): EmbeddedSpicyModal {
+        return EmbeddedSpicyModal(
+            i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Title),
+            true,
+            createHTML().div {
+                style = "text-align: center;"
+
+                img {
+                    src = "https://stuff.loritta.website/lori-nota-fiscal.png"
+                    width = "300"
+                }
+
+                i18nContext.get(
+                    I18nKeysData.Website.Dashboard.PurchaseModal.Description(
+                        price,
+                        userSonhos
+                    )
+                ).forEach {
+                    p {
+                        text(it)
                     }
-                )
+                }
+            },
+            listOf(
+                createHTML().button(classes = "discord-button no-background-theme-dependent-dark-text") {
+                    type = ButtonType.button
+                    closeModalOnClick()
+                    text(i18nContext.get(I18nKeysData.Website.Dashboard.Modal.Close))
+                },
+                createHTML().button(classes = "discord-button primary") {
+                    type = ButtonType.button
+                    if (price > userSonhos) {
+                        openEmbeddedNotEnoughSonhosModalOnClick(i18nContext, price)
+                        text(i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Buy))
+                    } else {
+                        attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
+                        attributes["hx-disabled-elt"] = "this"
+                        confirmPurchaseButtonBehavior.invoke(this)
+
+                        div(classes = "htmx-discord-like-loading-button") {
+                            div {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Buy))
+                            }
+
+                            div(classes = "loading-text-wrapper") {
+                                img(src = LoadingSectionComponents.list.random())
+
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+                            }
+                        }
+                    }
+                }
             )
         )
     }
@@ -48,61 +111,7 @@ object EmbeddedSpicyModalUtils {
         userSonhos: Long,
         confirmPurchaseButtonBehavior: BUTTON.() -> (Unit)
     ) {
-        openEmbeddedModalOnClick(
-            i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Title),
-            true,
-            {
-                div {
-                    style = "text-align: center;"
-
-                    img {
-                        src = "https://stuff.loritta.website/lori-nota-fiscal.png"
-                        width = "300"
-                    }
-
-                    i18nContext.get(
-                        I18nKeysData.Website.Dashboard.PurchaseModal.Description(
-                            price,
-                            userSonhos
-                        )
-                    ).forEach {
-                        p {
-                            text(it)
-                        }
-                    }
-                }
-            },
-            listOf(
-                {
-                    classes += "no-background-theme-dependent-dark-text"
-
-                    closeModalOnClick()
-                    text(i18nContext.get(I18nKeysData.Website.Dashboard.Modal.Close))
-                },
-                {
-                    classes += "primary"
-                    if (price > userSonhos) {
-                        openEmbeddedNotEnoughSonhosModalOnClick(i18nContext, price)
-                        text(i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Buy))
-                    } else {
-                        classes += "htmx-discord-like-loading-button"
-                        attributes["hx-indicator"] = "this"
-                        attributes["hx-disabled-elt"] = "this"
-                        confirmPurchaseButtonBehavior.invoke(this)
-
-                        div {
-                            text(i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Buy))
-                        }
-
-                        div(classes = "loading-text-wrapper") {
-                            img(src = LoadingSectionComponents.list.random())
-
-                            text("Carregando...")
-                        }
-                    }
-                }
-            )
-        )
+        openEmbeddedModalOnClick(createEmbeddedConfirmPurchaseModal(i18nContext, price, userSonhos, confirmPurchaseButtonBehavior))
     }
 
     fun FlowContent.openEmbeddedNotEnoughSonhosModalOnClick(

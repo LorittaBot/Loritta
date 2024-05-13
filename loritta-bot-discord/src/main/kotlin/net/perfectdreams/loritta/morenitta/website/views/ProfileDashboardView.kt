@@ -23,7 +23,7 @@ abstract class ProfileDashboardView(
     locale: BaseLocale,
     path: String,
     private val legacyBaseLocale: LegacyBaseLocale,
-    private val userIdentification: LorittaJsonWebSession.UserIdentification,
+    val userIdentification: LorittaJsonWebSession.UserIdentification,
     private val userPremiumPlan: UserPremiumPlans,
     private val selectedType: String,
 ) : BaseView(
@@ -133,7 +133,7 @@ abstract class ProfileDashboardView(
 
                                     appendEntry("/user/@me/dashboard/profiles", false, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", "profile_list")
                                     appendEntry("/user/@me/dashboard/backgrounds", false, "Backgrounds", "far fa-images", "background_list")
-                                    appendEntry("/user/@me/dashboard/ship-effects", false, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", "ship_effects")
+                                    appendEntry("/user/@me/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", "ship_effects")
 
                                     hr(classes = "divider") {}
                                     div(classes = "category") {
@@ -216,12 +216,14 @@ abstract class ProfileDashboardView(
                                 div(classes = "htmx-fill-content-loading-section") {
                                     id = "right-sidebar-wrapper"
 
-                                    article(classes = "content") {
-                                        // This ID is used for content switch
-                                        id = "right-sidebar-contents"
+                                    div {
+                                        article(classes = "content") {
+                                            // This ID is used for content switch
+                                            id = "right-sidebar-contents"
 
-                                        div {
-                                            generateRightSidebarContents()
+                                            div {
+                                                generateRightSidebarContents()
+                                            }
                                         }
                                     }
 

@@ -713,13 +713,29 @@ aside#that-wasnt-very-cash-money-of-you-reserved-space {
     }
 }
 
+.htmx-inline-loading-section {
+    .inline-loading-section {
+        display: none;
+    }
+
+    &.htmx-request {
+        >div:first-child {
+            display: none;
+        }
+
+        .inline-loading-section {
+            display: flex;
+        }
+    }
+}
+
 .htmx-fill-content-loading-section {
     .loading-section {
         display: none;
     }
 
     &.htmx-request {
-        div:first-child {
+        >div:first-child {
             display: none;
         }
 

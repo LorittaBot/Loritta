@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.website.components
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.img
+import kotlinx.html.span
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
@@ -15,13 +16,7 @@ object LoadingSectionComponents {
         "https://cdn.discordapp.com/emojis/985919207147470858.gif?size=160&quality=lossless"
     )
 
-    /**
-     * A loading section
-     */
-    fun FlowContent.loadingSection(i18nContext: I18nContext) {
-        div(classes = "loading-section") {
-            // Set the img src to a random GIF when we aren't intersecting
-            attributes["_"] = """
+    private val HYPERSCRIPT_CHANGE_IMG_SRC_TO_A_RANDOM_GIF_WHEN_THE_IMAGE_IS_NON_VISIBLE = """
                 on intersection(intersecting) having threshold 0.5
                     if intersecting
                     else
@@ -30,6 +25,29 @@ object LoadingSectionComponents {
                         set x to the first <img/> in me
                         set x's @src to gif
                 end""".trimIndent()
+
+    /**
+     * A inline loading section
+     */
+    fun FlowContent.inlineLoadingSection(i18nContext: I18nContext) {
+        span(classes = "inline-loading-section") {
+            // Set the img src to a random GIF when we aren't intersecting
+            attributes["_"] = HYPERSCRIPT_CHANGE_IMG_SRC_TO_A_RANDOM_GIF_WHEN_THE_IMAGE_IS_NON_VISIBLE
+            img(src = list.random())
+
+            div {
+                text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+            }
+        }
+    }
+
+    /**
+     * A loading section
+     */
+    fun FlowContent.loadingSection(i18nContext: I18nContext) {
+        div(classes = "loading-section") {
+            // Set the img src to a random GIF when we aren't intersecting
+            attributes["_"] = HYPERSCRIPT_CHANGE_IMG_SRC_TO_A_RANDOM_GIF_WHEN_THE_IMAGE_IS_NON_VISIBLE
             img(src = list.random())
 
             div {
@@ -44,15 +62,7 @@ object LoadingSectionComponents {
     fun FlowContent.fillContentLoadingSection(i18nContext: I18nContext) {
         div(classes = "loading-section fill-content-loading-section") {
             // Set the img src to a random GIF when we aren't intersecting
-            attributes["_"] = """
-                on intersection(intersecting) having threshold 0.5
-                    if intersecting
-                    else
-                        set gifs to [${list.joinToString(",") { "\"$it\"" }}]
-                        set gif to random in gifs
-                        set x to the first <img/> in me
-                        set x's @src to gif
-                end""".trimIndent()
+            attributes["_"] = HYPERSCRIPT_CHANGE_IMG_SRC_TO_A_RANDOM_GIF_WHEN_THE_IMAGE_IS_NON_VISIBLE
             img(src = list.random())
 
             div {

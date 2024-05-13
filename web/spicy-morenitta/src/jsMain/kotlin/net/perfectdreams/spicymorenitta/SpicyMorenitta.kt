@@ -25,12 +25,16 @@ import kotlinx.html.span
 import kotlinx.html.stream.createHTML
 import kotlinx.html.style
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import loadEmbeddedLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.Language
 import net.perfectdreams.i18nhelper.formatters.IntlMessageFormat
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
@@ -43,6 +47,7 @@ import net.perfectdreams.spicymorenitta.routes.user.dashboard.*
 import net.perfectdreams.spicymorenitta.toasts.ToastManager
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
+import org.w3c.xhr.XMLHttpRequest
 import kotlin.collections.set
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.js.Date
@@ -234,6 +239,52 @@ class SpicyMorenitta : Logging {
 
 				// Render NitroPay ads
 				NitroPay.renderAds()
+			})
+
+			document.addEventListener("htmx:afterRequest", { evt ->
+				println("htmx:afterRequest")
+				val xmlHttpRequest = evt.asDynamic().detail.xhr as XMLHttpRequest
+				// While we can send the modal within a HX-Trigger header, there's an issue with it: nginx limits the header size!
+				// It is possible to increase it on nginx's side by increasing the proxy_buffer_size, proxy_buffers and proxy_busy_buffers_size
+				// However we've decided to just let the JSON modal be embedded on the response itself
+				val openEmbeddedModal = xmlHttpRequest.getResponseHeader("SpicyMorenitta-Open-Embedded-Spicy-Modal")?.toBoolean()
+
+				if (openEmbeddedModal == true) {
+					println("Received embedded spicy modal")
+					val responseAsText = xmlHttpRequest.responseText
+					val embeddedSpicyModal = kotlinx.serialization.json.Json.decodeFromString<EmbeddedSpicyModal>(responseAsText)
+					modalManager.openModal(embeddedSpicyModal)
+				}
+
+				// The lack of dash is intentional, htmx checks if the header CONTAINS HX-Trigger not if it is equal to
+				val useResponseAsHxTrigger = xmlHttpRequest.getResponseHeader("SpicyMorenitta-Use-Response-As-HXTrigger")?.toBoolean()
+
+				if (useResponseAsHxTrigger == true) {
+					println("Received use response as HX-Trigger")
+					val responseAsText = xmlHttpRequest.responseText
+					val json = kotlinx.serialization.json.Json.parseToJsonElement(responseAsText).jsonObject
+					json.entries.forEach {
+						val eventName = it.key
+						val eventValue = it.value.jsonPrimitive.contentOrNull
+						println("Triggering event $eventName with $eventValue")
+						trigger(
+							"body",
+							it.key,
+							jsObject {
+								this.value = eventValue
+							}
+						)
+					}
+				}
+			})
+
+			document.addEventListener("showSpicyModal", { evt ->
+				val eventValue = evt.asDynamic().detail.value as String
+
+				// We use decodeURIComponent because headers cannot have non-ASCII characters
+				// We also use decodeURIComponent instead of Base64 because technically headers in HTTP/2.0 are compressed, and URI components compress better than Base64
+				val embeddedSpicyModal = kotlinx.serialization.json.Json.decodeFromString<EmbeddedSpicyModal>(decodeURIComponent(eventValue))
+				modalManager.openModal(embeddedSpicyModal)
 			})
 
 			document.addEventListener("closeSpicyModal", { evt ->

@@ -2,6 +2,9 @@ package net.perfectdreams.loritta.morenitta.website.views
 
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
@@ -175,14 +178,20 @@ window.addEventListener('load', function () {
                     }
                 }
 
-                // We want to ALWAYS do a hard refresh when pressing the back button
-                // https://htmx.org/docs/#history
-                /* meta(
+                meta(
                     name = "htmx-config",
                     content = buildJsonObject {
-                        put("refreshOnHistoryMiss", true)
+                        putJsonArray("attributesToSettle") {
+                            // default settle attributes
+                            add("class")
+                            add("style")
+                            add("width")
+                            add("height")
+                            // custom settle attributes!
+                            add("disabled")
+                        }
                     }.toString()
-                ) */
+                )
 
                 generateMeta()
             }
