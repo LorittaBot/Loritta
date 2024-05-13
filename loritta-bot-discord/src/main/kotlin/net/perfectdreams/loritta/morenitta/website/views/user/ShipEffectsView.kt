@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.morenitta.website.components.EmptySection.emptySection
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
 import net.perfectdreams.loritta.morenitta.website.components.InlineNullableUserDisplay.inlineNullableUserDisplay
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
@@ -234,6 +235,8 @@ class ShipEffectsView(
                                     }
                                 }
                             }
+                        } else {
+                            emptySection(i18nContext)
                         }
                     }
                 }
