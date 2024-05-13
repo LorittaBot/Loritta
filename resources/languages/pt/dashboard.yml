@@ -27,7 +27,6 @@ website:
           favoritesDescription: "Servidores adicionados aos favoritos aparecem no topo da sua lista de servidores no painel da Loritta"
           tooManyFavorites: "Você chegou no limite de servidores favoritos!"
           tooManyFavoritesDescription: "Remova outros servidores da sua lista de favoritos para adicionar novos servidores!"
-
     modal:
       close: "Fechar"
     purchaseVariants:
@@ -105,3 +104,10 @@ website:
       description:
         - "Eu não tenho permissão para enviar mensagens no canal que você escolheu..."
         - "Para eu conseguir falar neste canal, vá nas configurações do canal e, nas permissões avançadas, adicione que eu, ou o meu cargo, possa ler e mandar mensagens no canal!"
+    authorizationFailedModal:
+      title: "Autorização falhou!"
+      description:
+        - "Eu tentei acessar as informações da sua conta do Discord, mas não consegui!"
+        - "Isto pode acontecer se você desautorizou a Loritta nas configurações do Discord, se faz tempo que você acessou o painel da Loritta, ou por alguma intervenção divina."
+        - "Para usar o painel da Loritta, você precisará reautorizar a sua conta do Discord."
+      reauthorize: "Reautorizar"
