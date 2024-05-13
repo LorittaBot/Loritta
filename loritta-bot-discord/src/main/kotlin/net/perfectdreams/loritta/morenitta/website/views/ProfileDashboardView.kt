@@ -170,11 +170,11 @@ abstract class ProfileDashboardView(
                                                 "gif"
                                             } else { "png" }
 
-                                            "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userAvatarId}.${extension}?size=256"
+                                            "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userAvatarId}.${extension}?size=64"
                                         } else {
                                             val avatarId = (userIdentification.id.toLong() shr 22) % 6
 
-                                            "https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
+                                            "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
                                         }
 
                                         img(src = avatarUrl) {

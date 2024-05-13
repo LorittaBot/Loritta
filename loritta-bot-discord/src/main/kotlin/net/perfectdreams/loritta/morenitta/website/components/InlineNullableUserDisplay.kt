@@ -17,11 +17,11 @@ object InlineNullableUserDisplay {
                         "gif"
                     } else { "png" }
 
-                    "https://cdn.discordapp.com/avatars/$userId/${userAvatarId}.${extension}?size=256"
+                    "https://cdn.discordapp.com/avatars/$userId/${userAvatarId}.${extension}?size=24"
                 } else {
                     val avatarId = (userId shr 22) % 6
 
-                    "https://cdn.discordapp.com/embed/avatars/$avatarId.png?size=256"
+                    "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
                 }
 
                 img(src = avatarUrl) {
