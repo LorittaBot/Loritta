@@ -15,6 +15,13 @@ object EmbeddedSpicyModalUtils {
         attributes["hx-on:click"] = "window['spicy-morenitta'].closeModal()"
     }
 
+    fun BUTTON.defaultModalCloseButton(i18nContext: I18nContext) {
+        classes += "no-background-theme-dependent-dark-text"
+        type = ButtonType.button
+        closeModalOnClick()
+        text(i18nContext.get(I18nKeysData.Website.Dashboard.Modal.Close))
+    }
+
     fun FlowContent.openEmbeddedModalOnClick(
         title: String,
         canBeClosedByClickingOutsideTheWindow: Boolean,
@@ -73,10 +80,8 @@ object EmbeddedSpicyModalUtils {
                 }
             },
             listOf(
-                createHTML().button(classes = "discord-button no-background-theme-dependent-dark-text") {
-                    type = ButtonType.button
-                    closeModalOnClick()
-                    text(i18nContext.get(I18nKeysData.Website.Dashboard.Modal.Close))
+                createHTML().button(classes = "discord-button") {
+                    defaultModalCloseButton(i18nContext)
                 },
                 createHTML().button(classes = "discord-button primary") {
                     type = ButtonType.button
@@ -127,10 +132,7 @@ object EmbeddedSpicyModalUtils {
                 }
             },
             listOf {
-                classes += "no-background-theme-dependent-dark-text"
-
-                closeModalOnClick()
-                text(i18nContext.get(I18nKeysData.Website.Dashboard.Modal.Close))
+                defaultModalCloseButton(i18nContext)
             }
         )
     }

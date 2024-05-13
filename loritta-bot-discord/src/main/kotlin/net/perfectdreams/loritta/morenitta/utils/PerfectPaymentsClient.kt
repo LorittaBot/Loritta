@@ -81,4 +81,67 @@ class PerfectPaymentsClient(val url: String) {
 
         return paymentUrl
     }
+
+    /**
+     * Creates a payment in PerfectPayments, creates a entry in Loritta's payment table and returns the payment URL
+     *
+     * @return the payment URL
+     */
+    suspend fun createPayment(
+        loritta: LorittaBot,
+        userId: Long,
+        paymentTitle: String,
+        amount: Long,
+        storedAmount: Long,
+        paymentReason: PaymentReason,
+        externalReference: String,
+        discount: Double? = null,
+        metadata: kotlinx.serialization.json.JsonObject? = null
+    ): String {
+        logger.info { "Requesting PerfectPayments payment URL for $userId" }
+        val payments = loritta.http.post("${url}api/v1/payments") {
+            header("Authorization", loritta.config.loritta.perfectPayments.token)
+
+            setBody(
+                jsonObject(
+                    "title" to paymentTitle,
+                    "callbackUrl" to "${loritta.config.loritta.website.url}api/v1/callbacks/perfect-payments",
+                    "amount" to amount,
+                    "currencyId" to "BRL",
+                    "externalReference" to externalReference
+                ).toString()
+            )
+        }.bodyAsText()
+
+        val paymentResponse = JsonParser.parseString(payments)
+            .obj
+
+        val partialPaymentId = UUID.fromString(paymentResponse["id"].string)
+        val paymentUrl = paymentResponse["paymentUrl"].string
+
+        logger.info { "Payment successfully created for $userId! ID: $partialPaymentId" }
+        loritta.newSuspendedTransaction {
+            DonationKey.find {
+                DonationKeys.expiresAt greaterEq System.currentTimeMillis()
+            }
+
+            Payment.new {
+                this.userId = userId
+                this.gateway = PaymentGateway.PERFECTPAYMENTS
+                this.reason = paymentReason
+
+                if (discount != null)
+                    this.discount = discount
+
+                if (metadata != null)
+                    this.metadata = metadata.toString()
+
+                this.money = (storedAmount.toDouble() / 100).toBigDecimal()
+                this.createdAt = System.currentTimeMillis()
+                this.referenceId = partialPaymentId
+            }
+        }
+
+        return paymentUrl
+    }
 }
