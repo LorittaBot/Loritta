@@ -6,7 +6,7 @@ input[type=text], input[type=number], textarea {
     width: 100%;
     color: var(--input-text-color);
     transition-duration: 0.25s;
-    outline-color: rgba(var(--loritta-blue-rgb), 0.5);
+    outline: 0 solid rgba(var(--loritta-blue-rgb), 0.5); // Only here to avoid a quick snap when the input is not focused anymore
     // Avoids the textarea resize handle feeling sluggish
     transition: height 0s, border-color 0.25s, outline 0.25s, background-color 0.25s;
 
