@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
@@ -169,8 +170,8 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 
 		when (result) {
 			Result.ItemNotInItemShop -> {
-				call.response.header(
-					"HX-Trigger",
+				call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+				call.respondJson(
 					buildJsonObject {
 						put("closeSpicyModal", null)
 						put("refreshItemShop", null)
@@ -183,13 +184,13 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 								)
 							)
 						)
-					}.toString()
+					}.toString(),
+					status = HttpStatusCode.BadRequest
 				)
-				call.respondText("", status = HttpStatusCode.BadRequest)
 			}
 			Result.NotEnoughSonhos -> {
-				call.response.header(
-					"HX-Trigger",
+				call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+				call.respondJson(
 					buildJsonObject {
 						put("closeSpicyModal", null)
 						put("refreshItemShop", null)
@@ -202,13 +203,13 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 								)
 							)
 						)
-					}.toString()
+					}.toString(),
+					status = HttpStatusCode.PaymentRequired
 				)
-				call.respondText("", status = HttpStatusCode.PaymentRequired)
 			}
 			Result.YouAlreadyHaveThisItem -> {
-				call.response.header(
-					"HX-Trigger",
+				call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+				call.respondJson(
 					buildJsonObject {
 						put("closeSpicyModal", null)
 						put("refreshItemShop", null)
@@ -221,13 +222,13 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 								)
 							)
 						)
-					}.toString()
+					}.toString(),
+					status = HttpStatusCode.Conflict
 				)
-				call.respondText("", status = HttpStatusCode.Conflict)
 			}
 			Result.Success -> {
-				call.response.header(
-					"HX-Trigger",
+				call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+				call.respondJson(
 					buildJsonObject {
 						put("closeSpicyModal", null)
 						put("refreshItemShop", null)
