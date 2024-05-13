@@ -104,7 +104,7 @@ class ShipEffectsView(
                                 name = "userSearch"
                                 attributes["hx-post"] = ""
                                 attributes["hx-swap"] = "innerHTML"
-                                attributes["hx-trigger"] = "input changed delay:500ms, load"
+                                attributes["hx-trigger"] = "input changed delay:500ms, load, focusout"
                                 attributes["hx-target"] = "next .inline-discord-user-input-result"
                                 attributes["hx-indicator"] = "next div"
                                 type = InputType.text
