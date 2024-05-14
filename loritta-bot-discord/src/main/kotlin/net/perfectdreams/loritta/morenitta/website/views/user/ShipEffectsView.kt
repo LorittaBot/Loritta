@@ -249,7 +249,7 @@ class ShipEffectsView(
     companion object {
         fun FlowContent.buyShipEffectButton(i18nContext: I18nContext, disabled: Boolean, oobSwap: Boolean) {
             button(classes = "discord-button success") {
-                attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/user/@me/dashboard/ship-effects/pre-buy"
+                attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/ship-effects/pre-buy"
                 attributes["hx-swap"] = "none"
                 attributes["hx-include"] = "#ship-effects-form"
                 attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"

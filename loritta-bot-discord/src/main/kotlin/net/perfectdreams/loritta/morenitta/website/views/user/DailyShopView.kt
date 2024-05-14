@@ -146,7 +146,7 @@ class DailyShopView(
                                                     shopItem.price.toLong(),
                                                     profile?.money ?: 0L
                                                 ) {
-                                                    attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/user/@me/dashboard/daily-shop/buy"
+                                                    attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/daily-shop/buy"
                                                     attributes["hx-vals"] = buildJsonObject {
                                                         put("type", "background")
                                                         put("internalName", shopItem.internalName)
@@ -233,7 +233,7 @@ class DailyShopView(
                                                     shopItem.price.toLong(),
                                                     profile?.money ?: 0L
                                                 ) {
-                                                    attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/user/@me/dashboard/daily-shop/buy"
+                                                    attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/daily-shop/buy"
                                                     attributes["hx-vals"] = buildJsonObject {
                                                         put("type", "profile-design")
                                                         put("internalName", shopItem.internalName)

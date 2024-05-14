@@ -27,7 +27,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.*
 import java.util.concurrent.TimeUnit
 
-class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/daily-shop/buy") {
+class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/daily-shop/buy") {
 	companion object {
 		private val mutexes = Caffeine.newBuilder()
 			.expireAfterAccess(60, TimeUnit.SECONDS)

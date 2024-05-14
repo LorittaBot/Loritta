@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.selectAll
 
-class SonhosShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/users/@me/dashboard/sonhos-shop") {
+class SonhosShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/sonhos-shop") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val sonhosBundles = loritta.transaction {
 			SonhosBundles.selectAll()

@@ -55,7 +55,7 @@ import org.w3c.dom.Image
 import org.w3c.files.FileReader
 import kotlin.js.Date
 
-class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/backgrounds") {
+class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashboard/backgrounds") {
     override val keepLoadingScreen: Boolean
         get() = true
     private val activeBackgroundTitleElement: Element

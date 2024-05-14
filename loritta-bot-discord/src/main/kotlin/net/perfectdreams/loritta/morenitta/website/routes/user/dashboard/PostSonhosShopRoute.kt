@@ -22,7 +22,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
-class PostSonhosShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/users/@me/dashboard/sonhos-shop") {
+class PostSonhosShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/sonhos-shop") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val params = call.receiveParameters()
 		val bundleId = params.getOrFail("bundleId").toLong()

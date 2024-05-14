@@ -49,7 +49,7 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.Image
 import kotlin.js.Date
 
-class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/profiles") {
+class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashboard/profiles") {
     override val keepLoadingScreen: Boolean
         get() = true
     private val activeBackgroundTitleElement: Element

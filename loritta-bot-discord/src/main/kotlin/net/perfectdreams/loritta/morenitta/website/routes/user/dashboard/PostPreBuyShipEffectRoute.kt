@@ -33,7 +33,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.collections.set
 
-class PostPreBuyShipEffectRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/ship-effects/pre-buy") {
+class PostPreBuyShipEffectRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/ship-effects/pre-buy") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val params = call.receiveParameters()
 
@@ -65,7 +65,7 @@ class PostPreBuyShipEffectRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 			3_000,
 			profile?.money ?: 0L
 		) {
-			attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/user/@me/dashboard/ship-effects/buy"
+			attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/ship-effects/buy"
 			attributes["hx-vals"] = buildJsonObject {
 				put("receivingEffectUserId", receivingEffectUserId.toString())
 				put("shipPercentage", shipPercentage)

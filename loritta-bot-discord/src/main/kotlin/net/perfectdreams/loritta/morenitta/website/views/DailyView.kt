@@ -163,7 +163,7 @@ class DailyView(
                             WebsiteUtils.buildAsHtml(
                                 i18nContext.language.textBundle.strings[I18nKeys.Daily.Attention.BuySonhos.key]!!,
                                 {
-                                    a(href = "/user/@me/dashboard/bundles") {
+                                    a(href = "/dashboard/sonhos-shop") {
                                         +i18nContext.get(I18nKeysData.Daily.Attention.ClickHere)
                                     }
                                 },

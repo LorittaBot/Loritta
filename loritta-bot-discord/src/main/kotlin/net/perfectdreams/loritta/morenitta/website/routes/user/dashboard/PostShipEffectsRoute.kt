@@ -22,7 +22,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import kotlin.collections.component1
 import kotlin.collections.component2
 
-class PostShipEffectsRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/ship-effects") {
+class PostShipEffectsRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/ship-effects") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val params = call.receiveParameters()
 

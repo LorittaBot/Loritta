@@ -31,7 +31,7 @@ object GACampaigns {
         campaignName: String,
         campaignContent: String
     ): String {
-        return "${lorittaWebsiteUrl}user/@me/dashboard/bundles?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
+        return "${lorittaWebsiteUrl}dashboard/sonhos-shop?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
     }
 
     fun premiumUpsellDiscordMessageUrl(

@@ -46,7 +46,6 @@ import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.BackgroundsListDashboardRoute
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileDesignsListDashboardRoute
-import net.perfectdreams.spicymorenitta.routes.user.dashboard.ShipEffectsDashboardRoute
 import net.perfectdreams.spicymorenitta.toasts.ToastManager
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
@@ -101,7 +100,6 @@ class SpicyMorenitta : Logging {
 		TwitchRoute(this),
 		DonateRoute(this),
 		FortniteConfigRoute(this),
-		ShipEffectsDashboardRoute(this),
 		DailyRoute(this),
 		BackgroundsListDashboardRoute(this),
 		AllBackgroundsListDashboardRoute(this),

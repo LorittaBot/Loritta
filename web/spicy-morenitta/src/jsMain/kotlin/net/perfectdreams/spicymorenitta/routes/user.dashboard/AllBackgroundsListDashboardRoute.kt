@@ -4,16 +4,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.html.b
-import kotlinx.html.canvas
-import kotlinx.html.div
+import kotlinx.html.*
 import kotlinx.html.dom.append
-import kotlinx.html.h1
-import kotlinx.html.id
-import kotlinx.html.style
-import kotlinx.serialization.decodeFromString
-import net.perfectdreams.loritta.serializable.DefaultBackgroundVariation
 import net.perfectdreams.loritta.serializable.BackgroundListResponse
+import net.perfectdreams.loritta.serializable.DefaultBackgroundVariation
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -26,7 +20,7 @@ import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.Image
 
-class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/all-backgrounds") {
+class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/dashboard/all-backgrounds") {
     override val keepLoadingScreen: Boolean
         get() = true
 

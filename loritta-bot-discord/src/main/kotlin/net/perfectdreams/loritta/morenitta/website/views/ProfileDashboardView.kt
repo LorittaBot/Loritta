@@ -131,9 +131,9 @@ abstract class ProfileDashboardView(
                                         + "Configurações do Usuário"
                                     }
 
-                                    appendEntry("/user/@me/dashboard/profiles", false, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", "profile_list")
-                                    appendEntry("/user/@me/dashboard/backgrounds", false, "Backgrounds", "far fa-images", "background_list")
-                                    appendEntry("/user/@me/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", "ship_effects")
+                                    appendEntry("/dashboard/profiles", false, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", "profile_list")
+                                    appendEntry("/dashboard/backgrounds", false, "Backgrounds", "far fa-images", "background_list")
+                                    appendEntry("/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", "ship_effects")
 
                                     hr(classes = "divider") {}
                                     div(classes = "category") {
@@ -141,8 +141,8 @@ abstract class ProfileDashboardView(
                                     }
 
                                     appendEntry("/daily", false, "Daily", "fas fa-money-bill-wave", "daily")
-                                    appendEntry("/user/@me/dashboard/daily-shop", true, locale["website.dailyShop.title"], "fas fa-store", "daily_shop")
-                                    appendEntry("/user/@me/dashboard/bundles", false, locale["website.dashboard.profile.sectionNames.sonhosShop"], "fas fa-shopping-cart", "bundles")
+                                    appendEntry("/dashboard/daily-shop", true, locale["website.dailyShop.title"], "fas fa-store", "daily_shop")
+                                    appendEntry("/dashboard/sonhos-shop", true, locale["website.dashboard.profile.sectionNames.sonhosShop"], "fas fa-shopping-cart", "bundles")
                                     appendEntry("/guidelines", false, locale["website.guidelines.communityGuidelines"], "fas fa-asterisk", "guidelines")
 
                                     hr(classes = "divider") {}
