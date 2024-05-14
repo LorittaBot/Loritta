@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdSize
 import net.perfectdreams.loritta.morenitta.website.utils.generateNitroPayAd
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import kotlin.random.Random
 
@@ -28,6 +29,7 @@ abstract class ProfileDashboardView(
     private val legacyBaseLocale: LegacyBaseLocale,
     val userIdentification: LorittaJsonWebSession.UserIdentification,
     private val userPremiumPlan: UserPremiumPlans,
+    val colorTheme: ColorTheme,
     private val selectedType: String,
 ) : BaseView(
     i18nContext,
@@ -69,7 +71,7 @@ abstract class ProfileDashboardView(
             div {
                 id = "root"
 
-                div(classes = "light-theme") {
+                div(classes = colorTheme.className) {
                     id = "app-wrapper"
 
                     div {
@@ -304,6 +306,78 @@ abstract class ProfileDashboardView(
                                             div(classes = "discriminator") {
                                                 text("@${userIdentification.username}")
                                             }
+                                        }
+
+                                        div(classes = "discord-button no-background-theme-dependent-dark-text") {
+                                            openEmbeddedModalOnClick(
+                                                "Antes de começar...",
+                                                true,
+                                                {
+                                                    div(classes = "theme-selector") {
+                                                        div(classes = "theme-selector-lori") {
+                                                            div(classes = "theme-selector-lori-inner") {
+                                                                etherealGambiImg("https://stuff.loritta.website/loritta-matrix-choice-cookiluck.png", sizes = "500px") {}
+
+                                                                div(classes = "theme-option light") {
+                                                                    text("Tema Claro")
+                                                                }
+
+                                                                div(classes = "theme-option dark") {
+                                                                    text("Tema Escuro")
+                                                                }
+                                                            }
+                                                        }
+
+                                                        div(classes = "theme-selector-buttons") {
+                                                            button(classes = "discord-button primary") {
+                                                                attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/theme"
+                                                                attributes["hx-swap"] = "none"
+                                                                attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
+                                                                attributes["hx-disabled-elt"] = "this"
+                                                                attributes["hx-vals"] = buildJsonObject {
+                                                                    put("theme", ColorTheme.LIGHT.name)
+                                                                }.toString()
+
+                                                                div(classes = "htmx-discord-like-loading-button") {
+                                                                    div {
+                                                                        text("Tema Claro")
+                                                                    }
+
+                                                                    div(classes = "loading-text-wrapper") {
+                                                                        img(src = LoadingSectionComponents.list.random())
+
+                                                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            button(classes = "discord-button primary") {
+                                                                attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/theme"
+                                                                attributes["hx-swap"] = "none"
+                                                                attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
+                                                                attributes["hx-disabled-elt"] = "this"
+                                                                attributes["hx-vals"] = buildJsonObject {
+                                                                    put("theme", ColorTheme.DARK.name)
+                                                                }.toString()
+
+                                                                div(classes = "htmx-discord-like-loading-button") {
+                                                                    div {
+                                                                        text("Tema Escuro")
+                                                                    }
+
+                                                                    div(classes = "loading-text-wrapper") {
+                                                                        img(src = LoadingSectionComponents.list.random())
+
+                                                                        text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                listOf()
+                                            )
+                                            text("Tema")
                                         }
                                     }
                                 }

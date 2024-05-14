@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 /**
@@ -22,6 +23,7 @@ class LegacyPebbleProfileDashboardRawHtmlView(
     private val legacyBaseLocale: LegacyBaseLocale,
     userIdentification: LorittaJsonWebSession.UserIdentification,
     userPremiumPlan: UserPremiumPlans,
+    colorTheme: ColorTheme,
     private val _title: String,
     private val html: String,
     private val selectedType: String,
@@ -33,6 +35,7 @@ class LegacyPebbleProfileDashboardRawHtmlView(
     legacyBaseLocale,
     userIdentification,
     userPremiumPlan,
+    colorTheme,
     selectedType
 ) {
     override fun getTitle() = _title

@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.user.SonhosShopView
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.SonhosBundle
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -31,6 +32,7 @@ class SonhosShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(
 				loritta.getLegacyLocaleById(locale.id),
 				userIdentification,
 				UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())),
+				ColorTheme.DARK,
 				sonhosBundles.map {
 					SonhosBundle(
 						it[SonhosBundles.id].value,

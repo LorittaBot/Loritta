@@ -1,17 +1,13 @@
 .discord-invite-wrapper {
     display: flex;
     flex-direction: column;
-    background-color: #f2f3f5;
+    background-color: var(--interactive-element-background-color); // Technically not interactive, but that variable has the same color as invites
     border-radius: 3px;
     padding: 1em;
     gap: 0.5em;
     transition-duration: 1.0s;
     // width: fit-content;
     width: 100%;
-
-    .dark & {
-        background-color: #2f3136;
-    }
 
     &:hover {
         transform: scale(1.02);

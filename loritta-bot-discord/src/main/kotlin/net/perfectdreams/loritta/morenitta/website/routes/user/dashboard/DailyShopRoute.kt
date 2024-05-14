@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.user.dashboard
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.util.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -16,7 +14,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
+import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.user.DailyShopView
@@ -27,8 +25,8 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 
-class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/daily-shop") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboardRoute(loritta, "/dashboard/daily-shop") {
+	override suspend fun onDashboardAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, colorTheme: ColorTheme) {
 		val dreamStorageServiceNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 
 		val (profile, activeBackgroundId, shopId, generatedAt, backgroundsInShop, profileDesignsInShop, backgroundsWrapper, boughtProfileDesigns) = loritta.transaction {
@@ -122,6 +120,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 			loritta.getLegacyLocaleById(locale.id),
 			userIdentification,
 			UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())),
+			colorTheme,
 			profile,
 			activeBackgroundId,
 			shopId,

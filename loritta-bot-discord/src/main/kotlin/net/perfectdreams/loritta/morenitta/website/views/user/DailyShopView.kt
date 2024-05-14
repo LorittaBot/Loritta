@@ -19,10 +19,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedConfirmPurchaseModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.website.views.ProfileDashboardView
-import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
-import net.perfectdreams.loritta.serializable.DailyShopResult
-import net.perfectdreams.loritta.serializable.ProfileDesign
-import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
+import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -37,6 +34,7 @@ class DailyShopView(
     legacyBaseLocale: LegacyBaseLocale,
     userIdentification: LorittaJsonWebSession.UserIdentification,
     userPremiumPlan: UserPremiumPlans,
+    colorTheme: ColorTheme,
     private val profile: Profile?,
     private val activeBackgroundId: String,
     private val shopId: Long,
@@ -51,6 +49,7 @@ class DailyShopView(
     legacyBaseLocale,
     userIdentification,
     userPremiumPlan,
+    colorTheme,
     "daily-shop"
 ) {
     override fun DIV.generateRightSidebarContents() {

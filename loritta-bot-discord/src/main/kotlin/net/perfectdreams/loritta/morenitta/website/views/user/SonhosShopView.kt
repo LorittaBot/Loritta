@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComp
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.website.views.ProfileDashboardView
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.SonhosBundle
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
@@ -27,6 +28,7 @@ class SonhosShopView(
     legacyBaseLocale: LegacyBaseLocale,
     userIdentification: LorittaJsonWebSession.UserIdentification,
     userPremiumPlan: UserPremiumPlans,
+    colorTheme: ColorTheme,
     val sonhosBundles: List<SonhosBundle>
 ) : ProfileDashboardView(
     loritta,
@@ -36,6 +38,7 @@ class SonhosShopView(
     legacyBaseLocale,
     userIdentification,
     userPremiumPlan,
+    colorTheme,
     "sonhos-shop"
 ) {
     override fun DIV.generateRightSidebarContents() {

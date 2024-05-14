@@ -12,9 +12,10 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
+import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.SelectGuildProfileDashboardView
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -25,8 +26,8 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import kotlin.collections.set
 
-class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
+class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboardRoute(loritta, "/dashboard") {
+	override suspend fun onDashboardAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, colorTheme: ColorTheme) {
 		// See: "HTTP Headers & Caching"
 		// https://hypermedia.systems/more-htmx-patterns/
 		// When using a trigger on a same path, we need to bust the cache based on the trigger header, to avoid the back button
@@ -41,7 +42,8 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 			getPathWithoutLocale(call),
 			loritta.getLegacyLocaleById(locale.id),
 			userIdentification,
-			UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong()))
+			UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())),
+			colorTheme
 		)
 
 		if (call.request.header("HX-Trigger") == "user-guilds-wrapper") {

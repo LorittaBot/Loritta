@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControl
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.morenitta.website.views.ProfileDashboardView
 import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.ShipEffect
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
@@ -30,6 +31,7 @@ class ShipEffectsView(
     legacyBaseLocale: LegacyBaseLocale,
     userIdentification: LorittaJsonWebSession.UserIdentification,
     userPremiumPlan: UserPremiumPlans,
+    colorTheme: ColorTheme,
     val activeShipEffects: List<ShipEffect>,
     val resolvedUsers: List<CachedUserInfo>
 ) : ProfileDashboardView(
@@ -40,6 +42,7 @@ class ShipEffectsView(
     legacyBaseLocale,
     userIdentification,
     userPremiumPlan,
+    colorTheme,
     "ship-effects"
 ) {
     override fun DIV.generateRightSidebarContents() {

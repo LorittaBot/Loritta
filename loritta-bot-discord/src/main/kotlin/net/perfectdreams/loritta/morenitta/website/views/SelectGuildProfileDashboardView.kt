@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents.fillContentLoadingSection
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -22,7 +23,8 @@ class SelectGuildProfileDashboardView(
     path: String,
     legacyBaseLocale: LegacyBaseLocale,
     userIdentification: LorittaJsonWebSession.UserIdentification,
-    userPremiumPlan: UserPremiumPlans
+    userPremiumPlan: UserPremiumPlans,
+    colorTheme: ColorTheme
 ) : ProfileDashboardView(
     loritta,
     i18nContext,
@@ -31,6 +33,7 @@ class SelectGuildProfileDashboardView(
     legacyBaseLocale,
     userIdentification,
     userPremiumPlan,
+    colorTheme,
     "main"
 ) {
     override fun getTitle() = "Painel de Controle"

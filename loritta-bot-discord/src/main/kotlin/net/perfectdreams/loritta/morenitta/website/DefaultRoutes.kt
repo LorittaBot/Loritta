@@ -74,6 +74,7 @@ object DefaultRoutes {
 		PostSpawnPocketLorittaRoute(loritta),
 		PostClearPocketLorittaRoute(loritta),
 		PocketLorittaRoute(loritta),
+		PostDashboardThemeRoute(loritta),
 
 		// ===[ API ROUTES ]===
 		// Callbacks
