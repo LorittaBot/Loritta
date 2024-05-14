@@ -173,7 +173,8 @@ abstract class ProfileDashboardView(
                                                             fun FlowContent.creatureSpawner(
                                                                 fancyName: String,
                                                                 internalName: String,
-                                                                spritesFolder: String
+                                                                spritesFolder: String,
+                                                                loadingButtonGif: String
                                                             ) {
                                                                 div(classes = "loritta-spawner") {
                                                                     img(src = "https://stuff.loritta.website/pocket-loritta/$spritesFolder/repouso.png") {
@@ -206,7 +207,7 @@ abstract class ProfileDashboardView(
                                                                             }
 
                                                                             div(classes = "loading-text-wrapper") {
-                                                                                img(src = LoadingSectionComponents.LORITTA_LOADING_GIF)
+                                                                                img(src = loadingButtonGif)
 
                                                                                 text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
                                                                             }
@@ -215,9 +216,9 @@ abstract class ProfileDashboardView(
                                                                 }
                                                             }
 
-                                                            creatureSpawner("Loritta", "LORITTA", "lori-sprites")
-                                                            creatureSpawner("Pantufa", "PANTUFA", "pantufa-sprites")
-                                                            creatureSpawner("Gabriela", "GABRIELA", "gabriela-sprites")
+                                                            creatureSpawner("Loritta", "LORITTA", "lori-sprites", LoadingSectionComponents.LORITTA_LOADING_GIF)
+                                                            creatureSpawner("Pantufa", "PANTUFA", "pantufa-sprites", LoadingSectionComponents.PANTUFA_LOADING_GIF)
+                                                            creatureSpawner("Gabriela", "GABRIELA", "gabriela-sprites", LoadingSectionComponents.GABRIELA_LOADING_GIF)
                                                         }
 
                                                         button(classes = "discord-button danger") {
