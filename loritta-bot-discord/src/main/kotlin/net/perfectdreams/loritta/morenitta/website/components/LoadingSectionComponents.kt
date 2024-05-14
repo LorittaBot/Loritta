@@ -8,10 +8,14 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object LoadingSectionComponents {
+    val LORITTA_LOADING_GIF = "https://cdn.discordapp.com/emojis/957368372025262120.gif?size=160&quality=lossless"
+    val PANTUFA_LOADING_GIF = "https://cdn.discordapp.com/emojis/958906311414796348.gif?size=160&quality=lossless"
+    val GABRIELA_LOADING_GIF = "https://cdn.discordapp.com/emojis/959551356769820712.gif?size=160&quality=lossless"
+
     val list = listOf(
-        "https://cdn.discordapp.com/emojis/957368372025262120.gif?size=160&quality=lossless",
-        "https://cdn.discordapp.com/emojis/958906311414796348.gif?size=160&quality=lossless",
-        "https://cdn.discordapp.com/emojis/959551356769820712.gif?size=160&quality=lossless",
+        LORITTA_LOADING_GIF,
+        PANTUFA_LOADING_GIF,
+        GABRIELA_LOADING_GIF,
         "https://cdn.discordapp.com/emojis/959557654341103696.gif?size=160&quality=lossless",
         "https://cdn.discordapp.com/emojis/985919207147470858.gif?size=160&quality=lossless"
     )

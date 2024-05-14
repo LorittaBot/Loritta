@@ -26,6 +26,9 @@ a:has(.discord-button) {
     .htmx-discord-like-loading-button {
         .loading-text-wrapper {
             display: none;
+            img {
+                height: 1em;
+            }
         }
 
         &.htmx-request {
@@ -37,10 +40,6 @@ a:has(.discord-button) {
                 display: flex;
                 gap: 4px;
                 align-items: center;
-
-                img {
-                    height: 1em;
-                }
             }
         }
     }

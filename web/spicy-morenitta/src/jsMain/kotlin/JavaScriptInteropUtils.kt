@@ -3,8 +3,8 @@
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.game.entities.LorittaPlayer
 import org.w3c.dom.Element
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -13,7 +13,7 @@ fun closeModal() {
     SpicyMorenitta.INSTANCE.modalManager.closeModal()
 }
 
-@OptIn(ExperimentalJsExport::class, ExperimentalEncodingApi::class)
+@OptIn(ExperimentalJsExport::class)
 @JsExport
 @JsName("openEmbeddedModal")
 fun openEmbeddedModal(element: Element) {

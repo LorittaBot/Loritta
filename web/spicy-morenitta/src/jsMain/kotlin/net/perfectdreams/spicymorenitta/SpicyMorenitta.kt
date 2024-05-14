@@ -36,10 +36,13 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
+import net.perfectdreams.loritta.serializable.PocketLorittaSettings
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
+import net.perfectdreams.spicymorenitta.game.GameState
+import net.perfectdreams.spicymorenitta.game.entities.LorittaPlayer
 import net.perfectdreams.spicymorenitta.modals.ModalManager
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
@@ -80,6 +83,8 @@ class SpicyMorenitta : Logging {
 	val toastManager = ToastManager(this)
 	val soundEffects = SoundEffects(this)
 	val pageLoadLock = Mutex()
+	// well don't call this if the game state isn't initialized
+	val gameState = GameState()
 	val routes = mutableListOf(
 		HomeRoute(),
 		DiscordBotBrasileiroRoute(),
@@ -304,19 +309,32 @@ class SpicyMorenitta : Logging {
 				val eventValue = evt.asDynamic().detail.value
 				when (eventValue) {
 					"config-saved" -> {
-						soundEffects.configSaved.play(1.0)
+						soundEffects.configSaved.play(0.4) // for some reason this sfx is LOUD
 					}
 					"config-error" -> {
-						soundEffects.configError.play(1.0)
+						soundEffects.configError.play(0.4) // for some reason this sfx is LOUD
 					}
 					"cash" -> {
 						val cash = Audio("${loriUrl}assets/snd/css1_cash.wav")
 						cash.play()
 					}
+					"recycle-bin" -> {
+						soundEffects.recycleBin.play(1.0)
+					}
 					else -> {
 						warn("Unknown sound effect \"$eventValue\"")
 					}
 				}
+			})
+
+			document.addEventListener("pocketLorittaSpawnShimeji", { evt ->
+				val eventValue = evt.asDynamic().detail.value
+				gameState.spawnPlayer(LorittaPlayer.PlayerType.valueOf(eventValue))
+			})
+
+			document.addEventListener("pocketLorittaClearAll", { evt ->
+				val eventValue = evt.asDynamic().detail.value
+				gameState.entities.forEach { it.remove() }
 			})
 
 			launch {
@@ -1087,6 +1105,40 @@ class SpicyMorenitta : Logging {
 					delay(1_000)
 				}
 			}
+		}
+
+		// Technically only one loritta-game-canvas instance should exist
+		targetElement.selectAll<HTMLCanvasElement>("#loritta-game-canvas").forEach {
+			if (it.getAttribute("loritta-powered-up") != null)
+				return@forEach
+
+			it.setAttribute("loritta-powered-up", "")
+
+			val pocketLorittaSettings = kotlinx.serialization.json.Json.decodeFromString<PocketLorittaSettings>(it.getAttribute("pocket-loritta-settings")!!)
+			gameState.setCanvas(it)
+			gameState.updateCanvasSize()
+
+			gameState.addedToTheDOM = true
+
+			window.addEventListener(
+				"resize",
+				{
+					gameState.updateCanvasSize()
+				}
+			)
+
+			// Spawn the entities
+			repeat(pocketLorittaSettings.lorittaCount) {
+				gameState.spawnPlayer(LorittaPlayer.PlayerType.LORITTA)
+			}
+			repeat(pocketLorittaSettings.pantufaCount) {
+				gameState.spawnPlayer(LorittaPlayer.PlayerType.PANTUFA)
+			}
+			repeat(pocketLorittaSettings.gabrielaCount) {
+				gameState.spawnPlayer(LorittaPlayer.PlayerType.GABRIELA)
+			}
+
+			gameState.start()
 		}
 	}
 }

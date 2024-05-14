@@ -5,11 +5,9 @@
     align-items: center;
 
     .loritta-spawners {
-        display: flex;
-        flex-direction: row;
+        display: grid;
         gap: 1em;
-        flex-wrap: wrap;
-        justify-content: center;
+        grid-template-columns: 1fr 1fr 1fr;
 
         .loritta-spawner {
             display: flex;

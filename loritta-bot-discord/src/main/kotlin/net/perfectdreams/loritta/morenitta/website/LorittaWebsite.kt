@@ -280,7 +280,11 @@ class LorittaWebsite(
 				}
 
 				static("/lori-slippy/assets/snd/") {
-					resources("static/assets/snd/")
+					resources("static/lori-slippy/assets/snd/")
+				}
+
+				static("/lori-slippy/assets/img/") {
+					resources("static/lori-slippy/assets/img/")
 				}
 
 				File("${config.websiteFolder}/static/").listFiles().filter { it.isFile }.forEach {

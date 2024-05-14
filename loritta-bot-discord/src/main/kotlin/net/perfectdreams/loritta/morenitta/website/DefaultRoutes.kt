@@ -71,6 +71,9 @@ object DefaultRoutes {
 		BackgroundsListRoute(loritta),
 		AllBackgroundsListRoute(loritta),
 		DailyShopRoute(loritta),
+		PostSpawnPocketLorittaRoute(loritta),
+		PostClearPocketLorittaRoute(loritta),
+		PocketLorittaRoute(loritta),
 
 		// ===[ API ROUTES ]===
 		// Callbacks
