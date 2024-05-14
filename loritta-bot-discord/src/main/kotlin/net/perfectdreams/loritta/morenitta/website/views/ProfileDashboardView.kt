@@ -312,7 +312,7 @@ abstract class ProfileDashboardView(
 
                                         div(classes = "discord-button no-background-theme-dependent-dark-text") {
                                             openEmbeddedModalOnClick(
-                                                "Antes de começar...",
+                                                "Escolha um Tema",
                                                 true,
                                                 {
                                                     div(classes = "theme-selector") {
