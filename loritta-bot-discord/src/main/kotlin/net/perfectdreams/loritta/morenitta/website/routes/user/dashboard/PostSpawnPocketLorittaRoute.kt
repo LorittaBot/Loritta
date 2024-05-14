@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
+import net.perfectdreams.loritta.serializable.PocketLorittaSettings
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.selectAll
@@ -56,7 +57,7 @@ class PostSpawnPocketLorittaRoute(loritta: LorittaBot) : RequiresDiscordLoginLoc
 				it[UserPocketLorittaSettings.updatedAt] = Instant.now()
 			}
 
-			return@transaction Result.Success
+			return@transaction Result.Success(PocketLorittaSettings(newLorittaCount, newPantufaCount, newGabrielaCount))
 		}
 
 		when (result) {
@@ -78,12 +79,12 @@ class PostSpawnPocketLorittaRoute(loritta: LorittaBot) : RequiresDiscordLoginLoc
 
 				call.respondText("", status = HttpStatusCode.NoContent)
 			}
-			Result.Success -> {
+			is Result.Success -> {
 				call.response.header(
 					"HX-Trigger",
 					buildJsonObject {
 						put("playSoundEffect", "config-saved")
-						put("pocketLorittaSpawnShimeji", type)
+						put("pocketLorittaSettingsSync", Json.encodeToString(result.settings))
 					}.toString()
 				)
 
@@ -92,8 +93,8 @@ class PostSpawnPocketLorittaRoute(loritta: LorittaBot) : RequiresDiscordLoginLoc
 		}
 	}
 
-	sealed class Result {
+	private sealed class Result {
 		data object TooManyShimejis : Result()
-		data object Success : Result()
+		data class Success(val settings: PocketLorittaSettings) : Result()
 	}
 }

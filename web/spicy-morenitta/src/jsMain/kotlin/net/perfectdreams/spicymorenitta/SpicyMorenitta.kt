@@ -42,7 +42,6 @@ import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.game.GameState
-import net.perfectdreams.spicymorenitta.game.entities.LorittaPlayer
 import net.perfectdreams.spicymorenitta.modals.ModalManager
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
@@ -327,14 +326,10 @@ class SpicyMorenitta : Logging {
 				}
 			})
 
-			document.addEventListener("pocketLorittaSpawnShimeji", { evt ->
+			document.addEventListener("pocketLorittaSettingsSync", { evt ->
 				val eventValue = evt.asDynamic().detail.value
-				gameState.spawnPlayer(LorittaPlayer.PlayerType.valueOf(eventValue))
-			})
-
-			document.addEventListener("pocketLorittaClearAll", { evt ->
-				val eventValue = evt.asDynamic().detail.value
-				gameState.entities.forEach { it.remove() }
+				val pocketLorittaSettings = kotlinx.serialization.json.Json.decodeFromString<PocketLorittaSettings>(eventValue)
+				gameState.syncStateWithSettings(pocketLorittaSettings)
 			})
 
 			launch {
@@ -1117,6 +1112,7 @@ class SpicyMorenitta : Logging {
 			val pocketLorittaSettings = kotlinx.serialization.json.Json.decodeFromString<PocketLorittaSettings>(it.getAttribute("pocket-loritta-settings")!!)
 			gameState.setCanvas(it)
 			gameState.updateCanvasSize()
+			gameState.syncStateWithSettings(pocketLorittaSettings)
 
 			gameState.addedToTheDOM = true
 
@@ -1126,17 +1122,6 @@ class SpicyMorenitta : Logging {
 					gameState.updateCanvasSize()
 				}
 			)
-
-			// Spawn the entities
-			repeat(pocketLorittaSettings.lorittaCount) {
-				gameState.spawnPlayer(LorittaPlayer.PlayerType.LORITTA)
-			}
-			repeat(pocketLorittaSettings.pantufaCount) {
-				gameState.spawnPlayer(LorittaPlayer.PlayerType.PANTUFA)
-			}
-			repeat(pocketLorittaSettings.gabrielaCount) {
-				gameState.spawnPlayer(LorittaPlayer.PlayerType.GABRIELA)
-			}
 
 			gameState.start()
 		}

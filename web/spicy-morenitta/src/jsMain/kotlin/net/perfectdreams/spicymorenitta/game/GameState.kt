@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import io.ktor.util.date.*
 import kotlinx.browser.document
 import kotlinx.browser.window
+import net.perfectdreams.loritta.serializable.PocketLorittaSettings
 import net.perfectdreams.spicymorenitta.game.entities.Entity
 import net.perfectdreams.spicymorenitta.game.entities.LorittaPlayer
 import net.perfectdreams.spicymorenitta.game.entities.PlayerMovementState
@@ -188,7 +189,8 @@ class GameState {
         }
 
         ctx.clearRect(0.0, 0.0, width.toDouble(), height.toDouble())
-        entities.forEach {
+        // No need to render dead entities
+        entities.filter { !it.dead }.forEach {
             val playerRenderedEntity = renderedObjects.filterIsInstance<RenderedEntity<*>>().firstOrNull { re -> re.entity == it }
 
             if (playerRenderedEntity == null) {
@@ -241,6 +243,41 @@ class GameState {
             type
         )
         entities.add(player)
+    }
+
+    fun syncStateWithSettings(settings: PocketLorittaSettings) {
+        // Sync entities
+        syncPlayerTypeToCount(LorittaPlayer.PlayerType.LORITTA, settings.lorittaCount)
+        syncPlayerTypeToCount(LorittaPlayer.PlayerType.PANTUFA, settings.pantufaCount)
+        syncPlayerTypeToCount(LorittaPlayer.PlayerType.GABRIELA, settings.gabrielaCount)
+    }
+
+    private fun syncPlayerTypeToCount(type: LorittaPlayer.PlayerType, targetCount: Int) {
+        // First, we will get all types of entities we want to match
+        val lorittaPlayers = entities.filterIsInstance<LorittaPlayer>()
+        val lorittaKindPlayers = lorittaPlayers.filter { it.playerType == type }
+            .toMutableList()
+
+        // Now we want to know... do we need to kill, spawn, or do nothing?
+        val lorittaPlayerDiff = targetCount - lorittaKindPlayers.size
+        println("Target count $targetCount for $type, diff: $lorittaPlayerDiff")
+        if (lorittaPlayerDiff == 0) {
+            // Do nothing
+        } else if (lorittaPlayerDiff > 0) {
+            repeat(lorittaPlayerDiff) {
+                spawnPlayer(type)
+            }
+        } else {
+            val positiveDiff = lorittaPlayerDiff * -1
+            repeat(positiveDiff) {
+                if (lorittaKindPlayers.isEmpty()) {
+                    println("Trying to remove more (current index: $it, target was $positiveDiff $type entities that we don't have!")
+                    return@repeat
+                }
+
+                lorittaKindPlayers.removeAt(0).remove()
+            }
+        }
     }
 
     fun isGround(x: Int, y: Int): Rectangle? {
