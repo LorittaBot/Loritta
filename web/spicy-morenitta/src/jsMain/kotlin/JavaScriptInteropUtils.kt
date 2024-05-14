@@ -3,7 +3,6 @@
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
-import net.perfectdreams.spicymorenitta.game.entities.LorittaPlayer
 import org.w3c.dom.Element
 
 @OptIn(ExperimentalJsExport::class)
