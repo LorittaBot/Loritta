@@ -60,7 +60,9 @@ abstract class ProfileDashboardView(
             // TODO - htmx-adventures: Remove this! This is used by the old SpicyMorenitta coded for loading screens
             div {
                 id = "loading-screen"
-                div(classes = "loading-text") {}
+                div(classes = "loading-text") {
+                    style = "display: none;"
+                }
             }
 
             div {
