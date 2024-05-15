@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
+import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -415,6 +416,7 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(RaffleType.values())
                 createOrUpdatePostgreSQLEnum(TransactionType.values())
                 createOrUpdatePostgreSQLEnum(CardRarity.values())
+                createOrUpdatePostgreSQLEnum(ColorTheme.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(
