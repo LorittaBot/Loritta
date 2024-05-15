@@ -35,11 +35,11 @@ sealed class PlayerMovementState(val player: LorittaPlayer) {
         override fun handleInput(input: PlayerInput) {
             when (input) {
                 is PlayerInput.Right -> {
-                    // player.speed += 0.5
+                    player.speed += 0.5
                 }
 
                 is PlayerInput.Left -> {
-                    // player.speed -= 0.5
+                    player.speed -= 0.5
                 }
 
                 else -> {}

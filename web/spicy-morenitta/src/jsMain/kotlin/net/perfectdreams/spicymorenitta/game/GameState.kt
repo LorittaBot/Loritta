@@ -66,6 +66,7 @@ class GameState {
     var verticalScale by verticalScaleState
     var addedToTheDOM = false
     var scaled = false
+    val virtualKeyboard = VirtualKeyboard()
 
     fun start() {
         // DON'T USE EVAL!!!
@@ -123,6 +124,23 @@ class GameState {
         while (totalElapsedMS >= 50) { // game world will be updated every 50ms (20 ticks per second)
             // We will only run the collision recalculation code if there's an entity alive
             if (entities.isNotEmpty()) {
+                val firstInstance = entities.filterIsInstance<LorittaPlayer>().firstOrNull()
+
+                println("[KEYBOARD] left: ${virtualKeyboard.pressingLeft}; right: ${virtualKeyboard.pressingRight}; up: ${virtualKeyboard.pressingUp}")
+                if (firstInstance != null) {
+                    if (virtualKeyboard.pressingLeft) {
+                        firstInstance.left()
+                    }
+
+                    if (virtualKeyboard.pressingRight) {
+                        firstInstance.right()
+                    }
+
+                    if (virtualKeyboard.pressingUp) {
+                        firstInstance.jump(24.0)
+                    }
+                }
+
                 // println("Running game logic... Total Elapsed MS: $totalElapsedMS")
                 // Remove dead entities
                 entities.removeAll { it.dead }

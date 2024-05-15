@@ -42,6 +42,7 @@ import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.game.GameState
+import net.perfectdreams.spicymorenitta.game.entities.LorittaPlayer
 import net.perfectdreams.spicymorenitta.modals.ModalManager
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
@@ -51,6 +52,7 @@ import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileDesignsList
 import net.perfectdreams.spicymorenitta.toasts.ToastManager
 import net.perfectdreams.spicymorenitta.utils.*
 import org.w3c.dom.*
+import org.w3c.dom.events.KeyboardEvent
 import org.w3c.xhr.XMLHttpRequest
 import kotlin.collections.set
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -1122,6 +1124,46 @@ class SpicyMorenitta : Logging {
 					gameState.updateCanvasSize()
 				}
 			)
+
+			document.addEventListener("keydown", {
+				it as KeyboardEvent
+				println(it.key)
+
+				if (it.key == "a") {
+					it.preventDefault()
+					gameState.virtualKeyboard.pressingLeft = true
+				}
+
+				if (it.key == "d") {
+					it.preventDefault()
+					gameState.virtualKeyboard.pressingRight = true
+				}
+
+				if (it.key == "w") {
+					it.preventDefault()
+					gameState.virtualKeyboard.pressingUp = true
+				}
+			})
+
+			document.addEventListener("keyup", {
+				it as KeyboardEvent
+				println(it.key)
+
+				if (it.key == "a") {
+					it.preventDefault()
+					gameState.virtualKeyboard.pressingLeft = false
+				}
+
+				if (it.key == "d") {
+					it.preventDefault()
+					gameState.virtualKeyboard.pressingRight = false
+				}
+
+				if (it.key == "w") {
+					it.preventDefault()
+					gameState.virtualKeyboard.pressingUp = false
+				}
+			})
 
 			gameState.start()
 		}

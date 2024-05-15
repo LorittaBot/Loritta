@@ -87,14 +87,14 @@ class LorittaPlayer(
     override fun tick() {
         // println("X: $x; Y: $y; Speed: $speed; Gravity: $gravity; Current AI state: ${aiState::class}; Movement state: ${movementState::class};")
 
-        aiState.tick()
+        /* aiState.tick()
         val newAIState = aiState.transitionTo()
         if (newAIState != null) {
             newAIState.enterState()
             aiState = newAIState
-        }
+        } */
 
-        // println("Inputs for the movement state: $inputs")
+        println("Inputs for the movement state: $inputs")
 
         movementState.tick()
         val newState = movementState.transitionTo() ?: movementState.newState
