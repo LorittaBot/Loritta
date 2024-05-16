@@ -786,13 +786,17 @@ class LorittaBot(
 	}
 
 	fun initPostgreSql() {
-		logger.info("Iniciando PostgreSQL...")
+		logger.info { "Starting PostgreSQL related things..." }
 
+		logger.info { "Creating any missing tables and columns in PostgreSQL..." }
 		runBlocking {
 			pudding.createMissingTablesAndColumns { true }
 		}
+		logger.info { "Created all missing tables and columns!" }
 
+		logger.info { "Updating Loritta trinkets..." }
 		TrinketsStuff.updateTrinkets(pudding)
+		logger.info { "Updated Loritta trinkets!" }
 	}
 
 	fun startWebServer() {
