@@ -734,12 +734,10 @@ class LorittaBot(
 										}
 									}
 
-									runBlocking { jobs.joinAll() }
+									jobs.joinAll()
 									// Already sent all data to the channel, cancel the channel!
 									byteArrayChannel.cancel()
-									runBlocking {
-										fileOutputStreamJob.join()
-									}
+									fileOutputStreamJob.join()
 
 									logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
 									sessionCacheFile
