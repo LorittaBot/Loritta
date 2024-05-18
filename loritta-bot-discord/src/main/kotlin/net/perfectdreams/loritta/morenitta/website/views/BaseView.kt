@@ -146,7 +146,7 @@ window.addEventListener('load', function () {
                 // TODO - htmx-adventures: Defer this and other scripts of this page
                 //  (we cannot do this yet because some of the old server config pages call scripts inline, and that borks everything!)
                 script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {
-                    defer = true
+                    // defer = true
                 }
 
                 // htmx & hyperscript & other libs are included in the app.js bundle
