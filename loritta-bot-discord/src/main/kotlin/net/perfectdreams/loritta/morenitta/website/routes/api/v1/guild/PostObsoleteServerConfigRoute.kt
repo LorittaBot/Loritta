@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.common.utils.ActionType
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.morenitta.utils.auditlog.WebAuditLogUtils
@@ -65,43 +64,6 @@ class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthR
 					newConfig.requiredStars = requiredStars
 
 					serverConfig.starboardConfig = newConfig
-				}
-			}
-		} else if (type == "event_log") {
-			val isEnabled = receivedPayload["isEnabled"].bool
-			val eventLogChannelId = receivedPayload["eventLogChannelId"].long
-			val memberBanned = receivedPayload["memberBanned"].bool
-			val memberUnbanned = receivedPayload["memberUnbanned"].bool
-			val messageEdited = receivedPayload["messageEdit"].bool
-			val messageDeleted = receivedPayload["messageDeleted"].bool
-			val nicknameChanges = receivedPayload["nicknameChanges"].bool
-			val avatarChanges = receivedPayload["avatarChanges"].bool
-			val voiceChannelJoins = receivedPayload["voiceChannelJoins"].bool
-			val voiceChannelLeaves = receivedPayload["voiceChannelLeaves"].bool
-
-			loritta.newSuspendedTransaction {
-				val eventLogConfig = serverConfig.eventLogConfig
-
-				if (!isEnabled) {
-					serverConfig.eventLogConfig = null
-					eventLogConfig?.delete()
-				} else {
-					val newConfig = eventLogConfig ?: EventLogConfig.new {
-						this.eventLogChannelId = -1
-					}
-
-					newConfig.enabled = isEnabled
-					newConfig.eventLogChannelId = eventLogChannelId
-					newConfig.memberBanned = memberBanned
-					newConfig.memberUnbanned = memberUnbanned
-					newConfig.messageEdited = messageEdited
-					newConfig.messageDeleted = messageDeleted
-					newConfig.nicknameChanges = nicknameChanges
-					newConfig.avatarChanges = avatarChanges
-					newConfig.voiceChannelJoins = voiceChannelJoins
-					newConfig.voiceChannelLeaves = voiceChannelLeaves
-
-					serverConfig.eventLogConfig = newConfig
 				}
 			}
 		} else if (type == "invite_blocker") {

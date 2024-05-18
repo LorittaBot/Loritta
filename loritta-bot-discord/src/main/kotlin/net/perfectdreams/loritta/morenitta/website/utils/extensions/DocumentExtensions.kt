@@ -2,18 +2,17 @@ package net.perfectdreams.loritta.morenitta.website.utils.extensions
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.google.gson.JsonElement
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.gson
-import io.ktor.server.application.*
 import io.ktor.http.*
-import io.ktor.server.plugins.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import org.w3c.dom.Document
 import java.io.StringWriter
 import javax.xml.transform.OutputKeys
@@ -69,6 +68,7 @@ val ApplicationRequest.trueIp: String get() {
 		}
 }
 
+// TODO - htmx-adventures: Remove this after we stop using Pebble
 fun ApplicationCall.legacyVariables(loritta: LorittaBot, locale: BaseLocale): MutableMap<String, Any?> {
 	if (attributes.contains(WebsiteUtils.variablesKey))
 		return attributes[WebsiteUtils.variablesKey]

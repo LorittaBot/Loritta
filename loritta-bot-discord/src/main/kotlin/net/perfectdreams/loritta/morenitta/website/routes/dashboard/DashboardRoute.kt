@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.SelectGuildProfileDashboardView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.SelectGuildProfileDashboardView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -36,7 +36,7 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboa
 		call.response.header("Vary", "HX-Trigger")
 
 		val view = SelectGuildProfileDashboardView(
-			loritta,
+			loritta.newWebsite!!,
 			i18nContext,
 			locale,
 			getPathWithoutLocale(call),

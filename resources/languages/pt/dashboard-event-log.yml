@@ -1,0 +1,29 @@
+website:
+  dashboard:
+    eventLog:
+      title: "Event Log"
+      description:
+        - "Registre as ações que estão acontecendo no seu servidor, para ajudar você e a sua equipe a ficarem de olho no que está acontecendo."
+      enableEventLog: "Ativar o Event Log"
+      defaultChannelWhereTheActionsWillBeSent: "Canal padrão onde as ações serão anunciadas"
+      channelWhereTheActionsWillBeSent: "Canal onde esta ação será anunciada"
+      useDefaultChannel: "Usar canal padrão"
+      types:
+        memberBanned:
+          title: "Avisar quando alguém for banido"
+        memberUnbanned:
+          title: "Avisar quando alguém for desbanido"
+        messageEdited:
+          title: "Avisar quando uma mensagem for editada"
+          description: "Para a Loritta notificar quando uma mensagem for editada, ela terá que salvar as mensagens enviadas no seu servidor"
+        messageDeleted:
+          title: "Avisar quando uma mensagem for deletada"
+          description: "Para a Loritta notificar quando uma mensagem for deletada, ela terá que salvar as mensagens enviadas no seu servidor"
+        nicknameChanges:
+          title: "Avisar quando alguém alterar o nickname"
+        avatarChanges:
+          title: "Avisar quando alguém alterar o avatar"
+        voiceChannelJoins:
+          title: "Avisar quando alguém entrar em um canal de voz"
+        voiceChannelLeaves:
+          title: "Avisar quando alguém sair de um canal de voz"

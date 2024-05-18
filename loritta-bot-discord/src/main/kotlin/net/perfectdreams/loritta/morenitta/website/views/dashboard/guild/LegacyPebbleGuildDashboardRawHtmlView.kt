@@ -1,11 +1,15 @@
-package net.perfectdreams.loritta.morenitta.website.views
+package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
 
-import kotlinx.html.*
+import kotlinx.html.DIV
+import kotlinx.html.unsafe
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 /**
  * Renders a Navbar view with [html] as its' contents
@@ -17,12 +21,15 @@ class LegacyPebbleGuildDashboardRawHtmlView(
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
-    private val legacyBaseLocale: LegacyBaseLocale,
-    private val guild: Guild,
+    legacyBaseLocale: LegacyBaseLocale,
+    userIdentification: LorittaJsonWebSession.UserIdentification,
+    userPremiumPlan: UserPremiumPlans,
+    colorTheme: ColorTheme,
+    guild: Guild,
     private val _title: String,
     private val html: String,
-    private val selectedType: String,
-) : GuildDashboardView(
+    selectedType: String,
+) : LegacyGuildDashboardView(
     loritta,
     i18nContext,
     locale,
@@ -31,17 +38,9 @@ class LegacyPebbleGuildDashboardRawHtmlView(
     guild,
     selectedType
 ) {
-    override val hasFooter = false
-    override val useOldStyleCss = true
-
     override fun getTitle() = _title
 
     override fun DIV.generateRightSidebarContents() {
-        div(classes = "totallyHidden") {
-            id = "locale-json"
-            + LorittaBot.GSON.toJson(legacyBaseLocale.strings)
-        }
-
         unsafe {
             raw(html)
         }

@@ -108,6 +108,7 @@ body {
     margin: 0;
     color: var(--content-text-color);
     background-color: var(--background-color);
+    font-family: "Lato", "Arial", "sans-serif";
 }
 
 #app-wrapper {
@@ -133,10 +134,11 @@ h2 {
     font-size: 2em;
 }
 
+#outer-wrapper {}
+
 #wrapper {
     display: flex;
     min-height: 100vh;
-    font-family: "Lato", "Arial", "sans-serif";
 }
 
 nav#mobile-left-sidebar {

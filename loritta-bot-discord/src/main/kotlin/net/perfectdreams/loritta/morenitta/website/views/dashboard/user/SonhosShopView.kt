@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views.user
+package net.perfectdreams.loritta.morenitta.website.views.dashboard.user
 
 import kotlinx.html.*
 import kotlinx.serialization.json.buildJsonObject
@@ -7,7 +7,6 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.EmptySection.emptySection
@@ -15,13 +14,12 @@ import net.perfectdreams.loritta.morenitta.website.components.FancyDetails.fancy
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
-import net.perfectdreams.loritta.morenitta.website.views.ProfileDashboardView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.SonhosBundle
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
 class SonhosShopView(
-    loritta: LorittaBot,
+    lorittaWebsite: LorittaWebsite,
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
@@ -31,7 +29,7 @@ class SonhosShopView(
     colorTheme: ColorTheme,
     val sonhosBundles: List<SonhosBundle>
 ) : ProfileDashboardView(
-    loritta,
+    lorittaWebsite,
     i18nContext,
     locale,
     path,

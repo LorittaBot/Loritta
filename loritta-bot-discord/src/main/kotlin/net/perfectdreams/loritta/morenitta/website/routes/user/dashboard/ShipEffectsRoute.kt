@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.user.ShipEffectsView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.ShipEffectsView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.ShipEffect
 import net.perfectdreams.loritta.serializable.UserId
@@ -44,7 +44,7 @@ class ShipEffectsRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashb
 
 		call.respondHtml(
 			ShipEffectsView(
-				loritta,
+				loritta.newWebsite!!,
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),

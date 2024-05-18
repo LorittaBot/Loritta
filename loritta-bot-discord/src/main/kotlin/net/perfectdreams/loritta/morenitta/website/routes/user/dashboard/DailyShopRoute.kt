@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.user.DailyShopView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.DailyShopView
 import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -113,7 +113,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboa
 		}
 
 		val view = DailyShopView(
-			loritta,
+			loritta.newWebsite!!,
 			i18nContext,
 			locale,
 			getPathWithoutLocale(call),

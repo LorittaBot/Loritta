@@ -1,22 +1,11 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
-import club.minnced.discord.webhook.send.WebhookEmbed
-import club.minnced.discord.webhook.send.WebhookEmbedBuilder
-import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.dao.StoredMessage
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.StoredMessages
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
-import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
@@ -25,11 +14,22 @@ import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.loritta.cinnamon.pudding.tables.StoredMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.EventLogConfigs
-import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.common.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.dao.StoredMessage
+import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import org.apache.commons.io.IOUtils
@@ -115,7 +115,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 									.toList()
 						}.forEach {
 							val guildId = it[ServerConfigs.id].value
-							val eventLogChannelId = it[EventLogConfigs.eventLogChannelId]
+							val eventLogChannelId = it[EventLogConfigs.avatarChangesLogChannelId] ?: it[EventLogConfigs.eventLogChannelId]
 							val eventLogConfig = loritta.newSuspendedTransaction { EventLogConfig.wrapRow(it) }
 
 							val locale = loritta.localeManager.getLocaleById(it[ServerConfigs.localeId])
@@ -132,26 +132,22 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 								if (!guild.selfMember.hasPermission(textChannel, Permission.VIEW_CHANNEL))
 									return@forEach
 
-								val embed = WebhookEmbedBuilder()
+								val embed = EmbedBuilder()
 								embed.setTimestamp(Instant.now())
-								embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl))
+								embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 								embed.setColor(Constants.DISCORD_BLURPLE.rgb)
-								embed.setImageUrl("attachment://avatar.png")
+								embed.setImage("attachment://avatar.png")
 
 								embed.setDescription("\uD83D\uDDBC ${locale["modules.eventLog.avatarChanged", event.user.asMention]}")
-								embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
+								embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
 
-								val message = WebhookMessageBuilder()
-									.append(" ")
+								val message = MessageCreateBuilder()
+									.setContent(" ")
 									.addEmbeds(embed.build())
-									.addFile("avatar.png", bais)
+									.addFiles(FileUpload.fromData(bais, "avatar.png"))
 
-								EventLog.sendMessageInEventLogViaWebhook(
-									loritta,
-									message.build(),
-									guild,
-									eventLogConfig
-								)
+
+								textChannel.sendMessage(message.build()).await()
 							}
 						}
 					}
@@ -178,7 +174,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.messageDeletedLogChannelId ?: eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -192,12 +188,12 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					if (storedMessage != null) {
 						val user = loritta.lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
 
-						val embed = WebhookEmbedBuilder()
+						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
-						embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", user.id.toString()], null))
+						embed.setFooter(locale["modules.eventLog.userID", user.id.toString()], null)
 						embed.setColor(Color(221, 0, 0).rgb)
 
-						embed.setAuthor(WebhookEmbed.EmbedAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl))
+						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
 
 						var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", storedMessage.decryptContent(loritta), "<#${storedMessage.channelId}>").joinToString("\n")}"
 
@@ -207,17 +203,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						embed.setDescription(deletedMessage)
 
-						EventLog.sendMessageInEventLogViaWebhook(
-							loritta,
-							WebhookMessageBuilder()
-								.setUsername(event.guild.selfMember.user.name)
-								.setContent(" ")
-								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-								.addEmbeds(embed.build())
-								.build(),
-							event.guild,
-							eventLogConfig
-						)
+						textChannel.sendMessageEmbeds(embed.build()).await()
 
 						loritta.newSuspendedTransaction {
 							StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
@@ -239,7 +225,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId)
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.messageDeletedLogChannelId ?: eventLogConfig.eventLogChannelId)
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
@@ -258,10 +244,10 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						retrievedUsers[storedMessages.first().authorId] = user
 
-						val embed = WebhookEmbedBuilder()
+						val embed = EmbedBuilder()
 						embed.setTimestamp(Instant.now())
 						embed.setColor(Color(221, 0, 0).rgb)
-						embed.setAuthor(WebhookEmbed.EmbedAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl))
+						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
 
 						val lines = mutableListOf<String>()
 
@@ -286,18 +272,15 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						val channelName = event.guild.getGuildMessageChannelById(storedMessages.first().channelId)?.name ?: "unknown"
 
-						EventLog.sendMessageInEventLogViaWebhook(
-							loritta,
-							WebhookMessageBuilder()
-								.setUsername(event.guild.selfMember.user.name)
-								.setContent(" ")
-								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-								.addEmbeds(embed.build())
-								.addFile("deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log", targetStream)
-								.build(),
-							event.guild,
-							eventLogConfig
-						)
+						textChannel
+							.sendMessage(
+								MessageCreateBuilder()
+									.setContent(" ")
+									.addEmbeds(embed.build())
+									.addFiles(FileUpload.fromData(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log"))
+									.build(),
+							)
+							.await()
 
 						loritta.newSuspendedTransaction {
 							StoredMessages.deleteWhere { StoredMessages.id inList event.messageIds.map { it.toLong() } }
@@ -320,7 +303,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
-				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.memberBannedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 				if (!textChannel.canTalk())
@@ -330,27 +313,17 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 					return@launch
 
-				val embed = WebhookEmbedBuilder()
+				val embed = EmbedBuilder()
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
 
 				val message = "\uD83D\uDEAB **${locale["modules.eventLog.banned", event.user.name]}**"
 
-				embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl))
+				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
-				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
+				embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
 
-				EventLog.sendMessageInEventLogViaWebhook(
-					loritta,
-					WebhookMessageBuilder()
-						.setUsername(event.guild.selfMember.user.name)
-						.setContent(" ")
-						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-						.addEmbeds(embed.build())
-						.build(),
-					event.guild,
-					eventLogConfig
-				)
+				textChannel.sendMessageEmbeds(embed.build()).await()
 				return@launch
 			}
 		}
@@ -377,7 +350,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
-				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.memberUnbannedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return@launch
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
@@ -386,27 +359,17 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 					return@launch
 
-				val embed = WebhookEmbedBuilder()
+				val embed = EmbedBuilder()
 				embed.setTimestamp(Instant.now())
 				embed.setColor(Color(35, 209, 96).rgb)
 
 				val message = "\uD83E\uDD1D **${locale["modules.eventLog.unbanned", event.user.name]}**"
 
-				embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl))
+				embed.setAuthor("${event.user.name}#${event.user.discriminator}", null, event.user.effectiveAvatarUrl)
 				embed.setDescription(message)
-				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
+				embed.setFooter(locale["modules.eventLog.userID", event.user.id], null)
 
-				EventLog.sendMessageInEventLogViaWebhook(
-					loritta,
-					WebhookMessageBuilder()
-						.setUsername(event.guild.selfMember.user.name)
-						.setContent(" ")
-						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-						.addEmbeds(embed.build())
-						.build(),
-					event.guild,
-					eventLogConfig
-				)
+				textChannel.sendMessageEmbeds(embed.build()).await()
 				return@launch
 			}
 		}
@@ -422,13 +385,13 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-				val embed = WebhookEmbedBuilder()
+				val embed = EmbedBuilder()
 				embed.setColor(Color(35, 209, 96).rgb)
 				embed.setTimestamp(Instant.now())
-				embed.setAuthor(WebhookEmbed.EmbedAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl))
+				embed.setAuthor("${event.member.user.name}#${event.member.user.discriminator}", null, event.member.user.effectiveAvatarUrl)
 
 				// ===[ NICKNAME ]===
-				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.nicknameChangesLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return@launch
 				if (!textChannel.canTalk())
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
@@ -440,19 +403,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				val newNickname = if (event.newNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.newNickname
 
 				embed.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.nicknameChanged", oldNickname, newNickname).joinToString("\n")}")
-				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.member.user.id], null))
+				embed.setFooter(locale["modules.eventLog.userID", event.member.user.id], null)
 
-				EventLog.sendMessageInEventLogViaWebhook(
-					loritta,
-					WebhookMessageBuilder()
-						.setUsername(event.guild.selfMember.user.name)
-						.setContent(" ")
-						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
-						.addEmbeds(embed.build())
-						.build(),
-					event.guild,
-					eventLogConfig
-				)
+				textChannel.sendMessageEmbeds(embed.build()).await()
 				return@launch
 			}
 		}

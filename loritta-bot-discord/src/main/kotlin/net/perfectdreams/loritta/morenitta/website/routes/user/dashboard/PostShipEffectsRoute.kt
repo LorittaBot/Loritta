@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.components.InlineNullableUserDisplay.inlineNullableUserDisplay
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.user.ShipEffectsView.Companion.buyShipEffectButton
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.ShipEffectsView.Companion.buyShipEffectButton
 import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views.user
+package net.perfectdreams.loritta.morenitta.website.views.dashboard.user
 
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.User

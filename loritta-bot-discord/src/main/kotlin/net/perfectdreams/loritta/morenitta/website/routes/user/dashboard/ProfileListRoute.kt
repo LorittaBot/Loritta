@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.website.evaluate
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleProfileDashboardRawHtmlView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.LegacyPebbleProfileDashboardRawHtmlView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -23,7 +23,7 @@ class ProfileListRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashb
 		// Should be changed later but whatever let's roll with it
 		call.respondHtml(
 			LegacyPebbleProfileDashboardRawHtmlView(
-				loritta,
+				loritta.newWebsite!!,
 				i18nContext,
 				locale,
 				getPathWithoutLocale(call),

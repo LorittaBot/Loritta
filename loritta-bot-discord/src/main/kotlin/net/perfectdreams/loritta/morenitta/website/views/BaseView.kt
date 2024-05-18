@@ -4,6 +4,7 @@ import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -144,7 +145,9 @@ window.addEventListener('load', function () {
                 // App itself
                 // TODO - htmx-adventures: Defer this and other scripts of this page
                 //  (we cannot do this yet because some of the old server config pages call scripts inline, and that borks everything!)
-                script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {}
+                script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {
+                    defer = true
+                }
 
                 // htmx & hyperscript & other libs are included in the app.js bundle
 
@@ -191,7 +194,11 @@ window.addEventListener('load', function () {
                             add("height")
                             // custom settle attributes!
                             add("disabled")
+                            add("checked")
                         }
+
+                        // Our pages don't really play well with going back in history
+                        put("historyCacheSize", 0)
                     }.toString()
                 )
 

@@ -3,6 +3,7 @@
 .select-wrapper {
     position: relative;
     display: inline-block;
+    width: 100%;
 
     >.select {
         border: 1px solid var(--input-border-color);
@@ -15,6 +16,10 @@
         // Adding overflow: hidden adds unnecessary padding (why)
         // overflow: hidden;
         white-space: nowrap;
+
+        outline: 0 solid rgba(var(--loritta-blue-rgb), 0.5); // Only here to avoid a quick snap when the input is not focused anymore
+        // Avoids the textarea resize handle feeling sluggish
+        transition: height 0s, border-color 0.25s, outline 0.25s, background-color 0.25s;
 
         &:hover {
             outline: 4px solid rgba(var(--loritta-blue-rgb), 0.5);

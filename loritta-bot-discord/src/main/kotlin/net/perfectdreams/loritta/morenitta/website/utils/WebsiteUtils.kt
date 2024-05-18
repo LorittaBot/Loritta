@@ -27,8 +27,8 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.ConfigTransformer
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.sql.ResultRow
@@ -39,6 +39,7 @@ import kotlin.collections.set
 import kotlin.io.path.inputStream
 
 object WebsiteUtils {
+	// TODO - htmx-adventures: Remove this after we stop using Pebble
 	val variablesKey = AttributeKey<MutableMap<String, Any?>>("variables")
 	val localeKey = AttributeKey<BaseLocale>("locale")
 	val handledStatusBefore = AttributeKey<Boolean>("handledStatusBefore")
@@ -151,6 +152,7 @@ object WebsiteUtils {
 		return true
 	}
 
+	// TODO - htmx-adventures: Remove this after we stop using Pebble
 	fun initializeVariables(loritta: LorittaBot, call: ApplicationCall, locale: BaseLocale, legacyLocale: LegacyBaseLocale, languageCode: String?) {
 		val req = call.request
 		val attributes = call.attributes

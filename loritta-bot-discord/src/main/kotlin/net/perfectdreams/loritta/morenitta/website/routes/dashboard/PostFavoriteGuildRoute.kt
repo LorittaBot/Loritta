@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.SelectGuildProfileDashboardView.Companion.favoriteGuild
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.SelectGuildProfileDashboardView.Companion.favoriteGuild
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth

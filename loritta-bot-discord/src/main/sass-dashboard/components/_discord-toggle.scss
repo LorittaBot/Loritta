@@ -11,19 +11,26 @@
     border: 1px solid var(--input-border-color);
     --input-background-color: var(--input-secondary-element-background-color);
 
-    .toggleable-selection {
+    >.toggleable-selection {
         background-color: var(--interactive-element-background-color);
         padding: 20px;
         border-radius: var(--second-level-border-radius);
+    }
 
-        &.is-open {
+    >.toggleable-content {
+        display: none;
+        padding: 10px 20px 20px 20px;
+    }
+
+    &.is-open {
+        >.toggleable-content {
+            display: block;
+        }
+
+        >.toggleable-selection {
             border-radius: var(--second-level-border-radius) var(--second-level-border-radius) 0px 0px;
             border-bottom: 1px solid var(--input-border-color);
         }
-    }
-
-    .toggleable-content {
-        padding: 10px 20px 20px 20px;
     }
 
     // Used in position: absolute; divs to reset the input to their default color

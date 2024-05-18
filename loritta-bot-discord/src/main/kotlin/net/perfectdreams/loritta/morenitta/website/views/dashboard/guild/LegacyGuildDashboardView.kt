@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views
+package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
 
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
@@ -6,8 +6,11 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.morenitta.website.views.NavbarView
 
-abstract class GuildDashboardView(
+// TODO - htmx-adventures: This is only kept here because migrating everything all at once would be a pain and sad
+//  so we are keeping it here as a "fallback" for old views
+abstract class LegacyGuildDashboardView(
     loritta: LorittaBot,
     i18nContext: I18nContext,
     locale: BaseLocale,
@@ -119,7 +122,7 @@ abstract class GuildDashboardView(
                         "welcomer"
                     )
 
-                    appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", "event_log")
+                    appendEntry("/guild/${guild.id}/configure/event-log", false, locale["modules.sectionNames.eventLog"], "fa fa-eye", "event_log")
                     appendEntry("/guild/${guild.id}/configure/youtube", true, "YouTube", "fab fa-youtube", "youtube")
                     appendExternalEntry(
                         "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/twitch",

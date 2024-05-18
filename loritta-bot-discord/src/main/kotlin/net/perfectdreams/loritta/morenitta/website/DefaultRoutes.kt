@@ -42,6 +42,7 @@ object DefaultRoutes {
 		ConfigureDailyMultiplierRoute(loritta),
 		ConfigureEconomyRoute(loritta),
 		ConfigureEventLogRoute(loritta),
+		PostConfigureEventLogRoute(loritta),
 		ConfigureInviteBlockerRoute(loritta),
 		ConfigureLevelUpRoute(loritta),
 		ConfigureTwitchRoute(loritta),

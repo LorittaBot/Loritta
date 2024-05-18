@@ -21,4 +21,11 @@ fun openEmbeddedModal(element: Element) {
     SpicyMorenitta.INSTANCE.modalManager.openModal(embeddedSpicyModal)
 }
 
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+@JsName("playSoundEffect")
+fun playSoundEffect(soundEffect: String) {
+    SpicyMorenitta.INSTANCE.playSoundEffect(soundEffect)
+}
+
 external fun decodeURIComponent(encodedURI: String): String = definedExternally

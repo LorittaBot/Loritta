@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views
+package net.perfectdreams.loritta.morenitta.website.views.dashboard.user
 
 import kotlinx.html.*
 import kotlinx.serialization.json.buildJsonObject
@@ -7,7 +7,6 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
@@ -17,7 +16,7 @@ import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class SelectGuildProfileDashboardView(
-    loritta: LorittaBot,
+    lorittaWebsite: LorittaWebsite,
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
@@ -26,7 +25,7 @@ class SelectGuildProfileDashboardView(
     userPremiumPlan: UserPremiumPlans,
     colorTheme: ColorTheme
 ) : ProfileDashboardView(
-    loritta,
+    lorittaWebsite,
     i18nContext,
     locale,
     path,

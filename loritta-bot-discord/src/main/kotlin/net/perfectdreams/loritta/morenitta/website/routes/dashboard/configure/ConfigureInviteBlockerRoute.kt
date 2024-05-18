@@ -4,20 +4,21 @@ import io.ktor.server.application.*
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.evaluate
-import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.LegacyPebbleGuildDashboardRawHtmlView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.LegacyPebbleGuildDashboardRawHtmlView
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/invite-blocker") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val inviteBlockerConfig = loritta.newSuspendedTransaction {
+class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/invite-blocker") {
+	override suspend fun onDashboardGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, colorTheme: ColorTheme) {	val inviteBlockerConfig = loritta.newSuspendedTransaction {
 			serverConfig.inviteBlockerConfig
 		}
 
@@ -43,6 +44,9 @@ class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocali
 				locale,
 				getPathWithoutLocale(call),
 				loritta.getLegacyLocaleById(locale.id),
+				userIdentification,
+				UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())),
+				colorTheme,
 				guild,
 				"Painel de Controle",
 				evaluate("invite_blocker.html", variables),
