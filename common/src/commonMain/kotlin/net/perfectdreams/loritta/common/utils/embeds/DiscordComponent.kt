@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.common.utils.embeds
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.json.*
 
 @Serializable(ComponentConditionalSerializer::class)
@@ -23,7 +22,6 @@ sealed class DiscordComponent {
 }
 
 // Custom serializer that handles the conditional deserialization based on the "type" field
-@Serializer(forClass = DiscordComponent::class)
 object ComponentConditionalSerializer : JsonContentPolymorphicSerializer<DiscordComponent>(DiscordComponent::class) {
     override fun selectDeserializer(
         element: JsonElement

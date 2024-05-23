@@ -3,12 +3,12 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.dailytax
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds.THRESHOLDS
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
@@ -37,7 +37,7 @@ object DailyTaxUtils {
         val usersToBeIgnored = Payments.slice(Payments.userId, moneySum).select {
             Payments.expiresAt greaterEq System.currentTimeMillis()
         }.groupBy(Payments.userId)
-            .having { moneySum greaterEq (cheapestPlanWithoutDailyInactivityTaxCost - 10.00) } // It is actually 99.99 but shhhhh
+            .having { moneySum greaterEq (cheapestPlanWithoutDailyInactivityTaxCost - 10.00).toBigDecimal() } // It is actually 99.99 but shhhhh
             .map { it[Payments.userId] }
             .toMutableSet()
         usersToBeIgnored.add(lorittaId)

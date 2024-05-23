@@ -16,7 +16,8 @@ dependencyResolutionManagement {
             val jib = version("jib", "3.2.1")
             // We can't use 0.50.0 yet because they broke the inList and notInList signature for ID fields
             val exposed = version("exposed", "0.49.0")
-            val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
+            val i18nHelper = version("i18nhelper", "0.0.6-SNAPSHOT")
+            val i18nHelperPlugin = version("i18nhelperplugin", "0.0.6-SNAPSHOT")
             val logback = version("logback", "1.4.14")
             val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
 

@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("net.perfectdreams.i18nhelper.plugin") version libs.versions.i18nhelper
+    id("net.perfectdreams.i18nhelper.plugin") version libs.versions.i18nhelperplugin
     id("maven-publish")
 }
 
