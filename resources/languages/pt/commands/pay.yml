@@ -13,7 +13,7 @@ transferredSonhosWithRanking: "{user} agora possui {sonhosEmoji} **{sonhos,plura
 selfAccountIsTooNew: "Espere aí, a sua conta é muito nova! Antes de poder transferir sonhos, você precisa aguardar até {time} ({timeRelative}) antes de começar a transferir sonhos."
 selfAccountNeedsToGetDaily: "Parece que você não pegou a sua recompensa diária nos últimos 14 dias, você só pode enviar sonhos depois de pegar a sua recompensa diária. Que tal pegar agora? {dailyCommand}"
 otherAccountIsTooNew: "Eu sei que é legal ajudar os outros... Mas a conta do {user} é muito nova! Você precisa esperar até {time} ({timeRelative}) antes de {user} poder receber transferências de sonhos."
-cantTransferToSelf: "Transferência concluída com sucesso! Você não recebeu *nada* de si mesmo, porque você está tentando transferir sonhos para si mesmo!"
+cantTransferToSelf: "Transferência concluída com sucesso! Você recebeu *nada* de si mesmo, porque você está tentando transferir sonhos para si mesmo!"
 tryingToTransferZeroSonhos: "Uau, incrível! Você vai transferir *zero* sonhos, maravilha! Menos trabalho para mim, porque isso significa que não preciso preparar uma transação para você."
 tryingToTransferLessThanZeroSonhos: "Uau, excelente! Você vai transferir sonhos *negativos*, extraordinário! Será que sonhos negativos seriam... *pesadelos*? Eu sei, eu sei... Sou um gênio."
 failReasons:
