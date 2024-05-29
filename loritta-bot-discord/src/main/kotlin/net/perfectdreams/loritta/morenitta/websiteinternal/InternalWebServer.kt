@@ -10,9 +10,12 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -26,7 +29,10 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.RPCResponseExcept
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.Processors
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
@@ -88,6 +94,99 @@ class InternalWebServer(val m: LorittaBot) {
                     }
 
                     call.respondText(os.toString(Charsets.UTF_8))
+                }
+
+                // ===[ SPARKLYPOWER APIs ]===
+                // Get all albums
+                get("/sparklypower/loricoolcards/albums") {
+                    val albums = m.transaction {
+                        LoriCoolCardsEvents.selectAll()
+                            .toList()
+                    }
+
+                    call.respondJson(
+                        buildJsonArray {
+                            for (album in albums) {
+                                addJsonObject {
+                                    put("id", album[LoriCoolCardsEvents.id].value)
+                                    put("eventName", album[LoriCoolCardsEvents.eventName])
+                                }
+                            }
+                        }
+                    )
+                }
+
+                // Get all user finished albums
+                get("/sparklypower/loricoolcards/users/{userId}/albums") {
+                    val userId = call.parameters["userId"]!!.toLong()
+
+                    // Yeah, this is a bit wonky because we are generating arrays like this
+                    // It does work tho!!
+                    val json = buildJsonArray {
+                        m.transaction {
+                            val finishedAlbums = LoriCoolCardsFinishedAlbumUsers.innerJoin(LoriCoolCardsEvents)
+                                .selectAll()
+                                .where { LoriCoolCardsFinishedAlbumUsers.user eq userId }
+                                .toList()
+
+                            for (album in finishedAlbums) {
+                                val rankOverField = rank().over().orderBy(LoriCoolCardsFinishedAlbumUsers.finishedAt, SortOrder.ASC)
+
+                                // Should NEVER be null!
+                                val albumRank = LoriCoolCardsFinishedAlbumUsers.select(
+                                    LoriCoolCardsFinishedAlbumUsers.user,
+                                    LoriCoolCardsFinishedAlbumUsers.finishedAt,
+                                    rankOverField
+                                ).where {
+                                    // We cannot filter by user here, if we do an "eq userToBeViewed.idLong" here, the rank position will always be 1 (or null, if the user hasn't completed the album)
+                                    // So we filter it after the fact
+                                    LoriCoolCardsFinishedAlbumUsers.event eq album[LoriCoolCardsEvents.id]
+                                }.first { it[LoriCoolCardsFinishedAlbumUsers.user] == userId }
+
+                                addJsonObject {
+                                    put("id", album[LoriCoolCardsFinishedAlbumUsers.id].value)
+                                    put("finishedPosition", albumRank[rankOverField])
+                                    put("finishedAt", album[LoriCoolCardsFinishedAlbumUsers.finishedAt].toEpochMilli())
+
+                                    putJsonObject("album") {
+                                        put("id", album[LoriCoolCardsEvents.id].value)
+                                        put("eventName", album[LoriCoolCardsEvents.eventName])
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    call.respondJson(json)
+                }
+
+                // Get all stickers of an album
+                get("/sparklypower/loricoolcards/albums/{albumId}/stickers") {
+                    val albumId = call.parameters["albumId"]!!.toLong()
+
+                    val albums = m.transaction {
+                        LoriCoolCardsEventCards
+                            .selectAll()
+                            .where {
+                                LoriCoolCardsEventCards.event eq albumId
+                            }
+                            .toList()
+                    }
+
+                    call.respondJson(
+                        buildJsonArray {
+                            for (album in albums) {
+                                addJsonObject {
+                                    put("id", album[LoriCoolCardsEventCards.id].value)
+                                    put("fancyCardId", album[LoriCoolCardsEventCards.fancyCardId])
+                                    put("title", album[LoriCoolCardsEventCards.title])
+                                    put("rarity", album[LoriCoolCardsEventCards.rarity].name)
+                                    put("cardFrontImageUrl", album[LoriCoolCardsEventCards.cardFrontImageUrl])
+                                    put("cardReceivedImageUrl", album[LoriCoolCardsEventCards.cardReceivedImageUrl])
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
