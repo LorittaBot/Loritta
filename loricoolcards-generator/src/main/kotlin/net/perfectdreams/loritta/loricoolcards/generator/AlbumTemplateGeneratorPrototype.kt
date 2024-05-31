@@ -46,8 +46,8 @@ fun main() {
     //  Based off the layer name
     //  Or just sort it based on the sticker's xy position
     val templateSlots = mapOf(
-        1 to loadTemplatingSlots("combo_1_2"),
-        3 to loadTemplatingSlots("combo_3_4"),
+        1 to loadTemplatingSlots("new/new_album_first_page"),
+        3 to loadTemplatingSlots("new/new_album_second_page"),
         // 5 to loadTemplatingSlots("combo_lori_sleepy"),
         5 to loadTemplatingSlots("new/new_album_lori_stars_yafyr"),
         7 to loadTemplatingSlots("new/new_album_lori_sleepy"),
@@ -388,8 +388,8 @@ fun main() {
         if (templateSlot == -1) {
             // Needs to create new page!
             val pageBackdropUrl = when (currentPage) {
-                1 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/combo_1_2.psd.png"
-                3 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/combo_3_4.psd.png"
+                1 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_first_page.psd.png"
+                3 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_second_page.psd.png"
                 5 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_stars_yafyr.psd.png"
                 7 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_sleepy.psd.png"
                 9 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_pantufa_gabi.psd.png"

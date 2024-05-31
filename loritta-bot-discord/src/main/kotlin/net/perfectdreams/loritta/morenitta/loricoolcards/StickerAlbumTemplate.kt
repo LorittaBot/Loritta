@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.loricoolcards
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 
 @Serializable
 data class StickerAlbumTemplate(
@@ -24,6 +25,10 @@ data class StickerAlbumTemplate(
      * Sonhos Reward when someone completes the album
      */
     val sonhosReward: Long,
+    /**
+     * The weights (probability) of each sticker
+     */
+    val stickerProbabilityWeights: Map<CardRarity, Double>,
     /**
      * The pages of the album
      */

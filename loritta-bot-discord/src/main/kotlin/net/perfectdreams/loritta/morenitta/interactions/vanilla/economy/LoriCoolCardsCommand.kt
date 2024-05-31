@@ -170,6 +170,8 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                     LoriCoolCardsEventCards.fancyCardId eq fancyCardId and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
                 }.limit(1).firstOrNull() ?: return@transaction GetCardInfoResult.UnknownCard
 
+                val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
+
                 val isSticked = LoriCoolCardsUserOwnedCards.select {
                     LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
                 }.count() != 0L
@@ -190,14 +192,22 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                     LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false)
                 }.count()
 
+                val stickersWeightsInThisEvent = LoriCoolCardsEventCards
+                    .select(LoriCoolCardsEventCards.id, LoriCoolCardsEventCards.rarity)
+                    .where {
+                        LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
+                    }
+                    .map { template.stickerProbabilityWeights[it[LoriCoolCardsEventCards.rarity]]!! } // Should NEVER be null!
+
                 return@transaction GetCardInfoResult.Success(
-                    Json.decodeFromString(event[LoriCoolCardsEvents.template]),
+                    template,
                     cardEventCard,
                     isSeen,
                     isSticked,
                     cardsOfThisTypeOwnedByTheCurrentUser,
                     cardsOfThisTypeInCirculation,
-                    cardsOfThisTypeSticked
+                    cardsOfThisTypeSticked,
+                    stickersWeightsInThisEvent
                 )
             }
 
@@ -254,6 +264,11 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                                 appendLine(context.i18nContext.get(I18N_PREFIX.View.StickersStickedInAlbums(result.cardsInAlbums)))
                                 appendLine(context.i18nContext.get(I18N_PREFIX.View.StickersTotal(result.cardsInCirculation + result.cardsInAlbums)))
                                 appendLine(context.i18nContext.get(I18N_PREFIX.View.StickerPage(albumStickerPage)))
+
+                                val totalWeight = result.stickersWeightsInThisEvent.sum()
+                                val chanceOfSticker = result.template.stickerProbabilityWeights[result.card[LoriCoolCardsEventCards.rarity]]!! / totalWeight
+
+                                appendLine(context.i18nContext.get(I18N_PREFIX.View.ChanceOfGettingTheSticker(chanceOfSticker)))
                             }
 
                             if (result.isSeen) {
@@ -304,7 +319,8 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
             val isSticked: Boolean,
             val cardsOfThisTypeOwnedByTheCurrentUserNotSticked: Long,
             val cardsInCirculation: Long,
-            val cardsInAlbums: Long
+            val cardsInAlbums: Long,
+            val stickersWeightsInThisEvent: List<Double>
         ) : GetCardInfoResult()
     }
 }

@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsBoughtBoosterPa
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
+import kotlin.random.Random
 
 class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
     companion object {
@@ -138,10 +139,13 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                 //     .filter { it.value.isNotEmpty() } // Filter out rarities that do not have any cards
 
                                 // Now we need to calculate each probability
-                                // To calculate it, we will first calculate which rarity we will be selecting, and then we will select a random card from the selected rarity
-                                // For now, we will only get a random rarity and then a random card from it
-                                val selectedCards = (0 until result.template.stickersInPack).map { cards.random() }
-                                val selectedStickersIds = selectedCards.map { it[LoriCoolCardsEventCards.id].value }
+                                val stickerIdsWithWeights = cards.associate {
+                                    it[LoriCoolCardsEventCards.id].value to result.template.stickerProbabilityWeights[it[LoriCoolCardsEventCards.rarity]]!!
+                                }
+
+                                val selectedStickersIds = weightedRandomSelection(stickerIdsWithWeights, result.template.stickersInPack)
+                                // We use "map" instead of filter because we WANT duplicated stickers
+                                val selectedCards = selectedStickersIds.map { stickerId -> cards.first { it[LoriCoolCardsEventCards.id].value == stickerId } }
                                 val selectedCardsWithMetadata = mutableListOf<BuyStickersResult.Success.CardResult>()
 
                                 // TODO: This should consider stickers that are already sticked in the album
@@ -401,6 +405,36 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                 }
             }
         }
+    }
+
+    // Thanks ChatGPT xoxo
+    private fun weightedRandomSelection(weights: Map<Long, Double>, n: Int): List<Long> {
+        val weightedValues = ArrayList<Pair<Long, Double>>(weights.size)
+        var totalWeight = 0.0
+
+        for ((rarity, weight) in weights) {
+            totalWeight += weight
+            weightedValues.add(rarity to totalWeight)
+        }
+
+        return List(n) {
+            val randomValue = Random.nextDouble(totalWeight)
+            binarySearch(weightedValues, randomValue)
+        }
+    }
+
+    private fun binarySearch(weightedValues: List<Pair<Long, Double>>, randomValue: Double): Long {
+        var low = 0
+        var high = weightedValues.size - 1
+
+        while (low < high) {
+            val mid = (low + high) / 2
+            if (weightedValues[mid].second < randomValue)
+                low = mid + 1
+            else
+                high = mid
+        }
+        return weightedValues[low].first
     }
 
     sealed class BuyStickersPreResult {

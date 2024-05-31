@@ -23,6 +23,7 @@ view:
   stickersStickedInAlbums: "**Coladas em Álbuns:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
   stickersTotal: "**Total:** {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
   stickerPage: "**Página:** Página {page,number}"
+  chanceOfGettingTheSticker: "**Chance de receber a figurinha em um pacotinho:** {chance, number,#.#####%}"
   stickerFront: "Figurinha (Frente)"
   stickerAnimated: "Figurinha (Animada)"
   options:

@@ -44,6 +44,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                     LoriCoolCardsEvents.select(LoriCoolCardsEvents.id, LoriCoolCardsEvents.eventName)
                         .where { LoriCoolCardsEvents.startsAt lessEq now }
                         .orderBy(LoriCoolCardsEvents.endsAt, SortOrder.DESC)
+                        .limit(25)
                         .toList()
                 }
 
