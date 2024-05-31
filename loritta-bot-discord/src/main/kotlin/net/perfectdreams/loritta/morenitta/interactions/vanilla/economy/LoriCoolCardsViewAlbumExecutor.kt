@@ -25,11 +25,8 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
 class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
@@ -38,6 +35,23 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
     }
 
     inner class Options : ApplicationCommandOptions() {
+        val album = string("album", I18N_PREFIX.Options.Album.Text) {
+            autocomplete {
+                val now = Instant.now()
+
+                // Autocomplete all albums
+                val activeAlbums = loritta.transaction {
+                    LoriCoolCardsEvents.select(LoriCoolCardsEvents.id, LoriCoolCardsEvents.eventName)
+                        .where { LoriCoolCardsEvents.startsAt lessEq now }
+                        .orderBy(LoriCoolCardsEvents.endsAt, SortOrder.DESC)
+                        .toList()
+                }
+
+                activeAlbums.associate {
+                    it[LoriCoolCardsEvents.eventName] to it[LoriCoolCardsEvents.id].value.toString()
+                }
+            }
+        }
         val user = optionalUser("user", I18N_PREFIX.Options.User.Text)
         val page = optionalLong("page", I18N_PREFIX.Options.Page.Text)
     }
@@ -47,11 +61,13 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
         context.deferChannelMessage(false)
 
+        val albumId = args[options.album].toLong()
         val pageLookup = args[options.page]?.toInt() ?: 1
         val user = args[options.user]?.user ?: context.user
 
         viewAlbum(
             context,
+            albumId,
             pageLookup,
             user
         ) {
@@ -63,6 +79,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
     suspend fun viewAlbum(
         context: UnleashedContext,
+        eventId: Long,
         pageLookup: Int,
         userToBeViewed: User,
         targetAlbumEdit: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)
@@ -70,9 +87,9 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
         val now = Instant.now()
 
         val result = loritta.transaction {
-            val event = LoriCoolCardsEvents.select {
-                LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-            }.firstOrNull() ?: return@transaction ViewAlbumResult.EventUnavailable
+            val event = LoriCoolCardsEvents.selectAll().where {
+                LoriCoolCardsEvents.id eq eventId and (LoriCoolCardsEvents.startsAt lessEq now)
+            }.firstOrNull() ?: return@transaction ViewAlbumResult.AlbumDoesNotExist
 
             // First we need to check all cards that we have already sticked
             // We will inner join because we need that info when generating the album
@@ -114,10 +131,10 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
         }
 
         when (result) {
-            ViewAlbumResult.EventUnavailable -> {
+            ViewAlbumResult.AlbumDoesNotExist -> {
                 context.reply(false) {
                     styled(
-                        "Nenhum evento de figurinhas ativo"
+                        "O álbum de figurinhas que você selecionou não existe!"
                     )
                 }
             }
@@ -216,7 +233,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, 1, userToBeViewed) {
+                                viewAlbum(it, eventId, 1, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -249,7 +266,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, pageLookup - 2, userToBeViewed) {
+                                viewAlbum(it, eventId, pageLookup - 2, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -282,7 +299,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, pageLookup + 2, userToBeViewed) {
+                                viewAlbum(it, eventId, pageLookup + 2, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -315,7 +332,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
                                 val hook = it.event.hook
 
-                                viewAlbum(it, template.pages.last().pageRight, userToBeViewed) {
+                                viewAlbum(it, eventId, template.pages.last().pageRight, userToBeViewed) {
                                     editJob.await()
 
                                     hook.editOriginal(
@@ -333,7 +350,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
     }
 
     sealed class ViewAlbumResult {
-        data object EventUnavailable : ViewAlbumResult()
+        data object AlbumDoesNotExist : ViewAlbumResult()
         class Success(
             val template: StickerAlbumTemplate,
             val alreadyStickedCards: List<ResultRow>,

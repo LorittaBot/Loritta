@@ -46,6 +46,8 @@ album:
   finishedAlbumStatsYou: "**Você completou o álbum em {date}, tornando-se a {finishedPosition,number}ª pessoa a terminá-lo!**"
   finishedAlbumStatsOtherUser: "**{user} completou o álbum em {date}, tornando-se a {finishedPosition,number}ª pessoa a terminá-lo!**"
   options:
+    album:
+      text: "Qual álbum você quer ver"
     page:
       text: "A página do álbum de figurinhas que você quer ver"
     user:
