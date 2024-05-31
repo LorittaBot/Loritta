@@ -18,7 +18,7 @@ class BackgroundCommand(loritta: LorittaBot) : AbstractCommand(loritta, "backgro
                         Emotes.LORI_WOW
                 ),
                 LorittaReply(
-                        "Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.config.loritta.website.url}user/@me/dashboard/daily-shop>",
+                        "Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.config.loritta.website.url}dashboard/daily-shop>",
                         Emotes.LORI_WOW,
                         mentionUser = false
                 )
