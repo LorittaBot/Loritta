@@ -26,14 +26,8 @@ allprojects {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
 subprojects {
     tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = Versions.JVM_TARGET
         kotlinOptions.javaParameters = true
     }
 }

@@ -27,6 +27,12 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:3.12.2")
 }
 
+kotlin {
+	jvmToolchain {
+		languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
+	}
+}
+
 tasks.test {
 	useJUnitPlatform()
 }

@@ -9,3 +9,9 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.sessions)
 }
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
+    }
+}

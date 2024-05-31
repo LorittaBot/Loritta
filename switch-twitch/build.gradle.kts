@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     java
     kotlin("jvm")
@@ -16,8 +14,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = Versions.JVM_TARGET
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
+    }
 }
 
 tasks.test {
