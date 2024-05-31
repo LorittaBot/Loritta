@@ -10,6 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
@@ -27,6 +28,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EconomyConf
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.serializable.StoredDivineInterventionSonhosTransaction
+import net.perfectdreams.loritta.serializable.StoredSonhosBundlePurchaseTransaction
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -215,6 +217,73 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 								DivineInterventionTransactionEntryAction.ADDED_SONHOS,
 								context.userHandle.idLong,
 								null
+							)
+						)
+					}
+				}
+
+				context.reply(
+					LorittaReply(
+						"Sonhos de ${matched.joinToString { it.asMention }} foram editados com sucesso!"
+					)
+				)
+				return
+			}
+
+			if (arg0 == "add_dreams_bundle" && arg1 != null && arg2 != null) {
+				val onlyUsersRawArgs = context.rawArgs.drop(2)
+
+				val matchedSonhosBundle = loritta.transaction {
+					SonhosBundles.selectAll()
+						.where { SonhosBundles.active eq true and (SonhosBundles.sonhos eq arg1.toLong()) }
+						.firstOrNull()
+				}
+
+				if (matchedSonhosBundle == null) {
+					context.reply(
+						LorittaReply(
+							"Não existe um bundle de ${arg1} sonhos na loja da Loritta!"
+						)
+					)
+					return
+				}
+
+				val matchedUsers = onlyUsersRawArgs.map {
+					it to DiscordUtils.extractUserFromString(
+						loritta,
+						it,
+						context.event.message.mentions.users,
+						context.guildOrNull
+					)
+				}
+
+				val nonMatched = matchedUsers.filter { it.second == null }
+				if (nonMatched.isNotEmpty()) {
+					context.reply(
+						LorittaReply(
+							"Usuários ${nonMatched.joinToString { it.first }} não foram encontrados então os sonhos não foram adicionados para todos..."
+						)
+					)
+					return
+				}
+				val matched = matchedUsers.mapNotNull { it.second }
+
+				loritta.pudding.transaction {
+					for (user in matched) {
+						Profiles.update({ Profiles.id eq user.idLong }) {
+							with(SqlExpressionBuilder) {
+								it.update(money, money + arg1.toLong())
+							}
+						}
+
+						// Cinnamon transaction system
+						SimpleSonhosTransactionsLogUtils.insert(
+							user.idLong,
+							Instant.now(),
+							TransactionType.SONHOS_BUNDLE_PURCHASE,
+							arg1.toLong(),
+							StoredSonhosBundlePurchaseTransaction(
+								matchedSonhosBundle[SonhosBundles.id].value
 							)
 						)
 					}
