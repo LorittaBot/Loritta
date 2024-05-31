@@ -80,6 +80,8 @@ compare:
   whatStickersYouNeedThatTheOtherUserHas: "**Figurinhas que você precisa e que {userToBeComparedTo} tem ({stickerCount,number}):** {stickerList}"
   whatStickersYouHaveThatTheOtherUserNeeds: "**Figurinhas que {friend} precisa e você tem ({stickerCount,number}):** {stickerList}"
   noStickersToBeCompared: "*Nenhuma Figurinha*"
+  getFirstListOfStickers: "Pegar a primeira lista de figurinhas"
+  getSecondListOfStickers: "Pegar a segunda lista de figurinhas"
   options:
     user:
       text: "O usuário que você deseja comparar as suas figurinhas com as dele"

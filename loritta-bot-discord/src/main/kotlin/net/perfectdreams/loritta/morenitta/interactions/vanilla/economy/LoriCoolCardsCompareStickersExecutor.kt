@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
@@ -8,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolC
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
@@ -104,33 +106,33 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                 }
             }
             is CompareStickersResult.Success -> {
+                val yourStickersMissing = mutableListOf<ResultRow>()
+
+                for (stickerId in result.stickersThatYourFriendInTheirInventory) {
+                    val doWeHaveIt = result.stickersThatYouHaveSticked.contains(stickerId) || result.stickersThatYouHaveInYourInventory.contains(stickerId)
+
+                    if (!doWeHaveIt) {
+                        // We don't have it!
+                        val stickerInfo = result.eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
+                        yourStickersMissing.add(stickerInfo)
+                    }
+                }
+
+                val friendStickersMissing = mutableListOf<ResultRow>()
+
+                for (stickerId in result.stickersThatYouHaveInYourInventory) {
+                    val doWeHaveIt = result.stickersThatYourFriendHasSticked.contains(stickerId) || result.stickersThatYourFriendInTheirInventory.contains(stickerId)
+
+                    if (!doWeHaveIt) {
+                        // We don't have it!
+                        val stickerInfo = result.eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
+                        friendStickersMissing.add(stickerInfo)
+                    }
+                }
+
                 context.reply(false) {
                     embed {
                         title = "${Emotes.LoriLurk} Comparando Figurinhas"
-
-                        val yourStickersMissing = mutableListOf<ResultRow>()
-
-                        for (stickerId in result.stickersThatYourFriendInTheirInventory) {
-                            val doWeHaveIt = result.stickersThatYouHaveSticked.contains(stickerId) || result.stickersThatYouHaveInYourInventory.contains(stickerId)
-
-                            if (!doWeHaveIt) {
-                                // We don't have it!
-                                val stickerInfo = result.eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
-                                yourStickersMissing.add(stickerInfo)
-                            }
-                        }
-
-                        val friendStickersMissing = mutableListOf<ResultRow>()
-
-                        for (stickerId in result.stickersThatYouHaveInYourInventory) {
-                            val doWeHaveIt = result.stickersThatYourFriendHasSticked.contains(stickerId) || result.stickersThatYourFriendInTheirInventory.contains(stickerId)
-
-                            if (!doWeHaveIt) {
-                                // We don't have it!
-                                val stickerInfo = result.eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
-                                friendStickersMissing.add(stickerInfo)
-                            }
-                        }
 
                         description = buildString {
                             append("${Emotes.LoriHanglooseRight} ${context.i18nContext.get(I18N_PREFIX.WhatStickersYouNeedThatTheOtherUserHas(userToBeComparedTo = userToBeComparedTo.user.asMention, yourStickersMissing.size, if (yourStickersMissing.isEmpty()) context.i18nContext.get(I18N_PREFIX.NoStickersToBeCompared) else yourStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }))}")
@@ -140,6 +142,45 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
 
                         color = LorittaColors.LorittaAqua.rgb
                     }
+
+                    // This is useful for phone users to copy the sticker list
+                    val stickersThatYouNeedButton = UnleashedButton.of(
+                        ButtonStyle.PRIMARY,
+                        context.i18nContext.get(I18N_PREFIX.GetFirstListOfStickers),
+                        Emotes.LoriHanglooseRight
+                    )
+
+                    val stickersThatOtherFriendButton = UnleashedButton.of(
+                        ButtonStyle.PRIMARY,
+                        context.i18nContext.get(I18N_PREFIX.GetSecondListOfStickers),
+                        Emotes.PantufaHanglooseRight
+                    )
+
+                    actionRow(
+                        if (yourStickersMissing.isEmpty())
+                            stickersThatYouNeedButton.asDisabled()
+                        else
+                            loritta.interactivityManager.button(
+                                stickersThatYouNeedButton
+                            ) { context ->
+                                context.reply(true) {
+                                    content = yourStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }
+                                }
+                            }
+                    )
+
+                    actionRow(
+                        if (friendStickersMissing.isEmpty())
+                            stickersThatOtherFriendButton.asDisabled()
+                        else
+                            loritta.interactivityManager.button(
+                                stickersThatOtherFriendButton
+                            ) { context ->
+                                context.reply(true) {
+                                    content = friendStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }
+                                }
+                            }
+                    )
                 }
             }
         }
