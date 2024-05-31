@@ -13,7 +13,7 @@ dependencyResolutionManagement {
             val kotlin = version("kotlin", "1.7.10")
             val kotlinXSerialization = version("kotlinx-serialization", "1.6.0")
             val ktor = version("ktor", "2.3.6")
-            val jib = version("jib", "3.2.1")
+            val jib = version("jib", "3.4.3")
             // We can't use 0.50.0 yet because they broke the inList and notInList signature for ID fields
             val exposed = version("exposed", "0.49.0")
             val i18nHelper = version("i18nhelper", "0.0.6-SNAPSHOT")
