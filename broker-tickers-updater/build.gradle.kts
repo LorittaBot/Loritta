@@ -20,8 +20,10 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = Versions.JVM_TARGET
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
+    }
 }
 
 jib {

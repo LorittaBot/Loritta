@@ -30,8 +30,10 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:1.16.3")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = Versions.JVM_TARGET
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
+    }
 }
 
 tasks.withType<Test> {

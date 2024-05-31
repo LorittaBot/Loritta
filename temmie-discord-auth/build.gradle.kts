@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-tasks.withType<KotlinCompile> {
-	kotlinOptions.jvmTarget = Versions.JVM_TARGET
+kotlin {
+	jvmToolchain {
+		languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
+	}
 }
 
 plugins {
@@ -25,12 +25,6 @@ dependencies {
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
 	testImplementation("io.mockk:mockk:1.9.3")
 	testImplementation("org.assertj:assertj-core:3.12.2")
-}
-
-kotlin {
-	jvmToolchain {
-		languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
-	}
 }
 
 tasks.test {

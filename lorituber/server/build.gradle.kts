@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = Versions.JVM_TARGET
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(Versions.JVM_TARGET))
+    }
 }
 
 plugins {
@@ -54,9 +54,4 @@ jib {
         // https://github.com/GoogleContainerTools/jib/issues/1468
         image = "tar://${File(rootDir, "docker/image.tar").absoluteFile}"
     }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
