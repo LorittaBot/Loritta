@@ -292,18 +292,30 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         context.i18nContext.get(I18N_PREFIX.StickXStickers(5))
                                     else
                                         context.i18nContext.get(I18N_PREFIX.StickXStickers(cards.size)),
-                                    Emotes.LoriCoolSticker
+                                    Emotes.StickerRarityCommon
                                 )
 
                                 val next10StickersButton = UnleashedButton.of(
                                     ButtonStyle.PRIMARY,
                                     context.i18nContext.get(I18N_PREFIX.StickXStickers(10)),
-                                    Emotes.StickerRarityEpic
+                                    Emotes.StickerRarityUncommon
                                 )
 
                                 val next15StickersButton = UnleashedButton.of(
                                     ButtonStyle.PRIMARY,
                                     context.i18nContext.get(I18N_PREFIX.StickXStickers(15)),
+                                    Emotes.LoriCoolSticker
+                                )
+
+                                val next20StickersButton = UnleashedButton.of(
+                                    ButtonStyle.PRIMARY,
+                                    context.i18nContext.get(I18N_PREFIX.StickXStickers(20)),
+                                    Emotes.StickerRarityEpic
+                                )
+
+                                val next25StickersButton = UnleashedButton.of(
+                                    ButtonStyle.PRIMARY,
+                                    context.i18nContext.get(I18N_PREFIX.StickXStickers(25)),
                                     Emotes.StickerRarityLegendary
                                 )
 
@@ -370,6 +382,24 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                                     } else {
                                                         next15StickersButton
                                                             .asDisabled()
+                                                    },
+                                                    if (buttonThatInvokedTheCallback == next20StickersButton) {
+                                                        next20StickersButton
+                                                            .withLabel("Procurando as Próximas Figurinhas...")
+                                                            .withEmoji(Emotes.LoriDerp.toJDA())
+                                                            .asDisabled()
+                                                    } else {
+                                                        next20StickersButton
+                                                            .asDisabled()
+                                                    },
+                                                    if (buttonThatInvokedTheCallback == next25StickersButton) {
+                                                        next25StickersButton
+                                                            .withLabel("Procurando as Próximas Figurinhas...")
+                                                            .withEmoji(Emotes.LoriDerp.toJDA())
+                                                            .asDisabled()
+                                                    } else {
+                                                        next25StickersButton
+                                                            .asDisabled()
                                                     }
                                                 )
 
@@ -412,7 +442,21 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                                 next15StickersButton,
                                                 createNextStickersCallback(next15StickersButton, 15)
                                             )
-                                        } else next15StickersButton.asDisabled()
+                                        } else next15StickersButton.asDisabled(),
+                                        if (cards.size >= 20) {
+                                            loritta.interactivityManager.buttonForUser(
+                                                context.user,
+                                                next20StickersButton,
+                                                createNextStickersCallback(next20StickersButton, 15)
+                                            )
+                                        } else next20StickersButton.asDisabled(),
+                                        if (cards.size >= 25) {
+                                            loritta.interactivityManager.buttonForUser(
+                                                context.user,
+                                                next25StickersButton,
+                                                createNextStickersCallback(next25StickersButton, 15)
+                                            )
+                                        } else next25StickersButton.asDisabled()
                                     )
 
                                     actionRow(
