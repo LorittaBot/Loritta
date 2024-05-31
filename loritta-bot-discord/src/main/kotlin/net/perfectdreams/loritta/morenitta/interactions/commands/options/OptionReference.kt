@@ -150,6 +150,21 @@ class ImageReference(
                 return dataValue
             }
 
+            // It is a user mention!
+            if (dataValue.startsWith("<@") && dataValue.endsWith(">")) {
+                val userIdAsString = dataValue.removePrefix("<@").removeSuffix(">")
+                val userId = userIdAsString.toLongOrNull()
+
+                // If it is a valid long (so, it must be a snowflake...)
+                if (userId != null) {
+                    // And if the user is present in the mentions list...
+                    val user = context.mentions.users.firstOrNull { it.idLong == userId }
+                    if (user != null)
+                        // Then yay! Get the user avatar!!
+                        return user.effectiveAvatarUrl
+                }
+            }
+
             // It is a emote!
             // Discord emotes always starts with "<" and ends with ">"
             if (dataValue.startsWith("<") && dataValue.endsWith(">")) {
