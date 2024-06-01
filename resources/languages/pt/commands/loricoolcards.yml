@@ -40,8 +40,8 @@ album:
   label: "album"
   description: "Ver as páginas do seu álbum de figurinhas"
 
-  yourAlbum: "Seu Álbum de Figurinhas"
-  userAlbum: "Álbum de Figurinhas de {user}"
+  yourAlbum: "Seu Álbum de Figurinhas ({eventName})"
+  userAlbum: "Álbum de Figurinhas de {user} ({eventName})"
   albumPages: "Páginas {pageLeft,number} e {pageRight,number}"
   stickedStickers: "**Figurinhas Coladas:** {totalAlbumCompletionCount,number}/{albumCardsCount,number} figurinhas"
   finishedAlbumStatsYou: "**Você completou o álbum em {date}, tornando-se a {finishedPosition,number}ª pessoa a terminá-lo!**"
