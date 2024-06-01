@@ -660,9 +660,14 @@ class LorittaBot(
 					)
 				}
 
+				val limitedCount = random.nextInt(2, 17)
+				logger.info { "Using $limitedCount limited parallism in Dispatcher.IO for shard shutdown" }
+				
 				measureTime {
-					// Limit the shard saving stuff to 4 jobs in parallel
-					val dispatcher = Dispatchers.IO.limitedParallelism(4)
+					// Limit the shard saving stuff to X jobs in parallel
+					// We are using a random amount to try to figure out which number is the best for this
+					// After we debugged everything then we will use the value correctly
+					val dispatcher = Dispatchers.IO.limitedParallelism(limitedCount)
 
 					val shardJobs = shardManager.shards.map { shard ->
 						GlobalScope.async(dispatcher) {
@@ -776,7 +781,7 @@ class LorittaBot(
 					runBlocking {
 						shardJobs.awaitAll()
 					}
-				}.also { logger.info { "Took $it to persist all shards cache!!" } }
+				}.also { logger.info { "Took $it to persist all shards cache!! - Used $limitedCount limited parallism in Dispatcher.IO for shard shutdown" } }
 			}
 		)
 
