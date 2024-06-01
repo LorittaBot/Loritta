@@ -662,7 +662,7 @@ class LorittaBot(
 
 				val limitedCount = random.nextInt(2, 17)
 				logger.info { "Using $limitedCount limited parallism in Dispatcher.IO for shard shutdown" }
-				
+
 				measureTime {
 					// Limit the shard saving stuff to X jobs in parallel
 					// We are using a random amount to try to figure out which number is the best for this

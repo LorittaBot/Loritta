@@ -118,6 +118,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
             // The stickers will be sticked when the user clicks to stick the sticker
             return@transaction ViewAlbumResult.Success(
+                event[LoriCoolCardsEvents.eventName],
                 Json.decodeFromString(event[LoriCoolCardsEvents.template]),
                 alreadyStickedCards,
                 totalStickers,
@@ -178,9 +179,9 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                         MarkdownUtil.bold(
                             context.i18nContext.get(
                                 if (context.user == userToBeViewed)
-                                    I18N_PREFIX.YourAlbum
+                                    I18N_PREFIX.YourAlbum(result.eventName)
                                 else
-                                    I18N_PREFIX.UserAlbum(userToBeViewed.asMention)
+                                    I18N_PREFIX.UserAlbum(userToBeViewed.asMention, result.eventName)
                             )
                         ),
                         Emotes.LoriLurk
@@ -353,6 +354,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
     sealed class ViewAlbumResult {
         data object AlbumDoesNotExist : ViewAlbumResult()
         class Success(
+            val eventName: String,
             val template: StickerAlbumTemplate,
             val alreadyStickedCards: List<ResultRow>,
             val totalStickers: Long,
