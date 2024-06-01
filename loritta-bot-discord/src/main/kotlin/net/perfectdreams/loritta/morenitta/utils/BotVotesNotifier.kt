@@ -21,40 +21,44 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
     override suspend fun run() {
         val now = Instant.now()
 
-        m.transaction {
+        // We do this in two separate transactions because we don't want to ".await()" within a transaction because that blocks the transaction
+        // and we don't want concurrent serializations to cause the entire transaction to be retried
+        val usersToBeNotifiedData = m.transaction {
             // Get all users that needs to be notified
-            val usersToBeNotifiedData = BotVotesUserAvailableNotifications.select {
+            BotVotesUserAvailableNotifications.select {
                 BotVotesUserAvailableNotifications.notified eq false and (BotVotesUserAvailableNotifications.notifyAt lessEq now)
             }.toList()
+        }
 
-            // Notify them!
-            for (userToBeNotifiedData in usersToBeNotifiedData) {
-                val userId = userToBeNotifiedData[BotVotesUserAvailableNotifications.userId]
+        // Notify them!
+        for (userToBeNotifiedData in usersToBeNotifiedData) {
+            val userId = userToBeNotifiedData[BotVotesUserAvailableNotifications.userId]
 
-                try {
-                    val user = m.lorittaShards.retrieveUserById(userId)
+            try {
+                val user = m.lorittaShards.retrieveUserById(userId)
 
-                    if (user != null) {
-                        logger.info { "Notifying user ${user.idLong} about top.gg vote..." }
-                        user.openPrivateChannel().await()
-                            .sendMessageEmbeds(
-                                EmbedBuilder()
-                                    .setColor(Constants.LORITTA_AQUA)
-                                    .setThumbnail("https://stuff.loritta.website/loritta-happy.gif")
-                                    .setTitle("${m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Title)} ${Emotes.LoriSmile}")
-                                    .setDescription(
-                                        (m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Description(Emotes.LoriLurk.toString(), Emotes.LoriHeart.toString())) + "https://top.gg/bot/${m.config.loritta.discord.applicationId}/vote")
-                                            .joinToString("\n\n")
-                                    )
-                                    .build()
-                            )
-                            .await()
-                    }
-                } catch (e: Exception) {
-                    logger.warn(e) { "Something went wrong while attempting to notify $userId about vote ${userToBeNotifiedData[BotVotesUserAvailableNotifications.id]}!" }
+                if (user != null) {
+                    logger.info { "Notifying user ${user.idLong} about top.gg vote..." }
+                    user.openPrivateChannel().await()
+                        .sendMessageEmbeds(
+                            EmbedBuilder()
+                                .setColor(Constants.LORITTA_AQUA)
+                                .setThumbnail("https://stuff.loritta.website/loritta-happy.gif")
+                                .setTitle("${m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Title)} ${Emotes.LoriSmile}")
+                                .setDescription(
+                                    (m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Description(Emotes.LoriLurk.toString(), Emotes.LoriHeart.toString())) + "https://top.gg/bot/${m.config.loritta.discord.applicationId}/vote")
+                                        .joinToString("\n\n")
+                                )
+                                .build()
+                        )
+                        .await()
                 }
+            } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong while attempting to notify $userId about vote ${userToBeNotifiedData[BotVotesUserAvailableNotifications.id]}!" }
             }
+        }
 
+        m.transaction {
             BotVotesUserAvailableNotifications.update({ BotVotesUserAvailableNotifications.id inList usersToBeNotifiedData.map { it[BotVotesUserAvailableNotifications.id] }}) {
                 it[BotVotesUserAvailableNotifications.notified] = true
             }
