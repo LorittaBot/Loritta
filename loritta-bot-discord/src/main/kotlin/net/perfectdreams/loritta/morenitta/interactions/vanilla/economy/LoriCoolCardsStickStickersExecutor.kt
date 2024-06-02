@@ -447,14 +447,14 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                             loritta.interactivityManager.buttonForUser(
                                                 context.user,
                                                 next20StickersButton,
-                                                createNextStickersCallback(next20StickersButton, 15)
+                                                createNextStickersCallback(next20StickersButton, 20)
                                             )
                                         } else next20StickersButton.asDisabled(),
                                         if (cards.size >= 25) {
                                             loritta.interactivityManager.buttonForUser(
                                                 context.user,
                                                 next25StickersButton,
-                                                createNextStickersCallback(next25StickersButton, 15)
+                                                createNextStickersCallback(next25StickersButton, 25)
                                             )
                                         } else next25StickersButton.asDisabled()
                                     )
