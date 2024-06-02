@@ -75,7 +75,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
             val stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYetIds = LoriCoolCardsUserOwnedCards
                 .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
                 .select {
-                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.card notInList stickersThatYouHaveStickedIds)
+                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.card inList stickersThatYouHaveStickedIds)
                 }
                 .groupBy(LoriCoolCardsUserOwnedCards.card)
                 .toList()
@@ -85,7 +85,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                 .innerJoin(LoriCoolCardsEventCards)
                 .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
                 .select {
-                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userToBeComparedTo.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.card notInList stickersThatYourFriendHasStickedIds)
+                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userToBeComparedTo.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.card inList stickersThatYourFriendHasStickedIds)
                 }
                 .groupBy(LoriCoolCardsUserOwnedCards.card)
                 .toList()
