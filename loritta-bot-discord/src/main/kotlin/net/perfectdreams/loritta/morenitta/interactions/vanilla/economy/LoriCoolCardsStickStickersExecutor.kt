@@ -73,7 +73,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
             // Now we get the cards that aren't already sticked but can be sticked
             // We will also inner join because we need that info when generating the album
             val cardsThatCanBeSticked = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                LoriCoolCardsUserOwnedCards.sticked eq false and (LoriCoolCardsUserOwnedCards.card notInList alreadyStickedCardIds) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                LoriCoolCardsUserOwnedCards.sticked eq false and (LoriCoolCardsUserOwnedCards.card notInList alreadyStickedCardIds) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
             }.orderBy(LoriCoolCardsEventCards.fancyCardId, SortOrder.ASC) // Not really needed but this keeps a consistent order
                 .toList()
 
