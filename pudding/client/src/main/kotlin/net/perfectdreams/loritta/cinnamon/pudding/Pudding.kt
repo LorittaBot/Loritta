@@ -516,7 +516,7 @@ class Pudding(
         return createTableSuffixed + indicesDDL + alter
     }
 
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T) = net.perfectdreams.exposedpowerutils.sql.transaction(
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T) = suspendableNestableTransaction(
         dispatcher,
         database,
         repetitions,
