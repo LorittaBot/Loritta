@@ -31,9 +31,7 @@ suspend fun <T> suspendableNestableTransaction(
     database: Database?,
     repetitions: Int = 5,
     transactionIsolation: Int? = null,
-    beforeNewTransactionCallBlock: suspend (suspend () -> (T)) -> (T) = {
-        it.invoke()
-    },
+    beforeNewTransactionCallBlock: suspend (suspend () -> (T)) -> (T), // We don't provide a default lambda because for some reason that's causing issues with the K2 compiler
     statement: suspend Transaction.() -> T
 ): T {
     // Handle nested transactions
