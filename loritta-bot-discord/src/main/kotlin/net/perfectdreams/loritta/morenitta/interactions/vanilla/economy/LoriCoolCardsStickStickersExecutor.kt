@@ -260,7 +260,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                     ProfileDesignsPayments.insert {
                                         it[ProfileDesignsPayments.userId] = context.user.idLong
                                         it[cost] = 0
-                                        it[profile] = "loriCoolCardsStickerReceivedCommon"
+                                        it[profile] = profileDesignInternalNameToBeGiven
                                         it[boughtAt] = System.currentTimeMillis()
                                     }
                                 }
