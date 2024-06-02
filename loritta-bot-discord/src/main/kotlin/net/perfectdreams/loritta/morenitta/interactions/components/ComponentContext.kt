@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedHook
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedMentions
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
@@ -35,6 +36,18 @@ class ComponentContext(
     val event: ComponentInteraction
 ) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList(), emptyList(), emptyList(), emptyList()), event) {
     suspend fun deferEdit(): InteractionHook = event.deferEdit().await()
+
+    /**
+     * Edits the message that invoked the action
+     */
+    suspend inline fun editMessage(isReplace: Boolean = false, action: InlineMessage<*>.() -> (Unit)) = editMessage(isReplace, MessageEditBuilder { apply(action) }.build())
+
+    /**
+     * Edits the message that invoked the action
+     */
+    suspend inline fun editMessage(isReplace: Boolean = false, messageEditData: MessageEditData): UnleashedHook {
+        return UnleashedHook.InteractionHook(event.editMessage(messageEditData).apply { this.isReplace = isReplace }.await())
+    }
 
     /**
      * Defers the edit with [deferEdit] and edits the message with the result of the [action]

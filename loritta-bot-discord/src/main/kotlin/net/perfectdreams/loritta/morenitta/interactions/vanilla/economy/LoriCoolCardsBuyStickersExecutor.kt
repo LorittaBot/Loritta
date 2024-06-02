@@ -304,8 +304,6 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                                             this.loriEmoji = Emotes.LoriReading
                                                         }
                                                     ) {
-                                                        // TODO: Change this to edit the original message to disable the "Ver resumo" button instead
-                                                        val hook = it.deferEdit()
                                                         val groupedCards = result.cards.groupBy { it.card[LoriCoolCardsEventCards.id] }
                                                             .toList()
                                                             .sortedByDescending { it.second.size }
@@ -322,71 +320,66 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                                             Emotes.LoriCard
                                                         )
 
-                                                        // TODO: It would be cool if the embed had an image showing all stickers received, maybe holding it in a hand? maybe on a desk?
-                                                        //  Maybe on a desk with the album cover near it and a ripped package!
-                                                        hook.editOriginal(
-                                                            MessageEdit {
-                                                                embed {
-                                                                    title = "${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}"
-                                                                    color = LorittaColors.LorittaAqua.rgb
+                                                        // Don't defer, let's edit the original message directly because we don't need to access the database here
+                                                        it.editMessage(
+                                                            isReplace = false,
+                                                        ) {
+                                                            embed {
+                                                                title = "${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}"
+                                                                color = LorittaColors.LorittaAqua.rgb
 
-                                                                    val description = buildString {
-                                                                        groupedCards.forEach {
-                                                                            val cardReference = it.second.first().card
-                                                                            append("* ${it.second.size}x ${cardReference[LoriCoolCardsEventCards.rarity].emoji} ${cardReference[LoriCoolCardsEventCards.fancyCardId]} - ${cardReference[LoriCoolCardsEventCards.title]}")
-                                                                            if (!it.second.any { it.haveWeAlreadySeenThisCardBefore })
-                                                                                append(" **[NOVO!]**")
-                                                                            appendLine()
-                                                                        }
-
-                                                                        appendLine("**Progresso do Álbum:** ${currentCard.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${currentCard.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
-                                                                        appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
+                                                                val description = buildString {
+                                                                    groupedCards.forEach {
+                                                                        val cardReference = it.second.first().card
+                                                                        append("* ${it.second.size}x ${cardReference[LoriCoolCardsEventCards.rarity].emoji} ${cardReference[LoriCoolCardsEventCards.fancyCardId]} - ${cardReference[LoriCoolCardsEventCards.title]}")
+                                                                        if (!it.second.any { it.haveWeAlreadySeenThisCardBefore })
+                                                                            append(" **[NOVO!]**")
+                                                                        appendLine()
                                                                     }
 
-                                                                    this.description = description
+                                                                    appendLine("**Progresso do Álbum:** ${currentCard.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${currentCard.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
+                                                                    appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
                                                                 }
 
-                                                                if (result.alreadyStickedCardsCount != currentCard.totalAlbumCompletionCount) {
-                                                                    // If the number is different, then it means that we have new stickers to be sticked!
-                                                                    actionRow(
-                                                                        loritta.interactivityManager
-                                                                            .buttonForUser(
-                                                                                context.user,
-                                                                                stickStickersButton
-                                                                            ) {
-                                                                                loriCoolCardsCommand.stickStickers.stickStickers(it)
-                                                                            },
-                                                                        loritta.interactivityManager
-                                                                            .buttonForUser(
-                                                                                context.user,
-                                                                                buyMoreStickerPacksButton
-                                                                            ) {
-                                                                                it.deferChannelMessage(false)
-
-                                                                                buyStickers(it)
-                                                                            }
-                                                                    )
-                                                                } else {
-                                                                    // If not, just disable the button
-                                                                    actionRow(
-                                                                        stickStickersButton.asDisabled(),
-                                                                        loritta.interactivityManager
-                                                                            .buttonForUser(
-                                                                                context.user,
-                                                                                buyMoreStickerPacksButton
-                                                                            ) {
-                                                                                it.deferChannelMessage(false)
-
-                                                                                buyStickers(it)
-                                                                            }
-                                                                    )
-                                                                }
+                                                                this.description = description
                                                             }
-                                                        )
-                                                            .apply {
-                                                                this.isReplace = true
+
+                                                            if (result.alreadyStickedCardsCount != currentCard.totalAlbumCompletionCount) {
+                                                                // If the number is different, then it means that we have new stickers to be sticked!
+                                                                actionRow(
+                                                                    loritta.interactivityManager
+                                                                        .buttonForUser(
+                                                                            context.user,
+                                                                            stickStickersButton
+                                                                        ) {
+                                                                            loriCoolCardsCommand.stickStickers.stickStickers(it)
+                                                                        },
+                                                                    loritta.interactivityManager
+                                                                        .buttonForUser(
+                                                                            context.user,
+                                                                            buyMoreStickerPacksButton
+                                                                        ) {
+                                                                            it.deferChannelMessage(false)
+
+                                                                            buyStickers(it)
+                                                                        }
+                                                                )
+                                                            } else {
+                                                                // If not, just disable the button
+                                                                actionRow(
+                                                                    stickStickersButton.asDisabled(),
+                                                                    loritta.interactivityManager
+                                                                        .buttonForUser(
+                                                                            context.user,
+                                                                            buyMoreStickerPacksButton
+                                                                        ) {
+                                                                            it.deferChannelMessage(false)
+
+                                                                            buyStickers(it)
+                                                                        }
+                                                                )
                                                             }
-                                                            .await()
+                                                        }
                                                     }
                                                 )
                                             }
