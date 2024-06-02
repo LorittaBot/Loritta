@@ -131,7 +131,7 @@ class Pudding(
             hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
             hikariConfig.metricsTrackerFactory = PrometheusMetricsTrackerFactory()
 
-            hikariConfig.maximumPoolSize = 8
+            hikariConfig.maximumPoolSize = 16
             hikariConfig.poolName = "PuddingPool"
 
             hikariConfig.apply(builder)
