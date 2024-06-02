@@ -2,39 +2,14 @@ package net.perfectdreams.loritta.cinnamon.pudding
 
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.insert
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 private val logger = KotlinLogging.logger {}
-
-suspend fun main() {
-    val pudding = Pudding.createPostgreSQLPudding(
-        "127.0.0.1",
-        "cinnamon",
-        "postgres",
-        "postgres"
-    )
-
-    pudding.transaction {
-        println("Outer transaction: $this")
-
-        println("repeat me!")
-
-        pudding.transaction {
-            println("Inner transaction: $this")
-        }
-
-        Profiles.insert {
-
-        }
-    }
-}
 
 /**
  * A suspendable transaction block that reuses transactions if nested.
