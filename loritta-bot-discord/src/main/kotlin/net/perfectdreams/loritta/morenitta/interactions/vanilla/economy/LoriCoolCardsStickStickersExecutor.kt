@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
@@ -34,10 +35,12 @@ import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsFinishedAlbumSo
 import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.time.Instant
+import kotlin.time.measureTimedValue
 
 class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Stick
+        private val logger = KotlinLogging.logger {}
     }
 
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
@@ -51,49 +54,55 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
 
         val now = Instant.now()
 
-        val result = loritta.transaction {
-            val event = LoriCoolCardsEvents.select {
-                LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-            }.firstOrNull() ?: return@transaction StickStickersResult.EventUnavailable
+        logger.info { "User ${context.user.idLong} wants to stick stickers (initial)! Let's get the info about the event and other cool stuff..." }
 
-            val totalEventCards = LoriCoolCardsEventCards.select {
-                LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
-            }.count()
+        val (result, time) = measureTimedValue {
+            loritta.transaction {
+                val event = LoriCoolCardsEvents.select {
+                    LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                }.firstOrNull() ?: return@transaction StickStickersResult.EventUnavailable
 
-            // First we need to check all cards that we have already sticked
-            // We will inner join because we need that info when generating the album
-            val alreadyStickedCards = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-            }.toList()
+                val totalEventCards = LoriCoolCardsEventCards.select {
+                    LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
+                }.count()
 
-            val alreadyStickedCardIds = alreadyStickedCards.map {
-                it[LoriCoolCardsUserOwnedCards.card].value
+                // First we need to check all cards that we have already sticked
+                // We will inner join because we need that info when generating the album
+                val alreadyStickedCards = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                    LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                }.toList()
+
+                val alreadyStickedCardIds = alreadyStickedCards.map {
+                    it[LoriCoolCardsUserOwnedCards.card].value
+                }
+
+                // Now we get the cards that aren't already sticked but can be sticked
+                // We will also inner join because we need that info when generating the album
+                val cardsThatCanBeSticked = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                    LoriCoolCardsUserOwnedCards.sticked eq false and (LoriCoolCardsUserOwnedCards.card notInList alreadyStickedCardIds) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
+                }.orderBy(LoriCoolCardsEventCards.fancyCardId, SortOrder.ASC) // Not really needed but this keeps a consistent order
+                    .toList()
+
+                if (cardsThatCanBeSticked.isEmpty())
+                    return@transaction StickStickersResult.NoCardsToBeSticked
+
+                // And finally here's the thing, we don't want any duplicates!!!
+                val cardIdsAlreadyInTheList = mutableListOf<Long>()
+                val cardsThatCanBeStickedUnique = mutableListOf<ResultRow>()
+                for (card in cardsThatCanBeSticked) {
+                    val cardId = card[LoriCoolCardsUserOwnedCards.card].value
+                    if (cardId in cardIdsAlreadyInTheList)
+                        continue
+                    cardIdsAlreadyInTheList.add(cardId)
+                    cardsThatCanBeStickedUnique.add(card)
+                }
+
+                // The stickers will be sticked when the user clicks to stick the sticker
+                return@transaction StickStickersResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]), totalEventCards, cardsThatCanBeStickedUnique, alreadyStickedCards)
             }
-
-            // Now we get the cards that aren't already sticked but can be sticked
-            // We will also inner join because we need that info when generating the album
-            val cardsThatCanBeSticked = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                LoriCoolCardsUserOwnedCards.sticked eq false and (LoriCoolCardsUserOwnedCards.card notInList alreadyStickedCardIds) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
-            }.orderBy(LoriCoolCardsEventCards.fancyCardId, SortOrder.ASC) // Not really needed but this keeps a consistent order
-                .toList()
-
-            if (cardsThatCanBeSticked.isEmpty())
-                return@transaction StickStickersResult.NoCardsToBeSticked
-
-            // And finally here's the thing, we don't want any duplicates!!!
-            val cardIdsAlreadyInTheList = mutableListOf<Long>()
-            val cardsThatCanBeStickedUnique = mutableListOf<ResultRow>()
-            for (card in cardsThatCanBeSticked) {
-                val cardId = card[LoriCoolCardsUserOwnedCards.card].value
-                if (cardId in cardIdsAlreadyInTheList)
-                    continue
-                cardIdsAlreadyInTheList.add(cardId)
-                cardsThatCanBeStickedUnique.add(card)
-            }
-
-            // The stickers will be sticked when the user clicks to stick the sticker
-            return@transaction StickStickersResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]), totalEventCards, cardsThatCanBeStickedUnique, alreadyStickedCards)
         }
+
+        logger.info { "Got user ${context.user.idLong} stick stickers (initial)'s information! - Took $time" }
 
         when (result) {
             StickStickersResult.EventUnavailable -> {
@@ -137,13 +146,6 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                         return
                     }
 
-                    // Generate bulk sticker being sticked in album GIF
-                    val albumPasteGif = loritta.loriCoolCardsManager.generateStickerBeingStickedInAlbumGIF(
-                        template,
-                        alreadyStickedCards,
-                        cardsToBeSticked
-                    )
-
                     val buyStickerPackButton = UnleashedButton.of(
                         ButtonStyle.SECONDARY,
                         "Comprar Pacote de Figurinhas",
@@ -160,106 +162,112 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                     }
 
                     // Stick the sticker
-                    val stickResult = loritta.transaction {
-                        // This is hard because we need to check if a sticker with the same card ID has been sticked (the user may have initiated the stickering in another command)
-                        val eventId = cardsToBeSticked.first()[LoriCoolCardsUserOwnedCards.event]
+                    logger.info { "User ${context.user.idLong} is now sticking stickers! Getting information from the database..." }
 
-                        val alreadyStickedCards = LoriCoolCardsUserOwnedCards.select {
-                            LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq eventId) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                        }.toList()
+                    val (stickResult, time) = measureTimedValue {
+                        loritta.transaction {
+                            // This is hard because we need to check if a sticker with the same card ID has been sticked (the user may have initiated the stickering in another command)
+                            val eventId = cardsToBeSticked.first()[LoriCoolCardsUserOwnedCards.event]
 
-                        val alreadyStickedCardIds = alreadyStickedCards.map {
-                            it[LoriCoolCardsUserOwnedCards.card].value
-                        }
+                            val alreadyStickedCards = LoriCoolCardsUserOwnedCards.select {
+                                LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq eventId) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                            }.toList()
 
-                        // Bail out!
-                        for (cardToBeSticked in cardsToBeSticked) {
-                            if (alreadyStickedCardIds.contains(cardToBeSticked[LoriCoolCardsUserOwnedCards.card].value))
-                                return@transaction StickedStickerResult.StickerAlreadySticked
-                        }
-
-                        val cardsToBeStickedIds = cardsToBeSticked.map { it[LoriCoolCardsUserOwnedCards.id] }
-
-                        LoriCoolCardsUserOwnedCards.update({
-                            LoriCoolCardsUserOwnedCards.id inList cardsToBeStickedIds and (LoriCoolCardsUserOwnedCards.sticked eq false)
-                        }) {
-                            it[LoriCoolCardsUserOwnedCards.sticked] = true
-                            it[LoriCoolCardsUserOwnedCards.stickedAt] = Instant.now()
-                        }
-
-                        // Check if we have already sticked all stickers of this album
-                        // We could get the total cards amount from the result, but what if we add new cards after the fact?
-                        // (Probably won't ever happen, but still...)
-                        val totalEventCards = LoriCoolCardsEventCards.select {
-                            LoriCoolCardsEventCards.event eq eventId
-                        }.count()
-
-                        // "Plus cardsToBeSticked size" because we have sticked a new sticker (but we did the query before updating)
-                        val alreadyStickedCardIdsCountPlusOne = alreadyStickedCardIds.size + cardsToBeSticked.size
-
-                        val hasStickedAllAlbumCards = alreadyStickedCardIdsCountPlusOne == totalEventCards.toInt()
-
-                        // TODO: If hasStickedAllAlbumCards = true, give the rewards!
-                        if (hasStickedAllAlbumCards) {
-                            val completionId = LoriCoolCardsFinishedAlbumUsers.insertAndGetId {
-                                it[LoriCoolCardsFinishedAlbumUsers.user] = context.user.idLong
-                                it[LoriCoolCardsFinishedAlbumUsers.event] = eventId
-                                it[LoriCoolCardsFinishedAlbumUsers.finishedAt] = Instant.now()
+                            val alreadyStickedCardIds = alreadyStickedCards.map {
+                                it[LoriCoolCardsUserOwnedCards.card].value
                             }
 
-                            val howManyCompletionsWeAreInRightNow = LoriCoolCardsFinishedAlbumUsers.select {
-                                LoriCoolCardsFinishedAlbumUsers.user eq context.user.idLong
+                            // Bail out!
+                            for (cardToBeSticked in cardsToBeSticked) {
+                                if (alreadyStickedCardIds.contains(cardToBeSticked[LoriCoolCardsUserOwnedCards.card].value))
+                                    return@transaction StickedStickerResult.StickerAlreadySticked
+                            }
+
+                            val cardsToBeStickedIds = cardsToBeSticked.map { it[LoriCoolCardsUserOwnedCards.id] }
+
+                            LoriCoolCardsUserOwnedCards.update({
+                                LoriCoolCardsUserOwnedCards.id inList cardsToBeStickedIds and (LoriCoolCardsUserOwnedCards.sticked eq false)
+                            }) {
+                                it[LoriCoolCardsUserOwnedCards.sticked] = true
+                                it[LoriCoolCardsUserOwnedCards.stickedAt] = Instant.now()
+                            }
+
+                            // Check if we have already sticked all stickers of this album
+                            // We could get the total cards amount from the result, but what if we add new cards after the fact?
+                            // (Probably won't ever happen, but still...)
+                            val totalEventCards = LoriCoolCardsEventCards.select {
+                                LoriCoolCardsEventCards.event eq eventId
                             }.count()
 
-                            // Process rewards
-                            Profiles.update({ Profiles.id eq context.user.idLong }) {
-                                with(SqlExpressionBuilder) {
-                                    it.update(Profiles.money, Profiles.money + result.template.sonhosReward)
-                                }
-                            }
+                            // "Plus cardsToBeSticked size" because we have sticked a new sticker (but we did the query before updating)
+                            val alreadyStickedCardIdsCountPlusOne = alreadyStickedCardIds.size + cardsToBeSticked.size
 
-                            // Cinnamon transactions log
-                            SimpleSonhosTransactionsLogUtils.insert(
-                                context.user.idLong,
-                                now,
-                                TransactionType.LORI_COOL_CARDS,
-                                result.template.sonhosReward,
-                                StoredLoriCoolCardsFinishedAlbumSonhosTransaction(
-                                    eventId.value,
-                                    completionId.value
+                            val hasStickedAllAlbumCards = alreadyStickedCardIdsCountPlusOne == totalEventCards.toInt()
+
+                            // TODO: If hasStickedAllAlbumCards = true, give the rewards!
+                            if (hasStickedAllAlbumCards) {
+                                val completionId = LoriCoolCardsFinishedAlbumUsers.insertAndGetId {
+                                    it[LoriCoolCardsFinishedAlbumUsers.user] = context.user.idLong
+                                    it[LoriCoolCardsFinishedAlbumUsers.event] = eventId
+                                    it[LoriCoolCardsFinishedAlbumUsers.finishedAt] = Instant.now()
+                                }
+
+                                val howManyCompletionsWeAreInRightNow = LoriCoolCardsFinishedAlbumUsers.select {
+                                    LoriCoolCardsFinishedAlbumUsers.user eq context.user.idLong
+                                }.count()
+
+                                // Process rewards
+                                Profiles.update({ Profiles.id eq context.user.idLong }) {
+                                    with(SqlExpressionBuilder) {
+                                        it.update(Profiles.money, Profiles.money + result.template.sonhosReward)
+                                    }
+                                }
+
+                                // Cinnamon transactions log
+                                SimpleSonhosTransactionsLogUtils.insert(
+                                    context.user.idLong,
+                                    now,
+                                    TransactionType.LORI_COOL_CARDS,
+                                    result.template.sonhosReward,
+                                    StoredLoriCoolCardsFinishedAlbumSonhosTransaction(
+                                        eventId.value,
+                                        completionId.value
+                                    )
                                 )
-                            )
 
-                            // Give the sticker profile
-                            val profileDesignInternalNamesToBeGiven = mapOf(
-                                1L to "loriCoolCardsStickerReceivedCommon",
-                                2L to "loriCoolCardsStickerReceivedUncommon",
-                                3L to "loriCoolCardsStickerReceivedRare",
-                                4L to "loriCoolCardsStickerReceivedEpic",
-                                5L to "loriCoolCardsStickerReceivedLegendary",
-                                6L to "loriCoolCardsStickerReceivedMythic",
-                                7L to "loriCoolCardsStickerReceivedPlainCommon",
-                                8L to "loriCoolCardsStickerReceivedPlainUncommon",
-                                9L to "loriCoolCardsStickerReceivedPlainRare",
-                                10L to "loriCoolCardsStickerReceivedPlainEpic",
-                                11L to "loriCoolCardsStickerReceivedPlainLegendary",
-                                12L to "loriCoolCardsStickerReceivedPlainMythic"
-                            )
+                                // Give the sticker profile
+                                val profileDesignInternalNamesToBeGiven = mapOf(
+                                    1L to "loriCoolCardsStickerReceivedCommon",
+                                    2L to "loriCoolCardsStickerReceivedUncommon",
+                                    3L to "loriCoolCardsStickerReceivedRare",
+                                    4L to "loriCoolCardsStickerReceivedEpic",
+                                    5L to "loriCoolCardsStickerReceivedLegendary",
+                                    6L to "loriCoolCardsStickerReceivedMythic",
+                                    7L to "loriCoolCardsStickerReceivedPlainCommon",
+                                    8L to "loriCoolCardsStickerReceivedPlainUncommon",
+                                    9L to "loriCoolCardsStickerReceivedPlainRare",
+                                    10L to "loriCoolCardsStickerReceivedPlainEpic",
+                                    11L to "loriCoolCardsStickerReceivedPlainLegendary",
+                                    12L to "loriCoolCardsStickerReceivedPlainMythic"
+                                )
 
-                            val profileDesignInternalNameToBeGiven = profileDesignInternalNamesToBeGiven[howManyCompletionsWeAreInRightNow]
+                                val profileDesignInternalNameToBeGiven = profileDesignInternalNamesToBeGiven[howManyCompletionsWeAreInRightNow]
 
-                            if (profileDesignInternalNameToBeGiven != null) {
-                                ProfileDesignsPayments.insert {
-                                    it[ProfileDesignsPayments.userId] = context.user.idLong
-                                    it[cost] = 0
-                                    it[profile] = "loriCoolCardsStickerReceivedCommon"
-                                    it[boughtAt] = System.currentTimeMillis()
+                                if (profileDesignInternalNameToBeGiven != null) {
+                                    ProfileDesignsPayments.insert {
+                                        it[ProfileDesignsPayments.userId] = context.user.idLong
+                                        it[cost] = 0
+                                        it[profile] = "loriCoolCardsStickerReceivedCommon"
+                                        it[boughtAt] = System.currentTimeMillis()
+                                    }
                                 }
                             }
-                        }
 
-                        return@transaction StickedStickerResult.Success(hasStickedAllAlbumCards)
+                            return@transaction StickedStickerResult.Success(hasStickedAllAlbumCards)
+                        }
                     }
+
+                    logger.info { "User ${context.user.idLong} sticked stickers! - Took $time" }
 
                     when (stickResult) {
                         StickedStickerResult.StickerAlreadySticked -> {
@@ -271,6 +279,19 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                             return
                         }
                         is StickedStickerResult.Success -> {
+                            // Generate bulk sticker being sticked in album GIF
+                            logger.info { "Generating GIF for user ${context.user.idLong}'s sticking stickers... Stickers to be sticked: ${cardsToBeSticked.size}" }
+
+                            val (albumPasteGif, time) = measureTimedValue {
+                                loritta.loriCoolCardsManager.generateStickerBeingStickedInAlbumGIF(
+                                    template,
+                                    alreadyStickedCards,
+                                    cardsToBeSticked
+                                )
+                            }
+
+                            logger.info { "GIF for user ${context.user.idLong}'s sticking stickers was successfully generated! Stickers to be sticked: ${cardsToBeSticked.size} - Took $time" }
+
                             alreadyStickedCards.addAll(cardsToBeSticked)
 
                             target.invoke {

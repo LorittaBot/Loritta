@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
@@ -28,10 +29,12 @@ import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import kotlin.random.Random
+import kotlin.time.measureTimedValue
 
 class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Buy
+        private val logger = KotlinLogging.logger {}
     }
 
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
@@ -47,15 +50,21 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
         // We expect that this is already deferred by the caller
         val now = Instant.now()
 
-        // Load the current active event
-        val result = loritta.transaction {
-            // First we will get the active cards event to get the album template
-            val event = LoriCoolCardsEvents.select {
-                LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-            }.firstOrNull() ?: return@transaction BuyStickersPreResult.EventUnavailable
+        logger.info { "User ${context.user.idLong} is *starting* to buy a booster pack! Let's get the event info..." }
 
-            BuyStickersPreResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]))
+        // Load the current active event
+        val (result, time) = measureTimedValue {
+            loritta.transaction {
+                // First we will get the active cards event to get the album template
+                val event = LoriCoolCardsEvents.select {
+                    LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                }.firstOrNull() ?: return@transaction BuyStickersPreResult.EventUnavailable
+
+                BuyStickersPreResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]))
+            }
         }
+
+        logger.info { "Got event info information for ${context.user.idLong}'s *starting* to buy a booster pack thingy! - Took $time" }
 
         when (result) {
             BuyStickersPreResult.EventUnavailable -> {
@@ -93,131 +102,137 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                 )
                             }
 
-                            val result = loritta.transaction {
-                                // First we will get the active cards event
-                                // OPTIMIZATION: Only get the event ID, we don't need the rest of the things (like the template data) anyway
-                                val event = LoriCoolCardsEvents.slice(LoriCoolCardsEvents.id).select {
-                                    LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-                                }.firstOrNull() ?: return@transaction BuyStickersResult.EventUnavailable
+                            logger.info { "User ${context.user.idLong} is buying a booster pack! Giving stickers and stuff..." }
 
-                                // Check if we have enough money to buy the booster pack
-                                val userProfile = loritta.getOrCreateLorittaProfile(context.user.idLong)
-                                if (result.template.sonhosPrice > userProfile.money)
-                                    return@transaction BuyStickersResult.NotEnoughSonhos(userProfile.money, result.template.sonhosPrice)
+                            val (result, time) = measureTimedValue {
+                                loritta.transaction {
+                                    // First we will get the active cards event
+                                    // OPTIMIZATION: Only get the event ID, we don't need the rest of the things (like the template data) anyway
+                                    val event = LoriCoolCardsEvents.slice(LoriCoolCardsEvents.id).select {
+                                        LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                                    }.firstOrNull() ?: return@transaction BuyStickersResult.EventUnavailable
 
-                                val boosterPackId = LoriCoolCardsUserBoughtBoosterPacks.insertAndGetId {
-                                    it[LoriCoolCardsUserBoughtBoosterPacks.user] = context.user.idLong
-                                    it[LoriCoolCardsUserBoughtBoosterPacks.event] = event[LoriCoolCardsEvents.id]
-                                    it[LoriCoolCardsUserBoughtBoosterPacks.boughtAt] = Instant.now()
-                                }
+                                    // Check if we have enough money to buy the booster pack
+                                    val userProfile = loritta.getOrCreateLorittaProfile(context.user.idLong)
+                                    if (result.template.sonhosPrice > userProfile.money)
+                                        return@transaction BuyStickersResult.NotEnoughSonhos(userProfile.money, result.template.sonhosPrice)
 
-                                Profiles.update({ Profiles.id eq context.user.idLong }) {
-                                    with(SqlExpressionBuilder) {
-                                        it.update(Profiles.money, Profiles.money - result.template.sonhosPrice)
-                                    }
-                                }
-
-                                // Cinnamon transactions log
-                                SimpleSonhosTransactionsLogUtils.insert(
-                                    context.user.idLong,
-                                    now,
-                                    TransactionType.LORI_COOL_CARDS,
-                                    result.template.sonhosPrice,
-                                    StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction(
-                                        event[LoriCoolCardsEvents.id].value,
-                                        boosterPackId.value
-                                    )
-                                )
-
-                                // This is hard actually, because we need to calculate the chance for each rarity
-                                // So we will select everything (ew) and then randomize from there
-                                val cards = LoriCoolCardsEventCards.select {
-                                    LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
-                                }.toList()
-
-                                // val cardsGroupedByRarity = cards.groupBy { it[LoriCoolCardsEventCards.rarity] }
-                                //     .filter { it.value.isNotEmpty() } // Filter out rarities that do not have any cards
-
-                                // Now we need to calculate each probability
-                                val stickerIdsWithWeights = cards.associate {
-                                    it[LoriCoolCardsEventCards.id].value to result.template.stickerProbabilityWeights[it[LoriCoolCardsEventCards.rarity]]!!
-                                }
-
-                                val selectedStickersIds = weightedRandomSelection(stickerIdsWithWeights, result.template.stickersInPack)
-                                // We use "map" instead of filter because we WANT duplicated stickers
-                                val selectedCards = selectedStickersIds.map { stickerId -> cards.first { it[LoriCoolCardsEventCards.id].value == stickerId } }
-                                val selectedCardsWithMetadata = mutableListOf<BuyStickersResult.Success.CardResult>()
-
-                                // TODO: This should consider stickers that are already sticked in the album
-                                // We also need to calculate how many cards the user had before starting
-                                val cardDistinctField = LoriCoolCardsUserOwnedCards.card.countDistinct()
-                                val unmodifiableCountBeforeAddingCards = LoriCoolCardsUserOwnedCards.slice(cardDistinctField)
-                                    .select {
-                                        LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
-                                    }.first()[cardDistinctField]
-
-                                // Now that we selected the cards, we will mark them as seen + owned
-                                // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
-                                val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers = LoriCoolCardsSeenCards.slice(LoriCoolCardsSeenCards.card).select {
-                                    LoriCoolCardsSeenCards.card inList selectedStickersIds and (LoriCoolCardsSeenCards.user eq context.user.idLong)
-                                }.map { it[LoriCoolCardsSeenCards.card] }
-
-                                // OPTIMIZATION: Don't get each sticker count in the loop, get all of them at once
-                                val stickerCount = LoriCoolCardsUserOwnedCards.card.count()
-                                val howManyStickersOfTheseStickersCardIdWeHave = LoriCoolCardsUserOwnedCards.slice(LoriCoolCardsUserOwnedCards.card, stickerCount).select {
-                                    LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.card inList selectedStickersIds)
-                                }.groupBy(LoriCoolCardsUserOwnedCards.card)
-                                    .associate { it[LoriCoolCardsUserOwnedCards.card].value to it[stickerCount] }
-                                    .toMutableMap()
-
-                                for (card in selectedCards) {
-                                    // Have we already seen this card before?
-                                    val haveWeAlreadySeenThisCardBefore = card[LoriCoolCardsEventCards.id] in stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers
-
-                                    LoriCoolCardsUserOwnedCards.insert {
-                                        it[LoriCoolCardsUserOwnedCards.card] = card[LoriCoolCardsEventCards.id]
-                                        it[LoriCoolCardsUserOwnedCards.user] = context.user.idLong
-                                        it[LoriCoolCardsUserOwnedCards.event] = event[LoriCoolCardsEvents.id]
-                                        it[LoriCoolCardsUserOwnedCards.receivedAt] = now
-                                        it[LoriCoolCardsUserOwnedCards.sticked] = false
-                                        it[LoriCoolCardsUserOwnedCards.boosterPack] = boosterPackId
+                                    val boosterPackId = LoriCoolCardsUserBoughtBoosterPacks.insertAndGetId {
+                                        it[LoriCoolCardsUserBoughtBoosterPacks.user] = context.user.idLong
+                                        it[LoriCoolCardsUserBoughtBoosterPacks.event] = event[LoriCoolCardsEvents.id]
+                                        it[LoriCoolCardsUserBoughtBoosterPacks.boughtAt] = Instant.now()
                                     }
 
-                                    // "Seen cards" just mean that the card won't be unknown (???) when the user looks it up, even if they give the card away
-                                    if (!haveWeAlreadySeenThisCardBefore) {
-                                        LoriCoolCardsSeenCards.insert {
-                                            it[LoriCoolCardsSeenCards.card] = card[LoriCoolCardsEventCards.id]
-                                            it[LoriCoolCardsSeenCards.user] = context.user.idLong
-                                            it[LoriCoolCardsSeenCards.seenAt] = now
+                                    Profiles.update({ Profiles.id eq context.user.idLong }) {
+                                        with(SqlExpressionBuilder) {
+                                            it.update(Profiles.money, Profiles.money - result.template.sonhosPrice)
                                         }
                                     }
 
-                                    // Count how many cards of this specific type we have
-                                    val howManyCardsOfThisCardIdWeHave = (howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] ?: 0) + 1 // If not present, then it means we had 0 stickers (+1, because now we have one of them (yay))
-                                    howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] = howManyCardsOfThisCardIdWeHave // Update the map (required because there may be duplicate stickers)
+                                    // Cinnamon transactions log
+                                    SimpleSonhosTransactionsLogUtils.insert(
+                                        context.user.idLong,
+                                        now,
+                                        TransactionType.LORI_COOL_CARDS,
+                                        result.template.sonhosPrice,
+                                        StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction(
+                                            event[LoriCoolCardsEvents.id].value,
+                                            boosterPackId.value
+                                        )
+                                    )
 
-                                    // We also need to calculate how many cards the user now has for each "step" of the journey
-                                    val unmodifiableCount = LoriCoolCardsUserOwnedCards.slice(cardDistinctField)
+                                    // This is hard actually, because we need to calculate the chance for each rarity
+                                    // So we will select everything (ew) and then randomize from there
+                                    val cards = LoriCoolCardsEventCards.select {
+                                        LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
+                                    }.toList()
+
+                                    // val cardsGroupedByRarity = cards.groupBy { it[LoriCoolCardsEventCards.rarity] }
+                                    //     .filter { it.value.isNotEmpty() } // Filter out rarities that do not have any cards
+
+                                    // Now we need to calculate each probability
+                                    val stickerIdsWithWeights = cards.associate {
+                                        it[LoriCoolCardsEventCards.id].value to result.template.stickerProbabilityWeights[it[LoriCoolCardsEventCards.rarity]]!!
+                                    }
+
+                                    val selectedStickersIds = weightedRandomSelection(stickerIdsWithWeights, result.template.stickersInPack)
+                                    // We use "map" instead of filter because we WANT duplicated stickers
+                                    val selectedCards = selectedStickersIds.map { stickerId -> cards.first { it[LoriCoolCardsEventCards.id].value == stickerId } }
+                                    val selectedCardsWithMetadata = mutableListOf<BuyStickersResult.Success.CardResult>()
+
+                                    // TODO: This should consider stickers that are already sticked in the album
+                                    // We also need to calculate how many cards the user had before starting
+                                    val cardDistinctField = LoriCoolCardsUserOwnedCards.card.countDistinct()
+                                    val unmodifiableCountBeforeAddingCards = LoriCoolCardsUserOwnedCards.slice(cardDistinctField)
                                         .select {
                                             LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
                                         }.first()[cardDistinctField]
 
-                                    selectedCardsWithMetadata.add(
-                                        BuyStickersResult.Success.CardResult(
-                                            card,
-                                            howManyCardsOfThisCardIdWeHave,
-                                            unmodifiableCount,
-                                            haveWeAlreadySeenThisCardBefore
+                                    // Now that we selected the cards, we will mark them as seen + owned
+                                    // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
+                                    val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers = LoriCoolCardsSeenCards.slice(LoriCoolCardsSeenCards.card).select {
+                                        LoriCoolCardsSeenCards.card inList selectedStickersIds and (LoriCoolCardsSeenCards.user eq context.user.idLong)
+                                    }.map { it[LoriCoolCardsSeenCards.card] }
+
+                                    // OPTIMIZATION: Don't get each sticker count in the loop, get all of them at once
+                                    val stickerCount = LoriCoolCardsUserOwnedCards.card.count()
+                                    val howManyStickersOfTheseStickersCardIdWeHave = LoriCoolCardsUserOwnedCards.slice(LoriCoolCardsUserOwnedCards.card, stickerCount).select {
+                                        LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.card inList selectedStickersIds)
+                                    }.groupBy(LoriCoolCardsUserOwnedCards.card)
+                                        .associate { it[LoriCoolCardsUserOwnedCards.card].value to it[stickerCount] }
+                                        .toMutableMap()
+
+                                    for (card in selectedCards) {
+                                        // Have we already seen this card before?
+                                        val haveWeAlreadySeenThisCardBefore = card[LoriCoolCardsEventCards.id] in stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers
+
+                                        LoriCoolCardsUserOwnedCards.insert {
+                                            it[LoriCoolCardsUserOwnedCards.card] = card[LoriCoolCardsEventCards.id]
+                                            it[LoriCoolCardsUserOwnedCards.user] = context.user.idLong
+                                            it[LoriCoolCardsUserOwnedCards.event] = event[LoriCoolCardsEvents.id]
+                                            it[LoriCoolCardsUserOwnedCards.receivedAt] = now
+                                            it[LoriCoolCardsUserOwnedCards.sticked] = false
+                                            it[LoriCoolCardsUserOwnedCards.boosterPack] = boosterPackId
+                                        }
+
+                                        // "Seen cards" just mean that the card won't be unknown (???) when the user looks it up, even if they give the card away
+                                        if (!haveWeAlreadySeenThisCardBefore) {
+                                            LoriCoolCardsSeenCards.insert {
+                                                it[LoriCoolCardsSeenCards.card] = card[LoriCoolCardsEventCards.id]
+                                                it[LoriCoolCardsSeenCards.user] = context.user.idLong
+                                                it[LoriCoolCardsSeenCards.seenAt] = now
+                                            }
+                                        }
+
+                                        // Count how many cards of this specific type we have
+                                        val howManyCardsOfThisCardIdWeHave = (howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] ?: 0) + 1 // If not present, then it means we had 0 stickers (+1, because now we have one of them (yay))
+                                        howManyStickersOfTheseStickersCardIdWeHave[card[LoriCoolCardsEventCards.id].value] = howManyCardsOfThisCardIdWeHave // Update the map (required because there may be duplicate stickers)
+
+                                        // We also need to calculate how many cards the user now has for each "step" of the journey
+                                        val unmodifiableCount = LoriCoolCardsUserOwnedCards.slice(cardDistinctField)
+                                            .select {
+                                                LoriCoolCardsUserOwnedCards.user eq context.user.idLong and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
+                                            }.first()[cardDistinctField]
+
+                                        selectedCardsWithMetadata.add(
+                                            BuyStickersResult.Success.CardResult(
+                                                card,
+                                                howManyCardsOfThisCardIdWeHave,
+                                                unmodifiableCount,
+                                                haveWeAlreadySeenThisCardBefore
+                                            )
                                         )
-                                    )
+                                    }
+
+                                    val alreadyStickedCardsCount = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                                        LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                                    }.count()
+
+                                    BuyStickersResult.Success(cards.size, unmodifiableCountBeforeAddingCards, selectedCardsWithMetadata, alreadyStickedCardsCount)
                                 }
-
-                                val alreadyStickedCardsCount = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                                    LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                                }.count()
-
-                                BuyStickersResult.Success(cards.size, unmodifiableCountBeforeAddingCards, selectedCardsWithMetadata, alreadyStickedCardsCount)
                             }
+
+                            logger.info { "User ${context.user.idLong} bought a booster pack! - Took $time" }
 
                             val hook = future.await()
 
