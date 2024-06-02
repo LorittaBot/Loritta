@@ -9,15 +9,18 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolC
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.countDistinct
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
-class LoriCoolCardsStatsExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
+class LoriCoolCardsStatsExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
         context.deferChannelMessage(false)
 
@@ -170,5 +173,12 @@ class LoriCoolCardsStatsExecutor(val loritta: LorittaBot, private val loriCoolCa
             val totalBoosterPacksBought: Long,
             val userBoosterPacksBought: Long
         ) : EventStatsResult()
+    }
+
+    override suspend fun convertToInteractionsArguments(
+        context: LegacyMessageCommandContext,
+        args: List<String>
+    ): Map<OptionReference<*>, Any?>? {
+        return mapOf()
     }
 }

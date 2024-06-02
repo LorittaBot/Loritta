@@ -19,9 +19,12 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
@@ -29,7 +32,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
 import java.time.Instant
 
-class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
+class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Album
     }
@@ -365,5 +368,12 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                 val finishedAt: Instant
             )
         }
+    }
+
+    override suspend fun convertToInteractionsArguments(
+        context: LegacyMessageCommandContext,
+        args: List<String>
+    ): Map<OptionReference<*>, Any?>? {
+        return mapOf()
     }
 }

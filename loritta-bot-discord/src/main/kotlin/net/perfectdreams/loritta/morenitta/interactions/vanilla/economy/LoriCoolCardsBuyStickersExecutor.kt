@@ -20,8 +20,11 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction
@@ -31,7 +34,7 @@ import java.time.Instant
 import kotlin.random.Random
 import kotlin.time.measureTimedValue
 
-class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor() {
+class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Buy
         private val logger = KotlinLogging.logger {}
@@ -468,5 +471,12 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                 val haveWeAlreadySeenThisCardBefore: Boolean
             )
         }
+    }
+
+    override suspend fun convertToInteractionsArguments(
+        context: LegacyMessageCommandContext,
+        args: List<String>
+    ): Map<OptionReference<*>, Any?>? {
+        return mapOf()
     }
 }

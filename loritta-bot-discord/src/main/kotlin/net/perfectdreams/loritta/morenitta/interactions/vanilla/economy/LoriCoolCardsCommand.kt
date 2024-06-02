@@ -15,11 +15,9 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
-import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
@@ -38,6 +36,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
     val viewAlbum = LoriCoolCardsViewAlbumExecutor(loritta, this)
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY) {
+        this.enableLegacyMessageSupport = true
         this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
 
         subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
@@ -76,7 +75,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
         }
     }
 
-    inner class LoriCoolCardsViewExecutor : LorittaSlashCommandExecutor() {
+    inner class LoriCoolCardsViewExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val cardId = string("sticker_id", I18N_PREFIX.View.Options.Sticker.Text) {
                 autocomplete {
@@ -306,6 +305,13 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                     }
                 }
             }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            TODO("Not yet implemented")
         }
     }
 
