@@ -112,7 +112,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                 val yourStickersMissing = mutableListOf<ResultRow>()
 
                 for (stickerId in result.stickersThatYourFriendInTheirInventory) {
-                    val doWeHaveIt = result.stickersThatYouHaveSticked.contains(stickerId) && result.stickersThatYouHaveInYourInventory.contains(stickerId)
+                    val doWeHaveIt = result.stickersThatYouHaveSticked.contains(stickerId) || result.stickersThatYouHaveInYourInventory.contains(stickerId)
 
                     if (!doWeHaveIt) {
                         // We don't have it!
@@ -124,7 +124,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                 val friendStickersMissing = mutableListOf<ResultRow>()
 
                 for (stickerId in result.stickersThatYouHaveInYourInventory) {
-                    val doWeHaveIt = result.stickersThatYourFriendHasSticked.contains(stickerId) && result.stickersThatYourFriendInTheirInventory.contains(stickerId)
+                    val doWeHaveIt = result.stickersThatYourFriendHasSticked.contains(stickerId) || result.stickersThatYourFriendInTheirInventory.contains(stickerId)
 
                     if (!doWeHaveIt) {
                         // We don't have it!
