@@ -6,39 +6,58 @@ import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import java.io.File
 
+data class TemplatingSlots(
+    val imageFileName: String,
+    val slots: MutableList<StickerAlbumTemplate.StickerSlot>
+)
+
 fun main() {
     val stickersToBePlaced = (1..510).toMutableList()
 
-    fun loadTemplatingSlots(fileName: String): MutableList<StickerAlbumTemplate.StickerSlot> {
+    fun loadTemplatingSlots(fileName: String): TemplatingSlots {
         // Load templating slots from file
         val tentativeTemplatingSlots = mutableListOf<StickerAlbumTemplate.StickerSlot>()
+
+        var isFirstLine = true
+        var imageFileName: String? = null
 
         File("D:\\Pictures\\Loritta\\LoriCoolCards\\pages\\$fileName.psd.txt")
             .readLines()
             .forEach {
-                val (layerName, topLeftXString, topLeftYString, bottomRightXString, bottomRightYString) = it.split(";")
-                val topLeftX = topLeftXString.toInt()
-                val topLeftY = topLeftYString.toInt()
-                val bottomRightX = bottomRightXString.toInt()
-                val bottomRightY = bottomRightYString.toInt()
+                if (isFirstLine) {
+                    isFirstLine = false
 
-                tentativeTemplatingSlots.add(
-                    StickerAlbumTemplate.StickerSlot(
-                        layerName,
-                        topLeftX,
-                        topLeftY,
-                        bottomRightX - topLeftX,
-                        bottomRightY - topLeftY,
-                        8,
-                        32
+                    imageFileName = it
+                } else {
+                    val (layerName, topLeftXString, topLeftYString, bottomRightXString, bottomRightYString) = it.split(";")
+                    val topLeftX = topLeftXString.toInt()
+                    val topLeftY = topLeftYString.toInt()
+                    val bottomRightX = bottomRightXString.toInt()
+                    val bottomRightY = bottomRightYString.toInt()
+
+                    tentativeTemplatingSlots.add(
+                        StickerAlbumTemplate.StickerSlot(
+                            layerName,
+                            topLeftX,
+                            topLeftY,
+                            bottomRightX - topLeftX,
+                            bottomRightY - topLeftY,
+                            8,
+                            32
+                        )
                     )
-                )
+                }
             }
 
-        return tentativeTemplatingSlots.sortedBy { it.stickerId.removePrefix("[STICKER] ")
-            .trim()
-            .toInt()
-        }.map { it.copy(stickerId = "TEMPLATE") } .toMutableList()
+        return TemplatingSlots(
+            imageFileName!!,
+            tentativeTemplatingSlots
+                .sortedBy {
+                    it.stickerId.removePrefix("[STICKER] ")
+                        .trim()
+                        .toInt()
+                }.map { it.copy(stickerId = "TEMPLATE") }.toMutableList()
+        )
     }
 
     // TODO: It is "tentativeTemplatingSlots" because we need to sort the stickers!
@@ -46,29 +65,32 @@ fun main() {
     //  Based off the layer name
     //  Or just sort it based on the sticker's xy position
     val templateSlots = mapOf(
-        1 to loadTemplatingSlots("combo_1_2"),
-        3 to loadTemplatingSlots("combo_3_4"),
+        1 to loadTemplatingSlots("new/v2/new_album_first_page"),
+        3 to loadTemplatingSlots("new/v2/new_album_second_page"),
         // 5 to loadTemplatingSlots("combo_lori_sleepy"),
-        5 to loadTemplatingSlots("new/new_album_lori_stars_yafyr"),
-        7 to loadTemplatingSlots("new/new_album_lori_sleepy"),
-        9 to loadTemplatingSlots("new/new_album_lori_pantufa_gabi"),
-        11 to loadTemplatingSlots("new/new_album_lori_hey-hey-my-my-yo-yo"),
-        13 to loadTemplatingSlots("new/new_album_lori_and_wumpus"),
-        15 to loadTemplatingSlots("new/new_album_lori_running_sonhos"),
-        17 to loadTemplatingSlots("new/new_album_fofoca"),
-        19 to loadTemplatingSlots("new/new_album_gabriela_easel"),
-        21 to loadTemplatingSlots("new/new_album_lori_deitada"),
-        23 to loadTemplatingSlots("new/new_album_loritta_and_the_dreamers"),
-        25 to loadTemplatingSlots("new/new_album_legoshi"),
-        27 to loadTemplatingSlots("new/new_album_lori_cool_pose"),
-        29 to loadTemplatingSlots("new/new_album_lori_you_bring_light_in"),
-        31 to loadTemplatingSlots("new/new_album_lori_beach"),
-        33 to loadTemplatingSlots("new/new_album_lori_code"),
-        35 to loadTemplatingSlots("new/new_album_lori_water"),
-        37 to loadTemplatingSlots("new/new_album_sips"),
-        39  to loadTemplatingSlots("new/new_album_sparkly"),
+        5 to loadTemplatingSlots("new/v2/new_album_sparkly"), // full page
+        7 to loadTemplatingSlots("new/v2/new_album_lori_beach"), // big
+        9 to loadTemplatingSlots("new/v2/new_album_loritta_and_the_dreamers"), // small
+        11 to loadTemplatingSlots("new/v2/new_album_lori_and_wumpus"), // small
+        13 to loadTemplatingSlots("new/v2/new_album_lori_hey-hey-my-my-yo-yo"), // small
+        15 to loadTemplatingSlots("new/v2/new_album_herry"), // full page
+        17 to loadTemplatingSlots("new/v2/new_album_lori_water"), // big
+        19 to loadTemplatingSlots("new/v2/new_album_lori_deitada"), // small
+        21 to loadTemplatingSlots("new/v2/new_album_gabriela_easel"), // small
+        23 to loadTemplatingSlots("new/v2/new_album_lori_pantufa_gabi"), // small
+        25 to loadTemplatingSlots("new/v2/new_album_legoshi"), // full page
+        27 to loadTemplatingSlots("new/v2/new_album_lori_stars_yafyr"), // big
+        29 to loadTemplatingSlots("new/v2/new_album_lori_sleepy"), // small
+        31 to loadTemplatingSlots("new/v2/new_album_fofoca"), // small
+        33 to loadTemplatingSlots("new/v2/new_album_lori_running_sonhos"), // small
+        35 to loadTemplatingSlots("new/v2/new_album_sao_joao"), // full page
+        37 to loadTemplatingSlots("new/v2/new_album_lori_cool_pose"), // big
+        39 to loadTemplatingSlots("new/v2/new_album_lori_you_bring_light_in"), // small
+        41 to loadTemplatingSlots("new/v2/new_album_lori_code"), // small
+        43 to loadTemplatingSlots("new/v2/new_album_sips"), // small
+        45 to loadTemplatingSlots("new/v2/new_album_lori_mari_figurittas"), // full page
 
-        -1 to loadTemplatingSlots("new/new_album_generic_page"),
+        -1 to loadTemplatingSlots("new/v2/new_album_generic_page"),
 
         /* -1 to listOf(
             StickerAlbumTemplate.StickerSlot(
@@ -369,16 +391,16 @@ fun main() {
         ) */
     )
 
-    println("Filled slots: ${templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.size }}")
-    println("Slots missing: ${stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.size }}")
-    println("How many pages are missing? (considering 32 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.size }) / 32}")
-    println("How many pages are missing? (considering 28 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.size }) / 28}")
-    println("How many pages are missing? (considering 24 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.size }) / 24}")
-    println("How many pages are missing? (considering 20 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.size }) / 20}")
-    println("How many pages are missing? (considering 16 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.size }) / 16}")
+    println("Filled slots: ${templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.slots.size }}")
+    println("Slots missing: ${stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.slots.size }}")
+    println("How many pages are missing? (considering 32 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.slots.size }) / 32}")
+    println("How many pages are missing? (considering 28 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.slots.size }) / 28}")
+    println("How many pages are missing? (considering 24 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.slots.size }) / 24}")
+    println("How many pages are missing? (considering 20 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.slots.size }) / 20}")
+    println("How many pages are missing? (considering 16 stickers per page): ${(stickersToBePlaced.size - templateSlots.entries.filter { it.key > 0 }.sumOf { it.value.slots.size }) / 16}")
 
     var currentPage = 1
-    var currentPageSlots = (templateSlots[currentPage] ?: templateSlots[-1]!!).toMutableList()
+    var currentPageSlots = (templateSlots[currentPage] ?: templateSlots[-1]!!).slots.toMutableList()
     val pages = mutableListOf<StickerAlbumTemplate.AlbumComboPage>()
 
     while (stickersToBePlaced.isNotEmpty()) {
@@ -387,29 +409,9 @@ fun main() {
 
         if (templateSlot == -1) {
             // Needs to create new page!
-            val pageBackdropUrl = when (currentPage) {
-                1 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/combo_1_2.psd.png"
-                3 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/combo_3_4.psd.png"
-                5 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_stars_yafyr.psd.png"
-                7 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_sleepy.psd.png"
-                9 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_pantufa_gabi.psd.png"
-                11 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_hey-hey-my-my-yo-yo.psd.png"
-                13 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_and_wumpus.psd.png"
-                15 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_running_sonhos.psd.png"
-                17 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_fofoca.psd.png"
-                19 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_gabriela_easel.psd.png"
-                21 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_deitada.psd.png"
-                23 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_loritta_and_the_dreamers.psd.png"
-                25 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_legoshi.psd.png"
-                27 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_cool_pose.psd.png"
-                29 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_you_bring_light_in.psd.png"
-                31 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_beach.psd.png"
-                33 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_code.psd.png"
-                35 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_lori_water.psd.png"
-                37 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_sips.psd.png"
-                39 -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_sparkly.psd.png"
-                else -> "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_generic_page.psd.png"
-            }
+            val pageBackdropImageFileName = (templateSlots[currentPage] ?: templateSlots[-1]!!).imageFileName
+            val pageBackdropUrl = "https://stuff.loritta.website/loricoolcards/production/v2/pages/$pageBackdropImageFileName"
+
             pages.add(
                 StickerAlbumTemplate.AlbumComboPage(
                     currentPage++,
@@ -418,7 +420,7 @@ fun main() {
                     currentPageSlots
                 )
             )
-            currentPageSlots = (templateSlots[currentPage] ?: templateSlots[-1]!!).toMutableList()
+            currentPageSlots = (templateSlots[currentPage] ?: templateSlots[-1]!!).slots.toMutableList()
             continue
         }
 
@@ -430,11 +432,14 @@ fun main() {
 
     // Add not finished page
     if (nonTemplatingSlots.isNotEmpty()) {
+        val pageBackdropImageFileName = (templateSlots[currentPage] ?: templateSlots[-1]!!).imageFileName
+        val pageBackdropUrl = "https://stuff.loritta.website/loricoolcards/production/v2/pages/$pageBackdropImageFileName"
+
         pages.add(
             StickerAlbumTemplate.AlbumComboPage(
                 currentPage++,
                 currentPage++,
-                "file:///D:/Pictures/Loritta/LoriCoolCards/pages/new/new_album_generic_page.psd.png",
+                pageBackdropUrl,
                 nonTemplatingSlots
             )
         )
@@ -443,21 +448,21 @@ fun main() {
     println(
         "UPDATE loricoolcardsevents SET template = '${Json.encodeToString(
             StickerAlbumTemplate(
-                stickerPackImageUrl = "https://cdn.discordapp.com/attachments/1169984595131904010/1230605647691911241/buying_package_v3_gifsicle_test_v4.gif?ex=6633edd1&is=662178d1&hm=b38727bac519a9b50fc6e0f8a8e9704511d7da931316bea7d7e62d20ad62213a&",
-                unknownStickerImageUrl = "https://cdn.discordapp.com/attachments/1169984595131904010/1230605647691911241/buying_package_v3_gifsicle_test_v4.gif?ex=6633edd1&is=662178d1&hm=b38727bac519a9b50fc6e0f8a8e9704511d7da931316bea7d7e62d20ad62213a&",
+                stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
+                unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
                 sonhosPrice = 5_000,
-                sonhosReward = 5_000,
+                sonhosReward = 4_000_000,
                 stickersInPack = 5,
                 stickerProbabilityWeights = mapOf(
-                    CardRarity.COMMON to 1.0,
-                    CardRarity.UNCOMMON to 1.0,
-                    CardRarity.RARE to 1.0,
-                    CardRarity.EPIC to 1.0,
-                    CardRarity.LEGENDARY to 1.0,
-                    CardRarity.MYTHIC to 1.0,
+                    CardRarity.COMMON to 30.0,
+                    CardRarity.UNCOMMON to 25.0,
+                    CardRarity.RARE to 19.0,
+                    CardRarity.EPIC to 12.0,
+                    CardRarity.LEGENDARY to 8.0,
+                    CardRarity.MYTHIC to 5.0,
                 ),
                 pages = pages
             )
-        )}';"
+        )}' WHERE id = 2;"
     )
 }

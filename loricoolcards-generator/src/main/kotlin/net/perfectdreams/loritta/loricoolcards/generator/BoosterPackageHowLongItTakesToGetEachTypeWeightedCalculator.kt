@@ -4,6 +4,8 @@ import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import kotlin.random.Random
 import kotlin.time.measureTime
 
+val fixedRandom = Random(0)
+
 fun main() {
     // Define weights corresponding to the enum values
     val weights = mapOf(
@@ -47,23 +49,39 @@ fun main() {
         )
     }
 
+    cards.groupBy { it.second }
+        .forEach {
+            println(it.key.toString() + ": " + it.value.size)
+        }
+
     val totalBoosterPacks = mutableListOf<Int>()
 
     val weightedCards = cards.associate { it.first to weights[it.second]!! }
 
     measureTime {
-        repeat(10_000) {
+        repeat(100_000) {
             println(it)
-            val totalCards = (1..510).toList()
-            val currentCards = mutableSetOf<Int>()
+            val currentRaritiesCards = mutableListOf<CardRarity>()
 
             var boosterPacks = 0
 
-            while (!currentCards.containsAll(totalCards)) {
+            while (true) {
+                var diff = false
+                for (rarity in CardRarity.entries) {
+                    val gameCount = cards.count { it.second == rarity }
+                    if (gameCount > currentRaritiesCards.count { it == rarity }) {
+                        diff = true
+                        break
+                    }
+                }
+
+                if (!diff)
+                    break
+
                 val randomRarities = weightedRandomSelection(weightedCards, 5)
 
                 for (cardId in randomRarities) {
-                    currentCards.add(cards.first { it.first == cardId }.first)
+                    currentRaritiesCards.add(cards.first { it.first == cardId }.second)
                 }
 
                 boosterPacks++
@@ -71,9 +89,23 @@ fun main() {
 
 
             totalBoosterPacks.add(boosterPacks)
+
+            currentRaritiesCards.groupBy { it }
+                .entries
+                .sortedBy { it.key.ordinal }
+                .forEach {
+                    println(it.key.toString() + ": " + it.value.size)
+                }
+            println("Stickers: ${currentRaritiesCards.size}")
+            println("Booster packs: ${boosterPacks}")
+            println("Total Booster Packs (average): ${totalBoosterPacks.average()}")
+            println("Total Booster Packs (minimum): ${totalBoosterPacks.min()}")
+            println("Total Booster Packs (maxium): ${totalBoosterPacks.max()}")
         }
 
-        println("Total Booster Packs: ${totalBoosterPacks.average()}")
+        // println("Total Booster Packs (average): ${totalBoosterPacks.average()}")
+        // println("Total Booster Packs (minimum): ${totalBoosterPacks.min()}")
+        // println("Total Booster Packs (maxium): ${totalBoosterPacks.max()}")
     }.also { println("Took $it") }
 }
 
@@ -87,7 +119,7 @@ private fun weightedRandomSelection(weights: Map<Int, Double>, n: Int): List<Int
     }
 
     return List(n) {
-        val randomValue = Random.nextDouble(totalWeight)
+        val randomValue = fixedRandom.nextDouble(totalWeight)
         binarySearch(weightedValues, randomValue)
     }
 }

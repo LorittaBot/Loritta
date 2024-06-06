@@ -70,6 +70,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
+    val folderName = "production_v2"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -87,7 +88,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         .build()
         .awaitReady()
 
-    val sqlCommandsFile = File("D:\\Pictures\\Loritta\\LoriCoolCards\\prototype_v2\\sql_commands.sql")
+    val sqlCommandsFile = File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sql_commands.sql")
     sqlCommandsFile.delete()
 
     val cardGensData = mutableListOf<LoriCoolCardsManager.CardGenData>()
@@ -129,7 +130,8 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         // SparklyMemberBadge(loritta),
         // LorittaStaffBadge(loritta),
         // SparklyStaffBadge(loritta),
-        StonksBadge(pudding)
+        StonksBadge(pudding),
+        StickerFanBadge(pudding)
     )
 
     // Badges that requires a "Loritta" instance, so, to avoid changing the badges too much, we just pretend that the badge is valid and carry on with our lives
@@ -358,7 +360,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                         ImageIO.write(
                             frontFacingCard,
                             "png",
-                            File("D:\\Pictures\\Loritta\\LoriCoolCards\\prototype_v4\\sticker-$outputName-front.png")
+                            File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sticker-$outputName-front.png")
                         )
 
                         println("Took ${Clock.System.now() - start} to generate the front facing card for ${user.idLong}")
@@ -370,15 +372,15 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                             LoriCoolCardsManager.StickerReceivedRenderType.LoriCoolCardsEvent
                         )
 
-                        File("D:\\Pictures\\Loritta\\LoriCoolCards\\prototype_v4\\sticker-$outputName-animated.gif")
-                        File("D:\\Pictures\\Loritta\\LoriCoolCards\\prototype_v4\\sticker-$outputName-animated.gif")
+                        File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sticker-$outputName-animated.gif")
+                        File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sticker-$outputName-animated.gif")
                             .writeBytes(stickerReceivedGIF)
 
                         println("Took ${Clock.System.now() - start2} to generate the card animated GIF for ${user.idLong}")
                         println("Took ${Clock.System.now() - start} to generate everything for ${user.idLong}")
 
                         fileMutex.withLock {
-                            sqlCommandsFile.appendText("INSERT INTO loricoolcardseventcards (event, card_id, rarity, title, card_front_image_url, card_received_image_url) VALUES (1, '#$id', '${rarity.name}', '$name', 'https://stuff.loritta.website/loricoolcards/prototype/v1/sticker-$outputName-front.png', 'https://stuff.loritta.website/loricoolcards/prototype/v1/sticker-$outputName-animated.gif');\n")
+                            sqlCommandsFile.appendText("INSERT INTO loricoolcardseventcards (event, card_id, rarity, title, card_front_image_url, card_received_image_url) VALUES (1, '#$id', '${rarity.name}', '$name', 'https://stuff.loritta.website/loricoolcards/production/v2/stickers/sticker-$outputName-front.png', 'https://stuff.loritta.website/loricoolcards/production/v2/stickers/sticker-$outputName-animated.gif');\n")
                         }
                     }
                 } catch (e: Exception) {
