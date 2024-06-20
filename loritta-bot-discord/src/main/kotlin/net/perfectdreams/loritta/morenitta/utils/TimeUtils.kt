@@ -93,10 +93,14 @@ object TimeUtils {
                 val month = matcher.group(2).toIntOrNull() ?: 1
                 val year = matcher.group(3).toIntOrNull() ?: 1999
 
-                localDateTime = localDateTime
-                    .withDayOfMonth(day)
-                    .withMonth(month)
+                // This is a hack
+                // This fixes bugs when you use "31/12/2024" on a month that does NOT have 31 days "Invalid date 'JUNE 31'"
+                localDateTime = localDateTime.withYear(1999)
+                    .withMonth(1)
+                    .withDayOfMonth(1)
                     .withYear(year)
+                    .withMonth(month)
+                    .withDayOfMonth(day)
             }
         } else if (foundViaTime && localDateTime.isBefore(LocalDateTime.now().atZone(TIME_ZONE))) {
             // If it was found via time but there isn't any day set, we are going to check if it is in the past and, if true, we are going to add one day
