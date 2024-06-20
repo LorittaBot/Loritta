@@ -20,16 +20,33 @@ object TimeUtils {
     val TIME_ZONE = Constants.LORITTA_TIMEZONE
 
     fun convertToMillisRelativeToNow(input: String) = convertToLocalDateTimeRelativeToNow(input)
-            .toInstant()
-            .toEpochMilli()
+        .toInstant()
+        .toEpochMilli()
 
     fun convertToLocalDateTimeRelativeToNow(input: String) = convertToLocalDateTimeRelativeToTime(input, ZonedDateTime.now(TIME_ZONE))
 
     fun convertToLocalDateTimeRelativeToTime(input: String, relativeTo: ZonedDateTime): ZonedDateTime {
         val content = input.toLowerCase()
         var localDateTime = relativeTo
-                .withNano(0)
+            .withNano(0)
         var foundViaTime = false
+
+        // This is here instead of on the convertToMillisDurationRelative because durations don't have concept of "plus one month" (is it 31 or 30 days?)
+        val yearsMatcher = YEAR_PATTERN.matcher(content)
+        if (yearsMatcher.find()) {
+            val addYears = yearsMatcher.group(1).toLongOrNull() ?: 0
+            localDateTime = localDateTime.plus(addYears, ChronoUnit.YEARS)
+        }
+        val monthMatcher = MONTH_PATTERN.matcher(content)
+        if (monthMatcher.find()) {
+            val addMonths = monthMatcher.group(1).toLongOrNull() ?: 0
+            localDateTime = localDateTime.plus(addMonths, ChronoUnit.MONTHS)
+        }
+        val weekMatcher = WEEK_PATTERN.matcher(content)
+        if (weekMatcher.find()) {
+            val addWeeks = weekMatcher.group(1).toLongOrNull() ?: 0
+            localDateTime = localDateTime.plusDays(addWeeks)
+        }
 
         if (content.contains(":")) { // horário
             val matcher = TIME_PATTERN.matcher(content)
@@ -61,8 +78,8 @@ object TimeUtils {
                     localDateTime = localDateTime.withHour(hour)
                 }
                 localDateTime = localDateTime
-                        .withMinute(minute)
-                        .withSecond(seconds)
+                    .withMinute(minute)
+                    .withSecond(seconds)
 
                 foundViaTime = true
             }
@@ -77,14 +94,14 @@ object TimeUtils {
                 val year = matcher.group(3).toIntOrNull() ?: 1999
 
                 localDateTime = localDateTime
-                        .withDayOfMonth(day)
-                        .withMonth(month)
-                        .withYear(year)
+                    .withDayOfMonth(day)
+                    .withMonth(month)
+                    .withYear(year)
             }
         } else if (foundViaTime && localDateTime.isBefore(LocalDateTime.now().atZone(TIME_ZONE))) {
             // If it was found via time but there isn't any day set, we are going to check if it is in the past and, if true, we are going to add one day
             localDateTime = localDateTime
-                    .plusDays(1)
+                .plusDays(1)
         }
 
         val duration = convertToMillisDurationRelative(content)
@@ -99,23 +116,6 @@ object TimeUtils {
     fun convertToMillisDurationRelative(content: String): Duration {
         var duration = Duration.ZERO
 
-        val yearsMatcher = YEAR_PATTERN.matcher(content)
-        if (yearsMatcher.find()) {
-            val addYears = yearsMatcher.group(1).toLongOrNull() ?: 0
-            duration = duration.plus(addYears, ChronoUnit.YEARS)
-        }
-        val monthMatcher = MONTH_PATTERN.matcher(content)
-        var foundMonths = false
-        if (monthMatcher.find()) {
-            foundMonths = true
-            val addMonths = monthMatcher.group(1).toLongOrNull() ?: 0
-            duration = duration.plus(addMonths, ChronoUnit.MONTHS)
-        }
-        val weekMatcher = WEEK_PATTERN.matcher(content)
-        if (weekMatcher.find()) {
-            val addWeeks = weekMatcher.group(1).toLongOrNull() ?: 0
-            duration = duration.plus(addWeeks, ChronoUnit.WEEKS)
-        }
         val dayMatcher = DAY_PATTERN.matcher(content)
         if (dayMatcher.find()) {
             val addDays = dayMatcher.group(1).toLongOrNull() ?: 0
@@ -127,25 +127,10 @@ object TimeUtils {
             duration = duration.plus(addHours, ChronoUnit.HOURS)
         }
 
-        // This check is needed due to the month pattern also checking for "m"
-        // So, if the month was not found, we will check with the short minute pattern
-        // If it was found, we will ignore the short minute pattern and only use the long pattern
-        var foundMinutes = false
-        if (!foundMonths) {
-            val minuteMatcher = SHORT_MINUTE_PATTERN.matcher(content)
-            if (minuteMatcher.find()) {
-                foundMinutes = true
-                val addMinutes = minuteMatcher.group(1).toLongOrNull() ?: 0
-                duration = duration.plus(addMinutes, ChronoUnit.MINUTES)
-            }
-        }
-
-        if (!foundMinutes) {
-            val minuteMatcher = MINUTE_PATTERN.matcher(content)
-            if (minuteMatcher.find()) {
-                val addMinutes = minuteMatcher.group(1).toLongOrNull() ?: 0
-                duration = duration.plus(addMinutes, ChronoUnit.MINUTES)
-            }
+        val minuteMatcher = MINUTE_PATTERN.matcher(content)
+        if (minuteMatcher.find()) {
+            val addMinutes = minuteMatcher.group(1).toLongOrNull() ?: 0
+            duration = duration.plus(addMinutes, ChronoUnit.MINUTES)
         }
 
         val secondsMatcher = SECONDS_PATTERN.matcher(content)
