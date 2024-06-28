@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -121,6 +120,13 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                     }
                     is SonhosUtils.SpecialTotalCoinFlipReward.NoChange -> {
                         CoinFlipTaxResult.Default(UserPremiumPlans.Free.totalCoinFlipReward)
+                    }
+
+                    is SonhosUtils.SpecialTotalCoinFlipReward.PremiumCommunity -> {
+                        CoinFlipTaxResult.PremiumCommunity(
+                            specialTotalRewardChange.isSpecialDay,
+                            specialTotalRewardChange.value
+                        )
                     }
                 }
             }
@@ -289,6 +295,57 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                 context.i18nContext
                                     .get(
                                         I18nKeysData.Commands.Command.Coinflipbet.StartBetLorittaCommunity(
+                                            1.0 - UserPremiumPlans.Free.totalCoinFlipReward,
+                                            1.0 - taxResult.totalRewardPercentage
+                                        )
+                                    ),
+                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
+                            )
+                        }
+                    }
+                    is CoinFlipTaxResult.PremiumCommunity -> {
+                        if (taxResult.isSpecialDay && hasNoTax) {
+                            styled(
+                                context.i18nContext
+                                    .get(
+                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetNoTax(
+                                            invitedUser.asMention,
+                                            context.user.asMention,
+                                            SonhosUtils.getSonhosEmojiOfQuantity(money),
+                                            number,
+                                            money,
+                                        )
+                                    ),
+                                Emotes.LORI_RICH,
+                            )
+
+                            styled(
+                                context.i18nContext
+                                    .get(
+                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServerWeekend
+                                    ),
+                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
+                            )
+                        } else {
+                            styled(
+                                context.i18nContext
+                                    .get(
+                                        I18nKeysData.Commands.Command.Coinflipbet.StartBet(
+                                            invitedUser.asMention,
+                                            context.user.asMention,
+                                            SonhosUtils.getSonhosEmojiOfQuantity(money),
+                                            number,
+                                            tax ?: 0L,
+                                            money
+                                        )
+                                    ),
+                                Emotes.LORI_RICH,
+                            )
+
+                            styled(
+                                context.i18nContext
+                                    .get(
+                                        I18nKeysData.Commands.Command.Coinflipbet.StartBetPremiumServer(
                                             1.0 - UserPremiumPlans.Free.totalCoinFlipReward,
                                             1.0 - taxResult.totalRewardPercentage
                                         )
@@ -581,6 +638,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
     sealed class CoinFlipTaxResult(val totalRewardPercentage: Double) {
         class LorittaCommunity(val isWeekend: Boolean, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
+        class PremiumCommunity(val isSpecialDay: Boolean, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
         class PremiumUser(val premiumUser: User, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
         class Default(totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)
     }

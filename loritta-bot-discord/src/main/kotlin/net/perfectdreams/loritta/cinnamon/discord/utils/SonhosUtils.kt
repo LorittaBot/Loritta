@@ -226,11 +226,23 @@ object SonhosUtils {
             }
         }
 
+        if (guild.idLong == 1204104683380285520L) {
+            val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
+            return if (today.dayOfWeek == DayOfWeek.FRIDAY || today.dayOfWeek == DayOfWeek.SATURDAY || today.dayOfWeek == DayOfWeek.SUNDAY) {
+                // No tax during weekends poggies!!!
+                SpecialTotalCoinFlipReward.PremiumCommunity(1.0, true)
+            } else {
+                // 2.5% any other day
+                SpecialTotalCoinFlipReward.PremiumCommunity(0.975, false)
+            }
+        }
+
         return SpecialTotalCoinFlipReward.NoChange(currentTax)
     }
 
     sealed class SpecialTotalCoinFlipReward(val value: Double) {
         class LorittaCommunity(value: Double, val isWeekend: Boolean) : SpecialTotalCoinFlipReward(value)
+        class PremiumCommunity(value: Double, val isSpecialDay: Boolean) : SpecialTotalCoinFlipReward(value)
         class NoChange(value: Double) : SpecialTotalCoinFlipReward(value)
     }
 }

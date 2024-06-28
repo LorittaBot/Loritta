@@ -9,6 +9,9 @@ startBetPremiumUser: "Como {premiumPlanUser} é um usuário premium recomendado,
 startBetLorittaCommunity: "Ao invés de desembolsar {defaultRewardTax,number,#.##%} em taxas, você só precisará pagar {communityRewardTax,number,#.##%} ao fazer suas apostas no servidor da Loritta. Aproveite!"
 startBetLorittaCommunityWeekend: "Durante o final de semana, as taxas ficam por nossa conta, pois você está apostando no servidor da Loritta. Aproveite!"
 
+startBetPremiumServer: "Ao invés de desembolsar {defaultRewardTax,number,#.##%} em taxas, você só precisará pagar {communityRewardTax,number,#.##%} ao fazer suas apostas neste servidor. Aproveite!"
+startBetPremiumServerWeekend: "Durante o final de semana, as taxas ficam por nossa conta, pois você está apostando neste servidor. Aproveite!"
+
 youAreNotParticipatingOnThisBet: "Você não está participando desta aposta!"
 
 options:
