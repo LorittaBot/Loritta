@@ -2,10 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 
 import com.github.salomonbrys.kotson.jsonObject
 import io.ktor.server.application.*
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
@@ -53,8 +50,7 @@ class GetGuildEmojiFightTopWinnersRoute(loritta: LorittaBot) : RequiresAPIAuthen
 			query = query and (EmojiFightMatchmakingResults.entryPrice greaterEq minimumEntryPrice)
 
 		val winCount = EmojiFightParticipants.user.count()
-		val start = kotlinx.datetime.Clock.System.now()
-		val results = loritta.transaction {
+		val (count, results) = loritta.transaction {
 			val total = EmojiFightMatchmakingResults
 				.innerJoin(EmojiFightMatches)
 				.innerJoin(EmojiFightParticipants)
@@ -65,21 +61,30 @@ class GetGuildEmojiFightTopWinnersRoute(loritta: LorittaBot) : RequiresAPIAuthen
 				.count()
 
 			if (offset > total)
-				return@transaction listOf()
+				return@transaction Pair(0L, listOf())
 
-			EmojiFightMatchmakingResults
-				.innerJoin(EmojiFightMatches)
-				.innerJoin(EmojiFightParticipants)
-				.select(EmojiFightParticipants.user, winCount)
-				.where(query)
-				.groupBy(EmojiFightParticipants.user)
-				.orderBy(winCount, SortOrder.DESC)
-				.limit(limit, offset)
-				.toList()
+			Pair(
+				total,
+				EmojiFightMatchmakingResults
+					.innerJoin(EmojiFightMatches)
+					.innerJoin(EmojiFightParticipants)
+					.select(EmojiFightParticipants.user, winCount)
+					.where(query)
+					.groupBy(EmojiFightParticipants.user)
+					.orderBy(winCount, SortOrder.DESC)
+					.limit(limit, offset)
+					.toList()
+			)
 		}
 
 		call.respondJson(
 			buildJsonObject {
+				putJsonObject("paging") {
+					put("total", count)
+					put("limit", limit)
+					put("offset", offset)
+				}
+
 				putJsonArray("results") {
 					for (result in results) {
 						addJsonObject {
