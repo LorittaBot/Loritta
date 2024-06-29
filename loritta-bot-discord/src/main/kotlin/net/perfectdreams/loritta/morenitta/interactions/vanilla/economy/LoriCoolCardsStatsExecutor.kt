@@ -7,32 +7,60 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolC
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserBoughtBoosterPacks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserOwnedCards
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.countDistinct
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
 
 class LoriCoolCardsStatsExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    companion object {
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Stats
+    }
+
+    inner class Options : ApplicationCommandOptions() {
+        val album = string("album", I18N_PREFIX.Options.Album.Text) {
+            autocomplete {
+                val now = Instant.now()
+
+                // Autocomplete all albums
+                val activeAlbums = loritta.transaction {
+                    LoriCoolCardsEvents.select(LoriCoolCardsEvents.id, LoriCoolCardsEvents.eventName)
+                        .where { LoriCoolCardsEvents.startsAt lessEq now }
+                        .orderBy(LoriCoolCardsEvents.endsAt, SortOrder.DESC)
+                        .limit(25)
+                        .toList()
+                }
+
+                activeAlbums.associate {
+                    it[LoriCoolCardsEvents.eventName] to it[LoriCoolCardsEvents.id].value.toString()
+                }
+            }
+        }
+    }
+
+    override val options = Options()
+
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
         context.deferChannelMessage(false)
+        val albumId = args[options.album].toLong()
 
         // We expect that this is already deferred by the caller
         val now = Instant.now()
 
-        // Load the current active event
+        // Load the selected event
         val result = loritta.transaction {
             // First we will get the active cards event to get the album template
-            val event = LoriCoolCardsEvents.select {
-                LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-            }.firstOrNull() ?: return@transaction EventStatsResult.EventUnavailable
+            val event = LoriCoolCardsEvents.selectAll().where {
+                LoriCoolCardsEvents.id eq albumId and (LoriCoolCardsEvents.startsAt lessEq now)
+            }.firstOrNull() ?: return@transaction EventStatsResult.AlbumDoesNotExist
 
             val userCountDistinctField = LoriCoolCardsUserOwnedCards.user.countDistinct()
             val totalUsersParticipating = LoriCoolCardsUserOwnedCards.slice(userCountDistinctField).select {
@@ -73,10 +101,10 @@ class LoriCoolCardsStatsExecutor(val loritta: LorittaBot, private val loriCoolCa
         }
 
         when (result) {
-            EventStatsResult.EventUnavailable -> {
+            EventStatsResult.AlbumDoesNotExist -> {
                 context.reply(false) {
                     styled(
-                        "Nenhum evento de figurinhas ativo"
+                        "O álbum de figurinhas que você selecionou não existe!"
                     )
                 }
             }
@@ -161,7 +189,7 @@ class LoriCoolCardsStatsExecutor(val loritta: LorittaBot, private val loriCoolCa
     }
 
     sealed class EventStatsResult {
-        data object EventUnavailable : EventStatsResult()
+        data object AlbumDoesNotExist : EventStatsResult()
         class Success(
             val eventName: String,
             val startedAt: Instant,

@@ -76,6 +76,9 @@ give:
 stats:
   label: "stats"
   description: "Estatísticas sobre o Evento de Figurinhas"
+  options:
+    album:
+      text: "Qual álbum você quer ver as estatísticas dele"
 
 compare:
   label: "comparar"
