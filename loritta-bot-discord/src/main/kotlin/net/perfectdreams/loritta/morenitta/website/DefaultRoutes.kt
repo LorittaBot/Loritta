@@ -103,6 +103,8 @@ object DefaultRoutes {
 		PostSearchGuildsRoute(loritta),
 		PostSendMessageGuildRoute(loritta),
 		GetServerConfigSectionRoute(loritta, website),
+		GetGuildEmojiFightTopWinnersRoute(loritta),
+		GetGuildUserEmojiFightWinsRoute(loritta),
 
 		// Loritta
 		GetLanguageInfoRoute(loritta),
