@@ -357,6 +357,11 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                             context.user,
                                             viewSummaryButton
                                         ) {
+                                            // We need to do this because the user may have clicked the "View Summary" button before looking at all the stickers
+                                            val lastStickerOfThePacks = if (cards.isNotEmpty())
+                                                cards.last()
+                                            else currentCard
+
                                             val groupedCards = result.cards.groupBy { it.card[LoriCoolCardsEventCards.id] }
                                                 .toList()
                                                 // This is an amalgamation, but it does work
@@ -391,14 +396,14 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                                             appendLine()
                                                         }
 
-                                                        appendLine("**Progresso do Álbum:** ${currentCard.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${currentCard.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
+                                                        appendLine("**Progresso do Álbum:** ${lastStickerOfThePacks.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${lastStickerOfThePacks.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
                                                         appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
                                                     }
 
                                                     this.description = description
                                                 }
 
-                                                if (result.alreadyStickedCardsCount != currentCard.totalAlbumCompletionCount) {
+                                                if (result.alreadyStickedCardsCount != lastStickerOfThePacks.totalAlbumCompletionCount) {
                                                     // If the number is different, then it means that we have new stickers to be sticked!
                                                     actionRow(
                                                         loritta.interactivityManager
