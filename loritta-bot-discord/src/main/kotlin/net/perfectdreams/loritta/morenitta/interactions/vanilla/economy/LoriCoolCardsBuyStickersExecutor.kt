@@ -106,10 +106,38 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
 
                 val clickCallback: suspend (ComponentContext, Int) -> (Unit) = { it, stickerPacksCount ->
                     val future = it.editMessageAsync {
+                        // TODO: I think there must be a way to do this
                         actionRow(
-                            buyBoosterPack1xButton
-                                .withEmoji(LoadingEmojis.random().toJDA())
-                                .asDisabled()
+                            buyBoosterPack1xButton.asDisabled().let {
+                                if (stickerPacksCount == 1)
+                                    it.withEmoji(LoadingEmojis.random().toJDA())
+                                else
+                                    it
+                            },
+                            buyBoosterPack2xButton.asDisabled().let {
+                                if (stickerPacksCount == 2)
+                                    it.withEmoji(LoadingEmojis.random().toJDA())
+                                else
+                                    it
+                            },
+                            buyBoosterPack3xButton.asDisabled().let {
+                                if (stickerPacksCount == 3)
+                                    it.withEmoji(LoadingEmojis.random().toJDA())
+                                else
+                                    it
+                            },
+                            buyBoosterPack4xButton.asDisabled().let {
+                                if (stickerPacksCount == 4)
+                                    it.withEmoji(LoadingEmojis.random().toJDA())
+                                else
+                                    it
+                            },
+                            buyBoosterPack5xButton.asDisabled().let {
+                                if (stickerPacksCount == 5)
+                                    it.withEmoji(LoadingEmojis.random().toJDA())
+                                else
+                                    it
+                            }
                         )
                     }
 
