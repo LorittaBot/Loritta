@@ -141,7 +141,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                         )
                     }
 
-                    logger.info { "User ${context.user.idLong} is buying a booster pack! Giving stickers and stuff..." }
+                    logger.info { "User ${context.user.idLong} is buying ${stickerPacksCount}x booster packs! Giving stickers and stuff..." }
 
                     val (result, time) = measureTimedValue {
                         loritta.transaction {
@@ -272,7 +272,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                         }
                     }
 
-                    logger.info { "User ${context.user.idLong} bought a booster pack! - Took $time" }
+                    logger.info { "User ${context.user.idLong} bought ${stickerPacksCount}x booster packs! - Took $time" }
 
                     val hook = future.await()
 
