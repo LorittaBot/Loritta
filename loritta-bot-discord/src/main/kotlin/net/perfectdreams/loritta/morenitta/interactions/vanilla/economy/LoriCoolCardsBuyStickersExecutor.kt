@@ -329,16 +329,21 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                         this.image = cardReceivedImageUrl
                                     }
 
-                                    if (cards.isNotEmpty()) {
-                                        actionRow(
-                                            loritta.interactivityManager.buttonForUser(
-                                                context.user,
-                                                ButtonStyle.PRIMARY,
-                                                context.i18nContext.get(I18N_PREFIX.NextSticker(result.cards.size - cards.size, result.cards.size)),
-                                                {
-                                                    this.loriEmoji = Emotes.LoriCoolSticker
-                                                }
-                                            ) {
+                                    val nextStickerButton = UnleashedButton.of(
+                                        ButtonStyle.PRIMARY,
+                                        context.i18nContext.get(I18N_PREFIX.NextSticker(result.cards.size - cards.size, result.cards.size)),
+                                        Emotes.LoriCoolSticker
+                                    )
+
+                                    val viewSummaryButton = UnleashedButton.of(
+                                        ButtonStyle.SECONDARY,
+                                        context.i18nContext.get(I18N_PREFIX.ViewSummary),
+                                        Emotes.LoriReading
+                                    )
+
+                                    actionRow(
+                                        if (cards.isNotEmpty()) {
+                                            loritta.interactivityManager.buttonForUser(context.user, nextStickerButton) {
                                                 // We don't need to defer here because the getCurrentProfileIdAndCreateMessage does not do any database related things here!
                                                 // (if it does, then we need to update the code)
                                                 it.event.editMessage(MessageEdit { apply(getCurrentStickerAndCreateMessage()) })
@@ -347,97 +352,90 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                                     }
                                                     .await()
                                             }
-                                        )
-                                    } else {
-                                        actionRow(
-                                            loritta.interactivityManager.buttonForUser(
-                                                context.user,
+                                        } else nextStickerButton.asDisabled(),
+                                        loritta.interactivityManager.buttonForUser(
+                                            context.user,
+                                            viewSummaryButton
+                                        ) {
+                                            val groupedCards = result.cards.groupBy { it.card[LoriCoolCardsEventCards.id] }
+                                                .toList()
+                                                // This is an amalgamation, but it does work
+                                                .sortedWith(compareBy<Pair<EntityID<Long>, List<BuyStickersResult.Success.CardResult>>> { it.second.first().haveWeAlreadySeenThisCardBefore }.thenBy { it.second.size }.thenBy { it.second.first().card[LoriCoolCardsEventCards.fancyCardId] })
+
+                                            val stickStickersButton = UnleashedButton.of(
                                                 ButtonStyle.PRIMARY,
-                                                context.i18nContext.get(I18N_PREFIX.ViewSummary),
-                                                {
-                                                    this.loriEmoji = Emotes.LoriReading
-                                                }
+                                                context.i18nContext.get(I18N_PREFIX.StickStickers),
+                                                Emotes.LoriCoolSticker
+                                            )
+
+                                            val buyMoreStickerPacksButton = UnleashedButton.of(
+                                                ButtonStyle.SECONDARY,
+                                                context.i18nContext.get(I18N_PREFIX.BuyStickerBoosterPack),
+                                                Emotes.LoriCard
+                                            )
+
+                                            // Don't defer, let's edit the original message directly because we don't need to access the database here
+                                            it.editMessage(
+                                                isReplace = false,
                                             ) {
-                                                val groupedCards = result.cards.groupBy { it.card[LoriCoolCardsEventCards.id] }
-                                                    .toList()
-                                                    // This is an amalgamation, but it does work
-                                                    .sortedWith(compareBy<Pair<EntityID<Long>, List<BuyStickersResult.Success.CardResult>>> { it.second.first().haveWeAlreadySeenThisCardBefore }.thenBy { it.second.size }.thenBy { it.second.first().card[LoriCoolCardsEventCards.fancyCardId] })
+                                                embed {
+                                                    title = "${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}"
+                                                    color = LorittaColors.LorittaAqua.rgb
 
-                                                val stickStickersButton = UnleashedButton.of(
-                                                    ButtonStyle.PRIMARY,
-                                                    context.i18nContext.get(I18N_PREFIX.StickStickers),
-                                                    Emotes.LoriCoolSticker
-                                                )
-
-                                                val buyMoreStickerPacksButton = UnleashedButton.of(
-                                                    ButtonStyle.SECONDARY,
-                                                    context.i18nContext.get(I18N_PREFIX.BuyStickerBoosterPack),
-                                                    Emotes.LoriCard
-                                                )
-
-                                                // Don't defer, let's edit the original message directly because we don't need to access the database here
-                                                it.editMessage(
-                                                    isReplace = false,
-                                                ) {
-                                                    embed {
-                                                        title = "${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}"
-                                                        color = LorittaColors.LorittaAqua.rgb
-
-                                                        val description = buildString {
-                                                            groupedCards.forEach {
-                                                                val cardReference = it.second.first().card
-                                                                append("* ${it.second.size}x ${cardReference[LoriCoolCardsEventCards.rarity].emoji} ${cardReference[LoriCoolCardsEventCards.fancyCardId]} - ${cardReference[LoriCoolCardsEventCards.title]}")
-                                                                if (!it.second.any { it.haveWeAlreadySeenThisCardBefore })
-                                                                    append(" **[NOVO!]**")
-                                                                appendLine()
-                                                            }
-
-                                                            appendLine("**Progresso do Álbum:** ${currentCard.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${currentCard.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
-                                                            appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
+                                                    val description = buildString {
+                                                        groupedCards.forEach {
+                                                            val cardReference = it.second.first().card
+                                                            append("* ${it.second.size}x ${cardReference[LoriCoolCardsEventCards.rarity].emoji} ${cardReference[LoriCoolCardsEventCards.fancyCardId]} - ${cardReference[LoriCoolCardsEventCards.title]}")
+                                                            if (!it.second.any { it.haveWeAlreadySeenThisCardBefore })
+                                                                append(" **[NOVO!]**")
+                                                            appendLine()
                                                         }
 
-                                                        this.description = description
+                                                        appendLine("**Progresso do Álbum:** ${currentCard.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${currentCard.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
+                                                        appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
                                                     }
 
-                                                    if (result.alreadyStickedCardsCount != currentCard.totalAlbumCompletionCount) {
-                                                        // If the number is different, then it means that we have new stickers to be sticked!
-                                                        actionRow(
-                                                            loritta.interactivityManager
-                                                                .buttonForUser(
-                                                                    context.user,
-                                                                    stickStickersButton
-                                                                ) {
-                                                                    loriCoolCardsCommand.stickStickers.stickStickers(it)
-                                                                },
-                                                            loritta.interactivityManager
-                                                                .buttonForUser(
-                                                                    context.user,
-                                                                    buyMoreStickerPacksButton
-                                                                ) {
-                                                                    it.deferChannelMessage(false)
+                                                    this.description = description
+                                                }
 
-                                                                    buyStickers(it)
-                                                                }
-                                                        )
-                                                    } else {
-                                                        // If not, just disable the button
-                                                        actionRow(
-                                                            stickStickersButton.asDisabled(),
-                                                            loritta.interactivityManager
-                                                                .buttonForUser(
-                                                                    context.user,
-                                                                    buyMoreStickerPacksButton
-                                                                ) {
-                                                                    it.deferChannelMessage(false)
+                                                if (result.alreadyStickedCardsCount != currentCard.totalAlbumCompletionCount) {
+                                                    // If the number is different, then it means that we have new stickers to be sticked!
+                                                    actionRow(
+                                                        loritta.interactivityManager
+                                                            .buttonForUser(
+                                                                context.user,
+                                                                stickStickersButton
+                                                            ) {
+                                                                loriCoolCardsCommand.stickStickers.stickStickers(it)
+                                                            },
+                                                        loritta.interactivityManager
+                                                            .buttonForUser(
+                                                                context.user,
+                                                                buyMoreStickerPacksButton
+                                                            ) {
+                                                                it.deferChannelMessage(false)
 
-                                                                    buyStickers(it)
-                                                                }
-                                                        )
-                                                    }
+                                                                buyStickers(it)
+                                                            }
+                                                    )
+                                                } else {
+                                                    // If not, just disable the button
+                                                    actionRow(
+                                                        stickStickersButton.asDisabled(),
+                                                        loritta.interactivityManager
+                                                            .buttonForUser(
+                                                                context.user,
+                                                                buyMoreStickerPacksButton
+                                                            ) {
+                                                                it.deferChannelMessage(false)
+
+                                                                buyStickers(it)
+                                                            }
+                                                    )
                                                 }
                                             }
-                                        )
-                                    }
+                                        }
+                                    )
                                 }
                             }
 
