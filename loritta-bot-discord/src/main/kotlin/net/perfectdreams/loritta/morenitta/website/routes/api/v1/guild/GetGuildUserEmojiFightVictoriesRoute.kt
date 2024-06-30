@@ -68,14 +68,14 @@ class GetGuildUserEmojiFightVictoriesRoute(loritta: LorittaBot) : RequiresAPIAut
 		if (result != null) {
 			call.respondJson(
 				buildJsonObject {
-					put("id", userId)
+					put("id", userId.toString())
 					put("victories", result[winCount])
 				}
 			)
 		} else {
 			call.respondJson(
 				buildJsonObject {
-					put("id", userId)
+					put("id", userId.toString())
 					put("victories", 0)
 				}
 			)

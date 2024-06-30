@@ -88,7 +88,7 @@ class GetGuildEmojiFightTopWinnersRoute(loritta: LorittaBot) : RequiresAPIAuthen
 				putJsonArray("results") {
 					for (result in results) {
 						addJsonObject {
-							put("id", result[EmojiFightParticipants.user].value)
+							put("id", result[EmojiFightParticipants.user].value.toString())
 							put("victories", result[winCount])
 						}
 					}
