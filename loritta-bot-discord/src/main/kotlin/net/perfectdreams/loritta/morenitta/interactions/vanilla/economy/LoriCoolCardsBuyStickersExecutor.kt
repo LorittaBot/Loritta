@@ -155,7 +155,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                             // Check if we have enough money to buy the booster pack
                             val userProfile = loritta.getOrCreateLorittaProfile(context.user.idLong)
                             val priceOfAllStickerPacksThatTheUserWants = result.template.sonhosPrice * stickerPacksCount
-                            if (priceOfAllStickerPacksThatTheUserWants * stickerPacksCount > userProfile.money)
+                            if (priceOfAllStickerPacksThatTheUserWants > userProfile.money)
                                 return@transaction BuyStickersResult.NotEnoughSonhos(userProfile.money, priceOfAllStickerPacksThatTheUserWants)
 
                             Profiles.update({ Profiles.id eq context.user.idLong }) {
