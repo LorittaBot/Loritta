@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import kotlin.random.Random
@@ -359,7 +360,8 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                             ) {
                                                 val groupedCards = result.cards.groupBy { it.card[LoriCoolCardsEventCards.id] }
                                                     .toList()
-                                                    .sortedByDescending { it.second.size }
+                                                    // This is an amalgamation, but it does work
+                                                    .sortedWith(compareBy<Pair<EntityID<Long>, List<BuyStickersResult.Success.CardResult>>> { it.second.first().haveWeAlreadySeenThisCardBefore }.thenBy { it.second.size }.thenBy { it.second.first().card[LoriCoolCardsEventCards.fancyCardId] })
 
                                                 val stickStickersButton = UnleashedButton.of(
                                                     ButtonStyle.PRIMARY,
