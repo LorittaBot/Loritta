@@ -74,6 +74,42 @@ give:
     stickers:
       text: "As figurinhas que você quer dar, você também pode usar uma lista de IDs de figurinhas"
 
+trade:
+  label: "trocar"
+  stickerTradeBetweenUsers: "Troca de Figurittas de {user1} x {user2}"
+  description: "Troca figurinhas e sonhos com outra pessoa"
+  youCantTradeStickersWithYourself: "Você não pode trocar figurinhas com você mesmo, bobinho!"
+  nothingTradedYetFunnyMessages:
+    - "Vazio, igualzinho a minha conta bancária"
+    - "Vazio, ou seja, não cheio"
+    - "Vazio, igual ao vazio do meu coração"
+    - "Vazio, um espaço desprovido de entidades"
+    - "Vazio, um vazio existencial"
+  setStickers: "Colocar Figurinhas"
+  setSonhos: "Colocar Sonhos"
+  acceptTradeButton: "Aceitar Oferta ({totalAccepted,number}/{totalRequiredToAccept,number})"
+  tradeHasAlreadyBeenProcessed: "Esta troca já foi processada e não pode ser mais alterada!"
+  youCantChangeATradeThatYouHaveApproved: "Você não pode alterar uma troca que você já aprovou! Para alterar a troca, desaprove a troca e altere o que você deseja!"
+  youCantChangeATradeThatYourFriendHasApproved: "Você não pode alterar uma troca que o seu parceiro de troca já aprovou! Para alterar a troca, peça para ele desaprovar a troca e altere o que você deseja!"
+  userDoesNotHaveEnoughSonhosForTheTrade: "{user} não tem sonhos suficientes para realizar a troca!"
+  tradeSuccessful: "Troca realizada com sucesso!"
+  tradePlayerReceivedStickers: "{user} recebeu as **figurinhas `{stickerList}`**!"
+  tradePlayerReceivedSonhos: "{user} recebeu {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**!"
+  tradeAccepted: "Oferta aceita! Quando o seu parceiro de trocas aceitar a oferta, a troca será realizada!"
+  youDontHaveEnoughStickers: "Você não tem figurinhas suficientes para trocar! **Figurinhas que estão faltando:** {stickerList}"
+  userDoesNotHaveEnoughStickers: "{user} não tem figurinhas suficientes para trocar! **Figurinhas que estão faltando:** {stickerList}"
+  userIsTryingToGiveAnUnknownSticker: "{user} está tentando dar uma figurinha que não existe!"
+  tryingToGiveAnUnknownSticker: "Você está tentando dar uma figurinha que não existe!"
+  cantTradeSameStickers: "Vocês dois estão tentando trocar a mesma figurinha!"
+  tradeModal:
+    stickerTrade: "Troca de Figurinhas"
+    sonhosToBeTraded: "Sonhos que você deseja trocar"
+    stickersToBeTraded: "Lista de figurinhas que você deseja trocar"
+
+  options:
+    user:
+      text: "O usuário que você deseja trocar  figurinhas com ele"
+
 stats:
   label: "stats"
   description: "Estatísticas sobre o Evento de Figurinhas"

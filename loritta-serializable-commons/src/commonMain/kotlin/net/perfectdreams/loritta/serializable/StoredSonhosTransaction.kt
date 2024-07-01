@@ -109,3 +109,10 @@ data class StoredLoriCoolCardsFinishedAlbumSonhosTransaction(
     val eventId: Long,
     val completionId: Long
 ) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLoriCoolCardsPaymentSonhosTradeTransaction(
+    val givenBy: Long,
+    val receivedBy: Long,
+    val figurittasTradeId: Long
+) : StoredSonhosTransaction()

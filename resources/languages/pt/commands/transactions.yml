@@ -108,7 +108,8 @@ types:
     description: "Transações relacionadas aos eventos das Figurittas da Loritta"
     boughtBoosterPack: "Comprou um pacotinho de figurinhas por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} nas Figurittas da Loritta"
     finishedAlbum: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter acabado o álbum nas Figurittas da Loritta"
-
+    sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para `{receiverTag}` (`{receiverId}`) em uma troca de figurinhas"
+    received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de `{giverTag}` (`{giverId}`) em uma troca de figurinhas"
 options:
   user:
     text: "O usuário que você deseja ver as transações"
