@@ -59,11 +59,6 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
             executor = viewAlbum
         }
 
-        subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description) {
-            // Give stickers
-            executor = LoriCoolCardsGiveStickersExecutor(loritta, this@LoriCoolCardsCommand)
-        }
-
         subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description) {
             // Event stats
             executor = LoriCoolCardsStatsExecutor(loritta, this@LoriCoolCardsCommand)
@@ -72,6 +67,21 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
         subcommand(I18N_PREFIX.Compare.Label, I18N_PREFIX.Compare.Description) {
             // Compare stickers
             executor = LoriCoolCardsCompareStickersExecutor(loritta, this@LoriCoolCardsCommand)
+        }
+
+        subcommand(I18N_PREFIX.Duplicates.Label, I18N_PREFIX.Duplicates.Description) {
+            // Duplicate stickers
+            executor = LoriCoolCardsDuplicateStickersInventoryExecutor(loritta, this@LoriCoolCardsCommand)
+        }
+
+        subcommand(I18N_PREFIX.Missing.Label, I18N_PREFIX.Missing.Description) {
+            // Missing stickers
+            executor = LoriCoolCardsMissingStickersInventoryExecutor(loritta, this@LoriCoolCardsCommand)
+        }
+
+        subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description) {
+            // Give stickers
+            executor = LoriCoolCardsGiveStickersExecutor(loritta, this@LoriCoolCardsCommand)
         }
     }
 

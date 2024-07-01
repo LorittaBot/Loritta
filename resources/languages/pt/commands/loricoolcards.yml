@@ -92,3 +92,23 @@ compare:
   options:
     user:
       text: "O usuário que você deseja comparar as suas figurinhas com as dele"
+
+duplicates:
+  label: "repetidas"
+  description: "Mostra quais figurinhas repetidas você tem no seu inventário"
+  yourDuplicateStickers: "Suas Figurinhas Repetidas"
+  userDuplicateStickers: "Figurinhas Repetidas de {user}"
+  getListOfStickers: "Pegar a lista de figurinhas repetidas"
+  options:
+    user:
+      text: "O usuário que você deseja ver as figurinhas repetidas dele"
+
+missing:
+  label: "faltando"
+  description: "Mostra quais figurinhas estão faltando no seu álbum"
+  yourMissingStickers: "Figurinhas faltando no seu álbum"
+  userMissingStickers: "Figurinhas faltando no álbum de {user}"
+  getListOfStickers: "Pegar a lista de figurinhas faltando"
+  options:
+    user:
+      text: "O usuário que você deseja ver as figurinhas que estão faltando no seu álbum"
