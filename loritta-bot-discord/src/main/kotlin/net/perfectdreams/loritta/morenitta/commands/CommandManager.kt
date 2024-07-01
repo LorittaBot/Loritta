@@ -56,11 +56,11 @@ class CommandManager(val loritta: LorittaBot) {
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
 
 	init {
-		commandMap.add(FaustaoCommand(loritta))
-		commandMap.add(PedraPapelTesouraCommand(loritta))
-		commandMap.add(VaporondaCommand(loritta))
-		commandMap.add(QualidadeCommand(loritta))
-		commandMap.add(VaporQualidadeCommand(loritta))
+		// commandMap.add(FaustaoCommand(loritta))
+		// commandMap.add(PedraPapelTesouraCommand(loritta))
+		// commandMap.add(VaporondaCommand(loritta))
+		// commandMap.add(QualidadeCommand(loritta))
+		// commandMap.add(VaporQualidadeCommand(loritta))
 		commandMap.add(TretaNewsCommand(loritta))
 		commandMap.add(MagicBallCommand(loritta))
 		commandMap.add(NyanCatCommand(loritta))
@@ -69,7 +69,7 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(SpinnerCommand(loritta))
 		commandMap.add(LavaCommand(loritta))
 		commandMap.add(LavaReversoCommand(loritta))
-		commandMap.add(AvaliarWaifuCommand(loritta))
+		// commandMap.add(AvaliarWaifuCommand(loritta))
 		commandMap.add(RazoesCommand(loritta))
 		commandMap.add(DeusCommand(loritta))
 		commandMap.add(PerfeitoCommand(loritta))
@@ -99,9 +99,9 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(DrawnMaskCommand(loritta))
 
 		// =======[ DIVERSÃO ]======
-		commandMap.add(BemBoladaCommand(loritta))
-		commandMap.add(TioDoPaveCommand(loritta))
-		commandMap.add(VemDeZapCommand(loritta))
+		// commandMap.add(BemBoladaCommand(loritta))
+		// commandMap.add(TioDoPaveCommand(loritta))
+		// commandMap.add(VemDeZapCommand(loritta))
 
 		// =======[ MISC ]======
 		commandMap.add(SayCommand(loritta))
