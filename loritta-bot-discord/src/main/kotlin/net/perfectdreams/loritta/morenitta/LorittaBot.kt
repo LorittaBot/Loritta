@@ -131,9 +131,7 @@ import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.jetbrains.exposed.sql.*
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.io.InputStream
 import java.lang.reflect.Modifier
 import java.nio.file.*
@@ -662,7 +660,6 @@ class LorittaBot(
 				}
 
 				val limitedCount = 16
-				val isZstd = random.nextBoolean()
 				logger.info { "Using $limitedCount limited parallism in Dispatcher.IO for shard shutdown" }
 
 				measureTime {
