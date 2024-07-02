@@ -135,6 +135,7 @@ duplicates:
   yourDuplicateStickers: "Suas Figurinhas Repetidas"
   userDuplicateStickers: "Figurinhas Repetidas de {user}"
   getListOfStickers: "Pegar a lista de figurinhas repetidas"
+  youHaveSoManyStickersThatItDoesntFitAllInHere: "Você tem tantas figurinhas repetidas que elas não cabem todas aqui nesta mensagem!"
   options:
     user:
       text: "O usuário que você deseja ver as figurinhas repetidas dele"

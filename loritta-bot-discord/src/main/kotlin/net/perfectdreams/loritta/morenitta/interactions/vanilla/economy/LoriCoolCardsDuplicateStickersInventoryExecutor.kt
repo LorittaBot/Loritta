@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
@@ -17,7 +18,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.select
@@ -55,6 +55,7 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                 LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
             }.toList()
 
+            // First we get the stickers that we have sticked
             val stickersThatYouHaveStickedIds = LoriCoolCardsUserOwnedCards
                 .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
                 .select {
@@ -64,19 +65,36 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                 .toList()
                 .map { it[LoriCoolCardsUserOwnedCards.card].value }
 
-            val stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYetIds = LoriCoolCardsUserOwnedCards
+            // Then we get the stickers that aren't sticked, with their counts
+            val stickersThatYouHaveInYourInventoryWithTheirCountsIds = LoriCoolCardsUserOwnedCards
                 .slice(LoriCoolCardsUserOwnedCards.card, stickerCountColumn)
                 .select {
-                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userThatWillBeLookedUp.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.card inList stickersThatYouHaveStickedIds)
+                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userThatWillBeLookedUp.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false)
                 }
                 .groupBy(LoriCoolCardsUserOwnedCards.card)
                 .toList()
                 .map { it[LoriCoolCardsUserOwnedCards.card].value to it[stickerCountColumn] }
 
+            // So, here's how to figure out if a sticker is a duplicate:
+            // If we have it sticked + have one of them in our inventory
+            // If we DON'T have them sticked + we have TWO of them in our inventory (this result will be -1)
+            val stickerIdsToCount = mutableMapOf<Long, Long>()
+            for ((stickerId, inventoryCount) in stickersThatYouHaveInYourInventoryWithTheirCountsIds) {
+                val isSticked = stickersThatYouHaveStickedIds.contains(stickerId)
+
+                if (isSticked)
+                    stickerIdsToCount[stickerId] = inventoryCount
+                else if (inventoryCount >= 2)
+                    stickerIdsToCount[stickerId] = inventoryCount - 1
+            }
+
             DuplicateStickersResult.Success(
-                eventStickers,
-                stickersThatYouHaveStickedIds,
-                stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYetIds
+                stickerIdsToCount.map { (stickerId, stickerCount) ->
+                    DuplicateSticker(
+                        eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }[LoriCoolCardsEventCards.fancyCardId],
+                        stickerCount
+                    )
+                }
             )
         }
 
@@ -89,13 +107,6 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                 }
             }
             is DuplicateStickersResult.Success -> {
-                val yourStickersDuplicated = mutableListOf<Pair<ResultRow, Long>>()
-
-                for ((stickerId, stickerCount) in result.stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYet) {
-                    val stickerInfo = result.eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
-                    yourStickersDuplicated.add(Pair(stickerInfo, stickerCount))
-                }
-
                 context.reply(false) {
                     embed {
                         if (userThatWillBeLookedUp == context.user) {
@@ -104,11 +115,29 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                             title = "${Emotes.LoriLurk} ${context.i18nContext.get(I18N_PREFIX.UserDuplicateStickers(userThatWillBeLookedUp.name))}"
                         }
 
+                        var isFirst = true
+                        var descriptionHasOverflown = false
+
                         description = buildString {
-                            append(yourStickersDuplicated.sortedBy { it.first[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "${it.second}x ${it.first[LoriCoolCardsEventCards.fancyCardId]}" })
+                            for (duplicateSticker in result.duplicateStickers.sortedBy { it.fancyStickerId }) {
+                                var str = "${duplicateSticker.count}x ${duplicateSticker.fancyStickerId}"
+                                if (!isFirst)
+                                    str += ", "
+                                isFirst = false
+                                if (str.length + this.length > DiscordResourceLimits.Embed.Description) {
+                                    descriptionHasOverflown = true
+                                    return@buildString
+                                }
+
+                                append(str)
+                            }
                         }
 
                         color = LorittaColors.LorittaAqua.rgb
+
+                        if (descriptionHasOverflown) {
+                            footer(context.i18nContext.get(I18N_PREFIX.YouHaveSoManyStickersThatItDoesntFitAllInHere))
+                        }
                     }
 
                     // This is useful for phone users to copy the sticker list
@@ -119,14 +148,14 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                     )
 
                     actionRow(
-                        if (yourStickersDuplicated.isEmpty())
+                        if (result.duplicateStickers.isEmpty())
                             stickersThatYouNeedButton.asDisabled()
                         else
                             loritta.interactivityManager.button(
                                 stickersThatYouNeedButton
                             ) { context ->
                                 context.reply(true) {
-                                    content = yourStickersDuplicated.sortedBy { it.first[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it.first[LoriCoolCardsEventCards.fancyCardId] }
+                                    content = result.duplicateStickers.sortedBy { it.fancyStickerId }.joinToString { it.fancyStickerId }
                                 }
                             }
                     )
@@ -138,11 +167,14 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
     sealed class DuplicateStickersResult {
         data object EventUnavailable : DuplicateStickersResult()
         class Success(
-            val eventStickers: List<ResultRow>,
-            val stickersThatYouHaveSticked: List<Long>,
-            val stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYet: List<Pair<Long, Long>>
+            val duplicateStickers: List<DuplicateSticker>
         ) : DuplicateStickersResult()
     }
+
+    data class DuplicateSticker(
+        val fancyStickerId: String,
+        val count: Long
+    )
 
     override suspend fun convertToInteractionsArguments(
         context: LegacyMessageCommandContext,
