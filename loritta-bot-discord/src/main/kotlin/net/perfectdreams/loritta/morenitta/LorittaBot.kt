@@ -724,6 +724,7 @@ class LorittaBot(
 											// We want to minimize resizes of the backed stream, to make it go zooooom
 											// So what I did was calculating the 75th percentile of the guild data, and used it as the size
 											Json.encodeToStream(DeviousConverter.toJson(guild), zstdOutputStream)
+											zstdOutputStream.write(newLineUtf8)
 
 											// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 											guild.invalidate()
