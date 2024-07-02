@@ -120,9 +120,10 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
 
                         description = buildString {
                             for (duplicateSticker in result.duplicateStickers.sortedBy { it.fancyStickerId }) {
-                                var str = "${duplicateSticker.count}x ${duplicateSticker.fancyStickerId}"
-                                if (!isFirst)
-                                    str += ", "
+                                var str = if (isFirst)
+                                    ""
+                                else ", "
+                                str += "${duplicateSticker.count}x ${duplicateSticker.fancyStickerId}"
                                 isFirst = false
                                 if (str.length + this.length > DiscordResourceLimits.Embed.Description) {
                                     descriptionHasOverflown = true
