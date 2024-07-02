@@ -670,41 +670,13 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                             )
                                         }
 
-                                        fun markAsSeen(
-                                            userThatWillReceiveTheSticker: User,
-                                            stickerIdsToBeGivenMappedToEventStickerId: List<Long>
-                                        ) {
-                                            // Now that we selected the cards, we will mark them as seen + owned
-                                            // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
-                                            val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers =
-                                                LoriCoolCardsSeenCards.slice(
-                                                    LoriCoolCardsSeenCards.card
-                                                ).select {
-                                                    LoriCoolCardsSeenCards.card inList stickerIdsToBeGivenMappedToEventStickerId and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
-                                                }.map { it[LoriCoolCardsSeenCards.card].value }
-
-                                            val stickersIdsThatWeHaveNotSeenBefore = mutableListOf<Long>()
-                                            for (eventStickerId in stickerIdsToBeGivenMappedToEventStickerId) {
-                                                if (eventStickerId !in stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers)
-                                                    stickersIdsThatWeHaveNotSeenBefore.add(eventStickerId)
-                                            }
-
-                                            if (stickersIdsThatWeHaveNotSeenBefore.isNotEmpty()) {
-                                                // "Seen cards" just mean that the card won't be unknown (???) when the user looks it up, even if they give the card away
-                                                LoriCoolCardsSeenCards.batchInsert(
-                                                    stickersIdsThatWeHaveNotSeenBefore,
-                                                    shouldReturnGeneratedValues = false
-                                                ) {
-                                                    this[LoriCoolCardsSeenCards.card] = it
-                                                    this[LoriCoolCardsSeenCards.user] =
-                                                        userThatWillReceiveTheSticker.idLong
-                                                    this[LoriCoolCardsSeenCards.seenAt] = now
-                                                }
-                                            }
-                                        }
-
-                                        markAsSeen(selfUser, stickerIdsToBeGivenMappedToEventPlayer1StickerId)
                                         markAsSeen(
+                                            now,
+                                            selfUser,
+                                            stickerIdsToBeGivenMappedToEventPlayer1StickerId
+                                        )
+                                        markAsSeen(
+                                            now,
                                             userThatYouWantToTradeWith,
                                             stickerIdsToBeGivenMappedToEventPlayer2StickerId
                                         )
@@ -829,6 +801,39 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
         context.reply(false) {
             apply(createTradeMessage())
+        }
+    }
+
+    fun markAsSeen(
+        now: Instant,
+        userThatWillReceiveTheSticker: User,
+        stickerIdsToBeGivenMappedToEventStickerId: List<Long>
+    ) {
+        // Now that we selected the cards, we will mark them as seen + owned
+        // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
+        val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers =
+            LoriCoolCardsSeenCards.slice(
+                LoriCoolCardsSeenCards.card
+            ).select {
+                LoriCoolCardsSeenCards.card inList stickerIdsToBeGivenMappedToEventStickerId and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
+            }.map { it[LoriCoolCardsSeenCards.card].value }
+
+        val stickersIdsThatWeHaveNotSeenBefore = mutableListOf<Long>()
+        for (eventStickerId in stickerIdsToBeGivenMappedToEventStickerId) {
+            if (eventStickerId !in stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers)
+                stickersIdsThatWeHaveNotSeenBefore.add(eventStickerId)
+        }
+
+        if (stickersIdsThatWeHaveNotSeenBefore.isNotEmpty()) {
+            // "Seen cards" just mean that the card won't be unknown (???) when the user looks it up, even if they give the card away
+            LoriCoolCardsSeenCards.batchInsert(
+                stickersIdsThatWeHaveNotSeenBefore,
+                shouldReturnGeneratedValues = false
+            ) {
+                this[LoriCoolCardsSeenCards.card] = it
+                this[LoriCoolCardsSeenCards.user] = userThatWillReceiveTheSticker.idLong
+                this[LoriCoolCardsSeenCards.seenAt] = now
+            }
         }
     }
 
