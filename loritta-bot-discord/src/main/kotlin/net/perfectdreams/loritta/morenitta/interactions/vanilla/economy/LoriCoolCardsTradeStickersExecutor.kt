@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsGiveStickersExecutor.Companion
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsPaymentSonhosTradeTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
@@ -490,24 +489,24 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         // There are only two possible results here anyway
                                         verificationResultPlayer2 as StickerVerificationResult.Success
 
-                                        val stickerIdsToBeGivenMappedToOwnedPlayer1StickerId = verificationResultPlayer1.stickerIdsToBeGivenMappedToOwnedStickerId
-                                        val stickerIdsToBeGivenMappedToEventPlayer1StickerId = verificationResultPlayer1.stickerIdsToBeGivenMappedToEventStickerId
+                                        val stickerIdsByPlayer1ToBeGivenToPlayer2MappedToOwnedStickerId = verificationResultPlayer1.stickerIdsToBeGivenMappedToOwnedStickerId
+                                        val stickerIdsByPlayer1ToBeGivenToPlayer2MappedToEventStickerId = verificationResultPlayer1.stickerIdsToBeGivenMappedToEventStickerId
 
-                                        val stickerIdsToBeGivenMappedToOwnedPlayer2StickerId = verificationResultPlayer2.stickerIdsToBeGivenMappedToOwnedStickerId
-                                        val stickerIdsToBeGivenMappedToEventPlayer2StickerId = verificationResultPlayer2.stickerIdsToBeGivenMappedToEventStickerId
+                                        val stickerIdsByPlayer2ToBeGivenToPlayer1MappedToOwnedStickerId = verificationResultPlayer2.stickerIdsToBeGivenMappedToOwnedStickerId
+                                        val stickerIdsByPlayer2ToBeGivenToPlayer1MappedToEventStickerId = verificationResultPlayer2.stickerIdsToBeGivenMappedToEventStickerId
 
                                         // Do we have any elements in common?
-                                        val anyElementCommon = Collections.disjoint(stickerIdsToBeGivenMappedToEventPlayer1StickerId, stickerIdsToBeGivenMappedToEventPlayer2StickerId)
+                                        val anyElementCommon = Collections.disjoint(stickerIdsByPlayer1ToBeGivenToPlayer2MappedToEventStickerId, stickerIdsByPlayer2ToBeGivenToPlayer1MappedToEventStickerId)
                                         if (anyElementCommon)
                                             TradeStickerResult.CantTradeSameStickers
 
                                         // Delete the old cards
                                         LoriCoolCardsUserOwnedCards.deleteWhere {
-                                            LoriCoolCardsUserOwnedCards.id inList stickerIdsToBeGivenMappedToOwnedPlayer1StickerId
+                                            LoriCoolCardsUserOwnedCards.id inList stickerIdsByPlayer1ToBeGivenToPlayer2MappedToOwnedStickerId
                                         }
 
                                         LoriCoolCardsUserOwnedCards.deleteWhere {
-                                            LoriCoolCardsUserOwnedCards.id inList stickerIdsToBeGivenMappedToOwnedPlayer2StickerId
+                                            LoriCoolCardsUserOwnedCards.id inList stickerIdsByPlayer2ToBeGivenToPlayer1MappedToOwnedStickerId
                                         }
 
                                         // Give the new stickers
@@ -515,14 +514,14 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                             now,
                                             userThatYouWantToTradeWith,
                                             event[LoriCoolCardsEvents.id].value,
-                                            stickerIdsToBeGivenMappedToEventPlayer1StickerId,
+                                            stickerIdsByPlayer1ToBeGivenToPlayer2MappedToEventStickerId,
                                         )
 
                                         giveStickersToUser(
                                             now,
                                             selfUser,
                                             event[LoriCoolCardsEvents.id].value,
-                                            stickerIdsToBeGivenMappedToEventPlayer2StickerId,
+                                            stickerIdsByPlayer2ToBeGivenToPlayer1MappedToEventStickerId,
                                         )
 
                                         // Track the trade!
@@ -618,12 +617,12 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         markAsSeen(
                                             now,
                                             selfUser,
-                                            stickerIdsToBeGivenMappedToEventPlayer1StickerId
+                                            stickerIdsByPlayer2ToBeGivenToPlayer1MappedToEventStickerId
                                         )
                                         markAsSeen(
                                             now,
                                             userThatYouWantToTradeWith,
-                                            stickerIdsToBeGivenMappedToEventPlayer2StickerId
+                                            stickerIdsByPlayer1ToBeGivenToPlayer2MappedToEventStickerId
                                         )
 
                                         return@transaction TradeStickerResult.Success(
