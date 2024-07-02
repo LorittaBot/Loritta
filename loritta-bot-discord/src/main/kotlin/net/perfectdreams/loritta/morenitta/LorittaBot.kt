@@ -451,7 +451,7 @@ class LorittaBot(
 			.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
 			.apply {
 				logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-				bucketedController = BucketedController(this@LorittaBot)
+				bucketedController = BucketedController(this@LorittaBot, config.loritta.discord.maxConcurrency)
 				this.setSessionController(bucketedController)
 			}
 			.setShardsTotal(config.loritta.discord.maxShards)
