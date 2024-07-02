@@ -668,7 +668,10 @@ class LorittaBot(
 					// After we debugged everything then we will use the value correctly
 					val dispatcher = Dispatchers.IO.limitedParallelism(limitedCount)
 
-					val shardJobs = shardManager.shards.map { shard ->
+					val shardJobs = shardManager
+						.shards
+						.sortedBy { it.shardInfo.shardId } // Sorted by shard ID just to be easier to track them down in the logs
+						.map { shard ->
 						GlobalScope.async(dispatcher) {
 							measureTime {
 								val jdaImpl = shard as JDAImpl
