@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import dev.minn.jda.ktx.messages.InlineEmbed
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.sync.Mutex
@@ -31,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsGiveStickersExecutor.Companion
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsPaymentSonhosTradeTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
@@ -90,42 +92,27 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         fun createTradeMessage(): InlineMessage<*>.() -> (Unit) = {
             content = "**${context.i18nContext.get(I18N_PREFIX.StickerTradeBetweenUsers(context.user.asMention, userThatYouWantToTradeWith.asMention))}**"
 
+            // The embed trade status for each user
             embed {
-                val lockStatus = if (usersThatHaveConfirmedTheTrade.contains(selfUser))
-                    "\uD83D\uDD12"
-                else
-                    "\uD83D\uDD13"
-
-                author(selfUser.name, null, selfUser.effectiveAvatarUrl)
-                title = "${Emotes.LoriHanglooseRight}$lockStatus ${selfUser.name}"
-                description = buildString {
-                    if (trade.player1.sonhos != null) {
-                        appendLine("${Emotes.Sonhos2} ${trade.player1.sonhos} sonhos")
-                    }
-
-                    if (trade.player1.stickerFancyIds.isNotEmpty()) {
-                        appendLine("${Emotes.LoriCoolSticker} `${trade.player1.stickerFancyIds.joinToString()}`")
-                    }
-                }.ifEmpty { "*$emptyFunnyMessageForPlayer1*" }
+                apply(
+                    createTradeOfferEmbedStatus(
+                        selfUser,
+                        usersThatHaveConfirmedTheTrade,
+                        trade.player1,
+                        emptyFunnyMessageForPlayer1
+                    )
+                )
             }
 
             embed {
-                val lockStatus = if (usersThatHaveConfirmedTheTrade.contains(userThatYouWantToTradeWith))
-                    "\uD83D\uDD12"
-                else
-                    "\uD83D\uDD13"
-
-                author(userThatYouWantToTradeWith.name, null, userThatYouWantToTradeWith.effectiveAvatarUrl)
-                title = "${Emotes.PantufaHanglooseRight}$lockStatus ${userThatYouWantToTradeWith.name}"
-                description = buildString {
-                    if (trade.player2.sonhos != null) {
-                        appendLine("${Emotes.Sonhos2} ${trade.player2.sonhos} sonhos")
-                    }
-
-                    if (trade.player2.stickerFancyIds.isNotEmpty()) {
-                        appendLine("${Emotes.LoriCoolSticker} `${trade.player2.stickerFancyIds.joinToString()}`")
-                    }
-                }.ifEmpty { "*$emptyFunnyMessageForPlayer2*" }
+                apply(
+                    createTradeOfferEmbedStatus(
+                        userThatYouWantToTradeWith,
+                        usersThatHaveConfirmedTheTrade,
+                        trade.player2,
+                        emptyFunnyMessageForPlayer2
+                    )
+                )
             }
 
             actionRow(
@@ -184,6 +171,15 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         ) { context, args ->
                             val deferEdit = context.deferEdit()
                             val stickerFancyIdsList = args[stickerListOption].split(",").map { it.trim() }
+
+                            if (stickerFancyIdsList.size > 100) {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.TooManyStickers)
+                                    )
+                                }
+                                return@sendModal
+                            }
 
                             val result = loritta.transaction {
                                 val event = LoriCoolCardsEvents.select {
@@ -442,145 +438,94 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         }.firstOrNull()
                                             ?: return@transaction TradeStickerResult.EventUnavailable
 
-                                        val stickersToBeGivenByPlayer1 = LoriCoolCardsEventCards.select {
-                                            LoriCoolCardsEventCards.fancyCardId inList trade.player1.stickerFancyIds and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
-                                        }.toList()
+                                        val stickersToBeGivenByPlayer1 = getEventStickersFromStickerFancyIds(event[LoriCoolCardsEvents.id].value, trade.player1.stickerFancyIds)
+                                        val stickersToBeGivenByPlayer2 = getEventStickersFromStickerFancyIds(event[LoriCoolCardsEvents.id].value, trade.player2.stickerFancyIds)
 
+                                        // Validate if the stickers that we retrieved from the database do match the amount of sticker IDs that we have
+                                        // If it doesn't, then there are unknown stickers on the provided list!
                                         if (stickersToBeGivenByPlayer1.size != trade.player1.stickerFancyIds.size)
                                             return@transaction TradeStickerResult.UnknownCard(selfUser)
-
-                                        val stickersToBeGivenByPlayer2 = LoriCoolCardsEventCards.select {
-                                            LoriCoolCardsEventCards.fancyCardId inList trade.player2.stickerFancyIds and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
-                                        }.toList()
 
                                         if (stickersToBeGivenByPlayer2.size != trade.player2.stickerFancyIds.size)
                                             return@transaction TradeStickerResult.UnknownCard(userThatYouWantToTradeWith)
 
                                         // Do we have enough sonhos?
-                                        val player1Sonhos = Profiles.select(Profiles.money).where {
-                                            Profiles.id eq selfUser.idLong
-                                        }.firstOrNull()?.get(Profiles.money) ?: 0
-
-                                        val player2Sonhos = Profiles.select(Profiles.money).where {
-                                            Profiles.id eq userThatYouWantToTradeWith.idLong
-                                        }.firstOrNull()?.get(Profiles.money) ?: 0
+                                        val player1Sonhos = getUserSonhos(selfUser)
+                                        val player2Sonhos = getUserSonhos(userThatYouWantToTradeWith)
 
                                         val tradePlayer1Sonhos = trade.player1.sonhos ?: 0
                                         if (tradePlayer1Sonhos > player1Sonhos)
-                                            return@transaction TradeStickerResult.NotEnoughSonhos(
-                                                selfUser
-                                            )
+                                            return@transaction TradeStickerResult.NotEnoughSonhos(selfUser)
 
                                         val tradePlayer2Sonhos = trade.player2.sonhos ?: 0
                                         if (tradePlayer2Sonhos > player2Sonhos)
-                                            return@transaction TradeStickerResult.NotEnoughSonhos(
-                                                userThatYouWantToTradeWith
-                                            )
+                                            return@transaction TradeStickerResult.NotEnoughSonhos(userThatYouWantToTradeWith)
 
                                         // Does each player own each sticker?
-                                        val stickersIdsToBeGivenByPlayer1 =
-                                            stickersToBeGivenByPlayer1.map { it[LoriCoolCardsEventCards.id].value }
-                                        val matchedStickersToBeGivenByPlayer1 =
-                                            LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                                                LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGivenByPlayer1 and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq selfUser.idLong)
-                                            }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                                                .toList()
+                                        val verificationResultPlayer1 = verifyStickers(
+                                            selfUser,
+                                            stickersToBeGivenByPlayer1
+                                        )
 
-                                        val stickerIdsToBeGivenMappedToPlayer1Sticker = mutableMapOf<Long, ResultRow>()
-                                        val missingStickersByPlayer1 = mutableListOf<ResultRow>()
-
-                                        for (stickerId in stickersIdsToBeGivenByPlayer1) {
-                                            val stickerData =
-                                                matchedStickersToBeGivenByPlayer1.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
-                                            if (stickerData == null) {
-                                                missingStickersByPlayer1.add(stickersToBeGivenByPlayer1.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                                            } else {
-                                                stickerIdsToBeGivenMappedToPlayer1Sticker[stickerId] = stickerData
-                                            }
-                                        }
-
-                                        if (missingStickersByPlayer1.isNotEmpty())
+                                        if (verificationResultPlayer1 is StickerVerificationResult.NotEnoughCards)
                                             return@transaction TradeStickerResult.NotEnoughCards(
                                                 selfUser,
-                                                missingStickersByPlayer1
+                                                verificationResultPlayer1.missingStickers
                                             )
 
-                                        val stickerIdsToBeGivenMappedToOwnedPlayer1StickerId =
-                                            stickerIdsToBeGivenMappedToPlayer1Sticker.map { it.value[LoriCoolCardsUserOwnedCards.id].value }
-                                        val stickerIdsToBeGivenMappedToEventPlayer1StickerId =
-                                            stickerIdsToBeGivenMappedToPlayer1Sticker.map { it.value[LoriCoolCardsEventCards.id].value }
+                                        // There are only two possible results here anyway
+                                        verificationResultPlayer1 as StickerVerificationResult.Success
 
-                                        val stickersIdsToBeGivenByPlayer2 =
-                                            stickersToBeGivenByPlayer2.map { it[LoriCoolCardsEventCards.id].value }
-                                        val matchedStickersToBeGivenByPlayer2 =
-                                            LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
-                                                LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGivenByPlayer2 and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq userThatYouWantToTradeWith.idLong)
-                                            }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                                                .toList()
+                                        val verificationResultPlayer2 = verifyStickers(
+                                            userThatYouWantToTradeWith,
+                                            stickersToBeGivenByPlayer2
+                                        )
 
-                                        val stickerIdsToBeGivenMappedToPlayer2Sticker = mutableMapOf<Long, ResultRow>()
-                                        val missingStickersByPlayer2 = mutableListOf<ResultRow>()
-
-                                        for (stickerId in stickersIdsToBeGivenByPlayer2) {
-                                            val stickerData =
-                                                matchedStickersToBeGivenByPlayer2.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
-                                            if (stickerData == null) {
-                                                missingStickersByPlayer2.add(stickersToBeGivenByPlayer2.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                                            } else {
-                                                stickerIdsToBeGivenMappedToPlayer2Sticker[stickerId] = stickerData
-                                            }
-                                        }
-
-                                        if (missingStickersByPlayer2.isNotEmpty())
+                                        if (verificationResultPlayer2 is StickerVerificationResult.NotEnoughCards)
                                             return@transaction TradeStickerResult.NotEnoughCards(
                                                 userThatYouWantToTradeWith,
-                                                missingStickersByPlayer2
+                                                verificationResultPlayer2.missingStickers
                                             )
 
-                                        val stickerIdsToBeGivenMappedToOwnedPlayer2StickerId =
-                                            stickerIdsToBeGivenMappedToPlayer2Sticker.map { it.value[LoriCoolCardsUserOwnedCards.id].value }
-                                        val stickerIdsToBeGivenMappedToEventPlayer2StickerId =
-                                            stickerIdsToBeGivenMappedToPlayer2Sticker.map { it.value[LoriCoolCardsEventCards.id].value }
+                                        // There are only two possible results here anyway
+                                        verificationResultPlayer2 as StickerVerificationResult.Success
 
+                                        val stickerIdsToBeGivenMappedToOwnedPlayer1StickerId = verificationResultPlayer1.stickerIdsToBeGivenMappedToOwnedStickerId
+                                        val stickerIdsToBeGivenMappedToEventPlayer1StickerId = verificationResultPlayer1.stickerIdsToBeGivenMappedToEventStickerId
+
+                                        val stickerIdsToBeGivenMappedToOwnedPlayer2StickerId = verificationResultPlayer2.stickerIdsToBeGivenMappedToOwnedStickerId
+                                        val stickerIdsToBeGivenMappedToEventPlayer2StickerId = verificationResultPlayer2.stickerIdsToBeGivenMappedToEventStickerId
+
+                                        // Do we have any elements in common?
                                         val anyElementCommon = Collections.disjoint(stickerIdsToBeGivenMappedToEventPlayer1StickerId, stickerIdsToBeGivenMappedToEventPlayer2StickerId)
                                         if (anyElementCommon)
                                             TradeStickerResult.CantTradeSameStickers
 
-                                        // Track the trade!
                                         // Delete the old cards
                                         LoriCoolCardsUserOwnedCards.deleteWhere {
-                                            LoriCoolCardsUserOwnedCards.id inList matchedStickersToBeGivenByPlayer1.map { it[LoriCoolCardsUserOwnedCards.id] }
+                                            LoriCoolCardsUserOwnedCards.id inList stickerIdsToBeGivenMappedToOwnedPlayer1StickerId
                                         }
 
                                         LoriCoolCardsUserOwnedCards.deleteWhere {
-                                            LoriCoolCardsUserOwnedCards.id inList matchedStickersToBeGivenByPlayer2.map { it[LoriCoolCardsUserOwnedCards.id] }
+                                            LoriCoolCardsUserOwnedCards.id inList stickerIdsToBeGivenMappedToOwnedPlayer2StickerId
                                         }
 
-                                        // Insert the new ones WITH BATCH INSERT BECAUSE WE ARE BUILT LIKE THAT!!!
-                                        LoriCoolCardsUserOwnedCards.batchInsert(
-                                            stickerIdsToBeGivenMappedToPlayer1Sticker.values,
-                                            shouldReturnGeneratedValues = false
-                                        ) {
-                                            this[LoriCoolCardsUserOwnedCards.card] =
-                                                it[LoriCoolCardsUserOwnedCards.card]
-                                            this[LoriCoolCardsUserOwnedCards.user] = userThatYouWantToTradeWith.idLong
-                                            this[LoriCoolCardsUserOwnedCards.event] =
-                                                it[LoriCoolCardsUserOwnedCards.event]
-                                            this[LoriCoolCardsUserOwnedCards.receivedAt] = now
-                                            this[LoriCoolCardsUserOwnedCards.sticked] = false
-                                        }
+                                        // Give the new stickers
+                                        giveStickersToUser(
+                                            now,
+                                            userThatYouWantToTradeWith,
+                                            event[LoriCoolCardsEvents.id].value,
+                                            stickerIdsToBeGivenMappedToEventPlayer1StickerId,
+                                        )
 
-                                        LoriCoolCardsUserOwnedCards.batchInsert(
-                                            stickerIdsToBeGivenMappedToPlayer2Sticker.values,
-                                            shouldReturnGeneratedValues = false
-                                        ) {
-                                            this[LoriCoolCardsUserOwnedCards.card] = it[LoriCoolCardsUserOwnedCards.card]
-                                            this[LoriCoolCardsUserOwnedCards.user] = selfUser.idLong
-                                            this[LoriCoolCardsUserOwnedCards.event] = it[LoriCoolCardsUserOwnedCards.event]
-                                            this[LoriCoolCardsUserOwnedCards.receivedAt] = now
-                                            this[LoriCoolCardsUserOwnedCards.sticked] = false
-                                        }
+                                        giveStickersToUser(
+                                            now,
+                                            selfUser,
+                                            event[LoriCoolCardsEvents.id].value,
+                                            stickerIdsToBeGivenMappedToEventPlayer2StickerId,
+                                        )
 
+                                        // Track the trade!
                                         val acceptedTradeId = LoriCoolCardsUserTrades.insertAndGetId {
                                             it[LoriCoolCardsUserTrades.user1] = selfUser.idLong
                                             it[LoriCoolCardsUserTrades.user2] = userThatYouWantToTradeWith.idLong
@@ -804,7 +749,117 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         }
     }
 
-    fun markAsSeen(
+    private fun createTradeOfferEmbedStatus(
+        user: User,
+        usersThatHaveConfirmedTheTrade: Set<User>,
+        tradeOfferThings: TradeThings,
+        emptyFunnyMessage: String
+    ): InlineEmbed.() -> (Unit) = {
+        val lockStatus = if (usersThatHaveConfirmedTheTrade.contains(user))
+            "\uD83D\uDD12"
+        else
+            "\uD83D\uDD13"
+
+        author(user.name, null, user.effectiveAvatarUrl)
+        title = "${Emotes.LoriHanglooseRight}$lockStatus ${user.name}"
+        description = buildString {
+            if (tradeOfferThings.sonhos != null) {
+                appendLine("${Emotes.Sonhos2} ${tradeOfferThings.sonhos} sonhos")
+            }
+
+            if (tradeOfferThings.stickerFancyIds.isNotEmpty()) {
+                appendLine("${Emotes.LoriCoolSticker} `${tradeOfferThings.stickerFancyIds.joinToString()}`")
+            }
+        }.ifEmpty { "*${emptyFunnyMessage}*" }
+    }
+
+    private fun getEventStickersFromStickerFancyIds(eventId: Long, stickerFancyIds: List<String>): List<ResultRow> {
+        // noop
+        if (stickerFancyIds.isEmpty())
+            return emptyList()
+
+        return LoriCoolCardsEventCards.selectAll()
+            .where {
+                LoriCoolCardsEventCards.fancyCardId inList stickerFancyIds and (LoriCoolCardsEventCards.event eq eventId)
+            }.toList()
+    }
+
+    private fun giveStickersToUser(
+        now: Instant,
+        user: User,
+        eventId: Long,
+        stickerIdsToBeGiven: List<Long>
+    ) {
+        // Insert the new ones WITH BATCH INSERT BECAUSE WE ARE BUILT LIKE THAT!!!
+        LoriCoolCardsUserOwnedCards.batchInsert(
+            stickerIdsToBeGiven,
+            shouldReturnGeneratedValues = false
+        ) {
+            this[LoriCoolCardsUserOwnedCards.card] = it
+            this[LoriCoolCardsUserOwnedCards.user] = user.idLong
+            this[LoriCoolCardsUserOwnedCards.event] = eventId
+            this[LoriCoolCardsUserOwnedCards.receivedAt] = now
+            this[LoriCoolCardsUserOwnedCards.sticked] = false
+        }
+    }
+
+    private fun getUserSonhos(user: User): Long {
+        return Profiles.select(Profiles.money).where {
+            Profiles.id eq user.idLong
+        }.firstOrNull()?.get(Profiles.money) ?: 0
+    }
+
+    private fun verifyStickers(
+        user: User,
+        stickersToBeGiven: List<ResultRow>,
+    ): StickerVerificationResult {
+        // noop
+        if (stickersToBeGiven.isEmpty())
+            return StickerVerificationResult.Success(listOf(), listOf())
+
+        val eventId = stickersToBeGiven.first()[LoriCoolCardsEventCards.event].value
+
+        val stickersIdsToBeGiven = stickersToBeGiven.map { it[LoriCoolCardsEventCards.id].value }
+        val matchedStickersToBeGiven =
+            LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq eventId) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq user.idLong)
+            }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
+                .toList()
+
+        val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
+        val missingStickers = mutableListOf<ResultRow>()
+
+        for (stickerId in stickersIdsToBeGiven) {
+            val stickerData =
+                matchedStickersToBeGiven.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
+            if (stickerData == null) {
+                missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+            } else {
+                stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
+            }
+        }
+
+        if (missingStickers.isNotEmpty())
+            return StickerVerificationResult.NotEnoughCards(missingStickers)
+
+        val stickerIdsToBeGivenMappedToOwnedStickerId = stickerIdsToBeGivenMappedToSticker.values.map { it[LoriCoolCardsUserOwnedCards.id].value }
+        val stickerIdsToBeGivenMappedToEventStickerId = stickerIdsToBeGivenMappedToSticker.values.map { it[LoriCoolCardsEventCards.id].value }
+
+        return StickerVerificationResult.Success(
+            stickerIdsToBeGivenMappedToOwnedStickerId,
+            stickerIdsToBeGivenMappedToEventStickerId
+        )
+    }
+
+    sealed class StickerVerificationResult {
+        data class NotEnoughCards(val missingStickers: List<ResultRow>) : StickerVerificationResult()
+        data class Success(
+            val stickerIdsToBeGivenMappedToOwnedStickerId: List<Long>,
+            val stickerIdsToBeGivenMappedToEventStickerId: List<Long>
+        ) : StickerVerificationResult()
+    }
+
+    private fun markAsSeen(
         now: Instant,
         userThatWillReceiveTheSticker: User,
         stickerIdsToBeGivenMappedToEventStickerId: List<Long>
