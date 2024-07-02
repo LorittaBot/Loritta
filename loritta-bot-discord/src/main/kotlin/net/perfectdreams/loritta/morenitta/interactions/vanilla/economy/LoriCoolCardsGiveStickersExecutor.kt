@@ -237,7 +237,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                     styled(
                         context.i18nContext.get(
                             I18N_PREFIX.YouAreGoingToTransfer(
-                                result.givenStickers.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" },
+                                result.givenStickers.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" },
                                 result.givenStickers.size,
                                 userThatWillReceiveTheSticker.asMention
                             )
@@ -363,7 +363,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                 is GiveStickerAcceptedTransactionResult.NotEnoughCards -> {
                                     it.reply(false) {
                                         styled(
-                                            context.i18nContext.get(I18N_PREFIX.YouDontHaveEnoughStickers(finalResult.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
+                                            context.i18nContext.get(I18N_PREFIX.YouDontHaveEnoughStickers(finalResult.stickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
                                         )
                                     }
                                 }
@@ -373,7 +373,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                             context.i18nContext.get(
                                                 I18N_PREFIX.SuccessfullyTransferred(
                                                     userThatWillReceiveTheSticker.asMention,
-                                                    result.givenStickers.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" },
+                                                    result.givenStickers.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" },
                                                     result.givenStickers.size
                                                 )
                                             ),
