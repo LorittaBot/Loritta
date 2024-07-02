@@ -189,12 +189,12 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val now = Instant.now()
+            val albumId = args[options.album].toLongOrNull()
             val fancyCardId = args[options.cardId]
 
             val result = loritta.transaction {
                 val event = LoriCoolCardsEvents.select {
-                    LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                    LoriCoolCardsEvents.id eq albumId
                 }.firstOrNull() ?: return@transaction GetCardInfoResult.EventUnavailable
 
                 val cardEventCard = LoriCoolCardsEventCards.select {
