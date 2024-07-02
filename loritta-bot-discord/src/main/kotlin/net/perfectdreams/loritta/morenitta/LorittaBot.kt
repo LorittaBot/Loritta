@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.luben.zstd.ZstdOutputStream
+import com.github.luben.zstd.Zstd
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
@@ -33,8 +33,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
@@ -97,6 +99,7 @@ import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
+import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener.Companion.FAKE_EVENT_FIELD
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
 import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
@@ -115,6 +118,7 @@ import net.perfectdreams.loritta.morenitta.utils.config.*
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.devious.StoredGatewayGuilds
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
@@ -699,34 +703,39 @@ class LorittaBot(
 										// Create the shard cache folder
 										shardCacheFolder.mkdirs()
 
-										val guildsCacheFile = File(shardCacheFolder, "guilds.json.zst")
+										val guildsCacheFile = File(shardCacheFolder, "guilds.loriguilds.zst")
 										val sessionCacheFile = File(shardCacheFolder, "session.json")
 										val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
 										val versionFile = File(shardCacheFolder, "version")
 										val deviousConverterVersionFile = File(shardCacheFolder, "deviousconverter_version")
 
-										val guildIdsForReadyEvent =
-											jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
+										val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
 
 										val guildCount = jdaImpl.guildsView.size()
 
 										logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
 
-										val zstdOutputStream = ZstdOutputStream(guildsCacheFile.outputStream())
-										zstdOutputStream.setLevel(1)
+										val guildsToBePersistedByteArray = mutableListOf<ByteArray>()
 
 										for (guild in jdaImpl.guildsView) {
 											guild as GuildImpl
 
-											Json.encodeToStream(DeviousConverter.toJson(guild), zstdOutputStream)
-											zstdOutputStream.write(newLineUtf8)
+											val eventAsJson = """{"op":0,"d":${Json.encodeToString(DeviousConverter.toJson(guild))},"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}""".toByteArray(Charsets.UTF_8)
+											guildsToBePersistedByteArray.add(eventAsJson)
 
 											// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 											guild.invalidate()
 										}
 
-										// Already sent all data to the channel, close the zstd stream!
-										zstdOutputStream.close()
+										val compressedGuilds = Zstd.compress(
+											ProtoBuf.encodeToByteArray(
+												StoredGatewayGuilds(
+													guildsToBePersistedByteArray
+												)
+											)
+										)
+
+										guildsCacheFile.writeBytes(compressedGuilds)
 
 										logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
 										sessionCacheFile
