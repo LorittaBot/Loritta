@@ -140,7 +140,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         if (usersThatHaveConfirmedTheTrade.isNotEmpty()) {
                             context.reply(true) {
                                 styled(
-                                    if (usersThatHaveConfirmedTheTrade.contains(selfUser)) context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYouHaveApproved) else context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYourFriendHasApproved),
+                                    if (selfUser == context.user && usersThatHaveConfirmedTheTrade.contains(selfUser)) context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYouHaveApproved) else context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYourFriendHasApproved),
                                     Emotes.LoriRage
                                 )
                             }
@@ -270,7 +270,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         if (usersThatHaveConfirmedTheTrade.isNotEmpty()) {
                             context.reply(true) {
                                 styled(
-                                    if (usersThatHaveConfirmedTheTrade.contains(selfUser)) context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYouHaveApproved) else context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYourFriendHasApproved),
+                                    if (selfUser == context.user && usersThatHaveConfirmedTheTrade.contains(selfUser)) context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYouHaveApproved) else context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYourFriendHasApproved),
                                     Emotes.LoriRage
                                 )
                             }
@@ -324,7 +324,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                             if (parsedValue != null) {
                                 val result = loritta.transaction {
                                     val userSonhos = Profiles.select(Profiles.money).where {
-                                        Profiles.id eq selfUser.idLong
+                                        Profiles.id eq context.user.idLong
                                     }.firstOrNull()?.get(Profiles.money) ?: 0
 
                                     if (parsedValue > userSonhos)
@@ -703,7 +703,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                             }
                                         }
 
-                                        markAsSeen(context.user, stickerIdsToBeGivenMappedToEventPlayer1StickerId)
+                                        markAsSeen(selfUser, stickerIdsToBeGivenMappedToEventPlayer1StickerId)
                                         markAsSeen(
                                             userThatYouWantToTradeWith,
                                             stickerIdsToBeGivenMappedToEventPlayer2StickerId
