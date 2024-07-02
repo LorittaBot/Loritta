@@ -105,7 +105,7 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                         }
 
                         description = buildString {
-                            append(yourStickersDuplicated.sortedBy { it.first[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "${it.first[LoriCoolCardsEventCards.fancyCardId]} (${it.second}x)" })
+                            append(yourStickersDuplicated.sortedBy { it.first[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "${it.second}x ${it.first[LoriCoolCardsEventCards.fancyCardId]}" })
                         }
 
                         color = LorittaColors.LorittaAqua.rgb
