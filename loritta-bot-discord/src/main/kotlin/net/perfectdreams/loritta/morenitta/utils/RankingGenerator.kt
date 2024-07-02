@@ -15,7 +15,7 @@ import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 
 object RankingGenerator {
-	val VALID_RANKING_PAGES = 1L..100L
+	val VALID_RANKING_PAGES = 1L..1000L
 
 	/**
 	 * Generates a ranking image
