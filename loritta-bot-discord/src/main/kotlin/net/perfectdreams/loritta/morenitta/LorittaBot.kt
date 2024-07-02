@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.luben.zstd.ZstdOutputStream
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
@@ -660,7 +661,8 @@ class LorittaBot(
 					)
 				}
 
-				val limitedCount = random.nextInt(2, 17)
+				val limitedCount = 16
+				val isZstd = random.nextBoolean()
 				logger.info { "Using $limitedCount limited parallism in Dispatcher.IO for shard shutdown" }
 
 				measureTime {
@@ -699,7 +701,7 @@ class LorittaBot(
 									// Create the shard cache folder
 									shardCacheFolder.mkdirs()
 
-									val guildsCacheFile = File(shardCacheFolder, "guilds.json")
+									val guildsCacheFile = File(shardCacheFolder, "guilds.json.zst")
 									val sessionCacheFile = File(shardCacheFolder, "session.json")
 									val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
 									val versionFile = File(shardCacheFolder, "version")
@@ -712,16 +714,8 @@ class LorittaBot(
 
 									logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
 
-									val byteArrayChannel = Channel<ByteArray>()
-
-									val fileOutputStreamJob = GlobalScope.launch(Dispatchers.IO) {
-										FileOutputStream(guildsCacheFile).use {
-											for (byteArray in byteArrayChannel) {
-												it.write(byteArray)
-												it.write(newLineUtf8)
-											}
-										}
-									}
+									val zstdOutputStream = ZstdOutputStream(guildsCacheFile.outputStream())
+									zstdOutputStream.setLevel(1)
 
 									val jobs = jdaImpl.guildsView.map { guild ->
 										GlobalScope.launch(Dispatchers.IO) {
@@ -729,20 +723,16 @@ class LorittaBot(
 
 											// We want to minimize resizes of the backed stream, to make it go zooooom
 											// So what I did was calculating the 75th percentile of the guild data, and used it as the size
-											val baos = ByteArrayOutputStream(16_384)
-											Json.encodeToStream(DeviousConverter.toJson(guild), baos)
+											Json.encodeToStream(DeviousConverter.toJson(guild), zstdOutputStream)
 
 											// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 											guild.invalidate()
-
-											byteArrayChannel.send(baos.toByteArray())
 										}
 									}
 
 									jobs.joinAll()
-									// Already sent all data to the channel, cancel the channel!
-									byteArrayChannel.cancel()
-									fileOutputStreamJob.join()
+									// Already sent all data to the channel, close the zstd stream!
+									zstdOutputStream.close()
 
 									logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
 									sessionCacheFile

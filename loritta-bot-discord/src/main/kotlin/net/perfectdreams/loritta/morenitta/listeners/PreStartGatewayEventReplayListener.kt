@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
+import com.github.luben.zstd.ZstdInputStream
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
@@ -82,13 +83,30 @@ class PreStartGatewayEventReplayListener(
                         // but that makes the code harder and confusing.
                         val time = measureTime {
                             jdaImpl.guildsView.writeLock().use {
-                                File(cacheFolder, "${jdaImpl.shardInfo.shardId}/guilds.json").forEachLine {
-                                    // Fill the cache out
-                                    jdaImpl.client.handleEvent(
-                                        DataObject.fromJson(
-                                            """{"op":0,"d":$it,"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}"""
+                                val compressedGuildsFile = File(cacheFolder, "${jdaImpl.shardInfo.shardId}/guilds.json.zst")
+
+                                if (compressedGuildsFile.exists()) {
+                                    ZstdInputStream(compressedGuildsFile.inputStream())
+                                        .readAllBytes()
+                                        .toString(Charsets.UTF_8)
+                                        .lines()
+                                        .forEach {
+                                            // Fill the cache out
+                                            jdaImpl.client.handleEvent(
+                                                DataObject.fromJson(
+                                                    """{"op":0,"d":$it,"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}"""
+                                                )
+                                            )
+                                        }
+                                } else {
+                                    File(cacheFolder, "${jdaImpl.shardInfo.shardId}/guilds.json").forEachLine {
+                                        // Fill the cache out
+                                        jdaImpl.client.handleEvent(
+                                            DataObject.fromJson(
+                                                """{"op":0,"d":$it,"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}"""
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
