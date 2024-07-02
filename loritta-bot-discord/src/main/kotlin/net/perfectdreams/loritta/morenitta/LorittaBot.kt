@@ -659,115 +659,108 @@ class LorittaBot(
 					)
 				}
 
-				val limitedCount = 16
+				val limitedCount = 8
 				logger.info { "Using $limitedCount limited parallism in Dispatcher.IO for shard shutdown" }
 
 				measureTime {
 					// Limit the shard saving stuff to X jobs in parallel
-					// We are using a random amount to try to figure out which number is the best for this
-					// After we debugged everything then we will use the value correctly
 					val dispatcher = Dispatchers.IO.limitedParallelism(limitedCount)
 
 					val shardJobs = shardManager
 						.shards
 						.sortedBy { it.shardInfo.shardId } // Sorted by shard ID just to be easier to track them down in the logs
 						.map { shard ->
-						GlobalScope.async(dispatcher) {
-							measureTime {
-								val jdaImpl = shard as JDAImpl
-								val sessionId = jdaImpl.client.sessionId
-								val resumeUrl = jdaImpl.client.resumeUrl
-								val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
+							GlobalScope.async(dispatcher) {
+								measureTime {
+									val jdaImpl = shard as JDAImpl
+									val sessionId = jdaImpl.client.sessionId
+									val resumeUrl = jdaImpl.client.resumeUrl
+									val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
 
-								// Only get connected shards, invalidate everything else
-								if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
-									logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
-									// Not connected, shut down and invalidate our cached data
-									shard.shutdownNow(1000) // We don't care about persisting our gateway session
-									File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
-								} else {
-									logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
-									val shutdownBeganAt = Clock.System.now()
+									// Only get connected shards, invalidate everything else
+									if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
+										logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
+										// Not connected, shut down and invalidate our cached data
+										shard.shutdownNow(1000) // We don't care about persisting our gateway session
+										File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
+									} else {
+										logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
+										val shutdownBeganAt = Clock.System.now()
 
-									// Connected, store to the cache
-									// Using close code 1012 does not invalidate your gateway session!
-									shard.shutdownNow(1012)
+										// Connected, store to the cache
+										// Using close code 1012 does not invalidate your gateway session!
+										shard.shutdownNow(1012)
 
-									val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
+										val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
 
-									// Delete the current cached data for this shard
-									shardCacheFolder.deleteRecursively()
+										// Delete the current cached data for this shard
+										shardCacheFolder.deleteRecursively()
 
-									// Create the shard cache folder
-									shardCacheFolder.mkdirs()
+										// Create the shard cache folder
+										shardCacheFolder.mkdirs()
 
-									val guildsCacheFile = File(shardCacheFolder, "guilds.json.zst")
-									val sessionCacheFile = File(shardCacheFolder, "session.json")
-									val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
-									val versionFile = File(shardCacheFolder, "version")
-									val deviousConverterVersionFile = File(shardCacheFolder, "deviousconverter_version")
+										val guildsCacheFile = File(shardCacheFolder, "guilds.json.zst")
+										val sessionCacheFile = File(shardCacheFolder, "session.json")
+										val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
+										val versionFile = File(shardCacheFolder, "version")
+										val deviousConverterVersionFile = File(shardCacheFolder, "deviousconverter_version")
 
-									val guildIdsForReadyEvent =
-										jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
+										val guildIdsForReadyEvent =
+											jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
 
-									val guildCount = jdaImpl.guildsView.size()
+										val guildCount = jdaImpl.guildsView.size()
 
-									logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
+										logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
 
-									val zstdOutputStream = ZstdOutputStream(guildsCacheFile.outputStream())
-									zstdOutputStream.setLevel(1)
+										val zstdOutputStream = ZstdOutputStream(guildsCacheFile.outputStream())
+										zstdOutputStream.setLevel(1)
 
-									val jobs = jdaImpl.guildsView.map { guild ->
-										GlobalScope.launch(Dispatchers.IO) {
+										for (guild in jdaImpl.guildsView) {
 											guild as GuildImpl
 
-											// We want to minimize resizes of the backed stream, to make it go zooooom
-											// So what I did was calculating the 75th percentile of the guild data, and used it as the size
 											Json.encodeToStream(DeviousConverter.toJson(guild), zstdOutputStream)
 											zstdOutputStream.write(newLineUtf8)
 
 											// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 											guild.invalidate()
 										}
+
+										// Already sent all data to the channel, close the zstd stream!
+										zstdOutputStream.close()
+
+										logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
+										sessionCacheFile
+											.writeText(
+												Json.encodeToString(
+													GatewaySessionData(
+														sessionId,
+														resumeUrl,
+														jdaImpl.responseTotal,
+														guildIdsForReadyEvent
+													)
+												)
+											)
+
+										val shutdownFinishedAt = Clock.System.now()
+										gatewayExtrasFile
+											.writeText(
+												Json.encodeToString(
+													GatewayExtrasData(
+														shutdownBeganAt,
+														shutdownFinishedAt
+													)
+												)
+											)
+
+										// Write the current DeviousConverter version...
+										deviousConverterVersionFile.writeText(DeviousConverter.CACHE_VERSION.toString())
+
+										// Only write after everything has been successfully written
+										versionFile.writeText(connectionVersion.toString())
 									}
-
-									jobs.joinAll()
-									// Already sent all data to the channel, close the zstd stream!
-									zstdOutputStream.close()
-
-									logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
-									sessionCacheFile
-										.writeText(
-											Json.encodeToString(
-												GatewaySessionData(
-													sessionId,
-													resumeUrl,
-													jdaImpl.responseTotal,
-													guildIdsForReadyEvent
-												)
-											)
-										)
-
-									val shutdownFinishedAt = Clock.System.now()
-									gatewayExtrasFile
-										.writeText(
-											Json.encodeToString(
-												GatewayExtrasData(
-													shutdownBeganAt,
-													shutdownFinishedAt
-												)
-											)
-										)
-
-									// Write the current DeviousConverter version...
-									deviousConverterVersionFile.writeText(DeviousConverter.CACHE_VERSION.toString())
-
-									// Only write after everything has been successfully written
-									versionFile.writeText(connectionVersion.toString())
-								}
-							}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff!" } }
+								}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff!" } }
+							}
 						}
-					}
 
 					runBlocking {
 						shardJobs.awaitAll()
