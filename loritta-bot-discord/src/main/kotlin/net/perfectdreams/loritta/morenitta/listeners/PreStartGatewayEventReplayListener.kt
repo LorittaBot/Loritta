@@ -90,6 +90,7 @@ class PreStartGatewayEventReplayListener(
                                         .readAllBytes()
                                         .toString(Charsets.UTF_8)
                                         .lines()
+                                        .filter { it.isNotEmpty() }
                                         .forEach {
                                             // Fill the cache out
                                             jdaImpl.client.handleEvent(
