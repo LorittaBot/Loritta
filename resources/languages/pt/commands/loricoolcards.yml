@@ -28,6 +28,8 @@ view:
   stickerFront: "Figurinha (Frente)"
   stickerAnimated: "Figurinha (Animada)"
   options:
+    album:
+      text: "Qual álbum a figurinha que você quer ver está"
     sticker:
       text: "A figurinha que você quer ver as informações sobre ela"
 

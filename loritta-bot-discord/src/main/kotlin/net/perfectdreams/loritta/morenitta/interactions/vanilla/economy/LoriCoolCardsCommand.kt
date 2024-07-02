@@ -19,10 +19,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.time.Instant
 
@@ -92,17 +89,37 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
     inner class LoriCoolCardsViewExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
-            val cardId = string("sticker_id", I18N_PREFIX.View.Options.Sticker.Text) {
+            val album = string("album", I18N_PREFIX.View.Options.Album.Text) {
                 autocomplete {
                     val now = Instant.now()
+
+                    // Autocomplete all albums
+                    val activeAlbums = loritta.transaction {
+                        LoriCoolCardsEvents.select(LoriCoolCardsEvents.id, LoriCoolCardsEvents.eventName)
+                            .where { LoriCoolCardsEvents.startsAt lessEq now }
+                            .orderBy(LoriCoolCardsEvents.endsAt, SortOrder.DESC)
+                            .limit(25)
+                            .toList()
+                    }
+
+                    activeAlbums.associate {
+                        it[LoriCoolCardsEvents.eventName] to it[LoriCoolCardsEvents.id].value.toString()
+                    }
+                }
+            }
+
+            val cardId = string("sticker_id", I18N_PREFIX.View.Options.Sticker.Text) {
+                autocomplete {
+                    val selectedAlbumId = it.event.getOption("album")?.asString?.toLongOrNull() ?: return@autocomplete mapOf()
+
                     val focusedOptionValue = it.event.focusedOption.value
 
                     // We also let searchingByCardId = true if empty to make the autocomplete results be sorted from 0001 -> ... by default
                     val searchingByCardId = focusedOptionValue.startsWith("#") || focusedOptionValue.isEmpty() || focusedOptionValue.toIntOrNull() != null
 
                     return@autocomplete loritta.transaction {
-                        val event = LoriCoolCardsEvents.select {
-                            LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                        val event = LoriCoolCardsEvents.selectAll().where {
+                            LoriCoolCardsEvents.id eq selectedAlbumId
                         }.firstOrNull() ?: return@transaction mapOf()
 
                         if (searchingByCardId) {
