@@ -574,11 +574,9 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                             stickerIdsToBeGivenMappedToPlayer2Sticker.values,
                                             shouldReturnGeneratedValues = false
                                         ) {
-                                            this[LoriCoolCardsUserOwnedCards.card] =
-                                                it[LoriCoolCardsUserOwnedCards.card]
-                                            this[LoriCoolCardsUserOwnedCards.user] = context.user.idLong
-                                            this[LoriCoolCardsUserOwnedCards.event] =
-                                                it[LoriCoolCardsUserOwnedCards.event]
+                                            this[LoriCoolCardsUserOwnedCards.card] = it[LoriCoolCardsUserOwnedCards.card]
+                                            this[LoriCoolCardsUserOwnedCards.user] = selfUser.idLong
+                                            this[LoriCoolCardsUserOwnedCards.event] = it[LoriCoolCardsUserOwnedCards.event]
                                             this[LoriCoolCardsUserOwnedCards.receivedAt] = now
                                             this[LoriCoolCardsUserOwnedCards.sticked] = false
                                         }
