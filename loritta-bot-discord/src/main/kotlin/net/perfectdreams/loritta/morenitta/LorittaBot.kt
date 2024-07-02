@@ -659,7 +659,7 @@ class LorittaBot(
 					)
 				}
 
-				val limitedCount = 8
+				val limitedCount = System.getProperty("loritta.shutdownJobsParallelism", "32").toInt()
 				logger.info { "Using $limitedCount limited parallism in Dispatcher.IO for shard shutdown" }
 
 				measureTime {
