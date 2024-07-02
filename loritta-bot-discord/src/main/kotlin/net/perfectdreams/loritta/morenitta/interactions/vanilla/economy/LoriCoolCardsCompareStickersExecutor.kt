@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -17,10 +18,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
 
 class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -35,9 +33,15 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
     override val options = Options()
 
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+        // How compare should work?
+        // It should show ONLY stickers that
+        // - You don't have sticked
+        // - You don't have them in your inventory
+        // - Your friend has them
+
         context.deferChannelMessage(false)
 
-        val userToBeComparedTo = args[options.user]
+        val userToBeComparedTo = args[options.user].user
 
         // We expect that this is already deferred by the caller
         val now = Instant.now()
@@ -49,54 +53,32 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                 LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
             }.firstOrNull() ?: return@transaction CompareStickersResult.EventUnavailable
 
-            val eventStickers = LoriCoolCardsEventCards.select {
-                LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
-            }.toList()
+            val player1Stickers = getStickers(
+                event[LoriCoolCardsEvents.id].value,
+                context.user
+            )
 
-            val stickersThatYouHaveStickedIds = LoriCoolCardsUserOwnedCards
-                .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
-                .select {
-                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq true)
-                }
-                .groupBy(LoriCoolCardsUserOwnedCards.card)
-                .toList()
-                .map { it[LoriCoolCardsUserOwnedCards.card].value }
+            val player2Stickers = getStickers(
+                event[LoriCoolCardsEvents.id].value,
+                userToBeComparedTo
+            )
 
-            val stickersThatYourFriendHasStickedIds = LoriCoolCardsUserOwnedCards
-                .innerJoin(LoriCoolCardsEventCards)
-                .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
-                .select {
-                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userToBeComparedTo.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq true)
-                }
-                .groupBy(LoriCoolCardsUserOwnedCards.card)
-                .toList()
-                .map { it[LoriCoolCardsUserOwnedCards.card].value }
+            val stickerIdsToBeQueried = mutableSetOf<Long>()
 
-            val stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYetIds = LoriCoolCardsUserOwnedCards
-                .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
-                .select {
-                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.card inList stickersThatYouHaveStickedIds)
-                }
-                .groupBy(LoriCoolCardsUserOwnedCards.card)
-                .toList()
-                .map { it[LoriCoolCardsUserOwnedCards.card].value }
+            // Technically we don't need to add the "in our inventory" to the query list because they are already included
+            stickerIdsToBeQueried.addAll(player1Stickers.stickerIdsThatWeHave)
+            stickerIdsToBeQueried.addAll(player2Stickers.stickerIdsThatWeHave)
 
-            val stickersThatYourFriendHasInTheirInventoryExcludingStickersThatArentStickedYetIds = LoriCoolCardsUserOwnedCards
-                .innerJoin(LoriCoolCardsEventCards)
-                .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
-                .select {
-                    LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userToBeComparedTo.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.card inList stickersThatYourFriendHasStickedIds)
-                }
-                .groupBy(LoriCoolCardsUserOwnedCards.card)
-                .toList()
-                .map { it[LoriCoolCardsUserOwnedCards.card].value }
+            val eventStickers = LoriCoolCardsEventCards
+                .selectAll()
+                .where {
+                    LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsEventCards.id inList stickerIdsToBeQueried)
+                }.toList()
 
             CompareStickersResult.Success(
                 eventStickers,
-                stickersThatYouHaveStickedIds,
-                stickersThatYourFriendHasStickedIds,
-                stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYetIds,
-                stickersThatYourFriendHasInTheirInventoryExcludingStickersThatArentStickedYetIds
+                player1Stickers,
+                player2Stickers
             )
         }
 
@@ -109,38 +91,17 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                 }
             }
             is CompareStickersResult.Success -> {
-                val yourStickersMissing = mutableListOf<ResultRow>()
-
-                for (stickerId in result.stickersThatYourFriendHasInTheirInventoryExcludingStickersThatArentStickedYet) {
-                    val doWeHaveIt = result.stickersThatYouHaveSticked.contains(stickerId) || result.stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYet.contains(stickerId)
-
-                    if (!doWeHaveIt) {
-                        // We don't have it!
-                        val stickerInfo = result.eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
-                        yourStickersMissing.add(stickerInfo)
-                    }
-                }
-
-                val friendStickersMissing = mutableListOf<ResultRow>()
-
-                for (stickerId in result.stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYet) {
-                    val doWeHaveIt = result.stickersThatYourFriendHasSticked.contains(stickerId) || result.stickersThatYourFriendHasInTheirInventoryExcludingStickersThatArentStickedYet.contains(stickerId)
-
-                    if (!doWeHaveIt) {
-                        // We don't have it!
-                        val stickerInfo = result.eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
-                        friendStickersMissing.add(stickerInfo)
-                    }
-                }
+                val yourStickersMissing = getMissingStickers(result.eventStickers, result.player1Stickers, result.player2Stickers)
+                val friendStickersMissing = getMissingStickers(result.eventStickers, result.player2Stickers, result.player1Stickers)
 
                 context.reply(false) {
                     embed {
                         title = "${Emotes.LoriLurk} Comparando Figurinhas"
 
                         description = buildString {
-                            append("${Emotes.LoriHanglooseRight} ${context.i18nContext.get(I18N_PREFIX.WhatStickersYouNeedThatTheOtherUserHas(userToBeComparedTo = userToBeComparedTo.user.asMention, yourStickersMissing.size, if (yourStickersMissing.isEmpty()) context.i18nContext.get(I18N_PREFIX.NoStickersToBeCompared) else yourStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }))}")
+                            append("${Emotes.LoriHanglooseRight} ${context.i18nContext.get(I18N_PREFIX.WhatStickersYouNeedThatTheOtherUserHas(userToBeComparedTo = userToBeComparedTo.asMention, yourStickersMissing.size, if (yourStickersMissing.isEmpty()) context.i18nContext.get(I18N_PREFIX.NoStickersToBeCompared) else yourStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }))}")
                             append("\n\n")
-                            append("${Emotes.PantufaHanglooseRight} ${context.i18nContext.get(I18N_PREFIX.WhatStickersYouHaveThatTheOtherUserNeeds(friend = userToBeComparedTo.user.asMention, friendStickersMissing.size, if (friendStickersMissing.isEmpty()) context.i18nContext.get(I18N_PREFIX.NoStickersToBeCompared) else friendStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }))}")
+                            append("${Emotes.PantufaHanglooseRight} ${context.i18nContext.get(I18N_PREFIX.WhatStickersYouHaveThatTheOtherUserNeeds(friend = userToBeComparedTo.asMention, friendStickersMissing.size, if (friendStickersMissing.isEmpty()) context.i18nContext.get(I18N_PREFIX.NoStickersToBeCompared) else friendStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }))}")
                         }
 
                         color = LorittaColors.LorittaAqua.rgb
@@ -189,14 +150,73 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
         }
     }
 
+    private fun getStickers(
+        eventId: Long,
+        user: User,
+    ): UserStickers {
+        // This gets ALL the sticked stickers
+        val stickerIdsThatYouHaveSticked = LoriCoolCardsUserOwnedCards
+            .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
+            .where {
+                LoriCoolCardsUserOwnedCards.event eq eventId and (LoriCoolCardsUserOwnedCards.user eq user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq true)
+            }
+            .groupBy(LoriCoolCardsUserOwnedCards.card)
+            .toList()
+            .map { it[LoriCoolCardsUserOwnedCards.card].value }
+
+        // This gets ALL the non-sticked stickers, this is used to know if we can give them to our friend
+        val stickersIdsThatYouHaveInYourInventory = LoriCoolCardsUserOwnedCards
+            .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
+            .where {
+                LoriCoolCardsUserOwnedCards.event eq eventId and (LoriCoolCardsUserOwnedCards.user eq user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false)
+            }
+            .groupBy(LoriCoolCardsUserOwnedCards.card)
+            .toList()
+            .map { it[LoriCoolCardsUserOwnedCards.card].value }
+            .toSet()
+
+        val stickerIdsThatYouHave = mutableSetOf<Long>()
+        stickerIdsThatYouHave.addAll(stickerIdsThatYouHaveSticked)
+        stickerIdsThatYouHave.addAll(stickersIdsThatYouHaveInYourInventory)
+
+        return UserStickers(
+            stickerIdsThatYouHave,
+            stickersIdsThatYouHaveInYourInventory
+        )
+    }
+
+    private fun getMissingStickers(
+        eventStickers: List<ResultRow>,
+        whoNeedsTheStickers: UserStickers,
+        whoHasTheStickers: UserStickers
+    ): List<ResultRow>  {
+        val yourStickersMissing = mutableListOf<ResultRow>()
+
+        // What stickers you need that the other user has?
+        for (stickerId in whoHasTheStickers.stickerIdsThatWeHaveInOurInventory) {
+            val doWeHaveIt = whoNeedsTheStickers.stickerIdsThatWeHave.contains(stickerId)
+
+            if (!doWeHaveIt) {
+                // We don't have it!
+                val stickerInfo = eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
+                yourStickersMissing.add(stickerInfo)
+            }
+        }
+
+        return yourStickersMissing
+    }
+
+    data class UserStickers(
+        val stickerIdsThatWeHave: Set<Long>,
+        val stickerIdsThatWeHaveInOurInventory: Set<Long>,
+    )
+
     sealed class CompareStickersResult {
         data object EventUnavailable : CompareStickersResult()
         class Success(
             val eventStickers: List<ResultRow>,
-            val stickersThatYouHaveSticked: List<Long>,
-            val stickersThatYourFriendHasSticked: List<Long>,
-            val stickersThatYouHaveInYourInventoryExcludingStickersThatArentStickedYet: List<Long>,
-            val stickersThatYourFriendHasInTheirInventoryExcludingStickersThatArentStickedYet: List<Long>
+            val player1Stickers: UserStickers,
+            val player2Stickers: UserStickers
         ) : CompareStickersResult()
     }
 
