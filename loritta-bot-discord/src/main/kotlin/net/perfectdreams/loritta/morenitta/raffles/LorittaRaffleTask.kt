@@ -6,11 +6,9 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.RaffleRewardSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.RaffleType
@@ -101,9 +99,13 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             //  Planning Time: 0.040 ms
                             //  Execution Time: 56413.265 ms
                             // (6 rows)
-                            val winnerTicket = RaffleTickets.select {
-                                RaffleTickets.raffle eq currentRaffle[Raffles.id]
-                            }.orderBy(RaffleTickets.id, SortOrder.DESC)
+
+                            // We need to sort by bought at because that, for some reason, is faster when doing LIMIT 1 OFFSET 20
+                            // When sorting by the ID, it gets wonky as hell with some offset values, with some of them taking 5 minutes+ to process for some reason?
+                            val winnerTicket = RaffleTickets.selectAll()
+                                .where {
+                                    RaffleTickets.raffle eq currentRaffle[Raffles.id]
+                                }.orderBy(RaffleTickets.boughtAt, SortOrder.DESC)
                                 .limit(1, skipTickets)
                                 .first()
 
