@@ -426,6 +426,9 @@ class LorittaBot(
 			if (state.value == PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {
 				// For these that are already FINISHED, they will always be LOGGED_IN_FROM_SCRATCH anyway
 				gatewayShardsStartupResumeStatus[shardId] = GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH
+			} else {
+				// A fallback, to avoid returning null when querying the gatewayShardsStartupResumeStatus
+				gatewayShardsStartupResumeStatus[shardId] = GatewayShardStartupResumeStatus.UNKNOWN
 			}
 
 			preLoginStates[shardId] = state

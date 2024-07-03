@@ -309,7 +309,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             val row3 = mutableListOf("Uptime")
             val row4 = mutableListOf("Guilds")
             val row5 = mutableListOf("MsgQ")
-            val row6 = mutableListOf("R/I/S")
+            val row6 = mutableListOf("R/I/S/U")
 
             results.forEach {
                 try {
@@ -345,6 +345,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     val resumed = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.SUCCESSFULLY_RESUMED }
                     val invalidated = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.SESSION_INVALIDATED }
                     val scratch = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH }
+                    val unknown = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.UNKNOWN }
 
                     row0.add("$pendingMessagesStatus Cluster $shardId ($name) [b$loriBuild]")
                     row1.add("~${pingAverage}ms")
@@ -352,7 +353,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
                     row4.add("$totalGuildCount")
                     row5.add("$pendingMessages")
-                    row6.add("$resumed/$invalidated/$scratch")
+                    row6.add("$resumed/$invalidated/$scratch/$unknown")
 
                     val unstableShards = json["shards"].array.filter {
                         it["status"].string != JDA.Status.CONNECTED.toString() || it["ping"].int == -1 || it["ping"].int >= 250
