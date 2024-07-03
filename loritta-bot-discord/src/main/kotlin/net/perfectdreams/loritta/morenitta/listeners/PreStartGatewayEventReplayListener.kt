@@ -178,7 +178,7 @@ class PreStartGatewayEventReplayListener(
         if (event.newStatus == JDA.Status.CONNECTING_TO_WEBSOCKET) {
             if (initialSession != null) {
                 val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
-                logger.info { "Connecting to WebSocket, sending faked READY event... Took $diff since shard shutdown began to now" }
+                logger.info { "Connecting shard ${event.jda.shardInfo.shardId} to WebSocket, sending faked READY event... Took $diff since shard shutdown began to now" }
 
                 val jdaImpl = event.jda as JDAImpl
 
