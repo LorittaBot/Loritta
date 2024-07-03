@@ -682,7 +682,10 @@ class LorittaBot(
 									val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
 
 									// Only get connected shards, invalidate everything else
-									if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
+									// The "shards.guildView.isEmpty" check is done to avoid shards with no guilds being saved to the disk, because shards without any guilds aren't correctly loaded by the code
+									// This will never happen on Loritta (yay we have enough guilds for everyone!!) but it may happen when testing Loritta
+									// So, to avoid someone debugging this without knowing wtf is happening, let's add that check in here
+									if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null || shard.guildsView.isEmpty) {
 										logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
 										// Not connected, shut down and invalidate our cached data
 										shard.shutdownNow(1000) // We don't care about persisting our gateway session
