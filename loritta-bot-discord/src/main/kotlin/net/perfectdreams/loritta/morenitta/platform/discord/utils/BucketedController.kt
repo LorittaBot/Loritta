@@ -4,11 +4,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import java.util.concurrent.Semaphore
 import javax.annotation.CheckReturnValue
 import javax.annotation.Nonnegative
 
@@ -17,7 +17,7 @@ import javax.annotation.Nonnegative
  *
  * Thanks Mantaro! https://github.com/Mantaro/MantaroBot/blob/0abd5d98af728e24a5b0fb4a0ad63fc451ef8d0f/src/main/java/net/kodehawa/mantarobot/core/shard/jda/BucketedController.java
  */
-class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
+class BucketedController(val loritta: LorittaBot, @Nonnegative bucketFactor: Int = 16, @Nonnegative val maxParallelLogins: Int = 16) : SessionControllerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -26,12 +26,13 @@ class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Non
 	private val rateLimits = mutableListOf<RateLimitHit>()
 	private val rateLimitListMutex = Mutex()
 	private var lastTooManyRequestsCheck = -1L
+	val parallelLoginsSemaphore = Semaphore(maxParallelLogins)
 
 	init {
 		require(bucketFactor >= 1) { "Bucket factor must be at least 1" }
 		shardControllers = arrayOfNulls(bucketFactor)
 		for (i in 0 until bucketFactor) {
-			shardControllers[i] = LoriMasterShardControllerSessionControllerAdapter(loritta)
+			shardControllers[i] = LoriMasterShardControllerSessionControllerAdapter(loritta, this)
 		}
 	}
 
