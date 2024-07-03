@@ -53,6 +53,7 @@ data class LorittaConfig(
         val maxShards: Int,
         val maxRequestsPerHost: Int,
         val maxConcurrency: Int,
+        val maxParallelLogins: Int,
         val okHttp: JdaOkHttpConfig,
         val requestLimiter: RequestLimiterConfig,
         val baseUrl: String?

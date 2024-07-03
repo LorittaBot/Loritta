@@ -79,6 +79,7 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 			val reconnectingShards = LinkedBlockingQueue<SessionConnectNode>()
 			val startingFromScratchShards = LinkedBlockingQueue<SessionConnectNode>()
 
+			// Prioritize shards that are reconnecting
 			while (connectQueue.isNotEmpty()) {
 				val node = connectQueue.poll()
 				if (node.isReconnect || loritta.preLoginStates[node.shardInfo.shardId]?.value == PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION) {
@@ -88,11 +89,8 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 				}
 			}
 
-			// We sort it by shard ID because we want to reconnect the shards that were shutted down the earliest
-			val reconnectingShardsSortedById = LinkedBlockingQueue(reconnectingShards.sortedBy { it.shardInfo.shardId })
-
-			while (reconnectingShardsSortedById.isNotEmpty()) {
-				val node = reconnectingShardsSortedById.poll()
+			while (reconnectingShards.isNotEmpty()) {
+				val node = reconnectingShards.poll()
 
 				// Just a shard resuming
 				try {
