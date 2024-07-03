@@ -115,10 +115,7 @@ import net.perfectdreams.loritta.morenitta.twitch.TwitchSubscriptionsHandler
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.config.*
-import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
-import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
-import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
-import net.perfectdreams.loritta.morenitta.utils.devious.StoredGatewayGuilds
+import net.perfectdreams.loritta.morenitta.utils.devious.*
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
@@ -143,6 +140,7 @@ import java.security.SecureRandom
 import java.sql.Connection
 import java.time.*
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -387,6 +385,9 @@ class LorittaBot(
 	val activityUpdater = ActivityUpdater(this)
 	val loriCoolCardsManager = LoriCoolCardsManager(this.graphicsFonts)
 
+	// Stores if a gateway was successfully resumed during startup
+	val gatewayShardsStartupResumeStatus = ConcurrentHashMap<Int, GatewayShardStartupResumeStatus>()
+
 	private val internalWebServer = InternalWebServer(this)
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
@@ -421,6 +422,11 @@ class LorittaBot(
 				}
 			)
 			logger.info { "Shard $shardId status: ${state.value}" }
+
+			if (state.value == PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {
+				// For these that are already FINISHED, they will always be LOGGED_IN_FROM_SCRATCH anyway
+				gatewayShardsStartupResumeStatus[shardId] = GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH
+			}
 
 			preLoginStates[shardId] = state
 		}

@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.HostnameUtils
@@ -27,8 +28,8 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResumeStatus
 import org.jetbrains.exposed.sql.select
 import java.lang.management.ManagementFactory
 import java.time.Instant
@@ -308,6 +309,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             val row3 = mutableListOf("Uptime")
             val row4 = mutableListOf("Guilds")
             val row5 = mutableListOf("MsgQ")
+            val row6 = mutableListOf("R/I/S")
 
             results.forEach {
                 try {
@@ -339,12 +341,18 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         else -> "!"
                     }
 
+                    val gatewayResumeStatuses = json["shards"].array.map { it["gatewayShardStartupResumeStatus"].string }.map { GatewayShardStartupResumeStatus.valueOf(it) }
+                    val resumed = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.SUCCESSFULLY_RESUMED }
+                    val invalidated = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.SESSION_INVALIDATED }
+                    val scratch = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH }
+
                     row0.add("$pendingMessagesStatus Cluster $shardId ($name) [b$loriBuild]")
                     row1.add("~${pingAverage}ms")
                     row2.add("~${time}ms")
                     row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
                     row4.add("$totalGuildCount")
                     row5.add("$pendingMessages")
+                    row6.add("$resumed/$invalidated/$scratch")
 
                     val unstableShards = json["shards"].array.filter {
                         it["status"].string != JDA.Status.CONNECTED.toString() || it["ping"].int == -1 || it["ping"].int >= 250
@@ -357,6 +365,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         row3.add("---")
                         row4.add("---")
                         row5.add("---")
+                        row6.add("---")
 
                         unstableShards.forEach {
                             row0.add("> Shard ${it["id"].long}")
@@ -365,6 +374,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                             row3.add(it["status"].string)
                             row4.add("${it["guildCount"].long}")
                             row5.add("---")
+                            row6.add("---")
                         }
                     }
                 } catch (e: ClusterOfflineException) {
@@ -374,6 +384,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     row3.add("OFFLINE!")
                     row4.add("---")
                     row5.add("---")
+                    row6.add("---")
                 }
             }
 
@@ -382,6 +393,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             val maxRow2 = row2.maxByOrNull { it.length }!!.length
             val maxRow3 = row3.maxByOrNull { it.length }!!.length
             val maxRow4 = row4.maxByOrNull { it.length }!!.length
+            val maxRow5 = row5.maxByOrNull { it.length }!!.length
 
             val lines = mutableListOf<String>()
             for (i in 0 until row0.size) {
@@ -391,8 +403,9 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 val arg3 = row3.getOrNull(i) ?: "---"
                 val arg4 = row4.getOrNull(i) ?: "---"
                 val arg5 = row5.getOrNull(i) ?: "---"
+                val arg6 = row6.getOrNull(i) ?: "---"
 
-                lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')} | ${arg5.padEnd(maxRow4, ' ')}"
+                lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')} | ${arg5.padEnd(maxRow4, ' ')} | ${arg6.padEnd(maxRow5, ' ')}"
             }
 
             val asMessage = mutableListOf<String>()

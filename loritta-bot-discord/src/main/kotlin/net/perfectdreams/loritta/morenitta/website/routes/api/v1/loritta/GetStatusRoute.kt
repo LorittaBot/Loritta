@@ -1,8 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
-import com.github.salomonbrys.kotson.jsonArray
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.set
 import io.ktor.server.application.*
 import kotlinx.serialization.json.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -50,13 +47,14 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 			put("uptime", ManagementFactory.getRuntimeMXBean().uptime)
 
 			putJsonArray("shards") {
-				for (shard in loritta.lorittaShards.shardManager.shards) {
+				for (shard in loritta.lorittaShards.shardManager.shards.sortedBy { it.shardInfo.shardId }) {
 					addJsonObject {
 						put("id", shard.shardInfo.shardId)
 						put("ping", shard.gatewayPing)
 						put("status", shard.status.toString())
 						put("guildCount", shard.guildCache.size())
 						put("userCount", shard.userCache.size())
+						put("gatewayShardStartupResumeStatus", loritta.gatewayShardsStartupResumeStatus[shard.shardInfo.shardId]?.name)
 					}
 				}
 			}

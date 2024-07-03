@@ -22,6 +22,7 @@ import net.dv8tion.jda.internal.requests.WebSocketCode
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResumeStatus
 import net.perfectdreams.loritta.morenitta.utils.devious.StoredGatewayGuilds
 import java.io.File
 import java.util.concurrent.LinkedBlockingQueue
@@ -130,6 +131,7 @@ class PreStartGatewayEventReplayListener(
                         }
                         state.value = ProcessorState.FINISHED
                         logger.info { "Successfully replayed events for shard ${event.jda.shardInfo.shardId}! Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
+                        loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.SUCCESSFULLY_RESUMED
                         jdaImpl.presence.setPresence(
                             OnlineStatus.ONLINE,
                             runBlocking { loritta.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId) }
@@ -165,6 +167,7 @@ class PreStartGatewayEventReplayListener(
                     val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
                     logger.info { "Session of shard ${event.jda.shardInfo.shardId} has been invalidated, clearing out ${replayCache.size} events... Took $diff since shard shutdown began to now" }
                     state.value = ProcessorState.FINISHED
+                    loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.SESSION_INVALIDATED
                     replayCache.clear()
                 }
             }
@@ -230,6 +233,7 @@ class PreStartGatewayEventReplayListener(
             } else {
                 // We don't have a gateway session, so just skip the gateway event processing shenanigans
                 state.value = ProcessorState.FINISHED
+                loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH
             }
         }
     }
