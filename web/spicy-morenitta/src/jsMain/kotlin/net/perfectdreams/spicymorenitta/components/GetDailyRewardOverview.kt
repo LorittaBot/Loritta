@@ -1,7 +1,10 @@
 package net.perfectdreams.spicymorenitta.components
 
 import androidx.compose.runtime.Composable
-import net.perfectdreams.loritta.serializable.responses.*
+import net.perfectdreams.loritta.serializable.responses.DailyPayoutError
+import net.perfectdreams.loritta.serializable.responses.DiscordAccountError
+import net.perfectdreams.loritta.serializable.responses.GetDailyRewardStatusResponse
+import net.perfectdreams.loritta.serializable.responses.UserVerificationError
 import net.perfectdreams.spicymorenitta.i18nContext
 import net.perfectdreams.spicymorenitta.routes.DailyScreen
 import net.perfectdreams.spicymorenitta.utils.CloudflareTurnstileUtils
@@ -96,6 +99,10 @@ fun GetDailyRewardOverview(
                             if (receivedDailyWithSameIp) {
                                 Div(attrs = { classes("daily-warning") }) {
                                     Text( "Parece que você já recebeu o prêmio diário hoje, se você não pegou... isto pode significar que existem pessoas com o mesmo IP que também pegaram o prêmio! Se você prometer para mim que você não está criando contas alternativas/fakes para coletar o prêmio, vá em frente, pegue o prêmio! Se não, sai daqui, se você não sair... coisas ruins irão acontecer, então nem tente transferir sonhos.")
+                                }
+                            } else {
+                                Div(attrs = { classes("daily-warning") }) {
+                                    Text("Ao coletar o prêmio, informações sobre o seu navegador, seu email e IP serão guardados para a gente poder detectar abusos. Não use VPN ou proxies para pegar o prêmio como também não use diversas contas para pegar o prêmio diário, já que faz você correr o risco de ser banido!")
                                 }
                             }
                         }
