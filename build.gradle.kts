@@ -38,3 +38,5 @@ extensions.findByName("buildScan")?.withGroovyBuilder {
     setProperty("termsOfServiceUrl", "https://gradle.com/terms-of-service")
     setProperty("termsOfServiceAgree", "yes")
 }
+
+Loritta é feito com [ Kotlin ] ( https://kotlinlang.org/ ) . Kotlin é uma linguagem de programação moderna, concisa e segura feita pela JetBrains. Se você já usou Java antes, Kotlin parecerá familiar para você. Caramba, ele pode até rodar na JVM!
