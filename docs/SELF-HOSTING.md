@@ -8,7 +8,7 @@ This section is not recommended to users who wants to contribute to her code, ch
 1. [Conditions and Warnings](#-conditions-and-warnings)
 2. [Requirements](#-requirements)
 3. [Preparing Environment](#-preparing-environment)
-4. [Running Loritta](#-running-loritta)
+4. [Running Loritta](#%EF%B8%8F-running-loritta)
 
 ## 📜 Conditions and Warnings
 
