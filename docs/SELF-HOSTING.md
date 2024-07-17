@@ -59,7 +59,7 @@ services:
 
 ### This file contains instructions to Docker Compose and tells it to create three specific containers:
 - Loritta;
-- PostgreSQL 13;
+- PostgreSQL 16;
 - [Gabriela's Image Server](https://github.com/LorittaBot/GabrielaImageServer) (Image generation purposes).
 
 In the same folder as `docker-compose.yml` create an empty file named `loritta.conf`.
