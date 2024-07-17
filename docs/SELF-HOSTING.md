@@ -64,7 +64,7 @@ services:
 
 In the same folder as `docker-compose.yml` create an empty file named `loritta.conf`.
 
-## Running Loritta
+## 🏃‍♂️ Running Loritta
 
 Open your favorite terminal inside the folder where are the files then run `docker-compose up`, this will download the containers and start them!
 
