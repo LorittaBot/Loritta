@@ -1,6 +1,6 @@
 # 🚀 Selfhosting Loritta
 
-This section is not recommended to users who wants to contribute to her code, check out [Developing Loritta](https://github.com/hechfx).
+This section is not recommended to users who wants to contribute to her code, check out [Developing Loritta](./DEVELOPERS.md).
 
 **DISCLAIMER**: We don't give support for self-hosted instances. You need to troubleshoot the issues yourself.
 
