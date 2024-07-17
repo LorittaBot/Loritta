@@ -98,4 +98,6 @@ When the line `After configuring the file, run me again` is shown in console, ex
             * Set this to "http://gabriela-image-server:8080/", "gabriela-image-server" is Gabriela's Image Server's container name in docker-compose.yml
 ```
 
-If everything goes well, your instance will be up and running!
+**REMEMBER**: We don't give support for self-hosted instances. You need to troubleshoot the issues yourself.
+
+If everything goes well, your instance will be up and running! 
