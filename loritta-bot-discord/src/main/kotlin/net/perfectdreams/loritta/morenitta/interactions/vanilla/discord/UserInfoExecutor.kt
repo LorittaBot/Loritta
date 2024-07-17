@@ -279,7 +279,7 @@ object UserInfoExecutor {
 
                     title = sharedServersFieldTitle
 
-                    description = sharedServers.joinToString(separator = ", ", transform = { "`${it["name"].string}`" }).substringIfNeeded(0 until 4096)
+                    description = sharedServers.joinToString(separator = ", ", transform = { "`${it["name"].string}` (${it["id"].string})" }).substringIfNeeded(0 until 4096)
                 }
             }
 
