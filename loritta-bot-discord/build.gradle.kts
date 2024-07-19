@@ -29,7 +29,7 @@ dependencies {
 
     // Discord
     implementation("com.github.LorittaBot:DeviousJDA:c98147549f")
-    implementation("com.github.MinnDevelopment:jda-ktx:78dbf827d5")
+    implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
 
     // Used to serialize state on components

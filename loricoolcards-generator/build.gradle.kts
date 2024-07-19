@@ -14,7 +14,7 @@ dependencies {
     implementation(project(":pudding:client"))
     // Discord
     implementation("com.github.LorittaBot:DeviousJDA:c98147549f")
-    implementation("com.github.MinnDevelopment:jda-ktx:78dbf827d5")
+    implementation("club.minnced:jda-ktx:0.12.0")
     // DreamStorageService
     implementation("net.perfectdreams.dreamstorageservice:client:2.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
