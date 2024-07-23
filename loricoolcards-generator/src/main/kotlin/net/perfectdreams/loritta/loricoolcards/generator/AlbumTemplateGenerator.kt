@@ -65,32 +65,32 @@ fun main() {
     //  Based off the layer name
     //  Or just sort it based on the sticker's xy position
     val templateSlots = mapOf(
-        1 to loadTemplatingSlots("new/v2/new_album_first_page"),
-        3 to loadTemplatingSlots("new/v2/new_album_second_page"),
+        1 to loadTemplatingSlots("new/v3/new_album_first_page"),
+        3 to loadTemplatingSlots("new/v3/new_album_second_page"),
         // 5 to loadTemplatingSlots("combo_lori_sleepy"),
-        5 to loadTemplatingSlots("new/v2/new_album_sparkly"), // full page
-        7 to loadTemplatingSlots("new/v2/new_album_lori_beach"), // big
-        9 to loadTemplatingSlots("new/v2/new_album_loritta_and_the_dreamers"), // small
-        11 to loadTemplatingSlots("new/v2/new_album_lori_and_wumpus"), // small
-        13 to loadTemplatingSlots("new/v2/new_album_lori_hey-hey-my-my-yo-yo"), // small
-        15 to loadTemplatingSlots("new/v2/new_album_herry"), // full page
-        17 to loadTemplatingSlots("new/v2/new_album_lori_water"), // big
-        19 to loadTemplatingSlots("new/v2/new_album_lori_deitada"), // small
-        21 to loadTemplatingSlots("new/v2/new_album_gabriela_easel"), // small
-        23 to loadTemplatingSlots("new/v2/new_album_lori_pantufa_gabi"), // small
-        25 to loadTemplatingSlots("new/v2/new_album_legoshi"), // full page
-        27 to loadTemplatingSlots("new/v2/new_album_lori_stars_yafyr"), // big
-        29 to loadTemplatingSlots("new/v2/new_album_lori_sleepy"), // small
-        31 to loadTemplatingSlots("new/v2/new_album_fofoca"), // small
-        33 to loadTemplatingSlots("new/v2/new_album_lori_running_sonhos"), // small
-        35 to loadTemplatingSlots("new/v2/new_album_sao_joao"), // full page
-        37 to loadTemplatingSlots("new/v2/new_album_lori_cool_pose"), // big
-        39 to loadTemplatingSlots("new/v2/new_album_lori_you_bring_light_in"), // small
-        41 to loadTemplatingSlots("new/v2/new_album_lori_code"), // small
-        43 to loadTemplatingSlots("new/v2/new_album_sips"), // small
-        45 to loadTemplatingSlots("new/v2/new_album_lori_mari_figurittas"), // full page
+        5 to loadTemplatingSlots("new/v3/new_album_sparkly"), // full page
+        7 to loadTemplatingSlots("new/v3/new_album_lori_beach"), // big
+        9 to loadTemplatingSlots("new/v3/new_album_loritta_and_the_dreamers"), // small
+        11 to loadTemplatingSlots("new/v3/new_album_lori_and_wumpus"), // small
+        13 to loadTemplatingSlots("new/v3/new_album_lori_hey-hey-my-my-yo-yo"), // small
+        15 to loadTemplatingSlots("new/v3/new_album_herry"), // full page
+        17 to loadTemplatingSlots("new/v3/new_album_lori_water"), // big
+        19 to loadTemplatingSlots("new/v3/new_album_lori_deitada"), // small
+        21 to loadTemplatingSlots("new/v3/new_album_gabriela_easel"), // small
+        23 to loadTemplatingSlots("new/v3/new_album_lori_pantufa_gabi"), // small
+        25 to loadTemplatingSlots("new/v3/new_album_legoshi"), // full page
+        27 to loadTemplatingSlots("new/v3/new_album_lori_stars_yafyr"), // big
+        29 to loadTemplatingSlots("new/v3/new_album_lori_sleepy"), // small
+        31 to loadTemplatingSlots("new/v3/new_album_fofoca"), // small
+        33 to loadTemplatingSlots("new/v3/new_album_lori_running_sonhos"), // small
+        35 to loadTemplatingSlots("new/v3/new_album_sao_joao"), // full page
+        37 to loadTemplatingSlots("new/v3/new_album_lori_cool_pose"), // big
+        39 to loadTemplatingSlots("new/v3/new_album_lori_you_bring_light_in"), // small
+        41 to loadTemplatingSlots("new/v3/new_album_lori_code"), // small
+        43 to loadTemplatingSlots("new/v3/new_album_sips"), // small
+        45 to loadTemplatingSlots("new/v3/new_album_lori_mari_figurittas"), // full page
 
-        -1 to loadTemplatingSlots("new/v2/new_album_generic_page"),
+        -1 to loadTemplatingSlots("new/v3/new_album_generic_page"),
 
         /* -1 to listOf(
             StickerAlbumTemplate.StickerSlot(
@@ -410,7 +410,7 @@ fun main() {
         if (templateSlot == -1) {
             // Needs to create new page!
             val pageBackdropImageFileName = (templateSlots[currentPage] ?: templateSlots[-1]!!).imageFileName
-            val pageBackdropUrl = "https://stuff.loritta.website/loricoolcards/production/v2/pages/$pageBackdropImageFileName"
+            val pageBackdropUrl = "https://stuff.loritta.website/loricoolcards/production/v3/pages/$pageBackdropImageFileName"
 
             pages.add(
                 StickerAlbumTemplate.AlbumComboPage(
@@ -433,7 +433,7 @@ fun main() {
     // Add not finished page
     if (nonTemplatingSlots.isNotEmpty()) {
         val pageBackdropImageFileName = (templateSlots[currentPage] ?: templateSlots[-1]!!).imageFileName
-        val pageBackdropUrl = "https://stuff.loritta.website/loricoolcards/production/v2/pages/$pageBackdropImageFileName"
+        val pageBackdropUrl = "https://stuff.loritta.website/loricoolcards/production/v3/pages/$pageBackdropImageFileName"
 
         pages.add(
             StickerAlbumTemplate.AlbumComboPage(
@@ -451,18 +451,18 @@ fun main() {
                 stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
                 unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
                 sonhosPrice = 5_000,
-                sonhosReward = 4_000_000,
+                sonhosReward = 2_000_000,
                 stickersInPack = 5,
                 stickerProbabilityWeights = mapOf(
-                    CardRarity.COMMON to 30.0,
-                    CardRarity.UNCOMMON to 25.0,
-                    CardRarity.RARE to 19.0,
-                    CardRarity.EPIC to 12.0,
-                    CardRarity.LEGENDARY to 8.0,
-                    CardRarity.MYTHIC to 5.0,
+                    CardRarity.COMMON to 22.0,
+                    CardRarity.UNCOMMON to 20.0,
+                    CardRarity.RARE to 18.0,
+                    CardRarity.EPIC to 16.0,
+                    CardRarity.LEGENDARY to 13.0,
+                    CardRarity.MYTHIC to 11.0,
                 ),
                 pages = pages
             )
-        )}' WHERE id = 2;"
+        )}' WHERE id = 9;"
     )
 }

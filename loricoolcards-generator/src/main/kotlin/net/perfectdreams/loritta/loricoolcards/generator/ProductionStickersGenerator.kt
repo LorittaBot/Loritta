@@ -70,7 +70,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v2"
+    val folderName = "production_v3"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -181,8 +181,8 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
     var cardId = 1
 
     // Avatars that will be falled back to user avatar
-    val blacklistedUserAvatarsIds = setOf<Long>(
-
+    val blacklistedUserAvatarsIds = mapOf<Long, String>(
+        755138747938504871L to "https://cdn.discordapp.com/attachments/1082340413156892682/1257402203015221360/IMG_5412.jpg?ex=6684468e&is=6682f50e&hm=c6efc25a8f97c0b0df7573c50b29b06f3685d292b3782936425a4b865dd82b31&"
     )
 
     val staffIds = listOf(
@@ -322,6 +322,8 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                         val moneyIndex = moneyProfiles.indexOf(it)
                         if (it[Profiles.id].value !in staffIds && moneyIndex == -1)
                             error("Something went wrong!")
+
+                        val userAvatarUrl = blacklistedUserAvatarsIds[it[Profiles.id].value] ?: user.getEffectiveAvatarUrl(ImageFormat.PNG)
                         val cardGenData = LoriCoolCardsManager.CardGenData(
                             thisCardId.toString().padStart(4, '0'),
                             if (it[Profiles.id].value in staffIds)
@@ -343,7 +345,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                                 CardRarity.COMMON
                             } else error("Whoops $index"),
                             user.name,
-                            ImageIO.read(URL(user.getEffectiveAvatarUrl(ImageFormat.PNG))),
+                            ImageIO.read(URL(userAvatarUrl)),
                             ImageIO.read(URL(activeBackgroundUrl)),
                             badgeTitle,
                             badgeImage
@@ -380,7 +382,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                         println("Took ${Clock.System.now() - start} to generate everything for ${user.idLong}")
 
                         fileMutex.withLock {
-                            sqlCommandsFile.appendText("INSERT INTO loricoolcardseventcards (event, card_id, rarity, title, card_front_image_url, card_received_image_url) VALUES (1, '#$id', '${rarity.name}', '$name', 'https://stuff.loritta.website/loricoolcards/production/v2/stickers/sticker-$outputName-front.png', 'https://stuff.loritta.website/loricoolcards/production/v2/stickers/sticker-$outputName-animated.gif');\n")
+                            sqlCommandsFile.appendText("INSERT INTO loricoolcardseventcards (event, card_id, rarity, title, card_front_image_url, card_received_image_url) VALUES (1, '#$id', '${rarity.name}', '$name', 'https://stuff.loritta.website/loricoolcards/production/v3/stickers/sticker-$outputName-front.png', 'https://stuff.loritta.website/loricoolcards/production/v3/stickers/sticker-$outputName-animated.gif');\n")
                         }
                     }
                 } catch (e: Exception) {
