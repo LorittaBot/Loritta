@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.misc
 
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -28,7 +28,7 @@ class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MISC) {
         enableLegacyMessageSupport = true
-        integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         alternativeLegacyAbsoluteCommandPaths.apply {
             add("language")
             add("speak")

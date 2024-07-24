@@ -34,7 +34,6 @@ object DebugLog {
 		logger.info("Total Memory:" + runtime.totalMemory() / mb)
 		logger.info("Max Memory:" + runtime.maxMemory() / mb)
 		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
-		logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.config.loritta.discord.requestLimiter.maxRequestsPer10Minutes}")
 		logger.info("Shards Pre Login states that aren't finished:")
 		for ((shardId, state) in loritta.preLoginStates) {
 			if (state.value != PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {

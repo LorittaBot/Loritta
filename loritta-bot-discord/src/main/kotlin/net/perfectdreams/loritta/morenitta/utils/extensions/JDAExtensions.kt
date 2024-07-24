@@ -369,7 +369,7 @@ fun Permission.getI18nKey() = when (this) {
     NICKNAME_MANAGE -> I18nKeys.Permissions.ManageNicknames
     MANAGE_ROLES -> I18nKeys.Permissions.ManageRoles
     MANAGE_WEBHOOKS -> I18nKeys.Permissions.ManageWebhooks
-    MANAGE_EMOJIS_AND_STICKERS -> I18nKeys.Permissions.ManageEmojisAndStickers
+    MANAGE_GUILD_EXPRESSIONS -> I18nKeys.Permissions.ManageEmojisAndStickers
     USE_APPLICATION_COMMANDS -> I18nKeys.Permissions.UseApplicationCommands
     REQUEST_TO_SPEAK -> I18nKeys.Permissions.RequestToSpeak
     MANAGE_THREADS -> I18nKeys.Permissions.ManageThreads
@@ -388,6 +388,11 @@ fun Permission.getI18nKey() = when (this) {
     VOICE_USE_SOUNDBOARD -> I18nKeys.Permissions.VoiceUseSoundboard
     VOICE_USE_EXTERNAL_SOUNDS -> I18nKeys.Permissions.VoiceUseExternalSounds
     VOICE_SET_STATUS -> I18nKeys.Permissions.VoiceSetStatus
+    USE_EMBEDDED_ACTIVITIES -> I18nKeys.Permissions.StartActivities
+    CREATE_GUILD_EXPRESSIONS -> I18nKeys.Permissions.CreateGuildExpressions
+    CREATE_SCHEDULED_EVENTS -> I18nKeys.Permissions.CreateScheduledEvents
+    MESSAGE_SEND_POLLS -> I18nKeys.Permissions.MessageSendPolls
+    USE_EXTERNAL_APPLICATIONS -> I18nKeys.Permissions.UseExternalApplications
     UNKNOWN -> I18nKeys.Permissions.UnknownPermission
 }
 

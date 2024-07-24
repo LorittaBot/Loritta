@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import java.util.regex.Pattern
@@ -27,8 +27,8 @@ class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 
         canUseInPrivateChannel = false
 
-        botRequiredPermissions = listOf(Permission.MANAGE_EMOJIS_AND_STICKERS)
-        userRequiredPermissions = listOf(Permission.MANAGE_EMOJIS_AND_STICKERS)
+        botRequiredPermissions = listOf(Permission.MANAGE_GUILD_EXPRESSIONS)
+        userRequiredPermissions = listOf(Permission.MANAGE_GUILD_EXPRESSIONS)
 
         executesDiscord {
             val context = this

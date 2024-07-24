@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":temmie-discord-auth"))
     implementation(project(":temmie-discord-auth-loritta-commons"))
     implementation(project(":switch-twitch"))
+    implementation(project(":discord-chat-markdown-parser"))
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
@@ -28,7 +29,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
     // Discord
-    implementation("com.github.LorittaBot:DeviousJDA:c98147549f")
+    implementation("com.github.LorittaBot:DeviousJDA:40ea50aea7")
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
 
@@ -107,6 +108,9 @@ dependencies {
     // Used for logs - MojangStyleFileAppenderAndRollover
     implementation("com.github.luben:zstd-jni:1.5.5-6")
 
+    // Used to render messages
+    implementation("com.microsoft.playwright:playwright:1.45.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
     testImplementation("io.mockk:mockk:1.9.3")
@@ -140,6 +144,12 @@ val sassDashboard = tasks.register<SassTask>("sass-dashboard-style-scss") {
     this.outputSass.set(file("$buildDir/sass/style-dashboard-scss"))
 }
 
+val sassMessageRenderer = tasks.register<SassTask>("sass-message-renderer") {
+    this.inputSass.set(file("src/main/sass-message-renderer/style.scss"))
+    this.inputSassFolder.set(file("src/main/sass-message-renderer/"))
+    this.outputSass.set(file("$buildDir/sass/sass-message-renderer-scss"))
+}
+
 tasks.test {
     useJUnitPlatform()
 }
@@ -165,6 +175,9 @@ tasks {
         }
         from(sassDashboard) {
             into("static/lori-slippy/assets/css/")
+        }
+        from(sassMessageRenderer) {
+            into("message-renderer-assets/")
         }
         from(sassLegacy) {
             into("static/assets/css/")

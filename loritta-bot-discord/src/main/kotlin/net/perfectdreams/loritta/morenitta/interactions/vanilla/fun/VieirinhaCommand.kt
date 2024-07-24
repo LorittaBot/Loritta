@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -20,7 +21,7 @@ class VieirinhaCommand : SlashCommandDeclarationWrapper  {
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         executor = VieirinhaExecutor()
     }

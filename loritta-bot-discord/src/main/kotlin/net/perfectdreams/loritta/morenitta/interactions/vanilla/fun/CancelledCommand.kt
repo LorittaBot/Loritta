@@ -1,9 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 
-import net.dv8tion.jda.api.interactions.commands.Command
-import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -20,7 +17,7 @@ class CancelledCommand : SlashCommandDeclarationWrapper  {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
         enableLegacyMessageSupport = true
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         examples = I18N_PREFIX.Examples
 

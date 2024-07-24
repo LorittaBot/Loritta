@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.DiscordLocale
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -254,6 +255,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(InviteCommand())
         register(UserAvatarUserCommand())
         register(UserInfoUserCommand())
+        if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
+            register(SaveMessageCommand(loritta))
+            register(VerifyMessageCommand(loritta))
+        }
 
         // ===[ MODERATION ]===
         register(BanInfoCommand(loritta))
@@ -587,7 +592,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
             this.isGuildOnly = declaration.isGuildOnly
-            this.setInteractionContextTypes(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
+            this.setContexts(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
             this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
             forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
@@ -658,7 +663,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
             this.isGuildOnly = declaration.isGuildOnly
-            this.setInteractionContextTypes(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
+            this.setContexts(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
             this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
             forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
@@ -675,7 +680,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             if (declaration.defaultMemberPermissions != null)
                 this.defaultPermissions = declaration.defaultMemberPermissions
             this.isGuildOnly = declaration.isGuildOnly
-            this.setInteractionContextTypes(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
+            this.setContexts(declaration.interactionContexts[0], *declaration.interactionContexts.toTypedArray())
             this.setIntegrationTypes(declaration.integrationTypes[0], *declaration.integrationTypes.toTypedArray())
 
             forEachI18nContextWithValidLocale { discordLocale, i18nContext ->
@@ -732,7 +737,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
                     // TODO: THIS IS A HACK, will be removed after all Discord InteraKTions commands are migrated do InteraKTions Unleashed
                     if (declaration.name in legacyInteraKTionsGuildAndUserInstallableCommandLabels)
-                        this.setIntegrationTypes(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+                        this.setIntegrationTypes(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
                     // We can only have (subcommands OR subcommand groups) OR arguments
                     if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {

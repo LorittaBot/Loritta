@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
@@ -16,8 +18,8 @@ data class SlashCommandDeclaration(
     var enableLegacyMessageSupport: Boolean,
     var alternativeLegacyLabels: List<String>,
     var alternativeLegacyAbsoluteCommandPaths: List<String>,
-    val integrationTypes: List<Command.IntegrationType>,
-    val interactionContexts: List<Command.InteractionContextType>,
+    val integrationTypes: List<IntegrationType>,
+    val interactionContexts: List<InteractionContextType>,
     val executor: LorittaSlashCommandExecutor?,
     val subcommands: List<SlashCommandDeclaration>,
     val subcommandGroups: List<SlashCommandGroupDeclaration>
@@ -36,8 +38,8 @@ data class UserCommandDeclaration(
     val category: CommandCategory,
     val defaultMemberPermissions: DefaultMemberPermissions?,
     var isGuildOnly: Boolean,
-    val integrationTypes: List<Command.IntegrationType>,
-    val interactionContexts: List<Command.InteractionContextType>,
+    val integrationTypes: List<IntegrationType>,
+    val interactionContexts: List<InteractionContextType>,
     val executor: LorittaUserCommandExecutor?
 )
 
@@ -46,7 +48,7 @@ data class MessageCommandDeclaration(
     val category: CommandCategory,
     val defaultMemberPermissions: DefaultMemberPermissions?,
     var isGuildOnly: Boolean,
-    val integrationTypes: List<Command.IntegrationType>,
-    val interactionContexts: List<Command.InteractionContextType>,
+    val integrationTypes: List<IntegrationType>,
+    val interactionContexts: List<InteractionContextType>,
     val executor: LorittaMessageCommandExecutor?
 )

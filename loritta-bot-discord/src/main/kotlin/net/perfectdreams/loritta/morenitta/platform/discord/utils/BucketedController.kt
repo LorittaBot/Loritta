@@ -36,46 +36,6 @@ class BucketedController(val loritta: LorittaBot, @Nonnegative bucketFactor: Int
 		}
 	}
 
-	override fun setGlobalRatelimit(ratelimit: Long) {
-		super.setGlobalRatelimit(ratelimit)
-
-		// Após marcar o novo global ratelimit, iremos adicionar em uma lista de quantos ratelimits já recebemos neste minuto
-		// Remover todos os ratelimits que foram atingidos a mais de 10 minutos
-		// https://i.imgur.com/crENfcG.png
-		runBlocking {
-			rateLimitListMutex.withLock {
-				removeOutdatedGlobalRateLimitHits()
-
-				rateLimits.add(
-					RateLimitHit(
-						ratelimit,
-						System.currentTimeMillis()
-					)
-				)
-			}
-		}
-
-		val diff = System.currentTimeMillis() - lastTooManyRequestsCheck
-		if (diff >= 15_000) {
-			logger.info { "Doing self too many requests check... Last check was ${diff}ms ago" }
-			lastTooManyRequestsCheck = System.currentTimeMillis()
-		}
-	}
-
-	fun getGlobalRateLimitHitsInTheLastMinute(): Int {
-		return runBlocking {
-			rateLimitListMutex.withLock {
-				return@runBlocking rateLimits.size
-			}
-		}
-	}
-
-	fun removeOutdatedGlobalRateLimitHits() {
-		val activeRateLimits = rateLimits.filter { (10 * 60_000) > (System.currentTimeMillis() - it.hitAt) }
-		rateLimits.clear()
-		rateLimits.addAll(activeRateLimits)
-	}
-
 	override fun appendSession(node: SessionConnectNode) {
 		controllerFor(node)!!.appendSession(node)
 	}

@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import kotlinx.serialization.json.Json
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -34,7 +35,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY) {
         this.enableLegacyMessageSupport = true
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
             // Buy

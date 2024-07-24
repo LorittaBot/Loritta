@@ -14,6 +14,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -47,7 +48,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD) {
         enableLegacyMessageSupport = true
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         subcommand(INFO_I18N_PREFIX.Label, INFO_I18N_PREFIX.Description) {
             alternativeLegacyAbsoluteCommandPaths.apply {

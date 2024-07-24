@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import dev.kord.common.Color
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -17,7 +18,7 @@ class HelpCommand : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS) {
         enableLegacyMessageSupport = true
 
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         executor = HelpExecutor()
     }

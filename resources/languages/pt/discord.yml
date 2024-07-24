@@ -48,6 +48,11 @@ permissions:
   voiceUseSoundboard: "Usar efeitos sonoros"
   voiceUseExternalSounds: "Usar sons externos"
   voiceSetStatus: "Definir status do canal de voz"
+  useEmbeddedActivites: "Usar atividades"
+  createGuildExpressions: "Criar expressões"
+  createScheduledEvents: "Criar eventos"
+  messageSendPolls: "Criar Enquetes"
+  useExternalApplications: "Usar Aplicativos Externos"
   unknownPermission: "Permissão desconhecida"
 guildFeatures:
   inviteSplash: "Fundo de convite"

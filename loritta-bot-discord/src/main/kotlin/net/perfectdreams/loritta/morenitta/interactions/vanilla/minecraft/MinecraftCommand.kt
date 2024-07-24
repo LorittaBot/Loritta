@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft
 
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.gabrielaimageserver.data.MinecraftSkinLorittaSweatshirtRequest
@@ -30,7 +31,7 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     val mojang = MinecraftMojangAPI()
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */, CommandCategory.MINECRAFT) {
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         subcommandGroup(I18N_PREFIX.Player.Label, I18N_PREFIX.Player.Description) {
             subcommand(I18N_PREFIX.Player.Skin.Label, I18N_PREFIX.Player.Skin.Description) {

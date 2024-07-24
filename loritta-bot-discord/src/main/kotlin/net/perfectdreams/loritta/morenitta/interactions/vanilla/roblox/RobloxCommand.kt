@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -43,7 +44,7 @@ class RobloxCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */, CommandCategory.ROBLOX) {
         enableLegacyMessageSupport = true
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
 
         subcommand(I18N_PREFIX.User.Label, I18N_PREFIX.User.Description) {

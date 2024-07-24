@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay
 
 import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -85,7 +86,7 @@ class RoleplayCommand {
     class RoleplaySlashCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ROLEPLAY) {
             enableLegacyMessageSupport = true
-            this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+            this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
             subcommand(I18N_PREFIX.Hug.Label, I18N_PREFIX.Hug.Description) {
                 executor = RoleplayHugExecutor()
@@ -188,7 +189,7 @@ class RoleplayCommand {
 
     class RoleplayUserCommand(val loritta: LorittaBot) : UserCommandDeclarationWrapper {
         override fun command() = userCommand(I18N_PREFIX.DoRoleplayAction, CommandCategory.ROLEPLAY, RoleplayUserExecutor(loritta)) {
-            this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+            this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         }
 
         class RoleplayUserExecutor(val loritta: LorittaBot) : LorittaUserCommandExecutor() {

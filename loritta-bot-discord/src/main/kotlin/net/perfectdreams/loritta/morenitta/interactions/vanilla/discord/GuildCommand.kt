@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.RateLimitedException
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.FileUpload
@@ -34,7 +35,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         isGuildOnly = true
 
         integrationTypes = listOf(
-            Command.IntegrationType.GUILD_INSTALL
+            IntegrationType.GUILD_INSTALL
         )
 
         subcommandGroup(I18N_PREFIX.Sticker.Label, I18N_PREFIX.Sticker.Description) {

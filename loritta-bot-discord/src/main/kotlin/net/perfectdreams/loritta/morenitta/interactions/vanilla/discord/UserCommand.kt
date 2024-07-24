@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -23,7 +24,7 @@ class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
         enableLegacyMessageSupport = true
-        this.integrationTypes = listOf(Command.IntegrationType.GUILD_INSTALL, Command.IntegrationType.USER_INSTALL)
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         subcommand(I18N_PREFIX.Avatar.Label, I18N_PREFIX.Avatar.Description) {
             alternativeLegacyAbsoluteCommandPaths.apply {
