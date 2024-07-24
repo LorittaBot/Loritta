@@ -10,6 +10,9 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel
 import net.dv8tion.jda.api.entities.sticker.Sticker
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.utils.FileUpload
@@ -21,9 +24,13 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationComm
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.MessageCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.messageCommand
+import net.perfectdreams.loritta.morenitta.messageverify.SavedMessage
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
+import net.perfectdreams.loritta.morenitta.utils.readAllBytes
 import java.util.*
 
 class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
@@ -83,6 +90,54 @@ class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
                             body {
                                 div(classes = "loritta-fancy-preview") {
                                     id = "wrapper"
+
+                                    div(classes = "discord-message-sent-at-location") {
+                                        // We need to detect which type of thing we are dealing with
+
+                                        if (message.channelType == ChannelType.GROUP) {
+                                            val channel = message.channel as GroupChannel
+
+                                            img(src = channel.iconUrl) {
+                                                height = "20"
+                                                width = "20"
+                                                style = "border-radius: 99999px;"
+                                            }
+
+                                            div {
+                                                text("Mensagem enviada no grupo ")
+                                                b {
+                                                    text(channel.name)
+                                                }
+                                            }
+                                        } else if (message.channelType == ChannelType.PRIVATE) {
+                                            // While there is a "channel.name" in the PrivateChannel, it seems that it always returns an empty string, even when you are using in another user's DMs
+                                            div {
+                                                text("Mensagem enviada no privado")
+                                            }
+                                        } else {
+                                            if (!message.hasGuild()) {
+                                                div {
+                                                    text("Mensagem enviada no servidor de ID ")
+                                                    b {
+                                                        text(message.guildIdLong)
+                                                    }
+                                                }
+                                            } else {
+                                                img(src = message.guild.getIconUrl(64, ImageFormat.PNG)) {
+                                                    height = "20"
+                                                    width = "20"
+                                                    style = "border-radius: 99999px;"
+                                                }
+
+                                                div {
+                                                    text("Mensagem enviada no servidor ")
+                                                    b {
+                                                        text(message.guild.name)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
 
                                     div(classes = "discord-message") {
                                         div(classes = "discord-message-sidebar") {
@@ -909,7 +964,7 @@ class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
                                     }
 
                                     div {
-                                        style = "display: grid;grid-template-columns: 200px 1fr; align-items: self-start;"
+                                        style = "display: grid;grid-template-columns: 200px 1fr; align-items: self-end;"
 
                                         div {
                                             style = "font-size: 0.8em; display: flex; flex-direction: column; gap: 0.5em;"
@@ -1000,7 +1055,102 @@ class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
                 // val screenshot = page.screenshot(Page.ScreenshotOptions().setFullPage(true))
                 page.querySelector("#wrapper").screenshot(ElementHandle.ScreenshotOptions())
             }
-            val b64Encoded = Base64.getEncoder().encodeToString(Json.encodeToString(MagicMessage(message.author.idLong, message.contentRaw)).toByteArray(Charsets.UTF_8))
+
+            // TODO: If we are downloading the attachments to be stored on the file itself, we need to know if we can actually send the image afterwards
+            val b64Encoded = Base64.getEncoder().encodeToString(
+                Json.encodeToString(
+                    SavedMessage(
+                        message.idLong,
+                        message.channelIdLong,
+                        if (message.guildIdLong != 0L) message.guildIdLong else null,
+                        if (message.hasGuild() && !message.guild.isDetached) {
+                            SavedMessage.SavedGuild(
+                                message.guild.idLong,
+                                message.guild.name,
+                                message.guild.iconId
+                            )
+                        } else null,
+                        SavedMessage.SavedAuthor(
+                            message.author.idLong,
+                            message.author.name,
+                            message.author.discriminator,
+                            message.author.globalName,
+                            message.author.avatarId,
+                            message.author.isBot,
+                            message.author.isSystem,
+                            message.author.flagsRaw
+                        ),
+                        message.contentRaw,
+                        message.embeds.map {
+                            SavedMessage.SavedEmbed(
+                                it.title,
+                                it.description,
+                                it.url,
+                                if (it.colorRaw != Role.DEFAULT_COLOR_RAW) it.colorRaw else null,
+                                it.author?.let {
+                                    SavedMessage.SavedEmbed.SavedAuthor(
+                                        it.name,
+                                        it.url,
+                                        it.iconUrl,
+                                        it.proxyIconUrl
+                                    )
+                                },
+                                it.fields.map {
+                                    SavedMessage.SavedEmbed.SavedField(
+                                        it.name,
+                                        it.value,
+                                        it.isInline
+                                    )
+                                },
+                                it.footer?.let {
+                                    SavedMessage.SavedEmbed.SavedFooter(
+                                        it.text,
+                                        it.iconUrl,
+                                        it.proxyIconUrl
+                                    )
+                                },
+                                it.image?.let {
+                                    SavedMessage.SavedEmbed.SavedImage(
+                                        it.url,
+                                        it.proxyUrl,
+                                        it.width,
+                                        it.height
+                                    )
+                                },
+                                it.thumbnail?.let {
+                                    SavedMessage.SavedEmbed.SavedThumbnail(
+                                        it.url,
+                                        it.proxyUrl,
+                                        it.width,
+                                        it.height
+                                    )
+                                }
+                            )
+                        },
+                        message.attachments.map {
+                            val attachmentData = LorittaUtils.downloadFile(m, it.url, 5_000)
+                                ?.readAllBytes(8_388_608)
+
+                            SavedMessage.SavedAttachment(
+                                it.idLong,
+                                it.fileName,
+                                it.description,
+                                it.contentType,
+                                it.size,
+                                it.url,
+                                it.proxyUrl,
+                                if (it.width != -1) it.width else null,
+                                if (it.height != -1) it.height else null,
+                                it.isEphemeral,
+                                it.duration,
+                                it.waveform?.let { Base64.getEncoder().encodeToString(it) },
+                                attachmentData?.let { Base64.getEncoder().encodeToString(it) },
+                            )
+                        }
+                    )
+                ).toByteArray(Charsets.UTF_8)
+            )
+
             val finalImage = addChunkToPng(screenshot, createChunk("tEXt", "LORIMESSAGEDATA:${b64Encoded}".toByteArray(Charsets.US_ASCII)))
 
             // File("data.png").writeBytes(screenshot)
@@ -1010,7 +1160,22 @@ class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
             context.reply(false) {
                 content = "Mensagem salva!"
 
-                files += FileUpload.fromData(finalImage, "message.png")
+                // This makes the file name be a bit long, but it is useful to quickly check which user/guild/channel/message we are talking about
+                val fileName = buildString {
+                    append("message-")
+                    append(message.author.idLong)
+                    if (message.hasGuild()) {
+                        append("-")
+                        append(message.guildIdLong)
+                    }
+                    append("-")
+                    append(message.channelIdLong)
+                    append("-")
+                    append(message.idLong)
+                    append(".lxrimsg.png")
+                }
+
+                files += FileUpload.fromData(finalImage, fileName)
             }
         }
     }

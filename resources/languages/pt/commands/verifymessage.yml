@@ -1,2 +1,10 @@
 label: "verificarmensagem"
 description: "Verifica uma mensagem previamente salva pela Loritta"
+
+url:
+  label: "url"
+  description: "Verifica uma mensagem previamente salva pela Loritta"
+
+file:
+  label: "arquivo"
+  description: "Verifica uma mensagem previamente salva pela Loritta"

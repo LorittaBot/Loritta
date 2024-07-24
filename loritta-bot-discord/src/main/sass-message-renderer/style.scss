@@ -75,6 +75,19 @@ code {
 }
 
 // A Discord-like message
+.discord-message-sent-at-location {
+    display: flex;
+    gap: 0.5em;
+    font-size: 0.75em;
+    width: 100%;
+    background-color: #313338;
+    border-radius: 7px;
+    padding: 0.5em;
+    width: fit-content;
+    align-items: center;
+}
+
+// A Discord-like message
 .discord-message {
     display: flex;
     gap: 1em;
