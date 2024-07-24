@@ -7,7 +7,7 @@ class ChatRootNode(children: List<MarkdownNode>) : CompositeMarkdownNode(childre
 class BoldNode(children: List<MarkdownNode>) : CompositeMarkdownNode(children)
 class ItalicsNode(children: List<MarkdownNode>) : CompositeMarkdownNode(children)
 class StrikethroughNode(children: List<MarkdownNode>) : CompositeMarkdownNode(children)
-class CodeBlockNode(children: List<MarkdownNode>) : CompositeMarkdownNode(children)
+class CodeBlockNode(val language: String?, children: List<MarkdownNode>) : CompositeMarkdownNode(children)
 class InlineCodeNode(children: List<MarkdownNode>) : CompositeMarkdownNode(children)
 class HeaderNode(val level: Int, children: List<MarkdownNode>) : CompositeMarkdownNode(children)
 class SubTextNode(children: List<MarkdownNode>) : CompositeMarkdownNode(children)

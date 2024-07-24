@@ -11,7 +11,15 @@ fun main() {
         |not inside the blockquote!
     """.trimMargin()) */
     // val nodes = parser.parse("> block quote\nnot in a block quote\n\nyeah <:lori_zz:964701978091470919>".trimMargin())
-    val nodes = parser.parse("***bold italics***")
+    val nodes = parser.parse("""
+        ```
+        hello world
+        ```
+        
+        ```kotlin
+        println("hello world")
+        ```
+    """.trimIndent())
     /* val nodes = parser.parse("""# hello world!!!
         |how are you today?
     """.trimMargin()) */
@@ -50,6 +58,8 @@ fun recursivePrint(level: Int, node: MarkdownNode) {
                     }
                 }
                 is CodeBlockNode -> {
+                    println("----".repeat(level) + "Code: ${node.language}")
+
                     for (children in node.children) {
                         recursivePrint(level + 1, children)
                     }

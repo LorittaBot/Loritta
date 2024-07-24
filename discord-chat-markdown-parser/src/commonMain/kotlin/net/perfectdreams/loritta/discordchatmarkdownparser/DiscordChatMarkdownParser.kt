@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.discordchatmarkdownparser
 class DiscordChatMarkdownParser {
     companion object {
         private val EMPTY_SPACE_REGEX = Regex(" ")
-        private val DISCORD_MARKDOWN_REGEX = Regex("(\\*\\*(?<bold>(?:.|\\n)+?)\\*\\*|\\*(?<italics>(?:.|\\n)+?)\\*|~~(?<strikethrough>(?:.|\\n)+?)~~|```(?<codeblock>(?:.|\\n)+?)```|^-# (?<subtext>.+)\n?|^(?<header>#{1,3} .+)\n?|`(?<inlinecode>(?:.|\\n)+)`|^> (?<blockquote>.+)\n?|\\[(?<discordlinklabel>.+)\\]\\((?<discordlinkurl>https?:\\/\\/.+)\\)|(?<discordurl>https?://[A-z0-9./?=\\-&]+))", RegexOption.MULTILINE)
+        private val DISCORD_MARKDOWN_REGEX = Regex("(\\*\\*(?<bold>(?:.|\\n)+?)\\*\\*|\\*(?<italics>(?:.|\\n)+?)\\*|~~(?<strikethrough>(?:.|\\n)+?)~~|```(?:(?<codeblocklanguage>[A-z0-9]+)\\n)?(?<codeblock>(?:.|\\n)+?)```|^-# (?<subtext>.+)?|^(?<header>#{1,3} .+)?|`(?<inlinecode>(?:.|\\n)+)`|^> (?<blockquote>.+)?|\\[(?<discordlinklabel>.+)\\]\\((?<discordlinkurl>https?:\\/\\/.+)\\)|(?<discordurl>https?://[A-z0-9./?=\\-&]+))", RegexOption.MULTILINE)
         private val DISCORD_ENTITIES_REGEX = Regex("(<(?<discordemojianimated>a)?:(?<discordemojiname>[a-zA-Z0-9_]+):(?<discordemojiid>[0-9]+)>|</(?<discordcommandpath>[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai} ]+):(?<discordcommandid>[0-9]+)>|<@!?(?<discorduserid>[0-9]+)>)|(?<discordeveryone>@everyone)|(?<discordhere>@here)", RegexOption.MULTILINE)
     }
 
@@ -45,8 +45,9 @@ class DiscordChatMarkdownParser {
 
                     val codeblock = groups["codeblock"]
                     if (codeblock != null) {
+                        val codeblockLanguage = groups["codeblocklanguage"]
                         // Code block nodes should be parsed as is, don't attempt to parse what's inside
-                        nodes.add(CodeBlockNode(listOf(CodeTextNode(codeblock.value))))
+                        nodes.add(CodeBlockNode(codeblockLanguage?.value, listOf(CodeTextNode(codeblock.value))))
                         continue
                     }
 
