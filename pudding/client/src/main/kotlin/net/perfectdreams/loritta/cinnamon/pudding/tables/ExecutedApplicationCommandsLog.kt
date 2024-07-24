@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables
 import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.commands.InteractionContextType
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey() {
@@ -18,6 +19,10 @@ object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey()
     val options = jsonb("options")
     val success = bool("success")
     val latency = double("latency")
+    val context = postgresEnumeration<InteractionContextType>("context").nullable()
+    val guildIntegration = long("guild_integration").nullable()
+    val userIntegration = long("user_integration").nullable()
+
     val stacktrace = text("stacktrace").nullable()
 
     // Sent At must be a primary key because it is used as a partition key

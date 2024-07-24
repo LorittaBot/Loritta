@@ -3,11 +3,12 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.json.JsonObject
-import net.perfectdreams.loritta.common.commands.ApplicationCommandType
-import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.commands.InteractionContextType
+import net.perfectdreams.loritta.common.components.ComponentType
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 
@@ -23,7 +24,10 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
         options: JsonObject,
         success: Boolean,
         latency: Double,
-        stacktrace: String?
+        stacktrace: String?,
+        context: InteractionContextType,
+        guildIntegrationId: Long?,
+        userIntegrationId: Long?,
     ): Long {
         return pudding.transaction {
             ExecutedApplicationCommandsLog.insertAndGetId {
@@ -37,6 +41,9 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
                 it[ExecutedApplicationCommandsLog.options] = options.toString()
                 it[ExecutedApplicationCommandsLog.success] = success
                 it[ExecutedApplicationCommandsLog.latency] = latency
+                it[ExecutedApplicationCommandsLog.context] = context
+                it[ExecutedApplicationCommandsLog.guildIntegration] = guildIntegrationId
+                it[ExecutedApplicationCommandsLog.userIntegration] = userIntegrationId
                 it[ExecutedApplicationCommandsLog.stacktrace] = stacktrace
             }
         }.value

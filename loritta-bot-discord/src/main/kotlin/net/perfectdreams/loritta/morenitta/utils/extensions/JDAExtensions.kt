@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
@@ -510,4 +511,16 @@ fun Emote.toJDA() = when (this) {
     )
 
     is UnicodeEmote -> Emoji.fromUnicode(this.name)
+}
+
+/**
+ * Converts a [InteractionContextType] to [net.perfectdreams.loritta.common.commands.InteractionContextType]
+ */
+fun InteractionContextType.toLoritta(): net.perfectdreams.loritta.common.commands.InteractionContextType {
+    return when (this) {
+        InteractionContextType.UNKNOWN -> net.perfectdreams.loritta.common.commands.InteractionContextType.UNKNOWN
+        InteractionContextType.GUILD -> net.perfectdreams.loritta.common.commands.InteractionContextType.GUILD
+        InteractionContextType.BOT_DM -> net.perfectdreams.loritta.common.commands.InteractionContextType.BOT_DM
+        InteractionContextType.PRIVATE_CHANNEL -> net.perfectdreams.loritta.common.commands.InteractionContextType.PRIVATE_CHANNEL
+    }
 }

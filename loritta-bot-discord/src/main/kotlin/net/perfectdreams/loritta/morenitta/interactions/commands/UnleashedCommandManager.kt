@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.Channel
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.IntegrationType
@@ -37,6 +38,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.EnvironmentType
@@ -553,7 +555,18 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             },
             stacktrace == null,
             timer.observeDuration(),
-            stacktrace
+            stacktrace,
+            // Once again we don't have these attributes because this was invoked via messages, so we will roll our own!
+            // Messages can only be sent in the bot DM's
+            if (event.channel.type == ChannelType.PRIVATE) {
+                InteractionContextType.BOT_DM
+            } else InteractionContextType.GUILD, // If else, then it is a guild
+            // JDA always returns 0 when the guild is the bot DM's
+            if (event.channel.type == ChannelType.PRIVATE) {
+                0L
+            } else event.guild?.idLong, // If else, then it is a guild
+            // And finally, messages cannot be installed into the user's account
+            null
         )
 
         return true

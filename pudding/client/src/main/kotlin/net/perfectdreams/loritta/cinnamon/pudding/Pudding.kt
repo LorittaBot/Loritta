@@ -39,6 +39,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
@@ -69,7 +70,7 @@ class Pudding(
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
         private val ISOLATION_LEVEL =
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-        private const val SCHEMA_VERSION = 36 // Bump this every time any table is added/updated!
+        private const val SCHEMA_VERSION = 38 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
 
         /**
@@ -418,6 +419,7 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(TransactionType.values())
                 createOrUpdatePostgreSQLEnum(CardRarity.values())
                 createOrUpdatePostgreSQLEnum(ColorTheme.values())
+                createOrUpdatePostgreSQLEnum(InteractionContextType.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

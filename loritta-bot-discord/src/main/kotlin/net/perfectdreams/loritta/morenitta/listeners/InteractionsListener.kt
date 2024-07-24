@@ -45,6 +45,7 @@ import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toLoritta
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
 import org.postgresql.util.PGobject
@@ -244,7 +245,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 buildJsonObject {},
                 stacktrace == null,
                 timer.observeDuration(),
-                stacktrace
+                stacktrace,
+                event.interaction.context.toLoritta(),
+                event.interaction.integrationOwners.guildIntegration,
+                event.interaction.integrationOwners.userIntegration?.idLong,
             )
         }
     }
@@ -348,7 +352,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 buildJsonObject {},
                 stacktrace == null,
                 timer.observeDuration(),
-                stacktrace
+                stacktrace,
+                event.interaction.context.toLoritta(),
+                event.interaction.integrationOwners.guildIntegration,
+                event.interaction.integrationOwners.userIntegration?.idLong,
             )
         }
     }
@@ -453,7 +460,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 buildJsonObject {},
                 stacktrace == null,
                 timer.observeDuration(),
-                stacktrace
+                stacktrace,
+                event.interaction.context.toLoritta(),
+                event.interaction.integrationOwners.guildIntegration,
+                event.interaction.integrationOwners.userIntegration?.idLong,
             )
         }
     }

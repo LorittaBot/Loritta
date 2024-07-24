@@ -9,9 +9,10 @@ import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandC
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.commands.InteractionContextType
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
@@ -74,7 +75,11 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaBot) : UserComman
             buildJsonWithArguments(emptyMap()),
             stacktrace == null,
             commandLatency,
-            stacktrace
+            stacktrace,
+            // Technically this is an interaction, but we are using Kord and I really do not want to update my fork, so we will just fall back to UNKNOWN
+            InteractionContextType.UNKNOWN,
+            null,
+            null
         )
     }
 
