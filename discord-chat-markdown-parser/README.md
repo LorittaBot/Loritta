@@ -49,4 +49,4 @@ Result:
 hello world!
 ```
 
-More samples can be found on the `:discord-chat-markdown-parser` module.
+More samples can be found on the `:discord-chat-markdown-parser-samples` module.
