@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeUtil
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
@@ -19,6 +20,8 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.messageverify.SavedMessage
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import java.util.*
 
 class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -134,8 +137,28 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val url = args[options.url]
 
-            val imageByteArray = m.http.get(url).readBytes()
+            // TODO: Validate that we are downloading a image hosted on Discord's CDN
+            val imageInputStream = LorittaUtils.downloadFile(m, url, 5_000)
+            if (imageInputStream == null) {
+                context.reply(false) {
+                    styled(
+                        "Algo deu errado ao tentar baixar a imagem"
+                    )
+                }
+                return
+            }
 
+            val imageByteArray = imageInputStream.readAllBytes()
+
+            val simpleImageInfo = SimpleImageInfo(imageByteArray)
+            if (simpleImageInfo.mimeType != "image/png") {
+                context.reply(false) {
+                    styled(
+                        "A imagem enviada não é uma imagem PNG"
+                    )
+                }
+                return
+            }
             verifyMessageCommand.stuff(context, imageByteArray)
         }
     }
@@ -151,6 +174,15 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
             context.deferChannelMessage(false)
 
             val file = args[options.file]
+
+            if (file.contentType != "image/png") {
+                context.reply(false) {
+                    styled(
+                        "A imagem enviada não é uma imagem PNG ${file.contentType}"
+                    )
+                }
+                return
+            }
 
             val imageByteArray = m.http.get(file.url).readBytes()
 
