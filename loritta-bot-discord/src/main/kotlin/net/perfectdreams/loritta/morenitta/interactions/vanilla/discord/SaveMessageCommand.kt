@@ -24,7 +24,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.messageCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
-import org.intellij.markdown.ast.ASTNode
 import java.util.*
 
 class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
@@ -73,7 +72,7 @@ class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
                     createHTML()
                         .html {
                             head {
-                                link(href = "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap&family=Pacifico&display=swap", type = "stylesheet")
+                                link(href = "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap&family=Pacifico&display=swap&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap", type = "stylesheet")
                                 style {
                                     unsafe {
                                         raw(LorittaBot::class.java.getResourceAsStream("/message-renderer-assets/style.css").readAllBytes().toString(Charsets.UTF_8))
@@ -947,12 +946,6 @@ class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
                                                 div {
                                                     style = "font-weight: bold;"
                                                     text("ID do canal")
-
-                                                    context.event.interaction.context
-                                                    text(" ")
-                                                    text("(")
-                                                    text(context.event.interaction.context.name)
-                                                    text(")")
                                                 }
 
                                                 div {
@@ -1021,9 +1014,4 @@ class SaveMessageCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
             }
         }
     }
-
-    data class ParseResult(
-        val node: ASTNode,
-        val markdownText: String
-    )
 }

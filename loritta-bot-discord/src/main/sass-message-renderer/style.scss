@@ -14,6 +14,11 @@ body {
     --divider-color: #3b3d44;
 }
 
+pre {
+    font-family: 'JetBrains Mono';
+    white-space: break-spaces;
+}
+
 // We want to use this whenever we want
 .discord-inline-emoji {
     height: 1.5em;
@@ -49,7 +54,7 @@ code {
     font-family: Lato;
     display: flex;
     flex-direction: column;
-    max-width: 640px;
+    max-width: 1000px;
     gap: 0.5em;
 }
 
