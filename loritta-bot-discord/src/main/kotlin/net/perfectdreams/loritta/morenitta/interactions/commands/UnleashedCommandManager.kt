@@ -257,11 +257,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(InviteCommand())
         register(UserAvatarUserCommand())
         register(UserInfoUserCommand())
-        if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
-            register(SaveMessageCommand.SaveMessagePublicCommand(loritta))
-            register(SaveMessageCommand.SaveMessagePrivateCommand(loritta))
-            register(VerifyMessageCommand(loritta))
-        }
+        register(SaveMessageCommand.SaveMessagePublicCommand(loritta))
+        register(SaveMessageCommand.SaveMessagePrivateCommand(loritta))
+        register(VerifyMessageCommand(loritta))
 
         // ===[ MODERATION ]===
         register(BanInfoCommand(loritta))
