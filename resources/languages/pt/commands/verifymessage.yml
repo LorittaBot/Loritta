@@ -1,10 +1,24 @@
 label: "verificarmensagem"
 description: "Verifica uma mensagem previamente salva pela Loritta"
 
+imageDoesNotContainMessageData: "Não foi possível validar a mensagem pois a imagem não possui os dados da mensagem dentro dela! Tente verificar a mensagem usando o arquivo original da imagem, ao invés de verificar reposts dela."
+imageHasMessageDataButCouldntBeValidated: "Não foi possível validar a mensagem pois os dados da mensagem que estão dentro da imagem estão em um formato incompatível. Tente salvar a mensagem novamente!"
+imageDataHasBeenTampared: "Parece que os dados da imagem foram manipulados! Isto pode acontecer se os pixels da imagem foram editados ou se os dados da mensagem que estão dentro da imagem foram editados. Tente salvar a mensagem novamente!"
+validMessage: "Mensagem válida!"
+payAttentionToTheMessage: "Cuidado! Não se esqueça de verificar se o usuário é realmente quem ele é! Uma mensagem válida não significa que o autor da mensagem não pode ser uma conta fake tentando se passar por outro usuário."
+uploadedImageIsNotInPngFormat: "A imagem que você enviou não é uma imagem PNG! Para validar a veracidade da imagem, eu preciso da imagem original da mensagem que foi salva. Tente validar a imagem usando o link original da imagem da mensagem que foi salva!"
+
 url:
   label: "url"
   description: "Verifica uma mensagem previamente salva pela Loritta"
+  invalidUrl: "Desculpe, mas eu só consigo validar links de imagens que foram enviadas no Discord!"
+  options:
+    url:
+      text: "O link da imagem da mensagem que você deseja verificar"
 
 file:
   label: "arquivo"
   description: "Verifica uma mensagem previamente salva pela Loritta"
+  options:
+    file:
+      text: "O arquivo da imagem da mensagem que você deseja verificar"

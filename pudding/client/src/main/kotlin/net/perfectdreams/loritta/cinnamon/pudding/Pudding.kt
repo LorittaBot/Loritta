@@ -70,7 +70,7 @@ class Pudding(
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
         private val ISOLATION_LEVEL =
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-        private const val SCHEMA_VERSION = 38 // Bump this every time any table is added/updated!
+        private const val SCHEMA_VERSION = 40 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
 
         /**
@@ -387,16 +387,20 @@ class Pudding(
                             .firstOrNull()
                             ?.get(SchemaVersion.version)
 
-                    if (schemaVersion == SCHEMA_VERSION) {
-                        logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
-                        return@transaction
-                    } else {
-                        if (schemaVersion != null && schemaVersion > SCHEMA_VERSION) {
-                            logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will not update the tables to avoid issues..." }
+                    if (!java.lang.Boolean.getBoolean("loritta.ignoreSchemaVersion")) {
+                        if (schemaVersion == SCHEMA_VERSION) {
+                            logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
                             return@transaction
                         } else {
-                            logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
+                            if (schemaVersion != null && schemaVersion > SCHEMA_VERSION) {
+                                logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will not update the tables to avoid issues..." }
+                                return@transaction
+                            } else {
+                                logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
+                            }
                         }
+                    } else {
+                        logger.info { "Ignoring schema version (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables anyway, yay!" }
                     }
                 } else {
                     logger.warn { "SchemaVersion doesn't seem to exist, we will ignore the schema version check..." }

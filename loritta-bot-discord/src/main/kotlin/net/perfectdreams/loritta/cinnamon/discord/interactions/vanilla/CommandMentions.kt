@@ -35,6 +35,9 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val raffleStatus = commandMention("raffle status")
     val raffleBuy = commandMention("raffle buy")
 
+    val verifyMessageUrl = commandMention("verificarmensagem url")
+    val verifyMessageFile = commandMention("verificarmensagem arquivo")
+
     /**
      * Creates a command mention of [path]. If the command doesn't exist, an error will be thrown.
      */

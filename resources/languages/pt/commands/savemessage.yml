@@ -1,1 +1,10 @@
-label: "Salvar Mensagem"
+labelPublic: "Salvar Mensagem (Enviar Aqui)"
+labelPrivate: "Salvar Mensagem (Enviar na DM)"
+
+youReceivedACopyOfTheMessage: "Você recebeu uma cópia autenticada da mensagem {jumpUrl}"
+whatYouCanDoWithIt: "Use o link desta imagem no comando {verifyMessage} para checar se a mensagem é real. Compartilhe o link da mensagem para outras pessoas para que elas possam verificar que a mensagem é real. Útil para denúncias em servidores!"
+theMessageIsASnapshot: "A mensagem guardada na sua imagem jamais mudará! Mesmo que ela seja deletada, editada, ou evaporada, você ainda tem uma cópia dela, e você pode provar que ela realmente existiu com o {verifyMessage}."
+tamperingIsDetected: "Manipulações na imagem serão detectadas ao validar a imagem no {verifyMessage}. É como se eu fosse uma amiga sua que sempre fala a verdade sobre as provas que você recebe!"
+
+theMessageCopyWasSentInYourDMs: "A imagem da mensagem, junto com as instruções sobre como ela funciona, foi enviada na sua DM. Mas para deixar mais prático para você, aqui está o link da imagem! {imageUrl}"
+yourDMsAreClosed: "Suas DMs estão fechadas! As suas DMs precisam estar abertas para que eu possa te mandar a imagem da mensagem."

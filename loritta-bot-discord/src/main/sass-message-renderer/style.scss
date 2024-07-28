@@ -17,6 +17,10 @@ body {
 pre {
     font-family: 'JetBrains Mono';
     white-space: break-spaces;
+    background-color: #2b2d31;
+    padding: 0.5em;
+    border: 1px solid #1e1f22;
+    border-radius: 4px;
 }
 
 // We want to use this whenever we want
@@ -30,8 +34,18 @@ pre {
     color: #c9cdfb;
     font-weight: 600;
     transition: background-color .05s,color .05s;
-    padding: 2px;
+    padding: 0.1em 0.25em;
     border-radius: 3px;
+
+    &.discord-channel {
+        svg {
+            width: 1em;
+            height: 1em;
+            vertical-align: middle;
+            margin-bottom: .2rem;
+            margin-right: 0.3em;
+        }
+    }
 }
 
 a {
@@ -140,12 +154,17 @@ code {
         }
 
         .discord-message-bot-tag {
-            background-color: var(--loritta-blue);
+            background-color: #5865f2;
             color: white;
             font-weight: bold;
-            border-radius: 0.1875rem;
-            font-size: .625rem;
-            padding: 0.3em 0.5em;
+            display: flex;
+            height: .9375rem;
+            padding: 0 .275rem;
+            margin-top: .2em;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            align-items: center;
         }
 
         .discord-message-timestamp {
@@ -157,6 +176,12 @@ code {
     .discord-message-text {
         // We don't use this because kotlinx.html pretty prints html, and that causes issues because technically there are \n between elements, causing unnecessary new lines
         // white-space: break-spaces; // Let's us use "\n" to break lines
+
+        // Limit the amount of lines to avoid >16384px images (that causes issues with Chromium when taking screenshots, see DiscordMessageRendererManager's comments)
+        -webkit-line-clamp: 100;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .discord-message-accessories {
@@ -211,6 +236,11 @@ code {
                     .discord-embed-field {
                         .discord-embed-field-name {
                             font-weight: 600;
+                            word-break: break-all;
+                        }
+
+                        .discord-embed-field-value {
+                            word-break: break-all;
                         }
                     }
                 }
@@ -269,11 +299,45 @@ code {
 
         .discord-message-attachments {
             display: flex;
+            gap: 0.5em;
+            flex-direction: column;
+            justify-content: left;
+            align-items: flex-start;
+
+            .discord-message-attachment-preview {
+                border-radius: 4px;
+                max-width: 600px;
+                height: auto;
+                max-height: 400px;
+                width: auto;
+                object-fit: contain;
+            }
 
             .discord-message-attachment {
-                max-height: 350px;
-                width: auto;
+                flex-direction: row;
+                display: flex;
+                background-color: #2b2d31;
+                border: 1px solid #1e1f22;
                 border-radius: 4px;
+                padding: 1em;
+                gap: 1em;
+                align-items: center;
+                width: 432px;
+
+                svg {
+                    height: 40px;
+                    width: fit-content;
+                }
+
+                .discord-message-attachment-info {
+                    display: flex;
+                    flex-direction: column;
+
+                    .discord-message-attachment-size {
+                        font-size: 0.7em;
+                        color: #90969f;
+                    }
+                }
             }
         }
 

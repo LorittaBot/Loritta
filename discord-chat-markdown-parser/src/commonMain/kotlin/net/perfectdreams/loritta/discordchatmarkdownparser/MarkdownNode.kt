@@ -31,5 +31,11 @@ class DiscordCommandEntityNode(
 class DiscordUserMentionEntityNode(
     val id: Long
 ) : LeafMarkdownNode()
+class DiscordChannelMentionEntityNode(
+    val id: Long
+) : LeafMarkdownNode()
+class DiscordRoleMentionEntityNode(
+    val id: Long
+) : LeafMarkdownNode()
 data object DiscordEveryoneMentionEntityNode : LeafMarkdownNode()
 data object DiscordHereMentionEntityNode : LeafMarkdownNode()

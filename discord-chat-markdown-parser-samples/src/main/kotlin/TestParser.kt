@@ -12,14 +12,9 @@ fun main() {
     """.trimMargin()) */
     // val nodes = parser.parse("> block quote\nnot in a block quote\n\nyeah <:lori_zz:964701978091470919>".trimMargin())
     val nodes = parser.parse("""
-        ```
-        hello world
-        ```
-        
-        ```kotlin
-        println("hello world")
-        ```
-    """.trimIndent())
+        |**Usuário:** `361977144445763585`
+        |**Servidor:** `361977144445763585`
+    """.trimMargin())
     /* val nodes = parser.parse("""# hello world!!!
         |how are you today?
     """.trimMargin()) */
@@ -129,6 +124,14 @@ fun recursivePrint(level: Int, node: MarkdownNode) {
 
                 is DiscordUserMentionEntityNode -> {
                     println("----".repeat(level) + " user! " + node.id)
+                }
+
+                is DiscordRoleMentionEntityNode -> {
+                    println("----".repeat(level) + " role! " + node.id)
+                }
+
+                is DiscordChannelMentionEntityNode -> {
+                    println("----".repeat(level) + " channel! " + node.id)
                 }
             }
         }

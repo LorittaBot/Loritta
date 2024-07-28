@@ -4,7 +4,7 @@ class DiscordChatMarkdownParser {
     companion object {
         private val EMPTY_SPACE_REGEX = Regex(" ")
         private val DISCORD_MARKDOWN_REGEX = Regex("(\\*\\*(?<bold>(?:.|\\n)+?)\\*\\*|\\*(?<italics>(?:.|\\n)+?)\\*|~~(?<strikethrough>(?:.|\\n)+?)~~|```(?:(?<codeblocklanguage>[A-z0-9]+)\\n|\\n?)?(?<codeblock>(?:.|\\n)+?)```|^-# (?<subtext>.+)?|^(?<header>#{1,3} .+)?|`(?<inlinecode>(?:.|\\n)+?)`|^> (?<blockquote>.+)?|\\[(?<discordlinklabel>.+)\\]\\((?<discordlinkurl>https?:\\/\\/.+)\\)|(?<discordurl>https?://[A-z0-9./?=\\-&]+))", RegexOption.MULTILINE)
-        private val DISCORD_ENTITIES_REGEX = Regex("(<(?<discordemojianimated>a)?:(?<discordemojiname>[a-zA-Z0-9_]+):(?<discordemojiid>[0-9]+)>|</(?<discordcommandpath>[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai} ]+):(?<discordcommandid>[0-9]+)>|<@!?(?<discorduserid>[0-9]+)>)|(?<discordeveryone>@everyone)|(?<discordhere>@here)", RegexOption.MULTILINE)
+        private val DISCORD_ENTITIES_REGEX = Regex("(<(?<discordemojianimated>a)?:(?<discordemojiname>[a-zA-Z0-9_]+):(?<discordemojiid>[0-9]+)>|</(?<discordcommandpath>[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai} ]+):(?<discordcommandid>[0-9]+)>|<@!?(?<discorduserid>[0-9]+)>)|(?<discordeveryone>@everyone)|(?<discordhere>@here)|<#(?<discordchannelid>[0-9]+)>|<@&(?<discordroleid>[0-9]+)>", RegexOption.MULTILINE)
     }
 
     fun parse(markdownText: String): MarkdownNode {
@@ -135,6 +135,26 @@ class DiscordChatMarkdownParser {
                                     entityNodes.add(
                                         DiscordUserMentionEntityNode(
                                             discorduserid.value.toLong()
+                                        )
+                                    )
+                                    continue
+                                }
+
+                                val discordchannelid = groups["discordchannelid"]
+                                if (discordchannelid != null) {
+                                    entityNodes.add(
+                                        DiscordChannelMentionEntityNode(
+                                            discordchannelid.value.toLong()
+                                        )
+                                    )
+                                    continue
+                                }
+
+                                val discordroleid = groups["discordroleid"]
+                                if (discordroleid != null) {
+                                    entityNodes.add(
+                                        DiscordRoleMentionEntityNode(
+                                            discordroleid.value.toLong()
                                         )
                                     )
                                     continue

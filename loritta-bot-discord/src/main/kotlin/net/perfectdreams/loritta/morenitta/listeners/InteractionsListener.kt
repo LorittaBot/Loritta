@@ -179,7 +179,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val locale = loritta.localeManager.getLocaleById(currentLocale)
                 i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-                val lorittaUser = if (guild != null && member != null) {
+                val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
                     // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
                     val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
                     val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
@@ -307,7 +307,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val locale = loritta.localeManager.getLocaleById(currentLocale)
                 i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-                val lorittaUser = if (guild != null && member != null) {
+                val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
                     // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
                     val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
                     val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
@@ -502,7 +502,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val locale = loritta.localeManager.getLocaleById(currentLocale)
                 i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-                val lorittaUser = if (guild != null && member != null) {
+                val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
                     // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
                     val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
                     val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
@@ -576,7 +576,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val locale = loritta.localeManager.getLocaleById(currentLocale)
                 i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-                val lorittaUser = if (guild != null && member != null) {
+                val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
                     // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
                     val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
                     val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
@@ -650,7 +650,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val locale = loritta.localeManager.getLocaleById(currentLocale)
                 i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-                val lorittaUser = if (guild != null && member != null) {
+                val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
                     // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
                     val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
                     val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
@@ -765,7 +765,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val locale = loritta.localeManager.getLocaleById(currentLocale)
                 val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-                val lorittaUser = if (guild != null && member != null) {
+                val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
                     // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
                     val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
                     val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(

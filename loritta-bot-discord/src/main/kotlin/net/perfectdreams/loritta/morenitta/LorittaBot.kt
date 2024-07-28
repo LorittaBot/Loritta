@@ -101,6 +101,7 @@ import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
 import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener.Companion.FAKE_EVENT_FIELD
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
+import net.perfectdreams.loritta.morenitta.messageverify.DiscordMessageRendererManager
 import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
@@ -395,6 +396,7 @@ class LorittaBot(
 
 	// Used to lock raffle ticket purchases and raffle results
 	val raffleResultsMutex = Mutex()
+	val discordMessageRendererManager = DiscordMessageRendererManager()
 
 	init {
 		FOLDER = config.loritta.folders.root

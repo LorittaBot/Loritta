@@ -37,6 +37,7 @@ data class LorittaConfig(
     val turnstileCaptchas: TurnstileCaptchas,
     val voteWebsites: VotingWebsites,
     val messageEncryption: MessageEncryptionConfig,
+    val messageVerification: MessageVerificationConfig,
     val crowdin: CrowdinConfig,
     val twitter: TwitterConfig,
     val twitch: TwitchConfig,
@@ -238,6 +239,9 @@ data class LorittaConfig(
 
     @Serializable
     data class MessageEncryptionConfig(val encryptionKey: String)
+
+    @Serializable
+    data class MessageVerificationConfig(val encryptionKey: String)
 
     @Serializable
     data class TwitterConfig(
