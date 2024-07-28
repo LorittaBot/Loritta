@@ -59,7 +59,7 @@ class DiscordMessageRendererManager {
                             head {
                                 link(
                                     href = "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap&family=Pacifico&display=swap&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap",
-                                    type = "stylesheet"
+                                    rel = "stylesheet"
                                 )
                                 style {
                                     unsafe {
@@ -934,10 +934,9 @@ class DiscordMessageRendererManager {
                         }
                 )
                 // val screenshot = page.screenshot(Page.ScreenshotOptions().setFullPage(true))
-                val boundingBox = page.querySelector("#wrapper").boundingBox()
-                if (boundingBox.height > maxDimensionsOfImages) { // Too big!
-
-                }
+                // Not really needed but...
+                // This still works even with JS disabled
+                page.waitForFunction("document.fonts.ready")
                 page.querySelector("#wrapper").screenshot(ElementHandle.ScreenshotOptions())
             }
 
