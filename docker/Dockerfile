@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install nodejs -y
 RUN curl -fsSL https://deb.nodesource.com/node_18.x | bash -
 RUN apt-get install -y nodejs
 RUN npm install clean-css-cli -g
-RUN apt-get update && apt-get install -y ffmpeg gifsicle unzip && apt-get clean && rm -rf /var/lib/apt/lists/*
+# "libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libatspi2.0-0 libxcomposite1 libxdamage1" are Playwright dependencies
+RUN apt-get update && apt-get install -y ffmpeg gifsicle unzip libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libatspi2.0-0 libxcomposite1 libxdamage1 && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # MANUAL INSTALLATION OF PLAYWRIGHT'S DEPENDENCIES because I don't want to install all browsers (which is what Playwright does by default)
 # THE APP MUST RUN WITH "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=true"
