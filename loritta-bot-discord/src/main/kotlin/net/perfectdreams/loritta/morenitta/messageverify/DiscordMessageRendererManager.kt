@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.messageverify
 
 import com.microsoft.playwright.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
@@ -20,7 +22,7 @@ import java.awt.Color
 import java.util.*
 import kotlin.time.measureTimedValue
 
-class DiscordMessageRendererManager {
+class DiscordMessageRendererManager(private val loritta: LorittaBot) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -28,7 +30,7 @@ class DiscordMessageRendererManager {
     private val playwright = Playwright.create()
     // Firefox has an issue in headless more where there is a white space at the bottom of the screenshot...
     // Chromium has an issue where screenshots >16384 are "corrupted"
-    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(true))
+    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale).setJavaScriptEnabled(false))
@@ -937,6 +939,12 @@ class DiscordMessageRendererManager {
                 // Not really needed but...
                 // This still works even with JS disabled
                 page.waitForFunction("document.fonts.ready")
+
+                // Parse unicode emojis to Twemoji, this is a bit hacky but it does work
+                val script = loritta.http.get("https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js").bodyAsText()
+                page.evaluate(script)
+                page.evaluate("twemoji.parse(document.body, {className: 'discord-inline-emoji'});")
+
                 page.querySelector("#wrapper").screenshot(ElementHandle.ScreenshotOptions())
             }
 

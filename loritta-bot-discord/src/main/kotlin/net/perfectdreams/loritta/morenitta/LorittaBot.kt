@@ -396,7 +396,7 @@ class LorittaBot(
 
 	// Used to lock raffle ticket purchases and raffle results
 	val raffleResultsMutex = Mutex()
-	val discordMessageRendererManager = DiscordMessageRendererManager()
+	val discordMessageRendererManager = DiscordMessageRendererManager(this)
 
 	init {
 		FOLDER = config.loritta.folders.root
