@@ -16,4 +16,4 @@ RUN apt-get update && apt-get install -y ffmpeg gifsicle unzip && apt-get clean 
 # The Chromium version must match what Playwright uses
 # A path can be provided via the "setExecutablePath" option
 # See: https://github.com/microsoft/playwright/blob/main/packages/playwright-core/browsers.json
-RUN mkdir /playwright/ && cd /playwright/ && wget "https://playwright.azureedge.net/builds/chromium/1124/chromium-win64.zip" && unzip chromium-win64.zip
+RUN mkdir /root/.cache/ms-playwright/chromium-1124/ && cd /root/.cache/ms-playwright/chromium-1124/ && wget "https://playwright.azureedge.net/builds/chromium/1124/chromium-linux.zip" && unzip chromium-linux.zip
