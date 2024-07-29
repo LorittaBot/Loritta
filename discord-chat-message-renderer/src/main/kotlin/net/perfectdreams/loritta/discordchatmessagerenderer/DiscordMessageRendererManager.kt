@@ -829,7 +829,7 @@ class DiscordMessageRendererManager(
 
                                                 div {
                                                     // Makes the IDs look better when rendered in Linux
-                                                    style = "letter-spacing: -1px;"
+                                                    style = "letter-spacing: -0.5px;"
 
                                                     text("${savedMessage.author.id}")
                                                 }
@@ -844,7 +844,7 @@ class DiscordMessageRendererManager(
 
                                                     div {
                                                         // Makes the IDs look better when rendered in Linux
-                                                        style = "letter-spacing: -1px;"
+                                                        style = "letter-spacing: -0.5px;"
 
                                                         text("${placeContext.id}")
                                                     }
@@ -859,7 +859,7 @@ class DiscordMessageRendererManager(
 
                                                 div {
                                                     // Makes the IDs look better when rendered in Linux
-                                                    style = "letter-spacing: -1px;"
+                                                    style = "letter-spacing: -0.5px;"
 
                                                     when (placeContext) {
                                                         // Guild messages are sent in a channelId
@@ -890,7 +890,7 @@ class DiscordMessageRendererManager(
 
                                                 div {
                                                     // Makes the IDs look better when rendered in Linux
-                                                    style = "letter-spacing: -1px;"
+                                                    style = "letter-spacing: -0.5px;"
                                                     text("${savedMessage.id}")
                                                 }
                                             }
