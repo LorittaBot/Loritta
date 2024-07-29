@@ -290,8 +290,14 @@ data class SavedSticker(
     val formatType: StickerFormat,
     val name: String,
 ) {
+    companion object {
+        // We use the media.discordapp.net instead of using JDA's Sticker.ICON_URL because the media proxy allows us to change GIF stickers
+        // into PNG stickers
+        private const val ICON_URL = "https://media.discordapp.net/stickers/%s.%s"
+    }
+
     val iconUrl: String
-        get() = Helpers.format(Sticker.ICON_URL, id, formatType.getExtension()) + "?passthrough=false"
+        get() = Helpers.format(ICON_URL, id, formatType.getExtension()) + "?passthrough=false"
 }
 
 @Serializable
