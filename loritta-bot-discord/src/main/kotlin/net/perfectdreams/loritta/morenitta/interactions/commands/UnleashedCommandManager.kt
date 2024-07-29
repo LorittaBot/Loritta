@@ -744,12 +744,18 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                     if (defPermissions != null)
                         defaultPermissions = DefaultMemberPermissions.enabledFor(defPermissions.code.value.toLong())
                     val dmPermission = declaration.dmPermission
-                    if (dmPermission != null)
-                        isGuildOnly = !dmPermission
+
+                    this.setContexts(net.dv8tion.jda.api.interactions.InteractionContextType.GUILD, net.dv8tion.jda.api.interactions.InteractionContextType.BOT_DM, net.dv8tion.jda.api.interactions.InteractionContextType.PRIVATE_CHANNEL)
+                    if (dmPermission != null) {
+                        if (!dmPermission) {
+                            this.setContexts(net.dv8tion.jda.api.interactions.InteractionContextType.GUILD)
+                        }
+                    }
 
                     // TODO: THIS IS A HACK, will be removed after all Discord InteraKTions commands are migrated do InteraKTions Unleashed
-                    if (declaration.name in legacyInteraKTionsGuildAndUserInstallableCommandLabels)
+                    if (declaration.name in legacyInteraKTionsGuildAndUserInstallableCommandLabels) {
                         this.setIntegrationTypes(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+                    }
 
                     // We can only have (subcommands OR subcommand groups) OR arguments
                     if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
