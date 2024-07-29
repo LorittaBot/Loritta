@@ -35,7 +35,7 @@ class DiscordMessageRendererManager(
     private val playwright = Playwright.create()
     // Firefox has an issue in headless more where there is a white space at the bottom of the screenshot...
     // Chromium has an issue where screenshots >16384 are "corrupted"
-    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(true))
+    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale).setJavaScriptEnabled(false))
@@ -483,23 +483,26 @@ class DiscordMessageRendererManager(
                                             }
 
                                             div(classes = "discord-message-text") {
-                                                if (savedMessage.content.isNotEmpty()) {
-                                                    val contentAsDocument = parseMarkdownToNodes(savedMessage.content)
-                                                    traverseNodesAndRender(contentAsDocument)
+                                                div(classes = "discord-message-text-content") {
+                                                    if (savedMessage.content.isNotEmpty()) {
+                                                        val contentAsDocument =
+                                                            parseMarkdownToNodes(savedMessage.content)
+                                                        traverseNodesAndRender(contentAsDocument)
 
-                                                    if (savedMessage.isEdited) {
-                                                        text(" ")
-                                                        span {
-                                                            style = "color: #90969f; font-size: 0.5em;"
-                                                            text("(editado)")
+                                                        if (savedMessage.isEdited) {
+                                                            text(" ")
+                                                            span {
+                                                                style = "color: #90969f; font-size: 0.5em;"
+                                                                text("(editado)")
+                                                            }
                                                         }
-                                                    }
-                                                } else {
-                                                    text(" ")
-                                                    if (savedMessage.isEdited) {
-                                                        span {
-                                                            style = "color: #90969f; font-size: 0.5em;"
-                                                            text("(editado)")
+                                                    } else {
+                                                        text(" ")
+                                                        if (savedMessage.isEdited) {
+                                                            span {
+                                                                style = "color: #90969f; font-size: 0.5em;"
+                                                                text("(editado)")
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -970,7 +973,7 @@ class DiscordMessageRendererManager(
                 // Parse unicode emojis to Twemoji, this is a bit hacky but it does work
                 val script = DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/twemoji.min.js").readAllBytes().toString(Charsets.UTF_8)
                 page.evaluate(script)
-                page.evaluate("twemoji.parse(document.body, {className: 'discord-inline-emoji'});")
+                page.evaluate("twemoji.parse(document.body, {className: 'unicode-inline-emoji'});")
 
                 page.querySelector("#wrapper").screenshot(ElementHandle.ScreenshotOptions())
             }

@@ -29,6 +29,11 @@ pre {
     vertical-align: -0.4em;
 }
 
+.unicode-inline-emoji {
+    height: 1em;
+    vertical-align: -0.15em;
+}
+
 .discord-mention {
     background-color: rgba(88, 101, 242, .1);
     color: #c9cdfb;
@@ -182,6 +187,14 @@ code {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         overflow: hidden;
+
+        .discord-message-text-content {
+            // Reset the unicode emojis to be big like Discord custom emojis
+            .unicode-inline-emoji {
+                height: 1.5em;
+                vertical-align: -0.4em;
+            }
+        }
     }
 
     .discord-message-accessories {
