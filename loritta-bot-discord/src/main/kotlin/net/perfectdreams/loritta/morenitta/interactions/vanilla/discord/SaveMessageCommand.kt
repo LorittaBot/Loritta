@@ -329,6 +329,7 @@ class SaveMessageCommand(val m: LorittaBot) {
                                 Emotes.LoriSob
                             )
                         }
+                        return
                     }
                     throw e
                 }
