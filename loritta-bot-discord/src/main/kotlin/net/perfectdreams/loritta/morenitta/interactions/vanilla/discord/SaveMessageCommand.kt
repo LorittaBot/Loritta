@@ -26,10 +26,9 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationComm
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.MessageCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.messageCommand
-import net.perfectdreams.loritta.morenitta.messageverify.DiscordMessageRendererManager
 import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunkUtils
-import net.perfectdreams.loritta.morenitta.messageverify.savedmessage.*
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.bytesToHex
 import java.util.*

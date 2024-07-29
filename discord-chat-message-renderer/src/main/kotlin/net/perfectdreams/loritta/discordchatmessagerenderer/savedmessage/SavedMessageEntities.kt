@@ -1,6 +1,7 @@
-package net.perfectdreams.loritta.morenitta.messageverify.savedmessage
+package net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage
 
 import kotlinx.datetime.Instant
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.entities.sticker.Sticker
 import net.dv8tion.jda.api.entities.sticker.Sticker.StickerFormat
 import net.dv8tion.jda.api.utils.TimeUtil
 import net.dv8tion.jda.internal.utils.Helpers
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.discordchatmessagerenderer.ImageFormat
 import java.awt.Color
 import java.time.OffsetDateTime
 import java.util.*
@@ -20,6 +21,7 @@ interface DiscordSnowflakeEntity {
     val timeCreated: OffsetDateTime
         get() = TimeUtil.getTimeCreated(id)
 }
+
 /**
  * A saved message
  *
@@ -70,6 +72,7 @@ sealed class SavedGuild : SavedPlaceContext(), DiscordSnowflakeEntity {
 }
 
 @Serializable
+@SerialName("attached_guild")
 data class SavedAttachedGuild(
     override val id: Long,
     override val channelId: Long,
@@ -90,6 +93,7 @@ data class SavedAttachedGuild(
 }
 
 @Serializable
+@SerialName("detached_guild")
 data class SavedDetachedGuild(
     override val id: Long,
     override val channelId: Long,
@@ -98,9 +102,11 @@ data class SavedDetachedGuild(
 ) : SavedGuild(), DiscordSnowflakeEntity
 
 @Serializable
+@SerialName("private_channel")
 data class SavedPrivateChannel(override val id: Long) : SavedPlaceContext(), DiscordSnowflakeEntity
 
 @Serializable
+@SerialName("group_channel")
 data class SavedGroupChannel(
     override val id: Long,
     val name: String,
@@ -199,11 +205,13 @@ data class SavedRole(
 sealed class SavedRoleIcon
 
 @Serializable
+@SerialName("custom_icon")
 data class SavedCustomRoleIcon(
     val iconId: String
 ) : SavedRoleIcon()
 
 @Serializable
+@SerialName("unicode_icon")
 data class SavedUnicodeRoleIcon(
     val emoji: String
 ) : SavedRoleIcon()
@@ -300,6 +308,7 @@ data class SavedReaction(
 sealed class SavedPartialEmoji
 
 @Serializable
+@SerialName("custom_emoji")
 class SavedCustomPartialEmoji(
     override val id: Long,
     val name: String,
@@ -307,6 +316,7 @@ class SavedCustomPartialEmoji(
 ) : SavedPartialEmoji(), DiscordSnowflakeEntity
 
 @Serializable
+@SerialName("unicode_emoji")
 class SavedUnicodePartialEmoji(
     val name: String
 ) : SavedPartialEmoji()

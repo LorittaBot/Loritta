@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.discordchatmessagerenderer.ImageFormat
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -20,9 +21,8 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunkUtils
-import net.perfectdreams.loritta.morenitta.messageverify.savedmessage.*
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 
@@ -108,8 +108,9 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 field("${Emotes.LoriId} ID do Discord", "`${json.id}`", true)
                 field("${Emotes.LoriCalendar} Quando a Mensagem foi Enviada", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(json.timeCreated), true)
-                if (json.timeEdited != null) {
-                    field("${Emotes.LoriCalendar} Quando a Mensagem foi Editada", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(json.timeEdited.toJavaInstant()), true)
+                val timeEdited = json.timeEdited
+                if (timeEdited != null) {
+                    field("${Emotes.LoriCalendar} Quando a Mensagem foi Editada", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(timeEdited.toJavaInstant()), true)
                 }
                 if (placeContext is SavedGuild) {
                     field("${Emotes.LoriId} Onde a mensagem foi enviada", "#${placeContext.channelName} (`${placeContext.channelId}`)", true)
@@ -216,12 +217,14 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                                     field(field.name ?: "", field.value ?: "", field.isInline)
                                 }
 
-                                if (embed.author != null) {
-                                    author(embed.author.name, embed.author.url, embed.author.iconUrl)
+                                val embedAuthor = embed.author
+                                if (embedAuthor != null) {
+                                    author(embedAuthor.name, embedAuthor.url, embedAuthor.iconUrl)
                                 }
 
-                                if (embed.footer != null) {
-                                    this.footer(embed.footer.text ?: "", embed.footer.iconUrl)
+                                val embedFooter = embed.footer
+                                if (embedFooter != null) {
+                                    this.footer(embedFooter.text ?: "", embedFooter.iconUrl)
                                 }
                             }
                         }

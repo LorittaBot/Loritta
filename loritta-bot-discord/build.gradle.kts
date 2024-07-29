@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":temmie-discord-auth-loritta-commons"))
     implementation(project(":switch-twitch"))
     implementation(project(":discord-chat-markdown-parser"))
+    implementation(project(":discord-chat-message-renderer"))
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
@@ -144,12 +145,6 @@ val sassDashboard = tasks.register<SassTask>("sass-dashboard-style-scss") {
     this.outputSass.set(file("$buildDir/sass/style-dashboard-scss"))
 }
 
-val sassMessageRenderer = tasks.register<SassTask>("sass-message-renderer") {
-    this.inputSass.set(file("src/main/sass-message-renderer/style.scss"))
-    this.inputSassFolder.set(file("src/main/sass-message-renderer/"))
-    this.outputSass.set(file("$buildDir/sass/sass-message-renderer-scss"))
-}
-
 tasks.test {
     useJUnitPlatform()
 }
@@ -175,9 +170,6 @@ tasks {
         }
         from(sassDashboard) {
             into("static/lori-slippy/assets/css/")
-        }
-        from(sassMessageRenderer) {
-            into("message-renderer-assets/")
         }
         from(sassLegacy) {
             into("static/assets/css/")

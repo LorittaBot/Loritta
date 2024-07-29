@@ -1,8 +1,6 @@
-package net.perfectdreams.loritta.morenitta.messageverify
+package net.perfectdreams.loritta.discordchatmessagerenderer
 
 import com.microsoft.playwright.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
@@ -12,17 +10,24 @@ import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.sticker.Sticker
-import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
 import net.perfectdreams.loritta.discordchatmarkdownparser.*
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.messageverify.savedmessage.*
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import java.awt.Color
+import java.io.Closeable
+import java.time.ZoneId
 import java.util.*
 import kotlin.time.measureTimedValue
 
-class DiscordMessageRendererManager(private val loritta: LorittaBot) {
+class DiscordMessageRendererManager(
+    /**
+     * The [ZoneId] used when rendering dates
+     */
+    private val zoneId: ZoneId,
+    /**
+     * The MIME type of attachments that are considered images
+     */
+    private val imageContentTypes: Set<String>,
+) : Closeable {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -34,11 +39,11 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale).setJavaScriptEnabled(false))
-    val page: Page = browserContext.newPage()
-    val mutex = Mutex()
-    val markdownParser = DiscordChatMarkdownParser()
+    private val page: Page = browserContext.newPage()
+    private val mutex = Mutex()
+    private val markdownParser = DiscordChatMarkdownParser()
 
-    suspend inline fun <T> withPage(action: (Page) -> (T)): T {
+    private suspend inline fun <T> withPage(action: (Page) -> (T)): T {
         return mutex.withLock {
             action.invoke(page)
         }
@@ -66,7 +71,7 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                                 style {
                                     unsafe {
                                         raw(
-                                            LorittaBot::class.java.getResourceAsStream("/message-renderer-assets/style.css")
+                                            DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/style.css")
                                                 .readAllBytes().toString(Charsets.UTF_8)
                                         )
                                     }
@@ -223,7 +228,7 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                                                 }
 
                                                 span(classes = "discord-message-timestamp") {
-                                                    val timeCreated = savedMessage.timeCreated.atZoneSameInstant(Constants.LORITTA_TIMEZONE)
+                                                    val timeCreated = savedMessage.timeCreated.atZoneSameInstant(zoneId)
 
                                                     text(
                                                         buildString {
@@ -766,7 +771,7 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                                                         }
 
                                                         for (attachment in savedMessage.attachments) {
-                                                            if (attachment.contentType in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES) {
+                                                            if (attachment.contentType in imageContentTypes) {
                                                                 img(src = attachment.proxyUrl, classes = "discord-message-attachment-preview") {}
                                                             } else {
                                                                 div(classes = "discord-message-attachment") {
@@ -823,6 +828,9 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                                                 }
 
                                                 div {
+                                                    // Makes the IDs look better when rendered in Linux
+                                                    style = "letter-spacing: -1px;"
+
                                                     text("${savedMessage.author.id}")
                                                 }
                                             }
@@ -835,6 +843,9 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                                                     }
 
                                                     div {
+                                                        // Makes the IDs look better when rendered in Linux
+                                                        style = "letter-spacing: -1px;"
+
                                                         text("${placeContext.id}")
                                                     }
                                                 }
@@ -846,20 +857,27 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                                                     text("ID do canal")
                                                 }
 
-                                                when (placeContext) {
-                                                    // Guild messages are sent in a channelId
-                                                    is SavedAttachedGuild -> {
-                                                        text("${placeContext.channelId}")
-                                                    }
-                                                    is SavedDetachedGuild -> {
-                                                        text("${placeContext.channelId}")
-                                                    }
-                                                    // While everything else is sent on the place context ID itself
-                                                    is SavedGroupChannel -> {
-                                                        text("${placeContext.id}")
-                                                    }
-                                                    is SavedPrivateChannel -> {
-                                                        text("${placeContext.id}")
+                                                div {
+                                                    // Makes the IDs look better when rendered in Linux
+                                                    style = "letter-spacing: -1px;"
+
+                                                    when (placeContext) {
+                                                        // Guild messages are sent in a channelId
+                                                        is SavedAttachedGuild -> {
+                                                            text("${placeContext.channelId}")
+                                                        }
+
+                                                        is SavedDetachedGuild -> {
+                                                            text("${placeContext.channelId}")
+                                                        }
+                                                        // While everything else is sent on the place context ID itself
+                                                        is SavedGroupChannel -> {
+                                                            text("${placeContext.id}")
+                                                        }
+
+                                                        is SavedPrivateChannel -> {
+                                                            text("${placeContext.id}")
+                                                        }
                                                     }
                                                 }
                                             }
@@ -871,6 +889,8 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                                                 }
 
                                                 div {
+                                                    // Makes the IDs look better when rendered in Linux
+                                                    style = "letter-spacing: -1px;"
                                                     text("${savedMessage.id}")
                                                 }
                                             }
@@ -936,12 +956,19 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
                         }
                 )
                 // val screenshot = page.screenshot(Page.ScreenshotOptions().setFullPage(true))
-                // Not really needed but...
+
+                // Not really needed but... Wait all fonts to be ready
                 // This still works even with JS disabled
                 page.waitForFunction("document.fonts.ready")
 
+                // Wait all images to be loaded
+                page.waitForFunction("""
+                        const images = Array.from(document.querySelectorAll('img'));
+                        images.every(img => img.complete);
+                """.trimIndent())
+
                 // Parse unicode emojis to Twemoji, this is a bit hacky but it does work
-                val script = loritta.http.get("https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js").bodyAsText()
+                val script = DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/twemoji.min.js").readAllBytes().toString(Charsets.UTF_8)
                 page.evaluate(script)
                 page.evaluate("twemoji.parse(document.body, {className: 'discord-inline-emoji'});")
 
@@ -967,5 +994,9 @@ class DiscordMessageRendererManager(private val loritta: LorittaBot) {
             // The fallback icon is the text channel hashtag # icon
             else -> """<svg aria-hidden="false" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M10.99 3.16A1 1 0 1 0 9 2.84L8.15 8H4a1 1 0 0 0 0 2h3.82l-.67 4H3a1 1 0 1 0 0 2h3.82l-.8 4.84a1 1 0 0 0 1.97.32L8.85 16h4.97l-.8 4.84a1 1 0 0 0 1.97.32l.86-5.16H20a1 1 0 1 0 0-2h-3.82l.67-4H21a1 1 0 1 0 0-2h-3.82l.8-4.84a1 1 0 1 0-1.97-.32L15.15 8h-4.97l.8-4.84ZM14.15 14l.67-4H9.85l-.67 4h4.97Z" clip-rule="evenodd" class=""></path></svg>"""
         }
+    }
+
+    override fun close() {
+        playwright.close()
     }
 }

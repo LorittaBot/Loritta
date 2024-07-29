@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.messageverify
 
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedUser
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunk
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunkUtils
-import net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedMessage
-import net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.bytesToHex
 import java.security.MessageDigest
 import java.util.*
@@ -97,9 +97,49 @@ object LoriMessageDataUtils {
             return LoriMessageDataParseResult.InvalidSignature
 
         // Yay, this is a CERTIFIED SIGNED VALID Loritta Message!
-        val savedMessageAsJson = Base64.getDecoder().decode(data).toString(Charsets.UTF_8)
+        val savedMessageAsJsonString = Base64.getDecoder().decode(data).toString(Charsets.UTF_8)
+        val savedMessageAsJson = replaceTypeFields(
+            Json.parseToJsonElement(savedMessageAsJsonString),
+            // This is a workaround because old messages are saved with the full package name as its type
+            mapOf(
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedAttachedGuild" to "attached_guild",
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedDetachedGuild" to "detached_guild",
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedPrivateChannel" to "private_channel",
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedGroupChannel" to "group_channel",
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedCustomRoleIcon" to "custom_icon",
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedUnicodeRoleIcon" to "unicode_icon",
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedCustomPartialEmoji" to "custom_emoji",
+                "net.perfectdreams.loritta.morenitta.messageverify.savedmessage.SavedUnicodePartialEmoji" to "unicode_emoji"
+            )
+        )
 
-        return LoriMessageDataParseResult.Success(Json.decodeFromString(savedMessageAsJson))
+        return LoriMessageDataParseResult.Success(Json.decodeFromJsonElement(savedMessageAsJson))
+    }
+
+    private fun replaceTypeFields(
+        jsonElement: JsonElement,
+        remapValues: Map<String, String>
+    ): JsonElement {
+        return when (jsonElement) {
+            is JsonObject -> {
+                JsonObject(
+                    jsonElement.mapValues { (key, value) ->
+                        if (key == "type" && value is JsonPrimitive && value.isString) {
+                            val newString = remapValues[value.content]
+                            JsonPrimitive(newString ?: value.content)
+                        } else {
+                            replaceTypeFields(value, remapValues)
+                        }
+                    }
+                )
+            }
+            is JsonArray -> {
+                JsonArray(jsonElement.map { element ->
+                    replaceTypeFields(element, remapValues)
+                })
+            }
+            else -> jsonElement
+        }
     }
 
     sealed class LoriMessageDataParseResult {

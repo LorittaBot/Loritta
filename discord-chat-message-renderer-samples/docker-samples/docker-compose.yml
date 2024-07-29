@@ -1,0 +1,8 @@
+version: "3.7"    
+services:
+  app:
+    image: localhost/lorittabot/discord-chat-message-renderer-samples:latest
+    volumes:
+      - type: bind
+        source: ./renders
+        target: /renders
