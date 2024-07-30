@@ -6,11 +6,13 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
+import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import java.awt.Color
@@ -28,20 +30,15 @@ object EventLog {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdited)) {
-				val attachments = mutableListOf<String>()
-
-				message.attachments.forEach {
-					// https://i.imgur.com/VyVlzVe.png
-					attachments.add(it.url.replace("cdn.discordapp.com", "media.discordapp.net"))
-				}
+				val savedMessage = LoriMessageDataUtils.convertMessageToSavedMessage(message)
 
 				loritta.newSuspendedTransaction {
 					StoredMessage.new(message.idLong) {
-						authorId = message.author.idLong
-						channelId = message.channel.idLong
-						createdAt = System.currentTimeMillis()
-						storedAttachments = attachments
-						this.encryptAndSetContent(loritta, message.contentRaw)
+						this.authorId = message.author.idLong
+						this.channelId = message.channel.idLong
+						this.createdAt = Instant.now()
+						this.savedMessageDataVersion = 1
+						this.encryptAndSetContent(loritta, savedMessage)
 					}
 				}
 			}
@@ -67,21 +64,28 @@ object EventLog {
 						StoredMessage.findById(message.idLong)
 					}
 
-					if (storedMessage != null && storedMessage.decryptContent(loritta) != message.contentRaw && eventLogConfig.messageEdited) {
+					if (storedMessage != null && storedMessage.decryptContent(loritta).content != message.contentRaw && eventLogConfig.messageEdited) {
+						val savedMessage = storedMessage.decryptContent(loritta)
 						val embed = EmbedBuilder()
 							.setColor(Color(238, 241, 0).rgb)
-							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.decryptContent(loritta), message.contentRaw, message.guildChannel.asMention).joinToString("\n")}")
+							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, savedMessage.content, message.contentRaw, message.guildChannel.asMention).joinToString("\n")}")
 							.setAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl)
 							.setFooter(locale["modules.eventLog.userID", message.member?.user?.id], null)
 							.setTimestamp(Instant.now())
-							.build()
 
-						textChannel.sendMessageEmbeds(embed).await()
+						val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
+						embed.setImage("attachment://$fileName")
+
+						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage)
+
+						textChannel.sendMessageEmbeds(embed.build())
+							.addFiles(FileUpload.fromData(finalImage, fileName))
+							.await()
 					}
 
 					if (storedMessage != null) {
 						loritta.newSuspendedTransaction {
-							storedMessage.encryptAndSetContent(loritta, message.contentRaw)
+							storedMessage.encryptAndSetContent(loritta, LoriMessageDataUtils.convertMessageToSavedMessage(message))
 						}
 					}
 				}

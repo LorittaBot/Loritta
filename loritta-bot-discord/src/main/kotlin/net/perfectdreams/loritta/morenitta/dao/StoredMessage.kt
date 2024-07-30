@@ -1,7 +1,10 @@
 package net.perfectdreams.loritta.morenitta.dao
 
-import net.perfectdreams.loritta.morenitta.LorittaBot
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StoredMessages
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
@@ -12,17 +15,17 @@ class StoredMessage(id: EntityID<Long>) : LongEntity(id) {
 
 	var authorId by StoredMessages.authorId
 	var channelId by StoredMessages.channelId
-	var encryptedContent by StoredMessages.content
 	var createdAt by StoredMessages.createdAt
-	var editedAt by StoredMessages.editedAt
-	var storedAttachments by StoredMessages.storedAttachments
+	var savedMessageDataVersion by StoredMessages.savedMessageDataVersion
+	var encryptedSavedMessageData by StoredMessages.encryptedSavedMessageData
 	var initializationVector by StoredMessages.initializationVector
 
-	fun encryptAndSetContent(loritta: LorittaBot, value: String) {
-		val encrypted = EventLog.encryptMessage(loritta, value)
+	fun encryptAndSetContent(loritta: LorittaBot, value: SavedMessage) {
+		val encrypted = EventLog.encryptMessage(loritta, Json.encodeToString(value))
+		this.savedMessageDataVersion = 1
 		this.initializationVector = encrypted.initializationVector
-		this.encryptedContent = encrypted.encryptedMessage
+		this.encryptedSavedMessageData = encrypted.encryptedMessage
 	}
 
-	fun decryptContent(loritta: LorittaBot) = EventLog.decryptMessage(loritta, initializationVector, encryptedContent)
+	fun decryptContent(loritta: LorittaBot) = Json.decodeFromString<SavedMessage>(EventLog.decryptMessage(loritta, initializationVector, encryptedSavedMessageData))
 }

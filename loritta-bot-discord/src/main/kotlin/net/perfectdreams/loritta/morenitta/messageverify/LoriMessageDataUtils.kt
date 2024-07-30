@@ -1,9 +1,19 @@
 package net.perfectdreams.loritta.morenitta.messageverify
 
+import kotlinx.datetime.toKotlinInstant
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageReaction
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
-import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedUser
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji
+import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunk
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunkUtils
@@ -29,6 +39,212 @@ object LoriMessageDataUtils {
         "fcTL", // APNG frame control chunk
         "fdAT" // APNG frame data chunk
     )
+
+    suspend fun createSignedRenderedSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
+        val screenshot = loritta.discordMessageRendererManager.renderMessage(savedMessage, null)
+        val screenshotPNGChunks = PNGChunkUtils.readChunksFromPNG(screenshot)
+
+        val b64Encoded = Base64.getEncoder().encodeToString(Json.encodeToString(savedMessage).toByteArray(Charsets.UTF_8))
+
+        val hashOfTheImage = LoriMessageDataUtils.createSHA256HashOfImage(screenshotPNGChunks).bytesToHex()
+        val signingKey = SecretKeySpec("${loritta.config.loritta.messageVerification.encryptionKey}:$hashOfTheImage".toByteArray(Charsets.UTF_8), "HmacSHA256")
+        val mac = Mac.getInstance("HmacSHA256")
+        mac.init(signingKey)
+        val doneFinal = mac.doFinal(b64Encoded.toByteArray(Charsets.UTF_8))
+        val output = doneFinal.bytesToHex()
+
+        val finalImage = PNGChunkUtils.addChunkToPNG(screenshot, PNGChunkUtils.createTextPNGChunk("${LoriMessageDataUtils.SUB_CHUNK_ID}:${LoriMessageDataUtils.CURRENT_VERSION}:1:${b64Encoded}:$output"))
+
+        return finalImage
+    }
+
+    fun createFileNameForSavedMessageImage(message: SavedMessage): String {
+        // This makes the file name be a bit long, but it is useful to quickly check which user/guild/channel/message we are talking about
+        val placeContext = message.placeContext
+        return buildString {
+            append("message-")
+            append(message.author.id)
+            if (placeContext is SavedGuild) {
+                append("-")
+                append(placeContext.id)
+            }
+            append("-")
+            when (placeContext) {
+                is SavedGroupChannel -> append(placeContext.id)
+                is SavedGuild -> append(placeContext.channelId)
+                is SavedPrivateChannel -> append(placeContext.id)
+            }
+            append("-")
+            append(message.id)
+            append(".lxrimsg.png")
+        }
+    }
+
+    fun convertMessageToSavedMessage(message: Message): SavedMessage {
+        return SavedMessage(
+            message.idLong,
+            if (message.hasGuild())
+                SavedAttachedGuild(message.guild.idLong, message.channelIdLong, message.channel.name, message.channelType, message.guild.name, message.guild.iconId)
+            else if (message.channelType == ChannelType.GROUP) {
+                val channel = message.channel as GroupChannel
+
+                SavedGroupChannel(
+                    channel.idLong,
+                    channel.name,
+                    channel.iconId,
+                )
+            } else if (message.channelType == ChannelType.PRIVATE) {
+                val channel = message.channel as PrivateChannel
+                SavedPrivateChannel(channel.idLong)
+            } else if (message.isFromGuild) {
+                // If the message is from a guild, but we don't know it, then it must be a user app being used in a guild
+                SavedDetachedGuild(message.guildIdLong, message.channelIdLong, message.channel.name, message.channelType)
+            } else error("Unsupported channel type"),
+            LoriMessageDataUtils.convertUserToSavedUser(message.author),
+            message.member?.let {
+                SavedMember(
+                    it.nickname,
+                    it.roles.map {
+                        SavedRole(
+                            it.idLong,
+                            it.name,
+                            it.colorRaw,
+                            it.icon?.let {
+                                val emoji = it.emoji
+                                val iconId = it.iconId
+                                if (emoji != null)
+                                    SavedUnicodeRoleIcon(emoji)
+                                else if (iconId != null)
+                                    SavedCustomRoleIcon(iconId)
+                                else
+                                    null
+                            }
+                        )
+                    }
+                )
+            },
+            message.timeEdited?.toInstant()?.toKotlinInstant(),
+            message.contentRaw,
+            message.embeds.map {
+                SavedEmbed(
+                    it.type,
+                    it.title,
+                    it.description,
+                    it.url,
+                    if (it.colorRaw != Role.DEFAULT_COLOR_RAW) it.colorRaw else null,
+                    it.author?.let {
+                        SavedEmbed.SavedAuthor(
+                            it.name,
+                            it.url,
+                            it.iconUrl,
+                            it.proxyIconUrl
+                        )
+                    },
+                    it.fields.map {
+                        SavedEmbed.SavedField(
+                            it.name,
+                            it.value,
+                            it.isInline
+                        )
+                    },
+                    it.footer?.let {
+                        SavedEmbed.SavedFooter(
+                            it.text,
+                            it.iconUrl,
+                            it.proxyIconUrl
+                        )
+                    },
+                    it.image?.let {
+                        SavedEmbed.SavedImage(
+                            it.url,
+                            it.proxyUrl,
+                            it.width,
+                            it.height
+                        )
+                    },
+                    it.thumbnail?.let {
+                        SavedEmbed.SavedThumbnail(
+                            it.url,
+                            it.proxyUrl,
+                            it.width,
+                            it.height
+                        )
+                    }
+                )
+            },
+            message.attachments.map {
+                SavedAttachment(
+                    it.idLong,
+                    it.fileName,
+                    it.description,
+                    it.contentType,
+                    it.size,
+                    it.url,
+                    it.proxyUrl,
+                    if (it.width != -1) it.width else null,
+                    if (it.height != -1) it.height else null,
+                    it.isEphemeral,
+                    it.duration,
+                    it.waveform?.let { Base64.getEncoder().encodeToString(it) }
+                )
+            },
+            message.stickers.map {
+                SavedSticker(
+                    it.idLong,
+                    it.formatType,
+                    it.name
+                )
+            },
+            SavedMentions(
+                message.mentions.users.map {
+                    LoriMessageDataUtils.convertUserToSavedUser(it)
+                },
+                message.mentions.roles.map {
+                    SavedRole(
+                        it.idLong,
+                        it.name,
+                        it.colorRaw,
+                        it.icon?.let {
+                            val emoji = it.emoji
+                            val iconId = it.iconId
+                            if (emoji != null)
+                                SavedUnicodeRoleIcon(emoji)
+                            else if (iconId != null)
+                                SavedCustomRoleIcon(iconId)
+                            else
+                                null
+                        }
+                    )
+                }
+            ),
+            message.reactions.map {
+                val emoji = it.emoji
+                val savedEmoji = when (emoji) {
+                    is CustomEmoji -> {
+                        SavedCustomPartialEmoji(
+                            emoji.idLong,
+                            emoji.name,
+                            emoji.isAnimated
+                        )
+                    }
+
+                    is UnicodeEmoji -> {
+                        SavedUnicodePartialEmoji(
+                            emoji.name
+                        )
+                    }
+
+                    else -> error("I don't know how to handle emoji type $emoji")
+                }
+
+                SavedReaction(
+                    it.getCount(MessageReaction.ReactionType.NORMAL),
+                    it.getCount(MessageReaction.ReactionType.SUPER),
+                    savedEmoji
+                )
+            }
+        )
+    }
 
     fun convertUserToSavedUser(user: User) = SavedUser(
         user.idLong,

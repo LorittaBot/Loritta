@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
@@ -44,7 +45,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 import java.time.Instant
-import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -195,15 +195,26 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
 
-						var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", storedMessage.decryptContent(loritta), "<#${storedMessage.channelId}>").joinToString("\n")}"
+						val savedMessage = storedMessage.decryptContent(loritta)
+						var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", savedMessage.content, "<#${storedMessage.channelId}>").joinToString("\n")}"
 
-						if (storedMessage.storedAttachments.isNotEmpty()) {
-							deletedMessage += "\n${locale["modules.eventLog.messageDeletedUploads"]}\n" + storedMessage.storedAttachments.joinToString(separator = "\n")
+						if (savedMessage.attachments.isNotEmpty()) {
+							// We use proxy URL due to this: https://i.imgur.com/VyVlzVe.png
+							val storedAttachments = savedMessage.attachments.map {
+								it.proxyUrl
+							}
+							deletedMessage += "\n${locale["modules.eventLog.messageDeletedUploads"]}\n" + storedAttachments.joinToString(separator = "\n")
 						}
 
+						val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
+						embed.setImage("attachment://$fileName")
 						embed.setDescription(deletedMessage)
 
-						textChannel.sendMessageEmbeds(embed.build()).await()
+						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage)
+
+						textChannel.sendMessageEmbeds(embed.build())
+							.addFiles(FileUpload.fromData(finalImage, fileName))
+							.await()
 
 						loritta.newSuspendedTransaction {
 							StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
@@ -257,8 +268,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 									message.authorId
 								)
 							}
+							val savedMessage = message.decryptContent(loritta)
 
-							val creationTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(message.createdAt), TimeZone.getTimeZone("GMT").toZoneId())
+							val creationTime = savedMessage.timeCreated.atZoneSameInstant(TimeZone.getTimeZone("GMT").toZoneId())
 
 							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${messageSentByUser?.name}#${messageSentByUser?.discriminator}: ${message.decryptContent(loritta)}"
 							lines.add(line)
