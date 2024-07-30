@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel
-import net.dv8tion.jda.api.entities.sticker.Sticker
 import net.dv8tion.jda.api.entities.sticker.Sticker.StickerFormat
 import net.dv8tion.jda.api.utils.TimeUtil
 import net.dv8tion.jda.internal.utils.Helpers
