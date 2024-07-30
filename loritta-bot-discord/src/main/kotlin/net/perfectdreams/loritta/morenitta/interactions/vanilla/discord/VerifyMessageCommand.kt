@@ -4,13 +4,17 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.datetime.toJavaInstant
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.discordchatmessagerenderer.ImageFormat
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -21,7 +25,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunkUtils
-import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
@@ -29,6 +32,9 @@ import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Verifymessage
+        private val prettyPrintJson = Json {
+            prettyPrint = true
+        }
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
@@ -199,7 +205,7 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                 m.interactivityManager.buttonForUser(
                     context.user,
                     ButtonStyle.SECONDARY,
-                    "Enviar Cópia da Mensagem"
+                    context.i18nContext.get(I18N_PREFIX.SendMessageCopy)
                 ) { context ->
                     context.reply(true) {
                         this.content = json.content
@@ -228,6 +234,21 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                                 }
                             }
                         }
+                    }
+                },
+
+                m.interactivityManager.buttonForUser(
+                    context.user,
+                    ButtonStyle.SECONDARY,
+                    context.i18nContext.get(I18N_PREFIX.SendMessageCopyJson)
+                ) { context ->
+                    context.deferChannelMessage(true)
+
+                    context.reply(true) {
+                        files += FileUpload.fromData(
+                            prettyPrintJson.encodeToString(json).toByteArray(Charsets.UTF_8),
+                            "message.json"
+                        )
                     }
                 }
             )

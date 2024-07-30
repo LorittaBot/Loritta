@@ -7,6 +7,8 @@ imageDataHasBeenTampared: "Parece que os dados da imagem foram manipulados! Isto
 validMessage: "Mensagem válida!"
 payAttentionToTheMessage: "Cuidado! Não se esqueça de verificar se o usuário é realmente quem ele é! Uma mensagem válida não significa que o autor da mensagem não pode ser uma conta fake tentando se passar por outro usuário."
 uploadedImageIsNotInPngFormat: "A imagem que você enviou não é uma imagem PNG! Para validar a veracidade da imagem, eu preciso da imagem original da mensagem que foi salva. Tente validar a imagem usando o link original da imagem da mensagem que foi salva!"
+sendMessageCopy: "Enviar Cópia da Mensagem"
+sendMessageCopyJson: "Enviar Cópia da Mensagem (JSON)"
 
 url:
   label: "url"
