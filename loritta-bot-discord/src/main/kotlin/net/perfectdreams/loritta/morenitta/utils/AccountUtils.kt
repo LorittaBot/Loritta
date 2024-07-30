@@ -116,7 +116,9 @@ object AccountUtils {
                 apply(
                     buildBanMessage(
                         context.i18nContext,
+                        context.user.isLorittaSupervisor(loritta.lorittaShards),
                         userId,
+                        userBannedState.bannedBy?.value?.toLong(),
                         userBannedState.reason,
                         banDateInEpochMillis,
                         expiresDateInEpochMillis
@@ -142,7 +144,9 @@ object AccountUtils {
                     apply(
                         buildBanMessage(
                             context.i18nContext,
+                            context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards),
                             userProfile.userId,
+                            bannedState[BannedUsers.bannedBy],
                             bannedState[BannedUsers.reason],
                             bannedState[BannedUsers.bannedAt],
                             bannedState[BannedUsers.expiresAt]
@@ -157,7 +161,9 @@ object AccountUtils {
 
     private fun buildBanMessage(
         i18nContext: I18nContext,
+        showWhoBannedTheUser: Boolean,
         userId: Long,
+        bannedById: Long?,
         reason: String,
         banDateInEpochMillis: Long,
         expiresDateInEpochMillis: Long?,
@@ -195,6 +201,13 @@ object AccountUtils {
             styled(
                 i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.ExpiresAtTemporary(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(expiresDateInEpochMillis))),
                 Emotes.LoriLurk
+            )
+        }
+
+        if (showWhoBannedTheUser && bannedById != null) {
+            styled(
+                i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.BannedBy("<@$bannedById>")),
+                Emotes.LoriBanHammer
             )
         }
 
