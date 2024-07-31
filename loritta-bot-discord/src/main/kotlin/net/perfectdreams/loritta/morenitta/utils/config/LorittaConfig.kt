@@ -38,6 +38,7 @@ data class LorittaConfig(
     val voteWebsites: VotingWebsites,
     val messageEncryption: MessageEncryptionConfig,
     val messageVerification: MessageVerificationConfig,
+    val messageRenderer: MessageRendererConfig,
     val crowdin: CrowdinConfig,
     val twitter: TwitterConfig,
     val twitch: TwitchConfig,
@@ -242,6 +243,9 @@ data class LorittaConfig(
 
     @Serializable
     data class MessageVerificationConfig(val encryptionKey: String)
+
+    @Serializable
+    data class MessageRendererConfig(val rendererUrl: String)
 
     @Serializable
     data class TwitterConfig(

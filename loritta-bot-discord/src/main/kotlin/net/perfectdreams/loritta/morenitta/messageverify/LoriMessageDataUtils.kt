@@ -1,8 +1,11 @@
 package net.perfectdreams.loritta.morenitta.messageverify
 
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageReaction
 import net.dv8tion.jda.api.entities.Role
@@ -12,7 +15,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji
-import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunk
@@ -22,8 +24,10 @@ import java.security.MessageDigest
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import kotlin.time.measureTimedValue
 
 object LoriMessageDataUtils {
+    private val logger = KotlinLogging.logger {}
     const val CURRENT_VERSION = 1
     const val SUB_CHUNK_ID = "LORIMESSAGEDATA"
 
@@ -40,8 +44,19 @@ object LoriMessageDataUtils {
         "fdAT" // APNG frame data chunk
     )
 
+    /**
+     * Renders a [savedMessage] into a image using Loritta's DiscordChatMessageRendererServer
+     */
+    private suspend fun renderSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
+        return measureTimedValue {
+            loritta.httpWithoutTimeout.post(loritta.config.loritta.messageRenderer.rendererUrl + "/generate-message") {
+                setBody(Json.encodeToString(savedMessage))
+            }.readBytes()
+        }.also { logger.info { "Took ${it.duration} to ask DiscordChatMessageRendererServer to generate a message screenshot for ${savedMessage.id}!" } }.value
+    }
+
     suspend fun createSignedRenderedSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
-        val screenshot = loritta.discordMessageRendererManager.renderMessage(savedMessage, null)
+        val screenshot = renderSavedMessage(loritta, savedMessage)
         val screenshotPNGChunks = PNGChunkUtils.readChunksFromPNG(screenshot)
 
         val b64Encoded = Base64.getEncoder().encodeToString(Json.encodeToString(savedMessage).toByteArray(Charsets.UTF_8))

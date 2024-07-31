@@ -13,8 +13,7 @@ dependencies {
     implementation(project(":temmie-discord-auth"))
     implementation(project(":temmie-discord-auth-loritta-commons"))
     implementation(project(":switch-twitch"))
-    implementation(project(":discord-chat-markdown-parser"))
-    implementation(project(":discord-chat-message-renderer"))
+    implementation(project(":discord-chat-message-renderer-entities"))
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
@@ -190,8 +189,6 @@ jib {
 
             setIfPresent("commit.hash", "COMMIT_HASH")
             setIfPresent("build.id", "BUILD_ID")
-            // See Loritta's "Dockerfile" - We predownload the browsers we need and we don't want Playwright to download any other browsers
-            this["PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD"] = "true"
         }
     }
 

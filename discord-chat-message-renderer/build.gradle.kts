@@ -13,6 +13,7 @@ kotlin {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":discord-chat-markdown-parser"))
+    api(project(":discord-chat-message-renderer-entities"))
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")

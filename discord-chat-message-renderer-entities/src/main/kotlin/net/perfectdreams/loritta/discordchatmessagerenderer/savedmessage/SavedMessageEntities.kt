@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel
 import net.dv8tion.jda.api.entities.sticker.Sticker.StickerFormat
 import net.dv8tion.jda.api.utils.TimeUtil
 import net.dv8tion.jda.internal.utils.Helpers
-import net.perfectdreams.loritta.discordchatmessagerenderer.ImageFormat
 import java.awt.Color
 import java.time.OffsetDateTime
 import java.util.*

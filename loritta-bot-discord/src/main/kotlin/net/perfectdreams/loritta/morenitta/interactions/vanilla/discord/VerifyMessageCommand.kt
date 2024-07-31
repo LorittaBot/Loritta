@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.discordchatmessagerenderer.ImageFormat
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.*
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot

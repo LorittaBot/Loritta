@@ -69,6 +69,7 @@ jobs:
             :web:dashboard:backend:jib
             :web:showtime:backend:jib
             :broker-tickers-updater:jib
+            :discord-chat-message-renderer-server:jib
             -Dcommit.hash=${{ github.sha }}
             -Dbuild.id=${{ github.run_number }}
             --scan

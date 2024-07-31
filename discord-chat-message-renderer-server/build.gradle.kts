@@ -15,6 +15,8 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":discord-chat-message-renderer"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.1")
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.netty)
 
     // Logging Stuff
     implementation(libs.logback.classic)
@@ -28,7 +30,7 @@ jib {
     }
 
     to {
-        image = "localhost/lorittabot/discord-chat-message-renderer-samples"
+        image = "localhost/lorittabot/discord-chat-message-renderer-server"
     }
 
     from {

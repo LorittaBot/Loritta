@@ -92,7 +92,6 @@ import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
-import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
@@ -396,10 +395,6 @@ class LorittaBot(
 
 	// Used to lock raffle ticket purchases and raffle results
 	val raffleResultsMutex = Mutex()
-	val discordMessageRendererManager = DiscordMessageRendererManager(
-		zoneId = Constants.LORITTA_TIMEZONE,
-		imageContentTypes = ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES.toSet()
-	)
 
 	init {
 		FOLDER = config.loritta.folders.root

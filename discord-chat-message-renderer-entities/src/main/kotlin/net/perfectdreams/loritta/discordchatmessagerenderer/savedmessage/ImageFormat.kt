@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.discordchatmessagerenderer
+package net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage
 
 enum class ImageFormat(val extension: String) {
     PNG("png"),
