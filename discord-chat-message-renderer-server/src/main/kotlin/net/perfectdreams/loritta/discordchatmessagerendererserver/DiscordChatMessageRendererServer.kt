@@ -24,6 +24,8 @@ class DiscordChatMessageRendererServer {
             "image/png"
         )
     )
+    private var successfulRenders = 0
+    private var failedRenders = 0
 
     fun start() {
         val http = embeddedServer(Netty, port = 8080) {
@@ -40,12 +42,17 @@ class DiscordChatMessageRendererServer {
                             image,
                             ContentType.Image.PNG
                         )
+
+                        successfulRenders++
+                        logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
                     } catch (e: Exception) {
                         logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}!" }
                         call.respondText(
                             e.stackTraceToString(),
                             status = HttpStatusCode.InternalServerError
                         )
+                        failedRenders++
+                        logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
                     }
                 }
             }
