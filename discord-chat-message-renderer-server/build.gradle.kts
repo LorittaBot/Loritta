@@ -30,7 +30,7 @@ jib {
     }
 
     to {
-        image = "localhost/lorittabot/discord-chat-message-renderer-server"
+        image = "ghcr.io/lorittabot/discord-chat-message-renderer-server"
     }
 
     from {
