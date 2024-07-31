@@ -31,6 +31,11 @@ jib {
 
     to {
         image = "ghcr.io/lorittabot/discord-chat-message-renderer-server"
+
+        auth {
+            username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
+            password = System.getProperty("DOCKER_PASSWORD") ?: System.getenv("DOCKER_PASSWORD")
+        }
     }
 
     from {
