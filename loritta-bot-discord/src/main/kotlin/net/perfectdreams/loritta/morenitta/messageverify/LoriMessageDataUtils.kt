@@ -49,7 +49,7 @@ object LoriMessageDataUtils {
      */
     private suspend fun renderSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
         return measureTimedValue {
-            loritta.httpWithoutTimeout.post(loritta.config.loritta.messageRenderer.rendererUrl + "/generate-message") {
+            loritta.httpWithoutTimeout.post(loritta.config.loritta.messageRenderer.rendererUrl.removeSuffix("/") + "/generate-message") {
                 setBody(Json.encodeToString(savedMessage))
             }.readBytes()
         }.also { logger.info { "Took ${it.duration} to ask DiscordChatMessageRendererServer to generate a message screenshot for ${savedMessage.id}!" } }.value
