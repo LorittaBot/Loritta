@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.messageverify
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -49,9 +50,14 @@ object LoriMessageDataUtils {
      */
     private suspend fun renderSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
         return measureTimedValue {
-            loritta.httpWithoutTimeout.post(loritta.config.loritta.messageRenderer.rendererUrl.removeSuffix("/") + "/generate-message") {
+            val response = loritta.httpWithoutTimeout.post(loritta.config.loritta.messageRenderer.rendererUrl.removeSuffix("/") + "/generate-message") {
                 setBody(Json.encodeToString(savedMessage))
-            }.readBytes()
+            }
+
+            if (response.status != HttpStatusCode.OK)
+                error("Something went wrong while trying to render a message screenshot for ${savedMessage.id}! Status code: ${response.status}; Body: ${response.bodyAsText()}")
+
+            response.readBytes()
         }.also { logger.info { "Took ${it.duration} to ask DiscordChatMessageRendererServer to generate a message screenshot for ${savedMessage.id}!" } }.value
     }
 

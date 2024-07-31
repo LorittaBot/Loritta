@@ -8,11 +8,13 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
 import java.time.ZoneId
 
 class DiscordChatMessageRendererServer {
+    private val logger = KotlinLogging.logger {}
     private val rendererManager = DiscordMessageRendererManager(
         ZoneId.of("America/Sao_Paulo"),
         setOf(
@@ -30,12 +32,21 @@ class DiscordChatMessageRendererServer {
                     val body = call.receiveText()
 
                     val savedMessage = Json.decodeFromString<SavedMessage>(body)
-                    val image = rendererManager.renderMessage(savedMessage, null)
 
-                    call.respondBytes(
-                        image,
-                        ContentType.Image.PNG
-                    )
+                    try {
+                        val image = rendererManager.renderMessage(savedMessage, null)
+
+                        call.respondBytes(
+                            image,
+                            ContentType.Image.PNG
+                        )
+                    } catch (e: Exception) {
+                        logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}!" }
+                        call.respondText(
+                            e.stackTraceToString(),
+                            status = HttpStatusCode.InternalServerError
+                        )
+                    }
                 }
             }
         }

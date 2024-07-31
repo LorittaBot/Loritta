@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.ktor.server.netty)
 
     // Logging Stuff
+    implementation(libs.kotlin.logging)
     implementation(libs.logback.classic)
 }
 
