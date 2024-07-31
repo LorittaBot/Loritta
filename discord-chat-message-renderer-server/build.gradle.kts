@@ -18,6 +18,9 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
 
+    // Used for logs - MojangStyleFileAppenderAndRollover
+    implementation("com.github.luben:zstd-jni:1.5.5-6")
+
     // Logging Stuff
     implementation(libs.kotlin.logging)
     implementation(libs.logback.classic)
