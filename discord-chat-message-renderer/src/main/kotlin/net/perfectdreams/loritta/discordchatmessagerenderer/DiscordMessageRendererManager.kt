@@ -977,6 +977,11 @@ class DiscordMessageRendererManager(
                 )
                 // val screenshot = page.screenshot(Page.ScreenshotOptions().setFullPage(true))
 
+                // Parse unicode emojis to Twemoji, this is a bit hacky but it does work
+                val script = DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/twemoji.min.js").readAllBytes().toString(Charsets.UTF_8)
+                page.evaluate(script)
+                page.evaluate("twemoji.parse(document.body, {className: 'unicode-inline-emoji'});")
+                
                 // Not really needed but... Wait all fonts to be ready
                 // This still works even with JS disabled
                 page.waitForFunction("document.fonts.ready")
@@ -986,11 +991,6 @@ class DiscordMessageRendererManager(
                         const images = Array.from(document.querySelectorAll('img'));
                         images.every(img => img.complete);
                 """.trimIndent())
-
-                // Parse unicode emojis to Twemoji, this is a bit hacky but it does work
-                val script = DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/twemoji.min.js").readAllBytes().toString(Charsets.UTF_8)
-                page.evaluate(script)
-                page.evaluate("twemoji.parse(document.body, {className: 'unicode-inline-emoji'});")
 
                 page.querySelector("#wrapper").screenshot(ElementHandle.ScreenshotOptions())
             }
