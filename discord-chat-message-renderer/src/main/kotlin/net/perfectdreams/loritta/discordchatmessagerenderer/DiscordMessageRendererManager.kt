@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.discordchatmessagerenderer
 
 import com.microsoft.playwright.*
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
@@ -47,15 +46,12 @@ class DiscordMessageRendererManager(
     private fun createPage(): Page {
         val newPage = browserContext.newPage()
         newPage.onCrash {
-            runBlocking {
-                withPage {
-                    // Failsafe if a page crashes
-                    logger.error { "Page $it crashed! Closing page and creating a new one..." }
-                    // It seems that this does throw an exception, but it doesn't halt execution and it does close the page
-                    it.close()
-                    this@DiscordMessageRendererManager.page = createPage()
-                }
-            }
+            // The reason we don't attempt to withPage lock it, is because this seems to create a deadlock because the onCrash handler is triggered within the rendering call
+            // Failsafe if a page crashes
+            logger.error { "Page $it crashed! Is locked? ${mutex.isLocked} - Closing page and creating a new one..." }
+            // It seems that this does throw an exception, but it doesn't halt execution and it does close the page
+            newPage.close()
+            this@DiscordMessageRendererManager.page = createPage()
         }
         return newPage
     }
