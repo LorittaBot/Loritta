@@ -59,7 +59,7 @@ class DiscordChatMessageRendererServer {
 
                     val savedMessage = Json.decodeFromString<SavedMessage>(body)
 
-                    logger.info { "Attempting to get a available renderer..." }
+                    logger.info { "Attempting to get a available renderer for message ${savedMessage.id}..." }
 
                     val rendererManager = measureTimedValue { availableRenderers.receive() }.also {
                         logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}" }
