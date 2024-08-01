@@ -33,7 +33,7 @@ class DiscordChatMessageRendererServer {
             )
         )
     }
-    private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(4)
+    private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
     private var successfulRenders = 0
     private var failedRenders = 0
     private val dispatcher = Dispatchers.IO.limitedParallelism(rendererManagers.size)
