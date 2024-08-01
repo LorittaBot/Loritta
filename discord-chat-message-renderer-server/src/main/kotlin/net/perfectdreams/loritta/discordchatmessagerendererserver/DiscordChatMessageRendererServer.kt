@@ -7,7 +7,9 @@ import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
@@ -34,6 +36,7 @@ class DiscordChatMessageRendererServer {
     private val availableRenderers = LinkedBlockingQueue<DiscordMessageRendererManager>()
     private var successfulRenders = 0
     private var failedRenders = 0
+    private val dispatcher = Dispatchers.IO.limitedParallelism(rendererManagers.size)
 
     fun start() {
         logger.info { "Using ${rendererManagers.size} renderers" }
@@ -63,7 +66,7 @@ class DiscordChatMessageRendererServer {
                     }.value
 
                     try {
-                        val image = rendererManager.renderMessage(savedMessage, null)
+                        val image = withContext(dispatcher) { rendererManager.renderMessage(savedMessage, null) }
 
                         call.respondBytes(
                             image,
