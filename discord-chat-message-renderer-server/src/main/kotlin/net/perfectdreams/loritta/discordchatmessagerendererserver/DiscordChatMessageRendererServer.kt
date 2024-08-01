@@ -62,7 +62,7 @@ class DiscordChatMessageRendererServer {
                         successfulRenders++
                         logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
                     } catch (e: Exception) {
-                        logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}!" }
+                        logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}! Request Body: $body" }
                         call.respondText(
                             e.stackTraceToString(),
                             status = HttpStatusCode.InternalServerError

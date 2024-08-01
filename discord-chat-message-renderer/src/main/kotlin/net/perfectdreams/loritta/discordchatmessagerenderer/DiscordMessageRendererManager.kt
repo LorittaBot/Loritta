@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.discordchatmessagerenderer
 
 import com.microsoft.playwright.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
@@ -39,9 +40,25 @@ class DiscordMessageRendererManager(
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale).setJavaScriptEnabled(false))
-    private val page: Page = browserContext.newPage()
+    private var page = createPage()
     private val mutex = Mutex()
     private val markdownParser = DiscordChatMarkdownParser()
+
+    private fun createPage(): Page {
+        val newPage = browserContext.newPage()
+        newPage.onCrash {
+            runBlocking {
+                withPage {
+                    // Failsafe if a page crashes
+                    logger.error { "Page $it crashed! Closing page and creating a new one..." }
+                    // It seems that this does throw an exception, but it doesn't halt execution and it does close the page
+                    it.close()
+                    this@DiscordMessageRendererManager.page = createPage()
+                }
+            }
+        }
+        return newPage
+    }
 
     private suspend inline fun <T> withPage(action: (Page) -> (T)): T {
         return mutex.withLock {
@@ -56,7 +73,9 @@ class DiscordMessageRendererManager(
         logger.info { "Rendering message ${savedMessage.id}... Is locked? ${mutex.isLocked}" }
 
         val screenshot = withPage { page ->
-            logger.info { "Starting to render message ${savedMessage.id}!" }
+            // We somewhat piggy back the withPage lock here
+            // The page count should NEVER be != 1!
+            logger.info { "Starting to render message ${savedMessage.id}! - Open pages: ${browserContext.pages().size}" }
             val placeContext = savedMessage.placeContext
 
             val timedValue = measureTimedValue {
