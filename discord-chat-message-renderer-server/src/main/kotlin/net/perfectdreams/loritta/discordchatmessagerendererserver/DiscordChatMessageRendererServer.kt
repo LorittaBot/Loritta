@@ -8,6 +8,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -17,7 +18,6 @@ import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.time.ZoneId
-import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.measureTimedValue
 
 class DiscordChatMessageRendererServer {
@@ -33,7 +33,7 @@ class DiscordChatMessageRendererServer {
             )
         )
     }
-    private val availableRenderers = LinkedBlockingQueue<DiscordMessageRendererManager>()
+    private val availableRenderers = Channel<DiscordMessageRendererManager>(Channel.UNLIMITED)
     private var successfulRenders = 0
     private var failedRenders = 0
     private val dispatcher = Dispatchers.IO.limitedParallelism(rendererManagers.size)
@@ -41,7 +41,7 @@ class DiscordChatMessageRendererServer {
     fun start() {
         logger.info { "Using ${rendererManagers.size} renderers" }
         for (rendererManager in rendererManagers) {
-            availableRenderers.put(rendererManager)
+            availableRenderers.trySend(rendererManager)
         }
 
         val http = embeddedServer(Netty, port = 8080) {
@@ -59,9 +59,9 @@ class DiscordChatMessageRendererServer {
 
                     val savedMessage = Json.decodeFromString<SavedMessage>(body)
 
-                    logger.info { "Attempting to get a available renderer... Available renderers: ${availableRenderers.size}/${rendererManagers.size}" }
+                    logger.info { "Attempting to get a available renderer..." }
 
-                    val rendererManager = measureTimedValue { availableRenderers.take() }.also {
+                    val rendererManager = measureTimedValue { availableRenderers.receive() }.also {
                         logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}" }
                     }.value
 
@@ -85,7 +85,7 @@ class DiscordChatMessageRendererServer {
                         logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
                     } finally {
                         logger.info { "Putting $rendererManager back into the available renderers queue" }
-                        availableRenderers.add(rendererManager)
+                        availableRenderers.send(rendererManager)
                     }
                 }
             }
