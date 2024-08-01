@@ -7,6 +7,8 @@ import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
@@ -52,7 +54,7 @@ class DiscordChatMessageRendererServer {
                     }.value
 
                     try {
-                        val image = rendererManager.renderMessage(savedMessage, null)
+                        val image = withContext(Dispatchers.IO) { rendererManager.renderMessage(savedMessage, null) }
 
                         call.respondBytes(
                             image,
