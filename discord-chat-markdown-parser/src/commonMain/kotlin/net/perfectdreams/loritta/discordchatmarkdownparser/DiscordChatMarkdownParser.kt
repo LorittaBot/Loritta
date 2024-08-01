@@ -107,9 +107,15 @@ class DiscordChatMarkdownParser {
                                 val discordemojiid = groups["discordemojiid"]
 
                                 if (discordemojiname != null && discordemojiid != null) {
+                                    val id = discordemojiid.value.toLongOrNull()
+                                    if (id == null) {
+                                        entityNodes.add(TextNode(entityMessageSection.matchResult.value))
+                                        continue
+                                    }
+
                                     entityNodes.add(
                                         DiscordEmojiEntityNode(
-                                            discordemojiid.value.toLong(),
+                                            id,
                                             discordemojiname.value,
                                             discordemojianimated?.value == "a",
                                         )
@@ -121,9 +127,15 @@ class DiscordChatMarkdownParser {
                                 val discordcommandpath = groups["discordcommandpath"]
 
                                 if (discordcommandid != null && discordcommandpath != null) {
+                                    val id = discordcommandid.value.toLongOrNull()
+                                    if (id == null) {
+                                        entityNodes.add(TextNode(entityMessageSection.matchResult.value))
+                                        continue
+                                    }
+
                                     entityNodes.add(
                                         DiscordCommandEntityNode(
-                                            discordcommandid.value.toLong(),
+                                            id,
                                             discordcommandpath.value
                                         )
                                     )
@@ -132,6 +144,12 @@ class DiscordChatMarkdownParser {
 
                                 val discorduserid = groups["discorduserid"]
                                 if (discorduserid != null) {
+                                    val id = discorduserid.value.toLongOrNull()
+                                    if (id == null) {
+                                        entityNodes.add(TextNode(entityMessageSection.matchResult.value))
+                                        continue
+                                    }
+
                                     entityNodes.add(
                                         DiscordUserMentionEntityNode(
                                             discorduserid.value.toLong()
@@ -142,6 +160,12 @@ class DiscordChatMarkdownParser {
 
                                 val discordchannelid = groups["discordchannelid"]
                                 if (discordchannelid != null) {
+                                    val id = discordchannelid.value.toLongOrNull()
+                                    if (id == null) {
+                                        entityNodes.add(TextNode(entityMessageSection.matchResult.value))
+                                        continue
+                                    }
+
                                     entityNodes.add(
                                         DiscordChannelMentionEntityNode(
                                             discordchannelid.value.toLong()
@@ -152,6 +176,12 @@ class DiscordChatMarkdownParser {
 
                                 val discordroleid = groups["discordroleid"]
                                 if (discordroleid != null) {
+                                    val id = discordroleid.value.toLongOrNull()
+                                    if (id == null) {
+                                        entityNodes.add(TextNode(entityMessageSection.matchResult.value))
+                                        continue
+                                    }
+
                                     entityNodes.add(
                                         DiscordRoleMentionEntityNode(
                                             discordroleid.value.toLong()
