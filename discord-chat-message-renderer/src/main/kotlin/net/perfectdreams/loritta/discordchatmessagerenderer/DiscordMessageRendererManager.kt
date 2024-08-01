@@ -1000,7 +1000,7 @@ class DiscordMessageRendererManager(
                         """
                         const images = Array.from(document.querySelectorAll('img'));
                         images.every(img => img.complete);
-                """.trimIndent()
+                        """.trimIndent()
                     ) as Boolean
 
                     logger.info { "Checked if all images are loaded for message ${savedMessage.id}! Current status: $areAllImagesLoaded" }
@@ -1010,6 +1010,8 @@ class DiscordMessageRendererManager(
 
                     delay(250)
                 }
+
+                logger.info { "Taking screenshot of message ${savedMessage.id}!" }
 
                 page.querySelector("#wrapper").screenshot(ElementHandle.ScreenshotOptions())
             }
