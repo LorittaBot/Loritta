@@ -997,7 +997,7 @@ class DiscordMessageRendererManager(
                 while (true) {
                     if (System.currentTimeMillis() - startedCheckingAt >= 30_000)
                         error("Took too long to load all images!")
-                    
+
                     logger.info { "Checking if all images are loaded for message ${savedMessage.id}..." }
 
                     val areAllImagesLoaded = page.evaluate(
