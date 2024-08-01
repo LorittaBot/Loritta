@@ -8,8 +8,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
@@ -22,7 +22,7 @@ import kotlin.time.measureTimedValue
 
 class DiscordChatMessageRendererServer {
     private val logger = KotlinLogging.logger {}
-    private val rendererManagers = (0 until 4).map {
+    private val rendererManagers = (0 until 8).map {
         DiscordMessageRendererManager(
             ZoneId.of("America/Sao_Paulo"),
             setOf(
@@ -33,7 +33,7 @@ class DiscordChatMessageRendererServer {
             )
         )
     }
-    private val availableRenderers = Channel<DiscordMessageRendererManager>(Channel.UNLIMITED)
+    private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(4)
     private var successfulRenders = 0
     private var failedRenders = 0
     private val dispatcher = Dispatchers.IO.limitedParallelism(rendererManagers.size)
@@ -41,7 +41,7 @@ class DiscordChatMessageRendererServer {
     fun start() {
         logger.info { "Using ${rendererManagers.size} renderers" }
         for (rendererManager in rendererManagers) {
-            availableRenderers.trySend(rendererManager)
+            runBlocking { availableRenderers.send(rendererManager) }
         }
 
         val http = embeddedServer(Netty, port = 8080) {
@@ -59,9 +59,11 @@ class DiscordChatMessageRendererServer {
 
                     val savedMessage = Json.decodeFromString<SavedMessage>(body)
 
-                    logger.info { "Attempting to get a available renderer for message ${savedMessage.id}..." }
+                    logger.info { "Attempting to get a available renderer for message ${savedMessage.id}... Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}" }
 
-                    val rendererManager = measureTimedValue { availableRenderers.receive() }.also {
+                    val rendererManager = measureTimedValue {
+                        availableRenderers.receive()
+                    }.also {
                         logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}" }
                     }.value
 
