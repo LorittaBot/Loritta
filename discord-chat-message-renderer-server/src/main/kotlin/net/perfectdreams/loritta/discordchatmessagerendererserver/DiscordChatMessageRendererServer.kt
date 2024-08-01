@@ -8,11 +8,14 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import java.time.ZoneId
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.measureTimedValue
@@ -42,6 +45,14 @@ class DiscordChatMessageRendererServer {
 
         val http = embeddedServer(Netty, port = 8080) {
             routing {
+                // Dumps all currently running coroutines
+                get("/coroutines") {
+                    val os = ByteArrayOutputStream()
+                    val ps = PrintStream(os)
+                    DebugProbes.dumpCoroutines(ps)
+                    call.respondText(os.toString(Charsets.UTF_8))
+                }
+
                 post("/generate-message") {
                     val body = call.receiveText()
 
