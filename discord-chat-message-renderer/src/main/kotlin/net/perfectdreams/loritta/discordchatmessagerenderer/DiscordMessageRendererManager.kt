@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.discordchatmessagerenderer
 
 import com.microsoft.playwright.*
+import com.microsoft.playwright.options.WaitUntilState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
@@ -35,7 +37,7 @@ class DiscordMessageRendererManager(
     private val playwright = Playwright.create()
     // Firefox has an issue in headless more where there is a white space at the bottom of the screenshot...
     // Chromium has an issue where screenshots >16384 are "corrupted"
-    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(true))
+    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale).setJavaScriptEnabled(false))
@@ -973,24 +975,41 @@ class DiscordMessageRendererManager(
                                     }
                                 }
                             }
-                        }
+                        },
+                    // By using COMMIT, we avoid the setContent call be frozen waiting for any images to be loaded (we don't want that because we do load images after the fact)
+                    Page.SetContentOptions().setWaitUntil(WaitUntilState.COMMIT)
                 )
+
                 // val screenshot = page.screenshot(Page.ScreenshotOptions().setFullPage(true))
 
                 // Parse unicode emojis to Twemoji, this is a bit hacky but it does work
                 val script = DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/twemoji.min.js").readAllBytes().toString(Charsets.UTF_8)
                 page.evaluate(script)
                 page.evaluate("twemoji.parse(document.body, {className: 'unicode-inline-emoji'});")
-                
+
                 // Not really needed but... Wait all fonts to be ready
                 // This still works even with JS disabled
                 page.waitForFunction("document.fonts.ready")
 
                 // Wait all images to be loaded
-                page.waitForFunction("""
+                // I tried using waitForFunction but it didn't work that well
+                while (true) {
+                    logger.info { "Checking if all images are loaded for message ${savedMessage.id}..." }
+
+                    val areAllImagesLoaded = page.evaluate(
+                        """
                         const images = Array.from(document.querySelectorAll('img'));
                         images.every(img => img.complete);
-                """.trimIndent())
+                """.trimIndent()
+                    ) as Boolean
+
+                    logger.info { "Checked if all images are loaded for message ${savedMessage.id}! Current status: $areAllImagesLoaded" }
+
+                    if (areAllImagesLoaded)
+                        break
+
+                    delay(250)
+                }
 
                 page.querySelector("#wrapper").screenshot(ElementHandle.ScreenshotOptions())
             }
