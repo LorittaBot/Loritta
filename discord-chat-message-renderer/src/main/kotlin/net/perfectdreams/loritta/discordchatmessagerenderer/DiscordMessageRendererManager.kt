@@ -39,7 +39,6 @@ class DiscordMessageRendererManager(
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale).setJavaScriptEnabled(false))
-    private var page = createPage()
     private val mutex = Mutex()
     private val markdownParser = DiscordChatMarkdownParser()
 
@@ -48,17 +47,20 @@ class DiscordMessageRendererManager(
         newPage.onCrash {
             // The reason we don't attempt to withPage lock it, is because this seems to create a deadlock because the onCrash handler is triggered within the rendering call
             // Failsafe if a page crashes
-            logger.error { "Page $it crashed! Is locked? ${mutex.isLocked} - Closing page and creating a new one..." }
-            // It seems that this does throw an exception, but it doesn't halt execution and it does close the page
-            newPage.close()
-            this@DiscordMessageRendererManager.page = createPage()
+            logger.error { "Page $it crashed! Is locked? ${mutex.isLocked} - Closing page..." }
+            // We won't attempt to close the page, because this should be handled by our try finally in the "withPage" call
         }
         return newPage
     }
 
     private suspend inline fun <T> withPage(action: (Page) -> (T)): T {
         return mutex.withLock {
-            action.invoke(page)
+            // We create a new page every time because we are experiencing random "Page has crashed" issues, and it seems that it is correlated to reusing pages?
+            // (maybe the page memory is never freed and Chromium crashes?)
+            val page = createPage()
+            page.use {
+                action.invoke(it)
+            }
         }
     }
 
