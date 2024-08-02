@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.discordchatmessagerenderer
 
 import com.microsoft.playwright.*
 import com.microsoft.playwright.options.WaitUntilState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.html.*
@@ -41,6 +40,7 @@ class DiscordMessageRendererManager(
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale).setJavaScriptEnabled(false))
+    private var page = createPage()
     private val mutex = Mutex()
     private val markdownParser = DiscordChatMarkdownParser()
 
@@ -50,7 +50,8 @@ class DiscordMessageRendererManager(
             // The reason we don't attempt to withPage lock it, is because this seems to create a deadlock because the onCrash handler is triggered within the rendering call
             // Failsafe if a page crashes
             logger.error { "Page $it crashed! Is locked? ${mutex.isLocked} - Closing page..." }
-            // We won't attempt to close the page, because this should be handled by our try finally in the "withPage" call
+            page.close()
+            page = createPage()
         }
         return newPage
     }
@@ -59,10 +60,7 @@ class DiscordMessageRendererManager(
         return mutex.withLock {
             // We create a new page every time because we are experiencing random "Page has crashed" issues, and it seems that it is correlated to reusing pages?
             // (maybe the page memory is never freed and Chromium crashes?)
-            val page = createPage()
-            page.use {
-                action.invoke(it)
-            }
+            action.invoke(page)
         }
     }
 
