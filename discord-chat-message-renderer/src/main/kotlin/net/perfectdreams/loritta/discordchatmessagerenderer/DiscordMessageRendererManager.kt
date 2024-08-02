@@ -993,7 +993,7 @@ class DiscordMessageRendererManager(
 
                 // Wait all images to be loaded
                 // I tried using waitForFunction but it didn't work that well
-                val startedCheckingAt = System.currentTimeMillis()
+                /* val startedCheckingAt = System.currentTimeMillis()
                 while (true) {
                     if (System.currentTimeMillis() - startedCheckingAt >= 30_000)
                         error("Took too long to load all images!")
@@ -1013,7 +1013,7 @@ class DiscordMessageRendererManager(
                         break
 
                     delay(10)
-                }
+                } */
 
                 logger.info { "Taking screenshot of message ${savedMessage.id}!" }
 
