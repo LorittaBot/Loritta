@@ -9,17 +9,15 @@ val fixedRandom = Random(0)
 fun main() {
     // Define weights corresponding to the enum values
     val weights = mapOf(
-        CardRarity.COMMON to 22.0,
-        CardRarity.UNCOMMON to 20.0,
-        CardRarity.RARE to 18.0,
-        CardRarity.EPIC to 16.0,
-        CardRarity.LEGENDARY to 13.0,
-        CardRarity.MYTHIC to 11.0,
+        CardRarity.COMMON to 30.0,
+        CardRarity.UNCOMMON to 25.0,
+        CardRarity.RARE to 19.0,
+        CardRarity.EPIC to 12.0,
+        CardRarity.LEGENDARY to 8.0,
+        CardRarity.MYTHIC to 6.0,
     )
 
     println("Total weight value: ${weights.values.sum()}")
-
-    readln()
 
     val cards = mutableListOf<Pair<Int, CardRarity>>()
 
@@ -63,7 +61,7 @@ fun main() {
     val weightedCards = cards.associate { it.first to weights[it.second]!! }
 
     measureTime {
-        repeat(100_000) {
+        repeat(10_000) {
             println(it)
             val currentRaritiesCards = mutableListOf<CardRarity>()
 
