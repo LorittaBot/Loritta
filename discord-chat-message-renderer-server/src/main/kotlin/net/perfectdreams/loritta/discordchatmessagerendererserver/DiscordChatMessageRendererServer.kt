@@ -22,7 +22,7 @@ import kotlin.time.measureTimedValue
 
 class DiscordChatMessageRendererServer {
     private val logger = KotlinLogging.logger {}
-    private val rendererManagers = (0 until 8).map {
+    private val rendererManagers = (0 until 16).map {
         DiscordMessageRendererManager(
             ZoneId.of("America/Sao_Paulo"),
             setOf(
