@@ -15,7 +15,8 @@ class DiscordMessageRendererManager : Closeable {
     private val playwright = Playwright.create()
     // Firefox has an issue in headless more where there is a white space at the bottom of the screenshot...
     // Chromium has an issue where screenshots >16384 are "corrupted"
-    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(false))
+    private val isHeadful = java.lang.Boolean.getBoolean("discordchatmessagerenderer.headful")
+    private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(!isHeadful))
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
     private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale))
