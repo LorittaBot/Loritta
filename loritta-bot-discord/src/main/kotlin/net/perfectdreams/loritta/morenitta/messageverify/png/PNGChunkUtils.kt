@@ -57,7 +57,19 @@ object PNGChunkUtils {
         return chunks
     }
 
-    fun createTextPNGChunk(text: String) = createPNGChunk("tEXt", text.toByteArray(Charsets.US_ASCII))
+    fun createTextPNGChunk(keyword: String, text: String): ByteArray {
+        // Keyword + null separator + text length
+        val keywordBytes = keyword.toByteArray(Charsets.US_ASCII)
+        val textBytes = text.toByteArray(Charsets.US_ASCII)
+        // "the length of the chunk is sufficient information to locate the ending"
+        val buffer = ByteBuffer.allocate(keywordBytes.size + 1 + textBytes.size)
+        buffer.order(ByteOrder.BIG_ENDIAN)
+        buffer.put(keywordBytes)
+        buffer.put(0.toByte())
+        buffer.put(textBytes)
+
+        return createPNGChunk("tEXt", buffer.array())
+    }
 
     fun createPNGChunk(type: String, data: ByteArray): ByteArray {
         val typeBytes = type.toByteArray(Charsets.US_ASCII)
