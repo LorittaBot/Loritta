@@ -46,6 +46,18 @@ object LoriMessageDataUtils {
     )
 
     /**
+     * Renders a [savedMessage] into an image using Loritta's DiscordChatMessageRendererServer, if something goes wrong, a fallback image is loaded
+     */
+    private suspend fun renderSavedMessageWithFallback(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
+        try {
+            return renderSavedMessage(loritta, savedMessage)
+        } catch (e: Exception) {
+            logger.error { "Something went wrong while trying to render message ${savedMessage.id}! Using fallback image..." }
+            return LoriMessageDataUtils::class.java.getResourceAsStream("/message_renderer_fallback.png").readAllBytes()
+        }
+    }
+
+    /**
      * Renders a [savedMessage] into a image using Loritta's DiscordChatMessageRendererServer
      */
     private suspend fun renderSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
@@ -61,8 +73,8 @@ object LoriMessageDataUtils {
         }.also { logger.info { "Took ${it.duration} to ask DiscordChatMessageRendererServer to generate a message screenshot for ${savedMessage.id}!" } }.value
     }
 
-    suspend fun createSignedRenderedSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
-        val screenshot = renderSavedMessage(loritta, savedMessage)
+    suspend fun createSignedRenderedSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage, withFallback: Boolean): ByteArray {
+        val screenshot = if (withFallback) renderSavedMessageWithFallback(loritta, savedMessage) else renderSavedMessage(loritta, savedMessage)
         val screenshotPNGChunks = PNGChunkUtils.readChunksFromPNG(screenshot)
 
         val b64Encoded = Base64.getEncoder().encodeToString(Json.encodeToString(savedMessage).toByteArray(Charsets.UTF_8))

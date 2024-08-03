@@ -210,7 +210,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						embed.setImage("attachment://$fileName")
 						embed.setDescription(deletedMessage)
 
-						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage)
+						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
 
 						textChannel.sendMessageEmbeds(embed.build())
 							.addFiles(FileUpload.fromData(finalImage, fileName))

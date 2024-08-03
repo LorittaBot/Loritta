@@ -42,7 +42,7 @@ class SaveMessageCommand(val m: LorittaBot) {
             context.deferChannelMessage(isEphemeral)
 
             val savedMessage = LoriMessageDataUtils.convertMessageToSavedMessage(message)
-            val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(m, savedMessage)
+            val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(m, savedMessage, true)
 
             // There's a difference here:
             // - Public Messages: Sent on the current channel, public reply
