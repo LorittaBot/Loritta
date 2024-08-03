@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.discordchatmessagerendererserver
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -11,29 +11,34 @@ import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRenderer
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.time.ZoneId
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.measureTimedValue
 
 class DiscordChatMessageRendererServer {
     private val logger = KotlinLogging.logger {}
-    private val rendererManagers = (0 until 16).map {
-        DiscordMessageRendererManager(
-            ZoneId.of("America/Sao_Paulo"),
-            setOf(
-                "image/gif",
-                "image/jpeg",
-                "image/bmp",
-                "image/png"
-            )
+    private val messageHtmlRenderer = DiscordMessageRenderer(
+        ZoneId.of("America/Sao_Paulo"),
+        setOf(
+            "image/gif",
+            "image/jpeg",
+            "image/bmp",
+            "image/png"
         )
+    )
+    private val rendererManagers = (0 until 8).map {
+        DiscordMessageRendererManager()
     }
     private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
     private var successfulRenders = 0
     private var failedRenders = 0
+    private var storedSavedMessages = ConcurrentHashMap<UUID, SavedMessage>()
 
     fun start() {
         logger.info { "Using ${rendererManagers.size} renderers" }
@@ -41,7 +46,7 @@ class DiscordChatMessageRendererServer {
             runBlocking { availableRenderers.send(rendererManager) }
         }
 
-        val http = embeddedServer(Netty, port = 8080) {
+        val http = embeddedServer(CIO, port = 8080) {
             routing {
                 // Dumps all currently running coroutines
                 get("/coroutines") {
@@ -64,8 +69,12 @@ class DiscordChatMessageRendererServer {
                         logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}" }
                     }.value
 
+                    val messageUniqueId = UUID.randomUUID()
                     try {
-                        val image = rendererManager.renderMessage(savedMessage, null)
+                        // We don't use the "savedMessage.id" as the key because what we are storing is the "saved message render request"
+                        // There may be multiple requests for the same message, with different contents
+                        storedSavedMessages[messageUniqueId] = savedMessage
+                        val image = rendererManager.renderMessage(savedMessage.id, messageUniqueId, null)
 
                         call.respondBytes(
                             image,
@@ -83,8 +92,35 @@ class DiscordChatMessageRendererServer {
                         failedRenders++
                         logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
                     } finally {
+                        storedSavedMessages.remove(messageUniqueId)
                         logger.info { "Putting $rendererManager back into the available renderers queue" }
                         availableRenderers.send(rendererManager)
+                    }
+                }
+
+                get("/internal/message-preview") {
+                    val message = call.parameters["message"]!!
+                    val savedMessage = storedSavedMessages[UUID.fromString(message)]
+                    if (savedMessage == null) {
+                        logger.warn { "Tried to preview message $message, but I don't know about it!" }
+                        call.respondText(
+                            "",
+                            status = HttpStatusCode.NotFound
+                        )
+                        return@get
+                    }
+
+                    try {
+                        call.respondText(
+                            messageHtmlRenderer.renderMessage(savedMessage, null),
+                            ContentType.Text.Html
+                        )
+                    } catch (e: Exception) {
+                        logger.warn(e) { "Something went wrong while trying to preview message! Request Message: $savedMessage" }
+                        call.respondText(
+                            e.stackTraceToString(),
+                            status = HttpStatusCode.InternalServerError
+                        )
                     }
                 }
             }

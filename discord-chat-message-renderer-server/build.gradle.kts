@@ -13,10 +13,12 @@ kotlin {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation(project(":discord-chat-message-renderer"))
+    implementation(project(":discord-chat-markdown-parser"))
+    implementation(project(":discord-chat-message-renderer-entities"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.1")
     implementation(libs.ktor.server.core)
-    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.cio)
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.10.1")
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
@@ -26,9 +28,33 @@ dependencies {
     // Used for logs - MojangStyleFileAppenderAndRollover
     implementation("com.github.luben:zstd-jni:1.5.5-6")
 
+    // Playwright
+    implementation("com.microsoft.playwright:playwright:1.45.0")
+
+    // Discord
+    implementation("com.github.LorittaBot:DeviousJDA:40ea50aea7")
+
     // Logging Stuff
     implementation(libs.kotlin.logging)
     implementation(libs.logback.classic)
+}
+
+val sassMessageRenderer = tasks.register<SassTask>("sass-message-renderer") {
+    this.inputSass.set(file("src/main/sass-message-renderer/style.scss"))
+    this.inputSassFolder.set(file("src/main/sass-message-renderer/"))
+    this.outputSass.set(file("$buildDir/sass/sass-message-renderer-scss"))
+}
+
+tasks {
+    processResources {
+        // We need to wait until the JS build finishes and the SASS files are generated
+        dependsOn(sassMessageRenderer)
+
+        // Same thing with the SASS output
+        from(sassMessageRenderer) {
+            into("message-renderer-assets/")
+        }
+    }
 }
 
 jib {
