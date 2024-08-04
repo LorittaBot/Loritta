@@ -97,7 +97,8 @@ class DiscordMessageRendererManager : Closeable {
                     // Loop through each image element
                     images.forEach(function(image) {
                         // Check if the image is completely loaded
-                        if (!image.complete) {
+                        var fullyLoaded = image.complete && image.naturalWidth !== 0
+                        if (!fullyLoaded) {
                             console.log("Replacing image " + image.src + " with a broken image");
                             // Replace the src attribute with an invalid image
                             image.setAttribute("src", "data:image/jpeg;charset=utf-8;base64,");
