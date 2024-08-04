@@ -28,6 +28,7 @@ class DiscordMessageRendererManager : Closeable {
     ): ByteArray {
         // We always create a new browser context and a new page because Playwright leaks memory by keeping all request/responses stored in the "Connection.objects" HashMap
         // See: https://github.com/microsoft/playwright-java/issues/717
+        // (However, in my experience it seems that Playwright does free the objects map when closing the page, but better be safe than sorry)
         val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale))
         val page = browserContext.newPage()
         page.onCrash {
