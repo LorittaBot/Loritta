@@ -33,7 +33,7 @@ class DiscordChatMessageRendererServer {
             "image/png"
         )
     )
-    private val rendererManagers = (0 until 8).map {
+    private val rendererManagers = (0 until 32).map {
         DiscordMessageRendererManager()
     }
     private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
