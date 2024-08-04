@@ -19,6 +19,7 @@ import java.io.PrintStream
 import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.measureTimedValue
 
 class DiscordChatMessageRendererServer {
@@ -38,6 +39,7 @@ class DiscordChatMessageRendererServer {
     private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
     private var successfulRenders = 0
     private var failedRenders = 0
+    private val pendingRequests = AtomicInteger()
     private var storedSavedMessages = ConcurrentHashMap<UUID, SavedMessage>()
 
     fun start() {
@@ -61,40 +63,45 @@ class DiscordChatMessageRendererServer {
 
                     val savedMessage = Json.decodeFromString<SavedMessage>(body)
 
-                    logger.info { "Attempting to get a available renderer for message ${savedMessage.id}... Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}" }
+                    logger.info { "Attempting to get a available renderer for message ${savedMessage.id}... Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}; Pending requests: $pendingRequests" }
 
-                    val rendererManager = measureTimedValue {
-                        availableRenderers.receive()
-                    }.also {
-                        logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}" }
-                    }.value
-
-                    val messageUniqueId = UUID.randomUUID()
                     try {
-                        // We don't use the "savedMessage.id" as the key because what we are storing is the "saved message render request"
-                        // There may be multiple requests for the same message, with different contents
-                        storedSavedMessages[messageUniqueId] = savedMessage
-                        val image = rendererManager.renderMessage(savedMessage.id, messageUniqueId, null)
+                        pendingRequests.incrementAndGet()
+                        val rendererManager = measureTimedValue {
+                            availableRenderers.receive()
+                        }.also {
+                            logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}! Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}; Pending requests: $pendingRequests" }
+                        }.value
 
-                        call.respondBytes(
-                            image,
-                            ContentType.Image.PNG
-                        )
+                        val messageUniqueId = UUID.randomUUID()
+                        try {
+                            // We don't use the "savedMessage.id" as the key because what we are storing is the "saved message render request"
+                            // There may be multiple requests for the same message, with different contents
+                            storedSavedMessages[messageUniqueId] = savedMessage
+                            val image = rendererManager.renderMessage(savedMessage.id, messageUniqueId, null)
 
-                        successfulRenders++
-                        logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
-                    } catch (e: Exception) {
-                        logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}! Request Body: $body" }
-                        call.respondText(
-                            e.stackTraceToString(),
-                            status = HttpStatusCode.InternalServerError
-                        )
-                        failedRenders++
-                        logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
+                            call.respondBytes(
+                                image,
+                                ContentType.Image.PNG
+                            )
+
+                            successfulRenders++
+                            logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}! Request Body: $body" }
+                            call.respondText(
+                                e.stackTraceToString(),
+                                status = HttpStatusCode.InternalServerError
+                            )
+                            failedRenders++
+                            logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
+                        } finally {
+                            storedSavedMessages.remove(messageUniqueId)
+                            logger.info { "Putting $rendererManager back into the available renderers queue" }
+                            availableRenderers.send(rendererManager)
+                        }
                     } finally {
-                        storedSavedMessages.remove(messageUniqueId)
-                        logger.info { "Putting $rendererManager back into the available renderers queue" }
-                        availableRenderers.send(rendererManager)
+                        pendingRequests.decrementAndGet()
                     }
                 }
 
