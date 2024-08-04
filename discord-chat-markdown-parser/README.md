@@ -50,3 +50,13 @@ hello world!
 ```
 
 More samples can be found on the `:discord-chat-markdown-parser-samples` module.
+
+## Known Issues
+
+### Not all Discord chat markdown is supported yet
+
+Yeah...
+
+### StackOverflowError when parsing big strings
+
+When parsing big strings, the code may throw a `StackOverflowError`. A way to work around to this issue is by increasing the max stack size with `-Xss`, example: `-Xss16M`. 
