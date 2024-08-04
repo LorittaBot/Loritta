@@ -74,19 +74,15 @@ class DiscordChatMessageRendererServer {
                         }.value
 
                         val messageUniqueId = UUID.randomUUID()
-                        try {
+                        val image = try {
                             // We don't use the "savedMessage.id" as the key because what we are storing is the "saved message render request"
                             // There may be multiple requests for the same message, with different contents
                             storedSavedMessages[messageUniqueId] = savedMessage
                             val image = rendererManager.renderMessage(savedMessage.id, messageUniqueId, null)
 
-                            call.respondBytes(
-                                image,
-                                ContentType.Image.PNG
-                            )
-
                             successfulRenders++
                             logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
+                            image
                         } catch (e: Exception) {
                             logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}! Request Body: $body" }
                             call.respondText(
@@ -94,11 +90,20 @@ class DiscordChatMessageRendererServer {
                                 status = HttpStatusCode.InternalServerError
                             )
                             failedRenders++
-                            logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
+                            null
                         } finally {
                             storedSavedMessages.remove(messageUniqueId)
                             logger.info { "Putting $rendererManager back into the available renderers queue" }
                             availableRenderers.send(rendererManager)
+                        }
+
+                        if (image != null) {
+                            call.respondBytes(
+                                image,
+                                ContentType.Image.PNG
+                            )
+                        } else {
+                            call.respondText("", status = HttpStatusCode.InternalServerError)
                         }
                     } finally {
                         pendingRequests.decrementAndGet()
