@@ -4,6 +4,7 @@ import com.microsoft.playwright.*
 import com.microsoft.playwright.options.WaitUntilState
 import mu.KotlinLogging
 import java.io.Closeable
+import java.io.File
 import java.util.*
 import kotlin.time.measureTimedValue
 
@@ -37,20 +38,35 @@ class DiscordMessageRendererManager : Closeable {
             logger.error { "Whoops, page $it crashed!" }
         }
 
+        page.onLoad {
+            logger.info { "Load event for $messageId (render request: $savedMessageUniqueId)" }
+        }
+
+        page.onDOMContentLoaded {
+            logger.info { "DOMContentLoaded event for $messageId (render request: $savedMessageUniqueId)" }
+        }
+
+        var writeImageForDebug = false
+
         try {
             logger.info { "Starting to render message $messageId! - Open pages: ${browserContext.pages().size} (render request: $savedMessageUniqueId)" }
 
             val timedValueLoadPage = measureTimedValue {
                 logger.info { "Loading message preview page for $messageId! (render request: $savedMessageUniqueId)" }
 
-                page.navigate(
-                    // We navigate to an URL to avoid any memory leaks that may cause by reusing the same page
-                    "http://127.0.0.1:8080/internal/message-preview?message=$savedMessageUniqueId",
-                    // By using LOAD, we force the browser to actually wait the entire page to be loaded
-                    Page.NavigateOptions().setWaitUntil(WaitUntilState.LOAD),
-                )
+                try {
+                    page.navigate(
+                        // We navigate to an URL to avoid any memory leaks that may cause by reusing the same page
+                        "http://127.0.0.1:8080/internal/message-preview?message=$savedMessageUniqueId",
+                        // By using LOAD, we force the browser to actually wait the entire page to be loaded
+                        Page.NavigateOptions().setWaitUntil(WaitUntilState.LOAD),
+                    )
 
-                // We don't need to wait anything to load, because Playwright makes sure that everything is loaded when using "WaitUntilState.LOAD" :3
+                    // We don't need to wait anything to load, because Playwright makes sure that everything is loaded when using "WaitUntilState.LOAD" :3
+                } catch (e: TimeoutError) {
+                    logger.warn(e) { "Took too long to load message preview page for $messageId (render request: $savedMessageUniqueId), maybe an image wasn't completely loaded? - We are going to skip the load and attempt to render the message anyway..." }
+                    writeImageForDebug = true
+                }
             }
 
             logger.info { "Took ${timedValueLoadPage.duration} to load the message preview page for $messageId! (render request: $savedMessageUniqueId)" }
@@ -62,6 +78,12 @@ class DiscordMessageRendererManager : Closeable {
             }
 
             logger.info { "Took ${timedValueTakingScreenshot.duration} to generate a message screenshot for $messageId! (render request: $savedMessageUniqueId)" }
+
+            if (writeImageForDebug) {
+                // If a timeout happens, let's write the image to the disk to see what is happening
+                logger.info { "Writing screenshot of message $messageId (render request: $savedMessageUniqueId) to disk for debugging purposes..." }
+                File("/debug/$messageId-$savedMessageUniqueId.png").writeBytes(timedValueTakingScreenshot.value)
+            }
 
             return timedValueTakingScreenshot.value
         } finally {
