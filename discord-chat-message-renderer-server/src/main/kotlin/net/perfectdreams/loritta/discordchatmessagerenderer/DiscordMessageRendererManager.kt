@@ -19,17 +19,6 @@ class DiscordMessageRendererManager : Closeable {
     private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(!isHeadful))
     private val deviceScale = 2.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
-    private val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale))
-
-    private fun createPage(): Page {
-        val newPage = browserContext.newPage()
-        newPage.onCrash {
-            // The reason we don't attempt to withPage lock it, is because this seems to create a deadlock because the onCrash handler is triggered within the rendering call
-            // Failsafe if a page crashes
-            logger.error { "Whoops, page $it crashed!" }
-        }
-        return newPage
-    }
 
     // The caller must make sure that this is called on only a single thread!
     fun renderMessage(
@@ -37,8 +26,17 @@ class DiscordMessageRendererManager : Closeable {
         savedMessageUniqueId: UUID,
         qrCodeImageAsByteArray: ByteArray?
     ): ByteArray {
-        // We always create a new page because Playwright leaks memory by keeping all request/responses stored in the "Connection.objects" HashMap
-        createPage().use { page ->
+        // We always create a new browser context and a new page because Playwright leaks memory by keeping all request/responses stored in the "Connection.objects" HashMap
+        // See: https://github.com/microsoft/playwright-java/issues/717
+        val browserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale))
+        val page = browserContext.newPage()
+        page.onCrash {
+            // The reason we don't attempt to withPage lock it, is because this seems to create a deadlock because the onCrash handler is triggered within the rendering call
+            // Failsafe if a page crashes
+            logger.error { "Whoops, page $it crashed!" }
+        }
+
+        try {
             logger.info { "Starting to render message $messageId! - Open pages: ${browserContext.pages().size} (render request: $savedMessageUniqueId)" }
 
             val timedValueLoadPage = measureTimedValue {
@@ -65,6 +63,9 @@ class DiscordMessageRendererManager : Closeable {
             logger.info { "Took ${timedValueTakingScreenshot.duration} to generate a message screenshot for $messageId! (render request: $savedMessageUniqueId)" }
 
             return timedValueTakingScreenshot.value
+        } finally {
+            page.close()
+            browserContext.close()
         }
     }
 
