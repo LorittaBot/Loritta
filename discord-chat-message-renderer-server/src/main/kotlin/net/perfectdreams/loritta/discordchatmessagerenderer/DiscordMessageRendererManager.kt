@@ -20,7 +20,7 @@ class DiscordMessageRendererManager : Closeable {
     // Chromium has an issue where screenshots >16384 are "corrupted"
     private val isHeadful = java.lang.Boolean.getBoolean("discordchatmessagerenderer.headful")
     private val browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(!isHeadful))
-    private val deviceScale = 2.0
+    private val deviceScale = 1.0
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
 
     // The caller must make sure that this is called on only a single thread!
