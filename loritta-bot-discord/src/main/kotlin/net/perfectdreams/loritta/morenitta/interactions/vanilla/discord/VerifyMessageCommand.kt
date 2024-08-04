@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.messageverify.png.PNGChunkUtils
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
+import java.io.IOException
 
 class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -343,8 +344,13 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
 
             // We technically don't need to check for the image size, because we don't read the image's contents as pixels
             // If some day we add QR Codes to the image, then we will need to implement it tho!
-            val simpleImageInfo = SimpleImageInfo(imageByteArray)
-            if (simpleImageInfo.mimeType != "image/png") {
+            val simpleImageInfo = try {
+                SimpleImageInfo(imageByteArray)
+            } catch (e: IOException) {
+                // This may happen if someone submits something that isn't an image "Unsupported image type"
+                null
+            }
+            if (simpleImageInfo?.mimeType != "image/png") {
                 context.reply(false) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.UploadedImageIsNotInPngFormat),
