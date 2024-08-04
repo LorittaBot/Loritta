@@ -46,7 +46,10 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
         }
     }
 
-    suspend fun stuff(context: UnleashedContext, imageByteArray: ByteArray) {
+    /**
+     * Verifies the [imageByteArray] and sends the results to the user via [context]
+     */
+    suspend fun verifyMessageAndSendResults(context: UnleashedContext, imageByteArray: ByteArray) {
         val chunks = PNGChunkUtils.readChunksFromPNG(imageByteArray)
 
         val textChunks = chunks.filter { it.type == "tEXt" }
@@ -351,7 +354,7 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            verifyMessageCommand.stuff(context, imageByteArray)
+            verifyMessageCommand.verifyMessageAndSendResults(context, imageByteArray)
         }
     }
 
@@ -387,7 +390,7 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            verifyMessageCommand.stuff(context, imageByteArray)
+            verifyMessageCommand.verifyMessageAndSendResults(context, imageByteArray)
         }
     }
 }
