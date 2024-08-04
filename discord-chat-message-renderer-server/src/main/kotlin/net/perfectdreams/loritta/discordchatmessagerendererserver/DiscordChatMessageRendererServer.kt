@@ -17,8 +17,6 @@ import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.time.ZoneId
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.measureTimedValue
 
@@ -34,13 +32,12 @@ class DiscordChatMessageRendererServer {
         )
     )
     private val rendererManagers = (0 until 8).map {
-        DiscordMessageRendererManager()
+        DiscordMessageRendererManager(messageHtmlRenderer)
     }
     private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
     private var successfulRenders = 0
     private var failedRenders = 0
     private val pendingRequests = AtomicInteger()
-    private var storedSavedMessages = ConcurrentHashMap<UUID, SavedMessage>()
 
     fun start() {
         logger.info { "Using ${rendererManagers.size} renderers" }
@@ -73,12 +70,8 @@ class DiscordChatMessageRendererServer {
                             logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}! Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}; Pending requests: $pendingRequests" }
                         }.value
 
-                        val messageUniqueId = UUID.randomUUID()
                         val image = try {
-                            // We don't use the "savedMessage.id" as the key because what we are storing is the "saved message render request"
-                            // There may be multiple requests for the same message, with different contents
-                            storedSavedMessages[messageUniqueId] = savedMessage
-                            val image = rendererManager.renderMessage(savedMessage.id, messageUniqueId, null)
+                            val image = rendererManager.renderMessage(savedMessage, null)
 
                             successfulRenders++
                             logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
@@ -92,7 +85,6 @@ class DiscordChatMessageRendererServer {
                             failedRenders++
                             null
                         } finally {
-                            storedSavedMessages.remove(messageUniqueId)
                             logger.info { "Putting $rendererManager back into the available renderers queue" }
                             availableRenderers.send(rendererManager)
                         }
@@ -107,32 +99,6 @@ class DiscordChatMessageRendererServer {
                         }
                     } finally {
                         pendingRequests.decrementAndGet()
-                    }
-                }
-
-                get("/internal/message-preview") {
-                    val message = call.parameters["message"]!!
-                    val savedMessage = storedSavedMessages[UUID.fromString(message)]
-                    if (savedMessage == null) {
-                        logger.warn { "Tried to preview message $message, but I don't know about it!" }
-                        call.respondText(
-                            "",
-                            status = HttpStatusCode.NotFound
-                        )
-                        return@get
-                    }
-
-                    try {
-                        call.respondText(
-                            messageHtmlRenderer.renderMessage(savedMessage, null),
-                            ContentType.Text.Html
-                        )
-                    } catch (e: Exception) {
-                        logger.warn(e) { "Something went wrong while trying to preview message! Request Message: $savedMessage" }
-                        call.respondText(
-                            e.stackTraceToString(),
-                            status = HttpStatusCode.InternalServerError
-                        )
                     }
                 }
             }

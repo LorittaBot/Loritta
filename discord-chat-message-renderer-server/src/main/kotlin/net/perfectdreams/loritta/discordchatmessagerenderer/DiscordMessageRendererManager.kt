@@ -5,12 +5,12 @@ import com.microsoft.playwright.options.LoadState
 import com.microsoft.playwright.options.ScreenshotType
 import com.microsoft.playwright.options.WaitUntilState
 import mu.KotlinLogging
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
 import java.io.Closeable
 import java.io.File
-import java.util.*
 import kotlin.time.measureTimedValue
 
-class DiscordMessageRendererManager : Closeable {
+class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMessageRenderer) : Closeable {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -25,10 +25,11 @@ class DiscordMessageRendererManager : Closeable {
 
     // The caller must make sure that this is called on only a single thread!
     fun renderMessage(
-        messageId: Long,
-        savedMessageUniqueId: UUID,
+        savedMessage: SavedMessage,
         qrCodeImageAsByteArray: ByteArray?
     ): ByteArray {
+        val messageId = savedMessage.id
+
         // We always create a new browser context and a new page because Playwright leaks memory by keeping all request/responses stored in the "Connection.objects" HashMap
         // See: https://github.com/microsoft/playwright-java/issues/717
         // (However, in my experience it seems that Playwright does free the objects map when closing the page, but better be safe than sorry)
@@ -41,50 +42,49 @@ class DiscordMessageRendererManager : Closeable {
         }
 
         page.onLoad {
-            logger.info { "Load event for $messageId (render request: $savedMessageUniqueId)" }
+            logger.info { "Load event for $messageId" }
         }
 
         page.onDOMContentLoaded {
-            logger.info { "DOMContentLoaded event for $messageId (render request: $savedMessageUniqueId)" }
+            logger.info { "DOMContentLoaded event for $messageId" }
         }
 
         page.onConsoleMessage {
-            logger.info { "Page $messageId (render request: $savedMessageUniqueId): ${it.text()}" }
+            logger.info { "Page $messageId: ${it.text()}" }
         }
 
         var writeImageForDebug = false
 
         try {
             val timedValueScreenshot = measureTimedValue {
-                logger.info { "Starting to render message $messageId! - Open pages: ${browserContext.pages().size} (render request: $savedMessageUniqueId)" }
+                logger.info { "Starting to render message $messageId! - Open pages: ${browserContext.pages().size}" }
 
                 // If this throws an error we are already fucked anyway, there isn't a good fallback here
                 val timedValueDOMContentLoadedPage = measureTimedValue {
-                    logger.info { "Loading message preview page for $messageId! (render request: $savedMessageUniqueId)" }
+                    logger.info { "Loading message preview page for $messageId!" }
 
-                    page.navigate(
-                        // We navigate to an URL to avoid any memory leaks that may cause by reusing the same page
-                        "http://127.0.0.1:8080/internal/message-preview?message=$savedMessageUniqueId",
+                    page.setContent(
+                        messageHtmlRenderer.renderMessage(savedMessage, null),
                         // By using DOMCONTENTLOADED, we force the browser to wait for DOMContentLoaded, we DON'T want to wait for assets here
-                        Page.NavigateOptions().setWaitUntil(WaitUntilState.DOMCONTENTLOADED),
+                        Page.SetContentOptions().setWaitUntil(WaitUntilState.DOMCONTENTLOADED),
                     )
                 }
 
-                logger.info { "Took ${timedValueDOMContentLoadedPage.duration} to DOMContentLoaded the message preview page for $messageId! (render request: $savedMessageUniqueId)" }
+                logger.info { "Took ${timedValueDOMContentLoadedPage.duration} to DOMContentLoaded the message preview page for $messageId!" }
 
                 val timedValueLoadPage = measureTimedValue {
-                    logger.info { "Waiting for all assets of the message preview page of $messageId to be loaded! (render request: $savedMessageUniqueId)" }
+                    logger.info { "Waiting for all assets of the message preview page of $messageId to be loaded!" }
 
                     // We will wait at MOST 2.5s
                     try {
                         page.waitForLoadState(LoadState.LOAD, Page.WaitForLoadStateOptions().setTimeout(2_500.0))
                     } catch (e: TimeoutError) {
-                        logger.warn(e) { "Took too long to wait for assets of the message preview page for $messageId (render request: $savedMessageUniqueId), maybe an image wasn't completely loaded? - We are going to skip the load and attempt to render the message anyway..." }
+                        logger.warn(e) { "Took too long to wait for assets of the message preview page for $messageId, maybe an image wasn't completely loaded? - We are going to skip the load and attempt to render the message anyway..." }
                         writeImageForDebug = true
                     }
                 }
 
-                logger.info { "Took ${timedValueLoadPage.duration} to wait for all the message preview page assets of $messageId! (render request: $savedMessageUniqueId)" }
+                logger.info { "Took ${timedValueLoadPage.duration} to wait for all the message preview page assets of $messageId!" }
 
                 // STOP! Wait a minute!
                 // Stop all asset loading to avoid any non-loaded assets causing things to shift when taking screenshots
@@ -107,7 +107,7 @@ class DiscordMessageRendererManager : Closeable {
                 """.trimIndent())
 
                 val timedValueTakingScreenshot = measureTimedValue {
-                    logger.info { "Taking screenshot of message $messageId! (render request: $savedMessageUniqueId)" }
+                    logger.info { "Taking screenshot of message $messageId!" }
 
                     page.querySelector("#wrapper").screenshot(
                         ElementHandle.ScreenshotOptions()
@@ -115,18 +115,18 @@ class DiscordMessageRendererManager : Closeable {
                     )
                 }
 
-                logger.info { "Took ${timedValueTakingScreenshot.duration} to generate a message screenshot for $messageId! (render request: $savedMessageUniqueId)" }
+                logger.info { "Took ${timedValueTakingScreenshot.duration} to generate a message screenshot for $messageId!" }
 
                 if (writeImageForDebug) {
                     // If a timeout happens, let's write the image to the disk to see what is happening
-                    logger.info { "Writing screenshot of message $messageId (render request: $savedMessageUniqueId) to disk for debugging purposes..." }
-                    File("/debug/$messageId-$savedMessageUniqueId.png").writeBytes(timedValueTakingScreenshot.value)
+                    logger.info { "Writing screenshot of message $messageId to disk for debugging purposes..." }
+                    File("/debug/$messageId.png").writeBytes(timedValueTakingScreenshot.value)
                 }
 
                 return@measureTimedValue timedValueTakingScreenshot.value
             }
 
-            logger.info { "Took ${timedValueScreenshot.duration} to generate everything related to $messageId! (render request: $savedMessageUniqueId)" }
+            logger.info { "Took ${timedValueScreenshot.duration} to generate everything related to $messageId!" }
 
             return timedValueScreenshot.value
         } finally {
