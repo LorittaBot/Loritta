@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.encodeToString
@@ -330,8 +328,8 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             // We need to use "downloadFile" because we want to download the original raw image with our custom attributes within it
-            val imageInputStream = LorittaUtils.downloadFile(m, urlToBeUsedToDownloadTheImage, 5_000)
-            if (imageInputStream == null) {
+            val imageByteArray = LorittaUtils.downloadFile(m, urlToBeUsedToDownloadTheImage)
+            if (imageByteArray == null) {
                 context.reply(false) {
                     styled(
                         "Algo deu errado ao tentar baixar a imagem"
@@ -339,8 +337,6 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                 }
                 return
             }
-
-            val imageByteArray = imageInputStream.readAllBytes()
 
             // We technically don't need to check for the image size, because we don't read the image's contents as pixels
             // If some day we add QR Codes to the image, then we will need to implement it tho!
@@ -381,7 +377,15 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            val imageByteArray = m.http.get(file.url).readBytes()
+            val imageByteArray = LorittaUtils.downloadFile(m, file.url)
+            if (imageByteArray == null) {
+                context.reply(false) {
+                    styled(
+                        "Algo deu errado ao tentar baixar a imagem"
+                    )
+                }
+                return
+            }
 
             verifyMessageCommand.stuff(context, imageByteArray)
         }
