@@ -97,6 +97,7 @@ interface CommandContext {
 
                         when (option) {
                             is LongDiscordOptionReference -> append("número inteiro")
+                            is BooleanDiscordOptionReference -> append("booleano")
                             is NumberDiscordOptionReference -> append("número")
                             is StringDiscordOptionReference -> append("texto")
                             is ChannelDiscordOptionReference -> append("canal")

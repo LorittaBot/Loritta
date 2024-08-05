@@ -317,6 +317,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // April Fools
         // register(CoinFlipBetBugCommand(loritta))
         register(LoriCoolCardsCommand(loritta))
+        register(SonhosCommand(loritta))
 
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
@@ -925,6 +926,16 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                     is AttachmentDiscordOptionReference -> {
                         return listOf(
                             Option<Attachment>(
+                                interaKTionsOption.name,
+                                description,
+                                interaKTionsOption.required
+                            )
+                        )
+                    }
+
+                    is BooleanDiscordOptionReference -> {
+                        return listOf(
+                            Option<Boolean>(
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required

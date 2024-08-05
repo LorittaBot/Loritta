@@ -182,7 +182,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 		// =======[ ECONOMIA ]========
 		commandMap.add(PagarCommand(loritta))
-		commandMap.add(SonhosCommand(loritta))
 		commandMap.add(LigarCommand(loritta))
 	}
 
