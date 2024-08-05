@@ -1,6 +1,7 @@
 ---
 commands:
   errorWhileExecutingCommand: "Algo deu extremamente errado ao executar este comando... {loriRage} Desculpe pela inconveniência... {loriSob} Espero que este problema seja resolvido em breve! {stacktrace}"
+  errorWhileExecutingCommandWithErrorId: "Algo deu extremamente errado ao executar este comando... {loriRage} Desculpe pela inconveniência... {loriSob} Espero que este problema seja resolvido em breve! ID: `{errorId}`"
   commandOnlyAvailableInGuilds: "Este comando só está disponível em um servidor! Se você realmente quiser usá-lo, por favor crie um servidor agradável e aconchegante, me adicione, e use o comando lá!"
   noValidImageFound: "Desculpe, mas eu não achei nenhuma imagem que eu possa usar! Eu tentei pegar imagens em links, imagens anexadas, avatares de usuários mencionados, emojis... mas eu não achei nada disso na sua mensagem."
   noValidUserFound: "Desculpe, mas não consegui encontrar nenhum usuário válido!"

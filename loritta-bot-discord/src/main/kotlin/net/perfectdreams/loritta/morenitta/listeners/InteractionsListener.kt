@@ -16,9 +16,11 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
@@ -228,10 +230,42 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             } catch (e: CommandException) {
                 context?.reply(e.ephemeral, e.builder)
             } catch (e: Exception) {
-                // TODO: Proper catch and throw
-                e.printStackTrace()
+                val errorId = UUID.randomUUID()
+                logger.warn(e) { "Something went wrong while executing command ${executor::class.simpleName}! ID: $errorId" }
 
                 stacktrace = e.stackTraceToString()
+
+                val currentContext = context
+                val currentI18nContext = i18nContext
+                if (currentContext != null && currentI18nContext != null) {
+                    var sendExceptionToUser = true
+                    // Don't attempt to send the message to the user if it was a unknown interaction error, because attempting to follow up with a message with surely
+                    // cause yet another unknown interaction exception
+                    if (e is ErrorResponseException && e.errorResponse == ErrorResponse.UNKNOWN_INTERACTION)
+                        sendExceptionToUser = false
+
+                    if (sendExceptionToUser) {
+                        try {
+                            currentContext.reply(currentContext.wasInitiallyDeferredEphemerally == null || currentContext.wasInitiallyDeferredEphemerally == true) {
+                                styled(
+                                    currentI18nContext.get(
+                                        I18nKeysData.Commands.ErrorWhileExecutingCommandWithErrorId(
+                                            loriRage = Emotes.LoriRage,
+                                            loriSob = Emotes.LoriSob,
+                                            errorId = errorId.toString()
+                                        )
+                                    ),
+                                    Emotes.LoriSob
+                                )
+                            }
+                        } catch (e: Exception) {
+                            // wtf
+                            logger.warn(e) { "Something went wrong while sending the reason why command ${executor::class.simpleName} was not correctly executed! $errorId" }
+                            // At this point just give up bro
+                            throw e
+                        }
+                    }
+                }
             }
 
             loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(
@@ -536,8 +570,40 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 callbackId.invoke(context)
             } catch (e: Exception) {
-                // TODO: Proper catch and throw
-                e.printStackTrace()
+                val errorId = UUID.randomUUID()
+                logger.warn(e) { "Something went wrong while executing button interaction! ID: $errorId" }
+
+                val currentContext = context
+                val currentI18nContext = i18nContext
+                if (currentContext != null && currentI18nContext != null) {
+                    var sendExceptionToUser = true
+                    // Don't attempt to send the message to the user if it was a unknown interaction error, because attempting to follow up with a message with surely
+                    // cause yet another unknown interaction exception
+                    if (e is ErrorResponseException && e.errorResponse == ErrorResponse.UNKNOWN_INTERACTION)
+                        sendExceptionToUser = false
+
+                    if (sendExceptionToUser) {
+                        try {
+                            currentContext.reply(currentContext.wasInitiallyDeferredEphemerally == null || currentContext.wasInitiallyDeferredEphemerally == true) {
+                                styled(
+                                    currentI18nContext.get(
+                                        I18nKeysData.Commands.ErrorWhileExecutingCommandWithErrorId(
+                                            loriRage = Emotes.LoriRage,
+                                            loriSob = Emotes.LoriSob,
+                                            errorId = errorId.toString()
+                                        )
+                                    ),
+                                    Emotes.LoriSob
+                                )
+                            }
+                        } catch (e: Exception) {
+                            // wtf
+                            logger.warn(e) { "Something went wrong while sending the reason why the button interaction was not correctly executed! ID: $errorId" }
+                            // At this point just give up bro
+                            throw e
+                        }
+                    }
+                }
             }
         }
     }
@@ -610,8 +676,40 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 callback.invoke(context, event.interaction.values)
             } catch (e: Exception) {
-                // TODO: Proper catch and throw
-                e.printStackTrace()
+                val errorId = UUID.randomUUID()
+                logger.warn(e) { "Something went wrong while executing select menu interaction! ID: $errorId" }
+
+                val currentContext = context
+                val currentI18nContext = i18nContext
+                if (currentContext != null && currentI18nContext != null) {
+                    var sendExceptionToUser = true
+                    // Don't attempt to send the message to the user if it was a unknown interaction error, because attempting to follow up with a message with surely
+                    // cause yet another unknown interaction exception
+                    if (e is ErrorResponseException && e.errorResponse == ErrorResponse.UNKNOWN_INTERACTION)
+                        sendExceptionToUser = false
+
+                    if (sendExceptionToUser) {
+                        try {
+                            currentContext.reply(currentContext.wasInitiallyDeferredEphemerally == null || currentContext.wasInitiallyDeferredEphemerally == true) {
+                                styled(
+                                    currentI18nContext.get(
+                                        I18nKeysData.Commands.ErrorWhileExecutingCommandWithErrorId(
+                                            loriRage = Emotes.LoriRage,
+                                            loriSob = Emotes.LoriSob,
+                                            errorId = errorId.toString()
+                                        )
+                                    ),
+                                    Emotes.LoriSob
+                                )
+                            }
+                        } catch (e: Exception) {
+                            // wtf
+                            logger.warn(e) { "Something went wrong while sending the reason why the select menu interaction was not correctly executed! ID: $errorId" }
+                            // At this point just give up bro
+                            throw e
+                        }
+                    }
+                }
             }
         }
     }
