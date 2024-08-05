@@ -2,7 +2,9 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.toJsonArray
-import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.*
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.internal.entities.MemberImpl
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
@@ -19,15 +21,23 @@ class GetMembersWithRolesInGuildRoute(loritta: LorittaBot) : RequiresAPIAuthenti
 		}
 
 		val roleList = call.parameters["roleList"] ?: return
+		val roleIdsToBeMatchedAgainst = roleList.split(",")
+			.map { it.toLong() }
+			.toSet()
 
-		val roles = roleList.split(",").map { guild.getRoleById(it) }
+		val membersWithRoles = mutableListOf<Member>()
 
-		val membersWithRoles = guild.members.filter {  member ->
-			val rolesTheUserHas = roles.filter { role ->
-				member.roles.contains(role)
+		for (member in guild.members) {
+			// We cast and filter by the roleSet to avoid unnecessary sorting done by the Member.roles call
+			member as MemberImpl
+
+			// Check if "member" has any of the roles in the roleIdsToBeMatchedAgainst set
+			for (role in member.roleSet) {
+				if (role.idLong in roleIdsToBeMatchedAgainst) {
+					membersWithRoles.add(member)
+					break
+				}
 			}
-
-			rolesTheUserHas.isNotEmpty()
 		}
 
 		call.respondJson(
