@@ -1,10 +1,12 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import dev.minn.jda.ktx.messages.InlineMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -21,7 +23,10 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
     inner class Options : ApplicationCommandOptions() {
         val user = optionalUser("user", SONHOS_I18N_PREFIX.Options.User)
 
-        val extendedInfo = optionalBoolean("extended", SONHOS_I18N_PREFIX.Options.Extended.Text)
+        val informationType = optionalString("information_type", SONHOS_I18N_PREFIX.Options.InformationType.Text) {
+            choice(SONHOS_I18N_PREFIX.Options.InformationType.Choice.Normal, InformationType.NORMAL.name)
+            choice(SONHOS_I18N_PREFIX.Options.InformationType.Choice.Extended, InformationType.EXTENDED.name)
+        }
     }
 
     override val options = Options()
@@ -30,7 +35,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
         context.deferChannelMessage(false) // Defer because this sometimes takes too long
 
         val user = args[options.user]?.user ?: context.user
-        val showExtendedInfo = args[options.extendedInfo] ?: false
+        val informationType = args[options.informationType]?.let { InformationType.valueOf(it) } ?: InformationType.NORMAL
 
         val profile = context.loritta.pudding.users.getUserProfile(net.perfectdreams.loritta.serializable.UserId(user.idLong))
         val userSonhos = profile?.money ?: 0L
@@ -44,7 +49,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
 
         var extendedSonhosInfo: ExtendedSonhosInfo? = null
 
-        if (showExtendedInfo) {
+        if (informationType == InformationType.EXTENDED) {
             loritta.transaction {
                 val tickerFieldCount = BoughtStocks.ticker.count()
                 var totalBoughtStocks = 0L
@@ -75,6 +80,34 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
             }
         }
 
+        fun InlineMessage<*>.addExtendedSonhosInfoEmbed(extendedSonhosInfo: ExtendedSonhosInfo) {
+            val totalSonhos = userSonhos + extendedSonhosInfo.boughtStocks
+
+            embed {
+                title = "${Emotes.Sonhos3} ${context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosSummary)}"
+
+                field(
+                    "${Emotes.LoriCard} ${context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosInTheWallet)}",
+                    context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosField(userSonhos)),
+                    false
+                )
+
+                field(
+                    "${Emotes.LoriStonks} ${context.i18nContext.get(SONHOS_I18N_PREFIX.BoughtStocks(loritta.commandMentions.brokerPortfolio))}",
+                    context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosField(extendedSonhosInfo.boughtStocks)),
+                    false
+                )
+
+                field(
+                    "${SonhosUtils.getSonhosEmojiOfQuantity(totalSonhos)} ${context.i18nContext.get(SONHOS_I18N_PREFIX.TotalSonhos)}",
+                    context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosField(totalSonhos)),
+                    false
+                )
+
+                color = LorittaColors.LorittaAqua.rgb
+            }
+
+        }
         if (isSelf) {
             context.reply(false) {
                 styled(
@@ -96,39 +129,8 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                 )
 
                 val extendedSonhosInfo = extendedSonhosInfo
-                if (extendedSonhosInfo != null) {
-                    styled(
-                        context.i18nContext.get(
-                            SONHOS_I18N_PREFIX.SonhosInTheWallet(
-                                SonhosUtils.getSonhosEmojiOfQuantity(userSonhos),
-                                userSonhos
-                            )
-                        ),
-                        Emotes.LoriCard
-                    )
-
-                    styled(
-                        context.i18nContext.get(
-                            SONHOS_I18N_PREFIX.BoughtStocks(
-                                loritta.commandMentions.brokerInfo,
-                                SonhosUtils.getSonhosEmojiOfQuantity(extendedSonhosInfo.boughtStocks),
-                                extendedSonhosInfo.boughtStocks
-                            )
-                        ),
-                        Emotes.LoriStonks
-                    )
-
-                    val totalSonhos = userSonhos + extendedSonhosInfo.boughtStocks
-                    styled(
-                        context.i18nContext.get(
-                            SONHOS_I18N_PREFIX.TotalSonhos(
-                                SonhosUtils.getSonhosEmojiOfQuantity(totalSonhos),
-                                totalSonhos
-                            )
-                        ),
-                        Emotes.Sonhos2
-                    )
-                }
+                if (extendedSonhosInfo != null)
+                    addExtendedSonhosInfoEmbed(extendedSonhosInfo)
             }
 
             if (context is ApplicationCommandContext) {
@@ -161,41 +163,15 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                 )
 
                 val extendedSonhosInfo = extendedSonhosInfo
-                if (extendedSonhosInfo != null) {
-                    styled(
-                        context.i18nContext.get(
-                            SONHOS_I18N_PREFIX.SonhosInTheWallet(
-                                SonhosUtils.getSonhosEmojiOfQuantity(userSonhos),
-                                userSonhos
-                            )
-                        ),
-                        Emotes.LoriCard
-                    )
-
-                    styled(
-                        context.i18nContext.get(
-                            SONHOS_I18N_PREFIX.BoughtStocks(
-                                loritta.commandMentions.brokerInfo,
-                                SonhosUtils.getSonhosEmojiOfQuantity(extendedSonhosInfo.boughtStocks),
-                                extendedSonhosInfo.boughtStocks
-                            )
-                        ),
-                        Emotes.LoriStonks
-                    )
-
-                    val totalSonhos = userSonhos + extendedSonhosInfo.boughtStocks
-                    styled(
-                        context.i18nContext.get(
-                            SONHOS_I18N_PREFIX.TotalSonhos(
-                                SonhosUtils.getSonhosEmojiOfQuantity(totalSonhos),
-                                totalSonhos
-                            )
-                        ),
-                        Emotes.Sonhos2
-                    )
-                }
+                if (extendedSonhosInfo != null)
+                    addExtendedSonhosInfoEmbed(extendedSonhosInfo)
             }
         }
+    }
+
+    enum class InformationType {
+        NORMAL,
+        EXTENDED
     }
 
     data class ExtendedSonhosInfo(

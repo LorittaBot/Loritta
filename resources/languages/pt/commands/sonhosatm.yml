@@ -4,10 +4,15 @@ youHaveSonhos: "Você possui {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} 
 userHasSonhos: "{user} possui {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! {rankPositionText}"
 yourCurrentRankPosition: "Você está em **#{rankPosition,number,#} lugar** no ranking, veja outros ostentadores com {sonhosTopCommand}!"
 userCurrentRankPosition: "E você sabia que {user} está em **#{rankPosition,number,#} lugar** no ranking? Veja outros ostentadores com {sonhosTopCommand}!"
-sonhosInTheWallet: "**Sonhos na Carteira:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-boughtStocks: "**Valores das Ações Compradas na {brokerInfoCommand}:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-totalSonhos: "**Total de Sonhos:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+sonhosSummary: "Resumo dos Sonhos"
+sonhosInTheWallet: "Sonhos na Carteira"
+boughtStocks: "Valores das Ações Compradas na {brokerInfoCommand}"
+totalSonhos: "Total de Sonhos"
+sonhosField: "{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 options:
   user: "O usuário que você deseja desvendar os sonhos dele"
-  extended:
-    text: "Mostrar informações adicionais sobre os sonhos da pessoa"
+  informationType:
+    text: "Quais informações você deseja ver sobre os sonhos da pessoa"
+    choice:
+      normal: "Mostrar os sonhos da pessoa"
+      extended: "Mostrar os sonhos da pessoa, junto com um resumo de onde estão os sonhos dela"
