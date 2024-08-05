@@ -23,7 +23,6 @@ data class LorittaConfig(
     val pudding: PuddingConfig,
     val perfectPayments: PerfectPaymentsConfig,
     val binaries: BinariesConfig,
-    val prometheusPush: PrometheusPushConfig,
     val falatron: FalatronConfig,
     val gabrielaImageServer: GabrielaImageServerConfig,
     val dreamStorageService: DreamStorageServiceConfig,
@@ -187,9 +186,6 @@ data class LorittaConfig(
 
     @Serializable
     data class RandomRoleplayPicturesConfig(val url: String)
-
-    @Serializable
-    data class PrometheusPushConfig(val url: String)
 
     @Serializable
     data class YouTubeConfig(val key: String)

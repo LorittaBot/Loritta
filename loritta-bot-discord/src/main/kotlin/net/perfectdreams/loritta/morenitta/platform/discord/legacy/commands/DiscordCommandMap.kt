@@ -37,7 +37,6 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import java.sql.Connection
 import java.util.concurrent.CancellationException
 
@@ -458,7 +457,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 
 				val end = System.currentTimeMillis()
 				val commandLatency = end - start
-				Prometheus.COMMAND_LATENCY.labels(command.commandName).observe(commandLatency.toDouble())
 
 				CommandUtils.logMessageEventComplete(ev, logger, commandLatency)
 				return true

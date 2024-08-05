@@ -1,19 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.discord.voice
 
-import dev.kord.common.annotation.KordVoice
-import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
-import dev.kord.gateway.Gateway
 import dev.kord.voice.VoiceConnection
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -62,9 +56,6 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
 
             loriVC.launchAudioClipRequestsJob()
 
-            DiscordGatewayEventsProcessorMetrics.voiceConnections
-                .set(voiceConnections.size.toDouble())
-
             return loriVC
         }
     }
@@ -81,9 +72,6 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
         logger.info { "Shutting down voice connection $voiceConnection related to $guildId" }
         voiceConnections.remove(guildId, voiceConnection)
         voiceConnection.shutdown()
-
-        DiscordGatewayEventsProcessorMetrics.voiceConnections
-            .set(voiceConnections.size.toDouble())
     }
 
     /**

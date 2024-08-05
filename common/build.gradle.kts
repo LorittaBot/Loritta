@@ -149,11 +149,6 @@ kotlin {
 
                 // Emoji Stuff
                 api("com.vdurmont:emoji-java:5.1.1")
-
-                // Prometheus, for metrics
-                api("io.prometheus:simpleclient:${Versions.PROMETHEUS}")
-                api("io.prometheus:simpleclient_hotspot:${Versions.PROMETHEUS}")
-                api("io.prometheus:simpleclient_common:${Versions.PROMETHEUS}")
             }
         }
 

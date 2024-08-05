@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
@@ -575,10 +574,6 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 				if (!miscellaneousConfig[MiscellaneousConfigs.enableQuirky])
 					return@launch
-
-				DiscordGatewayEventsProcessorMetrics.firstTriggered
-					.labels(event.guild.id)
-					.inc()
 
 				channel.sendMessage(
 					MessageCreate {

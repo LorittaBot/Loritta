@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.pudding
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -36,7 +35,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.SimpleSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
-import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.InteractionContextType
@@ -130,7 +128,6 @@ class Pudding(
             // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
             hikariConfig.leakDetectionThreshold = 30L * 1000
             hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-            hikariConfig.metricsTrackerFactory = PrometheusMetricsTrackerFactory()
 
             hikariConfig.maximumPoolSize = 16
             hikariConfig.poolName = "PuddingPool"
@@ -529,10 +526,6 @@ class Pudding(
         repetitions,
         transactionIsolation,
         {
-            PuddingMetrics.availablePermits
-                .labels(hikariDataSource.poolName)
-                .set(semaphore.availablePermits.toDouble())
-
             semaphore.withPermit {
                 it.invoke()
             }

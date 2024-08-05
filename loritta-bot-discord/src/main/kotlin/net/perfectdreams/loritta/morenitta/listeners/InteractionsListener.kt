@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
@@ -51,6 +50,8 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.toLoritta
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
 import org.postgresql.util.PGobject
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 
 class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() {
@@ -151,9 +152,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
             val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
             val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
-            val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
-                .labels(rootDeclarationClazzName, executorClazzName)
-                .startTimer()
+            val startedAt = Instant.now()
 
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
@@ -278,7 +277,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 executorClazzName,
                 buildJsonObject {},
                 stacktrace == null,
-                timer.observeDuration(),
+                Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
                 stacktrace,
                 event.interaction.context.toLoritta(),
                 event.interaction.integrationOwners.guildIntegration,
@@ -311,9 +310,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
             val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
             val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
-            val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
-                .labels(rootDeclarationClazzName, executorClazzName)
-                .startTimer()
+            val startedAt = Instant.now()
 
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
@@ -385,7 +382,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 executorClazzName,
                 buildJsonObject {},
                 stacktrace == null,
-                timer.observeDuration(),
+                Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
                 stacktrace,
                 event.interaction.context.toLoritta(),
                 event.interaction.integrationOwners.guildIntegration,
@@ -418,9 +415,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
             val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
             val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
-            val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
-                .labels(rootDeclarationClazzName, executorClazzName)
-                .startTimer()
+            val startedAt = Instant.now()
 
             // These variables are used in the catch { ... } block, to make our lives easier
             var i18nContext: I18nContext? = null
@@ -493,7 +488,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 executorClazzName,
                 buildJsonObject {},
                 stacktrace == null,
-                timer.observeDuration(),
+                Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
                 stacktrace,
                 event.interaction.context.toLoritta(),
                 event.interaction.integrationOwners.guildIntegration,

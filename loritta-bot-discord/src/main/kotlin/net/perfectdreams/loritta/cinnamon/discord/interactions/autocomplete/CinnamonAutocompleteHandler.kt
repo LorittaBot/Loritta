@@ -5,9 +5,10 @@ import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteCon
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.autocomplete.GuildAutocompleteContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import java.time.Duration
+import java.time.Instant
 
 abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaBot) : AutocompleteHandler<T> {
     companion object {
@@ -19,9 +20,7 @@ abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaBot) : Autocom
     override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, T> {
         logger.info { "(${context.sender.id.value}) $this" }
 
-        val timer = InteractionsMetrics.EXECUTED_AUTOCOMPLETE_LATENCY_COUNT
-            .labels(this::class.simpleName ?: "UnknownHandler") // TODO: Fix this
-            .startTimer()
+        val startedAt = Instant.now()
 
         val result = try {
             val guildId = (context as? GuildAutocompleteContext)?.guildId
@@ -49,7 +48,7 @@ abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaBot) : Autocom
             throw e
         }
 
-        val commandLatency = timer.observeDuration()
+        val commandLatency = Duration.between(startedAt, Instant.now()).toMillis() / 1000.0
         logger.info { "(${context.sender.id.value}) $this - OK! Took ${commandLatency * 1000}ms" }
 
         // Weird hack
