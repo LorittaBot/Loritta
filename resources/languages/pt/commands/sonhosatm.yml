@@ -4,8 +4,8 @@ youHaveSonhos: "Você possui {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} 
 userHasSonhos: "{user} possui {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! {rankPositionText}"
 yourCurrentRankPosition: "Você está em **#{rankPosition,number,#} lugar** no ranking, veja outros ostentadores com {sonhosTopCommand}!"
 userCurrentRankPosition: "E você sabia que {user} está em **#{rankPosition,number,#} lugar** no ranking? Veja outros ostentadores com {sonhosTopCommand}!"
-sonhosInTheWallet: "**Sonhos na carteira:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-boughtStocks: "**Valores das ações compradas na {brokerInfoCommand}:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+sonhosInTheWallet: "**Sonhos na Carteira:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+boughtStocks: "**Valores das Ações Compradas na {brokerInfoCommand}:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 totalSonhos: "**Total de Sonhos:** {sonhosEmoji} {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 options:
   user: "O usuário que você deseja desvendar os sonhos dele"
