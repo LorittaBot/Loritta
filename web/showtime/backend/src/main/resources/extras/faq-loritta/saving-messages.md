@@ -19,13 +19,13 @@ Bem, agora tem um jeito de você conseguir validar se a prova que te passaram é
 ## Como Salvar Mensagens
 Ok, agora que você já sabe sobre essa incrível funcionalidade, que tal aprender a usá-la a seu favor? Para salvar uma mensagem de um meliante clique com o botão direito em qualquer mensagem e selecione a opção de "Salvar Mensagem"!
 
-![Botão para salvar a mensagem](/v3/assets/img/faq/saving_messages/5.png)
+![Botão para salvar a mensagem](/v3/assets/img/faq/saving_messages/2.png)
 
 Existem duas opções para salvar:
 - **Salvar Mensagem (Enviar Aqui)**: Envia a imagem publicamente no canal atual. Lembrando que, todos poderão ver a mensagem da Loritta com a imagem gerada.
 - **Salvar Mensagem (Enviar na DM)**: Envia a imagem na sua DM, isso é útil para denúncias sem que a pessoa que está sendo denunciada descubra <img src="https://cdn.discordapp.com/emojis/1012854272817381487.png?v=1" class="inline-emoji">!
 
-Ao clicar nela, a Loritta salva um "print" da imagem e, com uma pitadinha de <img src="https://abs.twimg.com/emoji/v2/72x72/2728.png" class="inline-emoji"> mágica <img src="https://abs.twimg.com/emoji/v2/72x72/2728.png" class="inline-emoji"> que só a Loritta sabe, guarda os dados da mensagem dentro da imagem, assim podendo confirmar que a mensagem é real!
+Ao clicar nela, a Loritta salva um "print" da imagem e, com uma pitadinha de ✨ mágica ✨ que só a Loritta sabe, guarda os dados da mensagem dentro da imagem, assim podendo confirmar que a mensagem é real!
 
 Dessa forma, qualquer outra pessoa do Discord que tenha o link ou a imagem original gerada pela Loritta (e que também a utilize, né? ;P) poderá confirmar que a mensagem que você está alegando ser real, é real meeeeiisssmooo.
 
@@ -34,11 +34,11 @@ Dessa forma, qualquer outra pessoa do Discord que tenha o link ou a imagem origi
 ## Verificando a Autenticidade
 Agora que você aprendeu a salvar uma imagem você se pergunta: "Como posso verificar ou dizer para as pessoas que a minha imagem é real?". Para verificar que a mensagem é real e receber informações sobre a mensagem enviada, basta usar `/verificarmensagem url LinkDaImagem`.
 
-![Comando de verificação](/v3/assets/img/faq/saving_messages/6.png)
+![Comando de verificação](/v3/assets/img/faq/saving_messages/4.png)
 
 Ou seja, até mesmo se a pessoa meticulosamente editar a imagem que a Loritta gera para fazer uma prova fake que parece 100% verídica, você ainda consegue verificar que a imagem é real! Não é incrível?? <img src="https://cdn.discordapp.com/emojis/626942886432473098.png?v=1" class="inline-emoji">
 
-![Comando de verificação](/v3/assets/img/faq/saving_messages/4.png)
+![Comando de verificação](/v3/assets/img/faq/saving_messages/5.png)
 
 Se você é da equipe de moderação de um servidor, validar denúncias se torna muito mais fácil! Basta você pedir para quem está denunciando salvar a mensagem pela Loritta e enviar a imagem para você! <img src="https://cdn.discordapp.com/emojis/864111506635227136.gif" class="inline-emoji">
 
