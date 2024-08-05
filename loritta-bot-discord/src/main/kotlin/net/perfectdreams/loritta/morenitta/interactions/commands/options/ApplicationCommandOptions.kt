@@ -20,6 +20,14 @@ open class ApplicationCommandOptions {
         .apply(builder)
         .also { registeredOptions.add(it) }
 
+    fun boolean(name: String, description: StringI18nData, builder: BooleanDiscordOptionReference<Boolean>.() -> (Unit) = {}) = BooleanDiscordOptionReference<Boolean>(name, description, true)
+        .apply(builder)
+        .also { registeredOptions.add(it) }
+
+    fun optionalBoolean(name: String, description: StringI18nData, builder: BooleanDiscordOptionReference<Boolean?>.() -> (Unit) = {}) = BooleanDiscordOptionReference<Boolean?>(name, description, false)
+        .apply(builder)
+        .also { registeredOptions.add(it) }
+
     fun long(name: String, description: StringI18nData, requiredRange: LongRange? = null) = LongDiscordOptionReference<Long>(name, description, true, requiredRange)
         .also { registeredOptions.add(it) }
 

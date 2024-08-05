@@ -33,7 +33,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customop
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
@@ -73,6 +72,8 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
@@ -316,6 +317,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // April Fools
         // register(CoinFlipBetBugCommand(loritta))
         register(LoriCoolCardsCommand(loritta))
+        register(SonhosCommand(loritta))
 
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
@@ -405,9 +407,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         val rootDeclarationClazzName = rootDeclaration::class.simpleName ?: "UnknownCommand"
         val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
-        val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
-            .labels(rootDeclarationClazzName, executorClazzName)
-            .startTimer()
+        val startedAt = Instant.now()
 
         // These variables are used in the catch { ... } block, to make our lives easier
         var context: UnleashedContext? = null
@@ -553,7 +553,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 put("raw_message", event.message.contentRaw)
             },
             stacktrace == null,
-            timer.observeDuration(),
+            Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
             stacktrace,
             // Once again we don't have these attributes because this was invoked via messages, so we will roll our own!
             // Messages can only be sent in the bot DM's
@@ -926,6 +926,16 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                     is AttachmentDiscordOptionReference -> {
                         return listOf(
                             Option<Attachment>(
+                                interaKTionsOption.name,
+                                description,
+                                interaKTionsOption.required
+                            )
+                        )
+                    }
+
+                    is BooleanDiscordOptionReference -> {
+                        return listOf(
+                            Option<Boolean>(
                                 interaKTionsOption.name,
                                 description,
                                 interaKTionsOption.required

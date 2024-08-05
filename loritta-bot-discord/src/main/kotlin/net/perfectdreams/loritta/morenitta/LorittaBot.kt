@@ -78,8 +78,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsM
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTranslateClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.EmojiImageCache
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -119,7 +117,6 @@ import net.perfectdreams.loritta.morenitta.utils.devious.*
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
-import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.website.*
 import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
@@ -520,7 +517,6 @@ class LorittaBot(
 
 	val activeEvents = ConcurrentLinkedQueue<Job>()
 
-	val prometheusPushClient = PrometheusPushClient("loritta-morenitta", config.loritta.prometheusPush.url)
 	val voiceConnectionsManager = LorittaVoiceConnectionManager(this)
 
 	val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -541,9 +537,6 @@ class LorittaBot(
 	fun start() {
 		logger.info { "Starting Debug Web Server..." }
 		internalWebServer.start()
-
-		logger.info { "Registering Prometheus Collectors..." }
-		Prometheus.register()
 
 		logger.info { "Success! Creating folders..." }
 		File(FOLDER).mkdirs()
@@ -1267,14 +1260,12 @@ class LorittaBot(
 		)
 
 		activeEvents.add(job)
-		DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
 
 		// Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
 		// added to the list, causing leaks.
 		// invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
 		job.invokeOnCompletion {
 			activeEvents.remove(job)
-			DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
 
 			val diff = System.currentTimeMillis() - start
 			if (diff >= 60_000) {

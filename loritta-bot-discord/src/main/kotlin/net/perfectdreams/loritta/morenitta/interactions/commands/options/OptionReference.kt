@@ -56,6 +56,12 @@ class StringDiscordOptionReference<T>(name: String, description: StringI18nData,
     }
 }
 
+class BooleanDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean) : DiscordOptionReference<T>(name, description, required) {
+    override fun get(option: OptionMapping): T {
+        return option.asBoolean as T
+    }
+}
+
 class LongDiscordOptionReference<T>(
     name: String,
     description: StringI18nData,

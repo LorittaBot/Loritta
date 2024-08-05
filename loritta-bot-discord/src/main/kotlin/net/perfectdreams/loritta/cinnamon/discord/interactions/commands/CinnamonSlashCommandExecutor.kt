@@ -8,10 +8,11 @@ import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCom
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import java.time.Duration
+import java.time.Instant
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
@@ -43,9 +44,7 @@ abstract class CinnamonSlashCommandExecutor(val loritta: LorittaBot) : SlashComm
 
         logger.info { "(${context.sender.id.value}) $this $stringifiedArgumentNames" }
 
-        val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
-            .labels(rootDeclarationClazzName, executorClazzName)
-            .startTimer()
+        val startedAt = Instant.now()
 
         val guildId = (context as? GuildApplicationCommandContext)?.guildId
 
@@ -61,7 +60,7 @@ abstract class CinnamonSlashCommandExecutor(val loritta: LorittaBot) : SlashComm
         if (result is CommandExecutorWrapper.CommandExecutionFailure)
             stacktrace = result.throwable.stackTraceToString()
 
-        val commandLatency = timer.observeDuration()
+        val commandLatency = Duration.between(startedAt, Instant.now()).toMillis() / 1000.0
         logger.info { "(${context.sender.id.value}) $this $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
         loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(

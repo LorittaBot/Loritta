@@ -31,6 +31,7 @@ object LoriMessageDataUtils {
     private val logger = KotlinLogging.logger {}
     const val CURRENT_VERSION = 1
     const val SUB_CHUNK_ID = "LORIMESSAGEDATA"
+    const val PNG_TEXT_CHUNK_KEYWORD = "Loritta Signed Discord Message Data"
 
     // We do an allowlist approach instead of a denylist approach because it seems that Discord does somewhat manipulate PNG files (example: adding eXIf chunks at the end of files)
     // (they probably add the eXIf chunk as an attempt of scrubbing eXIf data)
@@ -44,6 +45,18 @@ object LoriMessageDataUtils {
         "fcTL", // APNG frame control chunk
         "fdAT" // APNG frame data chunk
     )
+
+    /**
+     * Renders a [savedMessage] into an image using Loritta's DiscordChatMessageRendererServer, if something goes wrong, a fallback image is loaded
+     */
+    private suspend fun renderSavedMessageWithFallback(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
+        try {
+            return renderSavedMessage(loritta, savedMessage)
+        } catch (e: Exception) {
+            logger.error { "Something went wrong while trying to render message ${savedMessage.id}! Using fallback image..." }
+            return LoriMessageDataUtils::class.java.getResourceAsStream("/message_renderer_fallback.png").readAllBytes()
+        }
+    }
 
     /**
      * Renders a [savedMessage] into a image using Loritta's DiscordChatMessageRendererServer
@@ -61,8 +74,8 @@ object LoriMessageDataUtils {
         }.also { logger.info { "Took ${it.duration} to ask DiscordChatMessageRendererServer to generate a message screenshot for ${savedMessage.id}!" } }.value
     }
 
-    suspend fun createSignedRenderedSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage): ByteArray {
-        val screenshot = renderSavedMessage(loritta, savedMessage)
+    suspend fun createSignedRenderedSavedMessage(loritta: LorittaBot, savedMessage: SavedMessage, withFallback: Boolean): ByteArray {
+        val screenshot = if (withFallback) renderSavedMessageWithFallback(loritta, savedMessage) else renderSavedMessage(loritta, savedMessage)
         val screenshotPNGChunks = PNGChunkUtils.readChunksFromPNG(screenshot)
 
         val b64Encoded = Base64.getEncoder().encodeToString(Json.encodeToString(savedMessage).toByteArray(Charsets.UTF_8))
@@ -74,7 +87,7 @@ object LoriMessageDataUtils {
         val doneFinal = mac.doFinal(b64Encoded.toByteArray(Charsets.UTF_8))
         val output = doneFinal.bytesToHex()
 
-        val finalImage = PNGChunkUtils.addChunkToPNG(screenshot, PNGChunkUtils.createTextPNGChunk("${LoriMessageDataUtils.SUB_CHUNK_ID}:${LoriMessageDataUtils.CURRENT_VERSION}:1:${b64Encoded}:$output"))
+        val finalImage = PNGChunkUtils.addChunkToPNG(screenshot, PNGChunkUtils.createTextPNGChunk(PNG_TEXT_CHUNK_KEYWORD, "${LoriMessageDataUtils.SUB_CHUNK_ID}:${LoriMessageDataUtils.CURRENT_VERSION}:1:${b64Encoded}:$output"))
 
         return finalImage
     }
@@ -292,16 +305,34 @@ object LoriMessageDataUtils {
         return md.digest()
     }
 
-    fun parseFromPNGChunk(loritta: LorittaBot, chunks: List<PNGChunk>, input: String): LoriMessageDataParseResult {
+    fun parseFromPNGChunk(loritta: LorittaBot, chunks: List<PNGChunk>, chunkToBeVerified: PNGChunk): LoriMessageDataParseResult {
+        // This is a bit "hacky" because there are two versions we need to support:
+        // 1. Loritta's original "borked" implementation where she wasn't respecting proper tEXt chunk format
+        // 2. Loritta's new correct implementation that does respect proper tEXt chunk format
+        if (chunkToBeVerified.type != "tEXt")
+            return LoriMessageDataParseResult.NotATextChunk
+
+        // Now we need to attempt to parse the data
+        val rawInputAsString = chunkToBeVerified.data.toString(Charsets.US_ASCII)
+        val input = if (rawInputAsString.contains('\u0000')) {
+            // If it contains a null character, then  it means that this does contain a tEXt keyword (implementation 2)
+            // Has a null character!
+            val split = rawInputAsString.split('\u0000')
+            val keyword = split.first()
+            val text = split.last()
+
+            text
+        } else rawInputAsString // does not have it... (implementation 1)
+
         val split = input.split(":")
         // error("Invalid input, split must be 4, not ${split.size}")
         if (split.size != 5)
-            return LoriMessageDataParseResult.InvalidInput
+            return LoriMessageDataParseResult.NotALorittaMessageData
 
         val id = split[0]
         // error("Not a Loritta message data")
         if (id != SUB_CHUNK_ID)
-            return LoriMessageDataParseResult.InvalidInput
+            return LoriMessageDataParseResult.NotALorittaMessageData
 
         val version = split[1].toIntOrNull()
         // error("Invalid version")
@@ -380,6 +411,8 @@ object LoriMessageDataUtils {
     }
 
     sealed class LoriMessageDataParseResult {
+        data object NotATextChunk : LoriMessageDataParseResult()
+        data object NotALorittaMessageData : LoriMessageDataParseResult()
         data object InvalidInput : LoriMessageDataParseResult()
         data object InvalidSignature : LoriMessageDataParseResult()
         data class Success(val savedMessage: SavedMessage) : LoriMessageDataParseResult()

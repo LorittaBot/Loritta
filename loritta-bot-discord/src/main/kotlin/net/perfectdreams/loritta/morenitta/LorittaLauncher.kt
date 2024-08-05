@@ -6,7 +6,6 @@ import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
@@ -15,7 +14,6 @@ import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
-import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import java.io.File
 import java.lang.management.ManagementFactory
@@ -91,11 +89,6 @@ object LorittaLauncher {
 
 			logger.info { "Custom heap dump path set! The heap dump path is ${fileName}..." }
 		}
-
-		Prometheus.registerJFRExports()
-		InteractionsMetrics.registerInteractions()
-
-		logger.info { "Registered Prometheus Metrics" }
 
 		logger.info { "Loading languages..." }
 		val languageManager = LorittaLanguageManager(LorittaBot::class)

@@ -41,7 +41,6 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.sql.Connection
@@ -183,7 +182,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 		// =======[ ECONOMIA ]========
 		commandMap.add(PagarCommand(loritta))
-		commandMap.add(SonhosCommand(loritta))
 		commandMap.add(LigarCommand(loritta))
 	}
 
@@ -499,7 +497,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 				val end = System.currentTimeMillis()
 				val commandLatency = end - start
-				Prometheus.COMMAND_LATENCY.labels(command::class.simpleName).observe(commandLatency.toDouble())
 
 				CommandUtils.logMessageEventComplete(ev, logger, commandLatency)
 				return true

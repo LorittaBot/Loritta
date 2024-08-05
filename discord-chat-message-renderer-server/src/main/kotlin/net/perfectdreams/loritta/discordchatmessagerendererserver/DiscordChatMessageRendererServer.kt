@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.discordchatmessagerendererserver
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -11,29 +11,33 @@ import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRenderer
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.time.ZoneId
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.measureTimedValue
 
 class DiscordChatMessageRendererServer {
     private val logger = KotlinLogging.logger {}
-    private val rendererManagers = (0 until 16).map {
-        DiscordMessageRendererManager(
-            ZoneId.of("America/Sao_Paulo"),
-            setOf(
-                "image/gif",
-                "image/jpeg",
-                "image/bmp",
-                "image/png"
-            )
+    private val messageHtmlRenderer = DiscordMessageRenderer(
+        ZoneId.of("America/Sao_Paulo"),
+        setOf(
+            "image/gif",
+            "image/jpeg",
+            "image/bmp",
+            "image/png"
         )
+    )
+    private val rendererManagers = (0 until 8).map {
+        DiscordMessageRendererManager(messageHtmlRenderer)
     }
     private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
     private var successfulRenders = 0
     private var failedRenders = 0
+    private val pendingRequests = AtomicInteger()
 
     fun start() {
         logger.info { "Using ${rendererManagers.size} renderers" }
@@ -41,7 +45,7 @@ class DiscordChatMessageRendererServer {
             runBlocking { availableRenderers.send(rendererManager) }
         }
 
-        val http = embeddedServer(Netty, port = 8080) {
+        val http = embeddedServer(CIO, port = 8080) {
             routing {
                 // Dumps all currently running coroutines
                 get("/coroutines") {
@@ -56,35 +60,45 @@ class DiscordChatMessageRendererServer {
 
                     val savedMessage = Json.decodeFromString<SavedMessage>(body)
 
-                    logger.info { "Attempting to get a available renderer for message ${savedMessage.id}... Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}" }
-
-                    val rendererManager = measureTimedValue {
-                        availableRenderers.receive()
-                    }.also {
-                        logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}" }
-                    }.value
+                    logger.info { "Attempting to get a available renderer for message ${savedMessage.id}... Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}; Pending requests: $pendingRequests" }
 
                     try {
-                        val image = rendererManager.renderMessage(savedMessage, null)
+                        pendingRequests.incrementAndGet()
+                        val rendererManager = measureTimedValue {
+                            availableRenderers.receive()
+                        }.also {
+                            logger.info { "Took ${it.duration} to get an available renderer for ${savedMessage.id}! Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}; Pending requests: $pendingRequests" }
+                        }.value
 
-                        call.respondBytes(
-                            image,
-                            ContentType.Image.PNG
-                        )
+                        val image = try {
+                            val image = rendererManager.renderMessage(savedMessage, null)
 
-                        successfulRenders++
-                        logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
-                    } catch (e: Exception) {
-                        logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}! Request Body: $body" }
-                        call.respondText(
-                            e.stackTraceToString(),
-                            status = HttpStatusCode.InternalServerError
-                        )
-                        failedRenders++
-                        logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
+                            successfulRenders++
+                            logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }
+                            image
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Something went wrong while trying to render message ${savedMessage.id}! Request Body: $body" }
+                            call.respondText(
+                                e.stackTraceToString(),
+                                status = HttpStatusCode.InternalServerError
+                            )
+                            failedRenders++
+                            null
+                        } finally {
+                            logger.info { "Putting $rendererManager back into the available renderers queue" }
+                            availableRenderers.send(rendererManager)
+                        }
+
+                        if (image != null) {
+                            call.respondBytes(
+                                image,
+                                ContentType.Image.PNG
+                            )
+                        } else {
+                            call.respondText("", status = HttpStatusCode.InternalServerError)
+                        }
                     } finally {
-                        logger.info { "Putting $rendererManager back into the available renderers queue" }
-                        availableRenderers.send(rendererManager)
+                        pendingRequests.decrementAndGet()
                     }
                 }
             }

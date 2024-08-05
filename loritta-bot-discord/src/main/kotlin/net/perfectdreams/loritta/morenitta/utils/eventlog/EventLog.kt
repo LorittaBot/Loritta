@@ -76,7 +76,7 @@ object EventLog {
 						val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
 						embed.setImage("attachment://$fileName")
 
-						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage)
+						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
 
 						textChannel.sendMessageEmbeds(embed.build())
 							.addFiles(FileUpload.fromData(finalImage, fileName))

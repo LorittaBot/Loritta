@@ -1,11 +1,16 @@
 package net.perfectdreams.loritta.discordchatmarkdownparser
 
-class DiscordChatMarkdownParser {
-    companion object {
-        private val EMPTY_SPACE_REGEX = Regex(" ")
-        private val DISCORD_MARKDOWN_REGEX = Regex("(\\*\\*(?<bold>(?:.|\\n)+?)\\*\\*|\\*(?<italics>(?:.|\\n)+?)\\*|~~(?<strikethrough>(?:.|\\n)+?)~~|```(?:(?<codeblocklanguage>[A-z0-9]+)\\n|\\n?)?(?<codeblock>(?:.|\\n)+?)```|^-# (?<subtext>.+)?|^(?<header>#{1,3} .+)\\n?|`(?<inlinecode>(?:.|\\n)+?)`|^> (?<blockquote>.+)?|\\[(?<discordlinklabel>.+?)\\]\\((?<discordlinkurl><?https?:\\/\\/.+?>?)\\)|(?<discordurl><?https?://[A-z0-9./?=\\-&]+>?))", RegexOption.MULTILINE)
-        private val DISCORD_ENTITIES_REGEX = Regex("(<(?<discordemojianimated>a)?:(?<discordemojiname>[a-zA-Z0-9_]+):(?<discordemojiid>[0-9]+)>|</(?<discordcommandpath>[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai} ]+):(?<discordcommandid>[0-9]+)>|<@!?(?<discorduserid>[0-9]+)>)|(?<discordeveryone>@everyone)|(?<discordhere>@here)|<#(?<discordchannelid>[0-9]+)>|<@&(?<discordroleid>[0-9]+)>", RegexOption.MULTILINE)
-    }
+expect fun DiscordChatMarkdownParser(): DiscordChatMarkdownParser
+
+class DiscordChatMarkdownParser(
+    // Kotlin Multiplatform does not have "DOT_MATCHES_ALL" support, and without it, StackOverflowExceptions are more common in the JVM beecause of (.|\n)
+    // To workaround this, we let each platform provide its own RegexOption and what kind of RegEx should be used when matching everything AND new lines
+    regexOptions: Set<RegexOption>,
+    matchAllAndNewLinesRegex: String
+) {
+    private val EMPTY_SPACE_REGEX = Regex(" ")
+    private val DISCORD_MARKDOWN_REGEX = Regex("(\\*\\*(?<bold>$matchAllAndNewLinesRegex+?)\\*\\*|\\*(?<italics>$matchAllAndNewLinesRegex+?)\\*|~~(?<strikethrough>$matchAllAndNewLinesRegex+?)~~|```(?:(?<codeblocklanguage>[A-z0-9]+)\\n|\\n?)?(?<codeblock>$matchAllAndNewLinesRegex+?)```|^-# (?<subtext>[^\\n]+)?|^(?<header>#{1,3} [^\\n]+)\\n?|`(?<inlinecode>$matchAllAndNewLinesRegex+?)`|^> (?<blockquote>[^\\n]+)?|\\[(?<discordlinklabel>[^\\n]+?)\\]\\((?<discordlinkurl><?https?:\\/\\/[^\\n]+?>?)\\)|(?<discordurl><?https?://[A-z0-9./?=\\-&]+>?))", regexOptions)
+    private val DISCORD_ENTITIES_REGEX = Regex("(<(?<discordemojianimated>a)?:(?<discordemojiname>[a-zA-Z0-9_]+):(?<discordemojiid>[0-9]+)>|</(?<discordcommandpath>[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai} ]+):(?<discordcommandid>[0-9]+)>|<@!?(?<discorduserid>[0-9]+)>)|(?<discordeveryone>@everyone)|(?<discordhere>@here)|<#(?<discordchannelid>[0-9]+)>|<@&(?<discordroleid>[0-9]+)>", regexOptions)
 
     fun parse(markdownText: String): MarkdownNode {
         return ChatRootNode(parseInner(markdownText))

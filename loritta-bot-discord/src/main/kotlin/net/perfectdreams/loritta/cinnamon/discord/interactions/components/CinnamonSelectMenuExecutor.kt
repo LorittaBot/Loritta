@@ -7,15 +7,16 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.SilentCommandException
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.components.ComponentType
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import java.time.Duration
+import java.time.Instant
 
 abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuExecutor {
     companion object {
@@ -31,9 +32,7 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
 
         logger.info { "(${context.sender.id.value}) $this" }
 
-        val timer = InteractionsMetrics.EXECUTED_SELECT_MENU_LATENCY_COUNT
-            .labels(rootDeclarationClazzName, executorClazzName)
-            .startTimer()
+        val startedAt = Instant.now()
 
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
@@ -136,7 +135,7 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
             stacktrace = e.stackTraceToString()
         }
 
-        val commandLatency = timer.observeDuration()
+        val commandLatency = Duration.between(startedAt, Instant.now()).toMillis() / 1000.0
         logger.info { "(${context.sender.id.value}) $this - OK! Took ${commandLatency * 1000}ms" }
 
         loritta.pudding.executedInteractionsLog.insertComponentLog(

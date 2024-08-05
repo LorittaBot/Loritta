@@ -115,7 +115,6 @@ object DefaultRoutes {
 		GetLorittaActionRoute(loritta),
 		GetRaffleStatusRoute(loritta),
 		GetStatusRoute(loritta),
-		GetPrometheusMetricsRoute(loritta),
 		GetAvailableBackgroundsRoute(loritta),
 		GetAvailableProfileDesignsRoute(loritta),
 		GetSelfUserProfileRoute(loritta),

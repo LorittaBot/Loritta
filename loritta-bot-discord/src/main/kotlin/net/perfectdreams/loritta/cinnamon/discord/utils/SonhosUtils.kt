@@ -150,6 +150,34 @@ object SonhosUtils {
         }
     }
 
+    suspend fun sendEphemeralMessageIfUserHaventGotDailyRewardToday(
+        loritta: LorittaBot,
+        context: UnleashedContext,
+        userId: UserId
+    ) {
+        // TODO: Do not hardcode the timezone
+        val now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0)
+
+        val todayDailyReward = loritta.pudding.sonhos.getUserLastDailyRewardReceived(
+            userId,
+            now.toKotlinLocalDateTime().toInstant(TimeZone.of("America/Sao_Paulo"))
+        )
+
+        if (todayDailyReward != null)
+            return
+
+        context.reply(true) {
+            styled(
+                context.i18nContext.get(I18nKeysData.Commands.WantingMoreSonhosDaily(loritta.commandMentions.daily)),
+                Emotes.Gift
+            )
+        }
+    }
+
     fun getSonhosEmojiOfQuantity(quantity: Long) = when {
         quantity >= 1_000_000_000 -> Emotes.Sonhos6
         quantity >= 10_000_000 -> Emotes.Sonhos5

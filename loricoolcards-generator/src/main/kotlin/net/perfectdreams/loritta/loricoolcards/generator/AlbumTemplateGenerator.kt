@@ -445,6 +445,7 @@ fun main() {
         )
     }
 
+    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 4)', NOW(), '2024-09-01 00:00:00+00', '{}');")
     println(
         "UPDATE loricoolcardsevents SET template = '${Json.encodeToString(
             StickerAlbumTemplate(
@@ -454,15 +455,15 @@ fun main() {
                 sonhosReward = 2_000_000,
                 stickersInPack = 5,
                 stickerProbabilityWeights = mapOf(
-                    CardRarity.COMMON to 22.0,
-                    CardRarity.UNCOMMON to 20.0,
-                    CardRarity.RARE to 18.0,
-                    CardRarity.EPIC to 16.0,
-                    CardRarity.LEGENDARY to 13.0,
-                    CardRarity.MYTHIC to 11.0,
+                    CardRarity.COMMON to 30.0,
+                    CardRarity.UNCOMMON to 25.0,
+                    CardRarity.RARE to 19.0,
+                    CardRarity.EPIC to 12.0,
+                    CardRarity.LEGENDARY to 8.0,
+                    CardRarity.MYTHIC to 5.0,
                 ),
                 pages = pages
             )
-        )}' WHERE id = 9;"
+        )}' WHERE id = 10;"
     )
 }
