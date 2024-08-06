@@ -50,7 +50,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
         var extendedSonhosInfo: ExtendedSonhosInfo? = null
 
         if (informationType == InformationType.EXTENDED) {
-            loritta.transaction {
+            extendedSonhosInfo = loritta.transaction {
                 val tickerFieldCount = BoughtStocks.ticker.count()
                 var totalBoughtStocks = 0L
 
@@ -74,7 +74,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                     totalBoughtStocks += boughtStocks[tickerId]!! * tickerPrice
                 }
 
-                extendedSonhosInfo = ExtendedSonhosInfo(
+                ExtendedSonhosInfo(
                     totalBoughtStocks
                 )
             }
