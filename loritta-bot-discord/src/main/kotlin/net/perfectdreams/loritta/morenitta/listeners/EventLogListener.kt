@@ -4,6 +4,8 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -20,6 +22,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.StoredMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.common.utils.DateUtils
+import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
@@ -57,6 +60,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		val bannedUsers = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).maximumSize(100)
 				.build<String, Boolean>()
+		private val prettyPrintJson = Json {
+			prettyPrint = true
+		}
 	}
 
 	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
@@ -262,6 +268,8 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						val lines = mutableListOf<String>()
 
+						val savedMessages = mutableListOf<SavedMessage>()
+
 						for (message in storedMessages) {
 							val messageSentByUser = retrievedUsers.getOrPut(message.authorId) {
 								loritta.lorittaShards.retrieveUserInfoById(
@@ -269,6 +277,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 								)
 							}
 							val savedMessage = message.decryptContent(loritta)
+							savedMessages.add(savedMessage)
 
 							val creationTime = savedMessage.timeCreated.atZoneSameInstant(TimeZone.getTimeZone("GMT").toZoneId())
 
@@ -290,6 +299,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 									.setContent(" ")
 									.addEmbeds(embed.build())
 									.addFiles(FileUpload.fromData(targetStream, "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log"))
+									.addFiles(FileUpload.fromData(prettyPrintJson.encodeToString(savedMessages).toByteArray(Charsets.UTF_8), "deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.json"))
 									.build(),
 							)
 							.await()
