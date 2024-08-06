@@ -272,7 +272,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 							val creationTime = savedMessage.timeCreated.atZoneSameInstant(TimeZone.getTimeZone("GMT").toZoneId())
 
-							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${messageSentByUser?.name}#${messageSentByUser?.discriminator}: ${message.decryptContent(loritta)}"
+							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${messageSentByUser?.name}#${messageSentByUser?.discriminator}: ${savedMessage.content}"
 							lines.add(line)
 						}
 
