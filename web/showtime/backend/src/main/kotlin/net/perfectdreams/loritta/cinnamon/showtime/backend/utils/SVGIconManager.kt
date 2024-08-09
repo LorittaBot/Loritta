@@ -45,6 +45,7 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
     val ad = register("ad", "fontawesome5/solid/ad.svg")
     val dollarSign = register("dollar-sign", "fontawesome5/solid/dollar-sign.svg")
     val bell = register("bell", "fontawesome5/solid/bell.svg")
+    val comment = register("comment", "fontawesome5/solid/comment-alt.svg")
     val comments = register("comments", "fontawesome5/solid/comments.svg")
     val briefcase = register("briefcase", "fontawesome5/solid/briefcase.svg")
     val rocket = register("rocket", "fontawesome5/solid/rocket.svg")

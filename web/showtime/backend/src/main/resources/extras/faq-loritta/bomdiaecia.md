@@ -7,7 +7,7 @@ No meu sistema de Bom Dia & Cia eu anuncio nos canais de texto do seu servidor, 
 
 Quando alguém ganha eu anúncio o nome do vencedor e o servidor que ele ganhou para todos os servidores que eu anunciei que as ligações estavam abertas, e também mostro pro ganhador de quantas pessoas ele ganhou, quem são as pessoas de quem ele ganhou digitando mais rápido e o número de palavras que ele digitou por minuto! 
 
-Você não pode copiar e colar a frase que eu anunciei, não tente ligar sem que eu tenha anunciado o programa e não ligue se uma pessoa já ganhou. Se tentar fazer isto falhará miseravelmente e estará jogando seus sonhos fora... Cada ligação custa 75 sonhos! 
+Você não pode copiar e colar a frase que eu anunciei, não tente ligar sem que eu tenha anunciado o programa e não ligue se uma pessoa já ganhou. Se tentar fazer isto falhará miseravelmente e estará jogando seus sonhos fora... uma vez que cada ligação custa **75 sonhos**! 
 
 A mensagem abaixo é um exemplo de um anúncio do Bom Dia & Cia que eu faço. Infelizmente ainda não sou rica o suficiente pra dar um PlayStation pra todo mundo que liga primeiro no Bom Dia & Cia... <img src="https://cdn.discordapp.com/emojis/626942886251855872.png?v=1" class="inline-emoji">
 {{ renderDiscordMessage("bomdiaecia_announcement.html", "no_tooltips.conf") }}
