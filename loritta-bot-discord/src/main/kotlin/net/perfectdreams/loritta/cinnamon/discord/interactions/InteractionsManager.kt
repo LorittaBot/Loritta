@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.p
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.ChangeSonhosRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.PlayAudioClipButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
@@ -43,7 +42,7 @@ class InteractionsManager(
         register(ConfirmBanButtonExecutor(loritta))
 
         // ===[ FUN ]===
-        register(PlayAudioClipButtonExecutor(loritta))
+        // register(PlayAudioClipButtonExecutor(loritta))
 
         /* commandManager.register(
             BomDiaECiaCommand,

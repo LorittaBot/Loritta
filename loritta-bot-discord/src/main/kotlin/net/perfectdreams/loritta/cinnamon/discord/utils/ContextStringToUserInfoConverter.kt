@@ -1,7 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import dev.kord.common.entity.Snowflake
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.serializable.UserId
 
@@ -41,5 +47,41 @@ object ContextStringToUserInfoConverter {
         }
 
         return null
+    }
+
+    suspend fun convert(context: UnleashedContext, input: String): net.perfectdreams.loritta.morenitta.utils.CachedUserInfo? {
+        var userId: Long? = null
+
+        val inputAsLong = input.toLongOrNull()
+        if (inputAsLong != null)
+            userId = inputAsLong // The input is already a long value! Use it then
+
+        // Is this a mention?
+        if (input.startsWith("<@") && input.endsWith(">")) {
+            val userIdFromMention = input.removePrefix("<@")
+                .removePrefix("!")
+                .removeSuffix(">")
+                .toLongOrNull()
+
+            if (userIdFromMention != null) {
+                userId = userIdFromMention
+            }
+        }
+
+        // We couldn't find any IDs... :(
+        if (userId == null)
+            return null
+
+        val userFromMentions = context.mentions.users.firstOrNull { it.idLong == userId }
+        if (userFromMentions != null) {
+            return net.perfectdreams.loritta.morenitta.utils.CachedUserInfo(
+                userFromMentions.idLong,
+                userFromMentions.name,
+                userFromMentions.discriminator,
+                userFromMentions.avatarId
+            )
+        }
+
+        return context.loritta.lorittaShards.retrieveUserInfoById(userId)
     }
 }
