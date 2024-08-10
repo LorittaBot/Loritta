@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMe
 import java.io.Closeable
 import kotlin.time.measureTimedValue
 
-class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMessageRenderer) : Closeable {
+class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMessageRenderer, createBrowserType: Playwright.() -> (BrowserType)) : Closeable {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -20,7 +20,7 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
     // For now, we'll use Firefox instead of Chromium, because Chromium has some random timeout issues
     // And it seems that WebKit and Firefox is also faster to do the "set DOM and take screenshot" dance for some reason?
     // Firefox also seems to be way faster if you DON'T reuse pages
-    private val browser = playwright.firefox().launch(BrowserType.LaunchOptions().setHeadless(!isHeadful))
+    private val browser = createBrowserType.invoke(playwright).launch(BrowserType.LaunchOptions().setHeadless(!isHeadful))
     private val deviceScale = 2.0
     // Only affects Chromium
     private val maxDimensionsOfImages = (16_384 / deviceScale).toInt()
@@ -39,7 +39,13 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
         page?.close()
         browserContext?.close()
 
-        val newBrowserContext = browser.newContext(Browser.NewContextOptions().setDeviceScaleFactor(deviceScale))
+        val newBrowserContext = browser.newContext(
+            Browser.NewContextOptions()
+                .setDeviceScaleFactor(deviceScale)
+                .setAcceptDownloads(false)
+                .setOffline(false)
+                .setJavaScriptEnabled(false)
+        )
         val newPage = newBrowserContext.newPage()
 
         newPage.onCrash {
@@ -81,7 +87,7 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
             val messageId = savedMessage.id
 
             val timedValueScreenshot = measureTimedValue {
-                logger.info { "Starting to render message $messageId! - Open pages: ${browserContext.pages().size}" }
+                logger.info { "Starting to render message $messageId! - Open pages: ${browserContext.pages().size} - ${browser.browserType().name()}" }
 
                 // If this throws an error we are already fucked anyway, there isn't a good fallback here
                 val timedValueLoadingPage = measureTimedValue {
@@ -94,7 +100,7 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
                     )
                 }
 
-                logger.info { "Took ${timedValueLoadingPage.duration} to load the message preview page for $messageId!" }
+                logger.info { "Took ${timedValueLoadingPage.duration} to load the message preview page for $messageId! - ${browser.browserType().name()}" }
 
                 val timedValueTakingScreenshot = measureTimedValue {
                     logger.info { "Taking screenshot of message $messageId!" }
@@ -105,12 +111,12 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
                     )
                 }
 
-                logger.info { "Took ${timedValueTakingScreenshot.duration} to generate a message screenshot for $messageId!" }
+                logger.info { "Took ${timedValueTakingScreenshot.duration} to generate a message screenshot for $messageId! - ${browser.browserType().name()}" }
 
                 return@measureTimedValue timedValueTakingScreenshot.value
             }
 
-            logger.info { "Took ${timedValueScreenshot.duration} to generate everything related to $messageId!" }
+            logger.info { "Took ${timedValueScreenshot.duration} to generate everything related to $messageId! - ${browser.browserType().name()}" }
 
             renders++
 
