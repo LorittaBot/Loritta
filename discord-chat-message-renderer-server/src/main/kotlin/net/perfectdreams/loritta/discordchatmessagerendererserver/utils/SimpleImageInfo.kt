@@ -106,7 +106,15 @@ class SimpleImageInfo {
 			mimeType = "image/bmp"
 		} else {
 			val c4 = `is`.read()
-			if (c1 == 'M'.toInt() && c2 == 'M'.toInt() && c3 == 0 && c4 == 42 || c1 == 'I'.toInt() && c2 == 'I'.toInt() && c3 == 42 && c4 == 0) { //TIFF
+			if (c1 == 'R'.code && c2 == 'I'.code && c3 == 'F'.code && c4 == 'F'.code) {
+				// Image in RIFF format
+				val fileSize = `is`.readNBytes(4)
+				val header = `is`.readNBytes(4)
+				if (header[0].toInt() == 'W'.code && header[1].toInt() == 'E'.code && header[2].toInt() == 'B'.code && header[3].toInt() == 'P'.code) {
+					// TODO: Implement width/height
+					mimeType = "image/webp"
+				}
+			} else if (c1 == 'M'.toInt() && c2 == 'M'.toInt() && c3 == 0 && c4 == 42 || c1 == 'I'.toInt() && c2 == 'I'.toInt() && c3 == 42 && c4 == 0) { //TIFF
 				val bigEndian = c1 == 'M'.toInt()
 				var ifd = 0
 				val entries: Int

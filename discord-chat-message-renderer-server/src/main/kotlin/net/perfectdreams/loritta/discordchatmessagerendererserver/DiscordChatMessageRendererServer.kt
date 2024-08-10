@@ -44,7 +44,8 @@ class DiscordChatMessageRendererServer {
             "image/gif",
             "image/jpeg",
             "image/bmp",
-            "image/png"
+            "image/png",
+            "image/webp"
         )
     )
     private val rendererManagers = (0 until 8).map {

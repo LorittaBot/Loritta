@@ -671,17 +671,16 @@ class DiscordMessageRenderer(
                                                                 val embedImage = embed.image?.proxyUrl
                                                                 if (embedImage != null) {
                                                                     div(classes = "discord-embed-image") {
-                                                                        img(src = embedImage) {
+                                                                        img(src = embedImage + "&format=webp") {
                                                                             style = "width: 100%;"
                                                                         }
                                                                     }
                                                                 }
                                                             } else {
-                                                                val embedImage =
-                                                                    embed.thumbnail?.proxyUrl
+                                                                val embedImage = embed.thumbnail?.proxyUrl
                                                                 if (embedImage != null) {
                                                                     div(classes = "discord-embed-image") {
-                                                                        img(src = embedImage) {
+                                                                        img(src = embedImage + "&format=webp") {
                                                                             style = "width: 100%;"
                                                                         }
                                                                     }
@@ -722,7 +721,7 @@ class DiscordMessageRenderer(
                                                                     href = "#",
                                                                     classes = "discord-embed-thumbnail"
                                                                 ) {
-                                                                    img(src = embedThumbnail)
+                                                                    img(src = embedThumbnail + "&format=webp")
                                                                 }
                                                             }
                                                         }
@@ -741,13 +740,13 @@ class DiscordMessageRenderer(
                                                 val embedThumbnailUrl = embed.thumbnail?.proxyUrl
 
                                                 if (embedThumbnailUrl != null) {
-                                                    img(src = embedThumbnailUrl, classes = "discord-message-attachment-preview") {}
+                                                    img(src = embedThumbnailUrl + "&format=webp", classes = "discord-message-attachment-preview") {}
                                                 }
                                             }
 
                                             for (attachment in savedMessage.attachments) {
                                                 if (attachment.contentType in imageContentTypes) {
-                                                    img(src = attachment.proxyUrl, classes = "discord-message-attachment-preview") {}
+                                                    img(src = attachment.proxyUrl + "&format=webp", classes = "discord-message-attachment-preview") {}
                                                 } else {
                                                     div(classes = "discord-message-attachment") {
                                                         div {
