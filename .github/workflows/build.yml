@@ -62,7 +62,11 @@ jobs:
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+          # The -Djib.serialize=true is a workaround due to jib failing to upload artifacts
+          # See: https://github.com/GoogleContainerTools/jib/issues/2372
+          # idk if this REALLY fixes the issue tho
           arguments: |
+            -Djib.serialize=true
             build
             publish
             :loritta-bot-discord:jib
