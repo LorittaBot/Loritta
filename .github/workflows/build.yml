@@ -70,28 +70,28 @@ jobs:
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
         run: ./gradlew :loritta-bot-discord:jib  -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
 
-      - name: Docker - Discord Chat Message Renderer Server
+      - name: Jib - Discord Chat Message Renderer Server
         env:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
         run: ./gradlew :discord-chat-message-renderer-server:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
 
-      - name: Docker - SpicyMorenitta
+      - name: Jib - SpicyMorenitta
         env:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
         run: ./gradlew :web:dashboard:backend:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
 
-      - name: Docker - Showtime
+      - name: Jib - Showtime
         env:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
         run: ./gradlew :web:showtime:backend:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
 
-      - name: Docker - Broker Tickers Updater
+      - name: Jib - Broker Tickers Updater
         env:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
