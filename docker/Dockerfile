@@ -17,4 +17,4 @@ RUN apt-get update && apt-get install -y ffmpeg gifsicle unzip libnss3 libnspr4 
 # The Chromium version must match what Playwright uses
 # A path can be provided via the "setExecutablePath" option
 # See: https://github.com/microsoft/playwright/blob/main/packages/playwright-core/browsers.json
-RUN mkdir -p /root/.cache/ms-playwright/firefox-1124/ && cd /root/.cache/ms-playwright/firefox-1124/ && wget "https://playwright.azureedge.net/builds/firefox/1124/firefox-linux.zip" && unzip firefox-linux.zip
+RUN mkdir -p /root/.cache/ms-playwright/firefox-1454/ && cd /root/.cache/ms-playwright/firefox-1454/ && wget "https://playwright.azureedge.net/builds/firefox/1454/firefox-ubuntu-22.04.zip" && unzip firefox-ubuntu-22.04.zip
