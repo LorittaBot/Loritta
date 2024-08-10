@@ -58,7 +58,9 @@ object UserInfoExecutor {
             ApplicationInfoUtils.getApplicationInfo(context.loritta.http, user.idLong)
         } else null
 
-        val roles = member?.roles
+        val roles = if (member != null && !member.isDetached) {
+            member.roles
+        } else null
 
         val topRole = roles?.maxByOrNull { it.position }
         // Did you know that you can't have a fully black role on Discord? The color "0" is used for "not set"!
