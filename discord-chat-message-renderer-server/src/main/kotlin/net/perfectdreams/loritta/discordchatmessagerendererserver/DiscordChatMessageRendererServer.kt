@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.discordchatmessagerendererserver
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -17,6 +18,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRenderer
 import net.perfectdreams.loritta.discordchatmessagerenderer.DiscordMessageRendererManager
 import net.perfectdreams.loritta.discordchatmessagerenderer.savedmessage.SavedMessage
+import net.perfectdreams.loritta.discordchatmessagerendererserver.utils.DebugSender
 import net.perfectdreams.loritta.discordchatmessagerendererserver.utils.SimpleImageInfo
 import net.perfectdreams.loritta.discordchatmessagerendererserver.utils.readAllBytes
 import org.jsoup.Jsoup
@@ -27,6 +29,8 @@ import java.io.PrintStream
 import java.net.URL
 import java.time.ZoneId
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.measureTimedValue
 
@@ -43,7 +47,7 @@ class DiscordChatMessageRendererServer {
             "image/png"
         )
     )
-    private val rendererManagers = (0 until 8).map {
+    private val rendererManagers = (0 until 1).map {
         DiscordMessageRendererManager(messageHtmlRenderer) { this.firefox() }
     }
     private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
@@ -52,9 +56,11 @@ class DiscordChatMessageRendererServer {
     private val pendingRequests = AtomicInteger()
 
     fun start() {
+        scheduleWithFixedDelay(DebugSender(), 0L, 15L, TimeUnit.SECONDS)
+
         logger.info { "Downloading fonts..." }
 
-        var fontStylesheetAsTextReplacedFontsToBase64 = runBlocking {
+        val fontStylesheetAsTextReplacedFontsToBase64 = runBlocking {
             val fontStylesheetResponse = http.get("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap&family=Pacifico&display=swap&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap") {
                 // Google Fonts serves different stylesheets depending on the browser
                 header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0")
@@ -67,7 +73,6 @@ class DiscordChatMessageRendererServer {
                 }
             fontStylesheetAsTextReplacedFontsToBase64
         }
-        fontStylesheetAsTextReplacedFontsToBase64
         logger.info { "Successfully downloaded all fonts!" }
 
         logger.info { "Using ${rendererManagers.size} renderers" }
@@ -95,9 +100,8 @@ class DiscordChatMessageRendererServer {
                     // The less time we spend locking a renderer, the better!
                     // The image data will be embedded in the generated HTML
                     val savedMessageHtmlContentReplacedImagesTimedValue = measureTimedValue {
-                        // Because we don't enable JavaScript, we need to mimick Twemoji ourselves
-                        // This is a horrible stupid hack that we pray that won't cause any issues
-                        // TODO: ACTUALLY DO THAT ^
+                        // We don't need to mimick Twemoji because Firefox for Linux already uses Twemoji (yay)
+                        // We also don't need to worry about this being on the heap, the JVM will optimize this out for us (double yay)
                         val savedMessageHtmlContent = messageHtmlRenderer.renderMessage(
                             savedMessage,
                             null,
@@ -109,7 +113,6 @@ class DiscordChatMessageRendererServer {
                         val document = Jsoup.parse(savedMessageHtmlContent)
                         // We disable pretty print to avoid any unnecessary whitespace causing design issues
                         document.outputSettings(Document.OutputSettings().prettyPrint(false))
-
                         for (imgElement in document.select("img")) {
                             jobs.add(
                                 GlobalScope.async(Dispatchers.IO) {
@@ -243,5 +246,9 @@ class DiscordChatMessageRendererServer {
         }
 
         return null
+    }
+
+    fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
+        Executors.newScheduledThreadPool(1, ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()).scheduleWithFixedDelay(task, initialDelay, delay, unit)
     }
 }

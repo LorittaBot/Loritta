@@ -11,6 +11,7 @@ import kotlin.time.measureTimedValue
 class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMessageRenderer, createBrowserType: Playwright.() -> (BrowserType)) : Closeable {
     companion object {
         private val logger = KotlinLogging.logger {}
+        private const val RECREATE_PAGE_AND_BROWSERCONTEXT_EVERY_X_PAGES = 100
     }
 
     private val playwright = Playwright.create()
@@ -80,7 +81,7 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
     ): ByteArray {
         this.currentlyRenderingMessage = savedMessage
         // Recreate the context and the page every 10k renders
-        if (renders % 10_000 == 0)
+        if (renders % RECREATE_PAGE_AND_BROWSERCONTEXT_EVERY_X_PAGES == 0)
             recreateBrowserContextAndPage()
 
         val browserContext = this.browserContext ?: error("BrowserContext is null!")
