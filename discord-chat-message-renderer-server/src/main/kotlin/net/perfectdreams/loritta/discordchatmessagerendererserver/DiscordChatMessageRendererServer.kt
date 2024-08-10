@@ -65,6 +65,7 @@ class DiscordChatMessageRendererServer {
                     // We will attempt to download all required images before rendering, this way, we don't need to wait all images to individually download on the browser itself
                     // The less time we spend locking a renderer, the better!
                     // The image data will be embedded in the generated HTML
+                    // TODO: ^ That's not implemented yet
                     val savedMessageHtmlContent = messageHtmlRenderer.renderMessage(
                         savedMessage,
                         null
