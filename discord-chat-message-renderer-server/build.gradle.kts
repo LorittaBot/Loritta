@@ -18,6 +18,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.1")
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.10.1")
 
     // Kotlin Coroutines

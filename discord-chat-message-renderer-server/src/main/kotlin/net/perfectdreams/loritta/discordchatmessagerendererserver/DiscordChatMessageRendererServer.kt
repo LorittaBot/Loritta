@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.discordchatmessagerendererserver
 
+import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
@@ -22,6 +23,7 @@ import kotlin.time.measureTimedValue
 
 class DiscordChatMessageRendererServer {
     private val logger = KotlinLogging.logger {}
+    private val http = HttpClient {}
     private val messageHtmlRenderer = DiscordMessageRenderer(
         ZoneId.of("America/Sao_Paulo"),
         setOf(
@@ -60,6 +62,14 @@ class DiscordChatMessageRendererServer {
 
                     val savedMessage = Json.decodeFromString<SavedMessage>(body)
 
+                    // We will attempt to download all required images before rendering, this way, we don't need to wait all images to individually download on the browser itself
+                    // The less time we spend locking a renderer, the better!
+                    // The image data will be embedded in the generated HTML
+                    val savedMessageHtmlContent = messageHtmlRenderer.renderMessage(
+                        savedMessage,
+                        null
+                    )
+
                     logger.info { "Attempting to get a available renderer for message ${savedMessage.id}... Available renderers: ${availableRenderers.getCount()}/${rendererManagers.size}; Pending requests: $pendingRequests" }
 
                     try {
@@ -71,7 +81,7 @@ class DiscordChatMessageRendererServer {
                         }.value
 
                         val image = try {
-                            val image = rendererManager.renderMessage(savedMessage, null)
+                            val image = rendererManager.renderMessage(savedMessage, savedMessageHtmlContent)
 
                             successfulRenders++
                             logger.info { "Successfully rendered message ${savedMessage.id}! Successful renders: $successfulRenders; Failed renders: $failedRenders" }

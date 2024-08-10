@@ -183,6 +183,7 @@ code {
         // white-space: break-spaces; // Let's us use "\n" to break lines
 
         // Limit the amount of lines to avoid >16384px images (that causes issues with Chromium when taking screenshots, see DiscordMessageRendererManager's comments)
+        // WebKit does NOT have any issues when rendering big images, but we'll still limit it to avoid a big ass screenshot
         -webkit-line-clamp: 100;
         display: -webkit-box;
         -webkit-box-orient: vertical;
