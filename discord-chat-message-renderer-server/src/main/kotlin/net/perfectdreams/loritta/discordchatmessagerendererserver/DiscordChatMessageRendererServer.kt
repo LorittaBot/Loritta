@@ -116,7 +116,7 @@ class DiscordChatMessageRendererServer {
                         for (imgElement in document.select("img")) {
                             jobs.add(
                                 GlobalScope.async(Dispatchers.IO) {
-                                    logger.info { "Downloading file ${imgElement.attr("src")}" }
+                                    logger.info { "Downloading file ${imgElement.attr("src")} for message ${savedMessage.id}" }
                                     val byteArray = downloadFile(imgElement.attr("src"))
                                     // We don't really mind keeping the original image URL if it fails, the browser window is running on offline mode anyway
                                     if (byteArray != null) {
@@ -129,11 +129,17 @@ class DiscordChatMessageRendererServer {
                                         val mimeType = simpleImageInfo?.mimeType
 
                                         if (mimeType != null) {
+                                            logger.info { "Successfully downloaded file ${imgElement.attr("src")} for message ${savedMessage.id}! Bytes: ${byteArray.size} bytes (${(String.format("%.2f", byteArray.size / (1024.0 * 1024.0)))} MiB); MIME type: $mimeType" }
+
                                             imgElement.attr(
                                                 "src",
                                                 "data:$mimeType;base64,${Base64.getEncoder().encodeToString(byteArray)}"
                                             )
+                                        } else {
+                                            logger.warn { "Failed to check the MIME type of the file ${imgElement.attr("src")} for message ${savedMessage.id}!" }
                                         }
+                                    } else {
+                                        logger.warn { "Failed to download file ${imgElement.attr("src")} for message ${savedMessage.id}!" }
                                     }
                                 }
                             )
