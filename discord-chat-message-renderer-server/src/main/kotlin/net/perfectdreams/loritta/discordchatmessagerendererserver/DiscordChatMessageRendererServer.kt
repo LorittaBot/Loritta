@@ -47,7 +47,7 @@ class DiscordChatMessageRendererServer {
             "image/png"
         )
     )
-    private val rendererManagers = (0 until 1).map {
+    private val rendererManagers = (0 until 8).map {
         DiscordMessageRendererManager(messageHtmlRenderer) { this.firefox() }
     }
     private val availableRenderers = CoroutineQueue<DiscordMessageRendererManager>(rendererManagers.size)
