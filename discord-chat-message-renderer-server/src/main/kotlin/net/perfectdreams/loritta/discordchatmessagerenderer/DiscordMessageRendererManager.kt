@@ -20,6 +20,8 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
     // For now, we'll use Firefox instead of Chromium, because Chromium has some random timeout issues
     // And it seems that WebKit and Firefox is also faster to do the "set DOM and take screenshot" dance for some reason?
     // Firefox also seems to be way faster if you DON'T reuse pages
+    // Firefox has some "hitches" when rendering messages in headful mode (things taking 2s+ to render)
+    // I haven't reproduced that issue in headless mode yet
     private val browser = createBrowserType.invoke(playwright).launch(BrowserType.LaunchOptions().setHeadless(!isHeadful))
     private val deviceScale = 2.0
     // Only affects Chromium
@@ -31,7 +33,8 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
     private var renders = 0
 
     private fun recreateBrowserContextAndPage() {
-        logger.info { "Recreating browser context and page... Current renders: $renders" }
+        val wasItAlreadyCreatedBefore = page != null && browserContext != null
+        logger.info { "Recreating browser context and page... Current renders: $renders - Was it already created before? $wasItAlreadyCreatedBefore" }
 
         // We create a new browser context and a new page because Playwright leaks memory by keeping all request/responses stored in the "Connection.objects" HashMap
         // See: https://github.com/microsoft/playwright-java/issues/717
@@ -43,7 +46,7 @@ class DiscordMessageRendererManager(private val messageHtmlRenderer: DiscordMess
             Browser.NewContextOptions()
                 .setDeviceScaleFactor(deviceScale)
                 .setAcceptDownloads(false)
-                .setOffline(false)
+                .setOffline(true)
                 .setJavaScriptEnabled(false)
         )
         val newPage = newBrowserContext.newPage()

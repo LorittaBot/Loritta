@@ -29,31 +29,22 @@ class DiscordMessageRenderer(
      */
     fun renderMessage(
         savedMessage: SavedMessage,
-        qrCodeImageAsByteArray: ByteArray?
+        qrCodeImageAsByteArray: ByteArray?,
+        fontStylesheetAsTextReplacedFontsToBase64: String
     ): String {
         val placeContext = savedMessage.placeContext
         return createHTML()
             .html {
                 head {
-                    link(
-                        href = "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap&family=Pacifico&display=swap&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap",
-                        rel = "stylesheet"
-                    )
-
                     style {
+                        unsafe {
+                            raw(fontStylesheetAsTextReplacedFontsToBase64)
+                        }
+
                         unsafe {
                             raw(
                                 DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/style.css")
                                     .readAllBytes().toString(Charsets.UTF_8)
-                            )
-                        }
-                    }
-
-                    // Load twemoji script
-                    script {
-                        unsafe {
-                            raw(
-                                DiscordMessageRendererManager::class.java.getResourceAsStream("/message-renderer-assets/twemoji.min.js").readAllBytes().toString(Charsets.UTF_8)
                             )
                         }
                     }
@@ -934,13 +925,6 @@ class DiscordMessageRenderer(
                                     }
                                 }
                             }
-                        }
-                    }
-
-                    // Parse emojis AFTER the entire DOM has been processed by the browser
-                    script {
-                        unsafe {
-                            raw("""twemoji.parse(document.body, {className: 'unicode-inline-emoji'});""")
                         }
                     }
                 }

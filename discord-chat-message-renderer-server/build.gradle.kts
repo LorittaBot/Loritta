@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.10.1")
+    implementation("org.jsoup:jsoup:1.18.1")
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
