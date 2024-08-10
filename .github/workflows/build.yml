@@ -35,7 +35,7 @@ jobs:
           distribution: "temurin"
           java-version: "21"
           cache: "gradle"
-          
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -61,7 +61,39 @@ jobs:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        # The -Djib.serialize=true is a workaround due to jib failing to upload artifacts
-        # See: https://github.com/GoogleContainerTools/jib/issues/2372
-        # idk if this REALLY fixes the issue tho
-        run: ./gradlew -Djib.serialize=true build publish :loritta-bot-discord:jib :web:dashboard:backend:jib :web:showtime:backend:jib :broker-tickers-updater:jib :discord-chat-message-renderer-server:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} --scan
+        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} --scan
+
+      - name: Jib - LorittaBot Discord
+        env:
+          GRADLE_OPTS: -Xmx4096m -Xms4096m
+          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        run: ./gradlew :loritta-bot-discord:jib  -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
+
+      - name: Docker - Discord Chat Message Renderer Server
+        env:
+          GRADLE_OPTS: -Xmx4096m -Xms4096m
+          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        run: ./gradlew :discord-chat-message-renderer-server:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
+
+      - name: Docker - SpicyMorenitta
+        env:
+          GRADLE_OPTS: -Xmx4096m -Xms4096m
+          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        run: ./gradlew :web:dashboard:backend:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
+
+      - name: Docker - Showtime
+        env:
+          GRADLE_OPTS: -Xmx4096m -Xms4096m
+          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        run: ./gradlew :web:showtime:backend:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
+
+      - name: Docker - Broker Tickers Updater
+        env:
+          GRADLE_OPTS: -Xmx4096m -Xms4096m
+          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        run: ./gradlew :broker-tickers-updater:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
