@@ -62,16 +62,4 @@ jobs:
         # The -Djib.serialize=true is a workaround due to jib failing to upload artifacts
         # See: https://github.com/GoogleContainerTools/jib/issues/2372
         # idk if this REALLY fixes the issue tho
-        run: |
-          ./gradlew
-          -Djib.serialize=true
-          build
-          publish
-          :loritta-bot-discord:jib
-          :web:dashboard:backend:jib
-          :web:showtime:backend:jib
-          :broker-tickers-updater:jib
-          :discord-chat-message-renderer-server:jib
-          -Dcommit.hash=${{ github.sha }}
-          -Dbuild.id=${{ github.run_number }}
-          --scan
+        run: ./gradlew -Djib.serialize=true build publish :loritta-bot-discord:jib :web:dashboard:backend:jib :web:showtime:backend:jib :broker-tickers-updater:jib :discord-chat-message-renderer-server:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} --scan
