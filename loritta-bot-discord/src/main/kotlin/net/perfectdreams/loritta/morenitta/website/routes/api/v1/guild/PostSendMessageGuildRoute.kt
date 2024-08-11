@@ -1,34 +1,33 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.nullArray
-import com.github.salomonbrys.kotson.nullObj
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
-import com.github.salomonbrys.kotson.string
-import com.github.salomonbrys.kotson.toMap
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.website.LoriWebCode
-import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
+import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
+import net.perfectdreams.loritta.morenitta.website.LoriWebCode
+import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/send-message") {
@@ -114,12 +113,41 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 						)
 				)
 
-			val message = channel.sendMessage(message).await()
+			// This is a bit crappy, but we need to create a builder from the already generated message
+			val patchedMessage = MessageCreateBuilder.from(message)
+			if (5 > patchedMessage.components.size) { // Below the component limit
+				val member = guild.retrieveMemberOrNullById(userIdentification.id)
+				val user = member?.user
+				val i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
+				patchedMessage.addActionRow(
+					loritta.interactivityManager.button(
+						ButtonStyle.SECONDARY,
+						i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
+						{
+							this.loriEmoji = Emotes.LoriCoffee
+						}
+					) {
+						it.reply(true) {
+							styled(
+								i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user?.asMention} [${user?.asUserNameCodeBlockPreviewTag(true)}]")),
+								Emotes.LoriCoffee
+							)
+
+							styled(
+								i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
+								Emotes.LoriLurk
+							)
+						}
+					}
+				)
+			}
+
+			val message = channel.sendMessage(patchedMessage.build()).await()
 
 			call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
 			return
 		} else {
-			val user = loritta.lorittaShards.getUserById(userIdentification.id) ?: throw WebsiteAPIException(
+			val privateUser = loritta.lorittaShards.getUserById(userIdentification.id) ?: throw WebsiteAPIException(
 					HttpStatusCode.BadRequest,
 					WebsiteUtils.createErrorPayload(
 							loritta,
@@ -129,7 +157,36 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 			)
 
 			try {
-				val message = user.openPrivateChannel().await().sendMessage(message).await()
+				// This is a bit crappy, but we need to create a builder from the already generated message
+				val patchedMessage = MessageCreateBuilder.from(message)
+				if (5 > patchedMessage.components.size) { // Below the component limit
+					val member = guild.retrieveMemberOrNullById(userIdentification.id)
+					val user = member?.user
+					val i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
+					patchedMessage.addActionRow(
+						loritta.interactivityManager.button(
+							ButtonStyle.SECONDARY,
+							i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
+							{
+								this.loriEmoji = Emotes.LoriCoffee
+							}
+						) {
+							it.reply(true) {
+								styled(
+									i18nContext.get(I18nKeysData.Common.TestMessageWarning.MessageWasTestedByUser("${user?.asMention} [${user?.asUserNameCodeBlockPreviewTag(true)}]")),
+									Emotes.LoriCoffee
+								)
+
+								styled(
+									i18nContext.get(I18nKeysData.Common.TestMessageWarning.DontWorryTheMessageWillOnlyShowUpWhileTesting),
+									Emotes.LoriLurk
+								)
+							}
+						}
+					)
+				}
+
+				val message = privateUser.openPrivateChannel().await().sendMessage(patchedMessage.build()).await()
 
 				call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
 				return
