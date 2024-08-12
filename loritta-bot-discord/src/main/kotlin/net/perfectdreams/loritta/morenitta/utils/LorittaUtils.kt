@@ -15,7 +15,6 @@ import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
@@ -51,7 +50,7 @@ object LorittaUtils {
 	@JvmOverloads
 	fun downloadImage(loritta: LorittaBot, url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 8_388_608 /* 8mib */, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
 		try {
-			val imageBytes = downloadFile(loritta, url, connectTimeout, readTimeout, maxSize, overrideTimeoutsForSafeDomains) ?: return null
+			val imageBytes = downloadFile(loritta, url, connectTimeout, readTimeout, maxSize, overrideTimeoutsForSafeDomains, bypassSafety) ?: return null
 
 			val imageInfo = SimpleImageInfo(imageBytes)
 
