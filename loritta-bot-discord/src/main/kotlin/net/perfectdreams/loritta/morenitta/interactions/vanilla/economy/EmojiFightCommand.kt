@@ -119,16 +119,13 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             val providedStringSonhosInput = args[options.sonhos]
 
             val totalEarnings = if (providedStringSonhosInput != null) {
-                val sonhos = providedStringSonhosInput.let { NumberUtils.convertShortenedNumberToLong(it) }
-                    ?: context.fail(
-                        true,
-                        context.i18nContext.get(
-                            I18nKeysData.Commands.InvalidNumber(providedStringSonhosInput)
-                        ),
-                        Emotes.LORI_CRYING.asMention
-                    )
-
-                sonhos
+                NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(providedStringSonhosInput, selfUserProfile.money) ?: context.fail(
+                    true,
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.InvalidNumber(providedStringSonhosInput)
+                    ),
+                    Emotes.LORI_CRYING.asMention
+                )
             } else {
                 null
             }

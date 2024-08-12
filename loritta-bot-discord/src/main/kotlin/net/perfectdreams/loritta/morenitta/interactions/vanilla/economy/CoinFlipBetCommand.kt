@@ -85,12 +85,14 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
             val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
             val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
 
+            val selfUserProfile = context.lorittaUser.profile
+
             var tax: Long? = null
             val totalRewardPercentage: Double?
             val money: Long
             val taxResult: CoinFlipTaxResult
 
-            val number = NumberUtils.convertShortenedNumberToLong(args[options.sonhos])
+            val number = NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(args[options.sonhos], selfUserProfile.money)
                 ?: context.fail(
                     false,
                     context.i18nContext.get(
@@ -162,8 +164,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                 }
                 return
             }
-
-            val selfUserProfile = context.lorittaUser.profile
 
             if (number > selfUserProfile.money) {
                 context.reply(false) {
