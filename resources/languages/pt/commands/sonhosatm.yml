@@ -7,6 +7,11 @@ userCurrentRankPosition: "E você sabia que {user} está em **#{rankPosition,num
 sonhosSummary: "Resumo dos Sonhos"
 sonhosInTheWallet: "Sonhos na Carteira"
 boughtStocks: "Valores das Ações Compradas na {brokerInfoCommand}"
+sparklySonecasUnknown: "Carteira no SparklyPower"
+sparklySonecasPlayerName: "Carteira no SparklyPower (`{playerName}`)"
+sparklySonecasAccountNotConnected: "{mention} não tem a conta do Discord conectada no SparklyPower!"
+sparklySonecasFail: "Não consegui pegar as sonecas no SparklyPower..."
+
 totalSonhos: "Total de Sonhos"
 sonhosField: "{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 options:

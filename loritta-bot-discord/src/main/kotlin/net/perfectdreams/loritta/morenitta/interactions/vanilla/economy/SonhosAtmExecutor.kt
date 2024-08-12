@@ -1,6 +1,16 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import dev.minn.jda.ktx.messages.InlineMessage
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.withTimeout
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.double
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -14,10 +24,12 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import org.jetbrains.exposed.sql.count
+import java.util.*
 
 class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         val SONHOS_I18N_PREFIX = I18nKeysData.Commands.Command.Sonhosatm
+        private val logger = KotlinLogging.logger {}
     }
 
     inner class Options : ApplicationCommandOptions() {
@@ -50,7 +62,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
         var extendedSonhosInfo: ExtendedSonhosInfo? = null
 
         if (informationType == InformationType.EXTENDED) {
-            extendedSonhosInfo = loritta.transaction {
+            val totalSonecasInStocks = loritta.transaction {
                 val tickerFieldCount = BoughtStocks.ticker.count()
                 var totalBoughtStocks = 0L
 
@@ -74,14 +86,47 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                     totalBoughtStocks += boughtStocks[tickerId]!! * tickerPrice
                 }
 
-                ExtendedSonhosInfo(
-                    totalBoughtStocks
-                )
+                totalBoughtStocks
             }
+
+            // Get how many sonecas the user has on SparklyPower
+            val sparklySonecasResult = run {
+                try {
+                    return@run withTimeout(5_000) {
+                        val response = loritta.http.get("${loritta.config.loritta.sparklyPower.sparklySurvivalUrl.removeSuffix("/")}/loritta/${user.idLong}/sonecas")
+
+                        // User does not have account
+                        if (response.status == HttpStatusCode.NotFound)
+                            return@withTimeout ExtendedSonhosInfo.SparklySonecasNotFound
+
+                        if (!response.status.isSuccess()) {
+                            return@withTimeout ExtendedSonhosInfo.SparklySonecasFailure
+                        }
+
+                        val json = Json.parseToJsonElement(response.bodyAsText())
+                            .jsonObject
+
+                        return@withTimeout ExtendedSonhosInfo.SparklySonecasSuccess(
+                            UUID.fromString(json["userUniqueId"]!!.jsonPrimitive.content),
+                            json["username"]!!.jsonPrimitive.content,
+                            json["sonecas"]!!.jsonPrimitive.double
+                        )
+                    }
+                } catch (e: Exception) {
+                    if (e is TimeoutCancellationException) {
+                        logger.warn { "Took too long to get ${user.idLong}'s sonecas in SparklyPower! Ignoring..." }
+                    } else {
+                        logger.warn(e) { "Something went wrong while trying to get ${user.idLong}'s sonecas in SparklyPower!" }
+                    }
+                    return@run ExtendedSonhosInfo.SparklySonecasFailure
+                }
+            }
+
+            extendedSonhosInfo = ExtendedSonhosInfo(totalSonecasInStocks, sparklySonecasResult)
         }
 
         fun InlineMessage<*>.addExtendedSonhosInfoEmbed(extendedSonhosInfo: ExtendedSonhosInfo) {
-            val totalSonhos = userSonhos + extendedSonhosInfo.boughtStocks
+            val totalSonhos = userSonhos + extendedSonhosInfo.totalSonhos
 
             embed {
                 title = "${Emotes.Sonhos3} ${context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosSummary)}"
@@ -97,6 +142,30 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                     context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosField(extendedSonhosInfo.boughtStocks)),
                     false
                 )
+
+                when (val result = extendedSonhosInfo.sparklySonecas) {
+                    ExtendedSonhosInfo.SparklySonecasFailure -> {
+                        field(
+                            "${Emotes.PantufaPickaxe} ${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasUnknown)}",
+                            "*${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasFail)}*",
+                            false
+                        )
+                    }
+                    ExtendedSonhosInfo.SparklySonecasNotFound -> {
+                        field(
+                            "${Emotes.PantufaPickaxe} ${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasUnknown)}",
+                            "*${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasUnknown)}*",
+                            false
+                        )
+                    }
+                    is ExtendedSonhosInfo.SparklySonecasSuccess -> {
+                        field(
+                            "${Emotes.PantufaPickaxe} ${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasPlayerName(result.username))}",
+                            context.i18nContext.get(SONHOS_I18N_PREFIX.SonhosField(result.sonhos)),
+                            false
+                        )
+                    }
+                }
 
                 field(
                     "${SonhosUtils.getSonhosEmojiOfQuantity(totalSonhos)} ${context.i18nContext.get(SONHOS_I18N_PREFIX.TotalSonhos)}",
@@ -175,8 +244,29 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
     }
 
     data class ExtendedSonhosInfo(
-        val boughtStocks: Long
-    )
+        val boughtStocks: Long,
+        val sparklySonecas: SparklySonecasResult
+    ) {
+        /**
+         * Gets the total sonhos of everything related to this [ExtendedSonhosInfo]
+         */
+        val totalSonhos
+            get() = run {
+                var totalSonhos = 0L
+                totalSonhos += boughtStocks
+                if (sparklySonecas is SparklySonecasSuccess)
+                    totalSonhos += sparklySonecas.sonhos
+                return@run totalSonhos
+            }
+
+        sealed class SparklySonecasResult
+        data class SparklySonecasSuccess(val userId: UUID, val username: String, val sonecas: Double) : SparklySonecasResult() {
+            val sonhos: Long
+                get() = (sonecas / 2).toLong()
+        }
+        data object SparklySonecasNotFound : SparklySonecasResult()
+        data object SparklySonecasFailure : SparklySonecasResult()
+    }
 
     override suspend fun convertToInteractionsArguments(
         context: LegacyMessageCommandContext,
