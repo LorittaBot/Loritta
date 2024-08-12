@@ -80,8 +80,15 @@ website:
       description:
         - "Para sua segurança, você precisa verificar sua conta do Discord antes de comprar algo."
         - "Após verificar, volte aqui para continuar a sua compra!"
+    pocketLoritta:
+      title: "Loritta de Bolso"
+      description:
+        - "Leve a Loritta para qualquer lugar! Use os slash commands da Loritta no privado, em grupos privados e até mesmo em servidores que a Loritta não está adicionada!"
+        - "Descubra novas funcionalidades com a Loritta de Bolso! Com o sistema de \"Salvar Mensagem\" da Loritta de Bolso, você pode salvar mensagens de canais privados, assim moderadores de outros servidores podem verificar a veracidade das mensagens salvas usando o comando {verifyMessageMention}, mesmo que elas tenham acontecido em um lugar que eles não possuem acesso."
+        - "Se você cansar de ficar levando a Loritta no seu Bolso, basta desautorizar a Loritta na sua conta do Discord na aba de \"Aplicativos autorizados\"."
+      addPocketLoritta: "Adicionar Loritta de Bolso"
     lorittaSpawner:
-      pocketLoritta: "Loritta de Bolso"
+      pocketLoritta: "Pestinhas Travessas"
       doYouWantSomeCompany:
         - "Quer uma amiguinha pra te fazer companhia?"
         - "Invoque a Loritta & Amigas para te fazerem companhia enquanto você configura o seu servidor! Ao invocar, elas ficarão perambulando pela sua tela, correndo e pulando feito doidinhas."

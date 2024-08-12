@@ -45,6 +45,7 @@ abstract class ProfileDashboardView(
             hr(classes = "divider") {}
 
             appendEntry("/dashboard", true, locale["website.dashboard.profile.sectionNames.yourServers"], "fa fa-cogs", "main")
+            appendEntry("/dashboard/user-app", true, i18nContext.get(I18nKeysData.Website.Dashboard.PocketLoritta.Title), "fa fa-box", "user-app")
 
             hr(classes = "divider") {}
             div(classes = "category") {

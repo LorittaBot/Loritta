@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
@@ -73,7 +72,7 @@ class ShipEffectsView(
                                 when (it) {
                                     "shipCommand" -> {
                                         TextReplaceControls.ComposableFunctionResult {
-                                            code {
+                                            span(classes = "discord-mention") {
                                                 text("/ship")
                                             }
                                         }
