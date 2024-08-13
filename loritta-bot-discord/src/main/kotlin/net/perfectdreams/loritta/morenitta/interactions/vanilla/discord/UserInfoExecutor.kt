@@ -31,7 +31,7 @@ object UserInfoExecutor {
 
         val now = Clock.System.now()
 
-        val flags = context.user.flags
+        val flags = user.flags
         val flagsToEmotes = flags.mapNotNull {
             when (it) {
                 User.UserFlag.STAFF -> Emotes.DiscordEmployee
@@ -52,7 +52,7 @@ object UserInfoExecutor {
         }
 
         // Discord's System User (643945264868098049) does not have the "System" flag, so we will add a special handling for it
-        val isSystemUser = context.user.isSystem
+        val isSystemUser = user.isSystem
 
         // Get application information
         val applicationInfo = if (user.isBot && !isSystemUser) {
