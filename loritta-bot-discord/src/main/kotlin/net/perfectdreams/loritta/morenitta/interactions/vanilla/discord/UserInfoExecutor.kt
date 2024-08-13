@@ -341,20 +341,16 @@ object UserInfoExecutor {
                     ) {
                         it.reply(true) {
                             embed {
+                                val permissionList = member.permissions.joinToString(
+                                    ", "
+                                ) { it.getLocalizedName(context.i18nContext) }
+
+                                // We put the permission list on the description because it is VERY big and doesn't fit on a field
+                                description = "${Emotes.LoriAngel} **${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Permissions)}:** $permissionList"
+
                                 field(
                                     "${Emotes.LoriSunglasses} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Roles)}",
                                     roles.joinToString { it.asMention }.ifBlank { "\u200b" },
-                                    false
-                                )
-
-                                val permissionList = member.permissions.map { it.getLocalizedName(context.i18nContext) }.joinToString(
-                                    ", ",
-                                    transform = { "`$it`" }
-                                )
-
-                                field(
-                                    "${Emotes.LoriAngel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Permissions)}",
-                                    permissionList.ifEmpty { "\u200B" },
                                     false
                                 )
 
