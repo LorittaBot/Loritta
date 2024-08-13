@@ -329,11 +329,22 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		UserFlag.getFlags(profileSettings.discordAccountFlags),
 	)
 
-	fun transformGuildToProfileGuildInfoData(guild: Guild) = ProfileGuildInfoData(
-		guild.idLong,
-		guild.name,
-		guild.iconUrl
-	)
+	fun transformGuildToProfileGuildInfoData(guild: Guild): ProfileGuildInfoData {
+		if (guild.isDetached) {
+			return ProfileGuildInfoData(
+				guild.idLong,
+				// Fallback to the guild ID if the guild is detached
+				guild.id,
+				null
+			)
+		}
+
+		return ProfileGuildInfoData(
+			guild.idLong,
+			guild.name,
+			guild.iconUrl
+		)
+	}
 
 	/**
 	 * Gets the user's badges, the user's mutual guilds will be retrieved
