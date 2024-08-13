@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
@@ -47,9 +48,10 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                 val now = Instant.now()
 
                 // Get current active raffles
-                val currentRaffles = Raffles.select {
-                    Raffles.endedAt.isNull()
-                }.orderBy(Raffles.endsAt, SortOrder.DESC)
+                val currentRaffles = Raffles.selectAll()
+                    .where {
+                        Raffles.endedAt.isNull()
+                    }.orderBy(Raffles.endsAt, SortOrder.DESC)
                     .toList()
 
                 for (currentRaffle in currentRaffles) {
@@ -214,7 +216,22 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         Raffles.insert {
                             it[Raffles.raffleType] = currentRaffle[Raffles.raffleType]
                             it[Raffles.startedAt] = now
-                            it[Raffles.endsAt] = (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
+                            if (currentRaffle[Raffles.raffleType] == RaffleType.DAILY) {
+                                // The end date of the daily raffle is a raffle is a bit different on how it is handled
+                                // It should ALWAYS start at 00:00 GMT-3... why? because it is fun!
+                                // First we get when the current raffle ended...
+                                val storedDateOfWhenTheCurrentRaffleEnded = currentRaffle[Raffles.endsAt]
+                                // Then we +1 and set it to midnight
+                                val storedDateTomorrowAtMidnight = storedDateOfWhenTheCurrentRaffleEnded.atZone(Constants.LORITTA_TIMEZONE)
+                                    .plusDays(1)
+                                    .withHour(0)
+                                    .withMinute(0)
+                                    .withSecond(0)
+                                    .toInstant()
+                                it[Raffles.endsAt] = storedDateTomorrowAtMidnight
+                            } else {
+                                it[Raffles.endsAt] = (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
+                            }
                             it[Raffles.endedAt] = null
                             it[Raffles.winnerTicket] = null
                             it[Raffles.paidOutPrize] = null
