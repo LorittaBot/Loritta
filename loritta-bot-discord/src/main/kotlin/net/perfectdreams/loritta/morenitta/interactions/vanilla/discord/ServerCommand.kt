@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
@@ -34,7 +36,8 @@ class ServerCommand : SlashCommandDeclarationWrapper {
         CommandCategory.DISCORD
     ) {
         enableLegacyMessageSupport = true
-        isGuildOnly = true
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD)
 
         subcommand(I18N_PREFIX.Icon.Label, I18N_PREFIX.Icon.Description) {
             alternativeLegacyAbsoluteCommandPaths.apply {
