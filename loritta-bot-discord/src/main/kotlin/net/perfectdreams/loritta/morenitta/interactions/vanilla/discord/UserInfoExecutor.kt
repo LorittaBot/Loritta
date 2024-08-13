@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -17,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.utils.ApplicationInfoUtils
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.asPomeloOrLegacyTag
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
+import net.perfectdreams.loritta.morenitta.utils.extensions.joinToStringLimitedByCharacters
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 
 object UserInfoExecutor {
@@ -350,7 +352,7 @@ object UserInfoExecutor {
 
                                 field(
                                     "${Emotes.LoriSunglasses} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Roles)}",
-                                    roles.joinToString { it.asMention }.ifBlank { "\u200b" },
+                                    roles.joinToStringLimitedByCharacters(", ", DiscordResourceLimits.Embed.Field.Value) { it.asMention }.ifBlank { "\u200b" },
                                     false
                                 )
 
