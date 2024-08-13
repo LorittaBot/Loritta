@@ -110,7 +110,7 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 
 						// This is weird as hell, isn't there's a way to make this EASIER TO UNDERSTAND???
 						if (guild != null) {
-							val guildIcon = LorittaUtils.downloadImage(loritta, guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
+							val guildIcon = (guild.iconUrl?.replace("jpg", "png")?.let { LorittaUtils.downloadImage(loritta, it) } ?: Constants.MISSING_DISCORD_ICON_FALLBACK_IMAGE).getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
 							val xpLocal = localProfile?.xp
 

@@ -41,6 +41,11 @@ object Constants {
 	val DEFAULT_DISCORD_BLUE_AVATAR by lazy { ImageIO.read(LorittaBot::class.java.getResourceAsStream("/avatars/0.png")) }
 
 	/**
+	 * A 512x512 image used for icon (especially server icons) fallbacks
+	 */
+	val MISSING_DISCORD_ICON_FALLBACK_IMAGE by lazy { ImageIO.read(LorittaBot::class.java.getResourceAsStream("/fallback_icon.png")) }
+
+	/**
 	 * Discord's URL Crawler User Agent
 	 */
 	const val DISCORD_CRAWLER_USER_AGENT = "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)"
