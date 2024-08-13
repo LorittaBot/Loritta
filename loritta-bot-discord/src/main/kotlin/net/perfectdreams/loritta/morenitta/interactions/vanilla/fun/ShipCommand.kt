@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.gabrielaimageserver.data.ShipRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -397,7 +396,9 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 )
             }
 
-            return StringResult(input)
+            // We'll take only 100 characters to avoid any "message too long" issues
+            // (Example: Before, if you typed a big enough message, the ship's alt text would trigger an error)
+            return StringResult(input.take(100))
         }
     }
 }
