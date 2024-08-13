@@ -7,6 +7,7 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -158,6 +160,25 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             var i18nContext: I18nContext? = null
             var context: ApplicationCommandContext? = null
             var stacktrace: String? = null
+            // Used for logs
+            val slashCommandOptionValuesAsJson = buildJsonObject {
+                event.options.forEach {
+                    when (it.type) {
+                        OptionType.UNKNOWN, OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP -> {}
+                        OptionType.STRING -> put(it.name, it.asString)
+                        OptionType.INTEGER -> put(it.name, it.asInt)
+                        OptionType.BOOLEAN -> put(it.name, it.asBoolean)
+                        OptionType.USER -> put(it.name, it.asUser.idLong)
+                        OptionType.CHANNEL -> put(it.name, it.asChannel.idLong)
+                        OptionType.ROLE -> put(it.name, it.asRole.idLong)
+                        OptionType.MENTIONABLE -> put(it.name, it.asMentionable.idLong)
+                        // This is a bit tricky because number can accept double OR longs
+                        // So here we get everything as a string
+                        OptionType.NUMBER -> put(it.name, it.asString)
+                        OptionType.ATTACHMENT -> put(it.name, it.asAttachment.url)
+                    }
+                }
+            }
 
             try {
                 val guild = event.guild
@@ -230,7 +251,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 context?.reply(e.ephemeral, e.builder)
             } catch (e: Exception) {
                 val errorId = UUID.randomUUID()
-                logger.warn(e) { "Something went wrong while executing command ${executor::class.simpleName}! Error ID: $errorId" }
+                logger.warn(e) { "Something went wrong while executing command ${executor::class.simpleName}! Option Values: $slashCommandOptionValuesAsJson; Error ID: $errorId" }
 
                 stacktrace = e.stackTraceToString()
 
@@ -275,7 +296,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 ApplicationCommandType.CHAT_INPUT,
                 rootDeclarationClazzName,
                 executorClazzName,
-                buildJsonObject {},
+                slashCommandOptionValuesAsJson,
                 stacktrace == null,
                 Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
                 stacktrace,
