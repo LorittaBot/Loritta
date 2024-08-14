@@ -191,7 +191,8 @@ class ImageReference(
             val channel = context.channelOrNull
             val guild = context.guildOrNull
 
-            if (channel != null) {
+            // Only non-detached channels have the ability of querying the channel history
+            if (channel != null && !channel.isDetached) {
                 val canQuery = if (guild != null && channel is GuildChannel) {
                     guild.selfMember.hasPermission(channel, Permission.MESSAGE_HISTORY, Permission.MESSAGE_SEND)
                 } else true
