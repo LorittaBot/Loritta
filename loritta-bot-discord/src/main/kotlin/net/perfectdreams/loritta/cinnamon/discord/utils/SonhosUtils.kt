@@ -238,12 +238,12 @@ object SonhosUtils {
         return false
     }
 
-    fun getSpecialTotalCoinFlipReward(guild: Guild, currentTax: Double): SpecialTotalCoinFlipReward {
+    fun getSpecialTotalCoinFlipReward(guild: Guild?, currentTax: Double): SpecialTotalCoinFlipReward {
         // No need to change
         if (currentTax == 1.0)
             return SpecialTotalCoinFlipReward.NoChange(currentTax)
 
-        if (guild.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
+        if (guild?.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
             val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
             return if (today.dayOfWeek == DayOfWeek.SATURDAY || today.dayOfWeek == DayOfWeek.SUNDAY) {
                 // No tax during weekends poggies!!!
@@ -254,7 +254,7 @@ object SonhosUtils {
             }
         }
 
-        if (guild.idLong == 1204104683380285520L) {
+        if (guild?.idLong == 1204104683380285520L) {
             val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
             return if (today.dayOfWeek == DayOfWeek.FRIDAY || today.dayOfWeek == DayOfWeek.SATURDAY || today.dayOfWeek == DayOfWeek.SUNDAY) {
                 // No tax during weekends poggies!!!

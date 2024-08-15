@@ -5,6 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -39,7 +40,8 @@ import java.time.LocalDateTime
 class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(I18nKeysData.Commands.Command.Coinflipbet.Label, I18nKeysData.Commands.Command.Coinflipbet.Description, CommandCategory.ECONOMY) {
         enableLegacyMessageSupport = true
-        isGuildOnly = true
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+
         alternativeLegacyAbsoluteCommandPaths.apply {
             listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
                 .flatMap { listOf("$it bet", "$it apostar") }
@@ -111,7 +113,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                     1.0
                 )
             } else {
-                val specialTotalRewardChange = SonhosUtils.getSpecialTotalCoinFlipReward(context.guild, UserPremiumPlans.Free.totalCoinFlipReward)
+                val specialTotalRewardChange = SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, UserPremiumPlans.Free.totalCoinFlipReward)
 
                 taxResult = when (specialTotalRewardChange) {
                     is SonhosUtils.SpecialTotalCoinFlipReward.LorittaCommunity -> {
