@@ -427,7 +427,7 @@ class EmojiFight(
                 val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 
                 val winnerProfile = userProfiles[winner.key]!!
-                val taxPercentage = (1.0.toBigDecimal() - SonhosUtils.getSpecialTotalCoinFlipReward(context.guild, selfPlan.totalCoinFlipReward).value.toBigDecimal()).toDouble() // Avoid rounding errors
+                val taxPercentage = (1.0.toBigDecimal() - SonhosUtils.getSpecialTotalCoinFlipReward(context.guildOrNull, selfPlan.totalCoinFlipReward).value.toBigDecimal()).toDouble() // Avoid rounding errors
                 val tax = (entryPrice * taxPercentage).toLong()
                 val taxedEntryPrice = entryPrice - tax
 
