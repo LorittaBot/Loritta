@@ -68,7 +68,8 @@ object UserInfoExecutor {
         // Did you know that you can't have a fully black role on Discord? The color "0" is used for "not set"!
         val topRoleForColor = roles?.filter { it.color != null }?.maxByOrNull { it.position }
 
-        val sharedServers = if (context.channel.idLong == 358774895850815488L || context.channel.idLong == 547119872568459284L) {
+        // We only get shared servers for non-bot accounts, because bot accounts may be in a lot of shared servers with Loritta, which may cause a OutOfMemoryError
+        val sharedServers = if (!user.isBot && (context.channel.idLong == 358774895850815488L || context.channel.idLong == 547119872568459284L)) {
             val sharedServersResults = context.loritta.lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
             val sharedServers = sharedServersResults.sortedByDescending {
                 it["memberCount"].int
