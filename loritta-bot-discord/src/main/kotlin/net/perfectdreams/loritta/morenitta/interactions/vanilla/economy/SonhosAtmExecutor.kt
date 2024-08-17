@@ -154,7 +154,7 @@ class SonhosAtmExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()
                     ExtendedSonhosInfo.SparklySonecasNotFound -> {
                         field(
                             "${Emotes.PantufaPickaxe} ${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasUnknown)}",
-                            "*${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasUnknown)}*",
+                            "*${context.i18nContext.get(SONHOS_I18N_PREFIX.SparklySonecasAccountNotConnected(user.asMention))}*",
                             false
                         )
                     }
