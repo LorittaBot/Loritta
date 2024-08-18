@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
-class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso", "avisar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 	}
