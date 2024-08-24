@@ -15,6 +15,9 @@ dependencies {
     implementation("io.ktor:ktor-server-cio:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
+
+    // Used for logs - MojangStyleFileAppenderAndRollover
+    implementation("com.github.luben:zstd-jni:1.5.5-6")
 }
 
 jib {

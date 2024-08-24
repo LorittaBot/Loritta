@@ -30,6 +30,11 @@ class LoriAPIProxy(
             "User-Agent",
             "Authorization"
         )
+        private val BACKEND_HEADERS_TO_BE_LOGGED = setOf(
+            "Loritta-Cluster",
+            "Loritta-Token-Creator",
+            "Loritta-Token-User"
+        )
         private val logger = KotlinLogging.logger {}
     }
 
@@ -85,7 +90,11 @@ class LoriAPIProxy(
 
                                 setBody(call.receiveStream())
                             }
-                            logger.info { "Requested ${proxiedRoute.method.value} ${call.request.uri} for $authorizationTokenFromHeader! Status Code: ${response.status}" }
+                            val logBuild = BACKEND_HEADERS_TO_BE_LOGGED.joinToString(";") {
+                                "$it: ${response.headers[it]}"
+                            }
+
+                            logger.info { "Requested ${proxiedRoute.method.value} ${call.request.uri} for $authorizationTokenFromHeader! Status Code: ${response.status}; $logBuild" }
 
                             val proxiedHeaders = response.headers
                             val location = proxiedHeaders[HttpHeaders.Location]
