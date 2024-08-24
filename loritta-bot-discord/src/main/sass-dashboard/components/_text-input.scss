@@ -1,4 +1,4 @@
-input[type=text], input[type=number], textarea {
+input[type=text], input[type=number], input[type=password], textarea {
     border: 1px solid var(--input-border-color);
     border-radius: var(--first-level-border-radius);
     background-color: var(--input-background-color);
@@ -33,7 +33,7 @@ input[type=text], input[type=number], textarea {
     }
 }
 
-input[type=text] {
+input[type=text], input[type=password] {
     // Additional settings if it is a text input
     height: 40px;
 }

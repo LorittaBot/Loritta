@@ -58,25 +58,60 @@ class LorittaUserAPIKeysView(
                 }
 
                 div {
-                    code {
-                        id = "user-api-key"
-                        text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.ResetTheTokenToGetIt))
-                    }
+                    text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.ResetTheTokenToGetIt))
+                }
+
+                div(classes = "alert alert-danger") {
+                    text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.DoNotShareYourAPIKey))
+                }
+
+                div {
+                    id = "user-api-key-wrapper"
+                    style = "display: flex; gap: 0.5em;"
+
+                    tokenInputWrapper(i18nContext, null)
                 }
             }
 
-            div {
-                style = "color: red; font-weight: bold; color: #d32f2f;"
-                text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.DoNotShareYourAPIKey))
-            }
-
             button(classes = "discord-button primary", type = ButtonType.button) {
+                style = "margin-top: 0.25em;"
                 attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/api-keys/generate"
-                attributes["hx-target"] = "#user-api-key"
+                attributes["hx-target"] = "#user-api-key-wrapper"
+                attributes["hx-swap"] = "outerHTML"
+                attributes["hx-disabled-elt"] = "this"
                 text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.GenerateNewToken))
             }
         }
     }
 
     override fun getTitle() = i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title)
+
+    companion object {
+        fun DIV.tokenInputWrapper(i18nContext: I18nContext, apiToken: String?) {
+            val inputType = if (apiToken == null) InputType.password else InputType.text
+            val tokenValue = apiToken ?: "ParabensVocêEncontrouUmEasterEgg!!!ALoriÉMuitoFofa"
+
+            input(inputType) {
+                id = "user-api-key"
+                value = tokenValue
+                readonly = true
+            }
+
+            button(classes = "discord-button success", type = ButtonType.button) {
+                if (apiToken != null) {
+                    script {
+                        unsafe {
+                            raw("""
+                                me().on("click", function() {
+                                    navigator.clipboard.writeText("$apiToken")
+                                })
+                            """.trimIndent())
+                        }
+                    }
+                } else disabled = true
+
+                text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.CopyTokenButton))
+            }
+        }
+    }
 }

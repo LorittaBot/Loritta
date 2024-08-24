@@ -6,5 +6,9 @@ website:
         - "Automatize e interaja com a Loritta programaticamente! Integre funcionalidades da Loritta nas suas aplicações para criar experiências únicas e inovadoras em seus servidores."
       doNotShareYourAPIKey: "NÃO COMPARTILHE O SEU TOKEN COM OUTRAS PESSOAS! Se alguém tiver o seu token, ela poderá realizar ações na Loritta se passando por você!"
       yourToken: "Seu Token"
-      resetTheTokenToGetIt: "Por questões de segurança, o token só é mostrado quando ele é gerado. Se você esqueceu ou perdeu o seu token, gere um novo. Ao gerar um novo token, o seu token antigo irá parar de funcionar!"
+      resetTheTokenToGetIt: "Por motivos de segurança, o tokens só podem ser visualizados quando forem criados. Se você esqueceu ou perdeu o seu token, gere um novo. Ao gerar um novo token, o seu token antigo parará de funcionar!"
       generateNewToken: "Gerar novo token"
+      copyTokenButton: "Copiar"
+      toast:
+        tokenRegeneratedTitle: "Token regenerado!"
+        tokenRegeneratedDescription: "Guarde ele com muito amor e carinho :3"

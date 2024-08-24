@@ -8,6 +8,7 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteAssetsHashes
 
@@ -147,6 +148,12 @@ window.addEventListener('load', function () {
                 //  (we cannot do this yet because some of the old server config pages call scripts inline, and that borks everything!)
                 script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {
                     // defer = true
+                }
+
+                script {
+                    unsafe {
+                        raw(LorittaBot::class.java.getResourceAsStream("/tsuki.js").readAllBytes().toString(Charsets.UTF_8))
+                    }
                 }
 
                 // htmx & hyperscript & other libs are included in the app.js bundle
