@@ -90,7 +90,7 @@ class LoriAPIProxy(
 
                                 setBody(call.receiveStream())
                             }
-                            val logBuild = BACKEND_HEADERS_TO_BE_LOGGED.joinToString(";") {
+                            val logBuild = BACKEND_HEADERS_TO_BE_LOGGED.joinToString("; ") {
                                 "$it: ${response.headers[it]}"
                             }
 
