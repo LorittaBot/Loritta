@@ -10,9 +10,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.Simp
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.serializable.SonhosTransaction
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import java.time.Instant
 import kotlin.time.Duration.Companion.days
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {
@@ -29,14 +33,23 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
     suspend fun getUserTotalTransactions(
         userId: UserId,
-        transactionTypeFilter: List<TransactionType>
+        transactionTypeFilter: List<TransactionType>,
+        beforeDateFilter: Instant?,
+        afterDateFilter: Instant?,
     ): Long {
         val userIdAsLong = userId.value.toLong()
+        var query = Op.build {
+            SimpleSonhosTransactionsLog.user eq userIdAsLong and (SimpleSonhosTransactionsLog.type inList transactionTypeFilter)
+        }
+
+        if (beforeDateFilter != null)
+            query = query and (SimpleSonhosTransactionsLog.timestamp lessEq beforeDateFilter)
+
+        if (afterDateFilter != null)
+            query = query and (SimpleSonhosTransactionsLog.timestamp greaterEq afterDateFilter)
 
         return pudding.transaction {
-            SimpleSonhosTransactionsLog.select {
-                SimpleSonhosTransactionsLog.user eq userIdAsLong and (SimpleSonhosTransactionsLog.type inList transactionTypeFilter)
-            }.count()
+            SimpleSonhosTransactionsLog.select(query).count()
         }
     }
 
@@ -44,19 +57,29 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         userId: UserId,
         transactionTypeFilter: List<TransactionType>,
         limit: Int,
-        offset: Long
+        offset: Long,
+        beforeDateFilter: Instant?,
+        afterDateFilter: Instant?,
     ): List<SonhosTransaction> {
         val userIdAsLong = userId.value.toLong()
+        var query = Op.build {
+            SimpleSonhosTransactionsLog.user eq userIdAsLong and (SimpleSonhosTransactionsLog.type inList transactionTypeFilter)
+        }
+
+        if (beforeDateFilter != null)
+            query = query and (SimpleSonhosTransactionsLog.timestamp lessEq beforeDateFilter)
+
+        if (afterDateFilter != null)
+            query = query and (SimpleSonhosTransactionsLog.timestamp greaterEq afterDateFilter)
 
         return pudding.transaction {
-            SimpleSonhosTransactionsLog.select {
-                SimpleSonhosTransactionsLog.user eq userIdAsLong and (SimpleSonhosTransactionsLog.type inList transactionTypeFilter)
-            }.orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
+            SimpleSonhosTransactionsLog.select(query).orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
                 .limit(limit, offset)
                 .map {
                     when (val stored = Json.decodeFromString<StoredSonhosTransaction>(it[SimpleSonhosTransactionsLog.metadata])) {
                         is StoredShipEffectSonhosTransaction -> ShipEffectSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos]
@@ -64,6 +87,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredDailyRewardSonhosTransaction -> DailyRewardSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos]
@@ -71,6 +95,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredBotVoteSonhosTransaction -> BotVoteSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             stored.websiteSource,
@@ -79,6 +104,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredDivineInterventionSonhosTransaction -> DivineInterventionSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             stored.action,
@@ -89,6 +115,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredDailyTaxSonhosTransaction -> DailyTaxSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -98,6 +125,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredPaymentSonhosTransaction -> PaymentSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             UserId(stored.givenBy),
@@ -107,6 +135,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredBrokerSonhosTransaction -> BrokerSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             stored.action,
@@ -123,6 +152,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                             RaffleRewardSonhosTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
                                 it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                                 UserId(it[SimpleSonhosTransactionsLog.user].value),
                                 raffle[Raffles.paidOutPrize] ?: -1,
@@ -134,6 +164,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredRaffleTicketsTransaction -> RaffleTicketsSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -142,6 +173,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredSonhosBundlePurchaseTransaction -> SonhosBundlePurchaseSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos]
@@ -154,6 +186,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                             CoinFlipBetSonhosTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
                                 it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                                 UserId(it[SimpleSonhosTransactionsLog.user].value),
                                 UserId(matchmakingResult[CoinFlipBetMatchmakingResults.winner].value),
@@ -172,6 +205,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                             CoinFlipBetGlobalSonhosTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
                                 it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                                 UserId(it[SimpleSonhosTransactionsLog.user].value),
                                 UserId(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.winner].value),
@@ -186,6 +220,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredSparklyPowerLSXSonhosTransaction -> SparklyPowerLSXSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             stored.action,
@@ -198,6 +233,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredChristmas2022SonhosTransaction -> Christmas2022SonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -206,6 +242,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredEaster2023SonhosTransaction -> Easter2023SonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -214,6 +251,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredPowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -223,6 +261,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredPowerStreamClaimedFirstSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -232,6 +271,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction -> LoriCoolCardsBoughtBoosterPackSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -240,6 +280,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredLoriCoolCardsFinishedAlbumSonhosTransaction -> LoriCoolCardsFinishedAlbumSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             it[SimpleSonhosTransactionsLog.sonhos],
@@ -248,6 +289,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredLoriCoolCardsPaymentSonhosTradeTransaction -> LoriCoolCardsPaymentSonhosTradeTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
                             it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                             UserId(it[SimpleSonhosTransactionsLog.user].value),
                             UserId(stored.givenBy),
@@ -268,6 +310,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                             EmojiFightBetSonhosTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
                                 it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                                 UserId(it[SimpleSonhosTransactionsLog.user].value),
                                 UserId(winnerInMatch[EmojiFightParticipants.user].value),

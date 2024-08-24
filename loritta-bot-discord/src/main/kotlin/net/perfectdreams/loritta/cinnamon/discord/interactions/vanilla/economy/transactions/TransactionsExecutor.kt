@@ -50,12 +50,16 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                 UserId(viewingTransactionsOfUserId),
                 transactionTypeFilter,
                 TRANSACTIONS_PER_PAGE,
-                (page * TRANSACTIONS_PER_PAGE)
+                (page * TRANSACTIONS_PER_PAGE),
+                null,
+                null
             )
 
             val totalTransactions = loritta.pudding.sonhos.getUserTotalTransactions(
                 UserId(viewingTransactionsOfUserId),
-                transactionTypeFilter
+                transactionTypeFilter,
+                null,
+                null
             )
 
             val totalPages = ceil((totalTransactions / TRANSACTIONS_PER_PAGE.toDouble())).toLong()

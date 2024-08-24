@@ -25,6 +25,11 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.*
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages.PostVerifyMessageRoute
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.sonhos.GetRichestUsersRoute
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.users.GetUserInfoRoute
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.users.GetUserTransactionsRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.RPCResponseException
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.Processors
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
@@ -45,6 +50,18 @@ class InternalWebServer(val m: LorittaBot) {
     }
 
     val processors = Processors(this)
+    val publicAPIRoutes = listOf(
+        GetUserInfoRoute(m),
+        GetUserTransactionsRoute(m),
+        GetRichestUsersRoute(m),
+        PostVerifyMessageRoute(m),
+        PostSaveMessageRoute(m),
+        PutGiveawayRoute(m),
+        PostEndGiveawayRoute(m),
+        PostRerollGiveawayRoute(m),
+        GetGuildEmojiFightTopWinnersRoute(m),
+        GetGuildUserEmojiFightVictoriesRoute(m),
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
@@ -187,6 +204,10 @@ class InternalWebServer(val m: LorittaBot) {
                             }
                         }
                     )
+                }
+
+                for (route in publicAPIRoutes) {
+                    route.register(this)
                 }
             }
         }

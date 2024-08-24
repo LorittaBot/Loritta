@@ -2,14 +2,12 @@ package net.perfectdreams.loritta.serializable
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.common.utils.DivineInterventionTransactionEntryAction
-import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
-import net.perfectdreams.loritta.common.utils.SparklyPowerLSXTransactionEntryAction
-import net.perfectdreams.loritta.common.utils.WebsiteVoteSource
+import net.perfectdreams.loritta.common.utils.*
 
 @Serializable
 sealed class SonhosTransaction {
     abstract val id: Long
+    abstract val transactionType: TransactionType
     abstract val timestamp: Instant
     abstract val user: UserId
 }
@@ -17,6 +15,7 @@ sealed class SonhosTransaction {
 @Serializable
 data class PaymentSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val givenBy: UserId,
@@ -27,6 +26,7 @@ data class PaymentSonhosTransaction(
 @Serializable
 data class DailyRewardSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long
@@ -35,6 +35,7 @@ data class DailyRewardSonhosTransaction(
 @Serializable
 data class BrokerSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val action: LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction,
@@ -47,6 +48,7 @@ data class BrokerSonhosTransaction(
 @Serializable
 data class CoinFlipBetSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val winner: UserId,
@@ -60,6 +62,7 @@ data class CoinFlipBetSonhosTransaction(
 @Serializable
 data class CoinFlipBetGlobalSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val winner: UserId,
@@ -74,6 +77,7 @@ data class CoinFlipBetGlobalSonhosTransaction(
 @Serializable
 data class EmojiFightBetSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val winner: UserId,
@@ -88,6 +92,7 @@ data class EmojiFightBetSonhosTransaction(
 @Serializable
 data class SparklyPowerLSXSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val action: SparklyPowerLSXTransactionEntryAction,
@@ -101,6 +106,7 @@ data class SparklyPowerLSXSonhosTransaction(
 @Serializable
 data class DailyTaxSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -111,6 +117,7 @@ data class DailyTaxSonhosTransaction(
 @Serializable
 data class SonhosBundlePurchaseSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long
@@ -119,6 +126,7 @@ data class SonhosBundlePurchaseSonhosTransaction(
 @Serializable
 data class DivineInterventionSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val action: DivineInterventionTransactionEntryAction,
@@ -130,6 +138,7 @@ data class DivineInterventionSonhosTransaction(
 @Serializable
 data class BotVoteSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val websiteSource: WebsiteVoteSource,
@@ -139,6 +148,7 @@ data class BotVoteSonhosTransaction(
 @Serializable
 data class Christmas2022SonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -148,6 +158,7 @@ data class Christmas2022SonhosTransaction(
 @Serializable
 data class Easter2023SonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -157,6 +168,7 @@ data class Easter2023SonhosTransaction(
 @Serializable
 data class ShipEffectSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long
@@ -165,6 +177,7 @@ data class ShipEffectSonhosTransaction(
 @Serializable
 data class RaffleRewardSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val quantity: Long,
@@ -176,6 +189,7 @@ data class RaffleRewardSonhosTransaction(
 @Serializable
 data class RaffleTicketsSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -185,6 +199,7 @@ data class RaffleTicketsSonhosTransaction(
 @Serializable
 data class PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -195,6 +210,7 @@ data class PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction(
 @Serializable
 data class PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -205,6 +221,7 @@ data class PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
 @Serializable
 data class LoriCoolCardsBoughtBoosterPackSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -214,6 +231,7 @@ data class LoriCoolCardsBoughtBoosterPackSonhosTransaction(
 @Serializable
 data class LoriCoolCardsFinishedAlbumSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val sonhos: Long,
@@ -223,6 +241,7 @@ data class LoriCoolCardsFinishedAlbumSonhosTransaction(
 @Serializable
 data class LoriCoolCardsPaymentSonhosTradeTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
     val givenBy: UserId,
@@ -233,6 +252,7 @@ data class LoriCoolCardsPaymentSonhosTradeTransaction(
 @Serializable
 data class UnknownSonhosTransaction(
     override val id: Long,
+    override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId
 ) : SonhosTransaction()

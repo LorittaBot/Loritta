@@ -92,6 +92,5 @@ class LorittaUserAppView(
         }
     }
 
-
-    override fun getTitle() = locale["website.dailyShop.title"]
+    override fun getTitle() = i18nContext.get(I18nKeysData.Website.Dashboard.PocketLoritta.Title)
 }

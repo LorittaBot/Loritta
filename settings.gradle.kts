@@ -11,7 +11,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             val kotlin = version("kotlin", "1.7.10")
-            val kotlinXSerialization = version("kotlinx-serialization", "1.6.0")
+            val kotlinXSerialization = version("kotlinx-serialization", "1.7.1")
             val ktor = version("ktor", "2.3.6")
             val jib = version("jib", "3.4.3")
             // We can't use 0.50.0 yet because they broke the inList and notInList signature for ID fields
@@ -98,3 +98,4 @@ include(":discord-chat-markdown-parser")
 include(":discord-chat-markdown-parser-samples")
 include(":discord-chat-message-renderer-entities")
 include(":discord-chat-message-renderer-server")
+include(":lori-api-proxy")

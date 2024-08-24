@@ -77,6 +77,8 @@ object DefaultRoutes {
 		PocketLorittaRoute(loritta),
 		PostDashboardThemeRoute(loritta),
 		LorittaUserAppRoute(loritta),
+		LorittaUserAPIKeysRoute(loritta),
+		PostGenerateNewLorittaUserAPIKeyRoute(loritta),
 
 		// ===[ API ROUTES ]===
 		// Callbacks
