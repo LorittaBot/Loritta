@@ -12,13 +12,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import kotlin.time.Duration.Companion.seconds
 
 class GetRichestUsersRoute(m: LorittaBot) : LoriPublicAPIRoute(
     m,
-    "/sonhos/rank",
+    LoriPublicHttpApiEndpoints.GET_SONHOS_RANK,
     RateLimitOptions(
         5,
         5.seconds

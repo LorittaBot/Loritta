@@ -19,11 +19,12 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.Generic
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPIGuildRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.RateLimitOptions
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.TokenInfo
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import kotlin.time.Duration.Companion.seconds
 
 class PostRerollGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     m,
-    "/guilds/{guildId}/giveaways/{giveawayId}/reroll",
+    LoriPublicHttpApiEndpoints.REROLL_GUILD_GIVEAWAY,
     RateLimitOptions(
         2,
         5.seconds

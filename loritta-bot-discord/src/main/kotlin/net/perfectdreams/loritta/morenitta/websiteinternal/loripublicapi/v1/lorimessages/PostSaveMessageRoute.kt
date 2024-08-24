@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds
+package net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -19,11 +19,12 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.Generic
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPIGuildRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.RateLimitOptions
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.TokenInfo
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import kotlin.time.Duration.Companion.seconds
 
 class PostSaveMessageRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     m,
-    "/guilds/{guildId}/channels/{channelId}/messages/{messageId}/save",
+    LoriPublicHttpApiEndpoints.SAVE_LORITTA_MESSAGE,
     RateLimitOptions(
         2,
         5.seconds

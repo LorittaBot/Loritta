@@ -17,13 +17,14 @@ import net.perfectdreams.loritta.morenitta.utils.AWTColorSerializer
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import java.awt.Color
 import kotlin.time.Duration.Companion.seconds
 
 class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     m,
-    "/guilds/{guildId}/giveaways",
+    LoriPublicHttpApiEndpoints.REROLL_GUILD_GIVEAWAY,
     RateLimitOptions(
         2,
         5.seconds

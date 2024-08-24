@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.plugins.compression.*
+import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -25,7 +26,9 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.WebsitePublicAPIException
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.*
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages.PostSaveMessageRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages.PostVerifyMessageRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.sonhos.GetRichestUsersRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.users.GetUserInfoRoute
@@ -70,6 +73,12 @@ class InternalWebServer(val m: LorittaBot) {
         // Reserved ports can be checked with "netsh interface ipv4 show excludedportrange protocol=tcp"
         val server = embeddedServer(CIO, 13003) {
             install(Compression)
+
+            install(StatusPages) {
+                exception<WebsitePublicAPIException> { call, cause ->
+                    cause.action.invoke(call)
+                }
+            }
 
             routing {
                 post("/rpc") {

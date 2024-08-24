@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":temmie-discord-auth-loritta-commons"))
     implementation(project(":switch-twitch"))
     implementation(project(":discord-chat-message-renderer-entities"))
+    implementation(project(":lori-public-http-api-common"))
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)

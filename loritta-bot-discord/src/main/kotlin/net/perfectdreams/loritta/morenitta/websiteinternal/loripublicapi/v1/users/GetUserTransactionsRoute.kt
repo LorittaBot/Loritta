@@ -12,13 +12,14 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.UserIdAsStringSerializer
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.UserId
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
 class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
     m,
-    "/users/{userId}/transactions",
+    LoriPublicHttpApiEndpoints.GET_USER_TRANSACTIONS,
     RateLimitOptions(
         5,
         5.seconds

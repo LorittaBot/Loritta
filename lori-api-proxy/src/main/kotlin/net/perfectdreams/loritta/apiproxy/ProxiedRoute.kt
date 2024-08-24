@@ -3,7 +3,16 @@ package net.perfectdreams.loritta.apiproxy
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.util.*
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.loritta.serializable.LorittaCluster
+
+fun ProxiedRoute(endpoint: LoriPublicHttpApiEndpoint, routeToClusterId: (LoriAPIProxy, ApplicationCall) -> (LorittaCluster)): ProxiedRoute {
+    return ProxiedRoute(
+        endpoint.method,
+        "/v1${endpoint.path}",
+        routeToClusterId
+    )
+}
 
 class ProxiedRoute(
     val method: HttpMethod,

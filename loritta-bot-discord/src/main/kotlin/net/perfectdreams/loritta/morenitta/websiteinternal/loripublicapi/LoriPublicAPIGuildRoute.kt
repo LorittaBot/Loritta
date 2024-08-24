@@ -8,33 +8,51 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 
 abstract class LoriPublicAPIGuildRoute(
     m: LorittaBot,
-    path: String,
+    endpoint: LoriPublicHttpApiEndpoint,
     rateLimitOptions: RateLimitOptions
-) : LoriPublicAPIRoute(m, path, rateLimitOptions) {
+) : LoriPublicAPIRoute(m, endpoint, rateLimitOptions) {
+    companion object {
+        suspend fun validateGuildRequest(m: LorittaBot, tokenInfo: TokenInfo, guildId: Long): GuildAndMember {
+            val guild = m.lorittaShards.getGuildById(guildId)
+            if (guild == null) {
+                throw WebsitePublicAPIException { call ->
+                    call.respondJson(
+                        "",
+                        status = HttpStatusCode.NotFound
+                    )
+                }
+            }
+
+            val member = guild.retrieveMemberOrNullById(tokenInfo.userId)
+            if (member == null) {
+                throw WebsitePublicAPIException { call ->
+                    call.respondJson(
+                        "",
+                        status = HttpStatusCode.NotFound
+                    )
+                }
+            }
+
+            return GuildAndMember(
+                guild,
+                member
+            )
+        }
+    }
+
     override suspend fun onAPIRequest(call: ApplicationCall, tokenInfo: TokenInfo) {
-        val guild = m.lorittaShards.getGuildById(call.parameters.getOrFail("guildId"))
-        if (guild == null) {
-            call.respondJson(
-                "",
-                status = HttpStatusCode.NotFound
-            )
-            return
-        }
-
-        val member = guild.retrieveMemberOrNullById(tokenInfo.userId)
-        if (member == null) {
-            call.respondJson(
-                "",
-                status = HttpStatusCode.NotFound
-            )
-            return
-        }
-
+        val (guild, member) = validateGuildRequest(m, tokenInfo, call.parameters.getOrFail("guildId").toLong())
         onGuildAPIRequest(call, tokenInfo, guild, member)
     }
 
     abstract suspend fun onGuildAPIRequest(call: ApplicationCall, tokenInfo: TokenInfo, guild: Guild, member: Member)
+
+    data class GuildAndMember(
+        val guild: Guild,
+        val member: Member
+    )
 }

@@ -9,6 +9,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":common"))
     implementation(project(":loritta-serializable-commons"))
+    implementation(project(":lori-public-http-api-common"))
 
     // Ktor
     implementation("io.ktor:ktor-server-core:${Versions.KTOR}")

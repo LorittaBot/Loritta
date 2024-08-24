@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
@@ -26,7 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class GetGuildEmojiFightTopWinnersRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     m,
-    "/guilds/{guildId}/emojifights/top-winners-rank",
+    LoriPublicHttpApiEndpoints.EMOJIFIGHT_GUILD_TOP_WINNERS_RANK,
     RateLimitOptions(
         5,
         5.seconds

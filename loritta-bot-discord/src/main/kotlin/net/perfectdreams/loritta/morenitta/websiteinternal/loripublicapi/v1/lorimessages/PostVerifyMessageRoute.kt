@@ -16,12 +16,13 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPub
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPIRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.RateLimitOptions
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.TokenInfo
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import java.io.IOException
 import kotlin.time.Duration.Companion.seconds
 
 class PostVerifyMessageRoute(m: LorittaBot) : LoriPublicAPIRoute(
     m,
-    "/lori-messages/verify-message",
+    LoriPublicHttpApiEndpoints.VERIFY_LORITTA_MESSAGE,
     RateLimitOptions(
         5,
         5.seconds

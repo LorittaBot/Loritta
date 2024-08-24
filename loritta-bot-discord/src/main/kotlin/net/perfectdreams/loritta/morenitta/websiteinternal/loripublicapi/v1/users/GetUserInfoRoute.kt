@@ -16,12 +16,13 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPub
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPIRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.RateLimitOptions
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.TokenInfo
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.time.Duration.Companion.seconds
 
 class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
     m,
-    "/users/{userId}",
+    LoriPublicHttpApiEndpoints.GET_USER_BY_ID,
     RateLimitOptions(
         5,
         5.seconds

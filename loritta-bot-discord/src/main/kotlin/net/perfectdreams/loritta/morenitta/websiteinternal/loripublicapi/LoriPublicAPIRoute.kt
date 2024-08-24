@@ -14,19 +14,19 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserLorittaAPITokens
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.selectAll
 
 abstract class LoriPublicAPIRoute(
     val m: LorittaBot,
-    path: String,
+    val endpoint: LoriPublicHttpApiEndpoint,
     val rateLimitOptions: RateLimitOptions
-) : BaseRoute("/lori-public-api/v1$path") {
+) : BaseRoute("/lori-public-api/v1${endpoint.path}") {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    // TODO: Token -> Accesses?
     private val accesses = mutableMapOf<String, RateLimitData>()
     private val rateLimitCheckMutex = Mutex()
 
@@ -135,6 +135,8 @@ abstract class LoriPublicAPIRoute(
     }
 
     abstract suspend fun onAPIRequest(call: ApplicationCall, tokenInfo: TokenInfo)
+
+    override fun getMethod() = endpoint.method
 
     data class RateLimitData(
         var requestsMade: Int,

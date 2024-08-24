@@ -14,6 +14,7 @@ import io.ktor.server.routing.*
 import io.ktor.util.*
 import io.ktor.utils.io.*
 import mu.KotlinLogging
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 
 /**
@@ -39,16 +40,16 @@ class LoriAPIProxy(
     }
 
     private val proxiedRoutes = listOf(
-        ProxiedRoute(HttpMethod.Get, "/v1/users/{userId}", ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
-        ProxiedRoute(HttpMethod.Get, "/v1/users/{userId}/transactions", ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
-        ProxiedRoute(HttpMethod.Get, "/v1/sonhos/rank", ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
-        ProxiedRoute(HttpMethod.Post, "/v1/lori-messages/verify-message", ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
-        ProxiedRoute(HttpMethod.Post, "/v1/guilds/{guildId}/channels/{channelId}/messages/{messageId}/save", ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
-        ProxiedRoute(HttpMethod.Put, "/v1/guilds/{guildId}/giveaways", ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
-        ProxiedRoute(HttpMethod.Post, "/v1/guilds/{guildId}/giveaways/{giveawayId}/end", ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
-        ProxiedRoute(HttpMethod.Post, "/v1/guilds/{guildId}/giveaways/{giveawayId}/reroll", ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
-        ProxiedRoute(HttpMethod.Get, "/v1/guilds/{guildId}/emojifights/top-winners", ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
-        ProxiedRoute(HttpMethod.Get, "/v1/guilds/{guildId}/users/{userId}/emojifight/victories", ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.GET_USER_BY_ID, ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.GET_USER_TRANSACTIONS, ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.GET_SONHOS_RANK, ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.VERIFY_LORITTA_MESSAGE, ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.SAVE_LORITTA_MESSAGE, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.CREATE_GUILD_GIVEAWAY, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.END_GUILD_GIVEAWAY, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.REROLL_GUILD_GIVEAWAY, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.EMOJIFIGHT_GUILD_TOP_WINNERS_RANK, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.EMOJIFIGHT_GUILD_VICTORIES, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
     )
 
     fun start() {
