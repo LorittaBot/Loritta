@@ -55,6 +55,7 @@ abstract class ProfileDashboardView(
             appendEntry("/dashboard/profiles", false, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", "profile_list")
             appendEntry("/dashboard/backgrounds", false, "Backgrounds", "far fa-images", "background_list")
             appendEntry("/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", "ship_effects")
+            appendEntry("/dashboard/api-keys", true, i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title), "fa fa-code", "user-api-keys")
 
             hr(classes = "divider") {}
             div(classes = "category") {
