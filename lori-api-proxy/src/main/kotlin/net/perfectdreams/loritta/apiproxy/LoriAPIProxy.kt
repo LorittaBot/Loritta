@@ -79,7 +79,10 @@ class LoriAPIProxy(
                             val clusterToBeUsed = proxiedRoute.routeToClusterId.invoke(this@LoriAPIProxy, call)
 
                             // The URI already includeds the query string
-                            logger.info { "Requesting ${proxiedRoute.method.value} ${call.request.uri} for $authorizationTokenFromHeader..." }
+                            val clientHeaders = call.request.headers.toMap().entries.joinToString("; ") {
+                                "$it: ${it.value}"
+                            }
+                            logger.info { "Requesting ${proxiedRoute.method.value} ${call.request.uri} for $authorizationTokenFromHeader... $clientHeaders" }
                             val response = http.request("${clusterToBeUsed.rpcUrl.removeSuffix("/")}/lori-public-api${call.request.uri}") {
                                 this.method = proxiedRoute.method
 
