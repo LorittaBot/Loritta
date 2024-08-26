@@ -92,7 +92,11 @@ class LoriAPIProxy(
                                         header(header, clientHeader)
                                 }
 
-                                setBody(call.receiveStream())
+                                // There's a bug in some bad clients (Bot Designer for Discord) that they send a "Content-Type" header for GET requests without any body, even if that's incorrect
+                                // So, as an workaround, we'll only attempt to read the body only if the request is NOT a GET request
+                                if (proxiedRoute.method != HttpMethod.Get) {
+                                    setBody(call.receiveStream())
+                                }
                             }
                             val logBuild = BACKEND_HEADERS_TO_BE_LOGGED.joinToString("; ") {
                                 "$it: ${response.headers[it]}"
