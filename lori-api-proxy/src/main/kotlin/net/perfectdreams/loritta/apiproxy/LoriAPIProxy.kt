@@ -83,6 +83,7 @@ class LoriAPIProxy(
                                 "$it: ${it.value}"
                             }
                             logger.info { "Requesting ${proxiedRoute.method.value} ${call.request.uri} for $authorizationTokenFromHeader... $clientHeaders" }
+                            val requestContentLength = call.request.contentLength()
                             val response = http.request("${clusterToBeUsed.rpcUrl.removeSuffix("/")}/lori-public-api${call.request.uri}") {
                                 this.method = proxiedRoute.method
 
@@ -94,7 +95,10 @@ class LoriAPIProxy(
 
                                 // There's a bug in some bad clients (Bot Designer for Discord) that they send a "Content-Type" header for GET requests without any body, even if that's incorrect
                                 // So, as an workaround, we'll only attempt to read the body only if the request is NOT a GET request
-                                if (proxiedRoute.method != HttpMethod.Get) {
+                                // The reason we do this is that somewhere (not in Ktor) there's a ~15s timeout waiting for the client to send a body, and that's causing issues
+                                // ...but then I found out that this same behavior *also* happens with curl, if you do a POST without any body
+                                // so as a 100% workaround, we'll check if the Content-Length is not null and if it is larger than 0
+                                if (requestContentLength != null && requestContentLength > 0) {
                                     setBody(call.receiveStream())
                                 }
                             }
