@@ -130,21 +130,21 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
 
         if (request.roleIdsToBeGivenToTheWinners != null) {
             for (roleId in request.roleIdsToBeGivenToTheWinners) {
-                if (!validateRole(call, guild, member, roleId))
+                if (!validateRole(call, guild, member, roleId, true))
                     return
             }
         }
 
         if (request.allowedRoles != null) {
             for (roleId in request.allowedRoles.roleIds) {
-                if (!validateRole(call, guild, member, roleId))
+                if (!validateRole(call, guild, member, roleId, false))
                     return
             }
         }
 
         if (request.deniedRoles != null) {
             for (roleId in request.deniedRoles.roleIds) {
-                if (!validateRole(call, guild, member, roleId))
+                if (!validateRole(call, guild, member, roleId, false))
                     return
             }
         }
@@ -175,7 +175,7 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             request.endsAt.toEpochMilliseconds(),
             request.numberOfWinners,
             null,
-            request.roleIdsToBeGivenToTheWinners?.map { it.toString() },
+            request.roleIdsToBeGivenToTheWinners?.map { it.toString() }?.ifEmpty { null },
             request.allowedRoles,
             request.deniedRoles,
             false,
@@ -199,7 +199,13 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     /**
      * Validates if the [roleId] exists and if it is interactable both by Loritta and by the user that invoked it
      */
-    private suspend fun validateRole(call: ApplicationCall, guild: Guild, invoker: Member, roleId: Long): Boolean {
+    private suspend fun validateRole(
+        call: ApplicationCall,
+        guild: Guild,
+        invoker: Member,
+        roleId: Long,
+        checkIfCanInteract: Boolean
+    ): Boolean {
         val role = guild.getRoleById(roleId)
         if (role == null) {
             call.respondJson(
@@ -213,28 +219,30 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             return false
         }
 
-        if (!guild.selfMember.canInteract(role) || role.isManaged) {
-            call.respondJson(
-                Json.encodeToString(
-                    GenericErrorResponse(
-                        "Loritta can't interact with the role $roleId"
-                    )
-                ),
-                status = HttpStatusCode.BadRequest
-            )
-            return false
-        }
+        if (checkIfCanInteract) {
+            if (!guild.selfMember.canInteract(role) || role.isManaged) {
+                call.respondJson(
+                    Json.encodeToString(
+                        GenericErrorResponse(
+                            "Loritta can't interact with the role $roleId"
+                        )
+                    ),
+                    status = HttpStatusCode.BadRequest
+                )
+                return false
+            }
 
-        if (!invoker.hasPermission(Permission.MANAGE_ROLES) || !invoker.canInteract(role)) {
-            call.respondJson(
-                Json.encodeToString(
-                    GenericErrorResponse(
-                        "You can't interact with the role $roleId"
-                    )
-                ),
-                status = HttpStatusCode.BadRequest
-            )
-            return false
+            if (!invoker.hasPermission(Permission.MANAGE_ROLES) || !invoker.canInteract(role)) {
+                call.respondJson(
+                    Json.encodeToString(
+                        GenericErrorResponse(
+                            "You can't interact with the role $roleId"
+                        )
+                    ),
+                    status = HttpStatusCode.BadRequest
+                )
+                return false
+            }
         }
 
         return true
