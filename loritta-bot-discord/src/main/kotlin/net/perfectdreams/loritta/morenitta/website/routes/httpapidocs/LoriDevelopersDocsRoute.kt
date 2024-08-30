@@ -32,10 +32,7 @@ import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.ColorTheme
 import org.jsoup.Jsoup
 import java.io.File
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import kotlin.collections.set
-import kotlin.random.Random
 
 class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/developers/docs/{apiDocsPath...}") {
     override val isMainClusterOnlyRoute = true
@@ -47,8 +44,6 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
     ) {
         val pathThatWillBeRendered = call.parameters["apiDocsPath"] ?: "index"
         val devDocs = Yaml.default.decodeFromStream<DevDocs>(File(loritta.config.loritta.folders.content, "dev-docs.yml").inputStream())
-        val playlistInfo = Yaml.default.decodeFromStream<SongPlaylist>(File(loritta.config.loritta.folders.content, "playlist.yml").inputStream())
-        val shuffledPlaylistSongs = playlistInfo.songs.shuffled(Random(0))
 
         // Load all pages to know what we can actually access
         val sidebarCategories = devDocs.sidebar.map {
@@ -139,8 +134,7 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                     lorifetchStats.guildCount,
                     lorifetchStats.executedCommands,
                     lorifetchStats.uniqueUsersExecutedCommands,
-                    playlistInfo,
-                    shuffledPlaylistSongs
+                    lorifetchStats.currentSong
                 ).generateHtml()
             )
 
@@ -165,6 +159,8 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
 
         val contentMetadata = Yaml.default.decodeFromString<DocsContentMetadata>(frontmatterYaml)
         val soup = Jsoup.parse(contentInMarkdown)
+
+        val playlistInfo = Yaml.default.decodeFromStream<SongPlaylist>(File(loritta.config.loritta.folders.content, "playlist.yml").inputStream())
 
         soup.select("transactiontypes-table")
             .forEach {
@@ -222,15 +218,6 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                 )
             }
 
-        val nowAsZST = ZonedDateTime.now(
-            ZoneId.of("America/Sao_Paulo")
-        )
-
-        val startTime = playlistInfo.startedPlayingAt.epochSeconds // When the playlist started playing
-        val timestamp = nowAsZST.toEpochSecond() // The timestamp we want to check
-
-        val currentSong = findCurrentSong(shuffledPlaylistSongs, startTime, timestamp)
-
         soup.select("loritta-mainframe-lorifetch")
             .forEach {
                 it.html(
@@ -245,7 +232,7 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                             lorifetchStats.guildCount,
                             lorifetchStats.executedCommands.toInt(),
                             lorifetchStats.uniqueUsersExecutedCommands,
-                            currentSong
+                            lorifetchStats.currentSong
                         )
                     }
                 )

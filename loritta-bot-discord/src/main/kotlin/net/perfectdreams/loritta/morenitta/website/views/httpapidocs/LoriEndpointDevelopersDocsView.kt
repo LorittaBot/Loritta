@@ -43,8 +43,7 @@ class LoriEndpointDevelopersDocsView(
     private val guildCount: Int,
     private val executedCommands: Int,
     private val uniqueUsersExecutedCommands: Int,
-    private val playlistInfo: SongPlaylist,
-    private val shuffledPlaylistSongs: List<Song>
+    private val currentSong: CurrentSong
 ) : LoriDevelopersDocsDashboardView(
     lorittaWebsite,
     i18nContext,
@@ -306,15 +305,6 @@ class LoriEndpointDevelopersDocsView(
                         }
                     }
                 }
-
-                val nowAsZST = ZonedDateTime.now(
-                    ZoneId.of("America/Sao_Paulo")
-                )
-
-                val startTime = playlistInfo.startedPlayingAt.epochSeconds // When the playlist started playing
-                val timestamp = nowAsZST.toEpochSecond() // The timestamp we want to check
-
-                val currentSong = findCurrentSong(shuffledPlaylistSongs, startTime, timestamp)
 
                 mainframeTerminalLorifetch(
                     lorittaWebsite.loritta,
