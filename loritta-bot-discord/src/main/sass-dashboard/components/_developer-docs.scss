@@ -95,6 +95,7 @@
     .mainframe-terminal {
       padding: 1em;
       font-family: monospace;
+      overflow: auto;
 
       .term-green {
         color: #b0eb93;
