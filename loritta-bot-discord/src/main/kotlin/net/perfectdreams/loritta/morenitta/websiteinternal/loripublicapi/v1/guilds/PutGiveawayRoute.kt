@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     m,
-    LoriPublicHttpApiEndpoints.REROLL_GUILD_GIVEAWAY,
+    LoriPublicHttpApiEndpoints.CREATE_GUILD_GIVEAWAY,
     RateLimitOptions(
         2,
         5.seconds
