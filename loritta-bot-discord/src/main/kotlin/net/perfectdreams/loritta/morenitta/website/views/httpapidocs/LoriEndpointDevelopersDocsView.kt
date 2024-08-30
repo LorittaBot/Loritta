@@ -14,14 +14,14 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.DiscordLikeToggles.discordToggle
-import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.*
+import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.CurrentSong
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.LoriDevelopersDocsRoute.Companion.createObjectTemplateButton
+import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.MagicEndpoints
+import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.ParameterKind
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PutGiveawayRoute
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubtypeOf
@@ -68,7 +68,7 @@ class LoriEndpointDevelopersDocsView(
 
                 text(" ")
 
-                span {
+                span(classes = "endpoint-path") {
                     text("/v1")
                     text(endpoint.path)
                 }

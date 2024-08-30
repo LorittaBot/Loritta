@@ -68,7 +68,6 @@ fun DIV.mainframeTerminalLorifetch(
                     attributes["sse-swap"] = "message"
 
                     mainframeTerminalLorifetchStats(
-
                         loritta,
                         i18nContext,
                         guildCount,

@@ -23,6 +23,10 @@
     align-items: center;
     gap: 0.5em;
 
+    .endpoint-path {
+      line-break: anywhere;
+    }
+
     .http-method-pill {
       padding: 0 6px 0 6px;
       color: white;
