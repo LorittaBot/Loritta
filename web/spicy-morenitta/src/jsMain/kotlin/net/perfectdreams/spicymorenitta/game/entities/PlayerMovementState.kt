@@ -130,7 +130,11 @@ sealed class PlayerMovementState(val player: LorittaPlayer) {
 
             if (player.x !in 1 until player.m.width) {
                 newState = HurtState(player)
-                player.speed = player.speed * -1
+                // Scale depending on the screen width
+                // 1706 (test screen size which is my monitor) --- -1
+                // player.m.width --- x
+                val targetMultiplication = (player.m.width * -1) / 1706.0
+                player.speed = player.speed * targetMultiplication
                 player.gravity = -24.0
             }
         }
