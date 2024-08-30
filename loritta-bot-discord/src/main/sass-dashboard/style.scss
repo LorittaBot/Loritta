@@ -222,7 +222,7 @@ nav#left-sidebar {
     height: calc(100% - 50px);
     position: fixed;
     transition-property: transform, box-shadow;
-    transition-duration: 1s; // Used for the nice mobile animation
+    transition-duration: 0.65s; // Used for the nice mobile animation
     width: 100%;
     transform: translate(-100%);
     // Both will change, yay!
