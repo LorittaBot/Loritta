@@ -147,6 +147,7 @@ window.addEventListener('load', function () {
                 // TODO - htmx-adventures: ^ Currently this is false because for some reason something is going wrong saying that htmx's "process" function does not work...
                 //  see the "htmx.kt" file
                 script(src = "https://unpkg.com/htmx.org@2.0.2") {}
+                script(src = "https://unpkg.com/htmx-ext-sse@2.2.2/sse.js") {}
 
                 script {
                     unsafe {

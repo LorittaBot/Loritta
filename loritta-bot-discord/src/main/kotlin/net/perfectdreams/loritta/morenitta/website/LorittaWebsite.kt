@@ -136,6 +136,7 @@ class LorittaWebsite(
 	)
 
 	val processors = Processors(this)
+	val lorifetch = Lorifetch(this.loritta)
 
 	fun start() {
 		INSTANCE = this

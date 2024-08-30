@@ -8,8 +8,7 @@ import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
 import io.ktor.server.application.*
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toKotlinInstant
+import kotlinx.coroutines.flow.first
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.decodeFromString
@@ -17,8 +16,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSettings
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.TransactionType
@@ -33,10 +30,8 @@ import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriEndpoin
 import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.mainframeTerminalLorifetch
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.ColorTheme
-import org.jetbrains.exposed.sql.select
 import org.jsoup.Jsoup
 import java.io.File
-import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.collections.set
@@ -122,33 +117,7 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
             } ?: ColorTheme.LIGHT
         } else ColorTheme.LIGHT
 
-        val guildCount = loritta.lorittaShards.queryGuildCount()
-        val since = Instant.now()
-            .minusSeconds(86400)
-            .toKotlinInstant()
-        val executedCommands = loritta.transaction {
-            val appCommands = ExecutedApplicationCommandsLog.select {
-                ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
-            }.count()
-            val legacyCommands = ExecutedCommandsLog.select {
-                ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
-            }.count()
-
-            return@transaction appCommands + legacyCommands
-        }
-
-        val uniqueUsersExecutedCommands = loritta.transaction {
-            val appCommands = ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
-                ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
-            }.groupBy(ExecutedApplicationCommandsLog.userId).toList()
-                .map { it[ExecutedApplicationCommandsLog.userId] }
-            val legacyCommands = ExecutedCommandsLog.slice(ExecutedCommandsLog.userId).select {
-                ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
-            }.groupBy(ExecutedCommandsLog.userId).toList()
-                .map { it[ExecutedCommandsLog.userId] }
-
-            return@transaction (appCommands + legacyCommands).distinct().size
-        }
+        val lorifetchStats = loritta.newWebsite!!.lorifetch.statsFlow.first()
 
         if (pageToAccess is LoriDevelopersDocsView.SidebarEntry.SidebarEndpointEntry) {
             call.respondHtml(
@@ -167,9 +136,9 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                     pageToAccess.endpointId,
                     pageToAccess.endpoint,
                     MagicEndpoints.endpointTesterOptions[pageToAccess.endpoint] ?: error("Whoops"),
-                    guildCount,
-                    executedCommands,
-                    uniqueUsersExecutedCommands.toLong(),
+                    lorifetchStats.guildCount,
+                    lorifetchStats.executedCommands,
+                    lorifetchStats.uniqueUsersExecutedCommands,
                     playlistInfo,
                     shuffledPlaylistSongs
                 ).generateHtml()
@@ -273,9 +242,9 @@ class LoriDevelopersDocsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/d
                             userIdentification,
                             "Terminal",
                             null,
-                            guildCount,
-                            executedCommands.toInt(),
-                            uniqueUsersExecutedCommands,
+                            lorifetchStats.guildCount,
+                            lorifetchStats.executedCommands.toInt(),
+                            lorifetchStats.uniqueUsersExecutedCommands,
                             currentSong
                         )
                     }

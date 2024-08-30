@@ -35,9 +35,9 @@ object DefaultRoutes {
 		// HTTP API Docs
 		LoriDevelopersDocsRoute(loritta),
 		PostTestLoriDevelopersDocsEndpointRoute(loritta),
-		PostLoriSongListeningRoute(loritta),
 		PostCreateObjectTemplateLoriDevelopersDocsRoute(loritta),
 		PostDeleteObjectTemplateLoriDevelopersDocsRoute(loritta),
+		GetLorifetchStatsSSERoute(loritta),
 
 		// Dashboard
 		DashboardRoute(loritta),

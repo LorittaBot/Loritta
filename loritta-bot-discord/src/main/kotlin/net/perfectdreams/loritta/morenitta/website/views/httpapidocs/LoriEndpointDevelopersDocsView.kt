@@ -41,8 +41,8 @@ class LoriEndpointDevelopersDocsView(
     private val endpoint: LoriPublicHttpApiEndpoint,
     private val endpointTesterOptions: MagicEndpoints.EndpointTesterOptions,
     private val guildCount: Int,
-    private val executedCommands: Long,
-    private val uniqueUsersExecutedCommands: Long,
+    private val executedCommands: Int,
+    private val uniqueUsersExecutedCommands: Int,
     private val playlistInfo: SongPlaylist,
     private val shuffledPlaylistSongs: List<Song>
 ) : LoriDevelopersDocsDashboardView(
@@ -323,8 +323,8 @@ class LoriEndpointDevelopersDocsView(
                     "Requisição",
                     "result-stuff",
                     guildCount,
-                    executedCommands.toInt(),
-                    uniqueUsersExecutedCommands.toInt(),
+                    executedCommands,
+                    uniqueUsersExecutedCommands,
                     currentSong
                 )
             }
