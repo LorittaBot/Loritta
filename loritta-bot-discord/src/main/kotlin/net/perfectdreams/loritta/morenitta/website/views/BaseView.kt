@@ -143,12 +143,10 @@ window.addEventListener('load', function () {
                 // Detect AdBlock
                 script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/adsbygoogle.js") {}
 
-                // App itself
-                // TODO - htmx-adventures: Defer this and other scripts of this page
-                //  (we cannot do this yet because some of the old server config pages call scripts inline, and that borks everything!)
-                script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {
-                    // defer = true
-                }
+                // htmx & hyperscript & other libs are included in the app.js bundle
+                // TODO - htmx-adventures: ^ Currently this is false because for some reason something is going wrong saying that htmx's "process" function does not work...
+                //  see the "htmx.kt" file
+                script(src = "https://unpkg.com/htmx.org@2.0.2") {}
 
                 script {
                     unsafe {
@@ -156,7 +154,12 @@ window.addEventListener('load', function () {
                     }
                 }
 
-                // htmx & hyperscript & other libs are included in the app.js bundle
+                // App itself
+                // TODO - htmx-adventures: Defer this and other scripts of this page
+                //  (we cannot do this yet because some of the old server config pages call scripts inline, and that borks everything!)
+                script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${LorittaWebsite.INSTANCE.spicyMorenittaBundle.hash()}") {
+                    // defer = true
+                }
 
                 // Google AdSense
                 script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}

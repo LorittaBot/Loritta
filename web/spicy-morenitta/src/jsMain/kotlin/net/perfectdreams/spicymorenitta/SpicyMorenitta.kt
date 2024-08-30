@@ -275,7 +275,7 @@ class SpicyMorenitta : Logging {
 						val eventName = it.key
 						val eventValue = it.value.jsonPrimitive.contentOrNull
 						println("Triggering event $eventName with $eventValue")
-						trigger(
+						htmx.trigger(
 							"body",
 							it.key,
 							jsObject {
@@ -1061,7 +1061,7 @@ class SpicyMorenitta : Logging {
 					val diff = resetsAt - (Date().getTime().toLong())
 					if (0 >= diff) {
 						// Trigger Item Shop refresh if the time is 0
-						trigger("body", "refreshItemShop", null)
+						htmx.trigger("body", "refreshItemShop", null)
 						return@launch
 					}
 
@@ -1140,8 +1140,8 @@ class SpicyMorenitta : Logging {
 			it.setAttribute("loritta-powered-up", "")
 			val lorittaSaveBarAttribute = it.getAttribute("loritta-synchronize-with-save-bar")!!
 
-			val saveBarElement = find(lorittaSaveBarAttribute) as HTMLDivElement
-			val initialState = JSON.stringify(values(it))
+			val saveBarElement = htmx.find(lorittaSaveBarAttribute) as HTMLDivElement
+			val initialState = JSON.stringify(htmx.values(it))
 
 			println("Form save bar setup, initial state is: $initialState")
 
@@ -1149,7 +1149,7 @@ class SpicyMorenitta : Logging {
 				"input",
 				{ event ->
 					// Save the current state
-					val newState = JSON.stringify(values(it))
+					val newState = JSON.stringify(htmx.values(it))
 
 					println("INITIAL STATE: $initialState")
 					println("NEW STATE: $newState")
@@ -1250,7 +1250,7 @@ class SpicyMorenitta : Logging {
 				// Because if a entry uses custom HTML it borks and the list is never updated
 				SimpleSelectMenu(
 					"Click Here!",
-					1, // TODO: If multiple, the original select MUST have "multiple" for it to work in form submissions
+					if (originalSelectMenuElement.multiple) null else 1,
 					modifiedEntries
 				) {
 					debug("owo!!!")

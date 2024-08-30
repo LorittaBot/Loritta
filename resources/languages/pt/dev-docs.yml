@@ -1,0 +1,27 @@
+devDocs:
+  generic:
+    userId: "ID do Usuário"
+    guildId: "ID do Servidor"
+    channelId: "ID do Canal"
+    messageId: "ID da Mensagem"
+    giveawayId: "ID do Sorteio"
+  endpoint:
+    getUserById:
+      title: "Pegar informações de um usuário"
+    getUserTransactions:
+      title: "Pegar transações de um usuário"
+    saveLorittaMessage:
+      title: "Salvar uma Mensagem com a Loritta"
+    verifyLorittaMessage:
+      title: "Verificar uma Mensagem da Loritta"
+    createGuildGiveaway:
+      title: "Criar Sorteio"
+    endGuildGiveaway:
+      title: "Encerrar Sorteio"
+    rerollGuildGiveaway:
+      title: "Fazer Reroll em um Sorteio"
+  parameterKinds:
+    path: "Parâmetro no Path"
+    query: "Parâmetro na Query"
+    json: "Parâmetro no Objeto JSON"
+    fullBody: "Corpo inteiro da Requisição"

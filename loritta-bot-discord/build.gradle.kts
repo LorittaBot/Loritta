@@ -19,6 +19,7 @@ dependencies {
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.hocon)
+    implementation("com.charleskorn.kaml:kaml:0.61.0")
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")

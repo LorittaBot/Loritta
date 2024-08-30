@@ -113,7 +113,8 @@ data class LorittaConfig(
         val root: String,
         val assets: String,
         val temp: String,
-        val website: String
+        val website: String,
+        val content: String
     )
 
     @Serializable

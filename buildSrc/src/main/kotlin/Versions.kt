@@ -1,7 +1,7 @@
 object Versions {
     const val LORITTA = "2023-SNAPSHOT"
     const val PUDDING = "0.0.3-SNAPSHOT"
-    const val KOTLIN = "2.0.0"
+    const val KOTLIN = "2.0.20"
     const val KTOR = "2.3.6"
     const val JDA = "5.0.0-deviousjda-alpha.22_DEV"
     const val KOTLIN_SERIALIZATION = "1.6.0"

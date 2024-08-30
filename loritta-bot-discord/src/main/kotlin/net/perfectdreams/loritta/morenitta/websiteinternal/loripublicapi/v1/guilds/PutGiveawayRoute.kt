@@ -18,7 +18,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChann
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
-import net.perfectdreams.loritta.serializable.GiveawayRoles
 import java.awt.Color
 import kotlin.time.Duration.Companion.seconds
 
@@ -176,8 +175,18 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             request.numberOfWinners,
             null,
             request.roleIdsToBeGivenToTheWinners?.map { it.toString() }?.ifEmpty { null },
-            request.allowedRoles,
-            request.deniedRoles,
+            request.allowedRoles?.let {
+                net.perfectdreams.loritta.serializable.GiveawayRoles(
+                    it.roleIds,
+                    it.isAndCondition
+                )
+            },
+            request.deniedRoles?.let {
+                net.perfectdreams.loritta.serializable.GiveawayRoles(
+                    it.roleIds,
+                    it.isAndCondition
+                )
+            },
             false,
             null,
             null,
@@ -250,20 +259,40 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
 
     @Serializable
     data class SpawnGiveawayRequest(
+        @LoriPublicAPIParameter
         val channelId: Long,
+        @LoriPublicAPIParameter
         val reason: String,
+        @LoriPublicAPIParameter
         val description: String,
+        @LoriPublicAPIParameter
         val imageUrl: String? = null,
+        @LoriPublicAPIParameter
         val thumbnailUrl: String? = null,
+        @LoriPublicAPIParameter
         @Serializable(AWTColorSerializer::class)
         val color: Color? = null,
+        @LoriPublicAPIParameter
         val reaction: String,
+        @LoriPublicAPIParameter
         val endsAt: Instant,
+        @LoriPublicAPIParameter
         val numberOfWinners: Int,
+        @LoriPublicAPIParameter
         val roleIdsToBeGivenToTheWinners: List<Long>? = null,
+        @LoriPublicAPIParameter
         val allowedRoles: GiveawayRoles? = null,
+        @LoriPublicAPIParameter
         val deniedRoles: GiveawayRoles? = null
-    )
+    ) {
+        @Serializable
+        data class GiveawayRoles(
+            @LoriPublicAPIParameter
+            val roleIds: List<Long>,
+            @LoriPublicAPIParameter
+            val isAndCondition: Boolean
+        )
+    }
 
     @Serializable
     data class SpawnGiveawayResponse(

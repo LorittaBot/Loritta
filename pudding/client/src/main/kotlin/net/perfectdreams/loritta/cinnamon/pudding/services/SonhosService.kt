@@ -10,12 +10,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.Simp
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.serializable.SonhosTransaction
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import kotlin.time.Duration.Companion.days
 
@@ -73,10 +70,53 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             query = query and (SimpleSonhosTransactionsLog.timestamp greaterEq afterDateFilter)
 
         return pudding.transaction {
-            SimpleSonhosTransactionsLog.select(query).orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
+            val rawResults = SimpleSonhosTransactionsLog.select(query).orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
                 .limit(limit, offset)
-                .map {
-                    when (val stored = Json.decodeFromString<StoredSonhosTransaction>(it[SimpleSonhosTransactionsLog.metadata])) {
+                .toList()
+
+            val rowToStoredTransactions = rawResults.associate {
+                it to Json.decodeFromString<StoredSonhosTransaction>(it[SimpleSonhosTransactionsLog.metadata])
+            }
+
+            val storedTransactions = rowToStoredTransactions.values
+
+            // Optimization: Query all matchmaking results in a single swoop
+            val globalMatchmakingResults = CoinFlipBetGlobalMatchmakingResults.selectAll()
+                .where {
+                    CoinFlipBetGlobalMatchmakingResults.id inList storedTransactions.filterIsInstance<StoredCoinFlipBetGlobalTransaction>().map { it.matchmakingResultId }
+                }
+                .toList()
+
+            val localMatchmakingResults = CoinFlipBetMatchmakingResults.selectAll()
+                .where {
+                    CoinFlipBetMatchmakingResults.id inList storedTransactions.filterIsInstance<StoredCoinFlipBetTransaction>().map { it.matchmakingResultId }
+                }
+                .toList()
+
+            val emojiFightMatchmakingResults = EmojiFightMatchmakingResults.selectAll()
+                .where {
+                    EmojiFightMatchmakingResults.id inList storedTransactions.filterIsInstance<StoredEmojiFightBetSonhosTransaction>().map { it.emojiFightMatchmakingResultsId }
+                }
+                .toList()
+
+            // EmojiFightParticipants.id eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.winner]
+            val emojiFightMatchmakingResultsWinnerInMatches = EmojiFightParticipants.selectAll()
+                .where {
+                    EmojiFightParticipants.id inList emojiFightMatchmakingResults.map { it[EmojiFightMatchmakingResults.winner] }
+                }
+                .toList()
+
+            val userCountField = EmojiFightParticipants.user.count()
+            val emojiFightMatchmakingResultsUsersInMatches = EmojiFightParticipants.select(EmojiFightParticipants.match, userCountField)
+                .where {
+                    EmojiFightParticipants.id inList emojiFightMatchmakingResults.map { it[EmojiFightMatchmakingResults.winner] }
+                }
+                .groupBy(EmojiFightParticipants.match)
+                .toList()
+
+            rowToStoredTransactions
+                .map { (it, stored) ->
+                    when (stored) {
                         is StoredShipEffectSonhosTransaction -> ShipEffectSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
                             it[SimpleSonhosTransactionsLog.type],
@@ -180,9 +220,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                         )
 
                         is StoredCoinFlipBetTransaction -> {
-                            val matchmakingResult = CoinFlipBetMatchmakingResults.select {
-                                CoinFlipBetMatchmakingResults.id eq stored.matchmakingResultId
-                            }.first()
+                            val matchmakingResult = localMatchmakingResults.first { it[CoinFlipBetMatchmakingResults.id].value == stored.matchmakingResultId }
 
                             CoinFlipBetSonhosTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
@@ -199,9 +237,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                         }
 
                         is StoredCoinFlipBetGlobalTransaction -> {
-                            val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.select {
-                                CoinFlipBetGlobalMatchmakingResults.id eq stored.matchmakingResultId
-                            }.first()
+                            val matchmakingResult = globalMatchmakingResults.first { it[CoinFlipBetGlobalMatchmakingResults.id].value == stored.matchmakingResultId }
 
                             CoinFlipBetGlobalSonhosTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
@@ -298,28 +334,26 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                         )
 
                         is StoredEmojiFightBetSonhosTransaction -> {
-                            val emojiFightMatchmakingResults = EmojiFightMatchmakingResults.select {
-                                EmojiFightMatchmakingResults.id eq stored.emojiFightMatchmakingResultsId
-                            }.first()
+                            val emojiFightMatchmakingResult = emojiFightMatchmakingResults.first { it[EmojiFightMatchmakingResults.id].value == stored.emojiFightMatchmakingResultsId }
 
-                            val winnerInMatch = EmojiFightParticipants.select { EmojiFightParticipants.id eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.winner] }
-                                .first()
+                            val winnerInMatch = emojiFightMatchmakingResultsWinnerInMatches.first { it[EmojiFightParticipants.id].value == emojiFightMatchmakingResult[EmojiFightMatchmakingResults.winner].value }
 
-                            val usersInMatch = EmojiFightParticipants.select { EmojiFightParticipants.match eq winnerInMatch[EmojiFightParticipants.match] }
-                                .count()
+                            val usersInMatch = emojiFightMatchmakingResultsUsersInMatches.first { it[EmojiFightParticipants.match] == winnerInMatch[EmojiFightParticipants.match] }[userCountField]
 
                             EmojiFightBetSonhosTransaction(
                                 it[SimpleSonhosTransactionsLog.id].value,
                                 it[SimpleSonhosTransactionsLog.type],
                                 it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
                                 UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                emojiFightMatchmakingResult[EmojiFightMatchmakingResults.id].value,
+                                emojiFightMatchmakingResult[EmojiFightMatchmakingResults.match]?.value,
                                 UserId(winnerInMatch[EmojiFightParticipants.user].value),
                                 usersInMatch,
                                 winnerInMatch[EmojiFightParticipants.emoji],
-                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.entryPrice],
-                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.entryPriceAfterTax],
-                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.tax],
-                                emojiFightMatchmakingResults[EmojiFightMatchmakingResults.taxPercentage]
+                                emojiFightMatchmakingResult[EmojiFightMatchmakingResults.entryPrice],
+                                emojiFightMatchmakingResult[EmojiFightMatchmakingResults.entryPriceAfterTax],
+                                emojiFightMatchmakingResult[EmojiFightMatchmakingResults.tax],
+                                emojiFightMatchmakingResult[EmojiFightMatchmakingResults.taxPercentage]
                             )
                         }
                     }

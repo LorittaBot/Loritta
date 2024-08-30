@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.components.CloseModalButton
 import net.perfectdreams.spicymorenitta.components.HtmlText
-import net.perfectdreams.spicymorenitta.utils.process
+import net.perfectdreams.spicymorenitta.utils.htmx
 import net.perfectdreams.spicymorenitta.utils.processNode
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
@@ -102,7 +102,7 @@ class ModalManager(val m: SpicyMorenitta) {
 
                                 ref { htmlDivElement ->
                                     // Hook up any htmx behavior on the modal
-                                    process(htmlDivElement)
+                                    htmx.process(htmlDivElement)
                                     // Hook up any _hyperscript behavior on the modal
                                     processNode(htmlDivElement)
                                     // And finally hook up and custom component

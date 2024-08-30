@@ -1,8 +1,8 @@
 plugins {
 	kotlin("multiplatform")
 	kotlin("plugin.serialization")
-	id("org.jetbrains.compose") version "1.6.10"
-	id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+	id("org.jetbrains.compose") version "1.7.0-alpha03"
+	id("org.jetbrains.kotlin.plugin.compose") version "2.0.20"
 }
 
 repositories {
@@ -50,7 +50,7 @@ kotlin {
 				api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 				api("io.ktor:ktor-client-js:${Versions.KTOR}")
 				implementation("app.softwork:kotlinx-uuid-core:0.0.17")
-				api(npm("htmx.org", "1.9.12"))
+				// api(npm("htmx.org", "2.0.2"))
 				api(npm("hyperscript.org", "0.9.12"))
 
 				// Yes, deprecated... but we need this because if we don't add this, DCE will fail :(

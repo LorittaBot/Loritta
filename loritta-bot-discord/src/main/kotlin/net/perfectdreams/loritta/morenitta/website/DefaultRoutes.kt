@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.youtube.GetChan
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.PostFavoriteGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
+import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.*
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.*
@@ -30,6 +31,13 @@ object DefaultRoutes {
 		TermsOfServiceRoute(loritta),
 		DailyRoute(loritta),
 		DonateRoute(loritta),
+
+		// HTTP API Docs
+		LoriDevelopersDocsRoute(loritta),
+		PostTestLoriDevelopersDocsEndpointRoute(loritta),
+		PostLoriSongListeningRoute(loritta),
+		PostCreateObjectTemplateLoriDevelopersDocsRoute(loritta),
+		PostDeleteObjectTemplateLoriDevelopersDocsRoute(loritta),
 
 		// Dashboard
 		DashboardRoute(loritta),

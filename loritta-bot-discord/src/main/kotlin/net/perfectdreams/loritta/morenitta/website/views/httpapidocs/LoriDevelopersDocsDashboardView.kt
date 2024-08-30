@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views.dashboard
+package net.perfectdreams.loritta.morenitta.website.views.httpapidocs
 
 import kotlinx.html.*
 import kotlinx.serialization.json.buildJsonObject
@@ -19,19 +19,23 @@ import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdSize
 import net.perfectdreams.loritta.morenitta.website.utils.generateNitroPayAd
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
+import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriDevelopersDocsView.SidebarCategory
+import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriDevelopersDocsView.SidebarEntry
+import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import kotlin.random.Random
 
-abstract class DashboardView(
+abstract class LoriDevelopersDocsDashboardView(
     internal val lorittaWebsite: LorittaWebsite,
     i18nContext: I18nContext,
     locale: BaseLocale,
     path: String,
     internal val legacyBaseLocale: LegacyBaseLocale,
-    internal val userIdentification: LorittaJsonWebSession.UserIdentification,
+    internal val userIdentification: LorittaJsonWebSession.UserIdentification?,
     internal val userPremiumPlan: UserPremiumPlans,
-    internal val colorTheme: ColorTheme
+    internal val colorTheme: ColorTheme,
+    private val sidebarCategories: List<SidebarCategory>,
 ) : BaseView(
     i18nContext,
     locale,
@@ -103,116 +107,120 @@ abstract class DashboardView(
                                     generateLeftSidebarContents()
 
                                     div(classes = "user-info-wrapper") {
-                                        div(classes = "user-info") {
-                                            // TODO - htmx-adventures: Move this somewhere else
-                                            val userAvatarId = userIdentification.avatar
-                                            val avatarUrl = if (userAvatarId != null) {
-                                                val extension =
-                                                    if (userAvatarId.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
-                                                        "gif"
-                                                    } else {
-                                                        "png"
+                                        if (userIdentification != null) {
+                                            div(classes = "user-info") {
+                                                // TODO - htmx-adventures: Move this somewhere else
+                                                val userAvatarId = userIdentification.avatar
+                                                val avatarUrl = if (userAvatarId != null) {
+                                                    val extension =
+                                                        if (userAvatarId.startsWith("a_")) { // Avatares animados no Discord começam com "_a"
+                                                            "gif"
+                                                        } else {
+                                                            "png"
+                                                        }
+
+                                                    "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userAvatarId}.${extension}?size=64"
+                                                } else {
+                                                    val avatarId = (userIdentification.id.toLong() shr 22) % 6
+
+                                                    "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
+                                                }
+
+                                                img(src = avatarUrl) {
+                                                    width = "24"
+                                                    height = "24"
+                                                }
+
+                                                div(classes = "user-tag") {
+                                                    div(classes = "name") {
+                                                        text(
+                                                            userIdentification.globalName ?: userIdentification.username
+                                                        )
                                                     }
 
-                                                "https://cdn.discordapp.com/avatars/${userIdentification.id}/${userAvatarId}.${extension}?size=64"
-                                            } else {
-                                                val avatarId = (userIdentification.id.toLong() shr 22) % 6
-
-                                                "https://cdn.discordapp.com/embed/avatars/$avatarId.png"
-                                            }
-
-                                            img(src = avatarUrl) {
-                                                width = "24"
-                                                height = "24"
-                                            }
-
-                                            div(classes = "user-tag") {
-                                                div(classes = "name") {
-                                                    text(userIdentification.globalName ?: userIdentification.username)
+                                                    div(classes = "discriminator") {
+                                                        text("@${userIdentification.username}")
+                                                    }
                                                 }
 
-                                                div(classes = "discriminator") {
-                                                    text("@${userIdentification.username}")
-                                                }
-                                            }
+                                                div(classes = "discord-button no-background-theme-dependent-dark-text") {
+                                                    openEmbeddedModalOnClick(
+                                                        "Escolha um Tema",
+                                                        true,
+                                                        {
+                                                            div(classes = "theme-selector") {
+                                                                div(classes = "theme-selector-lori") {
+                                                                    div(classes = "theme-selector-lori-inner") {
+                                                                        etherealGambiImg(
+                                                                            "https://stuff.loritta.website/loritta-matrix-choice-cookiluck.png",
+                                                                            sizes = "500px"
+                                                                        ) {}
 
-                                            div(classes = "discord-button no-background-theme-dependent-dark-text") {
-                                                openEmbeddedModalOnClick(
-                                                    "Escolha um Tema",
-                                                    true,
-                                                    {
-                                                        div(classes = "theme-selector") {
-                                                            div(classes = "theme-selector-lori") {
-                                                                div(classes = "theme-selector-lori-inner") {
-                                                                    etherealGambiImg(
-                                                                        "https://stuff.loritta.website/loritta-matrix-choice-cookiluck.png",
-                                                                        sizes = "500px"
-                                                                    ) {}
-
-                                                                    div(classes = "theme-option light") {
-                                                                        text("Tema Claro")
-                                                                    }
-
-                                                                    div(classes = "theme-option dark") {
-                                                                        text("Tema Escuro")
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            div(classes = "theme-selector-buttons") {
-                                                                button(classes = "discord-button primary") {
-                                                                    attributes["hx-post"] =
-                                                                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/theme"
-                                                                    attributes["hx-swap"] = "none"
-                                                                    attributes["hx-indicator"] =
-                                                                        "find .htmx-discord-like-loading-button"
-                                                                    attributes["hx-disabled-elt"] = "this"
-                                                                    attributes["hx-vals"] = buildJsonObject {
-                                                                        put("theme", ColorTheme.LIGHT.name)
-                                                                    }.toString()
-
-                                                                    div(classes = "htmx-discord-like-loading-button") {
-                                                                        div {
+                                                                        div(classes = "theme-option light") {
                                                                             text("Tema Claro")
                                                                         }
 
-                                                                        div(classes = "loading-text-wrapper") {
-                                                                            img(src = LoadingSectionComponents.list.random())
-
-                                                                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+                                                                        div(classes = "theme-option dark") {
+                                                                            text("Tema Escuro")
                                                                         }
                                                                     }
                                                                 }
 
-                                                                button(classes = "discord-button primary") {
-                                                                    attributes["hx-post"] =
-                                                                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/theme"
-                                                                    attributes["hx-swap"] = "none"
-                                                                    attributes["hx-indicator"] =
-                                                                        "find .htmx-discord-like-loading-button"
-                                                                    attributes["hx-disabled-elt"] = "this"
-                                                                    attributes["hx-vals"] = buildJsonObject {
-                                                                        put("theme", ColorTheme.DARK.name)
-                                                                    }.toString()
+                                                                div(classes = "theme-selector-buttons") {
+                                                                    button(classes = "discord-button primary") {
+                                                                        attributes["hx-post"] =
+                                                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/theme"
+                                                                        attributes["hx-swap"] = "none"
+                                                                        attributes["hx-indicator"] =
+                                                                            "find .htmx-discord-like-loading-button"
+                                                                        attributes["hx-disabled-elt"] = "this"
+                                                                        attributes["hx-vals"] = buildJsonObject {
+                                                                            put("theme", ColorTheme.LIGHT.name)
+                                                                        }.toString()
 
-                                                                    div(classes = "htmx-discord-like-loading-button") {
-                                                                        div {
-                                                                            text("Tema Escuro")
+                                                                        div(classes = "htmx-discord-like-loading-button") {
+                                                                            div {
+                                                                                text("Tema Claro")
+                                                                            }
+
+                                                                            div(classes = "loading-text-wrapper") {
+                                                                                img(src = LoadingSectionComponents.list.random())
+
+                                                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+                                                                            }
                                                                         }
+                                                                    }
 
-                                                                        div(classes = "loading-text-wrapper") {
-                                                                            img(src = LoadingSectionComponents.list.random())
+                                                                    button(classes = "discord-button primary") {
+                                                                        attributes["hx-post"] =
+                                                                            "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/theme"
+                                                                        attributes["hx-swap"] = "none"
+                                                                        attributes["hx-indicator"] =
+                                                                            "find .htmx-discord-like-loading-button"
+                                                                        attributes["hx-disabled-elt"] = "this"
+                                                                        attributes["hx-vals"] = buildJsonObject {
+                                                                            put("theme", ColorTheme.DARK.name)
+                                                                        }.toString()
 
-                                                                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+                                                                        div(classes = "htmx-discord-like-loading-button") {
+                                                                            div {
+                                                                                text("Tema Escuro")
+                                                                            }
+
+                                                                            div(classes = "loading-text-wrapper") {
+                                                                                img(src = LoadingSectionComponents.list.random())
+
+                                                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                    },
-                                                    listOf()
-                                                )
-                                                text("Tema")
+                                                        },
+                                                        listOf()
+                                                    )
+                                                    text("Tema")
+                                                }
                                             }
                                         }
                                     }
@@ -229,8 +237,8 @@ abstract class DashboardView(
                                                 raw("""
                                                     me().on("click", (e) => {
                                                         var leftSidebar = selectFirst("#left-sidebar");
-                                                        leftSidebar.toggleClass("is-open")
-                                                        leftSidebar.toggleClass("is-closed")
+                                                        selectFirst("#left-sidebar").toggleClass("is-open")
+                                                        selectFirst("#left-sidebar").toggleClass("is-closed")
                                                     });
                                                 """.trimIndent())
                                             }
@@ -351,6 +359,92 @@ abstract class DashboardView(
         }
     }
 
+    fun DIV.appendEntry(url: String, enableHtmxSwitch: Boolean, name: String, endpoint: LoriPublicHttpApiEndpoint) {
+        // If we are appending a non-relative URL, then use it instead!
+        val href = if (url.startsWith("https://") || url.startsWith("http://")) {
+            url
+        } else {
+            "/${locale.path}$url"
+        }
+        a(href = href, classes = "entry") {
+            // TODO - htmx-adventures: This actually works, but pages that rely on SpicyMorenitta's routing borks when we redirect in this way
+            if (enableHtmxSwitch) {
+                attributes["hx-select"] = "#right-sidebar-contents"
+                attributes["hx-target"] = "#right-sidebar-contents"
+                attributes["hx-get"] = "/${locale.path}$url"
+                attributes["hx-indicator"] = "#right-sidebar-wrapper"
+                attributes["hx-push-url"] = "true"
+                // Fix bug when a user is rapidly clicking on multiple entries while they are loading, causing a htmx:swapError
+                // Example: Click on entry1, then before it finishes loading, click on entry2, htmx will crash!
+                // We use "replace" because we always want to honor the LAST click made by the user
+                attributes["hx-sync"] = "#left-sidebar:replace"
+                // show:top - Scroll to the top
+                // settle:0ms - We don't want the settle animation beccause it is a full page swap
+                // swap:0ms - We don't want the swap animation because it is a full page swap
+                attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
+                script {
+                    unsafe {
+                        raw("""
+                            me().on("click", (e) => {
+                                var leftSidebar = selectFirst("#left-sidebar");
+                                leftSidebar.removeClass("is-open")
+                                leftSidebar.addClass("is-closed")
+                            });
+                        """.trimIndent())
+                    }
+                }
+            }
+
+            // TODO - htmx-adventures: Is this useful?
+            // if (selectedType == type)
+            //     classes = classes + "selected-entry"
+
+            span(classes = "http-method-sidebar") {
+                span(classes = "http-method-circle http-method-${endpoint.method.value.lowercase()}") {}
+
+                text(endpoint.method.value)
+            }
+            text(" ")
+            text(name)
+        }
+    }
+
+    fun NAV.generateLeftSidebarContents() {
+        div(classes = "entries") {
+            a(classes = "entry loritta-logo") {
+                text("Loritta")
+
+                div {
+                    style = "font-family: monospace; font-size: 0.75em;"
+                    text("for Developers")
+                }
+            }
+
+            for (sidebarCategory in sidebarCategories) {
+                hr(classes = "divider") {}
+                if (sidebarCategory.name != null) {
+                    div(classes = "category") {
+                        text(sidebarCategory.name)
+                    }
+                }
+
+                for (page in sidebarCategory.entries) {
+                    when (page) {
+                        is SidebarEntry.SidebarEndpointEntry -> {
+                            appendEntry("/developers/docs/${page.path}", true, page.name, page.endpoint)
+                        }
+                        is SidebarEntry.SidebarPageEntry -> {
+                            var baseUrl = "/developers/docs"
+                            if (page.path != "index")
+                                baseUrl += "/${page.path}"
+                            appendEntry(baseUrl, true, page.name, page.icon, "main")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun DIV.appendEntry(url: String, enableHtmxSwitch: Boolean, name: String, icon: String, type: String) {
         // If we are appending a non-relative URL, then use it instead!
         val href = if (url.startsWith("https://") || url.startsWith("http://")) {
@@ -400,6 +494,5 @@ abstract class DashboardView(
         }
     }
 
-    abstract fun NAV.generateLeftSidebarContents()
     abstract fun DIV.generateRightSidebarContents()
 }

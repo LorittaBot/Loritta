@@ -80,6 +80,8 @@ data class EmojiFightBetSonhosTransaction(
     override val transactionType: TransactionType,
     override val timestamp: Instant,
     override val user: UserId,
+    val matchmakingId: Long,
+    val matchId: Long?,
     val winner: UserId,
     val usersInMatch: Long,
     val emoji: String,

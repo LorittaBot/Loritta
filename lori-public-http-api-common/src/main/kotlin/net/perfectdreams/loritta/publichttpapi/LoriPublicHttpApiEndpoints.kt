@@ -2,11 +2,15 @@ package net.perfectdreams.loritta.publichttpapi
 
 import io.ktor.http.*
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.starProjectedType
 
 object LoriPublicHttpApiEndpoints {
-    val GET_USER_BY_ID = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/users/{userId}")
+    val GET_USER_BY_ID = LoriPublicHttpApiEndpoint(
+        HttpMethod.Get,
+        "/users/{userId}",
+    )
     val GET_USER_TRANSACTIONS = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/users/{userId}/transactions")
     val GET_SONHOS_RANK = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/sonhos/rank")
 
@@ -26,5 +30,14 @@ object LoriPublicHttpApiEndpoints {
                 it.returnType.isSubtypeOf(LoriPublicHttpApiEndpoint::class.starProjectedType)
             }
             .map { it.call(this) } as List<LoriPublicHttpApiEndpoint>
+    }
+
+    fun getEndpointById(endpointId: String): LoriPublicHttpApiEndpoint {
+        val callable = LoriPublicHttpApiEndpoints::class.declaredMembers
+            .firstOrNull { it.name == endpointId }
+        if (callable == null)
+            error("Unknown endpoint $endpointId")
+
+        return callable.call(LoriPublicHttpApiEndpoints) as LoriPublicHttpApiEndpoint
     }
 }

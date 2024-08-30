@@ -1,11 +1,15 @@
-@file:JsModule("htmx.org")
-@file:JsNonModule
 package net.perfectdreams.spicymorenitta.utils
 
-external fun trigger(elt: dynamic, name: String, detail: dynamic)
+// We include htmx.js on the head, because FOR SOME GODAWFUL REASON THIS WAS NOT WORKING (EVEN THO IT WAS WORKING BEFORE) WHEN INCLUDING IT IN build.gradle.kts
+// The issue COULD BE related that they changed the TS declarations to use namespace (what does that mean for us?)
+external val htmx: Htmx = definedExternally
 
-external fun process(elt: dynamic)
+external class Htmx {
+    fun trigger(elt: dynamic, name: String, detail: dynamic)
 
-external fun find(selector: String): dynamic
+    fun process(elt: dynamic)
 
-external fun values(element: dynamic): dynamic
+    fun find(selector: String): dynamic
+
+    fun values(element: dynamic): dynamic
+}

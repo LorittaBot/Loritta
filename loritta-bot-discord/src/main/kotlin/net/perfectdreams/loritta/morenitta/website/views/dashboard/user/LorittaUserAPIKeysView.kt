@@ -4,9 +4,13 @@ import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
+import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
@@ -44,9 +48,37 @@ class LorittaUserAPIKeysView(
                         text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title))
                     }
 
-                    for (line in i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Description)) {
+                    for (str in i18nContext.language
+                        .textBundle
+                        .lists
+                        .getValue(I18nKeys.Website.Dashboard.ApiKeys.Description.key)
+                    ) {
                         p {
-                            text(line)
+                            handleI18nString(
+                                str,
+                                appendAsFormattedText(i18nContext, mapOf()),
+                            ) {
+                                when (it) {
+                                    "apiDocs" -> {
+                                        TextReplaceControls.ComposableFunctionResult {
+                                            a(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/developers/docs") {
+                                                attributes["hx-select"] = "#wrapper"
+                                                attributes["hx-target"] = "#wrapper"
+                                                attributes["hx-get"] = "/${locale.path}/developers/docs"
+                                                attributes["hx-indicator"] = "#right-sidebar-wrapper"
+                                                attributes["hx-push-url"] = "true"
+                                                // show:top - Scroll to the top
+                                                // settle:0ms - We don't want the settle animation beccause it is a full page swap
+                                                // swap:0ms - We don't want the swap animation because it is a full page swap
+                                                attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
+                                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.ApiDocs))
+                                            }
+                                        }
+                                    }
+
+                                    else -> TextReplaceControls.AppendControlAsIsResult
+                                }
+                            }
                         }
                     }
                 }
