@@ -515,7 +515,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				return
 			}
 
-			if (arg0 == "total_tax") {
+			if (arg0 == "emojifight_total_tax") {
 				if (!context.loritta.isOwner(context.userHandle.id) && !context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
 					context.reply(
 						LorittaReply(
@@ -535,13 +535,18 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 
 				context.reply(
 					LorittaReply(
-						"O total de taxas cobradas é **${totalTax} sonhos**."
+						context.i18nContext.formatter.format(
+							"O total de taxas cobradas no Emoji Fight Bet é **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**",
+							mapOf(
+								"sonhos" to totalTax
+							)
+						),
 					)
 				)
 				return
 			}
 
-			if (arg0 == "daily_tax") {
+			if (arg0 == "emojifight_daily_tax") {
 				if (!context.loritta.isOwner(context.userHandle.id) && !context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
 					context.reply(
 						LorittaReply(
@@ -573,11 +578,17 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				var checkDateTax = today.minusWeeks(2)
 
 				while (today >= checkDateTax) {
-					val taxTotal = map[checkDateTax]
+					val taxTotal = map[checkDateTax] ?: 0L
 
 					replies.add(
 						LorittaReply(
-							"Data: **$checkDateTax** Quantia de sonhos: **$taxTotal**",
+							context.i18nContext.formatter.format(
+								"Data: **{date}** Quantia de sonhos: **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**",
+								mapOf(
+									"date" to checkDateTax.toString(),
+									"sonhos" to taxTotal
+								)
+							),
 							mentionUser = false
 						)
 					)
