@@ -8,9 +8,7 @@ import com.google.gson.JsonParser
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
@@ -32,7 +30,9 @@ import net.perfectdreams.loritta.serializable.StoredSonhosBundlePurchaseTransact
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.javatime.date
 import java.time.Instant
+import java.time.LocalDate
 
 class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -63,7 +63,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-						"Deve ter dado certo, yay"
+					"Deve ter dado certo, yay"
 				)
 				return
 			}
@@ -74,7 +74,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-						"Quantidade alterada com sucesso!!"
+					"Quantidade alterada com sucesso!!"
 				)
 				return
 			}
@@ -85,23 +85,23 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 					GlobalScope.async(context.loritta.coroutineDispatcher) {
 						try {
 							val body = HttpRequest.get("${it.getUrl(loritta)}/api/v1/loritta/update")
-									.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
-									.header("Authorization", context.loritta.lorittaInternalApiKey.name)
-									.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
-									.send(
-											gson.toJson(
-													jsonObject(
-															"type" to "setPatchNotesPost",
-															"patchNotesPostId" to arg1,
-															"expiresAt" to arg2!!.toLong()
-													)
-											)
+								.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
+								.header("Authorization", context.loritta.lorittaInternalApiKey.name)
+								.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
+								.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
+								.send(
+									gson.toJson(
+										jsonObject(
+											"type" to "setPatchNotesPost",
+											"patchNotesPostId" to arg1,
+											"expiresAt" to arg2!!.toLong()
+										)
 									)
-									.body()
+								)
+								.body()
 
 							JsonParser.parseString(
-									body
+								body
 							)
 						} catch (e: Exception) {
 							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
@@ -113,7 +113,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				jobs.awaitAll()
 
 				context.reply(
-						"Enviado patch data!"
+					"Enviado patch data!"
 				)
 				return
 			}
@@ -127,9 +127,9 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-                        LorittaReply(
-                                "Sonhos de ${user.asMention} foram editados com sucesso!"
-                        )
+					LorittaReply(
+						"Sonhos de ${user.asMention} foram editados com sucesso!"
+					)
 				)
 				return
 			}
@@ -367,9 +367,9 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-                        LorittaReply(
-                                "Guild banida!"
-                        )
+					LorittaReply(
+						"Guild banida!"
+					)
 				)
 			}
 
@@ -387,9 +387,9 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-                        LorittaReply(
-                                "Guild desbanida!"
-                        )
+					LorittaReply(
+						"Guild desbanida!"
+					)
 				)
 			}
 
@@ -417,10 +417,10 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 
 				if (strBuilder.isEmpty()) {
 					context.reply(
-                            LorittaReply(
-                                    "Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
-                                    Constants.ERROR
-                            )
+						LorittaReply(
+							"Nenhum usuário se encaixa na pesquisa que você realizou, sorry ;w;",
+							Constants.ERROR
+						)
 					)
 					return
 				}
@@ -450,10 +450,10 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 
 				if (strBuilder.isEmpty()) {
 					context.reply(
-                            LorittaReply(
-                                    "Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
-                                    Constants.ERROR
-                            )
+						LorittaReply(
+							"Nenhuma guild se encaixa na pesquisa que você realizou, sorry ;w;",
+							Constants.ERROR
+						)
 					)
 					return
 				}
@@ -471,21 +471,21 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 					GlobalScope.async(context.loritta.coroutineDispatcher) {
 						try {
 							val body = HttpRequest.post("${it.getUrl(loritta)}/api/v1/loritta/action/economy")
-									.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
-									.header("Authorization", context.loritta.lorittaInternalApiKey.name)
-									.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
-									.send(
-											gson.toJson(
-													jsonObject(
-															"enabled" to value
-													)
-											)
+								.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
+								.header("Authorization", context.loritta.lorittaInternalApiKey.name)
+								.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
+								.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
+								.send(
+									gson.toJson(
+										jsonObject(
+											"enabled" to value
+										)
 									)
-									.body()
+								)
+								.body()
 
 							JsonParser.parseString(
-									body
+								body
 							)
 						} catch (e: Exception) {
 							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
@@ -495,9 +495,9 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				}
 
 				context.reply(
-                        LorittaReply(
-                                "Alterando status de economia em todos os clusters..."
-                        )
+					LorittaReply(
+						"Alterando status de economia em todos os clusters..."
+					)
 				)
 				return
 			}
@@ -512,6 +512,79 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 						"<@${id}> possui **R$ ${moneyFromDonations}** ativos"
 					)
 				)
+				return
+			}
+
+			if (arg0 == "total_tax") {
+				if (!context.loritta.isOwner(context.userHandle.id) && !context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+					context.reply(
+						LorittaReply(
+							"Você não tem permissão para executar esse comando.",
+							Constants.ERROR
+						)
+					)
+					return
+				}
+
+				val totalTax = loritta.pudding.transaction {
+					val sumField = EmojiFightMatchmakingResults.tax.sum()
+					EmojiFightMatchmakingResults
+						.select(sumField)
+						.first()[sumField] ?: 0L
+				}
+
+				context.reply(
+					LorittaReply(
+						"O total de taxas cobradas é **${totalTax} sonhos**."
+					)
+				)
+				return
+			}
+
+			if (arg0 == "daily_tax") {
+				if (!context.loritta.isOwner(context.userHandle.id) && !context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+					context.reply(
+						LorittaReply(
+							"Você não tem permissão para executar esse comando.",
+							Constants.ERROR
+						)
+					)
+					return
+				}
+
+				val daysToSeconds: Long = 14 * 24 * 60 * 60;
+
+				val map = loritta.pudding.transaction {
+					val dateField = EmojiFightMatches.finishedAt.date()
+					val taxSumField = EmojiFightMatchmakingResults.tax.sum()
+
+					EmojiFightMatchmakingResults.innerJoin(EmojiFightMatches)
+						.select(dateField, taxSumField)
+						.groupBy(dateField)
+						.orderBy(dateField, SortOrder.DESC)
+						.where { EmojiFightMatches.finishedAt greaterEq Instant.now().minusSeconds(daysToSeconds) }
+						.associate {
+							it[dateField] to it[taxSumField]
+						}
+				}
+
+				val replies = mutableListOf<LorittaReply>()
+				val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
+				var checkDateTax = today.minusWeeks(2)
+
+				while (today >= checkDateTax) {
+					val taxTotal = map[checkDateTax]
+
+					replies.add(
+						LorittaReply(
+							"Data: **$checkDateTax** Quantia de sonhos: **$taxTotal**",
+							mentionUser = false
+						)
+					)
+					checkDateTax = checkDateTax.plusDays(1)
+				}
+
+				context.reply(*replies.reversed().toTypedArray())
 				return
 			}
 		}
