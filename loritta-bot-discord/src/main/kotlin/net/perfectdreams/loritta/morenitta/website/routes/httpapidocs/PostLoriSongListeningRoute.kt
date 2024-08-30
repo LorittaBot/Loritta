@@ -24,7 +24,7 @@ class PostLoriSongListeningRoute(loritta: LorittaBot) : LocalizedRoute(loritta, 
         locale: BaseLocale,
         i18nContext: I18nContext
     ) {
-        val playlistInfo = Yaml.default.decodeFromStream<SongPlaylist>(File("playlist.yml").inputStream())
+        val playlistInfo = Yaml.default.decodeFromStream<SongPlaylist>(File(loritta.config.loritta.folders.content, "playlist.yml").inputStream())
         val shuffledPlaylistSongs = playlistInfo.songs.shuffled(Random(0))
 
         val nowAsZST = ZonedDateTime.now(
