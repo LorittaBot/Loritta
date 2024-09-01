@@ -1,17 +1,12 @@
 package net.perfectdreams.loritta.morenitta.utils.debug
 
-import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
-import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
-import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
 import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener
+import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import java.io.File
-import java.io.PrintStream
-import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
-import kotlin.concurrent.thread
 
 object DebugLog {
 	private val logger = KotlinLogging.logger {}
@@ -64,6 +59,9 @@ object DebugLog {
 		val availableProcessors = LorittaBot.MESSAGE_EXECUTOR_THREADS
 		val isMessagesOverloaded = pendingMessagesSize > availableProcessors
 		logger.info("Pending Messages ($pendingMessagesSize): Active: ${loritta.pendingMessages.filter { it.isActive }.count()}; Cancelled: ${loritta.pendingMessages.filter { it.isCancelled }.count()}; Complete: ${loritta.pendingMessages.filter { it.isCompleted }.count()};")
+		logger.info("> Bluesky Stuff")
+		logger.info("Pending posts: ${loritta.blueSkyRelay.postStream.getCount()}")
+		logger.info("Last event received at: ${loritta.blueSkyRelay.firehoseClient.lastEventReceivedAt}")
 		if (isMessagesOverloaded)
 			logger.warn { "Loritta is overloaded! There are $pendingMessagesSize messages pending to be executed, ${pendingMessagesSize - availableProcessors} more than it should be!" }
 	}

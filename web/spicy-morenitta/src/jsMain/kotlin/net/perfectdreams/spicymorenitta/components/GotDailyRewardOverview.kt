@@ -152,12 +152,12 @@ fun GotDailyRewardOverview(
                 attr("style", "display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5em;")
             }
         ) {
-            A(href = "https://twitter.com/LorittaBot", attrs = {
+            A(href = "https://bsky.app/profile/loritta.website", attrs = {
                 classes("button", "primary")
                 target(ATarget.Blank)
                 attr("style", "justify-content: center; align-items: center; display: flex;")
             }) {
-                I(attrs = { classes("fab", "fa-twitter") })
+                I(attrs = { classes("fab", "fa-bluesky") })
             }
 
             A(href = "https://www.youtube.com/c/Loritta", attrs = {

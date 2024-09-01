@@ -1,5 +1,6 @@
 @use "../placeholders/reset-button-styling";
 
+// We shouldn't wrap buttons inside a tags! But here's a solution for the underline...
 a:has(.discord-button) {
   text-decoration: none;
 }
@@ -14,7 +15,7 @@ a:has(.discord-button) {
     opacity: 1;
     background-color: #757575;
     border: 1px solid var(--soft-border-color);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 
@@ -32,6 +33,32 @@ a:has(.discord-button) {
         }
 
         &.htmx-request {
+            div {
+                display: none;
+            }
+
+            .loading-text-wrapper {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+            }
+        }
+    }
+
+    // For anchor tags that looks like buttons
+    &.htmx-discord-like-loading-button {
+        .loading-text-wrapper {
+            display: none;
+            img {
+                height: 1em;
+            }
+        }
+
+        &.htmx-request {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+
             div {
                 display: none;
             }
@@ -116,6 +143,12 @@ a:has(.discord-button) {
             background-color: rgba(0, 0, 0, 0.1);
         }
     }
+}
+
+// Overrides when using links as buttons
+a.discord-button {
+    // Remove the underline
+    text-decoration: none;
 }
 
 .modal-wrapper {

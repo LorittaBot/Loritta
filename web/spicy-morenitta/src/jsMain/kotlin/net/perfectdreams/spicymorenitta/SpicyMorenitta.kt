@@ -36,12 +36,16 @@ import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.PocketLorittaSettings
 import net.perfectdreams.loritta.serializable.UserIdentification
+import net.perfectdreams.loritta.serializable.messageeditor.LorittaDiscordMessageEditorSetupConfig
+import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.components.HtmlText
 import net.perfectdreams.spicymorenitta.components.SimpleSelectMenu
 import net.perfectdreams.spicymorenitta.components.SimpleSelectMenuEntry
+import net.perfectdreams.spicymorenitta.components.messages.DiscordMessageEditor
+import net.perfectdreams.spicymorenitta.components.messages.TargetChannelResult
 import net.perfectdreams.spicymorenitta.game.GameState
 import net.perfectdreams.spicymorenitta.modals.ModalManager
 import net.perfectdreams.spicymorenitta.routes.*
@@ -1285,6 +1289,72 @@ class SpicyMorenitta : Logging {
 					originalSelectMenuElement.dispatchEvent(Event("input", EventInit(bubbles = true)))
 
 					originalSelectMenuElement.dispatchEvent(Event("change", EventInit(bubbles = true)))
+				}
+			}
+		}
+
+		targetElement.selectAll<HTMLSelectElement>("textarea[loritta-discord-message-editor]").forEach { originalSelectMenuElement ->
+			if (originalSelectMenuElement.getAttribute("loritta-powered-up") != null)
+				return@forEach
+
+			originalSelectMenuElement.setAttribute("loritta-powered-up", "")
+			val setupJson = kotlinx.serialization.json.Json.decodeFromString<LorittaDiscordMessageEditorSetupConfig>(originalSelectMenuElement.getAttribute("loritta-discord-message-editor-config")!!)
+
+			// Hide the original text area
+			originalSelectMenuElement.style.display = "none"
+
+			val selectMenuWrapperElement = document.createElement("div")
+
+			originalSelectMenuElement.parentElement!!.insertBefore(selectMenuWrapperElement, originalSelectMenuElement)
+
+			var rawMessage by mutableStateOf(originalSelectMenuElement.value)
+			var targetChannelId by mutableStateOf<String?>(null)
+
+			when (val query = setupJson.testMessageTargetChannelQuery) {
+				is TestMessageTargetChannelQuery.QuerySelector -> {
+					val targetQuery = document.select<HTMLElement>(query.querySelector)
+
+					fun updateSelect() {
+						val value = targetQuery.asDynamic().value
+						targetChannelId = value as String?
+					}
+
+					targetQuery.addEventListener(
+						"input",
+						{
+							updateSelect()
+						}
+					)
+
+					updateSelect()
+				}
+			}
+
+			renderComposable(selectMenuWrapperElement) {
+				val _targetChannelId = targetChannelId
+
+				DiscordMessageEditor(
+					this@SpicyMorenitta,
+					setupJson.templates,
+					setupJson.placeholderSectionType,
+					setupJson.placeholders,
+					setupJson.guild,
+					setupJson.testMessageEndpointUrl,
+					if (_targetChannelId != null) {
+						TargetChannelResult.GuildMessageChannelTarget(_targetChannelId.toLong())
+					} else {
+						TargetChannelResult.ChannelNotSelected
+					},
+					setupJson.selfLorittaUser,
+					listOf(),
+					listOf(),
+					rawMessage
+				) {
+					// Update our variable
+					rawMessage = it
+
+					// And update the backing textarea
+					originalSelectMenuElement.value = rawMessage
 				}
 			}
 		}

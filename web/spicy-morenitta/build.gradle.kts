@@ -47,6 +47,7 @@ kotlin {
 				implementation(project(":web:embed-editor:embed-renderer"))
 				implementation(project(":web:embed-editor:embed-editor-crosswindow"))
 				implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.3")
+				implementation(project(":discord-chat-markdown-parser"))
 				api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 				api("io.ktor:ktor-client-js:${Versions.KTOR}")
 				implementation("app.softwork:kotlinx-uuid-core:0.0.17")

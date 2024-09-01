@@ -91,6 +91,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
+import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.dao.*
@@ -282,6 +283,7 @@ class LorittaBot(
 	var twitch = TwitchAPI(config.loritta.twitch.clientId, config.loritta.twitch.clientSecret)
 	var switchTwitch = SwitchTwitchAPI(config.loritta.twitch.clientId, config.loritta.twitch.clientSecret)
 	val twitchSubscriptionsHandler = TwitchSubscriptionsHandler(this)
+	val blueSkyRelay = LorittaBlueskyRelay(this)
 	val connectionManager = ConnectionManager(this)
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
@@ -1347,6 +1349,12 @@ class LorittaBot(
 	}
 
 	private fun startTasks() {
+		if (isMainInstance) {
+			GlobalScope.launch(CoroutineName("BlueSky Posts Stream Relay")) {
+				blueSkyRelay.startRelay()
+			}
+		}
+
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(LorittaStatsCollector::class.simpleName!!, 1.minutes, action = LorittaStatsCollector(this@LorittaBot))
 		scheduleCoroutineAtFixedRateIfMainReplica(CreateYouTubeWebhooksTask::class.simpleName!!, 1.minutes, action = CreateYouTubeWebhooksTask(this@LorittaBot))

@@ -15,6 +15,7 @@ dependencies {
     implementation(project(":switch-twitch"))
     implementation(project(":discord-chat-message-renderer-entities"))
     implementation(project(":lori-public-http-api-common"))
+    implementation(project(":yokye"))
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
@@ -145,19 +146,25 @@ tasks.test {
     useJUnitPlatform()
 }
 
+val skipSpicyMorenitta = (findProperty("net.perfectdreams.loritta.skipSpicyMorenittaDistribution") as String?)?.toBoolean() == true
+
 tasks {
     processResources {
         from("../resources/") // Include folders from the resources root folder
 
         // We need to wait until the JS build finishes and the SASS files are generated
-        dependsOn(jsBrowserDistribution)
-        dependsOn(jsBrowserProductionWebpack)
+        if (!skipSpicyMorenitta) {
+            dependsOn(jsBrowserDistribution)
+            dependsOn(jsBrowserProductionWebpack)
+        }
         dependsOn(sass)
         dependsOn(sassLegacy)
 
         // Copy the output from the frontend task to the backend resources
-        from(jsBrowserProductionWebpack.destinationDirectory) {
-            into("spicy_morenitta/js/")
+        if (!skipSpicyMorenitta) {
+            from(jsBrowserProductionWebpack.destinationDirectory) {
+                into("spicy_morenitta/js/")
+            }
         }
 
         // Same thing with the SASS output

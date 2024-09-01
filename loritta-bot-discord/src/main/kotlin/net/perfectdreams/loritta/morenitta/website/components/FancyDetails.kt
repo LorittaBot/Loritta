@@ -13,6 +13,22 @@ object FancyDetails {
         )
     }
 
+    fun FlowContent.fancyDetails(title: String, description: DIV.() -> (Unit)) {
+        details(classes = "fancy-details") {
+            summary {
+                text(title)
+
+                div(classes = "chevron-icon") {
+                    i(classes = "fa-solid fa-chevron-down") {}
+                }
+            }
+
+            div(classes = "details-content") {
+                description.invoke(this)
+            }
+        }
+    }
+
     fun FlowContent.fancyDetails(title: String, description: List<String>) {
         details(classes = "fancy-details") {
             summary {

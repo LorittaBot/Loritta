@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolC
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitchAccounts
+import net.perfectdreams.loritta.common.utils.placeholders.BlueskyPostMessagePlaceholders
 import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -277,6 +278,40 @@ class InternalWebServer(val m: LorittaBot) {
                                         }
                                     },
                                     I18nKeysData.InvalidMessages.TwitchStreamOnlineNotification
+                                )
+                            ).await()
+                            notifiedGuilds.add(guild.idLong)
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Something went wrong while trying to send Twitch Stream Online notification on ${guild.idLong}!" }
+                        }
+                    }
+
+                    LorittaInternalRPCResponse.TwitchStreamOnlineEventResponse(notifiedGuilds)
+                }
+
+                is LorittaInternalRPCRequest.BlueskyPostRelayRequest -> {
+                    val notifiedGuilds = mutableListOf<Long>()
+                    for (tracked in request.tracks) {
+                        val guild = m.lorittaShards.getGuildById(tracked.guildId) ?: continue // This could be for other clusters, so let's just skip if the guild is null
+
+                        val channel = guild.getGuildMessageChannelById(tracked.channelId) ?: continue // Channel does not exist! Bail out
+
+                        try {
+                            channel.sendMessage(
+                                MessageUtils.generateMessageOrFallbackIfInvalid(
+                                    m.languageManager.defaultI18nContext, // TODO: Load the language of the server
+                                    tracked.message,
+                                    guild,
+                                    BlueskyPostMessagePlaceholders,
+                                    {
+                                        when (it) {
+                                            BlueskyPostMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
+                                            BlueskyPostMessagePlaceholders.GuildNamePlaceholder -> guild.name
+                                            BlueskyPostMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
+                                            BlueskyPostMessagePlaceholders.PostUrlPlaceholder -> "https://bsky.app/profile/${request.repo}/post/${request.postId}"
+                                        }
+                                    },
+                                    I18nKeysData.InvalidMessages.BlueskyPostNotification
                                 )
                             ).await()
                             notifiedGuilds.add(guild.idLong)

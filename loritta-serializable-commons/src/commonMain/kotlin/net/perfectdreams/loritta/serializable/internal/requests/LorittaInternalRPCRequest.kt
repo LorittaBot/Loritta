@@ -25,4 +25,18 @@ sealed class LorittaInternalRPCRequest {
         val title: String?,
         val gameName: String?,
     ) : LorittaInternalRPCRequest()
+
+    @Serializable
+    data class BlueskyPostRelayRequest(
+        val repo: String,
+        val postId: String,
+        val tracks: List<TrackInfo>
+    ) : LorittaInternalRPCRequest() {
+        @Serializable
+        data class TrackInfo(
+            val guildId: Long,
+            val channelId: Long,
+            val message: String
+        )
+    }
 }

@@ -27,4 +27,7 @@ sealed class LorittaInternalRPCResponse {
 
     @Serializable
     data class TwitchStreamOnlineEventResponse(val notifiedGuilds: List<Long>) : LorittaInternalRPCResponse()
+
+    @Serializable
+    data class BlueskyPostRelayResponse(val notifiedGuilds: List<Long>) : LorittaInternalRPCResponse()
 }

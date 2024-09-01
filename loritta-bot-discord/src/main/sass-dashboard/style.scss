@@ -325,6 +325,16 @@ nav#left-sidebar {
                 height: 24px;
                 display: block;
             }
+
+            .new-feature {
+                background-color: #da373c;
+                border-radius: 3px;
+                padding: 1px 3px 1px 5px;
+                color: white;
+                margin-left: auto;
+                text-transform: uppercase;
+                font-weight: bolder;
+            }
         }
 
         > .loritta-logo {

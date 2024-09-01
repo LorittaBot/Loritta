@@ -6,5 +6,6 @@ package net.perfectdreams.loritta.common.utils.placeholders
 enum class PlaceholderSectionType {
     JOIN_MESSAGE,
     LEAVE_MESSAGE,
-    TWITCH_STREAM_ONLINE_MESSAGE
+    TWITCH_STREAM_ONLINE_MESSAGE,
+    BLUESKY_POST_MESSAGE
 }

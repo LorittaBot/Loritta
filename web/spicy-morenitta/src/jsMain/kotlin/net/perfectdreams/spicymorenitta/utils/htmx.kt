@@ -5,6 +5,8 @@ package net.perfectdreams.spicymorenitta.utils
 external val htmx: Htmx = definedExternally
 
 external class Htmx {
+    fun ajax(elt: dynamic, name: String, detail: dynamic)
+
     fun trigger(elt: dynamic, name: String, detail: dynamic)
 
     fun process(elt: dynamic)

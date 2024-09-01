@@ -48,6 +48,8 @@ object EmbeddedSpicyModalUtils {
         attributes["hx-on:click"] = "window['spicy-morenitta'].openEmbeddedModal(this)"
         // We encode it using encodeURIComponent to avoid issues when nested modals breaking due to URL encoding (not really sure why they break tho)
         // While Base64 IS smaller than encodeURIComponent, encodeURIComponent compresses way better than Base64
+        // ATTENTION! If a stacktrace points to this line, it is probably an issue on the EmbeddedSpicyModal itself, NOT ON HERE
+        // Check if the "body" is wrapped in a div or something!!
         attributes["loritta-embedded-spicy-modal"] = encodeURIComponent(Json.encodeToString<EmbeddedSpicyModal>(embeddedSpicyModal))
     }
 

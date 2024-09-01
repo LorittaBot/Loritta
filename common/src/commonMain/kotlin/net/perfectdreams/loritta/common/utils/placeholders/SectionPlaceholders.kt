@@ -5,7 +5,8 @@ sealed interface SectionPlaceholders<T : MessagePlaceholder> {
         val sections = listOf<SectionPlaceholders<*>>(
             JoinMessagePlaceholders,
             LeaveMessagePlaceholders,
-            TwitchStreamOnlineMessagePlaceholders
+            TwitchStreamOnlineMessagePlaceholders,
+            BlueskyPostMessagePlaceholders
         )
 
         init {

@@ -44,28 +44,28 @@ abstract class ProfileDashboardView(
 
             hr(classes = "divider") {}
 
-            appendEntry("/dashboard", true, locale["website.dashboard.profile.sectionNames.yourServers"], "fa fa-cogs", "main")
-            appendEntry("/dashboard/user-app", true, i18nContext.get(I18nKeysData.Website.Dashboard.PocketLoritta.Title), "fa fa-box", "user-app")
+            appendEntry("/dashboard", true, locale["website.dashboard.profile.sectionNames.yourServers"], "fa fa-cogs", false)
+            appendEntry("/dashboard/user-app", true, i18nContext.get(I18nKeysData.Website.Dashboard.PocketLoritta.Title), "fa fa-box", false)
 
             hr(classes = "divider") {}
             div(classes = "category") {
                 + "Configurações do Usuário"
             }
 
-            appendEntry("/dashboard/profiles", false, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", "profile_list")
-            appendEntry("/dashboard/backgrounds", false, "Backgrounds", "far fa-images", "background_list")
-            appendEntry("/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", "ship_effects")
-            appendEntry("/dashboard/api-keys", true, i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title), "fa fa-code", "user-api-keys")
+            appendEntry("/dashboard/profiles", false, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", false)
+            appendEntry("/dashboard/backgrounds", false, "Backgrounds", "far fa-images", false)
+            appendEntry("/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", false)
+            appendEntry("/dashboard/api-keys", true, i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title), "fa fa-code", true)
 
             hr(classes = "divider") {}
             div(classes = "category") {
                 + "Miscelânea"
             }
 
-            appendEntry("/daily", false, "Daily", "fas fa-money-bill-wave", "daily")
-            appendEntry("/dashboard/daily-shop", true, locale["website.dailyShop.title"], "fas fa-store", "daily_shop")
-            appendEntry("/dashboard/sonhos-shop", true, locale["website.dashboard.profile.sectionNames.sonhosShop"], "fas fa-shopping-cart", "bundles")
-            appendEntry("/guidelines", false, locale["website.guidelines.communityGuidelines"], "fas fa-asterisk", "guidelines")
+            appendEntry("/daily", false, "Daily", "fas fa-money-bill-wave", false)
+            appendEntry("/dashboard/daily-shop", true, locale["website.dailyShop.title"], "fas fa-store", false)
+            appendEntry("/dashboard/sonhos-shop", true, locale["website.dashboard.profile.sectionNames.sonhosShop"], "fas fa-shopping-cart", false)
+            appendEntry("/guidelines", false, locale["website.guidelines.communityGuidelines"], "fas fa-asterisk", false)
             a(classes = "entry") {
                 openEmbeddedModalOnClick(
                     i18nContext.get(I18nKeysData.Website.Dashboard.LorittaSpawner.PocketLoritta),

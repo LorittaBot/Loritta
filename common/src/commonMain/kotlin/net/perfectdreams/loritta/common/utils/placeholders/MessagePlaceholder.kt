@@ -23,6 +23,6 @@ interface MessagePlaceholder {
 
     enum class RenderType {
         TEXT,
-        MENTION
+        MENTION,
     }
 }

@@ -17,3 +17,4 @@ invalidMessages:
   inviteBlocked: "convite bloqueado na seção de Bloqueador de Convites"
   youTubeNotification: "notificação de vídeo do YouTube"
   twitchStreamOnlineNotification: "notificação de livestream da Twitch"
+  blueskyPostNotification: "notificação de post no Bluesky"

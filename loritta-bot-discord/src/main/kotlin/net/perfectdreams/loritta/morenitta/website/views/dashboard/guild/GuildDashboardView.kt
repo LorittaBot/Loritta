@@ -76,17 +76,17 @@ abstract class GuildDashboardView(
 
             hr(classes = "divider") {}
 
-            appendEntry("/guild/${guild.id}/configure", false, locale["modules.sectionNames.general"], "fa fa-cogs", "default")
-            appendEntry("/guild/${guild.id}/configure/moderation", false, locale["modules.sectionNames.moderation"], "fas fa-exclamation-circle", "moderation")
-            appendEntry("/guild/${guild.id}/configure/commands", false, locale["modules.sectionNames.commands"], "fa fa-terminal", "vanilla_commands")
-            appendEntry("/guild/${guild.id}/configure/permissions", false, locale["modules.sectionNames.permissions"], "fa fa-address-card", "permissions")
+            appendEntry("/guild/${guild.id}/configure", false, locale["modules.sectionNames.general"], "fa fa-cogs", false)
+            appendEntry("/guild/${guild.id}/configure/moderation", false, locale["modules.sectionNames.moderation"], "fas fa-exclamation-circle", false)
+            appendEntry("/guild/${guild.id}/configure/commands", false, locale["modules.sectionNames.commands"], "fa fa-terminal", false)
+            appendEntry("/guild/${guild.id}/configure/permissions", false, locale["modules.sectionNames.permissions"], "fa fa-address-card", false)
 
             appendEntry(
                 "${lorittaWebsite.loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/gamersafer-verify",
                 false,
                 "GamerSafer",
                 "fas fa-list",
-                "gamersafer_verify"
+                false
             )
 
             hr(classes = "divider") {}
@@ -100,19 +100,19 @@ abstract class GuildDashboardView(
                 false,
                 locale["modules.sectionNames.welcomer"],
                 "fa fa-sign-in-alt",
-                "welcomer"
+                false
             )
 
-            appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", "event_log")
-            appendEntry("/guild/${guild.id}/configure/youtube", false, "YouTube", "fab fa-youtube", "youtube")
+            appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", false)
+            appendEntry("/guild/${guild.id}/configure/youtube", false, "YouTube", "fab fa-youtube", false)
             appendEntry(
                 "${lorittaWebsite.loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/twitch",
                 false,
                 "Twitch",
                 "fab fa-twitch",
-                "livestream"
+                false
             )
-            // appendEntry("/guild/${guild.id}/configure/twitter", true, "Twitter", "fab fa-twitter", "twitter")
+            appendEntry("/guild/${guild.id}/configure/bluesky", true, "Bluesky", "fab fa-bluesky", true)
 
             hr(classes = "divider") {}
 
@@ -120,19 +120,19 @@ abstract class GuildDashboardView(
                 + legacyBaseLocale.strings["CommandCategory_MISC_Name"]!!
             }
 
-            appendEntry("/guild/${guild.id}/configure/level", false, locale["modules.sectionNames.levelUp"], "fas fa-award", "level")
-            appendEntry("/guild/${guild.id}/configure/autorole", false, locale["modules.sectionNames.autorole"], "fa fa-briefcase", "autorole")
-            appendEntry("/guild/${guild.id}/configure/invite-blocker", false, locale["modules.sectionNames.inviteBlocker"], "fa fa-ban", "invite_blocker")
-            appendEntry("/guild/${guild.id}/configure/member-counter", false, locale["modules.sectionNames.memberCounter"], "fas fa-sort-amount-up", "member_counter")
+            appendEntry("/guild/${guild.id}/configure/level", false, locale["modules.sectionNames.levelUp"], "fas fa-award", false)
+            appendEntry("/guild/${guild.id}/configure/autorole", false, locale["modules.sectionNames.autorole"], "fa fa-briefcase", false)
+            appendEntry("/guild/${guild.id}/configure/invite-blocker", false, locale["modules.sectionNames.inviteBlocker"], "fa fa-ban", false)
+            appendEntry("/guild/${guild.id}/configure/member-counter", false, locale["modules.sectionNames.memberCounter"], "fas fa-sort-amount-up", false)
             appendEntry(
                 "${lorittaWebsite.loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/starboard",
                 false,
                 locale["modules.sectionNames.starboard"],
                 "fa fa-star",
-                "starboard"
+                false
             )
-            appendEntry("/guild/${guild.id}/configure/miscellaneous", false, "+${legacyBaseLocale.strings["CommandCategory_MISC_Name"]}", "fas fa-random", "miscellaneous")
-            appendEntry("/guild/${guild.id}/configure/audit-log", false, locale["modules.auditLog.title"], "fas fa-list", "audit_log")
+            appendEntry("/guild/${guild.id}/configure/miscellaneous", false, "+${legacyBaseLocale.strings["CommandCategory_MISC_Name"]}", "fas fa-random", false)
+            appendEntry("/guild/${guild.id}/configure/audit-log", false, locale["modules.auditLog.title"], "fas fa-list", false)
 
             hr(classes = "divider") {}
 
@@ -140,11 +140,11 @@ abstract class GuildDashboardView(
                 + "Premium"
             }
 
-            appendEntry("/guild/${guild.id}/configure/premium", false, locale["modules.sectionNames.premiumKeys"], "fas fa-gift", "premium")
+            appendEntry("/guild/${guild.id}/configure/premium", false, locale["modules.sectionNames.premiumKeys"], "fas fa-gift", false)
 
-            appendEntry("/guild/${guild.id}/configure/badge", false, locale["modules.sectionNames.customBadge"], "fas fa-certificate", "badge")
+            appendEntry("/guild/${guild.id}/configure/badge", false, locale["modules.sectionNames.customBadge"], "fas fa-certificate", false)
 
-            appendEntry("/guild/${guild.id}/configure/daily-multiplier", false, locale["modules.sectionNames.dailyMultiplier"], "fas fa-times", "daily_multiplier")
+            appendEntry("/guild/${guild.id}/configure/daily-multiplier", false, locale["modules.sectionNames.dailyMultiplier"], "fas fa-times", false)
 
             hr(classes = "divider") {}
 
@@ -156,7 +156,7 @@ abstract class GuildDashboardView(
                 false,
                 locale["modules.sectionNames.customCommands"],
                 "fas fa-code",
-                "custom_commands"
+                false
             )
 
             hr(classes = "divider") {}
@@ -166,7 +166,7 @@ abstract class GuildDashboardView(
                 false,
                 locale["website.navbar.support"],
                 "fas fa-question-circle",
-                "support"
+                false
             )
         }
     }

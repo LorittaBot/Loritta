@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.youtube.GetChan
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.PostFavoriteGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.*
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.*
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
@@ -65,6 +66,13 @@ object DefaultRoutes {
 		ConfigureYouTubeRoute(loritta),
 		ConfigureNashornCommandsRoute(loritta),
 		ConfigureCustomCommandsRoute(loritta),
+		ConfigureBlueskyRoute(loritta),
+		GetAddBlueskyTrackRoute(loritta),
+		GetConfigureBlueskyTrackRoute(loritta),
+		DeleteBlueskyTrackRoute(loritta),
+		PutBlueskyTrackRoute(loritta),
+		PatchBlueskyTrackRoute(loritta),
+		PostTestMessageRoute(loritta),
 
 		// Reps
 		UserReputationRoute(loritta),

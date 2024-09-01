@@ -351,7 +351,13 @@ abstract class DashboardView(
         }
     }
 
-    fun DIV.appendEntry(url: String, enableHtmxSwitch: Boolean, name: String, icon: String, type: String) {
+    fun DIV.appendEntry(
+        url: String,
+        enableHtmxSwitch: Boolean,
+        name: String,
+        icon: String,
+        isNewFeature: Boolean
+    ) {
         // If we are appending a non-relative URL, then use it instead!
         val href = if (url.startsWith("https://") || url.startsWith("http://")) {
             url
@@ -397,6 +403,11 @@ abstract class DashboardView(
 
             text(" ")
             text(name)
+            if (isNewFeature) {
+                span(classes = "new-feature") {
+                    text("Novo!")
+                }
+            }
         }
     }
 

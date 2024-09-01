@@ -118,7 +118,7 @@ window.addEventListener('load', function () {
                     )
                 }
 
-                styleLink("https://use.fontawesome.com/releases/v6.2.0/css/all.css")
+                styleLink("https://use.fontawesome.com/releases/v6.6.0/css/all.css")
 
                 // Google Analytics
                 script(src = "https://www.googletagmanager.com/gtag/js?id=UA-53518408-9") {}

@@ -2,6 +2,7 @@ package net.perfectdreams.spicymorenitta.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import kotlinx.browser.document
 import org.jetbrains.compose.web.dom.Span
 
 @Composable
@@ -12,7 +13,12 @@ fun HtmlText(rawHtml: String) {
     key(rawHtml) {
         Span(attrs = {
             ref { element ->
-                element.innerHTML = rawHtml
+                // Required to execute inline scripts
+                // https://pierodetomi.medium.com/how-to-append-dynamic-html-with-scripts-to-the-dom-14509c1ca784
+                val range = document.createRange()
+                val fragment = range.createContextualFragment(rawHtml)
+                element.appendChild(fragment)
+
                 onDispose {}
             }
         })

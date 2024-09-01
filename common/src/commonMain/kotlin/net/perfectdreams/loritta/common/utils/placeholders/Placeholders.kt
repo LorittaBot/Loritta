@@ -63,6 +63,9 @@ object Placeholders {
     // ===[ YOUTUBE ]===
     val VIDEO_THUMBNAIL = LorittaPlaceholder("video.thumbnail")
 
+    // ===[ BLUESKY ]===
+    val BLUESKY_POST_URL = LorittaPlaceholder("post.url")
+
     object Deprecated {
         val USER_ID = LorittaPlaceholder("user-id")
         val USER_DISCRIMINATOR = LorittaPlaceholder("user-discriminator")
