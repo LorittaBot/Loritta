@@ -1,0 +1,5 @@
+website:
+  dashboard:
+    bluesky:
+      title: "Notificações do Bluesky"
+      accounts: "{channelCount,plural, =0 {# contas} one {# conta} other {# contas}}"

@@ -62,7 +62,7 @@ class GuildBlueskyView(
                         }
 
                         div(classes = "card-header-description") {
-                            text("${trackedBlueskyAccounts.size} contas")
+                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Bluesky.Accounts(trackedBlueskyAccounts.size)))
                         }
                     }
 
@@ -245,7 +245,7 @@ class GuildBlueskyView(
 
                     div(classes = "hero-text") {
                         h1 {
-                            text("Notificações do Bluesky")
+                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Bluesky.Title))
                         }
 
                         for (line in i18nContext.get(I18N_PREFIX.Description)) {
