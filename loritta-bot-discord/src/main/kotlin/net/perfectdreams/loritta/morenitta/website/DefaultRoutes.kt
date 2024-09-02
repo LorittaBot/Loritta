@@ -142,7 +142,6 @@ object DefaultRoutes {
 		PostRaffleStatusRoute(loritta),
 		PostReputationMessageRoute(loritta),
 		PostTransferBalanceRoute(loritta),
-		PostUpdateReadyRoute(loritta),
 		PostUpdateUserBackgroundRoute(loritta),
 		PostErrorRoute(loritta),
 
