@@ -131,9 +131,7 @@ class GuildBlueskyView(
                                 it.did == trackedBlueskyAccount[TrackedBlueskyAccounts.repo]
                             }
 
-                            div(classes = "card") {
-                                style = "flex-direction: row; align-items: center; gap: 0.5em;"
-
+                            div(classes = "card card-with-avatar-content-buttons") {
                                 img(src = profileInfo?.avatar) {
                                     style = "width: 64px; height: 64px; border-radius: 100%;"
                                 }
@@ -237,10 +235,8 @@ class GuildBlueskyView(
             div {
                 id = "form-stuff-wrapper"
 
-                div(classes = "hero-image") {}
-
                 div(classes = "hero-wrapper") {
-                    // etherealGambiImg("https://stuff.loritta.website/loritta-daily-shop-allouette.png", classes = "hero-image", sizes = "(max-width: 900px) 100vw, 360px") {}
+                    img(src = "https://stuff.loritta.website/monica-ata-bluetero.jpeg", classes = "hero-image") {}
 
                     div(classes = "hero-text") {
                         h1 {
@@ -250,6 +246,18 @@ class GuildBlueskyView(
                         for (line in i18nContext.get(I18N_PREFIX.Description)) {
                             p {
                                 text("Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas.")
+                            }
+                        }
+
+                        div(classes = "alert alert-danger") {
+                            div {
+                                b {
+                                    text("Atenção: Funcionalidade experimental!")
+                                }
+                            }
+
+                            div {
+                                text("As vezes tem uns bugs no painel, como a Loritta não conseguindo carregar o perfil da pessoa e outras instabilidades no Bluesky, mas não se preocupe, a Loritta *tenta* repostar todas as suas opiniões filosoficas instantaneamente!")
                             }
                         }
                     }
