@@ -4,6 +4,7 @@ import com.upokecenter.cbor.CBORObject
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.client.request.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -25,6 +26,7 @@ class BlueskyFirehoseClient {
     var isShuttingDown = false
     var connectionTries = 1
     var lastEventReceivedAt = Instant.now()
+    var lastSequence: Long? = null
     private var _session: ClientWebSocketSession? = null
     val session: ClientWebSocketSession
         get() = _session ?: throw RuntimeException("Session isn't connected yet!")
@@ -43,7 +45,14 @@ class BlueskyFirehoseClient {
         GlobalScope.launch(Dispatchers.IO) {
             logger.info { "Starting Bluesky Firehose..." }
             try {
-                client.ws("wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos") {
+                client.ws(
+                    "wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos",
+                    {
+                        if (lastSequence != null)
+                            parameter("cursor", lastSequence)
+                    }
+                ) {
+
                     _session = this
 
                     // This is a hack mostly because sometimes Firehose stops sending events
@@ -52,7 +61,7 @@ class BlueskyFirehoseClient {
                         delay(30_000)
 
                         while (true) {
-                            logger.info { "Checking if Firehose stopped receiving events... Last event received at $lastEventReceivedAt" }
+                            logger.info { "Checking if Firehose stopped receiving events... Last event received at $lastEventReceivedAt; Last sequence: $lastSequence" }
                             val diff = Duration.between(lastEventReceivedAt, Instant.now())
                             if (diff.seconds >= 15) {
                                 logger.warn { "Stopped receiving Firehose events! Something may have gone wrong! Restarting..." }
@@ -93,7 +102,9 @@ class BlueskyFirehoseClient {
 
                                     // println(objStuff)
                                     val body = CBORObject.Read(inputStream)
-                                    // println(body)
+                                    val seq = body.get("seq").AsInt64Value()
+                                    lastSequence = seq
+                                    println(seq)
 
                                     val repo = body.get("repo")
                                     val ops = body.get("ops") ?: continue
