@@ -54,25 +54,22 @@ class BlueskyFirehoseClient {
                             parameter("cursor", lastSequence)
                     }
                 ) {
-
                     _session = this
 
-                    // This is a hack mostly because sometimes Firehose stops sending events
+                    // This is a hack mostly because sometimes Firehose stops sending events (?)
                     launch {
-                        // smol initial delay
-                        delay(30_000)
-
                         while (true) {
+                            delay(5_000) // Initial delay
                             logger.info { "Checking if Firehose stopped receiving events... Last event received at $lastEventReceivedAt; Last sequence: $lastSequence; Last header: $lastHeaderReceived; Last body: $lastBodyReceived" }
                             val diff = Duration.between(lastEventReceivedAt, Instant.now())
-                            if (diff.seconds >= 15) {
+                            if (diff.seconds >= 5) {
                                 logger.warn { "Stopped receiving Firehose events! Something may have gone wrong! Restarting..." }
                                 this@ws.close()
                                 this@ws.cancel()
                                 return@launch
                             }
 
-                            delay(5_000)
+                            delay(1_000)
                         }
                     }
 
