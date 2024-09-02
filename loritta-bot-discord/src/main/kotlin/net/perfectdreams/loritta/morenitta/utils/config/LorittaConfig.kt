@@ -40,7 +40,6 @@ data class LorittaConfig(
     val messageRenderer: MessageRendererConfig,
     val sparklyPower: SparklyPowerConfig,
     val crowdin: CrowdinConfig,
-    val twitter: TwitterConfig,
     val twitch: TwitchConfig,
     val quirky: QuirkyConfig,
     val donatorsOstentation: DonatorsOstentationConfig,
@@ -247,14 +246,6 @@ data class LorittaConfig(
 
     @Serializable
     data class SparklyPowerConfig(val sparklySurvivalUrl: String)
-
-    @Serializable
-    data class TwitterConfig(
-        val oAuthConsumerKey: String,
-        val oAuthConsumerSecret: String,
-        val oAuthAccessToken: String,
-        val oAuthAccessTokenSecret: String
-    )
 
     @Serializable
     data class TwitchConfig(
