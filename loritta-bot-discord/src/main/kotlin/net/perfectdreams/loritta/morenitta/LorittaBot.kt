@@ -1349,7 +1349,7 @@ class LorittaBot(
 	}
 
 	private fun startTasks() {
-		if (clusterId == config.loritta.blueskyConfig.firehoseEnabledOnClusterId) {
+		if (clusterId == config.loritta.bluesky.firehoseEnabledOnClusterId) {
 			GlobalScope.launch(CoroutineName("BlueSky Posts Stream Relay")) {
 				blueSkyRelay.startRelay()
 			}

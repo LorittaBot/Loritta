@@ -41,7 +41,7 @@ data class LorittaConfig(
     val sparklyPower: SparklyPowerConfig,
     val crowdin: CrowdinConfig,
     val twitch: TwitchConfig,
-    val blueskyConfig: BlueskyConfig,
+    val bluesky: BlueskyConfig,
     val quirky: QuirkyConfig,
     val donatorsOstentation: DonatorsOstentationConfig,
     val connectionManager: ConnectionManagerConfig,
