@@ -96,14 +96,22 @@ class BlueskyFirehoseClient {
                                         return@ws
                                     }
 
+                                    if (t == "#info") {
+                                        val body = CBORObject.Read(inputStream)
+                                        logger.info { "Received info from the Firehose stream: $body" }
+                                        continue
+                                    }
+
                                     // #identity = seems to be identity syncs (fancy handle -> did)
                                     if (t != "#commit")
                                         continue
 
                                     // println(objStuff)
                                     val body = CBORObject.Read(inputStream)
-                                    val seq = body.get("seq").AsInt64Value()
-                                    lastSequence = seq
+                                    val seq = body.get("seq")
+                                    if (seq != null) {
+                                        lastSequence = seq.AsInt64Value()
+                                    }
 
                                     val repo = body.get("repo")
                                     val ops = body.get("ops") ?: continue
