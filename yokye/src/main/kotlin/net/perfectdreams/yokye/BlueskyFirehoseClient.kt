@@ -29,6 +29,7 @@ class BlueskyFirehoseClient {
     var lastSequence: Long? = null
     var lastHeaderReceived: CBORObject? = null
     var lastBodyReceived: CBORObject? = null
+    var lastEventTime: Instant? = null
     private var _session: ClientWebSocketSession? = null
     val session: ClientWebSocketSession
         get() = _session ?: throw RuntimeException("Session isn't connected yet!")
@@ -47,6 +48,11 @@ class BlueskyFirehoseClient {
         GlobalScope.launch(Dispatchers.IO) {
             logger.info { "Starting Bluesky Firehose..." }
             try {
+                val _lastEventTime = lastEventTime
+                if (_lastEventTime != null && (System.currentTimeMillis() - _lastEventTime.toEpochMilli()) >= 60_000) {
+                    logger.warn { "The last event was sent at $_lastEventTime, and that's too long ago! We aren't going to ask to resume a connection then..." }
+                    lastSequence = null
+                }
                 client.ws(
                     "wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos",
                     {
@@ -108,6 +114,11 @@ class BlueskyFirehoseClient {
                                     // #identity = seems to be identity syncs (fancy handle -> did)
                                     if (t != "#commit")
                                         continue
+
+                                    val time = body.get("time")
+                                    if (time != null) {
+                                        lastEventTime = Instant.parse(time.AsString())
+                                    }
 
                                     // println(objStuff)
                                     val seq = body.get("seq")
