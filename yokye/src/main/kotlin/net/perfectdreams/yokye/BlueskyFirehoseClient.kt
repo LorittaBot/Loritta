@@ -102,8 +102,9 @@ class BlueskyFirehoseClient {
                                     if (op == -1) {
                                         // https://atproto.com/specs/event-stream
                                         // Something went wrong! "Streams should be closed immediately following transmitting or receiving an error frame."
-                                        val error = header.get("error").AsString()
-                                        val message = header.get("message")?.AsString() // This is optional
+                                        val body = CBORObject.Read(inputStream)
+                                        val error = body.get("error")?.AsString()
+                                        val message = body.get("message")?.AsString() // This is optional
                                         logger.warn { "A upstream error happened in the Firehose! The connection will be closed. Error: $error; Message: $message" }
                                         this.close()
                                         this.cancel()
