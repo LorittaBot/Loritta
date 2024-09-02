@@ -100,9 +100,10 @@ class BlueskyFirehoseClient {
                                         return@ws
                                     }
 
+                                    val body = CBORObject.Read(inputStream)
+                                    this@BlueskyFirehoseClient.lastBodyReceived = body
+
                                     if (t == "#info") {
-                                        val body = CBORObject.Read(inputStream)
-                                        this@BlueskyFirehoseClient.lastBodyReceived = body
                                         logger.info { "Received info from the Firehose stream: $body" }
                                         continue
                                     }
@@ -112,8 +113,6 @@ class BlueskyFirehoseClient {
                                         continue
 
                                     // println(objStuff)
-                                    val body = CBORObject.Read(inputStream)
-                                    this@BlueskyFirehoseClient.lastBodyReceived = body
                                     val seq = body.get("seq")
                                     if (seq != null) {
                                         lastSequence = seq.AsInt64Value()
