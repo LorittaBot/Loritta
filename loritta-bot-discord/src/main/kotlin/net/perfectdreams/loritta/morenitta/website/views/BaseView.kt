@@ -146,7 +146,7 @@ window.addEventListener('load', function () {
                 // htmx & hyperscript & other libs are included in the app.js bundle
                 // TODO - htmx-adventures: ^ Currently this is false because for some reason something is going wrong saying that htmx's "process" function does not work...
                 //  see the "htmx.kt" file
-                script(src = "https://unpkg.com/htmx.org@2.0.2") {}
+                script(src = "https://unpkg.com/htmx.org@1.9.12") {}
                 script(src = "https://unpkg.com/htmx-ext-sse@2.2.2/sse.js") {}
 
                 script {
@@ -210,6 +210,7 @@ window.addEventListener('load', function () {
 
                         // Our pages don't really play well with going back in history
                         put("historyCacheSize", 0)
+                        put("refreshOnHistoryMiss", true)
                     }.toString()
                 )
 
