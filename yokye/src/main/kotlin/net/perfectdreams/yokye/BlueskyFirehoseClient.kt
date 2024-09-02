@@ -15,8 +15,8 @@ class BlueskyFirehoseClient {
     companion object {
         private val client = HttpClient(CIO) {
             install(WebSockets) {
-                // Send ping every once in a while
-                pingInterval = 5_000
+                // We DON'T WANT to use the pingInterval, because we already do our own "ping at home" that automatically restarts the session if we haven't received an event for a looong time
+                pingInterval = -1L
             }
         }
         private val logger = KotlinLogging.logger {}
