@@ -285,6 +285,7 @@ class LorittaBot(
 	val twitchSubscriptionsHandler = TwitchSubscriptionsHandler(this)
 	val blueSkyRelay = LorittaBlueskyRelay(this)
 	val connectionManager = ConnectionManager(this)
+	var pendingUpdate: PendingUpdate? = null
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
 		.build<Long, Optional<CachedUserInfo>>()

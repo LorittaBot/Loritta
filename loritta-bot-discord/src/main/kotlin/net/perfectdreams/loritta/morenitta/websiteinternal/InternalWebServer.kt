@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.websiteinternal
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
@@ -10,6 +11,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.datetime.Clock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
@@ -23,6 +25,7 @@ import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.PendingUpdate
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
@@ -121,6 +124,24 @@ class InternalWebServer(val m: LorittaBot) {
                     }
 
                     call.respondText(os.toString(Charsets.UTF_8))
+                }
+
+                put("/loritta-restart") {
+                    m.pendingUpdate = PendingUpdate(Clock.System.now())
+                    call.respondText(
+                        "",
+                        status = HttpStatusCode.Accepted
+                    )
+                    return@put
+                }
+
+                delete("/loritta-restart") {
+                    m.pendingUpdate = null
+                    call.respondText(
+                        "",
+                        status = HttpStatusCode.Accepted
+                    )
+                    return@delete
                 }
 
                 // ===[ SPARKLYPOWER APIs ]===

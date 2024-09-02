@@ -248,6 +248,17 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     context,
                     args
                 )
+
+                // If Loritta has a pending update, let's notify the user that she'll restart soon™
+                val pendingUpdate = loritta.pendingUpdate
+                if (pendingUpdate != null) {
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.LorittaPendingUpdate),
+                            Emotes.LoriSleeping
+                        )
+                    }
+                }
             } catch (e: CommandException) {
                 context?.reply(e.ephemeral, e.builder)
             } catch (e: Exception) {
