@@ -66,6 +66,7 @@ give:
   tryingToGiveAnUnknownSticker: "Você está tentando dar uma figurinha que não existe!"
   youDontHaveEnoughStickers: "Você não tem figurinhas suficientes para dar! **Figurinhas que estão faltando:** {stickerList}"
   youAreGoingToTransfer: "Você está prestes a transferir **{stickerList}** (total: {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}) para {receiver}!"
+  receiverDidntBuyEnoughBoosterPacks: "{receiver} precisa comprar mais **{boosterPackCount,plural, =0 {# pacotinhos} one {# pacotinho} other {# pacotinhos}}** para poder aceitar a sua doação!"
   confirmTheTransaction: "Para confirmar a transação, {receiver} deve aceitar a transação!"
   successfullyTransferred: "Transferência realizada com sucesso! {receiver} recebeu **{stickerList}** (total: {stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}})!"
   acceptTransfer: "Aceitar Transferência"
@@ -81,6 +82,8 @@ trade:
   stickerTradeBetweenUsers: "Troca de Figurittas de {user1} x {user2}"
   description: "Troca figurinhas e sonhos com outra pessoa"
   youCantTradeStickersWithYourself: "Você não pode trocar figurinhas com você mesmo, bobinho!"
+  youDidntBuyEnoughBoosterPacks: "Você precisa comprar mais **{boosterPackCount,plural, =0 {# pacotinhos} one {# pacotinho} other {# pacotinhos}}** para poder trocar figurinhas!"
+  receiverDidntBuyEnoughBoosterPacks: "{receiver} precisa comprar mais **{boosterPackCount,plural, =0 {# pacotinhos} one {# pacotinho} other {# pacotinhos}}** para poder trocar figurinhas!"
   nothingTradedYetFunnyMessages:
     - "Vazio, igualzinho a minha conta bancária"
     - "Vazio, ou seja, não cheio"

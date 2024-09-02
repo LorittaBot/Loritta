@@ -30,9 +30,13 @@ data class StickerAlbumTemplate(
      */
     val stickerProbabilityWeights: Map<CardRarity, Double>,
     /**
+     * How many booster packs the user must buy before being able to trade
+     */
+    val minimumBoosterPacksToTrade: Int = 0,
+    /**
      * The pages of the album
      */
-    val pages: List<AlbumComboPage>
+    val pages: List<AlbumComboPage>,
 ) {
     @Serializable
     data class AlbumComboPage(

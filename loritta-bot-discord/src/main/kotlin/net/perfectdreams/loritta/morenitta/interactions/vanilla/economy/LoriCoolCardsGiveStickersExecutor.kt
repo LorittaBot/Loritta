@@ -1,15 +1,13 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import dev.minn.jda.ktx.interactions.components.asDisabled
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsSeenCards
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserOwnedCards
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -20,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import java.time.Instant
@@ -176,6 +175,15 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
             }.firstOrNull() ?: return@transaction GiveStickerResult.EventUnavailable
 
+            val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
+
+            val boughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                LoriCoolCardsUserBoughtBoosterPacks.user eq userThatWillReceiveTheSticker.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+            }.count()
+
+            if (template.minimumBoosterPacksToTrade > boughtPacks)
+                return@transaction GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, boughtPacks)
+
             val stickersToBeGiven = LoriCoolCardsEventCards.select {
                 LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
             }.toList()
@@ -215,6 +223,13 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 context.reply(false) {
                     styled(
                         "Nenhum evento de figurinhas ativo"
+                    )
+                }
+            }
+            is GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks -> {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacks(userThatWillReceiveTheSticker.asMention, result.requiredPacks - result.currentPacks))
                     )
                 }
             }
@@ -309,7 +324,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                 // Transfer
                                 // Delete the old card
                                 LoriCoolCardsUserOwnedCards.deleteWhere {
-                                    LoriCoolCardsUserOwnedCards.id inList stickerIdsToBeGivenMappedToOwnedStickerId
+                                    id inList stickerIdsToBeGivenMappedToOwnedStickerId
                                 }
 
                                 // Insert the new ones WITH BATCH INSERT BECAUSE WE ARE BUILT LIKE THAT!!!
@@ -393,6 +408,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
         data object EventUnavailable : GiveStickerResult()
         data object UnknownCard : GiveStickerResult()
         data class NotEnoughCards(val stickersMissing: List<ResultRow>) : GiveStickerResult()
+        data class ReceiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : GiveStickerResult()
         data class Success(val givenStickers: List<ResultRow>) : GiveStickerResult()
     }
 
