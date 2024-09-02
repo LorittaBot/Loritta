@@ -210,6 +210,7 @@ window.addEventListener('load', function () {
 
                         // Our pages don't really play well with going back in history
                         put("historyCacheSize", 0)
+                        put("refreshOnHistoryMiss", true)
                     }.toString()
                 )
 
