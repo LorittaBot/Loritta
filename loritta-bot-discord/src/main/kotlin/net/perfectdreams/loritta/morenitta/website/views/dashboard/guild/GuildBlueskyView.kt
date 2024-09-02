@@ -46,6 +46,7 @@ class GuildBlueskyView(
 ) {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Website.Dashboard.EventLog
+        val MAX_TRACKED_BLUESKY_ACCOUNTS = 25
 
         fun FlowContent.createBlueskyAccountCards(
             i18nContext: I18nContext,
@@ -66,44 +67,46 @@ class GuildBlueskyView(
                     }
 
                     button(classes = "discord-button primary") {
-                        openEmbeddedModalOnClick(
-                            "Adicionar Conta",
-                            true,
-                            {
-                                div {
-                                    input(InputType.text) {
-                                        name = "handle"
-                                        placeholder = "@loritta.website"
-                                    }
-                                }
-                            },
-                            listOf(
+                        if (MAX_TRACKED_BLUESKY_ACCOUNTS > trackedBlueskyAccounts.size) {
+                            openEmbeddedModalOnClick(
+                                "Adicionar Conta",
+                                true,
                                 {
-                                    this.defaultModalCloseButton(i18nContext)
+                                    div {
+                                        input(InputType.text) {
+                                            name = "handle"
+                                            placeholder = "@loritta.website"
+                                        }
+                                    }
                                 },
-                                {
-                                    attributes["hx-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/add"
-                                    attributes["hx-push-url"] = "true"
-                                    attributes["hx-disabled-elt"] = "this"
-                                    attributes["hx-include"] = "[name='handle']"
-                                    // show:top - Scroll to the top
-                                    // settle:0ms - We don't want the settle animation beccause it is a full page swap
-                                    // swap:0ms - We don't want the swap animation because it is a full page swap
-                                    attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
-                                    attributes["hx-select"] = "#right-sidebar-contents"
-                                    attributes["hx-target"] = "#right-sidebar-contents"
-                                    disabled = true
-                                    this.classes += "discord-button primary"
+                                listOf(
+                                    {
+                                        this.defaultModalCloseButton(i18nContext)
+                                    },
+                                    {
+                                        attributes["hx-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/add"
+                                        attributes["hx-push-url"] = "true"
+                                        attributes["hx-disabled-elt"] = "this"
+                                        attributes["hx-include"] = "[name='handle']"
+                                        // show:top - Scroll to the top
+                                        // settle:0ms - We don't want the settle animation beccause it is a full page swap
+                                        // swap:0ms - We don't want the swap animation because it is a full page swap
+                                        attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
+                                        attributes["hx-select"] = "#right-sidebar-contents"
+                                        attributes["hx-target"] = "#right-sidebar-contents"
+                                        disabled = true
+                                        this.classes += "discord-button primary"
 
-                                    htmxDiscordLikeLoadingButtonSetup(
-                                        i18nContext,
-                                    ) {
-                                        this.text("Continuar")
-                                    }
+                                        htmxDiscordLikeLoadingButtonSetup(
+                                            i18nContext,
+                                        ) {
+                                            this.text("Continuar")
+                                        }
 
-                                    script {
-                                        unsafe {
-                                            raw("""
+                                        script {
+                                            unsafe {
+                                                raw(
+                                                    """
                                                         var input = selectFirst("[name='handle']")
                                                         var button = me()
                                                         input.on("input", e => {
@@ -113,12 +116,14 @@ class GuildBlueskyView(
                                                                 button.disabled = false;
                                                             }
                                                         })
-                                                    """.trimIndent())
+                                                    """.trimIndent()
+                                                )
+                                            }
                                         }
                                     }
-                                }
+                                )
                             )
-                        )
+                        }
 
                         text("Adicionar Conta")
                     }

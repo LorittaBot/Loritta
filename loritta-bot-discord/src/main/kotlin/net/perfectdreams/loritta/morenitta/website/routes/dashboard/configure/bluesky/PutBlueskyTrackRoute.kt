@@ -22,12 +22,15 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildBlueskyView
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildConfigureBlueskyProfileView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 
 class PutBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/bluesky/tracks") {
 	override suspend fun onDashboardGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, colorTheme: ColorTheme) {
@@ -67,12 +70,43 @@ class PutBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 		val profile = json.decodeFromString<BlueskyProfile>(textStuff)
 
 		val insertedRow = loritta.transaction {
+			val count = TrackedBlueskyAccounts.selectAll()
+				.where {
+					TrackedBlueskyAccounts.guildId eq guild.idLong
+				}.count()
+			if (count >= GuildBlueskyView.MAX_TRACKED_BLUESKY_ACCOUNTS) {
+				return@transaction null
+			}
+
 			TrackedBlueskyAccounts.insert {
 				it[TrackedBlueskyAccounts.repo] = profile.did
 				it[TrackedBlueskyAccounts.guildId] = guild.idLong
 				it[TrackedBlueskyAccounts.channelId] = postParams.getOrFail("channelId").toLong()
 				it[TrackedBlueskyAccounts.message] = postParams.getOrFail("message")
 			}
+		}
+
+		if (insertedRow == null) {
+			call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+			call.respondJson(
+				buildJsonObject {
+					put("playSoundEffect", "config-error")
+					put(
+						"showSpicyToast",
+						EmbeddedSpicyModalUtils.encodeURIComponent(
+							Json.encodeToString(
+								EmbeddedSpicyToast(
+									EmbeddedSpicyToast.Type.WARN,
+									"Você já tem muitas contas conectadas!",
+									null
+								)
+							)
+						)
+					)
+				}.toString(),
+				status = HttpStatusCode.BadRequest
+			)
+			return
 		}
 
 		call.response.header(
