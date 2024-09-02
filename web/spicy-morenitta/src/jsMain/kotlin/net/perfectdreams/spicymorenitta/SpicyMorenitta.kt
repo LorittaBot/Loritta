@@ -1152,6 +1152,10 @@ class SpicyMorenitta : Logging {
 			it.addEventListener(
 				"input",
 				{ event ->
+					// If the input does not have a name attribute, let's ignore the input...
+					if ((event.target as Element?)?.getAttribute("name") == null)
+						return@addEventListener
+
 					// Save the current state
 					val newState = JSON.stringify(htmx.values(it))
 
@@ -1355,6 +1359,9 @@ class SpicyMorenitta : Logging {
 
 					// And update the backing textarea
 					originalSelectMenuElement.value = rawMessage
+
+					// And dispatch an input event for anyone that's listening to it
+					originalSelectMenuElement.dispatchEvent(Event("input", EventInit(bubbles = true, cancelable = true)))
 				}
 			}
 		}

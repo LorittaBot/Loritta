@@ -9,6 +9,8 @@ import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.components.DiscordButton
 import net.perfectdreams.spicymorenitta.components.DiscordButtonType
+import org.jetbrains.compose.web.attributes.ButtonType
+import org.jetbrains.compose.web.attributes.type
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
@@ -29,6 +31,7 @@ fun ColorPicker(
         classes("discord-color-selector")
     }) {
         Button(attrs = {
+            type(ButtonType.Button)
             classes("big-color-swatch")
 
             onClick {
@@ -43,6 +46,7 @@ fun ColorPicker(
         }
 
         Button(attrs = {
+            type(ButtonType.Button)
             classes("big-color-swatch")
             style {
                 if (currentColor != null) {
@@ -405,6 +409,7 @@ fun ColorPicker(
 @Composable
 fun ColorSwatch(currentColor: Color?, color: Color, onColorSelection: (Color) -> Unit) {
     Button(attrs = {
+        type(ButtonType.Button)
         classes("quick-color-swatch")
         style {
             backgroundColor(rgb(color.red, color.green, color.blue))
