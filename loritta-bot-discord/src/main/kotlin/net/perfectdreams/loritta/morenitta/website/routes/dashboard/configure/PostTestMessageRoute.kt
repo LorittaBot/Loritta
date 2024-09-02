@@ -1,10 +1,16 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import kotlinx.html.div
+import kotlinx.html.stream.createHTML
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -23,8 +29,10 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChann
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.utils.placeholders.RenderableMessagePlaceholder
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageRequest
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -67,7 +75,27 @@ class PostTestMessageRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 
 		val diff = System.currentTimeMillis() - last
 		if (4000 >= diff) {
-			call.respondHtml("")
+			call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+			call.respondJson(
+				buildJsonObject {
+					put("playSoundEffect", "config-error")
+					put(
+						"showSpicyToast",
+						EmbeddedSpicyModalUtils.encodeURIComponent(
+							Json.encodeToString(
+								EmbeddedSpicyToast(
+									EmbeddedSpicyToast.Type.WARN,
+									"Algo deu errado ao enviar a mensagem!",
+									createHTML().div {
+										text("Você já enviou uma mensagem recentemente! Espere um pouco antes de tentar enviar uma nova mensagem.")
+									}
+								)
+							)
+						)
+					)
+				}.toString(),
+				status = HttpStatusCode.TooManyRequests
+			)
 			return
 		}
 
@@ -80,7 +108,27 @@ class PostTestMessageRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 		}
 
 		if (channel == null) {
-			call.respondHtml("")
+			call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+			call.respondJson(
+				buildJsonObject {
+					put("playSoundEffect", "config-error")
+					put(
+						"showSpicyToast",
+						EmbeddedSpicyModalUtils.encodeURIComponent(
+							Json.encodeToString(
+								EmbeddedSpicyToast(
+									EmbeddedSpicyToast.Type.WARN,
+									"Algo deu errado ao enviar a mensagem!",
+									createHTML().div {
+										text("O canal que você selecionou não existe.")
+									}
+								)
+							)
+						)
+					)
+				}.toString(),
+				status = HttpStatusCode.BadRequest
+			)
 			return
 		}
 
@@ -121,11 +169,48 @@ class PostTestMessageRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 		try {
 			channel.sendMessage(patchedMessage.build()).await()
 		} catch (e: Exception) {
-			// return@run DashGuildScopedResponse.SendMessageResponse.FailedToSendMessage
-			call.respondText("")
+			call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+			call.respondJson(
+				buildJsonObject {
+					put("playSoundEffect", "config-error")
+					put(
+						"showSpicyToast",
+						EmbeddedSpicyModalUtils.encodeURIComponent(
+							Json.encodeToString(
+								EmbeddedSpicyToast(
+									EmbeddedSpicyToast.Type.WARN,
+									"Algo deu errado ao enviar a mensagem!",
+									createHTML().div {
+										text("Não foi possível enviar a mensagem.")
+									}
+								)
+							)
+						)
+					)
+				}.toString(),
+				status = HttpStatusCode.BadRequest
+			)
+			return
 		}
 
-		// DashGuildScopedResponse.SendMessageResponse.Success
-		call.respondText("")
+		call.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+		call.respondJson(
+			buildJsonObject {
+				put("playSoundEffect", "config-saved")
+				put(
+					"showSpicyToast",
+					EmbeddedSpicyModalUtils.encodeURIComponent(
+						Json.encodeToString(
+							EmbeddedSpicyToast(
+								EmbeddedSpicyToast.Type.SUCCESS,
+								"Mensagem enviada!",
+								null
+							)
+						)
+					)
+				)
+			}.toString(),
+			status = HttpStatusCode.OK
+		)
 	}
 }

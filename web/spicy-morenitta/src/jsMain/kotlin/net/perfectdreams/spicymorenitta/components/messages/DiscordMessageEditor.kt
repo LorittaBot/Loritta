@@ -2,11 +2,16 @@ package net.perfectdreams.spicymorenitta.components.messages
 
 import androidx.compose.runtime.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.utils.io.charsets.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
@@ -20,6 +25,8 @@ import net.perfectdreams.spicymorenitta.components.*
 import net.perfectdreams.spicymorenitta.components.colorpicker.ColorPicker
 import net.perfectdreams.spicymorenitta.components.colorpicker.ColorUtils
 import net.perfectdreams.spicymorenitta.toasts.Toast
+import net.perfectdreams.spicymorenitta.utils.htmx
+import net.perfectdreams.spicymorenitta.utils.jsObject
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
@@ -260,56 +267,23 @@ fun DiscordMessageEditor(
                                             )
                                         )
                                     }
-                                }
 
-                                // TODO: Fix this!
-                                /* val dashResponse = m.makeRPCRequest<LorittaDashboardRPCResponse.ExecuteDashGuildScopedRPCResponse>(
-                                    LorittaDashboardRPCRequest.ExecuteDashGuildScopedRPCRequest(
-                                        targetGuild.id,
-                                        DashGuildScopedRequest.SendMessageRequest(
-                                            when (targetChannel) {
-                                                TargetChannelResult.ChannelNotSelected -> error("Tried to send a message, but the channel is not selected!")
-                                                is TargetChannelResult.DirectMessageTarget -> null
-                                                is TargetChannelResult.GuildMessageChannelTarget -> targetChannel.id
-                                            },
-                                            rawMessage, // the message is a raw JSON string, or a content
-                                            section.type,
-                                            additionalPlaceholdersInfo
+                                    // This is from the "SpicyMorenitta-Use-Response-As-HXTrigger" code
+                                    val responseAsText = response.bodyAsText(Charsets.UTF_8)
+                                    val json = Json.parseToJsonElement(responseAsText).jsonObject
+                                    json.entries.forEach {
+                                        val eventName = it.key
+                                        val eventValue = it.value.jsonPrimitive.contentOrNull
+                                        println("Triggering event $eventName with $eventValue")
+                                        htmx.trigger(
+                                            "body",
+                                            it.key,
+                                            jsObject {
+                                                this.value = eventValue
+                                            }
                                         )
-                                    )
-                                ).dashResponse as DashGuildScopedResponse.SendMessageResponse
-
-                                when (dashResponse) {
-                                    is DashGuildScopedResponse.SendMessageResponse.FailedToSendMessage -> {
-                                        m.globalState.showToast(
-                                            Toast.Type.WARN,
-                                            "Algo deu errado ao enviar a mensagem!"
-                                        ) {
-                                            Text("Não foi possível enviar a mensagem.")
-                                        }
                                     }
-
-                                    is DashGuildScopedResponse.SendMessageResponse.UnknownChannel -> {
-                                        m.globalState.showToast(
-                                            Toast.Type.WARN,
-                                            "Algo deu errado ao enviar a mensagem!"
-                                        ) {
-                                            Text("O canal que você selecionou não existe.")
-                                        }
-                                    }
-
-                                    is DashGuildScopedResponse.SendMessageResponse.TooManyMessages -> {
-                                        m.globalState.showToast(
-                                            Toast.Type.WARN,
-                                            "Algo deu errado ao enviar a mensagem!"
-                                        ) {
-                                            Text("Você já enviou uma mensagem recentemente! Espere um pouco antes de tentar enviar uma nova mensagem.")
-                                        }
-                                    }
-
-                                    is DashGuildScopedResponse.SendMessageResponse.Success -> {
-                                        m.globalState.showToast(Toast.Type.SUCCESS, "Mensagem enviada!")
-                                    } */
+                                }
                             }
                         }
                     }
