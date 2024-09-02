@@ -341,7 +341,7 @@ class InternalWebServer(val m: LorittaBot) {
                         }
                     }
 
-                    LorittaInternalRPCResponse.TwitchStreamOnlineEventResponse(notifiedGuilds)
+                    LorittaInternalRPCResponse.BlueskyPostRelayResponse(notifiedGuilds)
                 }
             }
         } catch (e: RPCResponseException) {
