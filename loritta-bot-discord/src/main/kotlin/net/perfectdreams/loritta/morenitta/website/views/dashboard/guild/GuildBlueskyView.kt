@@ -131,7 +131,11 @@ class GuildBlueskyView(
 
                 div(classes = "cards") {
                     if (trackedBlueskyAccounts.isNotEmpty()) {
-                        for (trackedBlueskyAccount in trackedBlueskyAccounts) {
+                        val sortedTrackedBlueskyAccounts = trackedBlueskyAccounts.sortedByDescending {
+                            it[TrackedBlueskyAccounts.addedAt] ?: it[TrackedBlueskyAccounts.editedAt]
+                        }
+
+                        for (trackedBlueskyAccount in sortedTrackedBlueskyAccounts) {
                             val profileInfo = blueskyProfiles.firstOrNull {
                                 it.did == trackedBlueskyAccount[TrackedBlueskyAccounts.repo]
                             }
