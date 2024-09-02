@@ -29,8 +29,15 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class GetAddBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/bluesky/add") {
 	override suspend fun onDashboardGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, colorTheme: ColorTheme) {
+		// "Handles are not case-sensitive, which means they can be safely normalized from user input to lower-case (ASCII) form."
+		//https://atproto.com/specs/handle
+		val handle = call.parameters
+			.getOrFail("handle")
+			.removePrefix("@")
+			.lowercase()
+
 		val http = loritta.http.get("https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile") {
-			parameter("actor", call.parameters.getOrFail("handle").removePrefix("@"))
+			parameter("actor", handle)
 		}
 
 		if (http.status == HttpStatusCode.BadRequest) {
