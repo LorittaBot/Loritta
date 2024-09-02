@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import java.time.Instant
 
 class PutBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/bluesky/tracks") {
 	override suspend fun onDashboardGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, colorTheme: ColorTheme) {
@@ -78,11 +79,15 @@ class PutBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 				return@transaction null
 			}
 
+			val now = Instant.now()
+
 			TrackedBlueskyAccounts.insert {
 				it[TrackedBlueskyAccounts.repo] = profile.did
 				it[TrackedBlueskyAccounts.guildId] = guild.idLong
 				it[TrackedBlueskyAccounts.channelId] = postParams.getOrFail("channelId").toLong()
 				it[TrackedBlueskyAccounts.message] = postParams.getOrFail("message")
+				it[TrackedBlueskyAccounts.addedAt] = now
+				it[TrackedBlueskyAccounts.editedAt] = now
 			}
 		}
 
