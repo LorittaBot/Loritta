@@ -20,6 +20,11 @@ class BlueskyFirehoseClient {
             }
         }
         private val logger = KotlinLogging.logger {}
+        private val TYPES_TO_BE_BODY_PARSED = setOf(
+            // #identity = seems to be identity syncs (fancy handle -> did)
+            "#info",
+            "#commit"
+        )
     }
 
     // var ready = MutableStateFlow(false)
@@ -86,8 +91,10 @@ class BlueskyFirehoseClient {
                                     // https://atproto.com/specs/event-stream
                                     val inputStream = frame.readBytes().inputStream()
                                     val header = CBORObject.Read(inputStream)
+
                                     this@BlueskyFirehoseClient.lastHeaderReceived = header
                                     this@BlueskyFirehoseClient.lastBodyReceived = null
+
                                     val t = header.get("t").AsString()
                                     val op = header.get("op").AsInt32()
                                     lastEventReceivedAt = Instant.now()
@@ -95,13 +102,17 @@ class BlueskyFirehoseClient {
                                     if (op == -1) {
                                         // https://atproto.com/specs/event-stream
                                         // Something went wrong! "Streams should be closed immediately following transmitting or receiving an error frame."
-                                        val error = header.get("header").AsString()
-                                        val message = header.get("message").AsString()
+                                        val error = header.get("error").AsString()
+                                        val message = header.get("message")?.AsString() // This is optional
                                         logger.warn { "A upstream error happened in the Firehose! The connection will be closed. Error: $error; Message: $message" }
                                         this.close()
                                         this.cancel()
                                         return@ws
                                     }
+
+                                    // Now, let's parse the body ONLY if it is really needed
+                                    if (t !in TYPES_TO_BE_BODY_PARSED) // Bye!
+                                        continue
 
                                     val body = CBORObject.Read(inputStream)
                                     this@BlueskyFirehoseClient.lastBodyReceived = body
@@ -110,10 +121,6 @@ class BlueskyFirehoseClient {
                                         logger.info { "Received info from the Firehose stream: $body" }
                                         continue
                                     }
-
-                                    // #identity = seems to be identity syncs (fancy handle -> did)
-                                    if (t != "#commit")
-                                        continue
 
                                     val time = body.get("time")
                                     if (time != null) {
@@ -142,38 +149,6 @@ class BlueskyFirehoseClient {
                                             postStream.trySend(post)
                                         }
                                     }
-
-                                    // We technically don't need to read the blocks, unless if we want to get the post's content
-                                    /* val blocks = body.get("blocks")
-
-                                    // Blocks can be null!
-                                    if (blocks != null) {
-                                        val isWhatWeWant =
-                                            body.get("repo").AsString() == "did:plc:tpkrh3jv67mebzcq5xdstq65"
-                                        if (isWhatWeWant) {
-                                            // println(blocks::class.java)
-                                            // blocks.GetByteString()
-                                            val result = parseCAR(blocks.GetByteString().inputStream())
-                                            var isPost = false
-
-                                            result.forEach {
-                                                val type = it.get("\$type")
-                                                if (type != null && type.AsString() == "app.bsky.feed.post") {
-                                                    val content = it.get("text")
-                                                    // if (content != null && content.AsString().contains("hello world", true)) {
-                                                    isPost = true
-                                                    // }
-                                                }
-                                            }
-
-                                            if (isPost) {
-                                                println(body)
-                                                result.forEach {
-                                                    println(it.toString())
-                                                }
-                                            }
-                                        }
-                                    } */
                                 }
 
                                 is Frame.Close -> {
