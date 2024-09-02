@@ -104,7 +104,6 @@ class BlueskyFirehoseClient {
                                     val body = CBORObject.Read(inputStream)
                                     val seq = body.get("seq").AsInt64Value()
                                     lastSequence = seq
-                                    println(seq)
 
                                     val repo = body.get("repo")
                                     val ops = body.get("ops") ?: continue
