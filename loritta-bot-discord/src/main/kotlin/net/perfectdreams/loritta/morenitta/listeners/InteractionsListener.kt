@@ -47,6 +47,7 @@ import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toLoritta
 import org.jetbrains.exposed.sql.and
@@ -250,7 +251,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             } catch (e: CommandException) {
                 context?.reply(e.ephemeral, e.builder)
             } catch (e: Exception) {
-                val errorId = UUID.randomUUID()
+                val errorId = LorittaUtils.generateErrorId(loritta)
                 logger.warn(e) { "Something went wrong while executing command ${executor::class.simpleName}! Option Values: $slashCommandOptionValuesAsJson; Error ID: $errorId" }
 
                 stacktrace = e.stackTraceToString()
@@ -586,7 +587,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 callbackId.invoke(context)
             } catch (e: Exception) {
-                val errorId = UUID.randomUUID()
+                val errorId = LorittaUtils.generateErrorId(loritta)
                 logger.warn(e) { "Something went wrong while executing button interaction! Error ID: $errorId" }
 
                 val currentContext = context
@@ -614,7 +615,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                             }
                         } catch (e: Exception) {
                             // wtf
-                            logger.warn(e) { "Something went wrong while sending the reason why the button interaction was not correctly executed! Error ID: $errorId" }
+                            logger.warn(e) { "Something went wrong while sending the reason why the button interaction was not correctly executed! Error ID: ${LorittaUtils.generateErrorId(loritta)}" }
                             // At this point just give up bro
                             throw e
                         }
@@ -692,7 +693,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 callback.invoke(context, event.interaction.values)
             } catch (e: Exception) {
-                val errorId = UUID.randomUUID()
+                val errorId = LorittaUtils.generateErrorId(loritta)
                 logger.warn(e) { "Something went wrong while executing select menu interaction! Error ID: $errorId" }
 
                 val currentContext = context
@@ -720,7 +721,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                             }
                         } catch (e: Exception) {
                             // wtf
-                            logger.warn(e) { "Something went wrong while sending the reason why the select menu interaction was not correctly executed! Error ID: $errorId" }
+                            logger.warn(e) { "Something went wrong while sending the reason why the select menu interaction was not correctly executed! Error ID: ${LorittaUtils.generateErrorId(loritta)}" }
                             // At this point just give up bro
                             throw e
                         }

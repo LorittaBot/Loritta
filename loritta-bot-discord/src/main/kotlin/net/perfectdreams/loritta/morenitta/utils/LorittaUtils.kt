@@ -254,4 +254,11 @@ object LorittaUtils {
 		}
 		return false
 	}
+
+	/**
+	 * Generates a random error ID
+	 */
+	fun generateErrorId(loritta: LorittaBot): String {
+		return "cluster${loritta.lorittaCluster.id}_${UUID.randomUUID().toString().replace("-", "")}"
+	}
 }
