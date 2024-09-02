@@ -130,7 +130,7 @@ abstract class LegacyGuildDashboardView(
                         "fab fa-twitch",
                         "livestream"
                     )
-                    // appendEntry("/guild/${guild.id}/configure/twitter", true, "Twitter", "fab fa-twitter", "twitter")
+                    appendEntry("/guild/${guild.id}/configure/bluesky", false, "Bluesky", "fab fa-bluesky", "bluesky")
 
                     hr(classes = "divider") {}
 
