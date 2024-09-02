@@ -27,6 +27,8 @@ class BlueskyFirehoseClient {
     var connectionTries = 1
     var lastEventReceivedAt = Instant.now()
     var lastSequence: Long? = null
+    var lastHeaderReceived: CBORObject? = null
+    var lastBodyReceived: CBORObject? = null
     private var _session: ClientWebSocketSession? = null
     val session: ClientWebSocketSession
         get() = _session ?: throw RuntimeException("Session isn't connected yet!")
@@ -61,7 +63,7 @@ class BlueskyFirehoseClient {
                         delay(30_000)
 
                         while (true) {
-                            logger.info { "Checking if Firehose stopped receiving events... Last event received at $lastEventReceivedAt; Last sequence: $lastSequence" }
+                            logger.info { "Checking if Firehose stopped receiving events... Last event received at $lastEventReceivedAt; Last sequence: $lastSequence; Last header: $lastHeaderReceived; Last body: $lastBodyReceived" }
                             val diff = Duration.between(lastEventReceivedAt, Instant.now())
                             if (diff.seconds >= 15) {
                                 logger.warn { "Stopped receiving Firehose events! Something may have gone wrong! Restarting..." }
@@ -81,6 +83,8 @@ class BlueskyFirehoseClient {
                                     // https://atproto.com/specs/event-stream
                                     val inputStream = frame.readBytes().inputStream()
                                     val header = CBORObject.Read(inputStream)
+                                    this@BlueskyFirehoseClient.lastHeaderReceived = header
+                                    this@BlueskyFirehoseClient.lastBodyReceived = null
                                     val t = header.get("t").AsString()
                                     val op = header.get("op").AsInt32()
                                     lastEventReceivedAt = Instant.now()
@@ -98,6 +102,7 @@ class BlueskyFirehoseClient {
 
                                     if (t == "#info") {
                                         val body = CBORObject.Read(inputStream)
+                                        this@BlueskyFirehoseClient.lastBodyReceived = body
                                         logger.info { "Received info from the Firehose stream: $body" }
                                         continue
                                     }
@@ -108,6 +113,7 @@ class BlueskyFirehoseClient {
 
                                     // println(objStuff)
                                     val body = CBORObject.Read(inputStream)
+                                    this@BlueskyFirehoseClient.lastBodyReceived = body
                                     val seq = body.get("seq")
                                     if (seq != null) {
                                         lastSequence = seq.AsInt64Value()
