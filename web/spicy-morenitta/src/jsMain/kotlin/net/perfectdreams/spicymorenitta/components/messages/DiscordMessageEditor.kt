@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.common.utils.embeds.DiscordEmbed
 import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
@@ -603,17 +604,21 @@ fun DiscordMessageEditor(
                                         DiscordButton(
                                             DiscordButtonType.PRIMARY,
                                             attrs = {
-                                                onClick {
-                                                    embed.fields.add(
-                                                        MutableDiscordMessage.MutableDiscordEmbed.MutableField(
-                                                            DiscordEmbed.Field(
-                                                                "Loritta Morenitta",
-                                                                "Ela é muito fofa!",
-                                                                true
+                                                if (DiscordResourceLimits.Embed.FieldsPerEmbed > embed.fields.size) {
+                                                    onClick {
+                                                        embed.fields.add(
+                                                            MutableDiscordMessage.MutableDiscordEmbed.MutableField(
+                                                                DiscordEmbed.Field(
+                                                                    "Loritta Morenitta",
+                                                                    "Ela é muito fofa!",
+                                                                    true
+                                                                )
                                                             )
                                                         )
-                                                    )
-                                                    mutableMessage.triggerUpdate()
+                                                        mutableMessage.triggerUpdate()
+                                                    }
+                                                } else {
+                                                    disabledWithSoundEffect()
                                                 }
                                             }
                                         ) {
