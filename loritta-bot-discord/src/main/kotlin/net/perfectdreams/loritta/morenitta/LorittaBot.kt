@@ -1349,9 +1349,7 @@ class LorittaBot(
 	}
 
 	private fun startTasks() {
-		// TODO: Refactor this, this is only for tests
-		//  We are hosting on a different cluster to avoid bandwidth issues
-		if (clusterId == 16) {
+		if (clusterId == config.loritta.blueskyConfig.firehoseEnabledOnClusterId) {
 			GlobalScope.launch(CoroutineName("BlueSky Posts Stream Relay")) {
 				blueSkyRelay.startRelay()
 			}

@@ -41,6 +41,7 @@ data class LorittaConfig(
     val sparklyPower: SparklyPowerConfig,
     val crowdin: CrowdinConfig,
     val twitch: TwitchConfig,
+    val blueskyConfig: BlueskyConfig,
     val quirky: QuirkyConfig,
     val donatorsOstentation: DonatorsOstentationConfig,
     val connectionManager: ConnectionManagerConfig,
@@ -253,6 +254,11 @@ data class LorittaConfig(
         val clientSecret: String,
         val webhookUrl: String,
         val webhookSecret: String
+    )
+
+    @Serializable
+    data class BlueskyConfig(
+        val firehoseEnabledOnClusterId: Int
     )
 
     @Serializable
