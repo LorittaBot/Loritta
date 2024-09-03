@@ -7,9 +7,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.RateLimitedException
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.requests.ErrorResponse
-import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -22,8 +20,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageRe
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.newSticker
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
-import net.perfectdreams.loritta.morenitta.utils.readAllBytes
 
 class GuildCommand : SlashCommandDeclarationWrapper {
     companion object {
@@ -349,60 +345,116 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 )
             }
 
+            // We let the user add multiple emojis in a single message
+            val emojiData = args[options.emojiData]
             val name = args[options.emojiName]
-            val data = try {
-                args[options.emojiData].get(context, false)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
-
-            context.deferChannelMessage(false)
-
             try {
-                val parsedEmoji = LorittaUtils.retrieveEmoji(name)
+                if (emojiData.dataValue == null && emojiData.attachment == null) {
+                    // If the emoji data is null, then we need to parse the emojis from the emoji name!
+                    val emojisToBeAdded = LorittaUtils.retrieveEmojis(name)
 
-                val image = try {
-                    LorittaUtils.downloadFile(context.loritta, parsedEmoji!!.url, 5000) ?: context.fail(true) {
+                    if (emojisToBeAdded.isEmpty()) {
+                        // No emojis found!
+                        context.fail(true) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Emoji.Add.CouldntFindAnyEmojis
+                                ),
+                                Emotes.Error
+                            )
+                        }
+                    }
+
+                    context.deferChannelMessage(false)
+
+                    // Add all queried emojis!
+                    for (emojiToBeAdded in emojisToBeAdded) {
+                        val image = LorittaUtils.downloadFile(context.loritta, emojiToBeAdded.url, 5000) ?: context.fail(false) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Emoji.Add.InvalidUrl
+                                ),
+                                Emotes.Error
+                            )
+                        }
+
+                        val addedEmoji = try {
+                            context.guild.createEmoji(
+                                emojiToBeAdded.name,
+                                Icon.from(image)
+                            ).submit(false).await()
+                        } catch (e: RateLimitedException) {
+                            context.fail(true) {
+                                styled(
+                                    context.i18nContext.get(
+                                        I18N_PREFIX.Emoji.Add.RateLimitExceeded
+                                    ),
+                                    Emotes.Error
+                                )
+                            }
+                        }
+
+                        context.reply(false) {
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.Emoji.Add.SuccessfullyAdded),
+                                addedEmoji.asMention
+                            )
+                        }
+                    }
+                } else {
+                    val data = try {
+                        args[options.emojiData].get(context, false)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
+                    }
+
+                    context.deferChannelMessage(false)
+
+                    val parsedEmoji = LorittaUtils.retrieveEmoji(name)
+
+                    val image = try {
+                        LorittaUtils.downloadFile(context.loritta, parsedEmoji!!.url, 5000) ?: context.fail(true) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Emoji.Add.InvalidUrl
+                                ),
+                                Emotes.Error
+                            )
+                        }
+                    } catch (_: Exception) {
+                        data?.let { LorittaUtils.downloadFile(context.loritta, it, 5000) } ?: context.fail(true) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Emoji.Add.InvalidUrl
+                                ),
+                                Emotes.Error
+                            )
+                        }
+                    }
+
+                    val addedEmoji = try {
+                        context.guild.createEmoji(
+                            parsedEmoji?.name ?: name,
+                            Icon.from(image)
+                        ).submit(false).await()
+                    } catch (e: RateLimitedException) {
+                        context.fail(true) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Emoji.Add.RateLimitExceeded
+                                ),
+                                Emotes.Error
+                            )
+                        }
+                    }
+
+                    context.reply(false) {
                         styled(
-                            context.i18nContext.get(
-                                I18N_PREFIX.Emoji.Add.InvalidUrl
-                            ),
-                            Emotes.Error
+                            context.i18nContext.get(I18N_PREFIX.Emoji.Add.SuccessfullyAdded),
+                            addedEmoji.asMention
                         )
                     }
-                } catch (_: Exception) {
-                    data?.let { LorittaUtils.downloadFile(context.loritta, it, 5000) } ?: context.fail(true) {
-                        styled(
-                            context.i18nContext.get(
-                                I18N_PREFIX.Emoji.Add.InvalidUrl
-                            ),
-                            Emotes.Error
-                        )
-                    }
-                }
-
-                val addedEmoji = try {
-                    context.guild.createEmoji(
-                        parsedEmoji?.name ?: name,
-                        Icon.from(image)
-                    ).submit(false).await()
-                } catch(e: RateLimitedException) {
-                    context.fail(true) {
-                        styled(
-                            context.i18nContext.get(
-                                I18N_PREFIX.Emoji.Add.RateLimitExceeded
-                            ),
-                            Emotes.Error
-                        )
-                    }
-                }
-
-                context.reply(false) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Emoji.Add.SuccessfullyAdded),
-                        addedEmoji.asMention
-                    )
                 }
             } catch (e: ErrorResponseException) {
                 e.printStackTrace()

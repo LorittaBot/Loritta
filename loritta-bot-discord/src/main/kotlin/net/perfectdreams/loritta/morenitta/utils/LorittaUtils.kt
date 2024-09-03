@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
@@ -71,19 +72,45 @@ object LorittaUtils {
 	data class CustomEmojiData(
 		val isAnimated: Boolean,
 		val name: String,
-		val id: Long,
-		val url: String,
-	)
+		val id: Long
+	) {
+		val url: String
+			get() = "https://cdn.discordapp.com/emojis/$id.${if (isAnimated) "gif" else "png"}"
+	}
+
+	fun retrieveEmojis(data: String): List<CustomEmojiData> {
+		val matchResults = DiscordRegexes.DiscordEmote.findAll(data)
+		val customEmojis = mutableListOf<CustomEmojiData>()
+
+		for (matchResult in matchResults) {
+			val isAnimated = matchResult.groupValues[1] == "a"
+			val emojiName = matchResult.groupValues[2]
+			val emojiId = matchResult.groupValues[3].toLong()
+
+			customEmojis.add(
+				CustomEmojiData(
+					isAnimated,
+					emojiName,
+					emojiId
+				)
+			)
+		}
+
+		return customEmojis
+	}
 
 	fun retrieveEmoji(data: String): CustomEmojiData? {
-		val emojiMentionPattern = "<(a)?:[^:]+:\\d+>".toRegex()
+		val matchResult = DiscordRegexes.DiscordEmote.matchEntire(data)
 
-		return if (emojiMentionPattern.matches(data)) {
+		return if (matchResult != null) {
+			val isAnimated = matchResult.groupValues[1] == "a"
+			val emojiName = matchResult.groupValues[2]
+			val emojiId = matchResult.groupValues[3].toLong()
+
 			CustomEmojiData(
-				data.startsWith("<a:"),
-				data.substringAfter(":").substringBeforeLast(":"),
-				data.substringAfterLast(":").substringBefore(">").toLong(),
-				"https://cdn.discordapp.com/emojis/${data.substringAfterLast(":").substringBefore(">").toLong()}.${if (data.startsWith("<a:")) "gif" else "png"}"
+				isAnimated,
+				emojiName,
+				emojiId,
 			)
 		} else {
 			null

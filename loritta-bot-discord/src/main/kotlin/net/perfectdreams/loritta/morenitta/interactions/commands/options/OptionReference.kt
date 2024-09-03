@@ -130,8 +130,8 @@ class AttachmentDiscordOptionReference<T>(name: String, description: StringI18nD
 class ImageReferenceOrAttachmentDiscordOptionReference<T>(name: String) : OptionReference<T>(name)
 
 class ImageReference(
-    private val dataValue: String?,
-    private val attachment: Attachment?,
+    val dataValue: String?,
+    val attachment: Attachment?,
 ) {
     suspend fun get(context: UnleashedContext, searchHistory: Boolean = true): String {
         // Attachments take priority
