@@ -4,6 +4,7 @@ import kotlinx.html.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.embeds.DiscordMessage
 import net.perfectdreams.loritta.common.utils.placeholders.MessagePlaceholder
 import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
 import net.perfectdreams.loritta.common.utils.placeholders.SectionPlaceholders
@@ -17,6 +18,11 @@ import net.perfectdreams.loritta.serializable.messageeditor.MessageEditorMessage
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 
 object DashboardDiscordMessageEditor {
+    private val JsonForDiscordMessages = Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+    }
+
     /**
      * Converts a [MessagePlaceholder] into multiple [MessageEditorMessagePlaceholder] to be used in [lorittaDiscordMessageEditor]
      */
@@ -34,6 +40,22 @@ object DashboardDiscordMessageEditor {
             )
         }
     }
+
+    fun createMessageTemplate(
+        title: String,
+        content: String
+    ) = LorittaMessageTemplate(
+        title,
+        content
+    )
+
+    fun createMessageTemplate(
+        title: String,
+        content: DiscordMessage
+    ) = LorittaMessageTemplate(
+        title,
+        JsonForDiscordMessages.encodeToString(content)
+    )
 
     fun DIV.lorittaDiscordMessageEditor(
         i18nContext: I18nContext,

@@ -47,14 +47,12 @@ class ConfigureWelcomerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDa
 		} ?: GuildWelcomerConfig(
 			false,
 			null,
-			// TODO: Fix this
-			"\uD83D\uDC49 {@user} entrou no servidor!",
+			GuildWelcomerView.defaultJoinTemplate.content,
 			null,
 
 			false,
 			null,
-			// TODO: Fix this
-			"\uD83D\uDC48 {user} saiu do servidor...",
+			GuildWelcomerView.defaultRemoveTemplate.content,
 			null,
 
 			false,

@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
 
 import kotlinx.html.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -28,11 +26,10 @@ import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.config.GuildWelcomerConfig
-import net.perfectdreams.loritta.serializable.messageeditor.LorittaMessageTemplate
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
-class GuildWelcomerView(
+class  GuildWelcomerView(
     loritta: LorittaWebsite,
     i18nContext: I18nContext,
     locale: BaseLocale,
@@ -57,17 +54,22 @@ class GuildWelcomerView(
     selectedType
 ) {
     companion object {
-        private val JsonForDiscordMessages = Json {
-            prettyPrint = true
-            ignoreUnknownKeys = true
-        }
+        val defaultJoinTemplate = DashboardDiscordMessageEditor.createMessageTemplate(
+            "Padrão",
+            "\uD83D\uDC49 {@user} entrou no servidor!"
+        )
+        val defaultRemoveTemplate = DashboardDiscordMessageEditor.createMessageTemplate(
+            "Padrão",
+            "\uD83D\uDC48 {user.name} saiu do servidor..."
+        )
 
         private val joinTemplates = listOf(
-            LorittaMessageTemplate(
+            defaultJoinTemplate,
+            DashboardDiscordMessageEditor.createMessageTemplate(
                 "Padrão, só que melhor",
-                "<a:lori_happy:521721811298156558> | {@user} acabou de entrar na {guild}! Agora temos {guild-size} membros!"
+                "<a:lori_happy:521721811298156558> | {@user} acabou de entrar na {guild}! Agora temos {guild.size} membros!"
             ),
-            LorittaMessageTemplate(
+            DashboardDiscordMessageEditor.createMessageTemplate(
                 "Lista de Informações",
                 """{@user}, bem-vindo(a) ao {guild}! <a:lori_happy:521721811298156558>
 • Leia as #regras *(psiu, troque o nome do canal aqui na mensagem!)* para você poder conviver em harmonia! <:blobheart:467447056374693889>
@@ -76,160 +78,150 @@ class GuildWelcomerView(
 
 Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
             ),
-            LorittaMessageTemplate(
+            DashboardDiscordMessageEditor.createMessageTemplate(
                 "Embed Simples",
-                JsonForDiscordMessages.encodeToString(
-                    DiscordMessage(
-                        content = "{@user}",
-                        embed = DiscordEmbed(
-                            color = -9270822,
-                            title = "👋 Seja bem-vindo(a)!",
-                            description = "Olá {@user}! Seja bem-vindo(a) ao {guild}!"
-                        )
+                DiscordMessage(
+                    content = "{@user}",
+                    embed = DiscordEmbed(
+                        color = -9270822,
+                        title = "👋 Seja bem-vindo(a)!",
+                        description = "Olá {@user}! Seja bem-vindo(a) ao {guild}!"
                     )
                 )
             ),
-            LorittaMessageTemplate(
+            DashboardDiscordMessageEditor.createMessageTemplate(
                 "Embed com Avatar",
-                JsonForDiscordMessages.encodeToString(
-                    DiscordMessage(
-                        content = "{@user}",
-                        embed = DiscordEmbed(
-                            color = -9270822,
-                            title = "👋 Bem-vindo(a)!",
-                            description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
-                            author = DiscordEmbed.Author(
-                                "{user.tag}",
-                                iconUrl = "{user.avatar}"
-                            ),
-                            thumbnail = DiscordEmbed.EmbedUrl(
-                                "{user.avatar}"
-                            ),
-                            footer = DiscordEmbed.Footer(
-                                "ID do usuário: {user.id}"
-                            )
+                DiscordMessage(
+                    content = "{@user}",
+                    embed = DiscordEmbed(
+                        color = -9270822,
+                        title = "👋 Bem-vindo(a)!",
+                        description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
+                        author = DiscordEmbed.Author(
+                            "{user.tag}",
+                            iconUrl = "{user.avatar}"
+                        ),
+                        thumbnail = DiscordEmbed.EmbedUrl(
+                            "{user.avatar}"
+                        ),
+                        footer = DiscordEmbed.Footer(
+                            "ID do usuário: {user.id}"
                         )
                     )
                 )
             ),
-            LorittaMessageTemplate(
+            DashboardDiscordMessageEditor.createMessageTemplate(
                 "Embed com Avatar e Imagem",
-                JsonForDiscordMessages.encodeToString(
-                    DiscordMessage(
-                        content = "{@user}",
-                        embed = DiscordEmbed(
-                            color = -9270822,
-                            title = "👋 Bem-vindo(a)!",
-                            description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
-                            author = DiscordEmbed.Author(
-                                "{user.tag}",
-                                iconUrl = "{user.avatar}"
-                            ),
-                            thumbnail = DiscordEmbed.EmbedUrl(
-                                "{user.avatar}"
-                            ),
-                            image = DiscordEmbed.EmbedUrl(
-                                "https://media.giphy.com/media/GPQBFuG4ABACA/source.gif"
-                            ),
-                            footer = DiscordEmbed.Footer(
-                                "ID do usuário: {user.id}"
-                            )
+                DiscordMessage(
+                    content = "{@user}",
+                    embed = DiscordEmbed(
+                        color = -9270822,
+                        title = "👋 Bem-vindo(a)!",
+                        description = "Olá {@user}, espero que você se divirta no meu servidor! <:loritta:331179879582269451>",
+                        author = DiscordEmbed.Author(
+                            "{user.tag}",
+                            iconUrl = "{user.avatar}"
+                        ),
+                        thumbnail = DiscordEmbed.EmbedUrl(
+                            "{user.avatar}"
+                        ),
+                        image = DiscordEmbed.EmbedUrl(
+                            "https://media.giphy.com/media/GPQBFuG4ABACA/source.gif"
+                        ),
+                        footer = DiscordEmbed.Footer(
+                            "ID do usuário: {user.id}"
                         )
                     )
                 )
             ),
-            LorittaMessageTemplate(
+            DashboardDiscordMessageEditor.createMessageTemplate(
                 "Embed com Informações",
-                JsonForDiscordMessages.encodeToString(
-                    DiscordMessage(
-                        content = "{@user}",
-                        embed = DiscordEmbed(
-                            color = -14689638,
-                            title = "{user} | Bem-vindo(a)!",
-                            description = "<:lori_hug:515328576611155968> Olá, seja bem-vindo(a) ao {guild}!",
-                            fields = listOf(
-                                DiscordEmbed.Field(
-                                    "\uD83D\uDC4B Sabia que...",
-                                    "Atualmente temos {guild-size} membros no servidor?",
-                                    true
-                                ),
-                                DiscordEmbed.Field(
-                                    "🛡 Tag do Usuário",
-                                    "`{user.tag}` ({user-id})",
-                                    true
-                                ),
-                                DiscordEmbed.Field(
-                                    "\uD83D\uDCDB Precisando de ajuda?",
-                                    "Caso você tenha alguma dúvida ou problema, chame a nossa equipe!",
-                                    true
-                                ),
-                                DiscordEmbed.Field(
-                                    "\uD83D\uDC6E Evite punições!",
-                                    "Leia as nossas #regras para evitar ser punido no servidor!",
-                                    true
-                                )
+                DiscordMessage(
+                    content = "{@user}",
+                    embed = DiscordEmbed(
+                        color = -14689638,
+                        title = "{user} | Bem-vindo(a)!",
+                        description = "<:lori_hug:515328576611155968> Olá, seja bem-vindo(a) ao {guild}!",
+                        fields = listOf(
+                            DiscordEmbed.Field(
+                                "\uD83D\uDC4B Sabia que...",
+                                "Atualmente temos {guild.size} membros no servidor?",
+                                true
                             ),
-                            thumbnail = DiscordEmbed.EmbedUrl(
-                                "{user.avatar}"
+                            DiscordEmbed.Field(
+                                "🛡 Tag do Usuário",
+                                "`{user.tag}` ({user.id})",
+                                true
                             ),
-                            footer = DiscordEmbed.Footer(
-                                "{guild} • © Todos os direitos reservados."
-                            )
-                        )
-                    )
-                )
-            ),
-            LorittaMessageTemplate(
-                "Kit Social Influencer™",
-                JsonForDiscordMessages.encodeToString(
-                    DiscordMessage(
-                        content = "{@user}",
-                        embed = DiscordEmbed(
-                            color = -2342853,
-                            title = "{user} | Bem-vindo(a)!",
-                            description = "Salve {@user}! Você acabou de entrar no servidor do {guild}, aqui você poderá se interagir com fãs do {guild}, conversar sobre suas coisas favoritas e muito mais!",
-                            fields = listOf(
-                                DiscordEmbed.Field(
-                                    "\uD83D\uDCE2 Fique atento!",
-                                    "Novos vídeos do {guild} serão anunciados no #vídeos-novos!",
-                                    true
-                                )
+                            DiscordEmbed.Field(
+                                "\uD83D\uDCDB Precisando de ajuda?",
+                                "Caso você tenha alguma dúvida ou problema, chame a nossa equipe!",
+                                true
                             ),
-                            thumbnail = DiscordEmbed.EmbedUrl(
-                                "{user.avatar}"
-                            ),
-                            footer = DiscordEmbed.Footer(
-                                "{guild} • © Todos os direitos reservados."
+                            DiscordEmbed.Field(
+                                "\uD83D\uDC6E Evite punições!",
+                                "Leia as nossas #regras para evitar ser punido no servidor!",
+                                true
                             )
                         ),
-                        components = listOf(
-                            DiscordComponent.DiscordActionRow(
-                                components = listOf(
-                                    DiscordComponent.DiscordButton(
-                                        label = "YouTube",
-                                        style = 5,
-                                        url = "https://www.youtube.com/@Loritta"
-                                    ),
-                                    DiscordComponent.DiscordButton(
-                                        label = "Twitter",
-                                        style = 5,
-                                        url = "https://twitter.com/LorittaBot"
-                                    ),
-                                    DiscordComponent.DiscordButton(
-                                        label = "Instagram",
-                                        style = 5,
-                                        url = "https://www.instagram.com/lorittabot/"
-                                    ),
-                                    DiscordComponent.DiscordButton(
-                                        label = "TikTok",
-                                        style = 5,
-                                        url = "https://www.tiktok.com/@lorittamorenittabot"
-                                    ),
-                                    DiscordComponent.DiscordButton(
-                                        label = "Nosso Website",
-                                        style = 5,
-                                        url = "https://loritta.website/"
-                                    )
+                        thumbnail = DiscordEmbed.EmbedUrl(
+                            "{user.avatar}"
+                        ),
+                        footer = DiscordEmbed.Footer(
+                            "{guild} • © Todos os direitos reservados."
+                        )
+                    )
+                )
+            ),
+            DashboardDiscordMessageEditor.createMessageTemplate(
+                "Kit Social Influencer™",
+                DiscordMessage(
+                    content = "{@user}",
+                    embed = DiscordEmbed(
+                        color = -2342853,
+                        title = "{user} | Bem-vindo(a)!",
+                        description = "Salve {@user}! Você acabou de entrar no servidor do {guild}, aqui você poderá se interagir com fãs do {guild}, conversar sobre suas coisas favoritas e muito mais!",
+                        fields = listOf(
+                            DiscordEmbed.Field(
+                                "\uD83D\uDCE2 Fique atento!",
+                                "Novos vídeos do {guild} serão anunciados no #vídeos-novos!",
+                                true
+                            )
+                        ),
+                        thumbnail = DiscordEmbed.EmbedUrl(
+                            "{user.avatar}"
+                        ),
+                        footer = DiscordEmbed.Footer(
+                            "{guild} • © Todos os direitos reservados."
+                        )
+                    ),
+                    components = listOf(
+                        DiscordComponent.DiscordActionRow(
+                            components = listOf(
+                                DiscordComponent.DiscordButton(
+                                    label = "YouTube",
+                                    style = 5,
+                                    url = "https://www.youtube.com/@Loritta"
+                                ),
+                                DiscordComponent.DiscordButton(
+                                    label = "Twitter",
+                                    style = 5,
+                                    url = "https://twitter.com/LorittaBot"
+                                ),
+                                DiscordComponent.DiscordButton(
+                                    label = "Instagram",
+                                    style = 5,
+                                    url = "https://www.instagram.com/lorittabot/"
+                                ),
+                                DiscordComponent.DiscordButton(
+                                    label = "TikTok",
+                                    style = 5,
+                                    url = "https://www.tiktok.com/@lorittamorenittabot"
+                                ),
+                                DiscordComponent.DiscordButton(
+                                    label = "Nosso Website",
+                                    style = 5,
+                                    url = "https://loritta.website/"
                                 )
                             )
                         )
@@ -237,7 +229,72 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                 )
             )
         )
+
+        private val removeTemplates = listOf(
+            defaultRemoveTemplate,
+            DashboardDiscordMessageEditor.createMessageTemplate(
+                "Padrão, só que melhor",
+                "<a:bongo_lori_triste:524894216510373888> | {user} saiu do {guild}... espero que algum dia ele volte...",
+            ),
+            DashboardDiscordMessageEditor.createMessageTemplate(
+                "Embed Simples",
+                DiscordMessage(
+                    content = "",
+                    embed = DiscordEmbed(
+                        color = -6250077,
+                        title = "Tchau...",
+                        description = "{user} saiu do {guild}... espero que algum dia ele volte..."
+                    )
+                )
+            ),
+            DashboardDiscordMessageEditor.createMessageTemplate(
+                "Embed com Avatar",
+                DiscordMessage(
+                    content = "",
+                    embed = DiscordEmbed(
+                        color = -6250077,
+                        title = "😭 #chateada!",
+                        description = "⚰ **{user}** saiu do servidor... <:lori_triste:370344565967814659>",
+                        author = DiscordEmbed.Author(
+                            "{user.tag}",
+                            iconUrl = "{user.avatar}"
+                        ),
+                        thumbnail = DiscordEmbed.EmbedUrl(
+                            "{user.avatar}"
+                        ),
+                        footer = DiscordEmbed.Footer(
+                            "ID do usuário: {user.id}"
+                        )
+                    )
+                )
+            ),
+            DashboardDiscordMessageEditor.createMessageTemplate(
+                "Embed com Avatar e Imagem",
+                DiscordMessage(
+                    content = "{@user}",
+                    embed = DiscordEmbed(
+                        color = -9270822,
+                        title = "😭 #chateada!",
+                        description = "⚰ **{user}** saiu do servidor... <:lori_triste:370344565967814659>",
+                        author = DiscordEmbed.Author(
+                            "{user.tag}",
+                            iconUrl = "{user.avatar}"
+                        ),
+                        thumbnail = DiscordEmbed.EmbedUrl(
+                            "{user.avatar}"
+                        ),
+                        image = DiscordEmbed.EmbedUrl(
+                            "https://i.imgur.com/RUIaWW3.png"
+                        ),
+                        footer = DiscordEmbed.Footer(
+                            "ID do usuário: {user.id}"
+                        )
+                    )
+                )
+            )
+        )
     }
+
     override fun DIV.generateRightSidebarContents() {
         val serializableGuild = WebsiteUtils.convertJDAGuildToSerializable(guild)
         val serializableSelfLorittaUser = WebsiteUtils.convertJDAUserToSerializable(guild.selfMember.user)
@@ -431,7 +488,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                                         lorittaDiscordMessageEditor(
                                             i18nContext,
                                             "removeMessage",
-                                            listOf(),
+                                            removeTemplates,
                                             PlaceholderSectionType.LEAVE_MESSAGE,
                                             LeaveMessagePlaceholders.placeholders.flatMap {
                                                 when (it) {
@@ -504,7 +561,7 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                                                 i18nContext,
                                                 "bannedMessage",
                                                 listOf(),
-                                                PlaceholderSectionType.JOIN_MESSAGE,
+                                                PlaceholderSectionType.LEAVE_MESSAGE,
                                                 LeaveMessagePlaceholders.placeholders.flatMap {
                                                     when (it) {
                                                         LeaveMessagePlaceholders.UserMentionPlaceholder -> DashboardDiscordMessageEditor.createMessageEditorPlaceholders(
