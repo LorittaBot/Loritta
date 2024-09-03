@@ -9,6 +9,7 @@ emoji:
     description: "Adicionar um emoji ao servidor"
     invalidUrl: "A imagem está inválida."
     invalidEmoji: "Emoji inválido!"
+    couldntFindAnyEmojis: "Eu não consegui encontrar menções de emoji na sua mensagem!"
     successfullyAdded: "Emoji adicionado com sucesso!"
     fileUploadMaxSizeExceeded: "A imagem que você mandou atingiu o tamanho máximo de 256kb!"
     maxStaticEmojisLimitReached: "Você atingiu o limite máximo de emojis estáticos no servidor!"
