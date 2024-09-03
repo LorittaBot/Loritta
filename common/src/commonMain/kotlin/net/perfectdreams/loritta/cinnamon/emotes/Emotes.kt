@@ -163,7 +163,7 @@ object Emotes {
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)
-    val Twitter = DiscordEmote(552840901886738433L, "twitter", false)
+    val Bluesky = DiscordEmote(1280179710046896168L, "bluesky", false)
     val Instagram = DiscordEmote(552841049660325908L, "instagram", false)
     val YouTube = DiscordEmote(955785841609965588, "youtube", false)
     val Correios = DiscordEmote(375314171644084234, "correios", false)
