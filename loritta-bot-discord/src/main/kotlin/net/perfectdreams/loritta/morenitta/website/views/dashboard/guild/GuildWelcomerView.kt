@@ -204,9 +204,9 @@ Aliás, continue sendo incrível! (E eu sou muito fofa! :3)"""
                                     url = "https://www.youtube.com/@Loritta"
                                 ),
                                 DiscordComponent.DiscordButton(
-                                    label = "Twitter",
+                                    label = "Bluesky",
                                     style = 5,
-                                    url = "https://twitter.com/LorittaBot"
+                                    url = "https://bsky.app/profile/loritta.website"
                                 ),
                                 DiscordComponent.DiscordButton(
                                     label = "Instagram",

@@ -200,9 +200,9 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
                 actionRow(
                     linkButton(
-                        "https://twitter.com/LorittaBot",
-                        "Twitter",
-                        Emotes.Twitter
+                        "https://bsky.app/profile/loritta.website",
+                        "Bluesky",
+                        Emotes.Bluesky
                     ),
                     linkButton(
                         "https://instagram.com/lorittabot",
