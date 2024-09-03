@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views.dashboard
+package net.perfectdreams.loritta.morenitta.website.components
 
 import kotlinx.html.*
 import kotlinx.serialization.encodeToString

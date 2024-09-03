@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
 
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.concrete.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -12,13 +11,14 @@ import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionTyp
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.components.DashboardDiscordMessageEditor.lorittaDiscordMessageEditor
+import net.perfectdreams.loritta.morenitta.website.components.DashboardSaveBar.lorittaSaveBar
 import net.perfectdreams.loritta.morenitta.website.components.DiscordChannelSelectMenu.discordChannelSelectMenu
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.DashboardDiscordMessageEditor.lorittaDiscordMessageEditor
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.DashboardSaveBar.lorittaSaveBar
+import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
-import net.perfectdreams.loritta.serializable.*
+import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.messageeditor.MessageEditorMessagePlaceholder
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
@@ -50,84 +50,8 @@ class GuildConfigureBlueskyProfileView(
     selectedType
 ) {
     override fun DIV.generateRightSidebarContents() {
-        val serializableGuild = DiscordGuild(
-            guild.idLong,
-            guild.name,
-            guild.iconId,
-            guild.roles.map {
-                DiscordRole(
-                    it.idLong,
-                    it.name,
-                    it.colorRaw
-                )
-            },
-            guild.channels.map {
-                when (it) {
-                    is TextChannel -> {
-                        TextDiscordChannel(
-                            it.idLong,
-                            it.name,
-                            it.canTalk()
-                        )
-                    }
-                    is VoiceChannel -> {
-                        VoiceDiscordChannel(
-                            it.idLong,
-                            it.name
-                        )
-                    }
-
-                    is Category -> {
-                        CategoryDiscordChannel(
-                            it.idLong,
-                            it.name
-                        )
-                    }
-
-                    is NewsChannel -> {
-                        NewsDiscordChannel(
-                            it.idLong,
-                            it.name,
-                            it.canTalk()
-                        )
-                    }
-
-                    is StageChannel -> {
-                        StageDiscordChannel(
-                            it.idLong,
-                            it.name
-                        )
-                    }
-
-                    is ForumChannel -> {
-                        ForumDiscordChannel(
-                            it.idLong,
-                            it.name
-                        )
-                    }
-
-                    else -> UnknownDiscordChannel(
-                        it.idLong,
-                        it.name
-                    )
-                }
-            },
-            guild.emojis.map {
-                DiscordEmoji(
-                    it.idLong,
-                    it.name,
-                    it.isAnimated
-                )
-            }
-        )
-
-        val serializableSelfLorittaUser = DiscordUser(
-            guild.selfMember.user.idLong,
-            guild.selfMember.user.name,
-            guild.selfMember.user.globalName,
-            guild.selfMember.user.discriminator,
-            guild.selfMember.user.avatarId
-        )
+        val serializableGuild = WebsiteUtils.convertJDAGuildToSerializable(guild)
+        val serializableSelfLorittaUser = WebsiteUtils.convertJDAUserToSerializable(guild.selfMember.user)
 
         div {
             a(classes = "discord-button no-background-theme-dependent-dark-text", href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky") {

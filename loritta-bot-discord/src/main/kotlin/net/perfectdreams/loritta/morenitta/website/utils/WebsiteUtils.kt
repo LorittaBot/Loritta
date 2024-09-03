@@ -12,6 +12,7 @@ import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.concrete.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -28,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.utils.config.types.ConfigTransformer
+import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.codec.digest.DigestUtils
@@ -303,5 +305,161 @@ object WebsiteUtils {
 		}
 
 		onStringBuild.invoke(genericStringBuilder.toString())
+	}
+
+	fun convertJDAGuildToSerializable(guild: Guild): DiscordGuild {
+		return DiscordGuild(
+			guild.idLong,
+			guild.name,
+			guild.iconId,
+			guild.roles.map {
+				DiscordRole(
+					it.idLong,
+					it.name,
+					it.colorRaw
+				)
+			},
+			guild.channels.map {
+				when (it) {
+					is TextChannel -> {
+						TextDiscordChannel(
+							it.idLong,
+							it.name,
+							it.canTalk()
+						)
+					}
+					is VoiceChannel -> {
+						VoiceDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					is Category -> {
+						CategoryDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					is NewsChannel -> {
+						NewsDiscordChannel(
+							it.idLong,
+							it.name,
+							it.canTalk()
+						)
+					}
+
+					is StageChannel -> {
+						StageDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					is ForumChannel -> {
+						ForumDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					else -> UnknownDiscordChannel(
+						it.idLong,
+						it.name
+					)
+				}
+			},
+			guild.emojis.map {
+				DiscordEmoji(
+					it.idLong,
+					it.name,
+					it.isAnimated
+				)
+			}
+		)
+	}
+
+	fun convertToSerializable(guild: Guild): DiscordGuild {
+		return DiscordGuild(
+			guild.idLong,
+			guild.name,
+			guild.iconId,
+			guild.roles.map {
+				DiscordRole(
+					it.idLong,
+					it.name,
+					it.colorRaw
+				)
+			},
+			guild.channels.map {
+				when (it) {
+					is TextChannel -> {
+						TextDiscordChannel(
+							it.idLong,
+							it.name,
+							it.canTalk()
+						)
+					}
+					is VoiceChannel -> {
+						VoiceDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					is Category -> {
+						CategoryDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					is NewsChannel -> {
+						NewsDiscordChannel(
+							it.idLong,
+							it.name,
+							it.canTalk()
+						)
+					}
+
+					is StageChannel -> {
+						StageDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					is ForumChannel -> {
+						ForumDiscordChannel(
+							it.idLong,
+							it.name
+						)
+					}
+
+					else -> UnknownDiscordChannel(
+						it.idLong,
+						it.name
+					)
+				}
+			},
+			guild.emojis.map {
+				DiscordEmoji(
+					it.idLong,
+					it.name,
+					it.isAnimated
+				)
+			}
+		)
+	}
+
+	fun convertJDAUserToSerializable(user: User): DiscordUser {
+		return DiscordUser(
+			user.idLong,
+			user.name,
+			user.globalName,
+			user.discriminator,
+			user.avatarId
+		)
 	}
 }

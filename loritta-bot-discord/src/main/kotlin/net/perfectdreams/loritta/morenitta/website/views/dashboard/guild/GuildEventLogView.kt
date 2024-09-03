@@ -8,10 +8,10 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.components.DashboardSaveBar.lorittaSaveBar
 import net.perfectdreams.loritta.morenitta.website.components.DiscordChannelSelectMenu.discordChannelSelectMenu
 import net.perfectdreams.loritta.morenitta.website.components.DiscordLikeToggles.toggleableSection
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureEventLogRoute
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.DashboardSaveBar.lorittaSaveBar
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 

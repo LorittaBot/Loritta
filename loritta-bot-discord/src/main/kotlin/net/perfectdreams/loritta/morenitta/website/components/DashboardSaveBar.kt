@@ -1,9 +1,8 @@
-package net.perfectdreams.loritta.morenitta.website.views.dashboard
+package net.perfectdreams.loritta.morenitta.website.components
 
 import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
 
 object DashboardSaveBar {
     /**
