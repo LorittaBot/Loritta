@@ -45,7 +45,6 @@ class GuildBlueskyView(
     selectedType
 ) {
     companion object {
-        private val I18N_PREFIX = I18nKeysData.Website.Dashboard.EventLog
         val MAX_TRACKED_BLUESKY_ACCOUNTS = 25
 
         fun FlowContent.createBlueskyAccountCards(
@@ -252,10 +251,8 @@ class GuildBlueskyView(
                             text(i18nContext.get(I18nKeysData.Website.Dashboard.Bluesky.Title))
                         }
 
-                        for (line in i18nContext.get(I18N_PREFIX.Description)) {
-                            p {
-                                text("Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas.")
-                            }
+                        p {
+                            text("Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas.")
                         }
 
                         div(classes = "alert alert-danger") {
