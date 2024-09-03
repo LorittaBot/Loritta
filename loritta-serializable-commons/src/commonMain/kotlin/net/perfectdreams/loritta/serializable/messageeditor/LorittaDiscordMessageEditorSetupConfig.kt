@@ -27,7 +27,10 @@ data class LorittaMessageTemplate(
 @Serializable
 data class MessageEditorMessagePlaceholder(
     val name: String,
-    val replaceWith: String,
+    // Yes, this means that technically someone could change what replacer is being used when testing a message on the dashboard
+    // But does it really matter? The user can already type whatever they want in the box...
+    val replaceWithBackend: String,
+    val replaceWithFrontend: String,
     val renderType: MessagePlaceholder.RenderType
 ) {
     val asKey: String
@@ -38,4 +41,6 @@ data class MessageEditorMessagePlaceholder(
 sealed class TestMessageTargetChannelQuery {
     @Serializable
     class QuerySelector(val querySelector: String) : TestMessageTargetChannelQuery()
+    @Serializable
+    data object SendDirectMessage : TestMessageTargetChannelQuery()
 }

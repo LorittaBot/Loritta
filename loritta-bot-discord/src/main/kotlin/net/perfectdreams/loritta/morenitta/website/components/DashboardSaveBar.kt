@@ -41,12 +41,12 @@ object DashboardSaveBar {
                 button(classes = "discord-button no-background-light-text") {
                     resetButtonAttributes.invoke(this)
                     attributes["hx-get"] = ""
-                    attributes["hx-select"] = "#module-config"
-                    attributes["hx-target"] = "#module-config"
+                    attributes["hx-select"] = "#module-config-wrapper"
+                    attributes["hx-target"] = "#module-config-wrapper"
                     attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
                     attributes["hx-disabled-elt"] = "this"
                     // We don't want to swap nor settle because that causes a flicker due to our custom select menu
-                    attributes["hx-swap"] = "innerHTML settle:0ms swap:0ms"
+                    attributes["hx-swap"] = "outerHTML settle:0ms swap:0ms"
                     if (!hasChanges) {
                         attributes["hx-on::after-request"] = """
                             if (event.detail.successful) {
@@ -79,9 +79,9 @@ object DashboardSaveBar {
 
                 button(classes = "discord-button success") {
                     saveButtonAttributes.invoke(this)
-                    attributes["hx-swap"] = "innerHTML settle:0ms swap:0ms"
-                    attributes["hx-select"] = "#module-config"
-                    attributes["hx-target"] = "#module-config"
+                    attributes["hx-swap"] = "outerHTML settle:0ms swap:0ms"
+                    attributes["hx-select"] = "#module-config-wrapper"
+                    attributes["hx-target"] = "#module-config-wrapper"
                     attributes["hx-include"] = "#module-config"
                     attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
                     attributes["hx-disabled-elt"] = "this"

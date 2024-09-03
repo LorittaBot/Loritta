@@ -69,6 +69,8 @@ fun DiscordMessageEditor(
             null
         } catch (e: IllegalStateException) {
             null // This may be triggered when a message has invalid message components
+        } catch (e: IllegalArgumentException) {
+            null // This may be triggered when a message has invalid message components²
         }
 
         val mutableMessage = MutableDiscordMessage(
@@ -262,7 +264,7 @@ fun DiscordMessageEditor(
                                                     },
                                                     placeholderSectionType,
                                                     placeholders.associate {
-                                                        it.name to it.replaceWith
+                                                        it.name to it.replaceWithBackend
                                                     }
                                                 )
                                             )

@@ -198,7 +198,7 @@ object DiscordMessageUtils {
                         val placeholder = placeholders.firstOrNull { it.name == section.placeholderName }
 
                         if (placeholder != null) {
-                            append(placeholder.replaceWith)
+                            append(placeholder.replaceWithFrontend)
                         } else {
                             // Draw placeholder as is if it is an unknown placeholder
                             append("{${section.placeholderName}}")

@@ -661,8 +661,8 @@ private fun TransformedDiscordText(
                                         if (placeholder != null) {
                                             when (placeholder.renderType) {
                                                 // TODO: Convert text with URL
-                                                MessagePlaceholder.RenderType.TEXT -> Text(placeholder.replaceWith)
-                                                MessagePlaceholder.RenderType.MENTION -> InlineDiscordMention(placeholder.replaceWith)
+                                                MessagePlaceholder.RenderType.TEXT -> Text(placeholder.replaceWithFrontend)
+                                                MessagePlaceholder.RenderType.MENTION -> InlineDiscordMention(placeholder.replaceWithFrontend)
                                             }
                                         } else {
                                             // Unknown placeholder!

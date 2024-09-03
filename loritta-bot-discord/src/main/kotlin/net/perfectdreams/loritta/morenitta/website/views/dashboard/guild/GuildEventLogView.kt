@@ -64,112 +64,115 @@ class GuildEventLogView(
 
                 hr {}
 
-                form {
-                    id = "module-config"
-                    method = FormMethod.post
-                    attributes["loritta-synchronize-with-save-bar"] = "#save-bar"
+                div {
+                    id = "module-config-wrapper"
+                    form {
+                        id = "module-config"
+                        method = FormMethod.post
+                        attributes["loritta-synchronize-with-save-bar"] = "#save-bar"
 
-                    toggleableSection(
-                        "eventLogEnabled",
-                        i18nContext.get(I18N_PREFIX.EnableEventLog),
-                        null,
-                        eventLog.isEnabled
-                    ) {
-                        div(classes = "field-wrappers") {
-                            div(classes = "field-wrapper") {
-                                div(classes = "field-title") {
-                                    text(i18nContext.get(I18N_PREFIX.DefaultChannelWhereTheActionsWillBeSent))
-                                }
+                        toggleableSection(
+                            "eventLogEnabled",
+                            i18nContext.get(I18N_PREFIX.EnableEventLog),
+                            null,
+                            eventLog.isEnabled
+                        ) {
+                            div(classes = "field-wrappers") {
+                                div(classes = "field-wrapper") {
+                                    div(classes = "field-title") {
+                                        text(i18nContext.get(I18N_PREFIX.DefaultChannelWhereTheActionsWillBeSent))
+                                    }
 
-                                div {
-                                    style = "width: 100%;"
+                                    div {
+                                        style = "width: 100%;"
 
-                                    discordChannelSelectMenu(
-                                        lorittaWebsite,
-                                        i18nContext,
-                                        "eventLogChannelId",
-                                        guild.textChannels,
-                                        eventLog.eventLogChannelId,
-                                        null
-                                    )
+                                        discordChannelSelectMenu(
+                                            lorittaWebsite,
+                                            i18nContext,
+                                            "eventLogChannelId",
+                                            guild.textChannels,
+                                            eventLog.eventLogChannelId,
+                                            null
+                                        )
+                                    }
                                 }
                             }
-                        }
 
-                        hr {}
+                            hr {}
 
-                        div(classes = "toggleable-sections") {
-                            eventLogSection(
-                                i18nContext,
-                                "memberBanned",
-                                i18nContext.get(I18N_PREFIX.Types.MemberBanned.Title),
-                                null,
-                                eventLog.memberBanned,
-                                eventLog.memberBannedLogChannelId
-                            )
+                            div(classes = "toggleable-sections") {
+                                eventLogSection(
+                                    i18nContext,
+                                    "memberBanned",
+                                    i18nContext.get(I18N_PREFIX.Types.MemberBanned.Title),
+                                    null,
+                                    eventLog.memberBanned,
+                                    eventLog.memberBannedLogChannelId
+                                )
 
-                            eventLogSection(
-                                i18nContext,
-                                "memberUnbanned",
-                                i18nContext.get(I18N_PREFIX.Types.MemberUnbanned.Title),
-                                null,
-                                eventLog.memberUnbanned,
-                                eventLog.memberUnbannedLogChannelId
-                            )
+                                eventLogSection(
+                                    i18nContext,
+                                    "memberUnbanned",
+                                    i18nContext.get(I18N_PREFIX.Types.MemberUnbanned.Title),
+                                    null,
+                                    eventLog.memberUnbanned,
+                                    eventLog.memberUnbannedLogChannelId
+                                )
 
-                            eventLogSection(
-                                i18nContext,
-                                "messageEdited",
-                                i18nContext.get(I18N_PREFIX.Types.MessageEdited.Title),
-                                i18nContext.get(I18N_PREFIX.Types.MessageEdited.Description),
-                                eventLog.messageEdited,
-                                eventLog.messageEditedLogChannelId
-                            )
+                                eventLogSection(
+                                    i18nContext,
+                                    "messageEdited",
+                                    i18nContext.get(I18N_PREFIX.Types.MessageEdited.Title),
+                                    i18nContext.get(I18N_PREFIX.Types.MessageEdited.Description),
+                                    eventLog.messageEdited,
+                                    eventLog.messageEditedLogChannelId
+                                )
 
-                            eventLogSection(
-                                i18nContext,
-                                "messageDeleted",
-                                i18nContext.get(I18N_PREFIX.Types.MessageDeleted.Title),
-                                i18nContext.get(I18N_PREFIX.Types.MessageDeleted.Description),
-                                eventLog.messageDeleted,
-                                eventLog.messageDeletedLogChannelId
-                            )
+                                eventLogSection(
+                                    i18nContext,
+                                    "messageDeleted",
+                                    i18nContext.get(I18N_PREFIX.Types.MessageDeleted.Title),
+                                    i18nContext.get(I18N_PREFIX.Types.MessageDeleted.Description),
+                                    eventLog.messageDeleted,
+                                    eventLog.messageDeletedLogChannelId
+                                )
 
-                            eventLogSection(
-                                i18nContext,
-                                "nicknameChanges",
-                                i18nContext.get(I18N_PREFIX.Types.NicknameChanges.Title),
-                                null,
-                                eventLog.nicknameChanges,
-                                eventLog.nicknameChangesLogChannelId
-                            )
+                                eventLogSection(
+                                    i18nContext,
+                                    "nicknameChanges",
+                                    i18nContext.get(I18N_PREFIX.Types.NicknameChanges.Title),
+                                    null,
+                                    eventLog.nicknameChanges,
+                                    eventLog.nicknameChangesLogChannelId
+                                )
 
-                            eventLogSection(
-                                i18nContext,
-                                "avatarChanges",
-                                i18nContext.get(I18N_PREFIX.Types.AvatarChanges.Title),
-                                null,
-                                eventLog.avatarChanges,
-                                eventLog.avatarChangesLogChannelId
-                            )
+                                eventLogSection(
+                                    i18nContext,
+                                    "avatarChanges",
+                                    i18nContext.get(I18N_PREFIX.Types.AvatarChanges.Title),
+                                    null,
+                                    eventLog.avatarChanges,
+                                    eventLog.avatarChangesLogChannelId
+                                )
 
-                            eventLogSection(
-                                i18nContext,
-                                "voiceChannelJoins",
-                                i18nContext.get(I18N_PREFIX.Types.VoiceChannelJoins.Title),
-                                null,
-                                eventLog.voiceChannelJoins,
-                                eventLog.voiceChannelJoinsLogChannelId
-                            )
+                                eventLogSection(
+                                    i18nContext,
+                                    "voiceChannelJoins",
+                                    i18nContext.get(I18N_PREFIX.Types.VoiceChannelJoins.Title),
+                                    null,
+                                    eventLog.voiceChannelJoins,
+                                    eventLog.voiceChannelJoinsLogChannelId
+                                )
 
-                            eventLogSection(
-                                i18nContext,
-                                "voiceChannelLeaves",
-                                i18nContext.get(I18N_PREFIX.Types.VoiceChannelLeaves.Title),
-                                null,
-                                eventLog.voiceChannelLeaves,
-                                eventLog.voiceChannelLeavesLogChannelId
-                            )
+                                eventLogSection(
+                                    i18nContext,
+                                    "voiceChannelLeaves",
+                                    i18nContext.get(I18N_PREFIX.Types.VoiceChannelLeaves.Title),
+                                    null,
+                                    eventLog.voiceChannelLeaves,
+                                    eventLog.voiceChannelLeavesLogChannelId
+                                )
+                            }
                         }
                     }
                 }

@@ -114,6 +114,19 @@ data class LorittaJsonWebSession(
         val updatedAt: Long
     ) {
         fun toJson() = Json.encodeToString(this)
+
+        // TODO - htmx-mix: Refactor this!
+        val effectiveAvatarUrl: String
+            get() {
+                val avatarId = avatar
+                val url = if (avatarId != null) {
+                    "https://cdn.discordapp.com/avatars/${id}/${avatarId}.png"
+                } else {
+                    "https://cdn.discordapp.com/embed/avatars/${(id.toLong() shr 22) % 6}.png"
+                }
+
+                return url
+            }
     }
 
     @Serializable

@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionTyp
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.components.DashboardDiscordMessageEditor
 import net.perfectdreams.loritta.morenitta.website.components.DashboardDiscordMessageEditor.lorittaDiscordMessageEditor
 import net.perfectdreams.loritta.morenitta.website.components.DashboardSaveBar.lorittaSaveBar
 import net.perfectdreams.loritta.morenitta.website.components.DiscordChannelSelectMenu.discordChannelSelectMenu
@@ -19,7 +20,6 @@ import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
 import net.perfectdreams.loritta.serializable.ColorTheme
-import net.perfectdreams.loritta.serializable.messageeditor.MessageEditorMessagePlaceholder
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
@@ -86,82 +86,76 @@ class GuildConfigureBlueskyProfileView(
 
             hr {}
 
-            form {
-                id = "module-config"
-                // If the trackId is null, then the save bar should ALWAYS be dirty
-                if (trackId != null) {
-                    attributes["loritta-synchronize-with-save-bar"] = "#save-bar"
-                }
-
-                // TODO: We technically don't need this here if the trackId is != null
-                hiddenInput {
-                    name = "did"
-                    value = blueskyProfile.did
-                }
-
-                div(classes = "field-wrappers") {
-                    div(classes = "field-wrapper") {
-                        div(classes = "field-title") {
-                            label {
-                                text("Canal onde será enviado as mensagens")
-                            }
-                        }
-
-                        div {
-                            style = "width: 100%;"
-
-                            discordChannelSelectMenu(
-                                lorittaWebsite,
-                                i18nContext,
-                                "channelId",
-                                guild.channels.filterIsInstance<GuildMessageChannel>(),
-                                trackSettings.channelId,
-                                null
-                            )
-                        }
+            div {
+                id = "module-config-wrapper"
+                form {
+                    id = "module-config"
+                    // If the trackId is null, then the save bar should ALWAYS be dirty
+                    if (trackId != null) {
+                        attributes["loritta-synchronize-with-save-bar"] = "#save-bar"
                     }
 
-                    lorittaDiscordMessageEditor(
-                        i18nContext,
-                        listOf(),
-                        PlaceholderSectionType.BLUESKY_POST_MESSAGE,
-                        BlueskyPostMessagePlaceholders.placeholders.flatMap { placeholder ->
-                            when (placeholder) {
-                                BlueskyPostMessagePlaceholders.GuildIconUrlPlaceholder -> placeholder.names.map { placeholderName ->
-                                    MessageEditorMessagePlaceholder(
-                                        placeholderName.placeholder.name,
-                                        guild.iconUrl ?: "???", // TODO: Provide a proper fallback
-                                        placeholder.renderType
-                                    )
-                                }
-                                BlueskyPostMessagePlaceholders.GuildNamePlaceholder -> placeholder.names.map { placeholderName ->
-                                    MessageEditorMessagePlaceholder(
-                                        placeholderName.placeholder.name,
-                                        guild.name,
-                                        placeholder.renderType
-                                    )
-                                }
-                                BlueskyPostMessagePlaceholders.GuildSizePlaceholder -> placeholder.names.map { placeholderName ->
-                                    MessageEditorMessagePlaceholder(
-                                        placeholderName.placeholder.name,
-                                        guild.memberCount.toString(),
-                                        placeholder.renderType
-                                    )
-                                }
-                                BlueskyPostMessagePlaceholders.PostUrlPlaceholder -> placeholder.names.map { placeholderName ->
-                                    MessageEditorMessagePlaceholder(
-                                        placeholderName.placeholder.name,
-                                        "https://bsky.app/profile/loritta.website/post/3l34ux7btja24",
-                                        placeholder.renderType
-                                    )
+                    // TODO: We technically don't need this here if the trackId is != null
+                    hiddenInput {
+                        name = "did"
+                        value = blueskyProfile.did
+                    }
+
+                    div(classes = "field-wrappers") {
+                        div(classes = "field-wrapper") {
+                            div(classes = "field-title") {
+                                label {
+                                    text("Canal onde será enviado as mensagens")
                                 }
                             }
-                        },
-                        serializableGuild,
-                        serializableSelfLorittaUser,
-                        TestMessageTargetChannelQuery.QuerySelector("[name='channelId']"),
-                        trackSettings.message
-                    )
+
+                            div {
+                                style = "width: 100%;"
+
+                                discordChannelSelectMenu(
+                                    lorittaWebsite,
+                                    i18nContext,
+                                    "channelId",
+                                    guild.channels.filterIsInstance<GuildMessageChannel>(),
+                                    trackSettings.channelId,
+                                    null
+                                )
+                            }
+                        }
+
+                        lorittaDiscordMessageEditor(
+                            i18nContext,
+                            "message",
+                            listOf(),
+                            PlaceholderSectionType.BLUESKY_POST_MESSAGE,
+                            BlueskyPostMessagePlaceholders.placeholders.flatMap { placeholder ->
+                                when (placeholder) {
+                                    BlueskyPostMessagePlaceholders.GuildIconUrlPlaceholder -> DashboardDiscordMessageEditor.createMessageEditorPlaceholders(
+                                        placeholder,
+                                        guild.iconUrl ?: "???"
+                                    ) // TODO: Provide a proper fallback
+                                    BlueskyPostMessagePlaceholders.GuildNamePlaceholder -> DashboardDiscordMessageEditor.createMessageEditorPlaceholders(
+                                        placeholder,
+                                        guild.name
+                                    )
+
+                                    BlueskyPostMessagePlaceholders.GuildSizePlaceholder -> DashboardDiscordMessageEditor.createMessageEditorPlaceholders(
+                                        placeholder,
+                                        guild.memberCount.toString()
+                                    )
+
+                                    BlueskyPostMessagePlaceholders.PostUrlPlaceholder -> DashboardDiscordMessageEditor.createMessageEditorPlaceholders(
+                                        placeholder,
+                                        "https://bsky.app/profile/loritta.website/post/3l34ux7btja24"
+                                    )
+                                }
+                            },
+                            serializableGuild,
+                            serializableSelfLorittaUser,
+                            TestMessageTargetChannelQuery.QuerySelector("[name='channelId']"),
+                            trackSettings.message
+                        )
+                    }
                 }
             }
 
@@ -173,7 +167,8 @@ class GuildConfigureBlueskyProfileView(
                 {}
             ) {
                 if (trackId != null) {
-                    attributes["hx-patch"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/$trackId"
+                    attributes["hx-patch"] =
+                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/$trackId"
                 } else {
                     attributes["hx-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks"
                 }

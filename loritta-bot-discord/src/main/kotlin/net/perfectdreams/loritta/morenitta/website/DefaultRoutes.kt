@@ -16,6 +16,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRou
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.PostFavoriteGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.*
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.ConfigureWelcomerRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.PatchWelcomerRoute
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.*
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
@@ -63,6 +65,7 @@ object DefaultRoutes {
 		ConfigureStarboardRoute(loritta),
 		ConfigureTrackedTwitterAccountsRoute(loritta),
 		ConfigureWelcomerRoute(loritta),
+		PatchWelcomerRoute(loritta),
 		ConfigureYouTubeRoute(loritta),
 		ConfigureNashornCommandsRoute(loritta),
 		ConfigureCustomCommandsRoute(loritta),

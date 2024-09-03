@@ -4,6 +4,7 @@ import kotlinx.html.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.utils.placeholders.MessagePlaceholder
 import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
 import net.perfectdreams.loritta.common.utils.placeholders.SectionPlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -16,8 +17,27 @@ import net.perfectdreams.loritta.serializable.messageeditor.MessageEditorMessage
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 
 object DashboardDiscordMessageEditor {
+    /**
+     * Converts a [MessagePlaceholder] into multiple [MessageEditorMessagePlaceholder] to be used in [lorittaDiscordMessageEditor]
+     */
+    fun createMessageEditorPlaceholders(
+        placeholder: MessagePlaceholder,
+        replaceWithBackend: String,
+        replaceWithFrontend: String = replaceWithBackend
+    ): List<MessageEditorMessagePlaceholder> {
+        return placeholder.names.map {
+            MessageEditorMessagePlaceholder(
+                it.placeholder.name,
+                replaceWithBackend,
+                replaceWithFrontend,
+                placeholder.renderType
+            )
+        }
+    }
+
     fun DIV.lorittaDiscordMessageEditor(
         i18nContext: I18nContext,
+        textAreaName: String,
         templates: List<LorittaMessageTemplate>,
         placeholderSectionType: PlaceholderSectionType,
         placeholders: List<MessageEditorMessagePlaceholder>,
@@ -45,7 +65,8 @@ object DashboardDiscordMessageEditor {
             textArea {
                 attributes["loritta-discord-message-editor"] = "true"
                 attributes["loritta-discord-message-editor-config"] = Json.encodeToString(trackSettings)
-                name = "message"
+                name = textAreaName
+                // TODO: This may cause issues if the saved message does not match what we have on the db due to formatting issues
                 text(rawMessage)
             }
         }
