@@ -10,8 +10,8 @@ import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.DiscordChannelSelectMenu.discordChannelSelectMenu
 import net.perfectdreams.loritta.morenitta.website.components.DiscordLikeToggles.toggleableSection
-import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureEventLogRoute
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.DashboardSaveBar.lorittaSaveBar
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
@@ -46,8 +46,6 @@ class GuildEventLogView(
     override fun DIV.generateRightSidebarContents() {
         div {
             div {
-                id = "form-stuff-wrapper"
-
                 div(classes = "hero-wrapper") {
                     // etherealGambiImg("https://stuff.loritta.website/loritta-daily-shop-allouette.png", classes = "hero-image", sizes = "(max-width: 900px) 100vw, 360px") {}
 
@@ -67,7 +65,7 @@ class GuildEventLogView(
                 hr {}
 
                 form {
-                    id = "form-stuff"
+                    id = "module-config"
                     method = FormMethod.post
                     attributes["loritta-synchronize-with-save-bar"] = "#save-bar"
 
@@ -180,80 +178,12 @@ class GuildEventLogView(
 
         hr {}
 
-        // Maybe, with what little power you have... You can SAVE something else.
-        div(classes = "save-bar-fill-screen-height") {}
-
-        div(classes = "save-bar no-changes initial-state") {
-            id = "save-bar"
-            attributes["loritta-save-bar"] = "true"
-
-            div(classes = "save-bar-small-text") {
-                text("Deseja salvar?")
-            }
-
-            div(classes = "save-bar-large-text") {
-                text("Cuidado! Você tem alterações que não foram salvas")
-            }
-
-            div(classes = "save-bar-buttons") {
-                button(classes = "discord-button no-background-light-text") {
-                    attributes["hx-get"] = ""
-                    attributes["hx-select"] = "#form-stuff-wrapper"
-                    attributes["hx-target"] = "#form-stuff-wrapper"
-                    attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
-                    attributes["hx-disabled-elt"] = "this"
-                    // We don't want to swap nor settle because that causes a flicker due to our custom select menu
-                    attributes["hx-swap"] = "outerHTML settle:0ms swap:0ms"
-                    attributes["hx-on::after-request"] = """
-                            if (event.detail.successful) {
-                                document.querySelector("#save-bar").classList.add("no-changes")
-                                document.querySelector("#save-bar").classList.remove("has-changes")
-                                window['spicy-morenitta'].playSoundEffect("recycle-bin")
-                            }
-                            """.trimIndent()
-
-                    div(classes = "htmx-discord-like-loading-button") {
-                        div {
-                            text("Redefinir")
-                        }
-
-                        div(classes = "loading-text-wrapper") {
-                            img(src = LoadingSectionComponents.list.random())
-
-                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
-                        }
-                    }
-                }
-
-                button(classes = "discord-button success") {
-                    attributes["hx-post"] = ""
-                    attributes["hx-include"] = "#form-stuff"
-                    attributes["hx-select"] = "#form-stuff-wrapper"
-                    attributes["hx-target"] = "#form-stuff-wrapper"
-                    attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
-                    attributes["hx-disabled-elt"] = "this"
-                    // We don't want to swap nor settle because that causes a flicker due to our custom select menu
-                    attributes["hx-swap"] = "outerHTML settle:0ms swap:0ms"
-                    attributes["hx-on::after-request"] = """
-                            if (event.detail.successful) {
-                                document.querySelector("#save-bar").classList.add("no-changes")
-                                document.querySelector("#save-bar").classList.remove("has-changes")
-                            }
-                            """.trimIndent()
-
-                    div(classes = "htmx-discord-like-loading-button") {
-                        div {
-                            text("Salvar")
-                        }
-
-                        div(classes = "loading-text-wrapper") {
-                            img(src = LoadingSectionComponents.list.random())
-
-                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
-                        }
-                    }
-                }
-            }
+        lorittaSaveBar(
+            i18nContext,
+            false,
+            {}
+        ) {
+            attributes["hx-post"] = ""
         }
     }
 

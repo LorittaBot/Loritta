@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
 
 import kotlinx.html.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -15,13 +13,12 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.DiscordChannelSelectMenu.discordChannelSelectMenu
-import net.perfectdreams.loritta.morenitta.website.components.FancyDetails.fancyDetails
-import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.DashboardDiscordMessageEditor.lorittaDiscordMessageEditor
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.DashboardSaveBar.lorittaSaveBar
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
 import net.perfectdreams.loritta.serializable.*
-import net.perfectdreams.loritta.serializable.messageeditor.LorittaDiscordMessageEditorSetupConfig
 import net.perfectdreams.loritta.serializable.messageeditor.MessageEditorMessagePlaceholder
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
@@ -200,200 +197,61 @@ class GuildConfigureBlueskyProfileView(
                         }
                     }
 
-                    div {
-                        // TODO: Refactor this to be reusable!
-                        textArea {
-                            attributes["loritta-discord-message-editor"] = "true"
-                            attributes["loritta-discord-message-editor-config"] = Json.encodeToString(
-                                LorittaDiscordMessageEditorSetupConfig(
-                                    listOf(),
-                                    PlaceholderSectionType.BLUESKY_POST_MESSAGE,
-                                    BlueskyPostMessagePlaceholders.placeholders.flatMap { placeholder ->
-                                        when (placeholder) {
-                                            BlueskyPostMessagePlaceholders.GuildIconUrlPlaceholder -> placeholder.names.map { placeholderName ->
-                                                MessageEditorMessagePlaceholder(
-                                                    placeholderName.placeholder.name,
-                                                    guild.iconUrl ?: "???", // TODO: Provide a proper fallback
-                                                    placeholder.renderType
-                                                )
-                                            }
-                                            BlueskyPostMessagePlaceholders.GuildNamePlaceholder -> placeholder.names.map { placeholderName ->
-                                                MessageEditorMessagePlaceholder(
-                                                    placeholderName.placeholder.name,
-                                                    guild.name,
-                                                    placeholder.renderType
-                                                )
-                                            }
-                                            BlueskyPostMessagePlaceholders.GuildSizePlaceholder -> placeholder.names.map { placeholderName ->
-                                                MessageEditorMessagePlaceholder(
-                                                    placeholderName.placeholder.name,
-                                                    guild.memberCount.toString(),
-                                                    placeholder.renderType
-                                                )
-                                            }
-                                            BlueskyPostMessagePlaceholders.PostUrlPlaceholder -> placeholder.names.map { placeholderName ->
-                                                MessageEditorMessagePlaceholder(
-                                                    placeholderName.placeholder.name,
-                                                    "https://bsky.app/profile/loritta.website/post/3l34ux7btja24",
-                                                    placeholder.renderType
-                                                )
-                                            }
-                                        }
-                                    },
-                                    serializableGuild,
-                                    serializableSelfLorittaUser,
-                                    TestMessageTargetChannelQuery.QuerySelector("[name='channelId']"),
-                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/test-message"
-                                )
-                            )
-                            name = "message"
-                            text(trackSettings.message)
-                        }
-                    }
-
-                    fancyDetails(
-                        "Quais são as variáveis/placeholders que eu posso usar?"
-                    ) {
-                        table {
-                            thead {
-                                tr {
-                                    th {
-                                        text("Placeholder")
-                                    }
-
-                                    th {
-                                        text("Significado")
-                                    }
+                    lorittaDiscordMessageEditor(
+                        i18nContext,
+                        listOf(),
+                        PlaceholderSectionType.BLUESKY_POST_MESSAGE,
+                        BlueskyPostMessagePlaceholders.placeholders.flatMap { placeholder ->
+                            when (placeholder) {
+                                BlueskyPostMessagePlaceholders.GuildIconUrlPlaceholder -> placeholder.names.map { placeholderName ->
+                                    MessageEditorMessagePlaceholder(
+                                        placeholderName.placeholder.name,
+                                        guild.iconUrl ?: "???", // TODO: Provide a proper fallback
+                                        placeholder.renderType
+                                    )
+                                }
+                                BlueskyPostMessagePlaceholders.GuildNamePlaceholder -> placeholder.names.map { placeholderName ->
+                                    MessageEditorMessagePlaceholder(
+                                        placeholderName.placeholder.name,
+                                        guild.name,
+                                        placeholder.renderType
+                                    )
+                                }
+                                BlueskyPostMessagePlaceholders.GuildSizePlaceholder -> placeholder.names.map { placeholderName ->
+                                    MessageEditorMessagePlaceholder(
+                                        placeholderName.placeholder.name,
+                                        guild.memberCount.toString(),
+                                        placeholder.renderType
+                                    )
+                                }
+                                BlueskyPostMessagePlaceholders.PostUrlPlaceholder -> placeholder.names.map { placeholderName ->
+                                    MessageEditorMessagePlaceholder(
+                                        placeholderName.placeholder.name,
+                                        "https://bsky.app/profile/loritta.website/post/3l34ux7btja24",
+                                        placeholder.renderType
+                                    )
                                 }
                             }
-
-                            tbody {
-                                for (placeholder in BlueskyPostMessagePlaceholders.placeholders) {
-                                    tr {
-                                        td {
-                                            // TODO: Put it inside of a code block
-                                            var isFirst = true
-                                            for (name in placeholder.names) {
-                                                if (!isFirst)
-                                                    text(", ")
-                                                isFirst = false
-                                                code {
-                                                    text(name.placeholder.asKey)
-                                                }
-                                            }
-                                        }
-
-                                        td {
-                                            val i18nDescription = placeholder.description
-                                            if (i18nDescription != null) {
-                                                text(i18nContext.get(i18nDescription))
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                        },
+                        serializableGuild,
+                        serializableSelfLorittaUser,
+                        TestMessageTargetChannelQuery.QuerySelector("[name='channelId']"),
+                        trackSettings.message
+                    )
                 }
             }
 
             hr {}
 
-            // TODO: Refactor this to be reusable!
-            // Maybe, with what little power you have... You can SAVE something else.
-            div(classes = "save-bar-fill-screen-height") {}
-
-            div(classes = "save-bar") {
-                if (trackId == null) {
-                    classes += "has-changes"
+            lorittaSaveBar(
+                i18nContext,
+                trackId == null,
+                {}
+            ) {
+                if (trackId != null) {
+                    attributes["hx-patch"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/$trackId"
                 } else {
-                    classes += "initial-state"
-                    classes += "no-changes"
-                }
-
-                id = "save-bar"
-                attributes["loritta-save-bar"] = "true"
-
-                div(classes = "save-bar-small-text") {
-                    text("Deseja salvar?")
-                }
-
-                div(classes = "save-bar-large-text") {
-                    text("Cuidado! Você tem alterações que não foram salvas")
-                }
-
-                div(classes = "save-bar-buttons") {
-                    button(classes = "discord-button no-background-light-text") {
-                        attributes["hx-get"] = ""
-                        attributes["hx-select"] = "#module-config"
-                        attributes["hx-target"] = "#module-config"
-                        attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
-                        attributes["hx-disabled-elt"] = "this"
-                        // We don't want to swap nor settle because that causes a flicker due to our custom select menu
-                        attributes["hx-swap"] = "innerHTML settle:0ms swap:0ms"
-                        if (trackId != null) {
-                            attributes["hx-on::after-request"] = """
-                            if (event.detail.successful) {
-                                document.querySelector("#save-bar").classList.add("no-changes")
-                                document.querySelector("#save-bar").classList.remove("has-changes")
-                                window['spicy-morenitta'].playSoundEffect("recycle-bin")
-                            }
-                            """.trimIndent()
-                        } else {
-                            // TODO: This causes the sound effect to be played twice, because of the HX-Trigger header
-                            attributes["hx-on::after-request"] = """
-                            if (event.detail.successful) {
-                                window['spicy-morenitta'].playSoundEffect("recycle-bin")
-                            }
-                            """.trimIndent()
-                        }
-
-                        div(classes = "htmx-discord-like-loading-button") {
-                            div {
-                                text("Redefinir")
-                            }
-
-                            div(classes = "loading-text-wrapper") {
-                                img(src = LoadingSectionComponents.list.random())
-
-                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
-                            }
-                        }
-                    }
-
-                    button(classes = "discord-button success") {
-                        if (trackId != null) {
-                            attributes["hx-patch"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/$trackId"
-                        } else {
-                            attributes["hx-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks"
-                        }
-                        attributes["hx-swap"] = "innerHTML settle:0ms swap:0ms"
-                        attributes["hx-select"] = "#module-config"
-                        attributes["hx-target"] = "#module-config"
-                        attributes["hx-include"] = "#module-config"
-                        attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
-                        attributes["hx-disabled-elt"] = "this"
-                        // We don't want to swap nor settle because that causes a flicker due to our custom select menu
-                        attributes["hx-swap"] = "innerHTML settle:0ms swap:0ms"
-                        attributes["hx-on::after-request"] = """
-                            if (event.detail.successful) {
-                                document.querySelector("#save-bar").classList.add("no-changes")
-                                document.querySelector("#save-bar").classList.remove("has-changes")
-                            }
-                            """.trimIndent()
-
-                        div(classes = "htmx-discord-like-loading-button") {
-                            div {
-                                text("Salvar")
-                            }
-
-                            div(classes = "loading-text-wrapper") {
-                                img(src = LoadingSectionComponents.list.random())
-
-                                text(i18nContext.get(I18nKeysData.Website.Dashboard.Loading))
-                            }
-                        }
-                    }
+                    attributes["hx-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks"
                 }
             }
         }
