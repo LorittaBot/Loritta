@@ -196,8 +196,8 @@ class RoleplayCommand {
         class RoleplayUserExecutor(val loritta: LorittaBot) : LorittaUserCommandExecutor() {
             override suspend fun execute(context: ApplicationCommandContext, user: User) {
                 val guild = context.guildOrNull
-                if (guild != null && !guild.isDetached && !context.member.hasPermission(context.channel as GuildChannel, Permission.MESSAGE_SEND)) {
-                    // Fixes a bug where the deferred message is public on channels that the user does not have permission to talk in, and Loritta is on the server
+                if (guild != null && !guild.isDetached && !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_APPLICATION_COMMANDS)) {
+                    // Fixes a bug where the deferred message is public on channels that the user does not have permission to talk in/use slash commands, and Loritta is on the server
                     context.reply(true) {
                         styled(
                             context.i18nContext.get(I18nKeysData.Commands.Command.Roleplay.YouCantUseThisHere),
