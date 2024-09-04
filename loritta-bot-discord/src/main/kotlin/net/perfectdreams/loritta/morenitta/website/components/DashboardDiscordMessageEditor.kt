@@ -89,7 +89,13 @@ object DashboardDiscordMessageEditor {
                 attributes["loritta-discord-message-editor-config"] = Json.encodeToString(trackSettings)
                 name = textAreaName
                 // TODO: This may cause issues if the saved message does not match what we have on the db due to formatting issues
-                text(rawMessage)
+                val discordMessage = try {
+                    JsonForDiscordMessages.decodeFromString<DiscordMessage>(rawMessage)
+                } catch (e: Exception) {
+                    // If it is an exception, we'll create our own message, with blackjack and hookers!
+                    DiscordMessage(rawMessage)
+                }
+                text(JsonForDiscordMessages.encodeToString(discordMessage))
             }
         }
 

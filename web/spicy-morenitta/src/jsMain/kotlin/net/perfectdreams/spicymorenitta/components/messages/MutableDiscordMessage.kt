@@ -66,7 +66,7 @@ class MutableDiscordMessage(
         },
         components = components.map {
             transformToData(it)
-        }
+        }.ifEmpty { null }
     )
 
     /**
