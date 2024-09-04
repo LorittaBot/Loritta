@@ -8,7 +8,7 @@ import kotlinx.coroutines.joinAll
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -16,7 +16,6 @@ import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -43,7 +42,7 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
             if (args.isEmpty()) return@executesDiscord explain()
 
             val count = args[0].toIntOrNull()
-            val channel = discordMessage.channel as? TextChannel ?: return@executesDiscord
+            val channel = discordMessage.channel as? GuildMessageChannel ?: return@executesDiscord
 
             // The message count can't be null or be higher than 500 and lower than 2
             if (count == null || count !in 2..MAX_RANGE)
