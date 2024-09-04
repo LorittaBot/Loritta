@@ -1,10 +1,13 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch
 
-import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
+import kotlinx.html.body
+import kotlinx.html.script
+import kotlinx.html.stream.createHTML
+import kotlinx.html.unsafe
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.AuthorizedTwitchAccounts
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.switchtwitch.SwitchTwitchAPI
 import org.jetbrains.exposed.sql.upsert
@@ -28,6 +31,19 @@ class TwitchAccountCallbackRoute(val loritta: LorittaBot) : BaseRoute("/twitch-c
 			}
 		}
 
-		call.respondText("<script>window.opener.postMessage(\"${response.id}\"); window.close();</script>", ContentType.Text.Html)
+		call.respondHtml(
+			createHTML()
+				.body {
+					script {
+						unsafe {
+							raw("""
+								var openerOrigin = window.opener.origin;
+								window.opener.postMessage("${response.id}", openerOrigin);
+								window.close();
+							""".trimIndent())
+						}
+					}
+				}
+		)
 	}
 }
