@@ -44,9 +44,9 @@ object DashboardDiscordMessageEditor {
     fun createMessageTemplate(
         title: String,
         content: String
-    ) = LorittaMessageTemplate(
+    ) = createMessageTemplate(
         title,
-        content
+        DiscordMessage(content)
     )
 
     fun createMessageTemplate(

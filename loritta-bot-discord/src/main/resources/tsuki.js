@@ -22,6 +22,25 @@ function tsukify(element) {
         return element;
     }
 
+    element.whenRemovedFromDOM = (func) => {
+        // Create a MutationObserver to watch for the div being removed from the DOM
+        const observer = new MutationObserver((mutations) => {
+            // console.log("mutation happened")
+            if (!document.contains(self)) {
+                // Div is removed, remove the listener
+                // console.log("bye!!!")
+                func()
+                observer.disconnect() // Stop observing once done
+            }
+        });
+
+        // Start observing the parent of the div for childList changes (additions/removals)
+        console.log(self.parentNode)
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        return element;
+    }
+
     element.isTsukified = true
 
     return element

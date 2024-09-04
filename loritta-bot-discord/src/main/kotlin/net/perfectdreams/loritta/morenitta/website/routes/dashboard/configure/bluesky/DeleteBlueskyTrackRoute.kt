@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildBlueskyView.Companion.createBlueskyAccountCards
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.bluesky.GuildBlueskyView.Companion.createBlueskyAccountCards
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth

@@ -38,8 +38,10 @@ object DashboardSaveBar {
             }
 
             div(classes = "save-bar-buttons") {
+                id = "save-bar-buttons"
                 button(classes = "discord-button no-background-light-text") {
                     resetButtonAttributes.invoke(this)
+                    id = "save-bar-reset-button"
                     attributes["hx-get"] = ""
                     attributes["hx-select"] = "#module-config-wrapper"
                     attributes["hx-target"] = "#module-config-wrapper"
@@ -47,6 +49,8 @@ object DashboardSaveBar {
                     attributes["hx-disabled-elt"] = "this"
                     // We don't want to swap nor settle because that causes a flicker due to our custom select menu
                     attributes["hx-swap"] = "outerHTML settle:0ms swap:0ms"
+                    attributes["spicy-oob-attribute-swap"] = "hx-get,hx-post,hx-put,hx-patch,hx-delete"
+
                     if (!hasChanges) {
                         attributes["hx-on::after-request"] = """
                             if (event.detail.successful) {
@@ -79,6 +83,7 @@ object DashboardSaveBar {
 
                 button(classes = "discord-button success") {
                     saveButtonAttributes.invoke(this)
+                    id = "save-bar-save-button"
                     attributes["hx-swap"] = "outerHTML settle:0ms swap:0ms"
                     attributes["hx-select"] = "#module-config-wrapper"
                     attributes["hx-target"] = "#module-config-wrapper"
@@ -87,6 +92,7 @@ object DashboardSaveBar {
                     attributes["hx-disabled-elt"] = "this"
                     // We don't want to swap nor settle because that causes a flicker due to our custom select menu
                     attributes["hx-swap"] = "innerHTML settle:0ms swap:0ms"
+                    attributes["spicy-oob-attribute-swap"] = "hx-get,hx-post,hx-put,hx-patch,hx-delete"
                     attributes["hx-on::after-request"] = """
                             if (event.detail.successful) {
                                 document.querySelector("#save-bar").classList.add("no-changes")

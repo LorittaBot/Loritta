@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRou
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.PostFavoriteGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.*
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.ConfigureWelcomerRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.PatchWelcomerRoute
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.*
@@ -56,7 +57,15 @@ object DefaultRoutes {
 		PostConfigureEventLogRoute(loritta),
 		ConfigureInviteBlockerRoute(loritta),
 		ConfigureLevelUpRoute(loritta),
+
 		ConfigureTwitchRoute(loritta),
+		GetConfigureTwitchTrackRoute(loritta),
+		GetAddTwitchTrackRoute(loritta),
+		PutTwitchTrackRoute(loritta),
+		PatchTwitchTrackRoute(loritta),
+		DeleteTwitchTrackRoute(loritta),
+		TwitchAccountCallbackRoute(loritta),
+
 		ConfigureMemberCounterRoute(loritta),
 		ConfigureMiscellaneousRoute(loritta),
 		ConfigureModerationRoute(loritta),
@@ -69,12 +78,14 @@ object DefaultRoutes {
 		ConfigureYouTubeRoute(loritta),
 		ConfigureNashornCommandsRoute(loritta),
 		ConfigureCustomCommandsRoute(loritta),
+
 		ConfigureBlueskyRoute(loritta),
 		GetAddBlueskyTrackRoute(loritta),
 		GetConfigureBlueskyTrackRoute(loritta),
 		DeleteBlueskyTrackRoute(loritta),
 		PutBlueskyTrackRoute(loritta),
 		PatchBlueskyTrackRoute(loritta),
+
 		PostTestMessageRoute(loritta),
 
 		// Reps

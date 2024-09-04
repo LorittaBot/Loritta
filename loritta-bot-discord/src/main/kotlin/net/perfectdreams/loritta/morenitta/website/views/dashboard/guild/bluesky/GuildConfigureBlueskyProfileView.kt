@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
+package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.bluesky
 
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.website.components.DashboardSaveBar.l
 import net.perfectdreams.loritta.morenitta.website.components.DiscordChannelSelectMenu.discordChannelSelectMenu
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildDashboardView
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -167,8 +168,7 @@ class GuildConfigureBlueskyProfileView(
                 {}
             ) {
                 if (trackId != null) {
-                    attributes["hx-patch"] =
-                        "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/$trackId"
+                    attributes["hx-patch"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/$trackId"
                 } else {
                     attributes["hx-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks"
                 }

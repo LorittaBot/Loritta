@@ -59,6 +59,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.*
 import org.w3c.dom.events.Event
+import org.w3c.dom.parsing.DOMParser
 import org.w3c.xhr.XMLHttpRequest
 import kotlin.collections.set
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -287,6 +288,50 @@ class SpicyMorenitta : Logging {
 							}
 						)
 					}
+				}
+			})
+
+			document.addEventListener("htmx:afterSettle", { evt ->
+				println("htmx:afterSettle")
+
+				val xmlHttpRequest = evt.asDynamic().detail.xhr as XMLHttpRequest
+				println(xmlHttpRequest.getResponseHeader("Content-Type"))
+				if (xmlHttpRequest.getResponseHeader("Content-Type")?.startsWith("text/html") == true) {
+					// Sync attributes on the target elements
+					val parser = DOMParser()
+					// Parse the responseText into an HTML Document (because responseXML does not work)
+					val responseDocument = parser.parseFromString(xmlHttpRequest.responseText, "text/html")
+
+					responseDocument
+						.querySelectorAll("[spicy-oob-attribute-swap]")
+						.asList()
+						.filterIsInstance<HTMLElement>()
+						.forEach {
+							val element = document.getElementById(it.id)
+							if (element == null) {
+								println("Could not find a element in the document with ID ${it.id} to do a oob attribute swap...")
+								return@forEach
+							}
+
+							val attrsToBeSynced = it.getAttribute("spicy-oob-attribute-swap")!!.split(",")!!
+
+							println("Attributes to be synced: $attrsToBeSynced")
+
+							attrsToBeSynced.forEach { attributeName ->
+								val newValue = it.getAttribute(attributeName)
+								println("OOB attribute swap for $attributeName is $newValue")
+								if (newValue != null)
+									element.setAttribute(attributeName, newValue)
+								else
+									element.removeAttribute(attributeName)
+							}
+
+							// And then reprocess the element to make htmx actually understand the new things
+							// YES IT NEEDS TO BE INSIDE A SET TIMEOUT
+							window.setTimeout({
+								htmx.process(element)
+							})
+						}
 				}
 			})
 

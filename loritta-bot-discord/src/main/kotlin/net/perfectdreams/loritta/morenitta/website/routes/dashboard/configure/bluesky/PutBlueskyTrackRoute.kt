@@ -23,8 +23,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuil
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildBlueskyView
-import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildConfigureBlueskyProfileView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.bluesky.GuildBlueskyView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.bluesky.GuildConfigureBlueskyProfileView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
+package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.bluesky
 
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.website.components.EmptySection.empty
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildDashboardView
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
 import net.perfectdreams.loritta.serializable.ColorTheme

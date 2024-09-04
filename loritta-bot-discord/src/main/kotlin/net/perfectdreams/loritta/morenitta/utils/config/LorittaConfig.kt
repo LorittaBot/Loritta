@@ -252,6 +252,7 @@ data class LorittaConfig(
     data class TwitchConfig(
         val clientId: String,
         val clientSecret: String,
+        val redirectUri: String,
         val webhookUrl: String,
         val webhookSecret: String
     )
