@@ -2,16 +2,15 @@ package net.perfectdreams.loritta.morenitta.website.routes.user.dashboard
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserPocketLorittaSettings
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.respondBodyAsHXTrigger
 import net.perfectdreams.loritta.serializable.PocketLorittaSettings
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -34,14 +33,11 @@ class PostClearPocketLorittaRoute(loritta: LorittaBot) : RequiresDiscordLoginLoc
 			PocketLorittaSettings(0, 0, 0)
 		}
 
-		call.response.header(
-			"HX-Trigger",
-			buildJsonObject {
-				put("playSoundEffect", "recycle-bin")
+		call.respondBodyAsHXTrigger(status = HttpStatusCode.OK) {
+			playSoundEffect = "recycle-bin"
+			additionalJson = {
 				put("pocketLorittaSettingsSync", Json.encodeToString(settings))
-			}.toString()
-		)
-
-		call.respondText("", status = HttpStatusCode.NoContent)
+			}
+		}
 	}
 }

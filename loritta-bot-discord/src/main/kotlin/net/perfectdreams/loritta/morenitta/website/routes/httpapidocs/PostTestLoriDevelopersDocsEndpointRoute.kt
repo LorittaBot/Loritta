@@ -7,21 +7,19 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
@@ -161,12 +159,9 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
 
         // If we shouldn't execute the request, let's just show the curl command
         if (!executeRequest) {
-            call.response.header(
-                "HX-Trigger",
-                buildJsonObject {
-                    put("playSoundEffect", "config-saved")
-                }.toString()
-            )
+            call.response.headerHXTrigger {
+                playSoundEffect = "config-saved"
+            }
 
             call.respondHtml(
                 createHTML()
@@ -234,12 +229,9 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
         }
 
         // Palette inspired by https://lospec.com/palette-list/vanilla-milkshake
-        call.response.header(
-            "HX-Trigger",
-            buildJsonObject {
-                put("playSoundEffect", "config-saved")
-            }.toString()
-        )
+        call.response.headerHXTrigger {
+            playSoundEffect = "config-saved"
+        }
 
         call.respondHtml(
             createHTML()

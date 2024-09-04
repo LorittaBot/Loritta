@@ -5,8 +5,6 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.util.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -15,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.respondBodyAsHXTrigger
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -35,21 +33,9 @@ class PostSonhosShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 		}
 
 		if (bundle == null) {
-			call.response.header(
-				"HX-Trigger",
-				buildJsonObject {
-					put("playSoundEffect", "config-error")
-					put(
-						"showSpicyToast",
-						EmbeddedSpicyModalUtils.encodeURIComponent(
-							Json.encodeToString(
-								EmbeddedSpicyToast(EmbeddedSpicyToast.Type.WARN, "Bundle não existe!", null)
-							)
-						)
-					)
-				}.toString()
-			)
-			call.respondText("", status = HttpStatusCode.NotFound)
+			call.respondBodyAsHXTrigger(HttpStatusCode.NotFound) {
+				showSpicyToast(EmbeddedSpicyToast.Type.WARN, "Bundle não existe!")
+			}
 			return
 		}
 

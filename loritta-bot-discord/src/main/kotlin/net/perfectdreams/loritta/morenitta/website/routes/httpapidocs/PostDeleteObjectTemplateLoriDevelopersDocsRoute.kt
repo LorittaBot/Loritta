@@ -2,18 +2,16 @@ package net.perfectdreams.loritta.morenitta.website.routes.httpapidocs
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.body
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.LoriDevelopersDocsRoute.Companion.createObjectTemplateButton
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PutGiveawayRoute
@@ -38,12 +36,9 @@ class PostDeleteObjectTemplateLoriDevelopersDocsRoute(loritta: LorittaBot) : Loc
         val apiParameters = MagicEndpoints.endpointTesterOptions[LoriPublicHttpApiEndpoints.CREATE_GUILD_GIVEAWAY]!!
         val option = apiParameters.clazzesParameters[PutGiveawayRoute.SpawnGiveawayRequest::class.simpleName!!]!!.first { it.name == "allowedRoles" }
 
-        call.response.header(
-            "HX-Trigger",
-            buildJsonObject {
-                put("playSoundEffect", "recycle-bin")
-            }.toString()
-        )
+        call.response.headerHXTrigger {
+            playSoundEffect = "recycle-bin"
+        }
 
         call.respondHtml(
             createHTML()

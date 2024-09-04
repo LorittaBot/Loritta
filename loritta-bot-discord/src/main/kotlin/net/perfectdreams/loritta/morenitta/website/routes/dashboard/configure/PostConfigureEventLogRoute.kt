@@ -2,11 +2,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -16,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.ConfigureEventLogRoute.FakeEventLogConfig
-import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildEventLogView
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -83,20 +78,10 @@ class PostConfigureEventLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocaliz
 			}
 		}
 
-		call.response.header(
-			"HX-Trigger",
-			buildJsonObject {
-				put("playSoundEffect", "config-saved")
-				put(
-					"showSpicyToast",
-					EmbeddedSpicyModalUtils.encodeURIComponent(
-						Json.encodeToString(
-							EmbeddedSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Configuração salva!", null)
-						)
-					)
-				)
-			}.toString()
-		)
+		call.response.headerHXTrigger {
+			playSoundEffect = "config-saved"
+			showSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Configuração salva!")
+		}
 
 		val eventLogConfig = loritta.newSuspendedTransaction {
 			serverConfig.eventLogConfig

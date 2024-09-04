@@ -222,6 +222,9 @@ object EmbeddedSpicyModalUtils {
         status: HttpStatusCode,
         block: SpicyMorenittaTriggers.() -> (Unit)
     ) {
+        if (status == HttpStatusCode.NoContent)
+            error("A respondBodyAsHXTrigger cannot use a $status status code!")
+
         // Enables the feature
         this.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
         val triggers = SpicyMorenittaTriggers().apply(block)

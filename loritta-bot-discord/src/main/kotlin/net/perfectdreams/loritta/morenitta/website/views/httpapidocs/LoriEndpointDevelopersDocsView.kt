@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.CurrentSon
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.LoriDevelopersDocsRoute.Companion.createObjectTemplateButton
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.MagicEndpoints
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.ParameterKind
+import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PutGiveawayRoute
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -285,11 +286,13 @@ class LoriEndpointDevelopersDocsView(
                                 attributes["hx-vals"] = buildJsonObject {
                                     put("executeRequest", true)
                                 }.toString()
-                                attributes["hx-post"] =
-                                    "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/developers/docs/endpoint-tester"
+                                attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/developers/docs/endpoint-tester"
                                 attributes["hx-target"] = "#result-stuff"
                                 attributes["hx-disabled-elt"] = "this"
-                                text("Testar")
+
+                                htmxDiscordLikeLoadingButtonSetup(i18nContext) {
+                                    text("Testar")
+                                }
                             }
 
                             button(classes = "discord-button secondary", type = ButtonType.submit) {
@@ -300,7 +303,10 @@ class LoriEndpointDevelopersDocsView(
                                     "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/developers/docs/endpoint-tester"
                                 attributes["hx-target"] = "#result-stuff"
                                 attributes["hx-disabled-elt"] = "this"
-                                text("Gerar comando cURL")
+
+                                htmxDiscordLikeLoadingButtonSetup(i18nContext) {
+                                    text("Gerar comando cURL")
+                                }
                             }
                         }
                     }

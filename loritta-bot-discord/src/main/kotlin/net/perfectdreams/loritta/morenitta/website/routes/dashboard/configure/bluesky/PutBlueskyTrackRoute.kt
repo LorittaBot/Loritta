@@ -21,6 +21,9 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXPushURL
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.respondBodyAsHXTrigger
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.bluesky.GuildBlueskyView
@@ -44,22 +47,13 @@ class PutBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 		}
 
 		if (http.status == HttpStatusCode.BadRequest) {
-			call.response.header(
-				"HX-Trigger",
-				buildJsonObject {
-					put("playSoundEffect", "config-error")
-					put(
-						"showSpicyToast",
-						EmbeddedSpicyModalUtils.encodeURIComponent(
-							Json.encodeToString(
-								EmbeddedSpicyToast(
-									EmbeddedSpicyToast.Type.WARN, "Conta não existe!", null)
-							)
-						)
-					)
-				}.toString()
-			)
-			call.respondText("", status = HttpStatusCode.BadRequest)
+			call.respondBodyAsHXTrigger(HttpStatusCode.BadRequest) {
+				playSoundEffect = "config-error"
+				showSpicyToast(
+					EmbeddedSpicyToast.Type.WARN,
+					"Conta não existe!"
+				)
+			}
 			return
 		}
 
@@ -114,16 +108,10 @@ class PutBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 			return
 		}
 
-		call.response.header(
-			"HX-Push-URL",
-			"/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/${insertedRow[TrackedBlueskyAccounts.id].value}"
-		)
-		call.response.header(
-			"HX-Trigger",
-			buildJsonObject {
-				put("playSoundEffect", "config-saved")
-			}.toString()
-		)
+		call.response.headerHXPushURL("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/bluesky/tracks/${insertedRow[TrackedBlueskyAccounts.id].value}")
+		call.response.headerHXTrigger {
+			playSoundEffect = "config-saved"
+		}
 
 		call.respondHtml(
 			GuildConfigureBlueskyProfileView(

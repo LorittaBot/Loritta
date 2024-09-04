@@ -3,12 +3,9 @@ package net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.b
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.body
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
@@ -17,6 +14,7 @@ import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.bluesky.GuildBlueskyView.Companion.createBlueskyAccountCards
 import net.perfectdreams.loritta.serializable.ColorTheme
@@ -56,13 +54,11 @@ class DeleteBlueskyTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedD
 			blueskyProfiles.addAll(profiles.profiles)
 		}
 
-		call.response.header(
-			"HX-Trigger",
-			buildJsonObject {
-				put("closeSpicyModal", null)
-				put("playSoundEffect", "recycle-bin")
-			}.toString()
-		)
+		call.response.headerHXTrigger {
+			closeSpicyModal = true
+			playSoundEffect = "recycle-bin"
+		}
+
 		call.respondHtml(
 			createHTML()
 				.body {

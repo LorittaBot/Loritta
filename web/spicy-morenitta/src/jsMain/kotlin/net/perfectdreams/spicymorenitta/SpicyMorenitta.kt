@@ -291,6 +291,19 @@ class SpicyMorenitta : Logging {
 				}
 			})
 
+			document.addEventListener("htmx:beforeSwap", { evt ->
+				println("htmx:beforeSwap")
+				val xmlHttpRequest = evt.asDynamic().detail.xhr as XMLHttpRequest
+
+				// The lack of dash is intentional, htmx checks if the header CONTAINS HX-Trigger not if it is equal to
+				val useResponseAsHxTrigger = xmlHttpRequest.getResponseHeader("SpicyMorenitta-Use-Response-As-HXTrigger")?.toBoolean()
+
+				if (useResponseAsHxTrigger == true) {
+					// Don't attempt to swap if it is a SpicyMorenitta-Use-Response-As-HXTrigger response
+					evt.asDynamic().detail.shouldSwap = false
+				}
+			})
+
 			document.addEventListener("htmx:afterSettle", { evt ->
 				println("htmx:afterSettle")
 
@@ -1180,7 +1193,7 @@ class SpicyMorenitta : Logging {
 
 		run {
 			// Technically only one loritta-game-canvas instance should exist
-			if (it.id == "#loritta-game-canvas" && it is HTMLCanvasElement) {
+			if (it.id == "loritta-game-canvas" && it is HTMLCanvasElement) {
 				if (it.getAttribute("loritta-powered-up") != null)
 					return@run
 
