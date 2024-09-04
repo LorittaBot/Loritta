@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay
 import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
@@ -194,6 +193,18 @@ class RoleplayCommand {
 
         class RoleplayUserExecutor(val loritta: LorittaBot) : LorittaUserCommandExecutor() {
             override suspend fun execute(context: ApplicationCommandContext, user: User) {
+                val guild = context.guildOrNull
+                if (guild != null && !guild.isDetached && !context.channel.canTalk()) {
+                    // Fixes a bug where the deferred message is public on channels that the user does not have permission to talk in, and Loritta is on the server
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18nKeysData.Commands.Command.Roleplay.YouCantUseThisHere),
+                            Emotes.Error
+                        )
+                    }
+                    return
+                }
+
                 context.reply(true) {
                     styled(
                         context.i18nContext.get(I18nKeysData.Commands.Command.Roleplay.WhatActionDoYouWantForTheUser(user.asMention)),
