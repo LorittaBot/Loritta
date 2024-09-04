@@ -35,10 +35,10 @@ class TwitchAccountCallbackRoute(val loritta: LorittaBot) : BaseRoute("/twitch-c
 			createHTML()
 				.body {
 					script {
+						// We can't access the origin here because it is restricted, so that's why we do "*"!!!
 						unsafe {
 							raw("""
-								var openerOrigin = window.opener.origin;
-								window.opener.postMessage("${response.id}", openerOrigin);
+								window.opener.postMessage("${response.id}", "*");
 								window.close();
 							""".trimIndent())
 						}
