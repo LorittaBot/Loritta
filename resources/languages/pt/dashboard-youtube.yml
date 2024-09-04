@@ -1,0 +1,5 @@
+website:
+  dashboard:
+    youtube:
+      title: "Notificações do YouTube"
+      channels: "{channelCount,plural, =0 {# canais} one {# canal} other {# canais}}"

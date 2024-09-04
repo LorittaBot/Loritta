@@ -97,7 +97,7 @@ abstract class GuildDashboardView(
 
             appendEntry("/guild/${guild.id}/configure/welcomer", true, locale["modules.sectionNames.welcomer"], "fa fa-sign-in-alt", false)
             appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", false)
-            appendEntry("/guild/${guild.id}/configure/youtube", false, "YouTube", "fab fa-youtube", false)
+            appendEntry("/guild/${guild.id}/configure/youtube", true, "YouTube", "fab fa-youtube", false)
             appendEntry("/guild/${guild.id}/configure/twitch", true, "Twitch", "fab fa-twitch", false)
             appendEntry("/guild/${guild.id}/configure/bluesky", true, "Bluesky", "fab fa-bluesky", true)
 

@@ -123,13 +123,8 @@ abstract class LegacyGuildDashboardView(
                     )
 
                     appendEntry("/guild/${guild.id}/configure/event-log", false, locale["modules.sectionNames.eventLog"], "fa fa-eye", "event_log")
-                    appendEntry("/guild/${guild.id}/configure/youtube", true, "YouTube", "fab fa-youtube", "youtube")
-                    appendExternalEntry(
-                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/twitch",
-                        "Twitch",
-                        "fab fa-twitch",
-                        "livestream"
-                    )
+                    appendEntry("/guild/${guild.id}/configure/youtube", false, "YouTube", "fab fa-youtube", "youtube")
+                    appendEntry("/guild/${guild.id}/configure/twitch", false, "Twitch", "fab fa-twitch", "twitch")
                     appendEntry("/guild/${guild.id}/configure/bluesky", false, "Bluesky", "fab fa-bluesky", "bluesky")
 
                     hr(classes = "divider") {}

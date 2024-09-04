@@ -98,7 +98,7 @@ class GuildConfigureTwitchChannelView(
                 htmxDiscordLikeLoadingButtonSetup(
                     i18nContext
                 ) {
-                    this.text("Voltar para a lista de contas da Twitch")
+                    this.text("Voltar para a lista de canais da Twitch")
                 }
             }
 

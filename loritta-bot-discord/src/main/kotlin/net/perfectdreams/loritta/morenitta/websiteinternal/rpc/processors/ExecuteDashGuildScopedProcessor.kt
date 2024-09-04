@@ -283,16 +283,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                             TwitchStreamOnlineMessagePlaceholders.StreamUrlPlaceholder -> "https://twitch.tv/${additionalPlaceholdersInfo.twitchLogin}"
                         }
                     }
-                    is BlueskyPostMessagePlaceholders -> generateMessage(section) {
-                        // val additionalPlaceholdersInfo = dashRequest.additionalPlaceholdersInfo as DashGuildScopedRequest.SendMessageRequest.AdditionalPlaceholdersInfo.TwitchStreamOnlinePlaceholderInfo
-
-                        when (it) {
-                            BlueskyPostMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
-                            BlueskyPostMessagePlaceholders.GuildNamePlaceholder -> guild.name
-                            BlueskyPostMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
-                            BlueskyPostMessagePlaceholders.PostUrlPlaceholder -> "https://bsky.app/profile/mrpowergamerbr.com/post/3l2zjidl3zl2q"
-                        }
-                    }
+                    else -> error("Unsupported section type $section")
                 }
 
                 // This is a bit crappy, but we need to create a builder from the already generated message

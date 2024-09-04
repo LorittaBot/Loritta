@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bl
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.ConfigureWelcomerRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.PatchWelcomerRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.youtube.*
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.*
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
@@ -78,7 +79,14 @@ object DefaultRoutes {
 		ConfigureTrackedTwitterAccountsRoute(loritta),
 		ConfigureWelcomerRoute(loritta),
 		PatchWelcomerRoute(loritta),
+
 		ConfigureYouTubeRoute(loritta),
+		GetAddYouTubeTrackRoute(loritta),
+		GetConfigureYouTubeTrackRoute(loritta),
+		PutYouTubeTrackRoute(loritta),
+		PatchYouTubeTrackRoute(loritta),
+		DeleteYouTubeTrackRoute(loritta),
+
 		ConfigureNashornCommandsRoute(loritta),
 		ConfigureCustomCommandsRoute(loritta),
 
