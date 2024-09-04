@@ -15,8 +15,8 @@ fun closeModal() {
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 @JsName("openEmbeddedModal")
-fun openEmbeddedModal(element: Element) {
-    val embeddedModalData = element.getAttribute("loritta-embedded-spicy-modal") ?: error("There isn't any embedded modal on ${element}!")
+fun openEmbeddedModal(element: Element, attributeName: String = "loritta-embedded-spicy-modal") {
+    val embeddedModalData = element.getAttribute(attributeName) ?: error("There isn't any embedded modal on ${element}!")
     val embeddedSpicyModal = Json.decodeFromString<EmbeddedSpicyModal>(decodeURIComponent(embeddedModalData))
     SpicyMorenitta.INSTANCE.modalManager.openModal(embeddedSpicyModal)
 }
@@ -24,8 +24,8 @@ fun openEmbeddedModal(element: Element) {
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 @JsName("playSoundEffect")
-fun playSoundEffect(soundEffect: String) {
-    SpicyMorenitta.INSTANCE.playSoundEffect(soundEffect)
+fun playSoundEffect(soundEffect: String, onEnd: () -> (Unit) = {}) {
+    SpicyMorenitta.INSTANCE.playSoundEffect(soundEffect, onEnd = onEnd)
 }
 
 external fun decodeURIComponent(encodedURI: String): String = definedExternally

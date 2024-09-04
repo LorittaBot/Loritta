@@ -1055,20 +1055,23 @@ class SpicyMorenitta : Logging {
 		return rpcResponse
 	}
 
-	fun playSoundEffect(eventValue: String) {
+	fun playSoundEffect(eventValue: String, onEnd: () -> (Unit) = {}) {
 		when (eventValue) {
 			"config-saved" -> {
-				soundEffects.configSaved.play(0.4) // for some reason this sfx is LOUD
+				soundEffects.configSaved.play(0.4, onEnd = onEnd) // for some reason this sfx is LOUD
 			}
 			"config-error" -> {
-				soundEffects.configError.play(0.4) // for some reason this sfx is LOUD
+				soundEffects.configError.play(0.4, onEnd = onEnd) // for some reason this sfx is LOUD
 			}
 			"cash" -> {
 				val cash = Audio("${loriUrl}assets/snd/css1_cash.wav")
 				cash.play()
 			}
 			"recycle-bin" -> {
-				soundEffects.recycleBin.play(1.0)
+				soundEffects.recycleBin.play(1.0, onEnd = onEnd)
+			}
+			"xarola-ratinho" -> {
+				soundEffects.xarolaRatinho.play(0.1, onEnd = onEnd)
 			}
 			else -> {
 				warn("Unknown sound effect \"$eventValue\"")

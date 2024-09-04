@@ -98,13 +98,7 @@ abstract class GuildDashboardView(
             appendEntry("/guild/${guild.id}/configure/welcomer", true, locale["modules.sectionNames.welcomer"], "fa fa-sign-in-alt", false)
             appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", false)
             appendEntry("/guild/${guild.id}/configure/youtube", false, "YouTube", "fab fa-youtube", false)
-            appendEntry(
-                "${lorittaWebsite.loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/twitch",
-                false,
-                "Twitch",
-                "fab fa-twitch",
-                false
-            )
+            appendEntry("/guild/${guild.id}/configure/twitch", true, "Twitch", "fab fa-twitch", false)
             appendEntry("/guild/${guild.id}/configure/bluesky", true, "Bluesky", "fab fa-bluesky", true)
 
             hr(classes = "divider") {}

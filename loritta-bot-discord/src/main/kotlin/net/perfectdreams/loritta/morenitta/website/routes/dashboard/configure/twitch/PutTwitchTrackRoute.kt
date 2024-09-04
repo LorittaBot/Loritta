@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.util.*
@@ -12,13 +13,19 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.T
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedDashboardRoute
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXPushURL
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.respondBodyAsHXTrigger
+import net.perfectdreams.loritta.morenitta.website.utils.SpicyMorenittaTriggers
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.twitch.GuildConfigureTwitchChannelView
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -73,22 +80,37 @@ class PutTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashb
 			}
 
 			// Does not exist, so let's insert it!
+			val now = Instant.now()
 			val trackId = TrackedTwitchAccounts.insertAndGetId {
 				it[TrackedTwitchAccounts.guildId] = guild.idLong
 				it[TrackedTwitchAccounts.channelId] = channelId
 				it[TrackedTwitchAccounts.twitchUserId] = twitchUserId
 				it[TrackedTwitchAccounts.message] = message
+				it[TrackedTwitchAccounts.addedAt] = now
+				it[TrackedTwitchAccounts.editedAt] = now
 			}
 
 			val state = TwitchWebUtils.getTwitchAccountTrackState(twitchUserId)
 
-			return@transaction AddGuildTwitchChannelResult.Success(trackId.value, state)
+			val valueOfTheDonationKeysEnabledOnThisGuild = DonationKey.find { DonationKeys.activeIn eq guild.idLong and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+				.toList()
+				.sumOf { it.value }
+				.let { ceil(it) }
+
+			val premiumTracksCount = PremiumTrackTwitchAccounts.select {
+				PremiumTrackTwitchAccounts.guildId eq guild.idLong
+			}.count()
+
+			return@transaction AddGuildTwitchChannelResult.Success(trackId.value, state, valueOfTheDonationKeysEnabledOnThisGuild, premiumTracksCount)
 		}
 
 		when (result) {
 			is AddGuildTwitchChannelResult.Success -> {
 				val twitchUser = TwitchWebUtils.getCachedUsersInfoById(loritta, twitchUserId)
 					.first()
+
+				call.response.headerHXPushURL("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/twitch/tracks/${result.trackId}")
+				call.response.headerHXTrigger(SpicyMorenittaTriggers(playSoundEffect = "config-saved"))
 
 				call.respondHtml(
 					GuildConfigureTwitchChannelView(
@@ -105,17 +127,33 @@ class PutTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashb
 						result.trackId,
 						createPremiumTrack,
 						twitchUser,
-						result.state
+						result.state,
+						GuildConfigureTwitchChannelView.TwitchTrackSettings(
+							channelId,
+							message
+						),
+						ServerPremiumPlans.getPlanFromValue(result.valueOfTheDonationKeysEnabledOnThisGuild),
+						result.premiumTracksCount
 					).generateHtml()
 				)
 			}
-			AddGuildTwitchChannelResult.TooManyPremiumTracks -> TODO()
+			AddGuildTwitchChannelResult.TooManyPremiumTracks -> {
+				call.respondBodyAsHXTrigger(
+					status = HttpStatusCode.Forbidden,
+				) {
+					playSoundEffect = "config-error"
+					showSpicyToast(
+						EmbeddedSpicyToast.Type.WARN,
+						"Você está no limite de acompanhamentos premium!"
+					)
+				}
+			}
 		}
 	}
 
 	sealed class AddGuildTwitchChannelResult {
 		@Serializable
-		class Success(val trackId: Long, val state: TwitchAccountTrackState) : AddGuildTwitchChannelResult()
+		class Success(val trackId: Long, val state: TwitchAccountTrackState, val valueOfTheDonationKeysEnabledOnThisGuild: Double, val premiumTracksCount: Long) : AddGuildTwitchChannelResult()
 
 		@Serializable
 		data object TooManyPremiumTracks : AddGuildTwitchChannelResult()

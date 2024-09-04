@@ -97,7 +97,6 @@ class ConfigureTwitchRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 				colorTheme,
 				guild,
 				"twitch",
-				valueOfTheDonationKeysEnabledOnThisGuild,
 				twitchConfig
 			).generateHtml()
 		)

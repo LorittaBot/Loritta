@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.morenitta.website.utils
 
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.encodeToString
@@ -7,10 +10,18 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
+import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import java.net.URLEncoder
 
 object EmbeddedSpicyModalUtils {
+    fun modalButtonListOnlyCloseModalButton(i18nContext: I18nContext): List<BUTTON.() -> Unit> {
+        return listOf {
+            defaultModalCloseButton(i18nContext)
+        }
+    }
+
     fun FlowContent.closeModalOnClick() {
         attributes["hx-on:click"] = "window['spicy-morenitta'].closeModal()"
     }
@@ -22,6 +33,38 @@ object EmbeddedSpicyModalUtils {
         text(i18nContext.get(I18nKeysData.Website.Dashboard.Modal.Close))
     }
 
+    fun createSpicyModal(
+        title: String,
+        canBeClosedByClickingOutsideTheWindow: Boolean,
+        body: TagConsumer<String>.() -> (Unit),
+        buttons: List<BUTTON.() -> (Unit)>
+    ): EmbeddedSpicyModal {
+        return EmbeddedSpicyModal(
+            title,
+            canBeClosedByClickingOutsideTheWindow,
+            createHTML().apply(body).finalize(),
+            buttons.map {
+                createHTML()
+                    .button(classes = "discord-button") {
+                        type = ButtonType.button
+                        apply(it)
+                    }
+            }
+        )
+    }
+
+    fun createSpicyToast(
+        type: EmbeddedSpicyToast.Type,
+        title: String,
+        description: DIV.() -> (Unit) = {},
+    ): EmbeddedSpicyToast {
+        return EmbeddedSpicyToast(
+            type,
+            title,
+            createHTML().div { apply(description) },
+        )
+    }
+
     fun FlowContent.openEmbeddedModalOnClick(
         title: String,
         canBeClosedByClickingOutsideTheWindow: Boolean,
@@ -29,17 +72,11 @@ object EmbeddedSpicyModalUtils {
         buttons: List<BUTTON.() -> (Unit)>
     ) {
         openEmbeddedModalOnClick(
-            EmbeddedSpicyModal(
+            createSpicyModal(
                 title,
                 canBeClosedByClickingOutsideTheWindow,
-                createHTML().apply(body).finalize(),
-                buttons.map {
-                    createHTML()
-                        .button(classes = "discord-button") {
-                            type = ButtonType.button
-                            apply(it)
-                        }
-                }
+                body,
+                buttons
             )
         )
     }
@@ -147,5 +184,51 @@ object EmbeddedSpicyModalUtils {
             .replace("%28".toRegex(), "(")
             .replace("%29".toRegex(), ")")
             .replace("%7E".toRegex(), "~")
+    }
+
+    /**
+     * Sets the [call] to use htmx's `HX-Trigger` header
+     */
+    fun ApplicationResponse.headerHXTrigger(
+        block: SpicyMorenittaTriggers.() -> (Unit)
+    )  = headerHXTrigger(SpicyMorenittaTriggers().apply(block))
+
+    /**
+     * Sets the [call] to use htmx's `HX-Trigger` header
+     */
+    fun ApplicationResponse.headerHXTrigger(
+        triggers: SpicyMorenittaTriggers
+    ) {
+        this.header(
+            "HX-Trigger",
+            triggers.build().toString()
+        )
+    }
+
+    /**
+     * Sets the [call] to use htmx's `HX-Trigger` header
+     */
+    fun ApplicationResponse.headerHXPushURL(newUrl: String) {
+        this.header(
+            "HX-Push-URL",
+            newUrl
+        )
+    }
+
+    /**
+     * Sets the [call] to use the response body as htmx's HX-Trigger
+     */
+    suspend fun ApplicationCall.respondBodyAsHXTrigger(
+        status: HttpStatusCode,
+        block: SpicyMorenittaTriggers.() -> (Unit)
+    ) {
+        // Enables the feature
+        this.response.header("SpicyMorenitta-Use-Response-As-HXTrigger", "true")
+        val triggers = SpicyMorenittaTriggers().apply(block)
+        val json = triggers.build().toString()
+        this.respondJson(
+            json,
+            status
+        )
     }
 }

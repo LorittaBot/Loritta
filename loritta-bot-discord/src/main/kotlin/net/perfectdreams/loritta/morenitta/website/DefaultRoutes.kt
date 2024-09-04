@@ -61,9 +61,12 @@ object DefaultRoutes {
 		ConfigureTwitchRoute(loritta),
 		GetConfigureTwitchTrackRoute(loritta),
 		GetAddTwitchTrackRoute(loritta),
+		GetAddByLoginTwitchTrackRoute(loritta),
 		PutTwitchTrackRoute(loritta),
 		PatchTwitchTrackRoute(loritta),
 		DeleteTwitchTrackRoute(loritta),
+		DeleteTwitchPremiumTrackRoute(loritta),
+		PutTwitchPremiumTrackRoute(loritta),
 		TwitchAccountCallbackRoute(loritta),
 
 		ConfigureMemberCounterRoute(loritta),

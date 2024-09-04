@@ -7,17 +7,14 @@ import io.ktor.server.response.*
 import io.ktor.server.util.*
 import kotlinx.html.body
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserFavoritedGuilds
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
-import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.headerHXTrigger
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.respondBodyAsHXTrigger
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.user.SelectGuildProfileDashboardView.Companion.favoriteGuild
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
@@ -67,38 +64,25 @@ class PostFavoriteGuildRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalize
 
 		when (result) {
 			Result.TooManyGuilds -> {
-				call.response.header(
-					"HX-Trigger",
-					buildJsonObject {
-						put("playSoundEffect", "config-error")
-						put(
-							"showSpicyToast",
-							EmbeddedSpicyModalUtils.encodeURIComponent(
-								Json.encodeToString(
-									EmbeddedSpicyToast(EmbeddedSpicyToast.Type.WARN, i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.TooManyFavorites), i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.TooManyFavoritesDescription))
-								)
-							)
-						)
-					}.toString()
-				)
-				call.respondText("", status = HttpStatusCode.Forbidden)
+				call.respondBodyAsHXTrigger(status = HttpStatusCode.Forbidden) {
+					playSoundEffect = "config-error"
+					showSpicyToast(
+						EmbeddedSpicyToast.Type.WARN,
+						i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.TooManyFavorites),
+						i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.TooManyFavoritesDescription)
+					)
+				}
 			}
 			Result.Success -> {
 				if (favorited) {
-					call.response.header(
-						"HX-Trigger",
-						buildJsonObject {
-							put("playSoundEffect", "config-saved")
-							put(
-								"showSpicyToast",
-								EmbeddedSpicyModalUtils.encodeURIComponent(
-									Json.encodeToString(
-										EmbeddedSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerFavorited), i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.FavoritesDescription))
-									)
-								)
-							)
-						}.toString()
-					)
+					call.response.headerHXTrigger {
+						playSoundEffect = "config-saved"
+						showSpicyToast(
+							EmbeddedSpicyToast.Type.SUCCESS,
+							i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerFavorited),
+							i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.FavoritesDescription)
+						)
+					}
 
 					call.respondHtml(
 						createHTML()
@@ -107,20 +91,13 @@ class PostFavoriteGuildRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalize
 							}
 					)
 				} else {
-					call.response.header(
-						"HX-Trigger",
-						buildJsonObject {
-							put("playSoundEffect", "config-saved")
-							put(
-								"showSpicyToast",
-								EmbeddedSpicyModalUtils.encodeURIComponent(
-									Json.encodeToString(
-										EmbeddedSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerUnfavorited), null)
-									)
-								)
-							)
-						}.toString()
-					)
+					call.response.headerHXTrigger {
+						playSoundEffect = "config-saved"
+						showSpicyToast(
+							EmbeddedSpicyToast.Type.SUCCESS,
+							i18nContext.get(I18nKeysData.Website.Dashboard.ChooseAServer.FavoriteServer.Toast.ServerUnfavorited)
+						)
+					}
 
 					call.respondText(
 						createHTML()

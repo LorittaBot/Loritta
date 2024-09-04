@@ -9,4 +9,5 @@ class SoundEffects(val m: SpicyMorenitta) {
     val error = LazySoundEffect(m, "${window.location.origin}/lori-slippy/assets/snd/error.ogg")
     val toastNotificationWhoosh = LazySoundEffect(m, "${window.location.origin}/lori-slippy/assets/snd/toast-notification-whoosh.ogg")
     val recycleBin = LazySoundEffect(m, "${window.location.origin}/lori-slippy/assets/snd/windows-xp-recycle-bin.ogg")
+    val xarolaRatinho = LazySoundEffect(m, "${window.location.origin}/lori-slippy/assets/snd/xarola-ratinho.ogg")
 }

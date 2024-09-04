@@ -1,10 +1,15 @@
 package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.twitch
 
 import kotlinx.html.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.placeholders.PlaceholderSectionType
 import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
@@ -15,15 +20,21 @@ import net.perfectdreams.loritta.morenitta.website.components.DashboardDiscordMe
 import net.perfectdreams.loritta.morenitta.website.components.DashboardDiscordMessageEditor.lorittaDiscordMessageEditor
 import net.perfectdreams.loritta.morenitta.website.components.DashboardSaveBar.lorittaSaveBar
 import net.perfectdreams.loritta.morenitta.website.components.DiscordChannelSelectMenu.discordChannelSelectMenu
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.encodeURIComponent
+import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
+import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildDashboardView
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
 import net.perfectdreams.loritta.serializable.ColorTheme
+import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
 import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.switchtwitch.data.TwitchUser
+import kotlin.random.Random
 
 class GuildConfigureTwitchChannelView(
     loritta: LorittaWebsite,
@@ -39,7 +50,10 @@ class GuildConfigureTwitchChannelView(
     private val trackId: Long?,
     private val createPremiumTrack: Boolean,
     private val twitchUser: TwitchUser,
-    private val accountTrackState: TwitchAccountTrackState
+    private val accountTrackState: TwitchAccountTrackState,
+    private val trackSettings: TwitchTrackSettings,
+    private val serverPremiumPlan: ServerPremiumPlans,
+    private val premiumTracksCount: Long
 ) : GuildDashboardView(
     loritta,
     i18nContext,
@@ -198,100 +212,124 @@ class GuildConfigureTwitchChannelView(
                         TwitchAccountTrackState.UNAUTHORIZED -> {
                             div(classes = "alert alert-danger") {
                                 text("O canal não está autorizado! Você só receberá notificações quando o canal for autorizado na Loritta.")
-                                /* HorizontalList {
-                                    DiscordButton(
-                                        DiscordButtonType.PRIMARY,
-                                        attrs = {
-                                            onClick {
-                                                m.globalState.openCloseOnlyModal(
-                                                    "Autorizar Canal na Twitch",
-                                                    true,
-                                                ) { modal ->
-                                                    // This is a hack!!! We use this to know when the modal has been closed
-                                                    Span(attrs = {
-                                                        window.open("https://id.twitch.tv/oauth2/authorize?client_id=${spicyInfo.twitchClientId}&redirect_uri=${spicyInfo.twitchRedirectUri}&response_type=code")
-
-                                                        val listener = object : org.w3c.dom.events.EventListener {
-                                                            override fun handleEvent(event: org.w3c.dom.events.Event) {
-                                                                val userId = event.asDynamic().data.toString().toLong()
-
-                                                                // Close the modal...
-                                                                modal.close()
-
-                                                                // Check if the user ID matches!
-                                                                if (userId == mutableTrackedTwitchAccount.userId) {
-                                                                    // It matches, so the user has authorized the account! We will reload the current page...
-                                                                    reloadData.invoke()
-                                                                } else {
-                                                                    // Does NOT match...
-                                                                    m.globalState.openCloseOnlyModal(
-                                                                        "Canal Incorreto",
-                                                                        true
-                                                                    ) {
-                                                                        Text("O canal que você está configurando não é o mesmo canal que você autorizou! Verifique se você está conectado na conta correta na Twitch!")
+                                div(classes = "qm horizontal-list") {
+                                    button(classes = "discord-button primary") {
+                                        type = ButtonType.button
+                                        openEmbeddedModalOnClick(
+                                            "Autorizar Conta na Twitch",
+                                            true,
+                                            {
+                                                div {
+                                                    attributes["spicy-twitch-user-id"] = twitchUser.id.toString()
+                                                    attributes["spicy-incorrect-twitch-channel"] = encodeURIComponent(
+                                                        Json.encodeToString<EmbeddedSpicyModal>(
+                                                            EmbeddedSpicyModalUtils.createSpicyModal(
+                                                                "Canal Incorreto",
+                                                                true,
+                                                                {
+                                                                    div {
+                                                                        text("O canal que você está configurando não é o mesmo canal que você autorizou! Verifique se você está conectado na conta correta na Twitch!")
                                                                     }
-                                                                }
-                                                            }
-                                                        }
-
-                                                        window.addEventListener(
-                                                            "message",
-                                                            listener,
-                                                            false
+                                                                },
+                                                                EmbeddedSpicyModalUtils.modalButtonListOnlyCloseModalButton(i18nContext)
+                                                            )
                                                         )
+                                                    )
 
-                                                        ref {
-                                                            onDispose {
-                                                                window.removeEventListener("message", listener)
-                                                            }
-                                                        }
-                                                    })
+                                                    text("Siga as instruções para autorizar a sua conta")
 
-                                                    Text("Siga as instruções para autorizar a sua conta")
+                                                    // Hacky!
+                                                    // This is the same code as the "appendEntry" stuff
+                                                    form {
+                                                        id = "switch-twitch-redirect"
+                                                        attributes["hx-select"] = "#right-sidebar-contents"
+                                                        attributes["hx-target"] = "#right-sidebar-contents"
+                                                        attributes["hx-indicator"] = "#right-sidebar-wrapper"
+                                                        attributes["hx-push-url"] = "true"
+                                                        // Fix bug when a user is rapidly clicking on multiple entries while they are loading, causing a htmx:swapError
+                                                        // Example: Click on entry1, then before it finishes loading, click on entry2, htmx will crash!
+                                                        // We use "replace" because we always want to honor the LAST click made by the user
+                                                        // attributes["hx-sync"] = "#left-sidebar:replace"
+                                                        // show:top - Scroll to the top
+                                                        // settle:0ms - We don't want the settle animation beccause it is a full page swap
+                                                        // swap:0ms - We don't want the swap animation because it is a full page swap
+                                                        attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
+                                                    }
+
+                                                    // language=JavaScript
+                                                    tsukiScript(
+                                                        code = """
+                                                                    window.open(`https://id.twitch.tv/oauth2/authorize?client_id=${lorittaWebsite.loritta.config.loritta.twitch.clientId}&redirect_uri=${lorittaWebsite.loritta.config.loritta.twitch.redirectUri}&response_type=code`);
+                                                                        
+                                                                    const listener = (event) => {
+                                                                        const userId = event.data;
+                                                                        
+                                                                        // Switch / Twitch!
+                                                                        console.log("User ID:", userId);
+                                                                        
+                                                                        if (userId === self.getAttribute("spicy-twitch-user-id")) { // oooh, hacky!
+                                                                            // First let's attempt a redirect with htmx!
+                                                                            // This is ofc a bit hacky, but hey, it works!
+                                                                            htmx.ajax(
+                                                                                "GET",
+                                                                                window.location.href,
+                                                                                {
+                                                                                    source: selectFirst("#switch-twitch-redirect")
+                                                                                }
+                                                                            );
+                                                                                
+                                                                            // Then let's close the open modal
+                                                                            htmx.trigger(document, "closeSpicyModal", {})     
+                                                                        } else {
+                                                                            window['spicy-morenitta'].openEmbeddedModal(self, 'spicy-incorrect-twitch-channel')
+                                                                        }
+                                                                    };
+                                                                        
+                                                                    self.whenRemovedFromDOM(() => {
+                                                                        console.log("whenRemovedFromDOM!!!")
+                                                                        window.removeEventListener("message", listener, false);
+                                                                    })
+                                                                        
+                                                                    window.addEventListener("message", listener, false);
+                                                                """.trimIndent()
+                                                    )
                                                 }
-                                            }
-                                        }
-                                    ) {
-                                        Text("Autorizar Canal")
+                                            },
+                                            EmbeddedSpicyModalUtils.modalButtonListOnlyCloseModalButton(i18nContext)
+                                        )
+
+                                        text("Autorizar Canal")
                                     }
 
-                                    DiscordButton(
-                                        DiscordButtonType.PRIMARY,
-                                        attrs = {
-                                            if (plan.maxUnauthorizedTwitchChannels > premiumTracksCount) {
-                                                onClick {
-                                                    kotlinx.coroutines.GlobalScope.launch {
-                                                        m.globalState.showToast(
-                                                            Toast.Type.INFO,
-                                                            "Criando acompanhamento premium..."
-                                                        )
-
-                                                        m.makeGuildScopedRPCRequestWithGenericHandling<net.perfectdreams.loritta.serializable.dashboard.responses.DashGuildScopedResponse.EnablePremiumTrackForTwitchChannelResponse>(
-                                                            guild.id,
-                                                            net.perfectdreams.loritta.serializable.dashboard.requests.DashGuildScopedRequest.EnablePremiumTrackForTwitchChannelRequest(
-                                                                trackedTwitchAccount.twitchUserId
-                                                            ),
-                                                            onSuccess = {
-                                                                m.globalState.showToast(
-                                                                    Toast.Type.SUCCESS,
-                                                                    "Acompanhamento premium criado!"
-                                                                )
-                                                                m.soundEffects.configSaved.play(1.0)
-                                                                reloadData.invoke()
-                                                            },
-                                                            onError = {
-                                                                m.soundEffects.configError.play(1.0)
-                                                            }
-                                                        )
-                                                    }
-                                                }
-                                            } else {
-                                                disabledWithSoundEffect(m)
-                                            }
+                                    button(classes = "discord-button primary") {
+                                        type = ButtonType.button
+                                        if (serverPremiumPlan.maxUnauthorizedTwitchChannels > premiumTracksCount) {
+                                            attributes["hx-put"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/guild/${guild.idLong}/configure/twitch/premium-tracks"
+                                            attributes["hx-select"] = "#right-sidebar-contents"
+                                            attributes["hx-target"] = "#right-sidebar-contents"
+                                            attributes["hx-disabled-elt"] = "this"
+                                            // show:top - Scroll to the top
+                                            // settle:0ms - We don't want the settle animation beccause it is a full page swap
+                                            // swap:0ms - We don't want the swap animation because it is a full page swap
+                                            attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
+                                            attributes["hx-select"] = "#right-sidebar-contents"
+                                            attributes["hx-target"] = "#right-sidebar-contents"
+                                            attributes["hx-vals"] = buildJsonObject {
+                                                put("twitchUserId", twitchUser.id.toString())
+                                                if (trackId != null)
+                                                    put("trackId", trackId.toString())
+                                            }.toString()
+                                        } else {
+                                            disabled = true
                                         }
-                                    ) {
-                                        Text("Seguir com Acompanhamento Premium")
-                                    } */
+
+                                        htmxDiscordLikeLoadingButtonSetup(
+                                            i18nContext,
+                                        ) {
+                                            text("Seguir com Acompanhamento Premium")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -299,6 +337,11 @@ class GuildConfigureTwitchChannelView(
             }
 
             hr {}
+
+            // Easter Egg - XAROLA
+            if (twitchUser.id == 181743137L) {
+                xarolaRatinhoVALORANTVoiceChat()
+            }
 
             div {
                 id = "module-config-wrapper"
@@ -336,7 +379,7 @@ class GuildConfigureTwitchChannelView(
                                     i18nContext,
                                     "channelId",
                                     guild.channels.filterIsInstance<GuildMessageChannel>(),
-                                    null,
+                                    trackSettings.channelId,
                                     null
                                 )
                             }
@@ -382,7 +425,7 @@ class GuildConfigureTwitchChannelView(
                             serializableGuild,
                             serializableSelfLorittaUser,
                             TestMessageTargetChannelQuery.QuerySelector("[name='channelId']"),
-                            "{stream.url}"
+                            trackSettings.message
                         )
                     }
                 }
@@ -404,7 +447,56 @@ class GuildConfigureTwitchChannelView(
         }
     }
 
-    data class BlueskyTrackSettings(
+    fun DIV.xarolaRatinhoVALORANTVoiceChat() {
+        div {
+            style = "position: fixed;\n" +
+                    "  z-index: 1000;\n" +
+                    "  left: 1em;\n" +
+                    "  top: 65%;\n"
+            script {
+                unsafe {
+                    //language=JavaScript
+                    raw("""
+                        var self = me()
+                        {
+                            window['spicy-morenitta'].playSoundEffect(
+                                "xarola-ratinho",
+                                () => {
+                                    self.remove()
+                                }
+                            )
+                        }
+                    """.trimIndent())
+                }
+            }
+
+            div(classes = "xarola-ratinho") {
+                div(classes = "xarola-ratinho-icon-wrapper") {
+                    img(src = "https://stuff.loritta.website/valorant/yoru-icon.png")
+
+                    div(classes = "xarola-ratinho-bars") {
+                        repeat(10) {
+                            div(classes = "xarola-ratinho-bar") {
+                                style = "animation-delay: ${Random(it).nextDouble(-5.0, 0.0)}s;"
+                            }
+                        }
+                    }
+                }
+
+                div(classes = "xarola-ratinho-text") {
+                    div(classes = "xarola-ratinho-username") {
+                        text("XAROLA")
+                    }
+
+                    div {
+                        text("em Surgimento no Lado Atacante - Equipe")
+                    }
+                }
+            }
+        }
+    }
+
+    data class TwitchTrackSettings(
         val channelId: Long?,
         val message: String
     )

@@ -28,6 +28,8 @@ object DashboardSaveBar {
 
             id = "save-bar"
             attributes["loritta-save-bar"] = "true"
+            attributes["spicy-oob-attribute-swap"] = "spicy-initial-save-bar-has-changes"
+            attributes["spicy-initial-save-bar-has-changes"] = hasChanges.toString()
 
             div(classes = "save-bar-small-text") {
                 text("Deseja salvar?")
@@ -50,23 +52,21 @@ object DashboardSaveBar {
                     // We don't want to swap nor settle because that causes a flicker due to our custom select menu
                     attributes["hx-swap"] = "outerHTML settle:0ms swap:0ms"
                     attributes["spicy-oob-attribute-swap"] = "hx-get,hx-post,hx-put,hx-patch,hx-delete"
+                    attributes["spicy-save-bar-has-changes"] = hasChanges.toString()
 
-                    if (!hasChanges) {
-                        attributes["hx-on::after-request"] = """
+                    // TODO: This causes the sound effect to be played twice, because of the HX-Trigger header
+                    // language=JavaScript
+                    attributes["hx-on::after-request"] = """
                             if (event.detail.successful) {
-                                document.querySelector("#save-bar").classList.add("no-changes")
-                                document.querySelector("#save-bar").classList.remove("has-changes")
+                                const saveBar = document.querySelector("#save-bar")
+                                const initialHasChanges = saveBar.getAttribute("spicy-initial-save-bar-has-changes") === "true"
+                                if (!initialHasChanges) {
+                                    saveBar.classList.add("no-changes")
+                                    saveBar.classList.remove("has-changes")
+                                }
                                 window['spicy-morenitta'].playSoundEffect("recycle-bin")
                             }
                             """.trimIndent()
-                    } else {
-                        // TODO: This causes the sound effect to be played twice, because of the HX-Trigger header
-                        attributes["hx-on::after-request"] = """
-                            if (event.detail.successful) {
-                                window['spicy-morenitta'].playSoundEffect("recycle-bin")
-                            }
-                            """.trimIndent()
-                    }
 
                     div(classes = "htmx-discord-like-loading-button") {
                         div {
