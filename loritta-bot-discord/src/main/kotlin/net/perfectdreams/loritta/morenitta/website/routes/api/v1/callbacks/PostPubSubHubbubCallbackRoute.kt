@@ -11,7 +11,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.YouTubeEventSubEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
+import net.perfectdreams.loritta.common.utils.placeholders.YouTubePostMessagePlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
@@ -168,24 +168,26 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 				var message = trackedAccount[TrackedYouTubeAccounts.message]
 
 				if (message.isEmpty())
-					message = "{link}"
-
-				val customTokens = mapOf(
-					"título" to lastVideoTitle,
-					"title" to lastVideoTitle,
-					"link" to "https://youtu.be/$videoId",
-					"video-id" to videoId,
-					Placeholders.VIDEO_THUMBNAIL.name to "https://img.youtube.com/vi/${videoId}/maxresdefault.jpg"
-				)
+					message = "{video.url}"
 
 				val discordMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
 					loritta.languageManager.defaultI18nContext, // TODO: Load the server's i18nContext
 					message,
-					listOf(guild),
 					guild,
-					customTokens,
+					YouTubePostMessagePlaceholders,
+					{
+						when (it) {
+							YouTubePostMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
+							YouTubePostMessagePlaceholders.GuildNamePlaceholder -> guild.name
+							YouTubePostMessagePlaceholders.GuildSizePlaceholder -> guild.memberCount.toString()
+							YouTubePostMessagePlaceholders.VideoIdPlaceholder -> videoId
+							YouTubePostMessagePlaceholders.VideoThumbnailPlaceholder -> "https://img.youtube.com/vi/${videoId}/maxresdefault.jpg"
+							YouTubePostMessagePlaceholders.VideoTitlePlaceholder -> lastVideoTitle
+							YouTubePostMessagePlaceholders.VideoUrlPlaceholder -> "https://youtu.be/$videoId"
+						}
+					},
 					generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.YouTubeNotification
-				) ?: continue
+				)
 
 				textChannel.sendMessage(discordMessage)
 					.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(loritta, canTalkGuildIds.size)
