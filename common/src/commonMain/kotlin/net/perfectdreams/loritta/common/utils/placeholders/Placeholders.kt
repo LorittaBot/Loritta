@@ -61,6 +61,9 @@ object Placeholders {
     val STREAM_GAME = LorittaPlaceholder("stream.game")
 
     // ===[ YOUTUBE ]===
+    val VIDEO_TITLE = LorittaPlaceholder("video.title")
+    val VIDEO_ID = LorittaPlaceholder("video.id")
+    val VIDEO_URL = LorittaPlaceholder("video.url")
     val VIDEO_THUMBNAIL = LorittaPlaceholder("video.thumbnail")
 
     // ===[ BLUESKY ]===
@@ -81,6 +84,12 @@ object Placeholders {
         val GUILD_SIZE = LorittaPlaceholder("guild-size")
         val GUILD_SIZE_JOINED = LorittaPlaceholder("guildsize")
         val GUILD_ICON_URL = LorittaPlaceholder("guild-icon-url")
+
+        // ===[ YOUTUBE ]===
+        val VIDEO_TITLE = LorittaPlaceholder("title")
+        val VIDEO_TITLE_BR = LorittaPlaceholder("título")
+        val VIDEO_ID = LorittaPlaceholder("video-id")
+        val VIDEO_URL = LorittaPlaceholder("link")
     }
 
     /**
