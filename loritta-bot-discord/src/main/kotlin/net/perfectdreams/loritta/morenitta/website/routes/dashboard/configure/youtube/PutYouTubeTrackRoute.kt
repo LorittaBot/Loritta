@@ -71,8 +71,8 @@ class PutYouTubeTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 						it[TrackedYouTubeAccounts.guildId] = guild.idLong
 						it[TrackedYouTubeAccounts.channelId] = channelId
 						it[TrackedYouTubeAccounts.message] = message
-						// it[TrackedYouTubeAccounts.addedAt] = now
-						// it[TrackedYouTubeAccounts.editedAt] = now
+						it[TrackedYouTubeAccounts.addedAt] = now
+						it[TrackedYouTubeAccounts.editedAt] = now
 					}
 				}
 

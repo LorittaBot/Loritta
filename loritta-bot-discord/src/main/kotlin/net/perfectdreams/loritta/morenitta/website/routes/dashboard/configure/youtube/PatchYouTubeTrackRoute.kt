@@ -43,8 +43,6 @@ class PatchYouTubeTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDa
 		when (result) {
 			is YouTubeWebUtils.YouTubeChannelInfoResult.Success -> {
 				val insertedRow = loritta.transaction {
-					val now = Instant.now()
-
 					TrackedYouTubeAccounts.update({
 						TrackedYouTubeAccounts.guildId eq guild.idLong and (TrackedYouTubeAccounts.id eq trackId)
 					}) {
@@ -52,7 +50,7 @@ class PatchYouTubeTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDa
 						it[TrackedYouTubeAccounts.guildId] = guild.idLong
 						it[TrackedYouTubeAccounts.channelId] = postParams.getOrFail("channelId").toLong()
 						it[TrackedYouTubeAccounts.message] = postParams.getOrFail("message")
-						// it[TrackedYouTubeAccounts.editedAt] = Instant.now()
+						it[TrackedYouTubeAccounts.editedAt] = Instant.now()
 					}
 
 					TrackedYouTubeAccounts.selectAll()
