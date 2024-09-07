@@ -109,7 +109,7 @@ class GuildBlueskyView(
                                              var input = selectFirst("[name='handle']")
                                              var button = self
                                              input.on("input", e => {
-                                                 button.disabled = input.handle.value.trim() === '';
+                                                 button.disabled = input.value.trim() === '';
                                              })
                                         """.trimIndent())
                                     }

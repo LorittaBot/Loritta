@@ -156,8 +156,8 @@ object DiscordLikeToggles {
                         const toggleableSelection = input.closest(".toggleable-section");
                         function setClassOnToggleableSelection() {
                             console.log(input)
-                            console.log(input.handle.checked)
-                            if (input.handle.checked)
+                            console.log(input.checked)
+                            if (input.checked)
                                 toggleableSelection.addClass("is-open")
                             else
                                 toggleableSelection.removeClass("is-open")

@@ -136,7 +136,7 @@ class GuildYouTubeView(
                                              var input = selectFirst("[name='channelLink']")
                                              var button = self
                                              input.on("input", e => {
-                                                 button.disabled = input.handle.value.trim() === '';
+                                                 button.disabled = input.value.trim() === '';
                                              })
                                         """.trimIndent())
                                     }

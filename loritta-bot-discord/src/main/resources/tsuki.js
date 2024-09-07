@@ -11,35 +11,36 @@ function tsukify(element) {
         return element
 
     element.on = (type, func) => {
-        this.addEventListener(type, func);
-        return this;
+        element.addEventListener(type, func);
+        return element;
     }
 
     element.addClass = (clazz) => {
-        this.classList.add(clazz);
-        return this;
+        element.classList.add(clazz);
+        return element;
     }
 
     element.hasClass = (clazz) => {
-        return this.classList.contains(clazz);
+        return element.classList.contains(clazz);
     }
 
     element.removeClass = (clazz) => {
-        this.classList.remove(clazz);
-        return this;
+        element.classList.remove(clazz);
+        return element;
     }
 
     element.toggleClass = (clazz) => {
-        if (this.hasClass(clazz)) {
-            this.removeClass(clazz);
+        if (element.hasClass(clazz)) {
+            element.removeClass(clazz);
         } else {
-            this.addClass(clazz);
+            element.addClass(clazz);
         }
-        return this;
+        return element;
     }
 
+    const originalRemove = element.remove
     element.remove = () => {
-        this.remove()
+        originalRemove.call(element)
         return this;
     }
 
@@ -47,7 +48,7 @@ function tsukify(element) {
         // Create a MutationObserver to watch for the div being removed from the DOM
         const observer = new MutationObserver((mutations) => {
             // console.log("mutation happened")
-            if (!document.contains(this.handle)) {
+            if (!document.contains(element)) {
                 // Div is removed, remove the listener
                 // console.log("bye!!!")
                 func()
@@ -63,14 +64,15 @@ function tsukify(element) {
     }
 
     element.selectFirst = (selector) => {
-        const result = this.querySelector(selector)
+        const result = element.querySelector(selector)
         if (result === null)
             return
         return tsukify(result)
     }
 
+    const originalClosest = element.closest
     element.closest = (selector) => {
-        const result = this.closest(selector)
+        const result = originalClosest.call(element, selector)
         if (result === null)
             return
         return tsukify(result)

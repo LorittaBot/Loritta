@@ -183,7 +183,7 @@ class GuildTwitchView(
                                                         var input = selectFirst("[name='login']")
                                                         var button = self
                                                         input.on("input", e => {
-                                                            button.disabled = input.handle.value.trim() === '';
+                                                            button.disabled = input.value.trim() === '';
                                                         })
                                                      """.trimIndent())
                                                 }
