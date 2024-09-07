@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdSize
 import net.perfectdreams.loritta.morenitta.website.utils.generateNitroPayAd
 import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
+import net.perfectdreams.loritta.morenitta.website.views.dashboard.DashboardView
 import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriDevelopersDocsView.SidebarCategory
 import net.perfectdreams.loritta.morenitta.website.views.httpapidocs.LoriDevelopersDocsView.SidebarEntry
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
@@ -382,16 +383,7 @@ abstract class LoriDevelopersDocsDashboardView(
                 // settle:0ms - We don't want the settle animation beccause it is a full page swap
                 // swap:0ms - We don't want the swap animation because it is a full page swap
                 attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
-                // language=JavaScript
-                tsukiScript(
-                    code = """
-                        self.on("click", (e) => {
-                            const leftSidebar = selectFirst("#left-sidebar");
-                            leftSidebar.toggleClass("is-open")
-                            leftSidebar.toggleClass("is-closed")
-                        })
-                    """.trimIndent()
-                )
+                tsukiScript(code = DashboardView.JAVASCRIPT_CLOSE_LEFT_SIDEBAR_ON_CLICK)
             }
 
             // TODO - htmx-adventures: Is this useful?
@@ -467,16 +459,7 @@ abstract class LoriDevelopersDocsDashboardView(
                 // settle:0ms - We don't want the settle animation beccause it is a full page swap
                 // swap:0ms - We don't want the swap animation because it is a full page swap
                 attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
-                // language=JavaScript
-                tsukiScript(
-                    code = """
-                        self.on("click", (e) => {
-                            const leftSidebar = selectFirst("#left-sidebar");
-                            leftSidebar.toggleClass("is-open")
-                            leftSidebar.toggleClass("is-closed")
-                        })
-                    """.trimIndent()
-                )
+                tsukiScript(code = DashboardView.JAVASCRIPT_CLOSE_LEFT_SIDEBAR_ON_CLICK)
             }
 
             // TODO - htmx-adventures: Is this useful?
