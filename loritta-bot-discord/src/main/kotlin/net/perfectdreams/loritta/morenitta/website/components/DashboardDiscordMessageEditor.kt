@@ -84,6 +84,9 @@ object DashboardDiscordMessageEditor {
             }.placeholders
 
         div {
+            // Required to avoid the editor overflowing on the x-axis if the message is big
+            style = "width: 100%;"
+
             textArea {
                 attributes["loritta-discord-message-editor"] = "true"
                 attributes["loritta-discord-message-editor-config"] = Json.encodeToString(trackSettings)
