@@ -180,7 +180,7 @@ class GuildTwitchView(
 
                                                     //language=JavaScript
                                                     tsukiScript(code = """
-                                                        var input = selectFirst("[name='channelLink']")
+                                                        var input = selectFirst("[name='login']")
                                                         var button = self
                                                         input.on("input", e => {
                                                             button.disabled = input.handle.value.trim() === '';

@@ -447,7 +447,7 @@ class GuildConfigureTwitchChannelView(
         }
     }
 
-    fun DIV.xarolaRatinhoVALORANTVoiceChat() {
+    private fun DIV.xarolaRatinhoVALORANTVoiceChat() {
         div {
             style = "position: fixed;\n" +
                     "  z-index: 1000;\n" +

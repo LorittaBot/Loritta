@@ -228,13 +228,8 @@ abstract class DashboardView(
                                         // language=JavaScript
                                         tsukiScript(
                                             code = """
-                                                console.log("ayaya")
-                                                console.log(self)
                                                 self.on("click", (e) => {
-                                                    console.log("clicked!")
                                                     const leftSidebar = selectFirst("#left-sidebar");
-                                                    console.log("leftSidebar: ")
-                                                    console.log(leftSidebar)
                                                     leftSidebar.toggleClass("is-open")
                                                     leftSidebar.toggleClass("is-closed")
                                                 })

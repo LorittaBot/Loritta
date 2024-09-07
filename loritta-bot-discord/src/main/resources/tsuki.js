@@ -1,33 +1,35 @@
-// Tsuki: A small helper-like library inspired by Surreal.js
-class TsukiElement {
-    /**
-     * Creates an instance of TsukiElement
-     * @param {Element} handle - The DOM element to wrap.
-     */
-    constructor(handle) {
-        this.handle = handle;
-    }
+/**
+ * Tsukifies a element
+ */
+function tsukify(element) {
+    // Null, bail out!
+    if (element === null)
+        return element
 
-    on(type, func) {
-        this.handle.addEventListener(type, func);
+    // Already tsukified, bail out!
+    if (element.isTsukified === true)
+        return element
+
+    element.on = (type, func) => {
+        this.addEventListener(type, func);
         return this;
     }
 
-    addClass(clazz) {
-        this.handle.classList.add(clazz);
+    element.addClass = (clazz) => {
+        this.classList.add(clazz);
         return this;
     }
 
-    hasClass(clazz) {
-        return this.handle.classList.contains(clazz);
+    element.hasClass = (clazz) => {
+        return this.classList.contains(clazz);
     }
 
-    removeClass(clazz) {
-        this.handle.classList.remove(clazz);
+    element.removeClass = (clazz) => {
+        this.classList.remove(clazz);
         return this;
     }
 
-    toggleClass(clazz) {
+    element.toggleClass = (clazz) => {
         if (this.hasClass(clazz)) {
             this.removeClass(clazz);
         } else {
@@ -36,12 +38,12 @@ class TsukiElement {
         return this;
     }
 
-    remove() {
-        this.handle.remove()
+    element.remove = () => {
+        this.remove()
         return this;
     }
 
-    whenRemovedFromDOM(func) {
+    element.whenRemovedFromDOM = (func) => {
         // Create a MutationObserver to watch for the div being removed from the DOM
         const observer = new MutationObserver((mutations) => {
             // console.log("mutation happened")
@@ -60,35 +62,23 @@ class TsukiElement {
         return this;
     }
 
-    selectFirst(selector) {
-        const result = this.handle.querySelector(selector)
+    element.selectFirst = (selector) => {
+        const result = this.querySelector(selector)
         if (result === null)
             return
         return tsukify(result)
     }
 
-    closest(selector) {
-        const result = this.handle.closest(selector)
+    element.closest = (selector) => {
+        const result = this.closest(selector)
         if (result === null)
             return
         return tsukify(result)
     }
-}
 
-/**
- * Tsukifies a element
- * @returns {TsukiElement|null}
- */
-function tsukify(element) {
-    // Null, bail out!
-    if (element === null)
-        return element
+    element.isTsukified = true;
 
-    // Already tsukified, bail out!
-    if (element instanceof TsukiElement)
-        return element
-
-    return new TsukiElement(element)
+    return element;
 }
 
 /**
@@ -101,7 +91,7 @@ function me() {
 }
 
 /**
- * Gets the parent element of the <script>
+ * Wraps document.querySelector
  * @returns {TsukiElement|null}
  */
 function selectFirst(selector) {
