@@ -115,13 +115,7 @@ abstract class LegacyGuildDashboardView(
                         + legacyBaseLocale.strings["DASHBOARD_Notifications"]!!
                     }
 
-                    appendExternalEntry(
-                        "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/welcomer",
-                        locale["modules.sectionNames.welcomer"],
-                        "fa fa-sign-in-alt",
-                        "welcomer"
-                    )
-
+                    appendEntry("/guilds/${guild.id}/configure/welcomer", false, locale["modules.sectionNames.welcomer"], "fa fa-sign-in-alt", "welcomer")
                     appendEntry("/guild/${guild.id}/configure/event-log", false, locale["modules.sectionNames.eventLog"], "fa fa-eye", "event_log")
                     appendEntry("/guild/${guild.id}/configure/youtube", false, "YouTube", "fab fa-youtube", "youtube")
                     appendEntry("/guild/${guild.id}/configure/twitch", false, "Twitch", "fab fa-twitch", "twitch")
