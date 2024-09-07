@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -14,6 +16,9 @@ class DrakeCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarat
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES, UUID.fromString("c51567dd-5d35-4f42-be93-13faf52e66f1")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
+
         enableLegacyMessageSupport = true
 
         subcommand(I18N_PREFIX.Drake.Label, I18N_PREFIX.Drake.Description, UUID.fromString("2b858d29-10de-4153-9228-1ed4b25072e7")) {

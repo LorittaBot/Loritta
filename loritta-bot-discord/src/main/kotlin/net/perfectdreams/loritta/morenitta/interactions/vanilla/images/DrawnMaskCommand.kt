@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.DrawnMaskAtendenteRequest
@@ -20,6 +22,9 @@ class DrawnMaskCommand(val client: GabrielaImageServerClient) : SlashCommandDecl
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES, UUID.fromString("6dc0e9be-83c5-4d67-81f1-e0cc57eae08f")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
+
         enableLegacyMessageSupport = true
 
         subcommand(I18N_PREFIX.Atendente.Label, I18N_PREFIX.Atendente.Description, UUID.fromString("dc029079-399e-4e60-88bc-f747dbce858d")) {

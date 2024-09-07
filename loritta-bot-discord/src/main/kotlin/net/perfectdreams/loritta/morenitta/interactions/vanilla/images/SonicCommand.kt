@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.ManiaTitleCardRequest
@@ -20,6 +22,9 @@ class SonicCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarat
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.IMAGES, UUID.fromString("b8fb4291-79b5-41bb-a96b-cb8be4839693")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
+
         enableLegacyMessageSupport = true
 
         subcommand(I18N_PREFIX.Knuxthrow.Label, I18N_PREFIX.Knuxthrow.Description, UUID.fromString("0be0dabf-5acb-4793-9e7b-accd121f312e")) {
