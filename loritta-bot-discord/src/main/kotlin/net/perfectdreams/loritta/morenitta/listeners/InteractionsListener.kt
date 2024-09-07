@@ -1075,27 +1075,30 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 .let { GuildCommandConfigData.fromResultRowOrDefault(it) }
         }
 
-        // Command is NOT enabled!
-        // So, how can we check that the user can use it if it is a USER_INSTALL command?
-        // 1. Does the "USER_INSTALL" integration type is set?
-        // 2. Is the user an integration owner?
-        // If both are true, the message will be ephemeral if the user does NOT have the "external apps" permission set
-        val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && event.interaction.integrationOwners.userIntegration?.idLong == context.user.idLong
-        if (!canBeUsedAnyway) {
-            // NO, then bail out NOW
-            context.reply(true) {
-                styled(
-                    i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
-                    Emotes.Error
-                )
+        if (!g.enabled) {
+            // Command is NOT enabled!
+            // So, how can we check that the user can use it if it is a USER_INSTALL command?
+            // 1. Does the "USER_INSTALL" integration type is set?
+            // 2. Is the user an integration owner?
+            // If both are true, the message will be ephemeral if the user does NOT have the "external apps" permission set
+            val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && event.interaction.integrationOwners.userIntegration?.idLong == context.user.idLong
+            if (!canBeUsedAnyway) {
+                // NO, then bail out NOW
+                context.reply(true) {
+                    styled(
+                        i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
+                        Emotes.Error
+                    )
+                }
+                return true
+            } else {
+                // So, it is actually enabled on a user install context!
+                // What we'll do instead is force the interaction to ALWAYS be ephemeral
+                // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
+                context.alwaysEphemeral = !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
             }
-            return true
-        } else {
-            // So, it is actually enabled on a user install context!
-            // What we'll do instead is force the interaction to ALWAYS be ephemeral
-            // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
-            context.alwaysEphemeral = !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
         }
+
         return false
     }
 }
