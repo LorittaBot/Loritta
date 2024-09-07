@@ -19,13 +19,14 @@ import net.perfectdreams.loritta.morenitta.utils.UserUtils
 import net.perfectdreams.loritta.morenitta.utils.images.userAvatarCollage
 import net.perfectdreams.loritta.serializable.UserId
 import java.awt.Color
+import java.util.*
 
 class SadRealityCommand : SlashCommandDeclarationWrapper  {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Sadreality
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("0342dec6-209d-4435-9186-0e8503b84810")) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 

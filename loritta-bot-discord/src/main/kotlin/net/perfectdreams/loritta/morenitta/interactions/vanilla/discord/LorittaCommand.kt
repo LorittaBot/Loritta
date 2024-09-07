@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResu
 import org.jetbrains.exposed.sql.select
 import java.lang.management.ManagementFactory
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class LorittaCommand : SlashCommandDeclarationWrapper {
@@ -45,11 +46,11 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
         private val NERD_I18N_PREFIX = I18N_PREFIX.Nerd
     }
 
-    override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD) {
+    override fun command() = slashCommand(I18nKeysData.Commands.Command.Loritta.Label, TodoFixThisData, CommandCategory.DISCORD, UUID.fromString("7ff3e80c-5832-48f5-9137-6640ef341863")) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        subcommand(INFO_I18N_PREFIX.Label, INFO_I18N_PREFIX.Description) {
+        subcommand(INFO_I18N_PREFIX.Label, INFO_I18N_PREFIX.Description, UUID.fromString("4aae9454-e520-47ac-ba00-1c771456d067")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("botinfo")
             }
@@ -57,7 +58,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             executor = LorittaInfoExecutor()
         }
 
-        subcommand(PING_I18N_PREFIX.Label, PING_I18N_PREFIX.Description) {
+        subcommand(PING_I18N_PREFIX.Label, PING_I18N_PREFIX.Description, UUID.fromString("7dcf8135-ed5c-42e4-87ac-b01fe22fab1b")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("ping")
             }
@@ -65,7 +66,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             executor = LorittaPingExecutor()
         }
 
-        subcommand(CLUSTERS_I18N_PREFIX.Label, CLUSTERS_I18N_PREFIX.Description) {
+        subcommand(CLUSTERS_I18N_PREFIX.Label, CLUSTERS_I18N_PREFIX.Description, UUID.fromString("a42112fe-3c84-4cae-81dd-bd62dfc71485")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("ping clusters")
             }
@@ -73,7 +74,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             executor = LorittaClustersExecutor()
         }
 
-        subcommand(NERD_I18N_PREFIX.Label, NERD_I18N_PREFIX.Description) {
+        subcommand(NERD_I18N_PREFIX.Label, NERD_I18N_PREFIX.Description, UUID.fromString("5129831a-a9bc-4180-9b87-7e1c466d029a")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("botinfo extended")
             }

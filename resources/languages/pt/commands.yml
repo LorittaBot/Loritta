@@ -57,3 +57,4 @@ commands:
     notEnoughUsersPermissionsTip: "Eu poderia pegar membros das mensagens mais recentes do servidor, mas para isso eu preciso ter permissão para ler o histórico de mensagens do canal!"
     notEnoughUsersGuildTip: "Eu poderia pegar membros das mensagens mais recentes de um servidor, mas... bem, estamos em uma mensagem direta, os únicos dois usuários aqui são você e eu!"
   economyIsDisabled: "A economia da Loritta está temporariamente desativada, tente novamente mais tarde."
+  disabledCommandOnThisGuild: "Comando desativado nas configurações do servidor"

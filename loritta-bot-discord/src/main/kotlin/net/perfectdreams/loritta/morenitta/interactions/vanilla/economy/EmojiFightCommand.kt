@@ -23,13 +23,14 @@ import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import org.jetbrains.exposed.sql.*
+import java.util.*
 
 class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Emojifight
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("fae374b7-2c00-4575-9b1d-861e19b4e539")) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         this.interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
@@ -40,7 +41,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
         executor = EmojiFightForFunStartExecutor()
 
-        subcommand(I18N_PREFIX.Start.Label, I18N_PREFIX.Start.Description) {
+        subcommand(I18N_PREFIX.Start.Label, I18N_PREFIX.Start.Description, UUID.fromString("e4d8d632-4550-4706-a8b9-a3eba15161c5")) {
             alternativeLegacyLabels.apply {
                 add("bet")
             }
@@ -48,11 +49,11 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             executor = EmojiFightBetStartExecutor()
         }
 
-        subcommand(I18N_PREFIX.Emoji.Label, I18N_PREFIX.Emoji.Description) {
+        subcommand(I18N_PREFIX.Emoji.Label, I18N_PREFIX.Emoji.Description, UUID.fromString("a65d2655-20ad-4a93-8df8-b1dc43060f8e")) {
             executor = EmojiFightChangeEmojiExecutor()
         }
 
-        subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description) {
+        subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description, UUID.fromString("c6da643f-eabc-422c-8c6e-6d8aaeb05d0e")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("emojifight bet stats")
                 add("emotefight bet stats")

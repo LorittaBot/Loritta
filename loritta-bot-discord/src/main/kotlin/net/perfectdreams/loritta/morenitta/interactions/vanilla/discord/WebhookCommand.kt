@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDec
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.WebhookUtils
+import java.util.*
 
 class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -34,17 +35,17 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     val messageUrlRegex = Regex("/channels/([0-9]+)/([0-9]+)/([0-9]+)")
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD, UUID.fromString("222022f9-caa0-4f3a-9147-e048302582e4")) {
         subcommandGroup(I18N_PREFIX.Send.Label, TodoFixThisData) {
-            subcommand(I18N_PREFIX.Send.Simple.Label, I18N_PREFIX.Send.Simple.Description) {
+            subcommand(I18N_PREFIX.Send.Simple.Label, I18N_PREFIX.Send.Simple.Description, UUID.fromString("13899a72-b1bb-40bb-9a55-d90162d97f0d")) {
                 executor = WebhookSendSimpleExecutor()
             }
 
-            subcommand(I18N_PREFIX.Send.Json.Label, I18N_PREFIX.Send.Json.Description) {
+            subcommand(I18N_PREFIX.Send.Json.Label, I18N_PREFIX.Send.Json.Description, UUID.fromString("d8005136-e18b-4f40-9847-05944f007c5b")) {
                 executor = WebhookSendJsonExecutor()
             }
 
-            subcommand(I18N_PREFIX.Send.Repost.Label, I18N_PREFIX.Send.Repost.Description) {
+            subcommand(I18N_PREFIX.Send.Repost.Label, I18N_PREFIX.Send.Repost.Description, UUID.fromString("b7df9e7c-1ea7-4541-8663-2612c73a4ed2")) {
                 executor = WebhookSendRepostExecutor()
             }
         }
@@ -54,7 +55,7 @@ class WebhookCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 executor = WebhookEditSimpleExecutor(it)
             } */
 
-            subcommand(I18N_PREFIX.Edit.Json.Label, I18N_PREFIX.Edit.Json.Description) {
+            subcommand(I18N_PREFIX.Edit.Json.Label, I18N_PREFIX.Edit.Json.Description, UUID.fromString("8cc0820c-b585-43b7-8006-328f3f74f194")) {
                 executor = WebhookEditJsonExecutor()
             }
 

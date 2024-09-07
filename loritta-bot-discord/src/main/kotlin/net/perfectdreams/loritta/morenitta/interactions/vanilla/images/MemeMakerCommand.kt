@@ -13,13 +13,14 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import java.util.*
 
 class MemeMakerCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Mememaker
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES, UUID.fromString("23947584-91f0-4876-b81b-e7057a69a280")) {
         enableLegacyMessageSupport = true
         alternativeLegacyAbsoluteCommandPaths.apply {
             add("mememaker")

@@ -20,13 +20,14 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageRe
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.newSticker
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import java.util.*
 
 class GuildCommand : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Guild
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD, UUID.fromString("6392c773-3c42-4b18-92cf-145b3cbaa9b8")) {
         enableLegacyMessageSupport = true
         isGuildOnly = true
 
@@ -35,7 +36,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         )
 
         subcommandGroup(I18N_PREFIX.Sticker.Label, I18N_PREFIX.Sticker.Description) {
-            subcommand(I18N_PREFIX.Sticker.Add.Label, I18N_PREFIX.Sticker.Add.Description) {
+            subcommand(I18N_PREFIX.Sticker.Add.Label, I18N_PREFIX.Sticker.Add.Description, UUID.fromString("a3d3bcbf-17ba-4b35-a46e-288127972d07")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("addsticker")
                     add("adicionarfigurinha")
@@ -44,7 +45,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 executor = GuildStickerAddExecutor()
             }
 
-            subcommand(I18N_PREFIX.Sticker.Remove.Label, I18N_PREFIX.Sticker.Remove.Description) {
+            subcommand(I18N_PREFIX.Sticker.Remove.Label, I18N_PREFIX.Sticker.Remove.Description, UUID.fromString("7209c475-9269-4512-8624-3e89f814bf31")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("removesticker")
                     add("removerfigurinha")
@@ -55,7 +56,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
         }
 
         subcommandGroup(I18N_PREFIX.Emoji.Label, I18N_PREFIX.Emoji.Description) {
-            subcommand(I18N_PREFIX.Emoji.Add.Label, I18N_PREFIX.Emoji.Add.Description) {
+            subcommand(I18N_PREFIX.Emoji.Add.Label, I18N_PREFIX.Emoji.Add.Description, UUID.fromString("f0e2e530-3057-47b0-b2a9-0fa11b02f75a")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("addemoji")
                     add("adicionaremoji")
@@ -64,7 +65,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 executor = GuildEmojiAddExecutor()
             }
 
-            subcommand(I18N_PREFIX.Emoji.Remove.Label, I18N_PREFIX.Emoji.Remove.Description) {
+            subcommand(I18N_PREFIX.Emoji.Remove.Label, I18N_PREFIX.Emoji.Remove.Description, UUID.fromString("906952d3-a7f6-422e-a2c3-e0cb161f8717")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("removeemoji")
                     add("removeremoji")

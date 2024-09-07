@@ -36,6 +36,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
+import java.util.*
 import kotlin.math.ceil
 
 class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -47,18 +48,18 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Xp
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.SOCIAL) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.SOCIAL, UUID.fromString("1d3edb96-4485-4249-a365-4a772bb02f0c")) {
         isGuildOnly = true
         enableLegacyMessageSupport = true
 
         val viewXpExecutor = ViewXpExecutor()
         executor = viewXpExecutor
 
-        subcommand(XP_VIEW_I18N_PREFIX.Label, XP_VIEW_I18N_PREFIX.Description) {
+        subcommand(XP_VIEW_I18N_PREFIX.Label, XP_VIEW_I18N_PREFIX.Description, UUID.fromString("3e0b3704-3c10-42c7-8b90-54a02db05751")) {
             executor = viewXpExecutor
         }
 
-        subcommand(XP_RANK_I18N_PREFIX.Label, XP_RANK_I18N_PREFIX.Description) {
+        subcommand(XP_RANK_I18N_PREFIX.Label, XP_RANK_I18N_PREFIX.Description, UUID.fromString("5bc39edc-2dc1-462b-9b96-15ea27b168f9")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("rank")
                 add("top")
@@ -69,7 +70,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = XpRankExecutor()
         }
 
-        subcommand(XP_EDIT_I18N_PREFIX.Label, XP_EDIT_I18N_PREFIX.Description) {
+        subcommand(XP_EDIT_I18N_PREFIX.Label, XP_EDIT_I18N_PREFIX.Description, UUID.fromString("2aa975a7-23b1-430c-a1fb-4c0991af4e3b")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("editarxp")
                 add("setxp")
@@ -79,7 +80,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = EditXpExecutor()
         }
 
-        subcommand(XP_TRANSFER_I18N_PREFIX.Label, XP_TRANSFER_I18N_PREFIX.Description) {
+        subcommand(XP_TRANSFER_I18N_PREFIX.Label, XP_TRANSFER_I18N_PREFIX.Description, UUID.fromString("0ec48ce1-967e-422d-8147-eded127d5913")) {
             executor = TransferXpExecutor()
         }
     }

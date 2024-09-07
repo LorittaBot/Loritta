@@ -17,13 +17,14 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import org.jsoup.Jsoup
 import java.net.URLEncoder
+import java.util.*
 
 class DictionaryCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Dictionary
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS, UUID.fromString("88c87885-a6c9-4423-a585-b7ad9b33006e")) {
         enableLegacyMessageSupport = true
 
         alternativeLegacyLabels.apply {

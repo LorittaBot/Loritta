@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import java.util.*
 
 class VieirinhaCommand : SlashCommandDeclarationWrapper  {
     companion object {
@@ -20,7 +21,7 @@ class VieirinhaCommand : SlashCommandDeclarationWrapper  {
         )
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("86dd5593-8184-4212-a8b3-060a5d3de72c")) {
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         executor = VieirinhaExecutor()

@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -70,6 +71,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.Duration
 import java.time.Instant
@@ -125,6 +127,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     val slashCommands = mutableListOf<SlashCommandDeclaration>()
     val userCommands = mutableListOf<UserCommandDeclaration>()
     val messageCommands = mutableListOf<MessageCommandDeclaration>()
+    val applicationCommands: List<ExecutableApplicationCommandDeclaration>
+        get() = slashCommands + userCommands + messageCommands
     // Application Commands have their label/descriptions in English
     val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
 
@@ -341,6 +345,22 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
         register(RoleplayCommand.RoleplayUserCommand(loritta))
 
+        // Check if there is any duplicated IDs
+        val allCommands = slashCommands.flatMap {
+            listOf(it) + it.subcommands + it.subcommandGroups.flatMap { it.subcommands }
+        } + messageCommands + userCommands
+        val uniqueIds = mutableListOf<UUID>()
+        allCommands.forEach {
+            val sameIdCommand = allCommands.firstOrNull { cmd ->
+                cmd != it && cmd.uniqueId == it.uniqueId
+            }
+
+            if (sameIdCommand != null)
+                error("Command ${it.uniqueId} has the same ID as ${sameIdCommand.uniqueId}")
+
+            uniqueIds.add(it.uniqueId)
+        }
+
         // After registering everything, the command path must be updated!
         updateCommandPathToDeclarations()
     }
@@ -449,6 +469,31 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             // Check if user is banned
             if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
                 return true
+
+            // Check if the command is disabled
+            val guildId = context.guildId
+            if (guildId != null) {
+                val g = loritta.transaction {
+                    GuildCommandConfigs.selectAll()
+                        .where {
+                            GuildCommandConfigs.guildId eq guildId and (GuildCommandConfigs.commandId eq slashDeclaration.uniqueId)
+                        }
+                        .firstOrNull()
+                        .let { GuildCommandConfigData.fromResultRowOrDefault(it) }
+                }
+
+                if (!g.enabled) {
+                    // Command is NOT enabled!
+                    // Message commands should be fully disabled, no way around it! So let's bail out!
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
+                            Emotes.Error
+                        )
+                    }
+                    return true
+                }
+            }
 
             if (rawArgumentsAfterDrop.getOrNull(0) == "🤷") { // Show the command's help embed if 🤷 has been used
                 context.explain()

@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
+import java.util.*
 
 class ServerCommand : SlashCommandDeclarationWrapper {
     companion object {
@@ -33,13 +34,14 @@ class ServerCommand : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(
         I18N_PREFIX.Label,
         TodoFixThisData,
-        CommandCategory.DISCORD
+        CommandCategory.DISCORD,
+        UUID.fromString("ccafc456-ae0f-4359-9b9b-3274c0af550a")
     ) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
         this.interactionContexts = listOf(InteractionContextType.GUILD)
 
-        subcommand(I18N_PREFIX.Icon.Label, I18N_PREFIX.Icon.Description) {
+        subcommand(I18N_PREFIX.Icon.Label, I18N_PREFIX.Icon.Description, UUID.fromString("59be79b3-4a5e-4cda-ba5a-40e17175e134")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("servericon")
                 add("guildicon")
@@ -48,7 +50,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
             executor = ServerIconExecutor()
         }
 
-        subcommand(I18N_PREFIX.Banner.Label, I18N_PREFIX.Banner.Description) {
+        subcommand(I18N_PREFIX.Banner.Label, I18N_PREFIX.Banner.Description, UUID.fromString("c7e13909-3845-4faa-a66f-6190bee35faf")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("serverbanner")
                 add("guildbanner")
@@ -57,7 +59,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
             executor = ServerBannerExecutor()
         }
 
-        subcommand(I18N_PREFIX.Splash.Label, I18N_PREFIX.Splash.Description) {
+        subcommand(I18N_PREFIX.Splash.Label, I18N_PREFIX.Splash.Description, UUID.fromString("b7949cda-6887-4f6f-955a-80cc54f35c5c")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("serversplash")
             }
@@ -66,7 +68,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
         }
 
         subcommandGroup(I18N_PREFIX.Role.Label, TodoFixThisData) {
-            subcommand(I18N_PREFIX.Role.Info.Label, I18N_PREFIX.Role.Info.Description) {
+            subcommand(I18N_PREFIX.Role.Info.Label, I18N_PREFIX.Role.Info.Description, UUID.fromString("46d82f6b-bf0a-4013-b647-a2e87a481f83")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("roleinfo")
                 }
@@ -76,7 +78,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
         }
 
         subcommandGroup(I18N_PREFIX.Channel.Label, TodoFixThisData) {
-            subcommand(I18N_PREFIX.Channel.Info.Label, I18N_PREFIX.Channel.Info.Description) {
+            subcommand(I18N_PREFIX.Channel.Info.Label, I18N_PREFIX.Channel.Info.Description, UUID.fromString("9086b8f9-9545-4e9b-b722-8c7b10405c70")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("channelinfo")
                 }

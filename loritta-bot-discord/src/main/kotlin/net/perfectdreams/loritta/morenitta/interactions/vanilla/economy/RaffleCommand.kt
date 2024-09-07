@@ -13,7 +13,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
@@ -34,17 +33,18 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.util.*
 
 class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Raffle
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("59a50ba4-e0aa-4cd6-bf72-8ee048e78001")) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        subcommand(I18N_PREFIX.Status.Label, I18N_PREFIX.Status.Description) {
+        subcommand(I18N_PREFIX.Status.Label, I18N_PREFIX.Status.Description, UUID.fromString("9b2bcfba-eec7-4cd3-8187-4928a39f56b2")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("loraffle")
                 add("rifa")
@@ -55,7 +55,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = RaffleStatusExecutor()
         }
 
-        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
+        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description, UUID.fromString("a6fcf9d8-7feb-4eda-a613-af72614a9bf4")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 listOf("buy", "comprar").forEach {
                     add("loraffle $it")

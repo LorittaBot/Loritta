@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.UserAndMember
 import org.jsoup.Jsoup
+import java.util.*
 
 class HungerGamesCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -24,7 +25,7 @@ class HungerGamesCommand(private val loritta: LorittaBot) : SlashCommandDeclarat
         private const val REQUIRED_USERS = 24
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("bcf0366d-97ca-457d-a790-ebd90143d387")) {
         enableLegacyMessageSupport = true
         isGuildOnly = true
 

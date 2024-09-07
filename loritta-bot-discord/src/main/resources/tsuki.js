@@ -1,32 +1,51 @@
 // Tsuki: A small helper-like library inspired by Surreal.js
-function tsukify(element) {
-    // Null, bail out!
-    if (element === null)
-        return element
-
-    // Already tsukified, bail out!
-    if (element.isTsukified)
-        return element
-
-    element.on = (type, func) => { element.addEventListener(type, func); return element; }
-    element.hasClass = (clazz) => { return element.classList.contains(clazz); }
-    element.addClass = (clazz) => { element.classList.add(clazz); return element; }
-    element.removeClass = (clazz) => { element.classList.remove(clazz); return element; }
-    element.toggleClass = (clazz) => {
-        console.log(element)
-        if (element.hasClass(clazz)) {
-            element.removeClass(clazz);
-        } else {
-            element.addClass(clazz);
-        }
-        return element;
+class TsukiElement {
+    /**
+     * Creates an instance of TsukiElement
+     * @param {Element} handle - The DOM element to wrap.
+     */
+    constructor(handle) {
+        this.handle = handle;
     }
 
-    element.whenRemovedFromDOM = (func) => {
+    on(type, func) {
+        this.handle.addEventListener(type, func);
+        return this;
+    }
+
+    addClass(clazz) {
+        this.handle.classList.add(clazz);
+        return this;
+    }
+
+    hasClass(clazz) {
+        return this.handle.classList.contains(clazz);
+    }
+
+    removeClass(clazz) {
+        this.handle.classList.remove(clazz);
+        return this;
+    }
+
+    toggleClass(clazz) {
+        if (this.hasClass(clazz)) {
+            this.removeClass(clazz);
+        } else {
+            this.addClass(clazz);
+        }
+        return this;
+    }
+
+    remove() {
+        this.handle.remove()
+        return this;
+    }
+
+    whenRemovedFromDOM(func) {
         // Create a MutationObserver to watch for the div being removed from the DOM
         const observer = new MutationObserver((mutations) => {
             // console.log("mutation happened")
-            if (!document.contains(self)) {
+            if (!document.contains(this.handle)) {
                 // Div is removed, remove the listener
                 // console.log("bye!!!")
                 func()
@@ -38,24 +57,56 @@ function tsukify(element) {
         console.log(self.parentNode)
         observer.observe(document.body, { childList: true, subtree: true });
 
-        return element;
+        return this;
     }
 
-    element.isTsukified = true
+    selectFirst(selector) {
+        const result = this.handle.querySelector(selector)
+        if (result === null)
+            return
+        return tsukify(result)
+    }
 
-    return element
+    closest(selector) {
+        const result = this.handle.closest(selector)
+        if (result === null)
+            return
+        return tsukify(result)
+    }
 }
 
-// Gets the parent element of the <script>
+/**
+ * Tsukifies a element
+ * @returns {TsukiElement|null}
+ */
+function tsukify(element) {
+    // Null, bail out!
+    if (element === null)
+        return element
+
+    // Already tsukified, bail out!
+    if (element instanceof TsukiElement)
+        return element
+
+    return new TsukiElement(element)
+}
+
+/**
+ * Gets the parent element of the <script>
+ * @returns {TsukiElement}
+ */
 function me() {
     const scriptElement = document.currentScript;
     return tsukify(scriptElement.parentNode);
 }
 
-// Selects the first that matches selector
+/**
+ * Gets the parent element of the <script>
+ * @returns {TsukiElement|null}
+ */
 function selectFirst(selector) {
     const result = document.querySelector(selector)
     if (result === null)
-        return
+        return null
     return tsukify(result)
 }

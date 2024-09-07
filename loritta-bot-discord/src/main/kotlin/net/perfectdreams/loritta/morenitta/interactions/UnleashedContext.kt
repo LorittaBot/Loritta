@@ -38,6 +38,8 @@ abstract class UnleashedContext(
     val guildOrNull: Guild?,
     val channelOrNull: MessageChannel?,
 ) {
+    var alwaysEphemeral = false
+
     val guildId
         get() = guildOrNull?.idLong
 

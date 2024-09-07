@@ -9,9 +9,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import java.util.*
 
 class OCRSlashCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
-    override fun command() = slashCommand(OCRExecutor.I18N_PREFIX.Label, OCRExecutor.I18N_PREFIX.Description, CommandCategory.UTILS) {
+    override fun command() = slashCommand(OCRExecutor.I18N_PREFIX.Label, OCRExecutor.I18N_PREFIX.Description, CommandCategory.UTILS, UUID.fromString("47e4b00c-7a04-47bc-8a30-30bbcbd34770")) {
         enableLegacyMessageSupport = true
 
         alternativeLegacyLabels.apply {

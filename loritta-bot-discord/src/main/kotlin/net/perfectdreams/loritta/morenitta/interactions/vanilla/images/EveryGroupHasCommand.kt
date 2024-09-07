@@ -16,13 +16,14 @@ import net.perfectdreams.loritta.morenitta.utils.UserUtils
 import net.perfectdreams.loritta.morenitta.utils.images.userAvatarCollage
 import net.perfectdreams.loritta.serializable.UserId
 import java.awt.Color
+import java.util.*
 
 class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Everygrouphas
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("e8c0935d-bfba-48af-b2f9-a54c2d5bb96d")) {
         enableLegacyMessageSupport = true
         examples = I18N_PREFIX.Examples
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)

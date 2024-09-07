@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.serializable.UserId
+import java.util.*
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -34,7 +35,7 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Ship
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("7820547b-dff0-4a2c-b1c9-f77cf299f116")) {
         examples = I18N_PREFIX.Examples
 
         enableLegacyMessageSupport = true

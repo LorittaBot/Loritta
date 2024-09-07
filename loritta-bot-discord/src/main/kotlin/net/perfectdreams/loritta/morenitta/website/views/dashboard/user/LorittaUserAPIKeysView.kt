@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.appendAsFormattedText
 import net.perfectdreams.loritta.morenitta.website.components.TextReplaceControls.handleI18nString
+import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 
@@ -131,15 +132,12 @@ class LorittaUserAPIKeysView(
 
             button(classes = "discord-button success", type = ButtonType.button) {
                 if (apiToken != null) {
-                    script {
-                        unsafe {
-                            raw("""
-                                me().on("click", function() {
-                                    navigator.clipboard.writeText("$apiToken")
-                                })
-                            """.trimIndent())
-                        }
-                    }
+                    // language=JavaScript
+                    tsukiScript(code = """
+                        self.on("click", function() {
+                            navigator.clipboard.writeText("$apiToken")
+                        })
+                    """.trimIndent())
                 } else disabled = true
 
                 text(i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.CopyTokenButton))

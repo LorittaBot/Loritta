@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -14,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
+import java.util.*
 
 class MoneyCommand(val loritta: LorittaBot, val ecbManager: ECBManager) : SlashCommandDeclarationWrapper {
     companion object {
@@ -60,7 +60,7 @@ class MoneyCommand(val loritta: LorittaBot, val ecbManager: ECBManager) : SlashC
         )
     }
 
-    override fun command()  = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS) {
+    override fun command()  = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS, UUID.fromString("01d57fc8-b86e-4ffc-9177-47a578fe73c2")) {
         enableLegacyMessageSupport = true
 
         alternativeLegacyLabels.apply {

@@ -1277,9 +1277,11 @@ class LorittaBot(
 	}
 
 	/**
-	 * Gets the current registered application commands count
+	 * Gets the current registered Loritta commands count
 	 */
-	fun getCommandCount() = interactionsManager.interaKTions.manager.applicationCommandsExecutors.size
+	fun getCommandCount() = commandMap.commands.size + // Legacy commands
+			interactionsManager.interaKTions.manager.applicationCommandsExecutors.size + // Legacy InteraKTions commands
+			interactionsListener.manager.applicationCommands.size // InteraKTions Unleashed commands
 
 	/**
 	 * Sends the [builder] message to the [userId] via the user's direct message channel.

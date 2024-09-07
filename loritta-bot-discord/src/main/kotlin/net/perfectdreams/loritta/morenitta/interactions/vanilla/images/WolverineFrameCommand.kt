@@ -6,13 +6,14 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
+import java.util.*
 
 class WolverineFrameCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Wolverineframe
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES, UUID.fromString("cd92b981-f2ae-4970-857d-d312fe6971bb")) {
         enableLegacyMessageSupport = true
         alternativeLegacyAbsoluteCommandPaths.apply {
             add("wolverineframe")

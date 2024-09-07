@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdSize
 import net.perfectdreams.loritta.morenitta.website.utils.generateNitroPayAd
+import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
@@ -224,17 +225,21 @@ abstract class DashboardView(
                                     button(classes = "hamburger-button") {
                                         type = ButtonType.button
                                         i(classes = "fa-solid fa-bars") {}
-                                        script {
-                                            unsafe {
-                                                raw("""
-                                                    me().on("click", (e) => {
-                                                        var leftSidebar = selectFirst("#left-sidebar");
-                                                        leftSidebar.toggleClass("is-open")
-                                                        leftSidebar.toggleClass("is-closed")
-                                                    });
-                                                """.trimIndent())
-                                            }
-                                        }
+                                        // language=JavaScript
+                                        tsukiScript(
+                                            code = """
+                                                console.log("ayaya")
+                                                console.log(self)
+                                                self.on("click", (e) => {
+                                                    console.log("clicked!")
+                                                    const leftSidebar = selectFirst("#left-sidebar");
+                                                    console.log("leftSidebar: ")
+                                                    console.log(leftSidebar)
+                                                    leftSidebar.toggleClass("is-open")
+                                                    leftSidebar.toggleClass("is-closed")
+                                                })
+                                            """.trimIndent()
+                                        )
                                     }
                                 }
 
@@ -380,17 +385,16 @@ abstract class DashboardView(
                 // settle:0ms - We don't want the settle animation beccause it is a full page swap
                 // swap:0ms - We don't want the swap animation because it is a full page swap
                 attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
-                script {
-                    unsafe {
-                        raw("""
-                            me().on("click", (e) => {
-                                var leftSidebar = selectFirst("#left-sidebar");
-                                leftSidebar.removeClass("is-open")
-                                leftSidebar.addClass("is-closed")
-                            });
-                        """.trimIndent())
-                    }
-                }
+                // language=JavaScript
+                tsukiScript(
+                    code = """
+                        self.on("click", (e) => {
+                            const leftSidebar = selectFirst("#left-sidebar");
+                            leftSidebar.toggleClass("is-open")
+                            leftSidebar.toggleClass("is-closed")
+                        })
+                    """.trimIndent()
+                )
             }
 
             // TODO - htmx-adventures: Is this useful?

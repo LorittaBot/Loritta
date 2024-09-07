@@ -16,13 +16,14 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.utils.UserUtils
 import net.perfectdreams.loritta.morenitta.utils.images.userAvatarCollage
 import java.awt.Color
+import java.util.*
 
 class ThanksFriendsCommand : SlashCommandDeclarationWrapper  {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Thanksfriends
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("a55edb85-0877-4e8a-8970-79eb73aa71a4")) {
         enableLegacyMessageSupport = true
         examples = I18N_PREFIX.Examples
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)

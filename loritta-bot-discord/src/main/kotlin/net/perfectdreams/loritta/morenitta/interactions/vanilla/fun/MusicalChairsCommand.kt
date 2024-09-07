@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.nio.ByteBuffer
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.io.path.readBytes
@@ -219,7 +220,7 @@ class MusicalChairsCommand(val loritta: LorittaBot) : SlashCommandDeclarationWra
     )
     private val musicalChairsSessions = ConcurrentHashMap.newKeySet<Long>()
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("c7ba9746-75ab-4a39-977b-3755fdbe21f2")) {
         enableLegacyMessageSupport = true
 
         defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)

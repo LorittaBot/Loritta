@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.yo
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
+import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildDashboardView
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
@@ -130,20 +131,14 @@ class GuildYouTubeView(
                                             this.text("Continuar")
                                         }
 
-                                        script {
-                                            unsafe {
-                                                //language=JavaScript
-                                                raw(
-                                                    """
-                                                        var input = selectFirst("[name='channelLink']")
-                                                        var button = me()
-                                                        input.on("input", e => {
-                                                            button.disabled = input.value.trim() === '';
-                                                        })
-                                                    """.trimIndent()
-                                                )
-                                            }
-                                        }
+                                        //language=JavaScript
+                                        tsukiScript(code = """
+                                             var input = selectFirst("[name='channelLink']")
+                                             var button = self
+                                             input.on("input", e => {
+                                                 button.disabled = input.handle.value.trim() === '';
+                                             })
+                                        """.trimIndent())
                                     }
                                 )
                             )

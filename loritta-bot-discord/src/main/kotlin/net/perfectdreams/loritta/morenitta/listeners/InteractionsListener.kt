@@ -9,16 +9,15 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.*
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -29,6 +28,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMe
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.utils.LorittaPermission
@@ -44,13 +44,11 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.StringD
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
-import net.perfectdreams.loritta.morenitta.utils.AccountUtils
-import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
-import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toLoritta
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import org.postgresql.util.PGobject
 import java.time.Duration
@@ -228,11 +226,15 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
                     return@launchMessageJob
 
+                // Check if the command is disabled
+                val guildId = context.guildId
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                    return@launchMessageJob
+
                 loritta.transaction {
                     lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 
                     // Set that the user is in the guild
-                    val guildId = context.guildId
                     if (guildId != null) {
                         GuildProfiles.update({
                             GuildProfiles.userId eq lorittaUser.profile.userId and (GuildProfiles.guildId eq guildId)
@@ -392,6 +394,15 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     event
                 )
 
+                // Check if user is banned
+                if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+                    return@launchMessageJob
+
+                // Check if the command is disabled
+                val guildId = context.guildId
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                    return@launchMessageJob
+
                 executor.execute(
                     context,
                     event.target
@@ -497,6 +508,15 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
+
+                // Check if user is banned
+                if (AccountUtils.checkAndSendMessageIfUserIsBanned(context.loritta, context, context.user))
+                    return@launchMessageJob
+
+                // Check if the command is disabled
+                val guildId = context.guildId
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                    return@launchMessageJob
 
                 executor.execute(
                     context,
@@ -1034,5 +1054,48 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 logger.warn(e) { "Something went wrong while trying to update slash commands! Retrying... Lock: $lockId" }
             }
         }
+    }
+
+    private suspend fun checkIfCommandIsDisabledOnGuild(
+        event: GenericCommandInteractionEvent,
+        slashDeclaration: ExecutableApplicationCommandDeclaration,
+        context: ApplicationCommandContext,
+        i18nContext: I18nContext,
+        guildId: Long?,
+    ): Boolean {
+        if (guildId == null)
+            return false
+
+        val g = loritta.transaction {
+            GuildCommandConfigs.selectAll()
+                .where {
+                    GuildCommandConfigs.guildId eq guildId and (GuildCommandConfigs.commandId eq slashDeclaration.uniqueId)
+                }
+                .firstOrNull()
+                .let { GuildCommandConfigData.fromResultRowOrDefault(it) }
+        }
+
+        // Command is NOT enabled!
+        // So, how can we check that the user can use it if it is a USER_INSTALL command?
+        // 1. Does the "USER_INSTALL" integration type is set?
+        // 2. Is the user an integration owner?
+        // If both are true, the message will be ephemeral if the user does NOT have the "external apps" permission set
+        val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && event.interaction.integrationOwners.userIntegration?.idLong == context.user.idLong
+        if (!canBeUsedAnyway) {
+            // NO, then bail out NOW
+            context.reply(true) {
+                styled(
+                    i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
+                    Emotes.Error
+                )
+            }
+            return true
+        } else {
+            // So, it is actually enabled on a user install context!
+            // What we'll do instead is force the interaction to ALWAYS be ephemeral
+            // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
+            context.alwaysEphemeral = !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
+        }
+        return false
     }
 }

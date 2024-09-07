@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.sticker.Sticker
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.RateLimitedException
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -17,6 +16,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.newSticker
+import java.util.*
 
 class MessageStickerCommand : MessageCommandDeclarationWrapper {
     companion object {
@@ -26,6 +26,7 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
     override fun command() = messageCommand(
         I18N_PREFIX.GetStickerFromMessage,
         CommandCategory.DISCORD,
+        UUID.fromString("9fe85a69-dd50-4fee-9ba1-ce2594a458ab"),
         MessageStickerCommandExecutor()
     ) {
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)

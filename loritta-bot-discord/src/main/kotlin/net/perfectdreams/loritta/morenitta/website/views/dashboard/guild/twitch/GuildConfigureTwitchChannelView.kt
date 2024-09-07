@@ -453,22 +453,15 @@ class GuildConfigureTwitchChannelView(
                     "  z-index: 1000;\n" +
                     "  left: 1em;\n" +
                     "  top: 65%;\n"
-            script {
-                unsafe {
-                    //language=JavaScript
-                    raw("""
-                        var self = me()
-                        {
-                            window['spicy-morenitta'].playSoundEffect(
-                                "xarola-ratinho",
-                                () => {
-                                    self.remove()
-                                }
-                            )
-                        }
-                    """.trimIndent())
-                }
-            }
+            // language=JavaScript
+            tsukiScript(code = """
+               window['spicy-morenitta'].playSoundEffect(
+                    "xarola-ratinho",
+                    () => {
+                       self.remove()
+                    }
+               )
+            """.trimIndent())
 
             div(classes = "xarola-ratinho") {
                 div(classes = "xarola-ratinho-icon-wrapper") {

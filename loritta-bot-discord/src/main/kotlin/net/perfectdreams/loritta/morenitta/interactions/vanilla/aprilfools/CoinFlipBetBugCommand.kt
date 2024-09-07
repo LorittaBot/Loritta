@@ -22,9 +22,10 @@ import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.jetbrains.exposed.sql.insert
 import java.time.Instant
 import java.time.LocalDateTime
+import java.util.*
 
 class CoinFlipBetBugCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
-    override fun command() = slashCommand(I18nKeysData.Commands.Command.Coinflipbetbug.Label, I18nKeysData.Commands.Command.Coinflipbetbug.Description, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18nKeysData.Commands.Command.Coinflipbetbug.Label, I18nKeysData.Commands.Command.Coinflipbetbug.Description, CommandCategory.ECONOMY, UUID.fromString("910ab6c9-7c14-49f8-9d14-7ac6dd1e9b9f")) {
         executor = CoinFlipBetBugExecutor()
     }
 

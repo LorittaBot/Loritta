@@ -6,13 +6,14 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
+import java.util.*
 
 class InvertColorsCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Invertcolors
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES, UUID.fromString("4bc2aba7-b725-4878-a675-99808ca97a53")) {
         enableLegacyMessageSupport = true
         alternativeLegacyAbsoluteCommandPaths.apply {
             add("invertcolors")

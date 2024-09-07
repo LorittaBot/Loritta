@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -16,17 +15,18 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.UserAndMember
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import java.util.*
 
 class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.User
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD, UUID.fromString("b8e6a20e-4bd8-463a-a67f-89789d7c2bce")) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        subcommand(I18N_PREFIX.Avatar.Label, I18N_PREFIX.Avatar.Description) {
+        subcommand(I18N_PREFIX.Avatar.Label, I18N_PREFIX.Avatar.Description, UUID.fromString("51be3c9f-24a5-44cb-b2d6-69098f009f4d")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("avatar")
             }
@@ -36,7 +36,7 @@ class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = UserAvatarSlashExecutor()
         }
 
-        subcommand(I18N_PREFIX.Banner.Label, I18N_PREFIX.Banner.Description) {
+        subcommand(I18N_PREFIX.Banner.Label, I18N_PREFIX.Banner.Description, UUID.fromString("9cb23088-4523-4ece-90d6-77accea18420")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("banner")
             }
@@ -44,7 +44,7 @@ class UserCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = UserBannerSlashExecutor()
         }
 
-        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description) {
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description, UUID.fromString("9c35885f-2c55-4d6d-bbc0-fae8f92f487c")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("userinfo")
                 add("memberinfo")

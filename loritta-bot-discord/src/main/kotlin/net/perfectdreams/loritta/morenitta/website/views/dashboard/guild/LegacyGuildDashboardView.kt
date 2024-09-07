@@ -99,7 +99,7 @@ abstract class LegacyGuildDashboardView(
 
                     appendEntry("/guild/${guild.id}/configure", true, locale["modules.sectionNames.general"], "fa fa-cogs", "default")
                     appendEntry("/guild/${guild.id}/configure/moderation", true, locale["modules.sectionNames.moderation"], "fas fa-exclamation-circle", "moderation")
-                    appendEntry("/guild/${guild.id}/configure/commands", true, locale["modules.sectionNames.commands"], "fa fa-terminal", "vanilla_commands")
+                    appendEntry("/guild/${guild.id}/configure/commands", false, locale["modules.sectionNames.commands"], "fa fa-terminal", "vanilla_commands")
                     appendEntry("/guild/${guild.id}/configure/permissions", true, locale["modules.sectionNames.permissions"], "fa fa-address-card", "permissions")
 
                     appendExternalEntry(

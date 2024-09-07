@@ -44,25 +44,26 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.StoredEaster2023SonhosTransaction
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
+import java.util.*
 import kotlin.math.ceil
 
 class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     private val I18N_PREFIX = I18nKeysData.Commands.Command.Easter2023event
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN) {
-        subcommand(I18N_PREFIX.Join.Label, I18N_PREFIX.Description) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("a1a03b03-b23d-43b8-93f5-0c714307220d")) {
+        subcommand(I18N_PREFIX.Join.Label, I18N_PREFIX.Description, UUID.fromString("a9df2f98-5e35-4716-a8bc-906e566cb5ed")) {
             executor = JoinEventExecutor()
         }
 
-        subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description) {
+        subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description, UUID.fromString("011500c4-9955-49c2-aa72-925f576d6b0c")) {
             executor = StatsEventExecutor()
         }
 
-        subcommand(I18N_PREFIX.Inventory.Label, I18N_PREFIX.Inventory.Description) {
+        subcommand(I18N_PREFIX.Inventory.Label, I18N_PREFIX.Inventory.Description, UUID.fromString("b3766a24-5b2d-4fea-8c9d-7c02b047601b")) {
             executor = InventoryEventExecutor()
         }
 
-        subcommand(I18N_PREFIX.Rank.Label, I18N_PREFIX.Rank.Description) {
+        subcommand(I18N_PREFIX.Rank.Label, I18N_PREFIX.Rank.Description, UUID.fromString("39a1ba04-ad37-45cb-a3ba-7497cb1d28e7")) {
             executor = StatsRankExecutor()
         }
     }

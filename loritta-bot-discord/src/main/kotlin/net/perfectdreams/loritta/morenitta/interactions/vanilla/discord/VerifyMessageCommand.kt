@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import java.io.IOException
+import java.util.*
 
 class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -35,14 +36,14 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
         }
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.DISCORD, UUID.fromString("bc255b01-ca1a-4d43-87c3-a019dba3d048")) {
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        subcommand(I18N_PREFIX.Url.Label, I18N_PREFIX.Url.Description) {
+        subcommand(I18N_PREFIX.Url.Label, I18N_PREFIX.Url.Description, UUID.fromString("d9122384-e896-45f4-8f90-7a273176e128")) {
             executor = VerifyMessageURLExecutor(m, this@VerifyMessageCommand)
         }
 
-        subcommand(I18N_PREFIX.File.Label, I18N_PREFIX.File.Description) {
+        subcommand(I18N_PREFIX.File.Label, I18N_PREFIX.File.Description, UUID.fromString("cd32e34c-4d9a-4554-a40f-0e13795ee269")) {
             executor = VerifyMessageFileExecutor(m, this@VerifyMessageCommand)
         }
     }

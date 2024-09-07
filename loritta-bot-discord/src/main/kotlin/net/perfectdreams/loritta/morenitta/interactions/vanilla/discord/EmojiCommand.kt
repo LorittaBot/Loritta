@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
-import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -13,8 +12,11 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import net.perfectdreams.loritta.morenitta.utils.*
-import java.time.OffsetDateTime
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
+import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
+import java.util.*
 import kotlin.streams.toList
 
 class EmojiCommand : SlashCommandDeclarationWrapper {
@@ -22,10 +24,10 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Emoji
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.DISCORD) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.DISCORD, UUID.fromString("ea171b7a-5129-4f41-8f6c-d13b23a012b6")) {
         enableLegacyMessageSupport = true
 
-        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description) {
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description, UUID.fromString("d724a3b2-7938-406b-bce6-ff671da7ea31")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("emojiinfo")
                 add("emoji")

@@ -16,6 +16,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRou
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.PostFavoriteGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.*
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.commands.ConfigureCommandsRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.commands.PutConfigureCommandsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.ConfigureWelcomerRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.welcomer.PatchWelcomerRoute
@@ -51,6 +53,8 @@ object DefaultRoutes {
 		AuditLogRoute(loritta),
 		ConfigureAutoroleRoute(loritta),
 		ConfigureCommandsRoute(loritta),
+		PutConfigureCommandsRoute(loritta),
+		ConfigureLegacyCommandsRoute(loritta),
 		ConfigureCustomBadgeRoute(loritta),
 		ConfigureDailyMultiplierRoute(loritta),
 		ConfigureEconomyRoute(loritta),

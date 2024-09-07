@@ -23,13 +23,14 @@ import net.perfectdreams.loritta.serializable.lorituber.requests.*
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetCharactersByOwnerResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetMailResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.LoriTuberRPCResponse
+import java.util.*
 
 class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Lorituber
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("9692a1f9-0566-454d-9df7-c76950dc1f72")) {
         executor = LoriTuberExecutor()
     }
 

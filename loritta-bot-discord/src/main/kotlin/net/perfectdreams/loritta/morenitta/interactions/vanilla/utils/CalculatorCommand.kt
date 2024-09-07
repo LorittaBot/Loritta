@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import java.util.*
 
 class CalculatorCommand : SlashCommandDeclarationWrapper {
     companion object {
@@ -50,7 +51,7 @@ class CalculatorCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.UTILS, UUID.fromString("397065b0-f6b2-4ae8-90e3-38686eb16eca")) {
         enableLegacyMessageSupport = true
 
         examples = I18N_PREFIX.Examples

@@ -2,28 +2,37 @@ package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import java.util.*
+
+sealed class ExecutableApplicationCommandDeclaration {
+    abstract val name: StringI18nData
+    abstract val category: CommandCategory
+    abstract val uniqueId: UUID
+    abstract val integrationTypes: List<IntegrationType>
+    abstract val interactionContexts: List<InteractionContextType>
+}
 
 data class SlashCommandDeclaration(
-    val name: StringI18nData,
+    override val name: StringI18nData,
     val description: StringI18nData,
-    val category: CommandCategory,
+    override val category: CommandCategory,
+    override val uniqueId: UUID,
     val examples: ListI18nData?,
     val defaultMemberPermissions: DefaultMemberPermissions?,
     var isGuildOnly: Boolean,
     var enableLegacyMessageSupport: Boolean,
     var alternativeLegacyLabels: List<String>,
     var alternativeLegacyAbsoluteCommandPaths: List<String>,
-    val integrationTypes: List<IntegrationType>,
-    val interactionContexts: List<InteractionContextType>,
+    override val integrationTypes: List<IntegrationType>,
+    override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaSlashCommandExecutor?,
     val subcommands: List<SlashCommandDeclaration>,
     val subcommandGroups: List<SlashCommandGroupDeclaration>
-)
+) : ExecutableApplicationCommandDeclaration()
 
 data class SlashCommandGroupDeclaration(
     val name: StringI18nData,
@@ -34,21 +43,23 @@ data class SlashCommandGroupDeclaration(
 )
 
 data class UserCommandDeclaration(
-    val name: StringI18nData,
-    val category: CommandCategory,
+    override val name: StringI18nData,
+    override val category: CommandCategory,
+    override val uniqueId: UUID,
     val defaultMemberPermissions: DefaultMemberPermissions?,
     var isGuildOnly: Boolean,
-    val integrationTypes: List<IntegrationType>,
-    val interactionContexts: List<InteractionContextType>,
+    override val integrationTypes: List<IntegrationType>,
+    override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaUserCommandExecutor?
-)
+) : ExecutableApplicationCommandDeclaration()
 
 data class MessageCommandDeclaration(
-    val name: StringI18nData,
-    val category: CommandCategory,
+    override val name: StringI18nData,
+    override val category: CommandCategory,
+    override val uniqueId: UUID,
     val defaultMemberPermissions: DefaultMemberPermissions?,
     var isGuildOnly: Boolean,
-    val integrationTypes: List<IntegrationType>,
-    val interactionContexts: List<InteractionContextType>,
+    override val integrationTypes: List<IntegrationType>,
+    override val interactionContexts: List<InteractionContextType>,
     val executor: LorittaMessageCommandExecutor?
-)
+) : ExecutableApplicationCommandDeclaration()

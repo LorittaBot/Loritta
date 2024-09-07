@@ -78,7 +78,7 @@ abstract class GuildDashboardView(
 
             appendEntry("/guild/${guild.id}/configure", false, locale["modules.sectionNames.general"], "fa fa-cogs", false)
             appendEntry("/guild/${guild.id}/configure/moderation", false, locale["modules.sectionNames.moderation"], "fas fa-exclamation-circle", false)
-            appendEntry("/guild/${guild.id}/configure/commands", false, locale["modules.sectionNames.commands"], "fa fa-terminal", false)
+            appendEntry("/guild/${guild.id}/configure/commands", true, locale["modules.sectionNames.commands"], "fa fa-terminal", false)
             appendEntry("/guild/${guild.id}/configure/permissions", false, locale["modules.sectionNames.permissions"], "fa fa-address-card", false)
 
             appendEntry(

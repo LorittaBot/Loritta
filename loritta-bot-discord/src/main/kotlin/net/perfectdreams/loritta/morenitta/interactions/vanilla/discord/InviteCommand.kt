@@ -15,16 +15,17 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import java.util.*
 
 class InviteCommand : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Invite
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.DISCORD) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.DISCORD, UUID.fromString("e1ee9bd0-06f0-4f5d-b613-41bc989e21c4")) {
         enableLegacyMessageSupport = true
 
-        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description) {
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description, UUID.fromString("44a486e9-b5d5-4bc5-94bb-4e6b4b918d9e")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("inviteinfo")
             }

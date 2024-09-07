@@ -178,24 +178,14 @@ class GuildTwitchView(
                                                         this.text("Continuar")
                                                     }
 
-                                                    script {
-                                                        unsafe {
-                                                            //language=JavaScript
-                                                            raw(
-                                                                """
-                                                        var input = selectFirst("[name='login']")
-                                                        var button = me()
+                                                    //language=JavaScript
+                                                    tsukiScript(code = """
+                                                        var input = selectFirst("[name='channelLink']")
+                                                        var button = self
                                                         input.on("input", e => {
-                                                            if (input.value.trim() === '') {
-                                                                button.disabled = true;
-                                                            } else {
-                                                                button.disabled = false;
-                                                            }
+                                                            button.disabled = input.handle.value.trim() === '';
                                                         })
-                                                    """.trimIndent()
-                                                            )
-                                                        }
-                                                    }
+                                                     """.trimIndent())
                                                 }
                                             )
                                         )

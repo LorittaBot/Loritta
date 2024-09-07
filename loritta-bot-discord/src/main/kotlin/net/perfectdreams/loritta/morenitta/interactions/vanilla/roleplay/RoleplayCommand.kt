@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.serializable.UserId
+import java.util.*
 
 class RoleplayCommand {
     companion object {
@@ -85,11 +86,11 @@ class RoleplayCommand {
     }
 
     class RoleplaySlashCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
-        override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ROLEPLAY) {
+        override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ROLEPLAY, UUID.fromString("7e3b4ccf-0757-48fc-9120-e2e7938cb6f8")) {
             enableLegacyMessageSupport = true
             this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-            subcommand(I18N_PREFIX.Hug.Label, I18N_PREFIX.Hug.Description) {
+            subcommand(I18N_PREFIX.Hug.Label, I18N_PREFIX.Hug.Description, UUID.fromString("50495600-097f-4c61-970f-b5a8536dc4ba")) {
                 executor = RoleplayHugExecutor()
 
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -99,7 +100,7 @@ class RoleplayCommand {
                 }
             }
 
-            subcommand(I18N_PREFIX.Kiss.Label, I18N_PREFIX.Kiss.Description) {
+            subcommand(I18N_PREFIX.Kiss.Label, I18N_PREFIX.Kiss.Description, UUID.fromString("85538785-7ce8-456b-8af3-d9da4b431fdf")) {
                 executor = RoleplayKissExecutor()
 
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -109,7 +110,7 @@ class RoleplayCommand {
                 }
             }
 
-            subcommand(I18N_PREFIX.Slap.Label, I18N_PREFIX.Slap.Description) {
+            subcommand(I18N_PREFIX.Slap.Label, I18N_PREFIX.Slap.Description, UUID.fromString("391f31d8-796c-4733-98c2-9a457b4d3ba8")) {
                 executor = RoleplaySlapExecutor()
 
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -119,7 +120,7 @@ class RoleplayCommand {
                 }
             }
 
-            subcommand(I18N_PREFIX.Headpat.Label, I18N_PREFIX.Headpat.Description) {
+            subcommand(I18N_PREFIX.Headpat.Label, I18N_PREFIX.Headpat.Description, UUID.fromString("a07a6241-0cc4-40dc-af42-5095359e24dc")) {
                 executor = RoleplayHeadPatExecutor()
 
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -130,7 +131,7 @@ class RoleplayCommand {
                 }
             }
 
-            subcommand(I18N_PREFIX.Highfive.Label, I18N_PREFIX.Highfive.Description) {
+            subcommand(I18N_PREFIX.Highfive.Label, I18N_PREFIX.Highfive.Description, UUID.fromString("1f78591d-db42-46da-b18d-21860622b823")) {
                 executor = RoleplayHighFiveExecutor()
 
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -140,7 +141,7 @@ class RoleplayCommand {
                 }
             }
 
-            subcommand(I18N_PREFIX.Attack.Label, I18N_PREFIX.Attack.Description) {
+            subcommand(I18N_PREFIX.Attack.Label, I18N_PREFIX.Attack.Description, UUID.fromString("9a512a0e-139c-4283-a986-bfc957bdcc59")) {
                 executor = RoleplayAttackExecutor()
 
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -149,7 +150,7 @@ class RoleplayCommand {
                 }
             }
 
-            subcommand(I18N_PREFIX.Dance.Label, I18N_PREFIX.Dance.Description) {
+            subcommand(I18N_PREFIX.Dance.Label, I18N_PREFIX.Dance.Description, UUID.fromString("4526b150-ecad-4633-a13b-285d25e266b1")) {
                 executor = RoleplayDanceExecutor()
 
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -189,7 +190,7 @@ class RoleplayCommand {
     }
 
     class RoleplayUserCommand(val loritta: LorittaBot) : UserCommandDeclarationWrapper {
-        override fun command() = userCommand(I18N_PREFIX.DoRoleplayAction, CommandCategory.ROLEPLAY, RoleplayUserExecutor(loritta)) {
+        override fun command() = userCommand(I18N_PREFIX.DoRoleplayAction, CommandCategory.ROLEPLAY, UUID.fromString("eae40fed-c6cc-4c9b-b828-ef8b5784c4b0"), RoleplayUserExecutor(loritta)) {
             this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         }
 

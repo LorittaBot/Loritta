@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.MessageCommandD
 import net.perfectdreams.loritta.morenitta.interactions.commands.messageCommand
 import net.perfectdreams.loritta.morenitta.messageverify.LoriMessageDataUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import java.util.*
 
 class SaveMessageCommand(val m: LorittaBot) {
     companion object {
@@ -25,13 +26,13 @@ class SaveMessageCommand(val m: LorittaBot) {
     }
 
     class SaveMessagePublicCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
-        override fun command() = messageCommand(I18N_PREFIX.LabelPublic, CommandCategory.DISCORD, SaveMessageExecutor(m, true)) {
+        override fun command() = messageCommand(I18N_PREFIX.LabelPublic, CommandCategory.DISCORD, UUID.fromString("164f6195-e1be-4afa-8df5-8002ead39148"), SaveMessageExecutor(m, true)) {
             this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         }
     }
 
     class SaveMessagePrivateCommand(val m: LorittaBot) : MessageCommandDeclarationWrapper {
-        override fun command() = messageCommand(I18N_PREFIX.LabelPrivate, CommandCategory.DISCORD, SaveMessageExecutor(m, false)) {
+        override fun command() = messageCommand(I18N_PREFIX.LabelPrivate, CommandCategory.DISCORD, UUID.fromString("5648586b-3891-4472-b5ef-a0423dd499dc"), SaveMessageExecutor(m, false)) {
             this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         }
     }

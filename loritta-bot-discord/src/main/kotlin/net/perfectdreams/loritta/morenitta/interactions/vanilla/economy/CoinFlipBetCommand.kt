@@ -37,9 +37,10 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.LocalDateTime
+import java.util.*
 
 class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
-    override fun command() = slashCommand(I18nKeysData.Commands.Command.Coinflipbet.Label, I18nKeysData.Commands.Command.Coinflipbet.Description, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18nKeysData.Commands.Command.Coinflipbet.Label, I18nKeysData.Commands.Command.Coinflipbet.Description, CommandCategory.ECONOMY, UUID.fromString("49d61f90-9e3d-461a-95e8-7252841466f6")) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         this.interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)

@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import kotlinx.datetime.*
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -21,13 +21,14 @@ import net.perfectdreams.loritta.serializable.UserId
 import java.time.*
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.*
 
 class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Daily
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("e9fc464e-2064-445b-a17a-dfe89a3dbc87")) {
         enableLegacyMessageSupport = true
         alternativeLegacyLabels.apply {
             add("diário")

@@ -2,24 +2,26 @@ package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import java.util.*
 
 // ===[ SLASH COMMANDS ]===
-fun slashCommand(name: StringI18nData, description: StringI18nData, category: CommandCategory, block: SlashCommandDeclarationBuilder.() -> (Unit)) = SlashCommandDeclarationBuilder(
+fun slashCommand(name: StringI18nData, description: StringI18nData, category: CommandCategory, uniqueId: UUID, block: SlashCommandDeclarationBuilder.() -> (Unit)) = SlashCommandDeclarationBuilder(
     name,
     description,
-    category
+    category,
+    uniqueId
 ).apply(block)
 
 @InteraKTionsUnleashedDsl
 class SlashCommandDeclarationBuilder(
     val name: StringI18nData,
     val description: StringI18nData,
-    val category: CommandCategory
+    val category: CommandCategory,
+    val uniqueId: UUID
 ) {
     var examples: ListI18nData? = null
     var executor: LorittaSlashCommandExecutor? = null
@@ -33,13 +35,17 @@ class SlashCommandDeclarationBuilder(
     var integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
     var interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
 
-    fun subcommand(name: StringI18nData, description: StringI18nData, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
+    fun subcommand(name: StringI18nData, description: StringI18nData, uniqueId: UUID, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands.add(
             SlashCommandDeclarationBuilder(
                 name,
                 description,
-                category
-            ).apply(block)
+                category,
+                uniqueId
+            ).apply {
+                this.integrationTypes = this@SlashCommandDeclarationBuilder.integrationTypes
+                this.interactionContexts = this@SlashCommandDeclarationBuilder.interactionContexts
+            }.apply(block)
         )
     }
 
@@ -48,7 +54,9 @@ class SlashCommandDeclarationBuilder(
             SlashCommandGroupDeclarationBuilder(
                 name,
                 description,
-                category
+                category,
+                integrationTypes,
+                interactionContexts
             ).apply(block)
         )
     }
@@ -58,6 +66,7 @@ class SlashCommandDeclarationBuilder(
             name,
             description,
             category,
+            uniqueId,
             examples,
             defaultMemberPermissions,
             isGuildOnly,
@@ -77,18 +86,24 @@ class SlashCommandDeclarationBuilder(
 class SlashCommandGroupDeclarationBuilder(
     val name: StringI18nData,
     val description: StringI18nData,
-    val category: CommandCategory
+    val category: CommandCategory,
+    private val integrationTypes: List<IntegrationType>,
+    private val interactionContexts: List<InteractionContextType>
 ) {
     // Groups can't have executors!
     val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
     var alternativeLegacyLabels = mutableListOf<String>()
 
-    fun subcommand(name: StringI18nData, description: StringI18nData, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
+    fun subcommand(name: StringI18nData, description: StringI18nData, uniqueId: UUID, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += SlashCommandDeclarationBuilder(
             name,
             description,
-            category
-        ).apply(block)
+            category,
+            uniqueId
+        ).apply {
+            this.integrationTypes = this@SlashCommandGroupDeclarationBuilder.integrationTypes
+            this.interactionContexts = this@SlashCommandGroupDeclarationBuilder.interactionContexts
+        }.apply(block)
     }
 
     fun build(): SlashCommandGroupDeclaration {
@@ -103,14 +118,15 @@ class SlashCommandGroupDeclarationBuilder(
 }
 
 // ===[ USER COMMANDS ]===
-fun userCommand(name: StringI18nData, category: CommandCategory, executor: LorittaUserCommandExecutor, block: UserCommandDeclarationBuilder.() -> (Unit) = {}) = UserCommandDeclarationBuilder(name, category, executor)
+fun userCommand(name: StringI18nData, category: CommandCategory, uniqueId: UUID, executor: LorittaUserCommandExecutor, block: UserCommandDeclarationBuilder.() -> (Unit) = {}) = UserCommandDeclarationBuilder(name, category, uniqueId, executor)
     .apply(block)
 
 @InteraKTionsUnleashedDsl
 class UserCommandDeclarationBuilder(
     val name: StringI18nData,
     val category: CommandCategory,
-    val executor: LorittaUserCommandExecutor
+    val uniqueId: UUID,
+    val executor: LorittaUserCommandExecutor,
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
     var isGuildOnly = false
@@ -121,6 +137,7 @@ class UserCommandDeclarationBuilder(
         return UserCommandDeclaration(
             name,
             category,
+            uniqueId,
             defaultMemberPermissions,
             isGuildOnly,
             integrationTypes,
@@ -131,13 +148,14 @@ class UserCommandDeclarationBuilder(
 }
 
 // ===[ MESSAGE COMMANDS ]===
-fun messageCommand(name: StringI18nData, category: CommandCategory, executor: LorittaMessageCommandExecutor, block: MessageCommandDeclarationBuilder.() -> (Unit) = {}) = MessageCommandDeclarationBuilder(name, category, executor)
+fun messageCommand(name: StringI18nData, category: CommandCategory, uniqueId: UUID, executor: LorittaMessageCommandExecutor, block: MessageCommandDeclarationBuilder.() -> (Unit) = {}) = MessageCommandDeclarationBuilder(name, category, uniqueId, executor)
     .apply(block)
 
 @InteraKTionsUnleashedDsl
 class MessageCommandDeclarationBuilder(
     val name: StringI18nData,
     val category: CommandCategory,
+    val uniqueId: UUID,
     val executor: LorittaMessageCommandExecutor
 ) {
     var defaultMemberPermissions: DefaultMemberPermissions? = null
@@ -149,6 +167,7 @@ class MessageCommandDeclarationBuilder(
         return MessageCommandDeclaration(
             name,
             category,
+            uniqueId,
             defaultMemberPermissions,
             isGuildOnly,
             integrationTypes,

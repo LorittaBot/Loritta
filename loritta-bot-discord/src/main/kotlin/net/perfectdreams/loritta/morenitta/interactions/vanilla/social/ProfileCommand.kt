@@ -119,14 +119,14 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     private val PROFILE_BADGES_I18N_PREFIX = I18nKeysData.Commands.Command.Profilebadges
     private val ABOUT_ME_I18N_PREFIX = I18nKeysData.Commands.Command.Aboutme
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("785a6cf3-8cec-4cbc-8b70-ee97dfa27582")) {
         enableLegacyMessageSupport = true
 
         examples = PROFILE_VIEW_I18N_PREFIX.Examples
 
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        subcommand(PROFILE_VIEW_I18N_PREFIX.Label, PROFILE_VIEW_I18N_PREFIX.Description) {
+        subcommand(PROFILE_VIEW_I18N_PREFIX.Label, PROFILE_VIEW_I18N_PREFIX.Description, UUID.fromString("0b3d2b12-f46f-4a16-80fd-a9088cc699b1")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("profile")
                 add("perfil")
@@ -135,7 +135,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = ProfileViewExecutor()
         }
 
-        subcommand(ABOUT_ME_I18N_PREFIX.Label, ABOUT_ME_I18N_PREFIX.Description) {
+        subcommand(ABOUT_ME_I18N_PREFIX.Label, ABOUT_ME_I18N_PREFIX.Description, UUID.fromString("3818d227-e42f-4326-a7f0-49dce58f693b")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("sobremim")
                 add("aboutme")
@@ -146,7 +146,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = AboutMeExecutor()
         }
 
-        subcommand(PROFILE_BADGES_I18N_PREFIX.Label, PROFILE_BADGES_I18N_PREFIX.Description) {
+        subcommand(PROFILE_BADGES_I18N_PREFIX.Label, PROFILE_BADGES_I18N_PREFIX.Description, UUID.fromString("6ab5bb70-3baf-4794-8389-848f75ba13a2")) {
             alternativeLegacyLabels.apply {
                 add("insígnias")
             }

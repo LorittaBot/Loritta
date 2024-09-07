@@ -12,16 +12,17 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
+import java.util.*
 
 class DrawnMaskCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Drawnmask
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.IMAGES, UUID.fromString("6dc0e9be-83c5-4d67-81f1-e0cc57eae08f")) {
         enableLegacyMessageSupport = true
 
-        subcommand(I18N_PREFIX.Atendente.Label, I18N_PREFIX.Atendente.Description) {
+        subcommand(I18N_PREFIX.Atendente.Label, I18N_PREFIX.Atendente.Description, UUID.fromString("dc029079-399e-4e60-88bc-f747dbce858d")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("atendente")
             }
@@ -29,7 +30,7 @@ class DrawnMaskCommand(val client: GabrielaImageServerClient) : SlashCommandDecl
             executor = DrawnMaskAtendenteExecutor()
         }
 
-        subcommand(I18N_PREFIX.Sign.Label, I18N_PREFIX.Sign.Description) {
+        subcommand(I18N_PREFIX.Sign.Label, I18N_PREFIX.Sign.Description, UUID.fromString("f83f6cc0-56d2-47d3-8126-e2255f4bf56c")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("drawnmasksign")
             }
@@ -37,7 +38,7 @@ class DrawnMaskCommand(val client: GabrielaImageServerClient) : SlashCommandDecl
             executor = DrawnMaskSignExecutor()
         }
 
-        subcommand(I18N_PREFIX.Word.Label, I18N_PREFIX.Word.Description) {
+        subcommand(I18N_PREFIX.Word.Label, I18N_PREFIX.Word.Description, UUID.fromString("37ee0692-075e-4275-850b-f7057e820d0e")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("drawnmaskword")
                 add("drawnword")

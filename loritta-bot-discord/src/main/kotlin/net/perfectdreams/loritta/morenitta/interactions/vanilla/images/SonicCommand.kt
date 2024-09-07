@@ -12,16 +12,17 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
+import java.util.*
 
 class SonicCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Sonic
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.IMAGES) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.IMAGES, UUID.fromString("b8fb4291-79b5-41bb-a96b-cb8be4839693")) {
         enableLegacyMessageSupport = true
 
-        subcommand(I18N_PREFIX.Knuxthrow.Label, I18N_PREFIX.Knuxthrow.Description) {
+        subcommand(I18N_PREFIX.Knuxthrow.Label, I18N_PREFIX.Knuxthrow.Description, UUID.fromString("0be0dabf-5acb-4793-9e7b-accd121f312e")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("knuxthrow")
                 add("knucklesthrow")
@@ -36,14 +37,14 @@ class SonicCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarat
             executor = KnuxThrowExecutor()
         }
 
-        subcommand(I18N_PREFIX.Maniatitlecard.Label, I18N_PREFIX.Maniatitlecard.Description) {
+        subcommand(I18N_PREFIX.Maniatitlecard.Label, I18N_PREFIX.Maniatitlecard.Description, UUID.fromString("81d25db7-ad55-4bae-93c3-79bbfe344469")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("maniatitlecard")
             }
             executor = ManiaTitleCardExecutor()
         }
 
-        subcommand(I18N_PREFIX.Studiopolistv.Label, I18N_PREFIX.Studiopolistv.Description) {
+        subcommand(I18N_PREFIX.Studiopolistv.Label, I18N_PREFIX.Studiopolistv.Description, UUID.fromString("09fb2acd-91d0-4ef4-a4a9-021b0353c511")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("studiopolistv")
                 add("studiopolis")

@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageRe
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
 import java.awt.Color
+import java.util.*
 
 class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclarationWrapper {
     companion object {
@@ -56,11 +57,11 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
         )
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.IMAGES) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.IMAGES, UUID.fromString("f9f6e2bb-88de-4a72-aa9f-ff7805527a5c")) {
         enableLegacyMessageSupport = true
 
         subcommandGroup(I18N_PREFIX.Bolsonaro.Label, I18N_PREFIX.Bolsonaro.Description) {
-            subcommand(I18N_PREFIX.Bolsonaro.Tv.Label, I18N_PREFIX.Bolsonaro.Tv.Description) {
+            subcommand(I18N_PREFIX.Bolsonaro.Tv.Label, I18N_PREFIX.Bolsonaro.Tv.Description, UUID.fromString("5b306cdc-6b71-417f-9b94-1ba9119d344b")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("bolsonaro")
                     add("bolsonarotv")
@@ -69,7 +70,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
                 executor = BolsonaroTvExecutor()
             }
 
-            subcommand(I18N_PREFIX.Bolsonaro.Tv2.Label, I18N_PREFIX.Bolsonaro.Tv.Description) {
+            subcommand(I18N_PREFIX.Bolsonaro.Tv2.Label, I18N_PREFIX.Bolsonaro.Tv.Description, UUID.fromString("4ce1ccda-085c-4b97-8e86-4fa9f56df491")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("bolsonarotv2")
                     add("bolsonaro2")
@@ -78,7 +79,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
                 executor = BolsonaroTv2Executor()
             }
 
-            subcommand(I18N_PREFIX.Bolsonaro.Frame.Label, I18N_PREFIX.Bolsonaro.Frame.Description) {
+            subcommand(I18N_PREFIX.Bolsonaro.Frame.Label, I18N_PREFIX.Bolsonaro.Frame.Description, UUID.fromString("e7e5508e-79d8-40b4-80ab-ca09b67619ba")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("bolsoframe")
                 }
@@ -88,7 +89,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
         }
 
         subcommandGroup(I18N_PREFIX.Ata.Label, I18N_PREFIX.Ata.Description) {
-            subcommand(I18N_PREFIX.Ata.Monica.Label, I18N_PREFIX.Ata.Monica.Description) {
+            subcommand(I18N_PREFIX.Ata.Monica.Label, I18N_PREFIX.Ata.Monica.Description, UUID.fromString("6724b339-265f-4731-84f8-0be4495b229b")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("ata")
                     add("monicaata")
@@ -97,7 +98,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
                 executor = MonicaAtaExecutor()
             }
 
-            subcommand(I18N_PREFIX.Ata.Chico.Label, I18N_PREFIX.Ata.Chico.Description) {
+            subcommand(I18N_PREFIX.Ata.Chico.Label, I18N_PREFIX.Ata.Chico.Description, UUID.fromString("0e78be4d-1ec2-4511-a83e-c33a927d45f7")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("chicoata")
                 }
@@ -105,7 +106,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
                 executor = ChicoAtaExecutor()
             }
 
-            subcommand(I18N_PREFIX.Ata.Lori.Label, I18N_PREFIX.Ata.Lori.Label) {
+            subcommand(I18N_PREFIX.Ata.Lori.Label, I18N_PREFIX.Ata.Lori.Label, UUID.fromString("86d12d0a-25fb-4499-827a-9892e81a04ab")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("loriata")
                 }
@@ -113,7 +114,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
                 executor = LoriAtaExecutor()
             }
 
-            subcommand(I18N_PREFIX.Ata.Gessy.Label, I18N_PREFIX.Ata.Gessy.Description) {
+            subcommand(I18N_PREFIX.Ata.Gessy.Label, I18N_PREFIX.Ata.Gessy.Description, UUID.fromString("11fd7a8e-f88e-42ee-8634-f09744244a9c")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("gessyata")
                 }
@@ -123,7 +124,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
         }
 
         subcommandGroup(I18N_PREFIX.Ednaldo.Label, TodoFixThisData) {
-            subcommand(I18N_PREFIX.Ednaldo.Bandeira.Label, I18N_PREFIX.Ednaldo.Bandeira.Description) {
+            subcommand(I18N_PREFIX.Ednaldo.Bandeira.Label, I18N_PREFIX.Ednaldo.Bandeira.Description, UUID.fromString("9dbee067-10d9-42a9-bf29-dc7855893eff")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("ednaldobandeira")
                 }
@@ -132,7 +133,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
 
             }
 
-            subcommand(I18N_PREFIX.Ednaldo.Tv.Label, I18N_PREFIX.Ednaldo.Tv.Description) {
+            subcommand(I18N_PREFIX.Ednaldo.Tv.Label, I18N_PREFIX.Ednaldo.Tv.Description, UUID.fromString("abeab933-f98a-476d-9a73-9a91aab4cde1")) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
                     add("ednaldotv")
                 }
@@ -141,7 +142,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             }
         }
 
-        subcommand(I18N_PREFIX.Cortesflow.Label, I18N_PREFIX.Cortesflow.Description) {
+        subcommand(I18N_PREFIX.Cortesflow.Label, I18N_PREFIX.Cortesflow.Description, UUID.fromString("272c1348-95c1-41f5-8744-9387ffddaf2b")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("cortesflow")
             }
@@ -149,7 +150,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             executor = CortesFlowExecutor()
         }
 
-        subcommand(I18N_PREFIX.Sam.Label, I18N_PREFIX.Sam.Description) {
+        subcommand(I18N_PREFIX.Sam.Label, I18N_PREFIX.Sam.Description, UUID.fromString("28e12fa0-ca38-455c-8b30-20615848ef0c")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("sam")
             }
@@ -157,7 +158,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             executor = SAMExecutor()
         }
 
-        subcommand(I18N_PREFIX.Canelladvd.Label, I18N_PREFIX.Canelladvd.Description) {
+        subcommand(I18N_PREFIX.Canelladvd.Label, I18N_PREFIX.Canelladvd.Description, UUID.fromString("7682f13c-7e78-491e-8285-3da56194c199")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("canelladvd")
             }
@@ -165,7 +166,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             executor = CanellaDvdExecutor()
         }
 
-        subcommand(I18N_PREFIX.Cepo.Label, I18N_PREFIX.Cepo.Description) {
+        subcommand(I18N_PREFIX.Cepo.Label, I18N_PREFIX.Cepo.Description, UUID.fromString("ec585aa2-02a7-4eff-9861-cf8560fce192")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("cepo")
             }
@@ -173,7 +174,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             executor = CepoDeMadeiraExecutor()
         }
 
-        subcommand(I18N_PREFIX.Romerobritto.Label, I18N_PREFIX.Romerobritto.Description) {
+        subcommand(I18N_PREFIX.Romerobritto.Label, I18N_PREFIX.Romerobritto.Description, UUID.fromString("d5923869-a6c9-4faa-a9de-79f5b49f4edf")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("romerobritto")
             }
@@ -181,7 +182,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             executor = RomeroBrittoExecutor()
         }
 
-        subcommand(I18N_PREFIX.Briggscover.Label, I18N_PREFIX.Briggscover.Description) {
+        subcommand(I18N_PREFIX.Briggscover.Label, I18N_PREFIX.Briggscover.Description, UUID.fromString("cd077e5a-2390-4825-92e1-b88a0d48356a")) {
             alternativeLegacyAbsoluteCommandPaths.apply {
                 add("briggscover")
             }

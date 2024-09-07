@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.website.components.EmptySection.empty
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.BlueskyProfile
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
+import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.morenitta.website.views.dashboard.guild.GuildDashboardView
 import net.perfectdreams.loritta.morenitta.website.views.htmxDiscordLikeLoadingButtonSetup
 import net.perfectdreams.loritta.morenitta.website.views.htmxGetAsHref
@@ -103,23 +104,14 @@ class GuildBlueskyView(
                                             this.text("Continuar")
                                         }
 
-                                        script {
-                                            unsafe {
-                                                raw(
-                                                    """
-                                                        var input = selectFirst("[name='handle']")
-                                                        var button = me()
-                                                        input.on("input", e => {
-                                                            if (input.value.trim() === '') {
-                                                                button.disabled = true;
-                                                            } else {
-                                                                button.disabled = false;
-                                                            }
-                                                        })
-                                                    """.trimIndent()
-                                                )
-                                            }
-                                        }
+                                        //language=JavaScript
+                                        tsukiScript(code = """
+                                             var input = selectFirst("[name='handle']")
+                                             var button = self
+                                             input.on("input", e => {
+                                                 button.disabled = input.handle.value.trim() === '';
+                                             })
+                                        """.trimIndent())
                                     }
                                 )
                             )

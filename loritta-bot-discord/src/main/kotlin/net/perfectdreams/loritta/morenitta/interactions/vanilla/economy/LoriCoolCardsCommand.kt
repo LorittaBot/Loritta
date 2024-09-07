@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -23,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import org.jetbrains.exposed.sql.*
 import java.awt.Color
 import java.time.Instant
+import java.util.*
 
 class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -33,56 +33,56 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
     val buyStickers = LoriCoolCardsBuyStickersExecutor(loritta, this)
     val viewAlbum = LoriCoolCardsViewAlbumExecutor(loritta, this)
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY, UUID.fromString("1b5959b6-2e34-44eb-b411-2fec459dbcf8")) {
         this.enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
+        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description, UUID.fromString("dd838642-7ad8-4d23-9ba2-a0fe116a6faf")) {
             // Buy
             executor = buyStickers
         }
 
-        subcommand(I18N_PREFIX.View.Label, I18N_PREFIX.View.Description) {
+        subcommand(I18N_PREFIX.View.Label, I18N_PREFIX.View.Description, UUID.fromString("c4d1ff4c-23b5-429c-9515-84ae0374085d")) {
             // View Figurinhas Stats
             executor = LoriCoolCardsViewExecutor()
         }
 
-        subcommand(I18N_PREFIX.Stick.Label, I18N_PREFIX.Stick.Description) {
+        subcommand(I18N_PREFIX.Stick.Label, I18N_PREFIX.Stick.Description, UUID.fromString("a117846c-8155-41c4-9484-b194c992abc4")) {
             // Stick stickers
             executor = stickStickers
         }
 
-        subcommand(I18N_PREFIX.Album.Label, I18N_PREFIX.Album.Description) {
+        subcommand(I18N_PREFIX.Album.Label, I18N_PREFIX.Album.Description, UUID.fromString("987dcb56-ae95-4df0-89d2-1bd2f3124ba7")) {
             // View album
             executor = viewAlbum
         }
 
-        subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description) {
+        subcommand(I18N_PREFIX.Stats.Label, I18N_PREFIX.Stats.Description, UUID.fromString("9a65b860-5df0-4135-a09e-4229bb34a024")) {
             // Event stats
             executor = LoriCoolCardsStatsExecutor(loritta, this@LoriCoolCardsCommand)
         }
 
-        subcommand(I18N_PREFIX.Compare.Label, I18N_PREFIX.Compare.Description) {
+        subcommand(I18N_PREFIX.Compare.Label, I18N_PREFIX.Compare.Description, UUID.fromString("5365a37d-bf03-4d49-9b4f-56346b2779a0")) {
             // Compare stickers
             executor = LoriCoolCardsCompareStickersExecutor(loritta, this@LoriCoolCardsCommand)
         }
 
-        subcommand(I18N_PREFIX.Duplicates.Label, I18N_PREFIX.Duplicates.Description) {
+        subcommand(I18N_PREFIX.Duplicates.Label, I18N_PREFIX.Duplicates.Description, UUID.fromString("a6c63a8f-f753-4a2b-8637-1a8a38981210")) {
             // Duplicate stickers
             executor = LoriCoolCardsDuplicateStickersInventoryExecutor(loritta, this@LoriCoolCardsCommand)
         }
 
-        subcommand(I18N_PREFIX.Missing.Label, I18N_PREFIX.Missing.Description) {
+        subcommand(I18N_PREFIX.Missing.Label, I18N_PREFIX.Missing.Description, UUID.fromString("90e597d5-e1a7-4712-9eca-958e7a50c6de")) {
             // Missing stickers
             executor = LoriCoolCardsMissingStickersInventoryExecutor(loritta, this@LoriCoolCardsCommand)
         }
 
-        subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description) {
+        subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description, UUID.fromString("50ca3be0-06d1-4b03-9a46-84cccc1c1ce3")) {
             // Give stickers
             executor = LoriCoolCardsGiveStickersExecutor(loritta, this@LoriCoolCardsCommand)
         }
 
-        subcommand(I18N_PREFIX.Trade.Label, I18N_PREFIX.Trade.Description) {
+        subcommand(I18N_PREFIX.Trade.Label, I18N_PREFIX.Trade.Description, UUID.fromString("9355d9b7-a24e-4019-b9b9-4d08db47d509")) {
             // Trade stickers
             executor = LoriCoolCardsTradeStickersExecutor(loritta, this@LoriCoolCardsCommand)
         }

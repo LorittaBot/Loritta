@@ -20,13 +20,14 @@ import net.perfectdreams.loritta.morenitta.interactions.components.ComponentCont
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
+import java.util.*
 
 class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Language
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MISC) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MISC, UUID.fromString("401b5972-7ef3-4c92-bc0f-48b900803a13")) {
         enableLegacyMessageSupport = true
         integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
         alternativeLegacyAbsoluteCommandPaths.apply {

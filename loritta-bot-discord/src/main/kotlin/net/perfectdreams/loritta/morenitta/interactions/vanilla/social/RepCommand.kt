@@ -7,26 +7,30 @@ import kotlinx.datetime.toLocalDateTime
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.serializable.UserId
+import java.util.*
 
 class RepCommand : SlashCommandDeclarationWrapper {
     private val I18N_PREFIX = I18nKeysData.Commands.Command.Rep
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL) {
-        subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("912b9e16-bb52-47eb-afba-87ffabe9b6c9")) {
+        subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description, UUID.fromString("fb361757-9bf8-443c-83bb-733f24f482ae")) {
             executor = GiveRepExecutor()
         }
 
-        subcommand(I18N_PREFIX.Delete.Label, I18N_PREFIX.Delete.Description) {
+        subcommand(I18N_PREFIX.Delete.Label, I18N_PREFIX.Delete.Description, UUID.fromString("76c36a28-7eb1-4dac-86df-36b4da6cf13c")) {
             executor = DeleteRepExecutor()
         }
     }

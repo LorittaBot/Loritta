@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.serializable.BrokerTickerInformation
 import net.perfectdreams.loritta.serializable.UserId
 import java.awt.Color
+import java.util.*
 import kotlin.math.abs
 
 class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -51,30 +52,30 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         else Emotes.Online
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("65b54675-e0bb-43ec-948a-d6c73e57aaed")) {
         enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         val infoExecutor = BrokerInfoExecutor()
         executor = infoExecutor
 
-        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description) {
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description, UUID.fromString("d9d1daa7-9a58-4d3c-bba2-f251d40c2657")) {
             executor = infoExecutor
         }
 
-        subcommand(I18N_PREFIX.Portfolio.Label, I18N_PREFIX.Portfolio.Description) {
+        subcommand(I18N_PREFIX.Portfolio.Label, I18N_PREFIX.Portfolio.Description, UUID.fromString("05805c8e-e431-4900-b222-4c590c339da5")) {
             executor = BrokerPortfolioExecutor()
         }
 
-        subcommand(I18N_PREFIX.Stock.Label, I18N_PREFIX.Stock.Description) {
+        subcommand(I18N_PREFIX.Stock.Label, I18N_PREFIX.Stock.Description, UUID.fromString("1804a409-f0f0-489f-95ff-47363463a453")) {
             executor = BrokerStockInfoExecutor()
         }
 
-        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
+        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description, UUID.fromString("bc4903dc-8734-4092-b82d-15489529d989")) {
             executor = BrokerBuyStockExecutor()
         }
 
-        subcommand(I18N_PREFIX.Sell.Label, I18N_PREFIX.Sell.Description) {
+        subcommand(I18N_PREFIX.Sell.Label, I18N_PREFIX.Sell.Description, UUID.fromString("fd9d1aa4-1c6a-4075-9f01-edd0bcae4e58")) {
             executor = BrokerSellStockExecutor()
         }
     }
