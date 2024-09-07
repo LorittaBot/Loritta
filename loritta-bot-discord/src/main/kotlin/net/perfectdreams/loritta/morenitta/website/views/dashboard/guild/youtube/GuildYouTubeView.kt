@@ -150,8 +150,8 @@ class GuildYouTubeView(
 
                 div(classes = "cards") {
                     if (trackedYouTubeAccounts.isNotEmpty()) {
-                        // TODO: Add sorting
                         val sortedTrackedTwitchAccounts = trackedYouTubeAccounts
+                            .sortedByDescending { it[TrackedYouTubeAccounts.addedAt] ?: it[TrackedYouTubeAccounts.editedAt] }
 
                         for (trackedTwitchAccount in sortedTrackedTwitchAccounts) {
                             val channelInfo = youtubeChannels.firstOrNull { it.channelId == trackedTwitchAccount[TrackedYouTubeAccounts.youTubeChannelId] }
