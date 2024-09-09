@@ -19,6 +19,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
@@ -140,6 +143,8 @@ class LorittaWebsite(
 
 	fun start() {
 		INSTANCE = this
+		if (loritta.isMainInstance)
+			lorifetch.statsFlow.shareIn(GlobalScope, SharingStarted.Eagerly)
 
 		val routes = DefaultRoutes.defaultRoutes(loritta, this)
 

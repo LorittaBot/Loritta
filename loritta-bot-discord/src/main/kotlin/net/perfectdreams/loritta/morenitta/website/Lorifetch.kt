@@ -95,7 +95,7 @@ class Lorifetch(private val loritta: LorittaBot) {
             logger.info { "Took $t to query stats for Lorifetch, waiting ${timeToWait}..." }
             delay(timeToWait)
         }
-    }.shareIn(GlobalScope, SharingStarted.Eagerly)
+    }
 
     data class LorifetchStats(
         val guildCount: Int,
