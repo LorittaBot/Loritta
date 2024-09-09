@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 
 fun UserId(snowflake: Snowflake) = UserId(snowflake.value)
+
 fun Snowflake.toLong() = this.value.toLong()
 
 suspend fun UsersService.getUserProfile(user: User) = getUserProfile(UserId(user.id.value))

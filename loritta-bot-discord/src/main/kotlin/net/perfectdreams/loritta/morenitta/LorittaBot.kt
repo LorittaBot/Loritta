@@ -272,6 +272,7 @@ class LorittaBot(
 	val christmasListener = ReactionListener(this)
 	val easter2023Listener = Easter2023ReactionListener(this)
 	val giveawayInteractionsListener = GiveawayInteractionsListener(this)
+	val coinFlipBetGlobalListener = CoinFlipBetGlobalListener(this)
 
 	var builder: DefaultShardManagerBuilder
 
@@ -489,6 +490,7 @@ class LorittaBot(
 				interactionsListener,
 				christmasListener,
 				giveawayInteractionsListener,
+				coinFlipBetGlobalListener,
 				easter2023Listener
 			)
 			.addEventListenerProvider {

@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 import dev.kord.common.entity.Snowflake
 import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.Clock
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -226,7 +228,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
             }
         }
 
-        fun createCoinFlipResultMessage(
+        private fun createCoinFlipResultMessage(
             loritta: LorittaBot,
             i18nContext: I18nContext,
             selfUser: UserId,
@@ -266,7 +268,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 } else {
                     styled(
                         i18nContext.get(
-                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LostJustForFun(
+                            COINFLIP_GLOBAL_I18N_PREFIX.LostJustForFun(
                                 user = "<@${selfUser.value}>",
                                 winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
                                 winnerId = winnerCachedUserInfo?.id?.value.toString()
@@ -280,7 +282,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 if (isSelfUserTheWinner) {
                     styled(
                         i18nContext.get(
-                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.CongratulationsTaxed(
+                            COINFLIP_GLOBAL_I18N_PREFIX.CongratulationsTaxed(
                                 user = "<@${selfUser.value}>",
                                 sonhosCount = result.quantityAfterTax,
                                 sonhosCountWithoutTax = result.quantity,
@@ -350,7 +352,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
 
             styled(
                 i18nContext.get(
-                    BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.RecentBetsStats(
+                    COINFLIP_GLOBAL_I18N_PREFIX.RecentBetsStats(
                         selfStats.winCount + selfStats.lostCount,
                         selfStats.winCount,
                         selfStats.lostCount,
@@ -384,28 +386,12 @@ class BetCommand : SlashCommandDeclarationWrapper {
             }
 
             actionRow(
-                loritta.interactivityManager.buttonForUser(
-                    selfUser.value.toLong(),
+                Button.of(
                     ButtonStyle.PRIMARY,
-                    if (isJustForFun)
-                        i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueJustForFunButton
-                        )
-                    else
-                        i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueButton(quantity)
-                        ),
-                    {
-                        loriEmoji = Emotes.LoriRich
-                    }
-                ) {
-                    it.deferEdit()
-
-                    addToMatchmakingQueue(
-                        it,
-                        quantity
-                    )
-                }
+                    "betglobal:$quantity",
+                    if (isJustForFun) i18nContext.get(COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueJustForFunButton) else i18nContext.get(COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueButton(quantity)),
+                    Emoji.fromCustom(Emotes.LoriRich.name, Emotes.LoriRich.id, Emotes.LoriRich.animated)
+                )
             )
         }
     }
