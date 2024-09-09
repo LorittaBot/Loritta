@@ -13,8 +13,6 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.components.SVGIcon.svgIcon
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
-import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.defaultModalCloseButton
-import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 
 object DiscordChannelSelectMenu {
     fun FlowContent.discordChannelSelectMenu(
@@ -45,6 +43,49 @@ object DiscordChannelSelectMenu {
                 }
             }
 
+            val selectedChannel = channels.firstOrNull {
+                it.idLong == selectedChannelId
+            }
+
+            // If the selected channel is null, but the selected channel ID is NOT null, then it means that the channel has been deleted or something!
+            // Show that it is an unknown channel
+            if (selectedChannelId != null && selectedChannel == null) {
+                option {
+                    attributes["loritta-select-menu-open-embedded-modal-on-select"] =
+                        EmbeddedSpicyModalUtils.encodeURIComponent(
+                            Json.encodeToString(
+                                EmbeddedSpicyModalUtils.createSpicyModal(
+                                    i18nContext.get(I18nKeysData.Website.Dashboard.ChannelDoesNotExist.Modal.Title),
+                                    true,
+                                    {
+                                        div {
+                                            for (line in i18nContext.get(I18nKeysData.Website.Dashboard.ChannelDoesNotExist.Modal.Description)) {
+                                                p {
+                                                    text(line)
+                                                }
+                                            }
+                                        }
+                                    },
+                                    EmbeddedSpicyModalUtils.modalButtonListOnlyCloseModalButton(i18nContext)
+                                )
+                            )
+                        )
+
+                    attributes["loritta-select-menu-text"] = createHTML()
+                        .div(classes = "text-with-icon-wrapper") {
+                            div {
+                                text(i18nContext.get(I18nKeysData.Website.Dashboard.ChannelDoesNotExist.UnknownChannel(selectedChannelId.toString())))
+                            }
+                        }
+
+                    selected = true
+                    disabled = true
+                    value = selectedChannelId.toString()
+
+                    text(i18nContext.get(I18nKeysData.Website.Dashboard.ChannelDoesNotExist.UnknownChannel(selectedChannelId.toString())))
+                }
+            }
+
             for (channel in channels) {
                 val hasPermissionToTalk = if (channel is GuildMessageChannel)
                     channel.canTalk()
@@ -58,23 +99,19 @@ object DiscordChannelSelectMenu {
                         attributes["loritta-select-menu-open-embedded-modal-on-select"] =
                             EmbeddedSpicyModalUtils.encodeURIComponent(
                                 Json.encodeToString(
-                                    EmbeddedSpicyModal(
+                                    EmbeddedSpicyModalUtils.createSpicyModal(
                                         i18nContext.get(I18nKeysData.Website.Dashboard.ChannelNoTalkPermissionModal.Title),
                                         true,
-                                        createHTML()
-                                            .div {
+                                        {
+                                            div {
                                                 for (line in i18nContext.get(I18nKeysData.Website.Dashboard.ChannelNoTalkPermissionModal.Description)) {
                                                     p {
                                                         text(line)
                                                     }
                                                 }
-                                            },
-                                        listOf(
-                                            createHTML()
-                                                .button(classes = "discord-button") {
-                                                    defaultModalCloseButton(i18nContext)
-                                                }
-                                        )
+                                            }
+                                        },
+                                        EmbeddedSpicyModalUtils.modalButtonListOnlyCloseModalButton(i18nContext)
                                     )
                                 )
                             )

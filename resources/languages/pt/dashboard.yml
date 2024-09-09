@@ -111,6 +111,13 @@ website:
       description:
         - "Eu não tenho permissão para enviar mensagens no canal que você escolheu..."
         - "Para eu conseguir falar neste canal, vá nas configurações do canal e, nas permissões avançadas, adicione que eu, ou o meu cargo, possa ler e mandar mensagens no canal!"
+    channelDoesNotExist:
+      unknownChannel: "Canal desconhecido ({channelId})"
+      modal:
+        title: "Canal Desconhecido"
+        description:
+          - "Parece que o canal que estava configurado foi deletado do seu servidor..."
+          - "Que tal alterar para colocar um novo canal do seu servidor? De preferência, que o canal realmente exista rsrs"
     authorizationFailedModal:
       title: "Autorização falhou!"
       description:
