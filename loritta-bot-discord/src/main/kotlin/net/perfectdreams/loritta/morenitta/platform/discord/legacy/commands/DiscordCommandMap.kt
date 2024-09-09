@@ -23,7 +23,10 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.Renam
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.UnwarnCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
+import net.perfectdreams.loritta.morenitta.commands.vanilla.images.AsciiCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.images.CocieloChavesCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.images.EmojiMashupCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.images.MorrePragaCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.LoriToolsCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.DiscordBotListStatusCommand
@@ -117,12 +120,10 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			// SAMCommand(loritta),
 			// StudiopolisTvCommand(loritta),
 			// SustoCommand(loritta),
-			CarlyAaahCommand(loritta),
 			// PetPetCommand(loritta),
 			// EdnaldoTvCommand(loritta),
 			// EdnaldoBandeiraCommand(loritta),
 			// RipTvCommand(loritta),
-			AttackOnHeartCommand(loritta),
 			// ToBeContinuedCommand(loritta),
 			// TerminatorCommand(loritta),
 			MorrePragaCommand(loritta),

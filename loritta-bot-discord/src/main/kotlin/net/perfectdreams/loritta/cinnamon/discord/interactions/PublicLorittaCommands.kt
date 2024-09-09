@@ -13,7 +13,9 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.declarations.UndertaleCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.ChavesCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.FansExplainingCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.GigaChadCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
 
 /**
@@ -66,8 +68,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // register(DrawnMaskCommand(languageManager))
 
             // ===[ VIDEOS ]===
-            register(CarlyAaahCommand(languageManager))
-            register(AttackOnHeartCommand(languageManager))
             register(FansExplainingCommand(languageManager))
             register(GigaChadCommand(languageManager))
             register(ChavesCommand(languageManager))
