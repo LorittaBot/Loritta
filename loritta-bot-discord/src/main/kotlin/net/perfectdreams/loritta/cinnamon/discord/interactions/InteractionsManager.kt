@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.t
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -64,7 +63,6 @@ class InteractionsManager(
 
         // ===[ SOCIAL ]===
         register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))
-        register(ChangeXpRankPageButtonExecutor(loritta))
 
         // ===[ UNDERTALE ]===
         register(PortraitSelectMenuExecutor(loritta, loritta.gabrielaImageServerClient))
