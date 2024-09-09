@@ -8,6 +8,3 @@ falatron:
       text: "A voz que falará o texto fornecido"
     text:
       text: "O texto que será falado"
-board:
-  label: "board"
-  description: "Toque efeitos sonoros em um canal de voz"
