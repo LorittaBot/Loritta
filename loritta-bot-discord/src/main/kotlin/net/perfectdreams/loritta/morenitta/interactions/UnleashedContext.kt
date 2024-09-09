@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.DiscordLocale
+import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -37,6 +38,7 @@ abstract class UnleashedContext(
     val memberOrNull: Member?,
     val guildOrNull: Guild?,
     val channelOrNull: MessageChannel?,
+    val discordInteractionOrNull: Interaction? = null
 ) {
     var alwaysEphemeral = false
 
@@ -51,6 +53,9 @@ abstract class UnleashedContext(
 
     val channel: MessageChannel
         get() = channelOrNull ?: error("This interaction was not sent in a message channel!")
+
+    val discordInteraction: Interaction
+        get() = discordInteractionOrNull ?: error("This is not executed by an interaction!")
 
     var wasInitiallyDeferredEphemerally: Boolean? = null
 

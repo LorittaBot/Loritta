@@ -1,6 +1,7 @@
 .metadata
 bin/
 tmp/
+.kotlin/
 *.tmp
 *.bak
 *.swp
