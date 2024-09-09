@@ -81,7 +81,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                             context.i18nContext.get(
                                 I18N_PREFIX.AddedToMatchmakingQueue(context.loritta.commandMentions.coinflipBetGlobal)
                             ),
-                            Emotes.LoriRage
+                            Emotes.LoriRich
                         )
                     }
 
