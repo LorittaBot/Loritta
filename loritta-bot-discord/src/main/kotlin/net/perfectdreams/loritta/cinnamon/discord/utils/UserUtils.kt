@@ -221,7 +221,7 @@ object UserUtils {
 
             timestamp = data.timestamp
 
-            image = loritta.config.loritta.etherealGambiService.url.removeSuffix("/") + "/loritta-sonhos-drool-cooki.png"
+            image = "https://stuff.loritta.website/loritta-sonhos-drool-cooki.png"
         }
     }
 
@@ -264,7 +264,7 @@ object UserUtils {
 
             timestamp = data.timestamp
 
-            image = loritta.config.loritta.etherealGambiService.url.removeSuffix("/") + "/loritta-sonhos-running-cooki.png"
+            image = "https://stuff.loritta.website/loritta-sonhos-running-cooki.png"
         }
     }
 
