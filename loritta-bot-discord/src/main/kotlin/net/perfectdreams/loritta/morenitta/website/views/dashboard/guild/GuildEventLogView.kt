@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.views.dashboard.guild
 
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -90,7 +91,7 @@ class GuildEventLogView(
                                             lorittaWebsite,
                                             i18nContext,
                                             "eventLogChannelId",
-                                            guild.textChannels,
+                                            guild.channels.filterIsInstance<GuildMessageChannel>(),
                                             eventLog.eventLogChannelId,
                                             null
                                         )
@@ -217,7 +218,7 @@ class GuildEventLogView(
                             lorittaWebsite,
                             i18nContext,
                             "${checkboxName}LogChannelId",
-                            guild.textChannels,
+                            guild.channels.filterIsInstance<GuildMessageChannel>(),
                             eventLogChannelId
                         ) {
                             text(i18nContext.get(I18N_PREFIX.UseDefaultChannel))
