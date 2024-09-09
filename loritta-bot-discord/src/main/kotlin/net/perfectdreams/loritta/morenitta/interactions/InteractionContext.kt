@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -20,7 +21,7 @@ abstract class InteractionContext(
     locale: BaseLocale,
     i18nContext: I18nContext,
     mentions: UnleashedMentions,
-    private val replyCallback: IReplyCallback,
+    private val replyCallback: IReplyCallback
 ) : UnleashedContext(
     loritta,
     config,
@@ -34,7 +35,8 @@ abstract class InteractionContext(
     replyCallback.user,
     replyCallback.member,
     replyCallback.guild,
-    replyCallback.messageChannel
+    replyCallback.messageChannel,
+    replyCallback.hook.interaction
 ) {
     override suspend fun deferChannelMessage(ephemeral: Boolean): UnleashedHook.InteractionHook {
         val realEphemeralState = if (alwaysEphemeral) true else ephemeral

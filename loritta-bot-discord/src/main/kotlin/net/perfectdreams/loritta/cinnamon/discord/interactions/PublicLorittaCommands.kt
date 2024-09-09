@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
@@ -81,7 +80,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // ===[ ECONOMY ]===
             register(SonhosCommand(languageManager))
             // register(BrokerCommand(languageManager))
-            register(BetCommand(languageManager))
+            // register(BetCommand(languageManager))
 
             // ===[ SOCIAL ]===
             register(AchievementsCommand(languageManager))
