@@ -20,8 +20,8 @@ import net.perfectdreams.loritta.serializable.UserId
 /**
  * This is an interaction context for the current user token.
  *
- * @param jda The JDA instance
- * @param token The user token
+ * @param jda JDA instance
+ * @param token Interaction token
  */
 class BarebonesInteractionContext(
     val jda: JDA,
@@ -30,7 +30,7 @@ class BarebonesInteractionContext(
     val hook = InteractionHook.from(jda, token)
 
     /**
-     * Sends a message with the user token.
+     * Sends a message with the interaction token.
      */
     suspend fun reply(ephemeral: Boolean, block: suspend InlineMessage<MessageCreateData>.() -> Unit): Message? {
         val builtMessage = MessageCreateBuilder {

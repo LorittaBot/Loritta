@@ -4,6 +4,7 @@ import dev.kord.common.entity.Snowflake
 import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -397,6 +398,8 @@ class BetCommand : SlashCommandDeclarationWrapper {
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY, UUID.fromString("0b70972d-31b1-3b6d-a379-8f0af60ece64")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+
         subcommandGroup(I18nKeysData.Commands.Command.Coinflip.Label, TodoFixThisData) {
             subcommand(COINFLIP_GLOBAL_I18N_PREFIX.Label, COINFLIP_GLOBAL_I18N_PREFIX.Description, UUID.fromString("23c45ce7-d802-36e3-ad47-056a2bd7ab46")) {
                 executor = CoinFlipBetGlobalExecutor()
