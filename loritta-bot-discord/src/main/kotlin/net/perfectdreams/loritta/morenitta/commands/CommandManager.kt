@@ -55,7 +55,6 @@ class CommandManager(val loritta: LorittaBot) {
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
 
 	init {
-		commandMap.add(FaustaoCommand(loritta))
 		commandMap.add(PedraPapelTesouraCommand(loritta))
 		commandMap.add(VaporondaCommand(loritta))
 		commandMap.add(QualidadeCommand(loritta))
@@ -98,8 +97,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(DrawnMaskCommand(loritta))
 
 		// =======[ DIVERSÃO ]======
-		commandMap.add(BemBoladaCommand(loritta))
-		commandMap.add(TioDoPaveCommand(loritta))
 		commandMap.add(VemDeZapCommand(loritta))
 
 		// =======[ MISC ]======

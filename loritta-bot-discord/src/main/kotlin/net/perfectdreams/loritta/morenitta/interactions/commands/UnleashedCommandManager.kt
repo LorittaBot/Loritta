@@ -278,6 +278,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(VieirinhaCommand())
         register(CancelledCommand())
         register(HungerGamesCommand(loritta))
+        register(SummonCommand(loritta))
 
         // ===[ IMAGES ]==
         register(ArtCommand(loritta.gabrielaImageServerClient))
