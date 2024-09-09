@@ -14,16 +14,20 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.*
 import kotlin.math.ceil
 
-class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor()/*, LorittaLegacyMessageCommandExecutor */ {
+class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         private const val TRANSACTIONS_PER_PAGE = 10
 
@@ -183,9 +187,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                             }
                         }
                     ) { context, strings ->
-                        val hook = context.deferEdit()
-
-                        context.updateMessageSetLoadingState(hook)
+                        val hook = context.updateMessageSetLoadingState()
 
                         val builtMessage = createMessage(
                             loritta,
@@ -370,9 +372,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             page: Long,
             transactionTypeFilter: List<TransactionType>
         ) {
-            val hook = context.deferEdit()
-
-            context.updateMessageSetLoadingState(hook)
+            val hook = context.updateMessageSetLoadingState()
 
             val builtMessage = createMessage(
                 loritta,
@@ -387,7 +387,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                 builtMessage()
             }
 
-            hook.editOriginal(asMessageEditData).queue()
+            hook.editOriginal(asMessageEditData).await()
         }
     }
 
@@ -417,6 +417,13 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
         context.reply(false) {
             message()
         }
+    }
+
+    override suspend fun convertToInteractionsArguments(
+        context: LegacyMessageCommandContext,
+        args: List<String>
+    ): Map<OptionReference<*>, Any?>? {
+        return null
     }
 
     /* TODO: Implement this when the legacy command is removed

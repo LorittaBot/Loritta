@@ -11,8 +11,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.CancelSonhosTransferButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.TransferSonhosButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.ChangeSonhosRankPageButtonExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
@@ -51,8 +49,8 @@ class InteractionsManager(
         // ===[ UTILS ]===
 
         // ===[ ECONOMY ]===
-        register(ChangeTransactionPageButtonClickExecutor(loritta))
-        register(ChangeTransactionFilterSelectMenuExecutor(loritta))
+        // register(ChangeTransactionPageButtonClickExecutor(loritta))
+        // register(ChangeTransactionFilterSelectMenuExecutor(loritta))
 
         // register(StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(loritta))
 

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.components
 
+import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.interactions.components.option
 import dev.minn.jda.ktx.interactions.components.replyModal
 import dev.minn.jda.ktx.messages.InlineMessage
@@ -31,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -74,11 +76,12 @@ class ComponentContext(
     }
 
     suspend fun updateMessageSetLoadingState(
-        hook: InteractionHook,
         updateMessageContent: Boolean = true,
         disableComponents: Boolean = true,
         loadingEmoji: DiscordEmote = LoadingEmojis.random()
-    ) {
+    ): InteractionHook {
+        val hook = deferEdit()
+
         val builtMessage = MessageEdit {
             if (updateMessageContent)
                 styled(
@@ -87,96 +90,20 @@ class ComponentContext(
                 )
 
             if (disableComponents)
-                disableComponents(loadingEmoji)
+                    event.message.components.asDisabled().forEach {
+                        this.actionRow(
+                            it.components.map {
+                                if (it is Button && event.componentId == it.id)
+                                    it.withEmoji(loadingEmoji.toJDA())
+                                else
+                                    it
+                            }
+                        )
+                    }
         }
 
         hook.editOriginal(builtMessage).await()
-    }
-
-    fun InlineMessage<*>.disableComponents(
-        loadingEmoji: DiscordEmote
-    ) {
-        val buttonComponents = mutableListOf<ItemComponent>()
-        val selectMenuComponents = mutableListOf<ItemComponent>()
-
-        event.message.components.forEach { (it as Component)
-            if (it.type == Component.Type.ACTION_ROW) {
-                it.components.forEach { (it as Component)
-                    when (it.type) {
-                        Component.Type.BUTTON -> { (it as Button)
-                            buttonComponents.add(loritta.interactivityManager.disabledButton(
-                                it.style
-                            ) {
-                                emoji = if (event.componentId == it.id) {
-                                    Emoji.fromCustom(
-                                        loadingEmoji.name,
-                                        loadingEmoji.id,
-                                        loadingEmoji.animated
-                                    )
-                                } else {
-                                    it.emoji!!.asCustom()
-                                }
-                            })
-                        }
-
-                        Component.Type.STRING_SELECT -> { (it as StringSelectMenu)
-                            selectMenuComponents.add(loritta.interactivityManager.stringSelectMenu({
-                                val minValues = if (it.minValues == 0) 1 else it.minValues
-                                val maxValues = if (it.maxValues == 0) 1 else it.maxValues
-
-                                this.maxValues = maxValues
-                                this.minValues = minValues
-
-                                isDisabled = true
-
-                                if (placeholder != null)
-                                    placeholder = it.placeholder
-
-                                if (options.isEmpty()) {
-                                    if (minValues == 1 && maxValues == 1) {
-                                        option(
-                                            i18nContext.get(
-                                                I18nKeysData.Website.Dashboard.Loading
-                                            ),
-                                            "loading_psst_hey_u_are_cute_uwu",
-                                            emoji = Emoji.fromCustom(
-                                                loadingEmoji.name,
-                                                loadingEmoji.id,
-                                                loadingEmoji.animated
-                                            ),
-                                            default = true
-                                        )
-                                    } else {
-                                        it.options.forEach {
-                                            option(
-                                                it.label,
-                                                it.value,
-                                                it.description,
-                                                it.emoji,
-                                                default = it.value in this.options.map { it?.value }
-                                            )
-                                        }
-                                    }
-                                }
-
-                            }){ context, values ->
-                                // Do nothing, the user cannot interact with this anyway :p
-                            })
-                        }
-
-                        Component.Type.TEXT_INPUT -> error("This shouldn't exist here!")
-                        Component.Type.UNKNOWN -> error("This shouldn't exist here!")
-                        else -> error("Unknown component type ${it.type}")
-                    }
-                }
-            }
-        }
-
-        if (buttonComponents.isNotEmpty())
-            actionRow(buttonComponents)
-
-        if (selectMenuComponents.isNotEmpty())
-            actionRow(selectMenuComponents)
+        return hook
     }
 
     /**

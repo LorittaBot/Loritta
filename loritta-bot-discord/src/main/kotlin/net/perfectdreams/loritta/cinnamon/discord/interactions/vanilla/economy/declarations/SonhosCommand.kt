@@ -14,6 +14,7 @@ class SonhosCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val CATEGORY_I18N_PREFIX = I18nKeysData.Commands.Category.Economy
         val SONHOS_I18N_PREFIX = I18nKeysData.Commands.Command.Sonhosatm
         val SONHOS_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Sonhosrank
+        val TRANSACTIONS_I18N_PREFIX = I18nKeysData.Commands.Command.Transactions
         val PAY_I18N_PREFIX = I18nKeysData.Commands.Command.Pay
     }
 
