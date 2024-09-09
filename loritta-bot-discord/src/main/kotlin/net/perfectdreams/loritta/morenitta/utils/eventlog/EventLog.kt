@@ -52,40 +52,57 @@ object EventLog {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
 			if (eventLogConfig.enabled && (eventLogConfig.messageEdited || eventLogConfig.messageDeleted)) {
-				val textChannel = message.guild.getGuildMessageChannelById(eventLogConfig.messageEditedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return
+				val storedMessage = loritta.newSuspendedTransaction {
+					StoredMessage.findById(message.idLong)
+				}
 
-				if (textChannel.canTalk()) {
-					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-						return
-					if (!message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-						return
+				if (storedMessage != null) {
+					val decryptedOriginalMessage = storedMessage.decryptContent(loritta)
 
-					val storedMessage = loritta.newSuspendedTransaction {
-						StoredMessage.findById(message.idLong)
+					loritta.newSuspendedTransaction {
+						storedMessage.encryptAndSetContent(loritta, LoriMessageDataUtils.convertMessageToSavedMessage(message))
 					}
 
-					if (storedMessage != null && storedMessage.decryptContent(loritta).content != message.contentRaw && eventLogConfig.messageEdited) {
-						val savedMessage = storedMessage.decryptContent(loritta)
-						val embed = EmbedBuilder()
-							.setColor(Color(238, 241, 0).rgb)
-							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, savedMessage.content, message.contentRaw, message.guildChannel.asMention).joinToString("\n")}")
-							.setAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl)
-							.setFooter(locale["modules.eventLog.userID", message.member?.user?.id], null)
-							.setTimestamp(Instant.now())
+					val textChannel = message.guild.getGuildMessageChannelById(eventLogConfig.messageEditedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return
 
-						val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
-						embed.setImage("attachment://$fileName")
+					if (textChannel.canTalk()) {
+						if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+							return
+						if (!message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+							return
 
-						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
+						if (decryptedOriginalMessage.content != message.contentRaw && eventLogConfig.messageEdited) {
+							val savedMessage = storedMessage.decryptContent(loritta)
+							val embed = EmbedBuilder()
+								.setColor(Color(238, 241, 0).rgb)
+								.setDescription(
+									"\uD83D\uDCDD ${
+										locale.getList(
+											"modules.eventLog.messageEdited",
+											message.member?.asMention,
+											savedMessage.content,
+											message.contentRaw,
+											message.guildChannel.asMention
+										).joinToString("\n")
+									}"
+								)
+								.setAuthor(
+									"${message.member?.user?.name}#${message.member?.user?.discriminator}",
+									null,
+									message.member?.user?.effectiveAvatarUrl
+								)
+								.setFooter(locale["modules.eventLog.userID", message.member?.user?.id], null)
+								.setTimestamp(Instant.now())
 
-						textChannel.sendMessageEmbeds(embed.build())
-							.addFiles(FileUpload.fromData(finalImage, fileName))
-							.await()
-					}
+							val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
+							embed.setImage("attachment://$fileName")
 
-					if (storedMessage != null) {
-						loritta.newSuspendedTransaction {
-							storedMessage.encryptAndSetContent(loritta, LoriMessageDataUtils.convertMessageToSavedMessage(message))
+							val finalImage =
+								LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
+
+							textChannel.sendMessageEmbeds(embed.build())
+								.addFiles(FileUpload.fromData(finalImage, fileName))
+								.await()
 						}
 					}
 				}
