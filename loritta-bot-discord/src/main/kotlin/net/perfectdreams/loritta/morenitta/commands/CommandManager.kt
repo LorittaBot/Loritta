@@ -66,7 +66,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(SpinnerCommand(loritta))
 		commandMap.add(LavaCommand(loritta))
 		commandMap.add(LavaReversoCommand(loritta))
-		commandMap.add(AvaliarWaifuCommand(loritta))
 		commandMap.add(RazoesCommand(loritta))
 		commandMap.add(DeusCommand(loritta))
 		commandMap.add(PerfeitoCommand(loritta))

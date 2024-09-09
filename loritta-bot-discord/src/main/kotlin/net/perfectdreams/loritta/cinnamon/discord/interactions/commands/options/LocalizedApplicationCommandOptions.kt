@@ -1,18 +1,19 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options
 
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.*
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.ChoiceableCommandOptionBuilder
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandChoiceBuilder
+import net.perfectdreams.discordinteraktions.common.commands.options.register
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.ImageReferenceCommandOptionBuilder
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.ImageReferenceOrAttachmentOptionBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.StringListCommandOptionBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.UserListCommandOptionBuilder
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 abstract class LocalizedApplicationCommandOptions(val loritta: LorittaBot) : ApplicationCommandOptions() {
     val languageManager = loritta.languageManager
@@ -158,33 +159,6 @@ abstract class LocalizedApplicationCommandOptions(val loritta: LorittaBot) : App
         maximum: Int,
         builder: UserListCommandOptionBuilder.() -> (Unit) = {}
     ) = UserListCommandOptionBuilder(languageManager, name, description, minimum, maximum)
-        .apply(builder)
-        .let {
-            register(it)
-        }
-
-    fun imageReference(
-        name: String,
-        builder: ImageReferenceCommandOptionBuilder.() -> (Unit) = {}
-    ) = ImageReferenceCommandOptionBuilder(languageManager, name, true)
-        .apply(builder)
-        .let {
-            register(it)
-        }
-
-    fun imageReferenceOrAttachment(
-        name: String,
-        builder: ImageReferenceOrAttachmentOptionBuilder.() -> (Unit) = {}
-    ) = ImageReferenceOrAttachmentOptionBuilder(name, true)
-        .apply(builder)
-        .let {
-            register(it)
-        }
-
-    fun optionalImageReferenceOrAttachment(
-        name: String,
-        builder: ImageReferenceOrAttachmentOptionBuilder.() -> (Unit) = {}
-    ) = ImageReferenceOrAttachmentOptionBuilder(name, false)
         .apply(builder)
         .let {
             register(it)

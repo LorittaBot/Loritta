@@ -1,22 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale
 
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.TextBoxHelper.textBoxTextOption
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.ColorPortraitType
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.DialogBoxType
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.TextBoxWithCustomPortraitOptionsData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class CustomTextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val text = textBoxTextOption()
 
-        val imageReference = imageReferenceOrAttachment("image")
+        // val imageReference = imageReferenceOrAttachment("image")
     }
 
     override val options = Options()
@@ -24,7 +20,7 @@ class CustomTextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServer
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
-        val imageReference = args[options.imageReference].get(context)!!
+        /* val imageReference = args[options.imageReference].get(context)!!
         val text = args[options.text]
 
         val data = TextBoxWithCustomPortraitOptionsData(
@@ -45,6 +41,6 @@ class CustomTextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServer
         context.sendMessage {
             addFile("undertale_box.gif", dialogBox)
             apply(builtMessage)
-        }
+        } */
     }
 }

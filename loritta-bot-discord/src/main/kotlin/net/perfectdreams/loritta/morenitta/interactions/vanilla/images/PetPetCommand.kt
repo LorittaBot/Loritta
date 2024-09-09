@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import java.util.*
 
@@ -86,7 +86,7 @@ class PetPetCommand(val client: GabrielaImageServerClient) : SlashCommandDeclara
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             return mapOf(
-                options.imageReference to ImageReference(
+                options.imageReference to ImageReferenceOrAttachment(
                     args.getOrNull(0),
                     context.getImage(0)
                 ),

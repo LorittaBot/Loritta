@@ -1,10 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.DiscordOptionReference
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachmentDiscordOptionReference
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 
 abstract class SlashCommandArgumentsSource {
     abstract operator fun <T> get(argument: OptionReference<T>): T
@@ -25,6 +22,14 @@ abstract class SlashCommandArgumentsSource {
                     return argument.get(option)
                 }
 
+                is ImageReferenceDiscordOptionReference -> {
+                    val imageRefOption = event.getOption(argument.name)!!
+
+                    val imageRef = imageRefOption.asString
+
+                    return ImageReference(imageRef) as T
+                }
+
                 is ImageReferenceOrAttachmentDiscordOptionReference -> {
                     val imageRefOption = event.getOption(argument.name + "_data")
                     val attachmentOption = event.getOption(argument.name + "_attachment")
@@ -32,7 +37,7 @@ abstract class SlashCommandArgumentsSource {
                     val imageRef = imageRefOption?.asString
                     val attachment = attachmentOption?.asAttachment
 
-                    return ImageReference(imageRef, attachment) as T
+                    return ImageReferenceOrAttachment(imageRef, attachment) as T
                 }
             }
         }
@@ -42,6 +47,10 @@ abstract class SlashCommandArgumentsSource {
         override fun <T> get(argument: OptionReference<T>): T {
             when (argument) {
                 is DiscordOptionReference -> {
+                    return event[argument] as T
+                }
+
+                is ImageReferenceDiscordOptionReference -> {
                     return event[argument] as T
                 }
 

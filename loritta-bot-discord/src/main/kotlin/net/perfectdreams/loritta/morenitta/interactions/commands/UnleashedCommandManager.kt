@@ -26,8 +26,6 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDe
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.ImageReferenceCommandOption
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.ImageReferenceOrAttachmentOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.StringListCommandOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.UserListCommandOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -68,6 +66,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.AttackOnHeartCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.CarlyAaahCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.ChavesCommand
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
@@ -282,6 +281,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(HungerGamesCommand(loritta))
         register(SummonCommand(loritta))
         register(JankenponCommand(loritta))
+        register(RateCommand(loritta))
 
         // ===[ IMAGES ]==
         register(ArtCommand(loritta.gabrielaImageServerClient))
@@ -313,6 +313,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ VIDEOS ]===
         register(AttackOnHeartCommand(loritta.gabrielaImageServerClient))
         register(CarlyAaahCommand(loritta.gabrielaImageServerClient))
+        register(ChavesCommand(loritta.gabrielaImageServerClient))
 
         // ===[ SOCIAL ]===
         register(ProfileCommand(loritta))
@@ -995,6 +996,16 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 }
             }
 
+            is ImageReferenceDiscordOptionReference -> {
+                return listOf(
+                    Option<String>(
+                        interaKTionsOption.name + "_data",
+                        "User, URL or Emoji",
+                        false
+                    )
+                )
+            }
+
             is ImageReferenceOrAttachmentDiscordOptionReference -> {
                 return listOf(
                     Option<String>(
@@ -1231,29 +1242,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                             this.setDescriptionLocalizations(localizedDescriptions)
                     }
                 }
-            }
-            is ImageReferenceCommandOption -> {
-                return listOf(
-                    Option<String>(
-                        name = interaKTionsOption.name,
-                        description = "User, URL or Emoji",
-                        required = interaKTionsOption.required,
-                    )
-                )
-            }
-            is ImageReferenceOrAttachmentOption -> {
-                return listOf(
-                    Option<String>(
-                        name = interaKTionsOption.name + "_data",
-                        description = "User, URL or Emoji",
-                        required = false,
-                    ),
-                    Option<Attachment>(
-                        name = interaKTionsOption.name + "_attachment",
-                        description = "Image Attachment",
-                        required = false,
-                    )
-                )
             }
             is StringListCommandOption -> {
                 return (1..interaKTionsOption.maximum).map {

@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCo
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 
 open class UnleashedGabrielaImageServerTwoCommandBase(
@@ -62,11 +62,11 @@ open class UnleashedGabrielaImageServerTwoCommandBase(
 
         if (data == firstMention?.asMention && data2 == secondMention?.asMention) {
             return mapOf(
-                options.imageReference1 to ImageReference(
+                options.imageReference1 to ImageReferenceOrAttachment(
                     firstMention?.effectiveAvatarUrl,
                     context.getImage(0)
                 ),
-                options.imageReference2 to ImageReference(
+                options.imageReference2 to ImageReferenceOrAttachment(
                     secondMention?.effectiveAvatarUrl,
                     context.getImage(1)
                 )
@@ -74,11 +74,11 @@ open class UnleashedGabrielaImageServerTwoCommandBase(
         }
 
         return mapOf(
-            options.imageReference1 to ImageReference(
+            options.imageReference1 to ImageReferenceOrAttachment(
                 data,
                 context.getImage(0)
             ),
-            options.imageReference2 to ImageReference(
+            options.imageReference2 to ImageReferenceOrAttachment(
                 data2,
                 context.getImage(1)
             )

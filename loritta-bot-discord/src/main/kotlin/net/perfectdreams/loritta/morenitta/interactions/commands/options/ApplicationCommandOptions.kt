@@ -64,6 +64,9 @@ open class ApplicationCommandOptions {
     fun optionalAttachment(name: String, description: StringI18nData) = AttachmentDiscordOptionReference<Attachment?>(name, description, false)
         .also { registeredOptions.add(it) }
 
-    fun imageReferenceOrAttachment(name: String, description: StringI18nData) = ImageReferenceOrAttachmentDiscordOptionReference<ImageReference>(name)
+    fun imageReference(name: String) = ImageReferenceDiscordOptionReference<ImageReference>(name)
+        .also { registeredOptions.add(it) }
+
+    fun imageReferenceOrAttachment(name: String, description: StringI18nData) = ImageReferenceOrAttachmentDiscordOptionReference<ImageReferenceOrAttachment>(name)
         .also { registeredOptions.add(it) }
 }

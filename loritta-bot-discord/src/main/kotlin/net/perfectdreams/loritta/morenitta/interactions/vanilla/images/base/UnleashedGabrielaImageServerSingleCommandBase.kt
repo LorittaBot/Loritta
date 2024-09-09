@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCo
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 
 open class UnleashedGabrielaImageServerSingleCommandBase(
@@ -55,7 +55,7 @@ open class UnleashedGabrielaImageServerSingleCommandBase(
 
         if (data == firstMention?.asMention) {
             return mapOf(
-                options.imageReference to ImageReference(
+                options.imageReference to ImageReferenceOrAttachment(
                     firstMention?.effectiveAvatarUrl,
                     context.getImage(0)
                 )
@@ -63,7 +63,7 @@ open class UnleashedGabrielaImageServerSingleCommandBase(
         }
 
         return mapOf(
-            options.imageReference to ImageReference(
+            options.imageReference to ImageReferenceOrAttachment(
                 data,
                 context.getImage(0)
             )

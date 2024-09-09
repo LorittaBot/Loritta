@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.base.UnleashedGabrielaImageServerSingleCommandBase
 import java.awt.Color
@@ -417,7 +417,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             if (data == firstMention?.asMention) {
                 return mapOf(
                     options.type to type.toString(),
-                    options.imageReference to ImageReference(
+                    options.imageReference to ImageReferenceOrAttachment(
                         firstMention?.effectiveAvatarUrl,
                         context.getImage(0)
                     )
@@ -425,7 +425,7 @@ class BRMemesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclar
             }
 
             return mapOf(
-                options.imageReference to ImageReference(
+                options.imageReference to ImageReferenceOrAttachment(
                     data,
                     context.getImage(0)
                 )

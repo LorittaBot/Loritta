@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ImageReferenceOrAttachment
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.newSticker
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
@@ -235,7 +235,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
                 return mapOf(
                     options.stickerName to name,
                     options.stickerTags to tags,
-                    options.sticker to ImageReference(
+                    options.sticker to ImageReferenceOrAttachment(
                         dataValue = data,
                         attachment = context.event.message.attachments.firstOrNull()
                     )
@@ -534,7 +534,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
 
                     return mapOf(
                         options.emojiName to emoji.name,
-                        options.emojiData to ImageReference(
+                        options.emojiData to ImageReferenceOrAttachment(
                             dataValue = emoji.imageUrl,
                             attachment = null
                         )
@@ -549,7 +549,7 @@ class GuildCommand : SlashCommandDeclarationWrapper {
 
                     return mapOf(
                         options.emojiName to name,
-                        options.emojiData to ImageReference(
+                        options.emojiData to ImageReferenceOrAttachment(
                             dataValue = data,
                             attachment = context.event.message.attachments.firstOrNull()
                         )

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.RateCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
@@ -12,7 +11,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.declarations.UndertaleCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.ChavesCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.GigaChadCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
@@ -37,7 +35,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(PredefinedReasonsCommand(languageManager))
 
             // ===[ FUN ]===
-            register(RateCommand(languageManager))
             register(TextTransformCommand(languageManager))
             register(SoundboxCommand(languageManager))
 
@@ -68,7 +65,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // ===[ VIDEOS ]===
             register(FansExplainingCommand(languageManager))
             register(GigaChadCommand(languageManager))
-            register(ChavesCommand(languageManager))
 
             // ===[ UTILS ]===
             register(MorseCommand(languageManager))
