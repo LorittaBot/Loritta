@@ -59,7 +59,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 
 		val bannedUsers = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).maximumSize(100)
-				.build<String, Boolean>()
+			.build<String, Boolean>()
 		private val prettyPrintJson = Json {
 			prettyPrint = true
 		}
@@ -85,8 +85,8 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				logger.info("Baixando avatar de ${event.entity.id} para enviar no event log...")
 
 				val oldAvatarUrl = event.oldAvatarUrl
-						?.replace("gif", "png")
-						?: event.user.defaultAvatarUrl
+					?.replace("gif", "png")
+					?: event.user.defaultAvatarUrl
 
 				val rawOldAvatar = LorittaUtils.downloadImage(loritta, oldAvatarUrl)
 				val rawNewAvatar = LorittaUtils.downloadImage(loritta, event.user.getEffectiveAvatarUrl(ImageFormat.PNG))
@@ -113,12 +113,12 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						loritta.newSuspendedTransaction {
 							(ServerConfigs innerJoin EventLogConfigs)
-									.select {
-										EventLogConfigs.enabled eq true and
-												(EventLogConfigs.avatarChanges eq true) and
-												(ServerConfigs.id inList guilds.map { it.idLong })
-									}
-									.toList()
+								.select {
+									EventLogConfigs.enabled eq true and
+											(EventLogConfigs.avatarChanges eq true) and
+											(ServerConfigs.id inList guilds.map { it.idLong })
+								}
+								.toList()
 						}.forEach {
 							val guildId = it[ServerConfigs.id].value
 							val eventLogChannelId = it[EventLogConfigs.avatarChangesLogChannelId] ?: it[EventLogConfigs.eventLogChannelId]
@@ -180,53 +180,46 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
-				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.messageDeletedLogChannelId ?: eventLogConfig.eventLogChannelId)
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@launch
+				val textChannel = event.guild.getGuildMessageChannelById(eventLogConfig.messageDeletedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return@launch
 
-				if (textChannel != null && textChannel.canTalk()) {
-					val storedMessage = loritta.newSuspendedTransaction {
-						StoredMessage.findById(event.messageIdLong)
+				val storedMessage = loritta.newSuspendedTransaction {
+					val storedMessage = StoredMessage.findById(event.messageIdLong)
+					// Always delete the stored message no matter what
+					StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
+					storedMessage
+				}
+
+				if (storedMessage != null && textChannel.canTalk() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS) && event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
+					val user = loritta.lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
+
+					val embed = EmbedBuilder()
+					embed.setTimestamp(Instant.now())
+					embed.setFooter(locale["modules.eventLog.userID", user.id.toString()], null)
+					embed.setColor(Color(221, 0, 0).rgb)
+
+					embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
+
+					val savedMessage = storedMessage.decryptContent(loritta)
+					var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", savedMessage.content, "<#${storedMessage.channelId}>").joinToString("\n")}"
+
+					if (savedMessage.attachments.isNotEmpty()) {
+						// We use proxy URL due to this: https://i.imgur.com/VyVlzVe.png
+						val storedAttachments = savedMessage.attachments.map {
+							it.proxyUrl
+						}
+						deletedMessage += "\n${locale["modules.eventLog.messageDeletedUploads"]}\n" + storedAttachments.joinToString(separator = "\n")
 					}
 
-					if (storedMessage != null) {
-						val user = loritta.lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
+					val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
+					embed.setImage("attachment://$fileName")
+					embed.setDescription(deletedMessage)
 
-						val embed = EmbedBuilder()
-						embed.setTimestamp(Instant.now())
-						embed.setFooter(locale["modules.eventLog.userID", user.id.toString()], null)
-						embed.setColor(Color(221, 0, 0).rgb)
+					val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
 
-						embed.setAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl)
-
-						val savedMessage = storedMessage.decryptContent(loritta)
-						var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", savedMessage.content, "<#${storedMessage.channelId}>").joinToString("\n")}"
-
-						if (savedMessage.attachments.isNotEmpty()) {
-							// We use proxy URL due to this: https://i.imgur.com/VyVlzVe.png
-							val storedAttachments = savedMessage.attachments.map {
-								it.proxyUrl
-							}
-							deletedMessage += "\n${locale["modules.eventLog.messageDeletedUploads"]}\n" + storedAttachments.joinToString(separator = "\n")
-						}
-
-						val fileName = LoriMessageDataUtils.createFileNameForSavedMessageImage(savedMessage)
-						embed.setImage("attachment://$fileName")
-						embed.setDescription(deletedMessage)
-
-						val finalImage = LoriMessageDataUtils.createSignedRenderedSavedMessage(loritta, savedMessage, true)
-
-						textChannel.sendMessageEmbeds(embed.build())
-							.addFiles(FileUpload.fromData(finalImage, fileName))
-							.await()
-
-						loritta.newSuspendedTransaction {
-							StoredMessages.deleteWhere { StoredMessages.id eq event.messageIdLong }
-						}
-						return@launch
-					}
+					textChannel.sendMessageEmbeds(embed.build())
+						.addFiles(FileUpload.fromData(finalImage, fileName))
+						.await()
+					return@launch
 				}
 			}
 		}
@@ -257,7 +250,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						val retrievedUsers = mutableMapOf<Long, CachedUserInfo?>()
 
 						val user = loritta.lorittaShards.retrieveUserInfoById(storedMessages.first().authorId)
-								?: return@launch
+							?: return@launch
 
 						retrievedUsers[storedMessages.first().authorId] = user
 

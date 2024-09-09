@@ -65,12 +65,7 @@ object EventLog {
 
 					val textChannel = message.guild.getGuildMessageChannelById(eventLogConfig.messageEditedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return
 
-					if (textChannel.canTalk()) {
-						if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
-							return
-						if (!message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-							return
-
+					if (textChannel.canTalk() && message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS) && message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL) && message.guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
 						if (decryptedOriginalMessage.content != message.contentRaw && eventLogConfig.messageEdited) {
 							val savedMessage = storedMessage.decryptContent(loritta)
 							val embed = EmbedBuilder()
