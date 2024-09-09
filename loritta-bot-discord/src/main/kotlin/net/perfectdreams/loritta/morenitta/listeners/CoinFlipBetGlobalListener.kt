@@ -9,7 +9,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.BetCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.CoinFlipBetGlobalCommand
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import java.util.*
@@ -70,7 +70,7 @@ class CoinFlipBetGlobalListener(val m: LorittaBot) : ListenerAdapter() {
 
                     context.deferEdit()
 
-                    BetCommand.addToMatchmakingQueue(
+                    CoinFlipBetGlobalCommand.addToMatchmakingQueue(
                         context,
                         quantity
                     )

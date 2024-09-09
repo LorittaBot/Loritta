@@ -1,6 +1,4 @@
----
-label: "global"
-discordOldDiscordAppWorkaroundLabel: "girarmoedaglobal"
+label: "coinflipbetglobal"
 description: "O clássico \"Gire uma moeda e veja se irá cair cara ou coroa!\", mas agora com sonhos! Eu não me responsabilizo se você perder tudo em apostas"
 invalidQuantity: "Você colocou uma quantidade inválida de sonhos! Quantidades válidas: {validQuantities}"
 quittedMatchmakingQueue: "Você saiu da fila de espera!"

@@ -21,7 +21,7 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val brokerSell = commandMention("broker sell")
     val brokerPortfolio = commandMention("broker portfolio")
 
-    val betCoinflipGlobal = commandMention("bet coinflip global")
+    val coinflipBetGlobal = commandMention("coinflipbetglobal")
 
     val webhookSendSimple = commandMention("webhook send simple")
     val webhookSendRepost = commandMention("webhook send repost")

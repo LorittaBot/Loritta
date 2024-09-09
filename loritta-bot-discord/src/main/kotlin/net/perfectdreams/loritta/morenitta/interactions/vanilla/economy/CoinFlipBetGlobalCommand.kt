@@ -17,23 +17,24 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.GACampaigns
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.BarebonesInteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.serializable.UserId
 import java.util.*
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
-class BetCommand : SlashCommandDeclarationWrapper {
+class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
     companion object {
-        val I18N_PREFIX = I18nKeysData.Commands.Command.Bet
-        val COINFLIP_GLOBAL_I18N_PREFIX = I18nKeysData.Commands.Command.Betcoinflipglobal
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Coinflipbetglobal
 
         val QUANTITIES = listOf<Long>(
             0,
@@ -58,7 +59,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 context.fail(true) {
                     styled(
                         context.i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.InvalidQuantity(
+                            I18N_PREFIX.InvalidQuantity(
                                 QUANTITIES.joinToString(", ")
                             )
                         ),
@@ -78,7 +79,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                     is BetsService.AddedToQueueResult -> context.reply(true) {
                         styled(
                             context.i18nContext.get(
-                                COINFLIP_GLOBAL_I18N_PREFIX.AddedToMatchmakingQueue(context.loritta.commandMentions.betCoinflipGlobal)
+                                I18N_PREFIX.AddedToMatchmakingQueue(context.loritta.commandMentions.coinflipBetGlobal)
                             ),
                             Emotes.LoriRage
                         )
@@ -87,7 +88,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                     is BetsService.AlreadyInQueueResult -> context.reply(true) {
                         styled(
                             context.i18nContext.get(
-                                COINFLIP_GLOBAL_I18N_PREFIX.YouAreAlreadyInTheMatchmakingQueue
+                                I18N_PREFIX.YouAreAlreadyInTheMatchmakingQueue
                             ),
                             Emotes.LoriRage
                         )
@@ -169,7 +170,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                             styled(
                                 "<@${result.user.value}> ${
                                     otherUserI18nContext.get(
-                                        COINFLIP_GLOBAL_I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
+                                        I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
                                     )
                                 }",
                                 Emotes.LoriSob
@@ -190,7 +191,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                             styled(
                                 "${context.user.asMention} ${
                                     context.i18nContext.get(
-                                        COINFLIP_GLOBAL_I18N_PREFIX.NotEnoughSonhosToBet
+                                        I18N_PREFIX.NotEnoughSonhosToBet
                                     )
                                 }",
                                 Emotes.LoriSob
@@ -258,7 +259,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 if (isSelfUserTheWinner) {
                     styled(
                         i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.CongratulationsJustForFun(
+                            I18N_PREFIX.CongratulationsJustForFun(
                                 user = "<@${selfUser.value}>",
                                 loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
                                 loserId = loserCachedUserInfo?.id?.value.toString()
@@ -269,7 +270,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 } else {
                     styled(
                         i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.LostJustForFun(
+                            I18N_PREFIX.LostJustForFun(
                                 user = "<@${selfUser.value}>",
                                 winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
                                 winnerId = winnerCachedUserInfo?.id?.value.toString()
@@ -283,7 +284,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 if (isSelfUserTheWinner) {
                     styled(
                         i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.CongratulationsTaxed(
+                            I18N_PREFIX.CongratulationsTaxed(
                                 user = "<@${selfUser.value}>",
                                 sonhosCount = result.quantityAfterTax,
                                 sonhosCountWithoutTax = result.quantity,
@@ -296,7 +297,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 } else {
                     styled(
                         i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.LostTaxed(
+                            I18N_PREFIX.LostTaxed(
                                 user = "<@${selfUser.value}>",
                                 sonhosCount = result.quantityAfterTax,
                                 sonhosCountWithoutTax = result.quantity,
@@ -311,7 +312,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 if (isSelfUserTheWinner) {
                     styled(
                         i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.Congratulations(
+                            I18N_PREFIX.Congratulations(
                                 user = "<@${selfUser.value}>",
                                 sonhosCount = result.quantityAfterTax,
                                 loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
@@ -325,7 +326,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                     if (result.winner !in result.premiumUsers && result.loser in result.premiumUsers) {
                         styled(
                             i18nContext.get(
-                                COINFLIP_GLOBAL_I18N_PREFIX.DontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium(
+                                I18N_PREFIX.DontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium(
                                     GACampaigns.premiumUpsellDiscordMessageUrl(
                                         loritta.config.loritta.website.url,
                                         "bet-coinflip-global",
@@ -339,7 +340,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 } else {
                     styled(
                         i18nContext.get(
-                            COINFLIP_GLOBAL_I18N_PREFIX.Lost(
+                            I18N_PREFIX.Lost(
                                 user = "<@${selfUser.value}>",
                                 sonhosCount = result.quantityAfterTax,
                                 winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
@@ -353,7 +354,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
 
             styled(
                 i18nContext.get(
-                    COINFLIP_GLOBAL_I18N_PREFIX.RecentBetsStats(
+                    I18N_PREFIX.RecentBetsStats(
                         selfStats.winCount + selfStats.lostCount,
                         selfStats.winCount,
                         selfStats.lostCount,
@@ -368,7 +369,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
             // emojis = the three stages of happiness/grief idk i never watched it
             if (isSelfUserTheWinner) {
                 styled(
-                    i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveWins(selfStreak)),
+                    i18nContext.get(CoinFlipBetGlobalCommand.I18N_PREFIX.YouHaveConsecutiveWins(selfStreak)),
                     when {
                         selfStreak >= 10 -> Emotes.LoriHappy
                         selfStreak >= 5 -> Emotes.LoriUwU
@@ -377,7 +378,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 )
             } else {
                 styled(
-                    i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveLosses(selfStreak)),
+                    i18nContext.get(CoinFlipBetGlobalCommand.I18N_PREFIX.YouHaveConsecutiveLosses(selfStreak)),
                     when {
                         selfStreak >= 10 -> Emotes.LoriSob
                         selfStreak >= 5 -> Emotes.LoriRage
@@ -390,30 +391,22 @@ class BetCommand : SlashCommandDeclarationWrapper {
                 Button.of(
                     ButtonStyle.PRIMARY,
                     "betglobal:$quantity",
-                    if (isJustForFun) i18nContext.get(COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueJustForFunButton) else i18nContext.get(COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueButton(quantity)),
+                    if (isJustForFun) i18nContext.get(I18N_PREFIX.JoinMatchmakingQueueJustForFunButton) else i18nContext.get(I18N_PREFIX.JoinMatchmakingQueueButton(quantity)),
                     Emoji.fromCustom(Emotes.LoriRich.name, Emotes.LoriRich.id, Emotes.LoriRich.animated)
                 )
             )
         }
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY, UUID.fromString("0b70972d-31b1-3b6d-a379-8f0af60ece64")) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("0b70972d-31b1-3b6d-a379-8f0af60ece64")) {
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        subcommandGroup(I18nKeysData.Commands.Command.Coinflip.Label, TodoFixThisData) {
-            subcommand(COINFLIP_GLOBAL_I18N_PREFIX.Label, COINFLIP_GLOBAL_I18N_PREFIX.Description, UUID.fromString("23c45ce7-d802-36e3-ad47-056a2bd7ab46")) {
-                executor = CoinFlipBetGlobalExecutor()
-            }
-        }
-
-        subcommand(COINFLIP_GLOBAL_I18N_PREFIX.DiscordOldDiscordAppWorkaroundLabel, COINFLIP_GLOBAL_I18N_PREFIX.Description, UUID.fromString("4faff499-92b7-3304-b84c-495a12ca9be5")) {
-            executor = CoinFlipBetGlobalExecutor()
-        }
+        executor = CoinFlipBetGlobalExecutor()
     }
 
     inner class CoinFlipBetGlobalExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
-            val quantity = string("quantity", COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Text) {
+            val quantity = string("quantity", I18N_PREFIX.Options.Quantity.Text) {
                 autocomplete { context ->
                     val currentInput = context.event.focusedOption.value
 
@@ -442,80 +435,80 @@ class BetCommand : SlashCommandDeclarationWrapper {
                         val mmStat = matchmakingStats[choice]
 
                         discordChoices[
-                                buildString {
-                                    if (mmStat == null) {
+                            buildString {
+                                if (mmStat == null) {
+                                    if (choice == 0L) {
+                                        append(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Options.Quantity.Choice.JustForFun
+                                            )
+                                        )
+                                    } else {
+                                        append(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Options.Quantity.Choice.MatchmakingSonhos(
+                                                    choice
+                                                )
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    if (mmStat.userPresentInMatchmakingQueue) {
+                                        append(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Options.Quantity.Choice.QuitMatchmakingQueue(
+                                                    choice
+                                                )
+                                            )
+                                        )
+                                    } else {
                                         if (choice == 0L) {
                                             append(
                                                 context.i18nContext.get(
-                                                    COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.JustForFun
+                                                    I18N_PREFIX.Options.Quantity.Choice.JustForFun
                                                 )
                                             )
                                         } else {
                                             append(
                                                 context.i18nContext.get(
-                                                    COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.MatchmakingSonhos(
+                                                    I18N_PREFIX.Options.Quantity.Choice.MatchmakingSonhos(
                                                         choice
                                                     )
                                                 )
                                             )
                                         }
-                                    } else {
-                                        if (mmStat.userPresentInMatchmakingQueue) {
-                                            append(
+
+                                        val averageTimeOnQueue = mmStat.averageTimeOnQueue
+
+                                        if (averageTimeOnQueue != null) {
+                                            append(" (${
                                                 context.i18nContext.get(
-                                                    COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.QuitMatchmakingQueue(
-                                                        choice
+                                                    I18N_PREFIX.Options.Quantity.Choice.AverageTimeInSeconds(
+                                                        averageTimeOnQueue.toMillis().toDouble() / 1_000
                                                     )
                                                 )
-                                            )
-                                        } else {
-                                            if (choice == 0L) {
-                                                append(
-                                                    context.i18nContext.get(
-                                                        COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.JustForFun
-                                                    )
-                                                )
-                                            } else {
-                                                append(
-                                                    context.i18nContext.get(
-                                                        COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.MatchmakingSonhos(
-                                                            choice
-                                                        )
-                                                    )
-                                                )
-                                            }
-
-                                            val averageTimeOnQueue = mmStat.averageTimeOnQueue
-
-                                            if (averageTimeOnQueue != null) {
-                                                append(" (${
-                                                    context.i18nContext.get(
-                                                        COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.AverageTimeInSeconds(
-                                                            averageTimeOnQueue.toMillis().toDouble() / 1_000
-                                                        )
-                                                    )
-                                                })")
-                                            }
-                                            append(" ")
-                                            append("[")
-
-                                            if (mmStat.playersPresentInMatchmakingQueue) {
-                                                append(
-                                                    context.i18nContext.get(COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.PlayersInMatchmakingQueue)
-                                                )
-                                                append(" | ")
-                                            }
-                                            append(
-                                                context.i18nContext.get(
-                                                    COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.RecentMatches(
-                                                        mmStat.recentMatches
-                                                    )
-                                                )
-                                            )
-                                            append("]")
+                                            })")
                                         }
+                                        append(" ")
+                                        append("[")
+
+                                        if (mmStat.playersPresentInMatchmakingQueue) {
+                                            append(
+                                                context.i18nContext.get(I18N_PREFIX.Options.Quantity.Choice.PlayersInMatchmakingQueue)
+                                            )
+                                            append(" | ")
+                                        }
+                                        append(
+                                            context.i18nContext.get(
+                                                I18N_PREFIX.Options.Quantity.Choice.RecentMatches(
+                                                    mmStat.recentMatches
+                                                )
+                                            )
+                                        )
+                                        append("]")
                                     }
                                 }
+                            }
                         ] = if (mmStat?.userPresentInMatchmakingQueue == true)
                             "q$choice"
                         else
@@ -542,7 +535,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
             ) ?: context.fail(true) {
                 styled(
                     context.i18nContext.get(
-                        COINFLIP_GLOBAL_I18N_PREFIX.InvalidQuantity(
+                        I18N_PREFIX.InvalidQuantity(
                             QUANTITIES.joinToString(", ")
                         )
                     ),
@@ -560,7 +553,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                     context.reply(true) {
                         styled(
                             context.i18nContext.get(
-                                COINFLIP_GLOBAL_I18N_PREFIX.QuittedMatchmakingQueue
+                                I18N_PREFIX.QuittedMatchmakingQueue
                             ),
                             Emotes.LoriSmile
                         )
@@ -569,7 +562,7 @@ class BetCommand : SlashCommandDeclarationWrapper {
                     context.reply(true) {
                         styled(
                             context.i18nContext.get(
-                                COINFLIP_GLOBAL_I18N_PREFIX.YouArentInTheMatchmakingQueueToLeaveIt
+                                I18N_PREFIX.YouArentInTheMatchmakingQueueToLeaveIt
                             ),
                             Emotes.Error
                         )
