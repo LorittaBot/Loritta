@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.UserId
 
 /**
- * This is an interaction context for the current user token.
+ * This is an interaction context for the interaction token.
  *
  * @param jda JDA instance
  * @param token Interaction token
