@@ -109,7 +109,8 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             val userCountField = EmojiFightParticipants.user.count()
             val emojiFightMatchmakingResultsUsersInMatches = EmojiFightParticipants.select(EmojiFightParticipants.match, userCountField)
                 .where {
-                    EmojiFightParticipants.id inList emojiFightMatchmakingResults.map { it[EmojiFightMatchmakingResults.winner] }
+                    // If it is null when we can't do anything about it
+                    EmojiFightParticipants.match inList emojiFightMatchmakingResults.mapNotNull { it[EmojiFightMatchmakingResults.match] }
                 }
                 .groupBy(EmojiFightParticipants.match)
                 .toList()
