@@ -57,7 +57,7 @@ object EventLog {
 				}
 
 				if (storedMessage != null) {
-					val decryptedOriginalMessage = storedMessage.decryptContent(loritta)
+					val savedMessage = storedMessage.decryptContent(loritta)
 
 					loritta.newSuspendedTransaction {
 						storedMessage.encryptAndSetContent(loritta, LoriMessageDataUtils.convertMessageToSavedMessage(message))
@@ -66,8 +66,7 @@ object EventLog {
 					val textChannel = message.guild.getGuildMessageChannelById(eventLogConfig.messageEditedLogChannelId ?: eventLogConfig.eventLogChannelId) ?: return
 
 					if (textChannel.canTalk() && message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS) && message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL) && message.guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
-						if (decryptedOriginalMessage.content != message.contentRaw && eventLogConfig.messageEdited) {
-							val savedMessage = storedMessage.decryptContent(loritta)
+						if (savedMessage.content != message.contentRaw && eventLogConfig.messageEdited) {
 							val embed = EmbedBuilder()
 								.setColor(Color(238, 241, 0).rgb)
 								.setDescription(
