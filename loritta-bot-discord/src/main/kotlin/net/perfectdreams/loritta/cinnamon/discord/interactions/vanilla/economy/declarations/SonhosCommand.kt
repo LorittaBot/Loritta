@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.PayExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.SonhosRankExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.TransactionsExecutor
 
 class SonhosCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
@@ -29,6 +30,10 @@ class SonhosCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
 
         subcommand(SONHOS_RANK_I18N_PREFIX.Label, SONHOS_RANK_I18N_PREFIX.Description) {
             executor = { SonhosRankExecutor(it) }
+        }
+
+        subcommand(TRANSACTIONS_I18N_PREFIX.Label, TRANSACTIONS_I18N_PREFIX.Description) {
+            executor = { TransactionsExecutor(it) }
         }
     }
 }
