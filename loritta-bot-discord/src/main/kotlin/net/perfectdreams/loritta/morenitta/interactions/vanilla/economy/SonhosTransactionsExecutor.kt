@@ -170,7 +170,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         {
                             val transactionTypes = TransactionType.entries
                             maxValues = 25
-                            minValues = 1
+                            minValues = 0
 
                             for (transactionType in transactionTypes) {
                                 option(
