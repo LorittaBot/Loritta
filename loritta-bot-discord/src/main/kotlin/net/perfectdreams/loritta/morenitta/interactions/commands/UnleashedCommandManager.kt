@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.interactions.commands.*
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Message.Attachment
@@ -63,6 +64,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.Rolepla
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.UndertaleCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.AttackOnHeartCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.CarlyAaahCommand
@@ -80,6 +82,8 @@ import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
     companion object {
+        private val logger = KotlinLogging.logger {}
+
         // TODO: THIS IS A HACK, will be removed after all Discord InteraKTions commands are migrated do InteraKTions Unleashed
         private val legacyInteraKTionsGuildAndUserInstallableCommandLabels = setOf(
             "sonhos",
@@ -354,6 +358,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
         register(RoleplayCommand.RoleplayUserCommand(loritta))
+
+        // ===[ UNDERTALE ]===
+        register(UndertaleCommand(loritta, loritta.gabrielaImageServerClient))
 
         // Check if there is any duplicated IDs
         val allCommands = slashCommands.flatMap {
@@ -678,7 +685,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         }
 
                         for (ref in executor.options.registeredOptions) {
-                            addOptions(*createOption(ref).toTypedArray())
+                            try {
+                                addOptions(*createOption(ref).toTypedArray())
+                            } catch (e: Exception) {
+                                logger.error(e) { "Something went wrong while trying to add options of $executor" }
+                            }
                         }
                     }
                 }
@@ -700,7 +711,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                 }
 
                                 for (ref in executor.options.registeredOptions) {
-                                    addOptions(*createOption(ref).toTypedArray())
+                                    try {
+                                        addOptions(*createOption(ref).toTypedArray())
+                                    } catch (e: Exception) {
+                                        logger.error(e) { "Something went wrong while trying to add options of $executor" }
+                                    }
                                 }
                             }
                         }
@@ -711,7 +726,11 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
                 if (executor != null) {
                     for (ref in executor.options.registeredOptions) {
-                        addOptions(*createOption(ref).toTypedArray())
+                        try {
+                            addOptions(*createOption(ref).toTypedArray())
+                        } catch (e: Exception) {
+                            logger.error(e) { "Something went wrong while trying to add options of $executor" }
+                        }
                     }
                 }
             }
@@ -999,9 +1018,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             is ImageReferenceDiscordOptionReference -> {
                 return listOf(
                     Option<String>(
-                        interaKTionsOption.name + "_data",
+                        interaKTionsOption.name,
                         "User, URL or Emoji",
-                        false
+                        true
                     )
                 )
             }

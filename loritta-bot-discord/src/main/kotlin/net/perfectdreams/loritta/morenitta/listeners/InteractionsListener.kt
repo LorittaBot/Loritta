@@ -994,6 +994,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
         logger.info { "Updating slash command on guild $guildId..." }
 
         val applicationCommands = manager.slashCommands.map { manager.convertDeclarationToJDA(it) } + loritta.interactionsManager.interaKTions.manager.applicationCommandsDeclarations.map { manager.convertInteraKTionsDeclarationToJDA(it) } + manager.userCommands.map { manager.convertDeclarationToJDA(it) } + manager.messageCommands.map { manager.convertDeclarationToJDA(it) }
+        logger.info { "Successfully converted all application command declarations to JDA! Total commands: ${applicationCommands.size}" }
         val applicationCommandsHash = applicationCommands.sumOf { it.toData().toString().hashCode() }
 
         while (true) {
