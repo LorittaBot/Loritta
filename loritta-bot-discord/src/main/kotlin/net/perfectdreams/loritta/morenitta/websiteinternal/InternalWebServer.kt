@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.websiteinternal.loriinternalapi.GuildJsonBenchmarkRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.WebsitePublicAPIException
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.*
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages.PostSaveMessageRoute
@@ -57,7 +58,7 @@ class InternalWebServer(val m: LorittaBot) {
     }
 
     val processors = Processors(this)
-    val publicAPIRoutes = listOf(
+    private val publicAPIRoutes = listOf(
         GetUserInfoRoute(m),
         GetUserTransactionsRoute(m),
         GetRichestUsersRoute(m),
@@ -68,6 +69,9 @@ class InternalWebServer(val m: LorittaBot) {
         PostRerollGiveawayRoute(m),
         GetGuildEmojiFightTopWinnersRoute(m),
         GetGuildUserEmojiFightVictoriesRoute(m),
+    )
+    private val internalAPIRoutes = listOf(
+        GuildJsonBenchmarkRoute(m)
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -142,6 +146,10 @@ class InternalWebServer(val m: LorittaBot) {
                         status = HttpStatusCode.Accepted
                     )
                     return@delete
+                }
+
+                internalAPIRoutes.forEach {
+                    it.register(this)
                 }
 
                 // ===[ SPARKLYPOWER APIs ]===

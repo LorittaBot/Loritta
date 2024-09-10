@@ -672,116 +672,140 @@ class LorittaBot(
 				val limitedCount = System.getProperty("loritta.shutdownJobsParallelism", "32").toInt()
 				logger.info { "Using $limitedCount limited parallism in Dispatcher.IO for shard shutdown" }
 
+				val implicitNulls = Json {
+					this.explicitNulls = false
+				}
+
 				measureTime {
 					// Limit the shard saving stuff to X jobs in parallel
 					val dispatcher = Dispatchers.IO.limitedParallelism(limitedCount)
 
-					val shardJobs = shardManager
-						.shards
-						.sortedBy { it.shardInfo.shardId } // Sorted by shard ID just to be easier to track them down in the logs
-						.map { shard ->
-							GlobalScope.async(dispatcher) {
-								measureTime {
-									val jdaImpl = shard as JDAImpl
-									val sessionId = jdaImpl.client.sessionId
-									val resumeUrl = jdaImpl.client.resumeUrl
-									val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
+					val selfUser = shardManager.shardCache.firstOrNull { it.status == JDA.Status.CONNECTED }
+						?.selfUser
 
-									// Only get connected shards, invalidate everything else
-									// The "shards.guildView.isEmpty" check is done to avoid shards with no guilds being saved to the disk, because shards without any guilds aren't correctly loaded by the code
-									// This will never happen on Loritta (yay we have enough guilds for everyone!!) but it may happen when testing Loritta
-									// So, to avoid someone debugging this without knowing wtf is happening, let's add that check in here
-									if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null || shard.guildsView.isEmpty) {
-										logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
-										// Not connected, shut down and invalidate our cached data
-										shard.shutdownNow(1000) // We don't care about persisting our gateway session
-										File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
-									} else {
-										logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
-										val shutdownBeganAt = Clock.System.now()
+					if (selfUser != null) {
+						val serializableSelfUser = DeviousConverter.User(
+							id = selfUser.idLong,
+							username = selfUser.name,
+							global_name = selfUser.globalName,
+							discriminator = selfUser.discriminator,
+							avatar = selfUser.avatarId,
+							public_flags = selfUser.flagsRaw,
+							bot = selfUser.isBot,
+							system = selfUser.isSystem
+						)
 
-										// Connected, store to the cache
-										// Using close code 1012 does not invalidate your gateway session!
-										shard.shutdownNow(1012)
+						val shardJobs = shardManager
+							.shards
+							.sortedBy { it.shardInfo.shardId } // Sorted by shard ID just to be easier to track them down in the logs
+							.map { shard ->
+								GlobalScope.async(dispatcher) {
+									measureTime {
+										val jdaImpl = shard as JDAImpl
+										val sessionId = jdaImpl.client.sessionId
+										val resumeUrl = jdaImpl.client.resumeUrl
+										val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
 
-										val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
+										// Only get connected shards, invalidate everything else
+										// The "shards.guildView.isEmpty" check is done to avoid shards with no guilds being saved to the disk, because shards without any guilds aren't correctly loaded by the code
+										// This will never happen on Loritta (yay we have enough guilds for everyone!!) but it may happen when testing Loritta
+										// So, to avoid someone debugging this without knowing wtf is happening, let's add that check in here
+										if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null || shard.guildsView.isEmpty) {
+											logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
+											// Not connected, shut down and invalidate our cached data
+											shard.shutdownNow(1000) // We don't care about persisting our gateway session
+											File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
+										} else {
+											logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
+											val shutdownBeganAt = Clock.System.now()
 
-										// Delete the current cached data for this shard
-										shardCacheFolder.deleteRecursively()
+											// Connected, store to the cache
+											// Using close code 1012 does not invalidate your gateway session!
+											shard.shutdownNow(1012)
 
-										// Create the shard cache folder
-										shardCacheFolder.mkdirs()
+											val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
 
-										val guildsCacheFile = File(shardCacheFolder, "guilds.loriguilds.zst")
-										val sessionCacheFile = File(shardCacheFolder, "session.json")
-										val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
-										val versionFile = File(shardCacheFolder, "version")
-										val deviousConverterVersionFile = File(shardCacheFolder, "deviousconverter_version")
+											// Delete the current cached data for this shard
+											shardCacheFolder.deleteRecursively()
 
-										val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
+											// Create the shard cache folder
+											shardCacheFolder.mkdirs()
 
-										val guildCount = jdaImpl.guildsView.size()
+											val guildsCacheFile = File(shardCacheFolder, "guilds.loriguilds.zst")
+											val sessionCacheFile = File(shardCacheFolder, "session.json")
+											val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
+											val versionFile = File(shardCacheFolder, "version")
+											val deviousConverterVersionFile =
+												File(shardCacheFolder, "deviousconverter_version")
 
-										logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
+											val guildIdsForReadyEvent =
+												jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
 
-										val guildsToBePersistedByteArray = mutableListOf<ByteArray>()
+											val guildCount = jdaImpl.guildsView.size()
 
-										for (guild in jdaImpl.guildsView) {
-											guild as GuildImpl
+											logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
 
-											val eventAsJson = """{"op":0,"d":${Json.encodeToString(DeviousConverter.toJson(guild))},"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}""".toByteArray(Charsets.UTF_8)
-											guildsToBePersistedByteArray.add(eventAsJson)
+											val guildsToBePersistedByteArray = mutableListOf<ByteArray>()
 
-											// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
-											guild.invalidate()
+											for (guild in jdaImpl.guildsView) {
+												guild as GuildImpl
+
+												val eventAsJson = """{"op":0,"d":${implicitNulls.encodeToString(DeviousConverter.toSerializableGuildCreateEventV4(guild, serializableSelfUser))},"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}""".toByteArray(Charsets.UTF_8)
+												guildsToBePersistedByteArray.add(eventAsJson)
+
+												// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
+												guild.invalidate()
+											}
+
+											val compressedGuilds = Zstd.compress(
+												ProtoBuf.encodeToByteArray(
+													StoredGatewayGuilds(
+														guildsToBePersistedByteArray
+													)
+												)
+											)
+
+											guildsCacheFile.writeBytes(compressedGuilds)
+
+											logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
+											sessionCacheFile
+												.writeText(
+													Json.encodeToString(
+														GatewaySessionData(
+															sessionId,
+															resumeUrl,
+															jdaImpl.responseTotal,
+															guildIdsForReadyEvent
+														)
+													)
+												)
+
+											val shutdownFinishedAt = Clock.System.now()
+											gatewayExtrasFile
+												.writeText(
+													Json.encodeToString(
+														GatewayExtrasData(
+															shutdownBeganAt,
+															shutdownFinishedAt
+														)
+													)
+												)
+
+											// Write the current DeviousConverter version...
+											deviousConverterVersionFile.writeText(DeviousConverter.CACHE_VERSION.toString())
+
+											// Only write after everything has been successfully written
+											versionFile.writeText(connectionVersion.toString())
 										}
-
-										val compressedGuilds = Zstd.compress(
-											ProtoBuf.encodeToByteArray(
-												StoredGatewayGuilds(
-													guildsToBePersistedByteArray
-												)
-											)
-										)
-
-										guildsCacheFile.writeBytes(compressedGuilds)
-
-										logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
-										sessionCacheFile
-											.writeText(
-												Json.encodeToString(
-													GatewaySessionData(
-														sessionId,
-														resumeUrl,
-														jdaImpl.responseTotal,
-														guildIdsForReadyEvent
-													)
-												)
-											)
-
-										val shutdownFinishedAt = Clock.System.now()
-										gatewayExtrasFile
-											.writeText(
-												Json.encodeToString(
-													GatewayExtrasData(
-														shutdownBeganAt,
-														shutdownFinishedAt
-													)
-												)
-											)
-
-										// Write the current DeviousConverter version...
-										deviousConverterVersionFile.writeText(DeviousConverter.CACHE_VERSION.toString())
-
-										// Only write after everything has been successfully written
-										versionFile.writeText(connectionVersion.toString())
-									}
-								}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff!" } }
+									}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff!" } }
+								}
 							}
-						}
 
-					runBlocking {
-						shardJobs.awaitAll()
+						runBlocking {
+							shardJobs.awaitAll()
+						}
+					} else {
+						logger.warn { "Skipping shard cache because there isn't any shard ready for us to get Loritta's self user reference" }
 					}
 				}.also { logger.info { "Took $it to persist all shards cache!! - Used $limitedCount limited parallism in Dispatcher.IO for shard shutdown" } }
 			}
