@@ -1,20 +1,20 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers
+package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.serializable.CachedUserInfo
-import net.perfectdreams.loritta.serializable.CoinFlipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.serializable.CoinFlipBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
-object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransformer<CoinFlipBetGlobalSonhosTransaction> {
+object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<CoinFlipBetSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,
         cachedUserInfo: CachedUserInfo,
         cachedUserInfos: MutableMap<UserId, CachedUserInfo?>,
-        transaction: CoinFlipBetGlobalSonhosTransaction
+        transaction: CoinFlipBetSonhosTransaction
     ): suspend StringBuilder.() -> (Unit) = {
         val wonTheBet = transaction.user == transaction.winner
         val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
@@ -26,7 +26,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                 appendMoneyEarnedEmoji()
                 append(
                     i18nContext.get(
-                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBetGlobal.WonTaxed(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.WonTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
                             loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
@@ -38,7 +38,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                 appendMoneyLostEmoji()
                 append(
                     i18nContext.get(
-                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBetGlobal.LostTaxed(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.LostTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
                             winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
@@ -52,7 +52,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                 appendMoneyEarnedEmoji()
                 append(
                     i18nContext.get(
-                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBetGlobal.Won(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.Won(
                             quantityAfterTax = transaction.quantity,
                             loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
                             loserId = transaction.loser.value
@@ -63,7 +63,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                 appendMoneyLostEmoji()
                 append(
                     i18nContext.get(
-                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBetGlobal.Lost(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.Lost(
                             quantity = transaction.quantity,
                             winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
                             winnerId = transaction.winner.value

@@ -1,16 +1,26 @@
 package net.perfectdreams.loritta.morenitta.interactions.components
 
+import dev.minn.jda.ktx.interactions.components.asDisabled
+import dev.minn.jda.ktx.interactions.components.option
 import dev.minn.jda.ktx.interactions.components.replyModal
 import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageEdit
 import dev.minn.jda.ktx.messages.MessageEditBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.Component
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
+import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
@@ -20,7 +30,9 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedMentions
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
+import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -61,6 +73,37 @@ class ComponentContext(
         val hook = deferEdit()
 
         return hook.editOriginal(messageEditData).await()
+    }
+
+    suspend fun updateMessageSetLoadingState(
+        updateMessageContent: Boolean = true,
+        disableComponents: Boolean = true,
+        loadingEmoji: DiscordEmote = LoadingEmojis.random()
+    ): InteractionHook {
+        val hook = deferEdit()
+
+        val builtMessage = MessageEdit {
+            if (updateMessageContent)
+                styled(
+                    i18nContext.get(I18nKeysData.Website.Dashboard.Loading),
+                    loadingEmoji
+                )
+
+            if (disableComponents)
+                    event.message.components.asDisabled().forEach {
+                        this.actionRow(
+                            it.components.map {
+                                if (it is Button && event.componentId == it.id)
+                                    it.withEmoji(loadingEmoji.toJDA())
+                                else
+                                    it
+                            }
+                        )
+                    }
+        }
+
+        hook.editOriginal(builtMessage).await()
+        return hook
     }
 
     /**
