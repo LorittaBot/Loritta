@@ -108,6 +108,7 @@ dependencies {
 
     // Used to render messages
     implementation("com.microsoft.playwright:playwright:1.45.0")
+    implementation("net.sf.trove4j:core:3.1.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
