@@ -45,7 +45,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             val transactionTypeFilter = userFacingTransactionTypeFilter.ifEmpty { TransactionType.entries.toList() }
 
             val transactions = loritta.pudding.sonhos.getUserTransactions(
-                UserId(Snowflake(userId)),
+                UserId(Snowflake(viewingTransactionsOfUserId)),
                 transactionTypeFilter,
                 TRANSACTIONS_PER_PAGE,
                 (page * TRANSACTIONS_PER_PAGE),
