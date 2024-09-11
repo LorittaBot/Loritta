@@ -13,6 +13,7 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
         val I18N_PREFIX = I18nKeysData.Commands.Command.Sonhos
         val CATEGORY_I18N_PREFIX = I18nKeysData.Commands.Category.Economy
         val TRANSACTIONS_I18N_PREFIX = I18nKeysData.Commands.Command.Transactions
+        val SONHOS_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Sonhosrank
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label2, CATEGORY_I18N_PREFIX.RootCommandDescription, CommandCategory.ECONOMY, UUID.fromString("a2f8ef4e-ba83-4fb0-a14f-12a7168acf48")) {
@@ -31,6 +32,10 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
 
         subcommand(TRANSACTIONS_I18N_PREFIX.Label, TRANSACTIONS_I18N_PREFIX.Description, UUID.fromString("d5e873bf-98e6-3770-a4e3-03f08eb80297")) {
             executor = SonhosTransactionsExecutor(loritta)
+        }
+
+        subcommand(SONHOS_RANK_I18N_PREFIX.Label, SONHOS_RANK_I18N_PREFIX.Description, UUID.fromString("edb411ac-25a1-3c7e-98bb-45881f979ac2")) {
+            executor = SonhosRankExecutor(loritta)
         }
     }
 }
