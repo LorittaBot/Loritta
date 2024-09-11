@@ -2,11 +2,9 @@ package net.perfectdreams.loritta.morenitta.website
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.decodeFromStream
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
@@ -36,65 +34,64 @@ class Lorifetch(private val loritta: LorittaBot) {
     val statsFlow = flow {
         while (true) {
             val t = measureTime {
-                try {
-                    // How much time it took to query and stuffz
-                    val playlistInfo = Yaml.default.decodeFromStream<SongPlaylist>(
-                        File(
-                            loritta.config.loritta.folders.content,
-                            "playlist.yml"
-                        ).inputStream()
-                    )
-                    val shuffledPlaylistSongs = playlistInfo.songs.shuffled(Random(0))
+                // How much time it took to query and stuffz
+                val playlistInfo = Yaml.default.decodeFromStream<SongPlaylist>(
+                    File(
+                        loritta.config.loritta.folders.content,
+                        "playlist.yml"
+                    ).inputStream()
+                )
+                val shuffledPlaylistSongs = playlistInfo.songs.shuffled(Random(0))
 
-                    val guildCount = loritta.lorittaShards.queryGuildCount()
-                    val since = Instant.now()
-                        .minusSeconds(86400)
-                        .toKotlinInstant()
+                val guildCount = loritta.lorittaShards.queryGuildCount()
+                val since = Instant.now()
+                    .minusSeconds(86400)
+                    .toKotlinInstant()
 
-                    val (executedCommands, uniqueUsersExecutedCommands) = loritta.transaction {
-                        val appCommands = ExecutedApplicationCommandsLog.select {
-                            ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
-                        }.count()
-                        val legacyCommands = ExecutedCommandsLog.select {
-                            ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
-                        }.count()
+                val (executedCommands, uniqueUsersExecutedCommands) = loritta.transaction {
+                    val appCommands = ExecutedApplicationCommandsLog.select {
+                        ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
+                    }.count()
+                    val legacyCommands = ExecutedCommandsLog.select {
+                        ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
+                    }.count()
 
-                        val uniqueAppCommands = ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
-                            ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
-                        }.groupBy(ExecutedApplicationCommandsLog.userId).toList()
-                            .map { it[ExecutedApplicationCommandsLog.userId] }
-                        val uniqueLegacyCommands = ExecutedCommandsLog.slice(ExecutedCommandsLog.userId).select {
-                            ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
-                        }.groupBy(ExecutedCommandsLog.userId).toList()
-                            .map { it[ExecutedCommandsLog.userId] }
+                    val uniqueAppCommands = ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
+                        ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
+                    }.groupBy(ExecutedApplicationCommandsLog.userId).toList()
+                        .map { it[ExecutedApplicationCommandsLog.userId] }
+                    val uniqueLegacyCommands = ExecutedCommandsLog.slice(ExecutedCommandsLog.userId).select {
+                        ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
+                    }.groupBy(ExecutedCommandsLog.userId).toList()
+                        .map { it[ExecutedCommandsLog.userId] }
 
-                        return@transaction Pair(appCommands + legacyCommands, (uniqueAppCommands + uniqueLegacyCommands).distinct().size)
-                    }
-
-                    val nowAsZST = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
-
-                    val startTime = playlistInfo.startedPlayingAt.epochSeconds // When the playlist started playing
-                    val timestamp = nowAsZST.toEpochSecond() // The timestamp we want to check
-
-                    val currentSong = findCurrentSong(shuffledPlaylistSongs, startTime, timestamp)
-
-                    emit(
-                        LorifetchStats(
-                            guildCount,
-                            executedCommands.toInt(),
-                            uniqueUsersExecutedCommands,
-                            currentSong
-                        )
-                    )
-                } catch (e: Exception) {
-                    logger.warn(e) { "Something went wrong while processing lorifetch SSE flow!" }
+                    return@transaction Pair(appCommands + legacyCommands, (uniqueAppCommands + uniqueLegacyCommands).distinct().size)
                 }
+
+                val nowAsZST = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+
+                val startTime = playlistInfo.startedPlayingAt.epochSeconds // When the playlist started playing
+                val timestamp = nowAsZST.toEpochSecond() // The timestamp we want to check
+
+                val currentSong = findCurrentSong(shuffledPlaylistSongs, startTime, timestamp)
+
+                emit(
+                    LorifetchStats(
+                        guildCount,
+                        executedCommands.toInt(),
+                        uniqueUsersExecutedCommands,
+                        currentSong
+                    )
+                )
             }
 
             val timeToWait = 1.seconds - t
             logger.info { "Took $t to query stats for Lorifetch, waiting ${timeToWait}..." }
             delay(timeToWait)
         }
+    }.catch {
+        // Yes you NEED to do the try catch it in this way
+        logger.warn(it) { "Something went wrong while processing lorifetch SSE flow!" }
     }
 
     data class LorifetchStats(
