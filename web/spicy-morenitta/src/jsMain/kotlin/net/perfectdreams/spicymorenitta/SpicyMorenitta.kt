@@ -1327,7 +1327,8 @@ class SpicyMorenitta : Logging {
 						},
 						it.value,
 						it.selected,
-						it.disabled,
+						// We don't use HTML "disabled" attribute because that doesn't let the entry be serialized to a form
+						it.getAttribute("loritta-select-menu-disabled")?.toBoolean() == true,
 						embeddedSpicyModal
 					)
 				}

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.luben.zstd.Zstd
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
@@ -33,10 +32,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
@@ -98,7 +95,6 @@ import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
-import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayListener.Companion.FAKE_EVENT_FIELD
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
 import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule

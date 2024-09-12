@@ -79,7 +79,7 @@ object DiscordChannelSelectMenu {
                         }
 
                     selected = true
-                    disabled = true
+                    attributes["loritta-select-menu-disabled"] = "true"
                     value = selectedChannelId.toString()
 
                     text(i18nContext.get(I18nKeysData.Website.Dashboard.ChannelDoesNotExist.UnknownChannel(selectedChannelId.toString())))
@@ -95,7 +95,7 @@ object DiscordChannelSelectMenu {
                 option {
                     if (!hasPermissionToTalk) {
                         // Can't talk on this channel! Disable the option and show a modal when selecting the channel
-                        disabled = true
+                        attributes["loritta-select-menu-disabled"] = "true"
                         attributes["loritta-select-menu-open-embedded-modal-on-select"] =
                             EmbeddedSpicyModalUtils.encodeURIComponent(
                                 Json.encodeToString(
