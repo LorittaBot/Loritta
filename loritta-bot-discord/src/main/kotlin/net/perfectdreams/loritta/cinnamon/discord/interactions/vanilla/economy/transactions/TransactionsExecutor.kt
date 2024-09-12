@@ -167,7 +167,7 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                         )
                     ) {
                         val transactionTypes = TransactionType.values()
-                        this.allowedValues = 1..(25.coerceAtMost(transactionTypes.size))
+                        this.allowedValues = 0..(25.coerceAtMost(transactionTypes.size))
 
                         for (transactionType in transactionTypes) {
                             option(i18nContext.get(transactionType.title), transactionType.name) {
