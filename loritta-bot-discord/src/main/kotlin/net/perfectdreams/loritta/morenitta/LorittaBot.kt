@@ -130,6 +130,7 @@ import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
 import java.io.File
 import java.io.InputStream
 import java.lang.reflect.Modifier
@@ -167,7 +168,8 @@ class LorittaBot(
 	val pudding: Pudding,
 	val cacheFolder: File,
 	val initialSessions: Map<Int, GatewaySessionData>,
-	val gatewayExtras: Map<Int, GatewayExtrasData>
+	val gatewayExtras: Map<Int, GatewayExtrasData>,
+	val cacheDatabases: Map<Int, Database>,
 ) {
 	// ===[ STATIC ]===
 	companion object {
@@ -651,11 +653,6 @@ class LorittaBot(
 				}
 				logger.info { "Disconnected from all voice channels!" }
 
-				// This is used to validate if our cache was successfully written or not
-				val connectionVersion = UUID.randomUUID()
-
-				File(cacheFolder, "version").writeText(connectionVersion.toString())
-
 				shardManager.shards.forEach { jda ->
 					// Indicate on our presence that we are restarting
 					jda.presence.setPresence(
@@ -700,6 +697,9 @@ class LorittaBot(
 							.sortedBy { it.shardInfo.shardId } // Sorted by shard ID just to be easier to track them down in the logs
 							.map { shard ->
 								GlobalScope.async(dispatcher) {
+									var upsertedGuilds = 0
+									var unchangedGuilds = 0
+
 									measureTime {
 										val jdaImpl = shard as JDAImpl
 										val sessionId = jdaImpl.client.sessionId
@@ -725,52 +725,95 @@ class LorittaBot(
 
 											val shardCacheFolder = File(cacheFolder, shard.shardInfo.shardId.toString())
 
-											// Delete the current cached data for this shard
-											shardCacheFolder.deleteRecursively()
+											// We DO NOT WANT to delete the current cached data for this shard because we want to reuse what we already have!
 
 											// Create the shard cache folder
 											shardCacheFolder.mkdirs()
 
-											val guildsCacheFile = File(shardCacheFolder, "guilds.loriguilds.zst")
-											val sessionCacheFile = File(shardCacheFolder, "session.json")
-											val gatewayExtrasFile = File(shardCacheFolder, "extras.json")
-											val versionFile = File(shardCacheFolder, "version")
-											val deviousConverterVersionFile =
-												File(shardCacheFolder, "deviousconverter_version")
+											val database = cacheDatabases[shard.shardInfo.shardId]!! // This should NEVER be null
 
-											val guildIdsForReadyEvent =
-												jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
-
-											val guildCount = jdaImpl.guildsView.size()
-
-											logger.info { "Trying to persist ${guildCount} guilds for shard ${jdaImpl.shardInfo.shardId}..." }
-
-											val guildsToBePersistedByteArray = mutableListOf<ByteArray>()
-
-											for (guild in jdaImpl.guildsView) {
-												guild as GuildImpl
-
-												val eventAsJson = """{"op":0,"d":${implicitNulls.encodeToString(DeviousConverter.toSerializableGuildCreateEventV4(guild, serializableSelfUser))},"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}""".toByteArray(Charsets.UTF_8)
-												guildsToBePersistedByteArray.add(eventAsJson)
-
-												// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
-												guild.invalidate()
+											val implictNulls = Json {
+												explicitNulls = false
 											}
 
-											val compressedGuilds = Zstd.compress(
-												ProtoBuf.encodeToByteArray(
-													StoredGatewayGuilds(
-														guildsToBePersistedByteArray
-													)
+											org.jetbrains.exposed.sql.transactions.transaction(database) {
+												SchemaUtils.createMissingTablesAndColumns(
+													CachedGuilds,
+													SessionCacheMetadata
 												)
-											)
 
-											guildsCacheFile.writeBytes(compressedGuilds)
+												val guildIdsForReadyEvent = jdaImpl.guildsView.map { it.idLong } + jdaImpl.unavailableGuilds.map { it.toLong() }
 
-											logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
-											sessionCacheFile
-												.writeText(
-													Json.encodeToString(
+												val guildCount = jdaImpl.guildsView.size()
+
+												logger.info { "Trying to persist $guildCount guilds for shard ${jdaImpl.shardInfo.shardId}..." }
+
+												// Delete any guilds from the cache that doesn't exist anymore
+												val delCount = CachedGuilds.deleteWhere { CachedGuilds.id notInList guildIdsForReadyEvent }
+
+												logger.info { "Deleted $delCount unknown guilds from shard ${jdaImpl.shardInfo.shardId}'s cache" }
+
+												val guildIdToHash = CachedGuilds.select(
+													CachedGuilds.id,
+													CachedGuilds.hashCode
+												)
+													.toList()
+													.associate { it[CachedGuilds.id].value to it[CachedGuilds.hashCode] }
+
+												logger.info { "Queried ${guildIdToHash.size} cached guilds from shard ${jdaImpl.shardInfo.shardId}'s cache" }
+
+												for (guild in jdaImpl.guildsView) {
+													guild as GuildImpl
+
+													val serializableGuild = DeviousConverter.toSerializableGuildCreateEventV4(
+														guild,
+														serializableSelfUser
+													)
+
+													// We do this because some of the elements REQUIRE it to be in a certain order to avoid issues
+													val sortedSerializableGuild = serializableGuild.copy(
+														channels = serializableGuild.channels.sortedBy {
+															it.id
+														}.map { it.copy(permission_overwrites = it.permission_overwrites?.sortedBy { it.id }) } ,
+														roles = serializableGuild.roles.sortedBy {
+															it.id
+														},
+														emojis = serializableGuild.emojis.sortedBy {
+															it.id
+														},
+														stickers = serializableGuild.stickers.sortedBy {
+															it.id
+														}
+													)
+
+													val hashCode = sortedSerializableGuild.hashCode()
+
+													// println("Guild ID: ${guild.idLong}")
+													// println("Stored code: ${guildIdToHash[guild.idLong]}")
+													// println("Hash code: $hashCode")
+													// While it is a bit iffy that we are +1 inside a transaction, it doesn't really matter in this context: Because SQLite is only serializable, it should NEVER EVER trigger a exception in the transaction
+													if (guildIdToHash[guild.idLong] != hashCode) {
+														upsertedGuilds++
+
+														// We don't need to serialize the sorted version, but it is better for us because we can diff what was changed between the previous save and the new save
+														val guildAsJson = implictNulls.encodeToString(sortedSerializableGuild)
+
+														CachedGuilds.upsert(CachedGuilds.id) {
+															it[CachedGuilds.id] = guild.idLong
+															it[CachedGuilds.hashCode] = hashCode
+															it[CachedGuilds.event] = guildAsJson
+														}
+													} else {
+														unchangedGuilds++
+													}
+
+													guild.invalidate()
+												}
+
+												logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
+												SessionCacheMetadata.upsert(SessionCacheMetadata.id) {
+													it[SessionCacheMetadata.id] = UUID.fromString("07c70756-adfc-4229-b20d-2039f34bd146")
+													it[SessionCacheMetadata.content] = Json.encodeToString(
 														GatewaySessionData(
 															sessionId,
 															resumeUrl,
@@ -778,26 +821,21 @@ class LorittaBot(
 															guildIdsForReadyEvent
 														)
 													)
-												)
+												}
 
-											val shutdownFinishedAt = Clock.System.now()
-											gatewayExtrasFile
-												.writeText(
-													Json.encodeToString(
+												SessionCacheMetadata.upsert(SessionCacheMetadata.id) {
+													it[SessionCacheMetadata.id] = UUID.fromString("6a8702f0-4c50-4875-8555-4aee0609184d")
+													it[SessionCacheMetadata.content] = Json.encodeToString(
 														GatewayExtrasData(
 															shutdownBeganAt,
-															shutdownFinishedAt
+															Clock.System.now(),
+															DeviousConverter.CACHE_VERSION
 														)
 													)
-												)
-
-											// Write the current DeviousConverter version...
-											deviousConverterVersionFile.writeText(DeviousConverter.CACHE_VERSION.toString())
-
-											// Only write after everything has been successfully written
-											versionFile.writeText(connectionVersion.toString())
+												}
+											}
 										}
-									}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff!" } }
+									}.also { logger.info { "Took $it to process shard's ${shard.shardInfo.shardId} stuff! Upserted Guilds: $upsertedGuilds; Unchanged Guilds: $unchangedGuilds" } }
 								}
 							}
 

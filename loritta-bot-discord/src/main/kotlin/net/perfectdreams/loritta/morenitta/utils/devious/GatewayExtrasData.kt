@@ -13,5 +13,10 @@ data class GatewayExtrasData(
     /**
      * When the gateway session finished to be shutted down after writing the shard data to disk, used for debugging and stats
      */
-    val shutdownFinishedAt: Instant
+    val shutdownFinishedAt: Instant,
+
+    /**
+     * The DeviousConverter version used for the cached guilds
+     */
+    val deviousConverterVersion: Int
 )

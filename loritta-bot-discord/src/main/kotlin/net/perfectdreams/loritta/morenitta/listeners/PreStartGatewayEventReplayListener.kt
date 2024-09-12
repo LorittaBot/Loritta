@@ -1,13 +1,9 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
-import com.github.luben.zstd.Zstd
-import com.github.luben.zstd.ZstdInputStreamNoFinalizer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.json.*
-import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
@@ -20,10 +16,11 @@ import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.SelfUserImpl
 import net.dv8tion.jda.internal.requests.WebSocketCode
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.devious.CachedGuilds
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResumeStatus
-import net.perfectdreams.loritta.morenitta.utils.devious.StoredGatewayGuilds
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.ExperimentalTime
@@ -88,30 +85,13 @@ class PreStartGatewayEventReplayListener(
                         // but that makes the code harder and confusing.
                         val time = measureTime {
                             jdaImpl.guildsView.writeLock().use {
-                                val compressedGuildsFile = File(cacheFolder, "${jdaImpl.shardInfo.shardId}/guilds.loriguilds.zst")
-                                val compressedGuilds = compressedGuildsFile.readBytes()
-                                val uncompressedSize = Zstd.getFrameContentSize(compressedGuilds)
-                                if (uncompressedSize == 0L)
-                                    error("Cannot decompress because uncompressed size is unknown! (0)")
-                                if (0L > uncompressedSize)
-                                    error("Cannot decompress! Error $uncompressedSize - ${Zstd.getErrorName(uncompressedSize)}")
-
-                                val uncompressedSizeAsInt = uncompressedSize.toInt()
-
-                                logger.info { "Uncompressed size of fake guild create events for shard ${event.jda.shardInfo.shardId} is $uncompressedSizeAsInt bytes" }
-
-                                val serializedLoriGuilds = ByteArray(uncompressedSizeAsInt)
-                                ZstdInputStreamNoFinalizer(compressedGuildsFile.inputStream()).use {
-                                    it.read(serializedLoriGuilds, 0, uncompressedSizeAsInt)
-                                }
-
-                                val storedGatewayGuilds = ProtoBuf.decodeFromByteArray<StoredGatewayGuilds>(serializedLoriGuilds)
-
-                                storedGatewayGuilds.guilds.forEach {
-                                    // Fill the cache out
-                                    jdaImpl.client.handleEvent(
-                                        DataObject.fromJson(it)
-                                    )
+                                val database = loritta.cacheDatabases[jdaImpl.shardInfo.shardId]!! // This should NEVER be null
+                                transaction(database) {
+                                    for (row in CachedGuilds.select(CachedGuilds.event)) {
+                                        // Fill the cache out
+                                        val dataObject = DataObject.fromJson("""{"op":0,"d":${row[CachedGuilds.event]},"t":"GUILD_CREATE","$FAKE_EVENT_FIELD":true}""")
+                                        jdaImpl.client.handleEvent(dataObject)
+                                    }
                                 }
                             }
                         }

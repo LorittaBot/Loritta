@@ -11,10 +11,12 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
-import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
+import net.perfectdreams.loritta.morenitta.utils.devious.SessionCacheMetadata
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.selectAll
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.text.SimpleDateFormat
@@ -112,55 +114,34 @@ object LorittaLauncher {
 
 		val initialSessions = mutableMapOf<Int, GatewaySessionData>()
 		val gatewayExtras = mutableMapOf<Int, GatewayExtrasData>()
-		val previousVersionKeyFile = File(cacheFolder, "version")
-		if (previousVersionKeyFile.exists()) {
-			val previousVersion = UUID.fromString(previousVersionKeyFile.readText())
-			for (shard in lorittaCluster.minShard..lorittaCluster.maxShard) {
-				try {
-					val shardCacheFolder = File(cacheFolder, shard.toString())
-					val sessionFile = File(shardCacheFolder, "session.json")
-					val extrasFile = File(shardCacheFolder, "extras.json")
-					val cacheVersionKeyFile = File(shardCacheFolder, "version")
-					val deviousConverterVersionKeyFile = File(shardCacheFolder, "deviousconverter_version")
+		val cacheDatabases = mutableMapOf<Int, Database>()
 
-					// Does not exist, so bail out
-					if (!cacheVersionKeyFile.exists()) {
-						logger.warn("Couldn't load shard $shard cached data because the version file does not exist!")
-						continue
-					}
+		for (shard in lorittaCluster.minShard..lorittaCluster.maxShard) {
+			val shardCacheFolder = File(cacheFolder, shard.toString())
+			shardCacheFolder.mkdirs()
+			val shardCacheDatabaseFile = File(shardCacheFolder, "cache.db")
+			// We want to always create a database, no matter if it exists or not
+			val shardCacheDatabase = Database.connect(
+				"jdbc:sqlite:${shardCacheDatabaseFile.absoluteFile}",
+				driver = "org.sqlite.JDBC"
+			)
 
-					if (!deviousConverterVersionKeyFile.exists()) {
-						logger.warn("Couldn't load shard $shard cached data because the DeviousConverter version file does not exist!")
-						continue
-					}
+			cacheDatabases[shard] = shardCacheDatabase
 
-					val deviousConverterVersion = deviousConverterVersionKeyFile.readText().toInt()
-					if (deviousConverterVersion != DeviousConverter.CACHE_VERSION) {
-						logger.warn("Couldn't load shard $shard cached data because the DeviousConverter version does not match!")
-						continue
-					}
+			if (shardCacheDatabaseFile.exists()) {
+				// From here on out we query the data and store it
+				org.jetbrains.exposed.sql.transactions.transaction(shardCacheDatabase) {
+					val metadata = SessionCacheMetadata.selectAll()
+						.toList()
 
-					val cacheVersion = UUID.fromString(cacheVersionKeyFile.readText())
-					// Only load the data if the version matches
-					if (cacheVersion == previousVersion) {
-						val sessionData = parseFileIfExistsNullIfException<GatewaySessionData>(sessionFile)
-						if (sessionData != null)
-							initialSessions[shard] = sessionData
-
-						val extrasData = parseFileIfExistsNullIfException<GatewayExtrasData>(extrasFile)
-						if (extrasData != null)
-							gatewayExtras[shard] = extrasData
-					} else {
-						logger.warn { "Couldn't load shard $shard cached data because the cache version does not match!" }
-					}
-				} catch (e: Exception) {
-					logger.warn { "Failed to load shard $shard cached data!" }
+					initialSessions[shard] = Json.decodeFromString<GatewaySessionData>(metadata.first { it[SessionCacheMetadata.id].value == UUID.fromString("07c70756-adfc-4229-b20d-2039f34bd146") }[SessionCacheMetadata.content])
+					gatewayExtras[shard] = Json.decodeFromString<GatewayExtrasData>(metadata.first { it[SessionCacheMetadata.id].value == UUID.fromString("6a8702f0-4c50-4875-8555-4aee0609184d") }[SessionCacheMetadata.content])
 				}
 			}
 		}
 
 		// Iniciar instância da Loritta
-		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions, gatewayExtras)
+		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, cacheFolder, initialSessions, gatewayExtras, cacheDatabases)
 		loritta.start()
 	}
 

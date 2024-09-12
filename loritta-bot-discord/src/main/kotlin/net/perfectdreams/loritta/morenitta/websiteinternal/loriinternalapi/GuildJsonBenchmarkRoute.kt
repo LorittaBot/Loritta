@@ -46,6 +46,28 @@ class GuildJsonBenchmarkRoute(val loritta: LorittaBot) : BaseRoute("/guild-json-
         ) { guild, user ->
             val g = DeviousConverter.toSerializableGuildCreateEventV4(guild, user)
             json.encodeToString(g)
+        },
+        BenchmarkTest(
+            "V4-plus-sorted-hashcode"
+        ) { guild, user ->
+            val g = DeviousConverter.toSerializableGuildCreateEventV4(guild, user)
+
+            val sortedSerializableGuild = g.copy(
+                channels = g.channels.sortedBy {
+                    it.id
+                }.map { it.copy(permission_overwrites = it.permission_overwrites?.sortedBy { it.id }) } ,
+                roles = g.roles.sortedBy {
+                    it.id
+                },
+                emojis = g.emojis.sortedBy {
+                    it.id
+                },
+                stickers = g.stickers.sortedBy {
+                    it.id
+                }
+            )
+
+            sortedSerializableGuild.hashCode()
         }
     )
 

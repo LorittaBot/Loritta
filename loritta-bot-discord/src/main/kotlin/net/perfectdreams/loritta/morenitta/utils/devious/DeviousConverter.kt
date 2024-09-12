@@ -205,7 +205,7 @@ object DeviousConverter {
                     format_type = sticker.formatType.id,
                     type = sticker.type.id,
                     description = sticker.description,
-                    tags = sticker.tags,
+                    tags = sticker.tags.joinToString(", "),
                     available = sticker.isAvailable,
                     guild_id = sticker.guildIdLong,
                     user = null // TODO: User (but does it reaaaally matter?)
@@ -430,7 +430,7 @@ object DeviousConverter {
                     format_type = sticker.formatType.id,
                     type = sticker.type.id,
                     description = sticker.description,
-                    tags = sticker.tags,
+                    tags = sticker.tags.joinToString(", "),
                     available = sticker.isAvailable,
                     guild_id = sticker.guildIdLong,
                     user = null // TODO: User (but does it reaaaally matter?)
@@ -655,7 +655,7 @@ object DeviousConverter {
                     format_type = sticker.formatType.id,
                     type = sticker.type.id,
                     description = sticker.description,
-                    tags = sticker.tags,
+                    tags = sticker.tags.joinToString(", "),
                     available = sticker.isAvailable,
                     guild_id = sticker.guildIdLong,
                     user = null // TODO: User (but does it reaaaally matter?)
@@ -856,7 +856,7 @@ object DeviousConverter {
                 format_type = sticker.formatType.id,
                 type = sticker.type.id,
                 description = sticker.description,
-                tags = sticker.tags,
+                tags = sticker.tags.joinToString(", "),
                 available = sticker.isAvailable,
                 guild_id = sticker.guildIdLong,
                 user = null // TODO: User (but does it reaaaally matter?)
@@ -1358,7 +1358,7 @@ object DeviousConverter {
         val format_type: Int,
         val type: Int,
         val description: String?,
-        val tags: Set<String>,
+        val tags: String?,
         val available: Boolean,
         val guild_id: Long,
         val user: String? // Assuming null is okay
