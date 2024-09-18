@@ -154,7 +154,7 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                     "",
                     {
                         loriEmoji = Emotes.ChevronRight
-                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
+                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
                     }
                 ) {
                     it.updateMessageSetLoadingState()
