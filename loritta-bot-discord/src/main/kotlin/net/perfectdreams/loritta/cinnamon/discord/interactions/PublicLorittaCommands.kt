@@ -63,7 +63,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(MorseCommand(languageManager))
             register(ChooseCommand(languageManager))
             register(ColorInfoCommand(languageManager))
-            register(NotificationsCommand(languageManager))
+//            register(NotificationsCommand(languageManager))
             register(TranslateCommand(languageManager))
 
             // ===[ ECONOMY ]===
