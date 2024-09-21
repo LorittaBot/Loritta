@@ -117,7 +117,7 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(ColorInfoCommand(loritta))
 		commandMap.add(LembrarCommand(loritta))
 		commandMap.add(TempoCommand(loritta))
-		commandMap.add(MorseCommand(loritta))
+//		commandMap.add(MorseCommand(loritta))
 		commandMap.add(EncodeCommand(loritta))
 		commandMap.add(LyricsCommand(loritta))
 

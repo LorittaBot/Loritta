@@ -60,7 +60,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 //            register(GigaChadCommand(languageManager))
 
             // ===[ UTILS ]===
-            register(MorseCommand(languageManager))
+//            register(MorseCommand(languageManager))
             register(ChooseCommand(languageManager))
             register(ColorInfoCommand(languageManager))
 //            register(NotificationsCommand(languageManager))
