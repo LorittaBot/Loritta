@@ -1,23 +1,139 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations
+package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text
 
-import net.perfectdreams.loritta.common.locale.LanguageManager
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextClapExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextLowercaseExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextMockExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextQualityExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextUppercaseExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextVaporQualityExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextVaporwaveExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextVemDeZapExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.iterator
 
-class TextTransformCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
+class TextVemDeZapExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class Options : ApplicationCommandOptions() {
+        val mood = string("mood", I18N_PREFIX.Options.Mood.Text) {
+            choice(I18N_PREFIX.Options.Mood.Choice.Happy, "happy")
+            choice(I18N_PREFIX.Options.Mood.Choice.Angry, "angry")
+            choice(I18N_PREFIX.Options.Mood.Choice.Sassy, "sassy")
+            choice(I18N_PREFIX.Options.Mood.Choice.Sad, "sad")
+            choice(I18N_PREFIX.Options.Mood.Choice.Sick, "sick")
+        }
+
+        val level = string("level", I18N_PREFIX.Options.Level.Text) {
+            choice(I18N_PREFIX.Options.Level.Choice.Level1, "0")
+            choice(I18N_PREFIX.Options.Level.Choice.Level2, "1")
+            choice(I18N_PREFIX.Options.Level.Choice.Level3, "2")
+            choice(I18N_PREFIX.Options.Level.Choice.Level4, "3")
+            choice(I18N_PREFIX.Options.Level.Choice.Level5, "4")
+        }
+
+        val text = string("text", I18N_PREFIX.Options.Text)
+    }
+
+    override val options: Options = Options()
+
+    override suspend fun execute(
+        context: UnleashedContext,
+        args: SlashCommandArguments
+    ) {
+        val mood = ZapZapMood.valueOf(args[options.mood].toUpperCase())
+        val level = args[options.level].toLong()
+        val split = cleanUpForOutput(context, args[options.text]).split(" ")
+
+        var output = ""
+
+        for (word in split) {
+            val lowerCaseWord = word.toLowerCase()
+            output += "$word "
+            var addedEmoji = false
+
+            for ((match, emojis) in fullMatch) {
+                if (lowerCaseWord == match) {
+                    output += "${emojis.random()} "
+                    addedEmoji = true
+                }
+            }
+
+            for ((match, emojis) in partialMatchAny) {
+                if (lowerCaseWord.contains(match, true)) {
+                    output += "${emojis.random()} "
+                    addedEmoji = true
+                }
+            }
+
+            for ((match, emojis) in partialMatchPrefix) {
+                if (lowerCaseWord.startsWith(match, true)) {
+                    output += "${emojis.random()} "
+                    addedEmoji = true
+                }
+            }
+
+            if (!addedEmoji) { // Se nós ainda não adicionamos nenhum emoji na palavra...
+                // Para fazer um aleatório baseado no nível... quanto maior o nível = mais chance de aparecer emojos
+                val upperBound = (5 - level) + 3
+                val randomInteger = context.loritta.random.nextLong(upperBound)
+
+                if (randomInteger == 0L) {
+                    val moodEmojis = when (mood) {
+                        ZapZapMood.HAPPY -> happyEmojis
+                        ZapZapMood.ANGRY -> angryEmojis
+                        ZapZapMood.SASSY -> sassyEmojis
+                        ZapZapMood.SAD -> sadEmojis
+                        ZapZapMood.SICK -> sickEmojis
+                    }
+
+                    // E quanto maior o nível, maiores as chances de aparecer mais emojis do lado da palavra
+                    val addEmojis = context.loritta.random.nextLong(1, level + 2)
+
+                    for (i in 0 until addEmojis) {
+                        output += "${moodEmojis.random()} "
+                    }
+                }
+            }
+        }
+
+        context.reply(ephemeral = false) {
+            styled(
+                output,
+                "✍"
+            )
+        }
+    }
+
+    override suspend fun convertToInteractionsArguments(
+        context: LegacyMessageCommandContext,
+        args: List<String>
+    ): Map<OptionReference<*>, Any?>? {
+        if (args.size < 2) return null
+
+        return mapOf(
+            options.mood to args[0],
+            options.level to args[1],
+            options.text to args.drop(2).joinToString(" ")
+        )
+    }
+
     companion object {
-        const val VEMDEZAP_LOCALE_PREFIX = "commands.command.vemdezap"
+        val I18N_PREFIX = TextTransformCommand.I18N_PREFIX.Vemdezap
+
+        val happyEmojis =
+            listOf("😀", "😁", "😂", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", "☺", "😛", "😜", "😝", "👌")
+        val angryEmojis = listOf("😤", "😤💦", "😖", "🙁", "😩", "😦", "😡", "🤬", "💣", "💢", "✋🛑", "☠")
+        val sadEmojis = listOf("☹", "🙁", "😖", "😞", "😟", "😢", "😭", "😭", "😭", "😩", "😿")
+        val sassyEmojis = listOf("😉", "😎", "😋", "😘", "😏", "😜", "😈", "😻", "🙊", "👉👌", "😼")
+        val sickEmojis = listOf("😷", "🤒", "🤕", "🤢", "🤮", "🤧")
+
+        enum class ZapZapMood {
+            HAPPY,
+            ANGRY,
+            SASSY,
+            SAD,
+            SICK
+        }
 
         val fullMatch = mapOf(
             "100" to listOf("💯"),
@@ -333,50 +449,5 @@ class TextTransformCommand(languageManager: LanguageManager) : CinnamonSlashComm
             "aquarian" to listOf("♒"),
             "piscian" to listOf("♓")
         )
-
-        val happyEmojis =
-            listOf("😀", "😁", "😂", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", "☺", "😛", "😜", "😝", "👌")
-        val angryEmojis = listOf("😤", "😤💦", "😖", "🙁", "😩", "😦", "😡", "🤬", "💣", "💢", "✋🛑", "☠")
-        val sadEmojis = listOf("☹", "🙁", "😖", "😞", "😟", "😢", "😭", "😭", "😭", "😩", "😿")
-        val sassyEmojis = listOf("😉", "😎", "😋", "😘", "😏", "😜", "😈", "😻", "🙊", "👉👌", "😼")
-        val sickEmojis = listOf("😷", "🤒", "🤕", "🤢", "🤮", "🤧")
-
-        val I18N_PREFIX = I18nKeysData.Commands.Command.Text
-        val VEMDEZAP_I18N_PREFIX = I18N_PREFIX.Vemdezap
-        val CLAP_EMOJI = "\uD83D\uDC4F"
-    }
-
-    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, TodoFixThisData) {
-        subcommand(I18N_PREFIX.Vaporwave.Label, I18N_PREFIX.Vaporwave.Description) {
-            executor = { TextVaporwaveExecutor(it) }
-        }
-
-        subcommand(I18N_PREFIX.Uppercase.Label, I18N_PREFIX.Uppercase.Description) {
-            executor = { TextUppercaseExecutor(it) }
-        }
-
-        subcommand(I18N_PREFIX.Lowercase.Label, I18N_PREFIX.Lowercase.Description) {
-            executor = { TextLowercaseExecutor(it) }
-        }
-
-        subcommand(I18N_PREFIX.Clap.Label, I18N_PREFIX.Clap.Description(CLAP_EMOJI)) {
-            executor = { TextClapExecutor(it) }
-        }
-
-        subcommand(I18N_PREFIX.Mock.Label, I18N_PREFIX.Mock.Description) {
-            executor = { TextMockExecutor(it) }
-        }
-
-        subcommand(I18N_PREFIX.Quality.Label, I18N_PREFIX.Quality.Description) {
-            executor = { TextQualityExecutor(it) }
-        }
-
-        subcommand(I18N_PREFIX.Vaporquality.Label, I18N_PREFIX.Vaporquality.Description) {
-            executor = { TextVaporQualityExecutor(it) }
-        }
-
-        subcommand(I18N_PREFIX.Vemdezap.Label, VEMDEZAP_I18N_PREFIX.Description) {
-            executor = { TextVemDeZapExecutor(it) }
-        }
     }
 }

@@ -54,6 +54,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text.TextTransformCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
@@ -289,6 +290,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(SummonCommand(loritta))
         register(JankenponCommand(loritta))
         register(RateCommand(loritta))
+        register(TextTransformCommand())
 
         // ===[ IMAGES ]==
         register(ArtCommand(loritta.gabrielaImageServerClient))
