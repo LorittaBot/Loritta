@@ -98,6 +98,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             "summon",
             "text",
             "achievements",
+            "afk",
             "gender",
             "undertale",
             "colorinfo",
