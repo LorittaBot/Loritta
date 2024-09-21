@@ -1,28 +1,21 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.colorinfo
+package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.color
 
-import dev.kord.common.kColor
-import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.discordinteraktions.common.utils.field
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.ColorInfoCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.addFileData
+import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import java.awt.Color
-import java.awt.Font
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 
-abstract class ColorInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
+class ColorInfoCommandHandler(private val loritta: LorittaBot) {
     companion object {
         private const val FACTOR = 0.7
     }
 
-    suspend fun executeWithColor(context: ApplicationCommandContext, color: Color) {
-        context.deferChannelMessage()
-
+    suspend fun execute(context: UnleashedContext, color: Color) {
         val hsbVals = Color.RGBtoHSB(color.red, color.green, color.blue, null)
 
         val hue = hsbVals[0] * 360
@@ -56,14 +49,14 @@ abstract class ColorInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExec
             context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Complementary)
         )
 
-        context.sendMessage {
-            addFile("color.png", image.toByteArray(ImageFormatType.PNG).inputStream())
+        context.reply(ephemeral = false) {
+            addFileData("color.png", image.toByteArray(ImageFormatType.PNG))
 
             embed {
                 val colorName = ColorUtils.getColorNameFromColor(color)
                 title = "\uD83C\uDFA8 $colorName"
 
-                this.color = color.kColor
+                this.color = color.rgb
 
                 field("RGB", "`${color.red}, ${color.green}, ${color.blue}`", true)
                 val hex = String.format("#%02x%02x%02x", color.red, color.green, color.blue)
@@ -119,7 +112,7 @@ abstract class ColorInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExec
         previewGraphics.color = color
         previewGraphics.fillRect(0, 0, 192, 192)
 
-        graphics.drawImage(ImageUtils.makeRoundedCorners(colorPreview, 99999), 237, 167, null)
+        graphics.drawImage(ImageUtils.makeRoundedCorner(colorPreview, 99999), 237, 167, null)
 
         return colorInfo
     }

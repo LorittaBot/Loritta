@@ -70,6 +70,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepComman
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.UndertaleCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.color.ColorInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.AttackOnHeartCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.CarlyAaahCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.ChavesCommand
@@ -359,6 +360,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ UTILS ]===
         register(AnagramCommand())
+        register(ColorInfoCommand(loritta))
         register(HelpCommand())
         register(CalculatorCommand())
         register(OCRSlashCommand(loritta))
