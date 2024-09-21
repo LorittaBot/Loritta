@@ -73,6 +73,8 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.AttackOnHeartCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.CarlyAaahCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.ChavesCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.FansExplainingCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.GigaChadCommand
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
@@ -323,6 +325,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(AttackOnHeartCommand(loritta.gabrielaImageServerClient))
         register(CarlyAaahCommand(loritta.gabrielaImageServerClient))
         register(ChavesCommand(loritta.gabrielaImageServerClient))
+        register(FansExplainingCommand(loritta.gabrielaImageServerClient))
+        register(GigaChadCommand(loritta.gabrielaImageServerClient))
 
         // ===[ SOCIAL ]===
         register(AfkCommand())

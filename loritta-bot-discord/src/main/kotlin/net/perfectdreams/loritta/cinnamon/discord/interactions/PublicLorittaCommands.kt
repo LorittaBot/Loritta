@@ -6,8 +6,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.FansExplainingCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.GigaChadCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
 
 /**
@@ -58,8 +56,8 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // register(DrawnMaskCommand(languageManager))
 
             // ===[ VIDEOS ]===
-            register(FansExplainingCommand(languageManager))
-            register(GigaChadCommand(languageManager))
+//            register(FansExplainingCommand(languageManager))
+//            register(GigaChadCommand(languageManager))
 
             // ===[ UTILS ]===
             register(MorseCommand(languageManager))

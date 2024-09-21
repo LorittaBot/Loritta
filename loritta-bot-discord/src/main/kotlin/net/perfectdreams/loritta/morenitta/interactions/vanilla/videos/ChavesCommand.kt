@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.morenitta.interactions.commands.addFileData
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import java.util.*
@@ -102,7 +103,7 @@ class ChavesCommand(val client: GabrielaImageServerClient) : SlashCommandDeclara
             }
 
             context.reply(false) {
-                files += FileUpload.fromData(result.inputStream(), "cocielo_chaves.mp4")
+                addFileData("cocielo_chaves.mp4", result)
             }
         }
     }
