@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AfkCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.FansExplainingCommand
@@ -80,7 +79,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // ===[ SOCIAL ]===
             register(AchievementsCommand(languageManager))
 
-            register(AfkCommand(languageManager))
+//            register(AfkCommand(languageManager))
             register(GenderCommand(languageManager))
 
             // ===[ UNDERTALE ]===

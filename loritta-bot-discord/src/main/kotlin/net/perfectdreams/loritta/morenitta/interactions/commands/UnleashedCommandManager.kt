@@ -61,6 +61,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCom
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.AfkCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
@@ -91,7 +92,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             "summon",
             "text",
             "achievements",
-            "afk",
             "gender",
             "undertale",
             "colorinfo",
@@ -320,6 +320,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(ChavesCommand(loritta.gabrielaImageServerClient))
 
         // ===[ SOCIAL ]===
+        register(AfkCommand())
         register(ProfileCommand(loritta))
         register(RepCommand())
         register(XpCommand(loritta))

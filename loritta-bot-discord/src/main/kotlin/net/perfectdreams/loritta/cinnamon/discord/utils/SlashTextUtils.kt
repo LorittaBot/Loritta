@@ -32,7 +32,7 @@ object SlashTextUtils {
         append("」")
         // Looks better without this whitespace
         // append(" ")
-        append(i18nContext.get(description))
+//        append(i18nContext.get(description))
     }.shortenWithEllipsis(DiscordResourceLimits.Command.Description.Length)
 
     /**
