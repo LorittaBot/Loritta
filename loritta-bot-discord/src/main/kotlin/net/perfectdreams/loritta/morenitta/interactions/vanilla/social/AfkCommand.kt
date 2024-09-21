@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripNewLines
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -23,7 +24,7 @@ class AfkCommand: SlashCommandDeclarationWrapper {
     override fun command(): SlashCommandDeclarationBuilder =
         slashCommand(
             name = I18N_PREFIX.Label,
-            description = I18N_PREFIX.Label,
+            description = TodoFixThisData,
             category = CommandCategory.SOCIAL,
             uniqueId = UUID.fromString("bcf80930-44b9-4a60-814e-0a9549e939ed")
         ) {
@@ -91,7 +92,7 @@ class AfkCommand: SlashCommandDeclarationWrapper {
         ): Map<OptionReference<*>, Any?>? = emptyMap()
     }
 
-    companion object {
+    private companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Afk
     }
 }

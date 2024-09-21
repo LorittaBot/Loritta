@@ -44,6 +44,11 @@ class GenderCommand: SlashCommandDeclarationWrapper {
             context: UnleashedContext,
             args: SlashCommandArguments
         ) {
+            if (context is LegacyMessageCommandContext) {
+                context.reply(ephemeral = true, "This command can only be used as a slash command!")
+                return
+            }
+
             val userSettings = context.loritta.pudding.users.getOrCreateUserProfile(UserId(context.user.idLong))
                 .getProfileSettings()
 
@@ -64,12 +69,15 @@ class GenderCommand: SlashCommandDeclarationWrapper {
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
-            val choice = args.singleOrNull() ?: return null
+            context.reply(ephemeral = true, "This command can only be used as as slash command!")
+            val choice = args.singleOrNull() ?: GENDER_NOT_SPECIFIED
             return mapOf(options.gender to choice)
         }
     }
 
-    companion object {
+    private companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Gender
+
+        const val GENDER_NOT_SPECIFIED = "none"
     }
 }

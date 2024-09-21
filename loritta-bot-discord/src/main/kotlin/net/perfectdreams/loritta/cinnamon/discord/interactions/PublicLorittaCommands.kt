@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.GigaChadCommand
@@ -30,7 +29,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ MODERATION ]===
             register(BanCommand(languageManager))
-            register(PredefinedReasonsCommand(languageManager))
+//            register(PredefinedReasonsCommand(languageManager))
 
             // ===[ FUN ]===
             register(TextTransformCommand(languageManager))

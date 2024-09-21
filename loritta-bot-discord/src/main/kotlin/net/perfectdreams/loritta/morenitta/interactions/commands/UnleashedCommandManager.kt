@@ -60,6 +60,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.Minecr
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.PredefinedReasonsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.AfkCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.GenderCommand
@@ -274,6 +275,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ MODERATION ]===
         register(BanInfoCommand(loritta))
         register(DashboardCommand(loritta))
+        register(PredefinedReasonsCommand())
 
         // ===[ FUN ]===
         register(EventCommand(loritta))
