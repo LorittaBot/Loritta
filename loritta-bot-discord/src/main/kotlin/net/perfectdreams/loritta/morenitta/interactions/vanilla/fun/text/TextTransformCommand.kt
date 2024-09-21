@@ -25,6 +25,8 @@ class TextTransformCommand: SlashCommandDeclarationWrapper {
             category = CommandCategory.FUN,
             uniqueId = UUID.fromString("01bf4a78-1aaa-45c9-bf83-72f1742a3498")
         ) {
+            enableLegacyMessageSupport = true
+
             for (simpleSubcommand in simpleSubcommands) {
                 subcommand(simpleSubcommand.label, simpleSubcommand.description, simpleSubcommand.uniqueId) {
                     executor = SimpleTextTransformCommandExecutor(simpleSubcommand)

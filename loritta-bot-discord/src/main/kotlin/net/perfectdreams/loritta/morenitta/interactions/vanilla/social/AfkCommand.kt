@@ -28,39 +28,98 @@ class AfkCommand: SlashCommandDeclarationWrapper {
             category = CommandCategory.SOCIAL,
             uniqueId = UUID.fromString("bcf80930-44b9-4a60-814e-0a9549e939ed")
         ) {
-            subcommand(I18N_PREFIX.On.Label, I18N_PREFIX.On.Description, UUID.fromString("0633bb0a-bcdc-4274-bcd9-00d82d5ecf36")) {
-                executor = AfkOnExecutor()
+            enableLegacyMessageSupport = true
+
+            alternativeLegacyAbsoluteCommandPaths.add("awayfromthekeyboard")
+
+            executor = ToggleExecutor()
+
+            subcommand(
+                name = OnExecutor.I18N_PREFIX.Label,
+                description = OnExecutor.I18N_PREFIX.Description,
+                uniqueId = UUID.fromString("0633bb0a-bcdc-4274-bcd9-00d82d5ecf36")
+            ) {
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("ligar")
+                    add("ativar")
+                }
+
+                executor = OnExecutor()
             }
-            subcommand(I18N_PREFIX.Off.Label, I18N_PREFIX.Off.Description, UUID.fromString("92b44d1c-b479-463f-91fd-016018757f87")) {
-                executor = AfkOffExecutor()
+            subcommand(
+                name = OffExecutor.I18N_PREFIX.Label,
+                description = OffExecutor.I18N_PREFIX.Description,
+                uniqueId = UUID.fromString("92b44d1c-b479-463f-91fd-016018757f87")
+            ) {
+                alternativeLegacyAbsoluteCommandPaths.apply {
+                    add("desligar")
+                    add("desativar")
+                }
+
+                executor = OffExecutor()
             }
         }
 
-    class AfkOnExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class OnExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options: ApplicationCommandOptions() {
             val reason =
                 optionalString(
                     "reason",
-                    I18N_PREFIX.On.Options.Reason
+                    I18N_PREFIX.Options.Reason
                 )
         }
 
         override val options: Options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val profile = context.loritta.pudding.users.getOrCreateUserProfile(UserId(context.user.idLong))
             val reason = args[options.reason]?.shortenAndStripCodeBackticks(300)?.stripNewLines()
+            enable(context, reason)
+        }
 
-            if (!profile.isAfk || profile.afkReason != reason)
-                profile.enableAfk(reason)
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? = emptyMap()
 
-            context.reply(ephemeral = true) {
-                styled(
-                    context.i18nContext.get(
-                        I18N_PREFIX.On.AfkModeActivated
-                    ),
-                    Emotes.LoriSleeping
+        companion object {
+            val I18N_PREFIX = AfkCommand.I18N_PREFIX.On
+        }
+    }
+
+    class OffExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            disable(context)
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? = emptyMap()
+
+        companion object {
+            val I18N_PREFIX = AfkCommand.I18N_PREFIX.Off
+        }
+    }
+
+    class ToggleExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        class Options: ApplicationCommandOptions() {
+            val reason =
+                optionalString(
+                    "reason",
+                    OnExecutor.I18N_PREFIX.Options.Reason
                 )
+        }
+
+        override val options: Options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            if (context is LegacyMessageCommandContext)
+                enable(context, args[options.reason])
+            else {
+                if (context.lorittaUser.profile.isAfk)
+                    disable(context)
+                else
+                    enable(context, args[options.reason])
             }
         }
 
@@ -70,8 +129,29 @@ class AfkCommand: SlashCommandDeclarationWrapper {
         ): Map<OptionReference<*>, Any?>? = emptyMap()
     }
 
-    class AfkOffExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
-        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Afk
+
+        suspend fun enable(
+            context: UnleashedContext,
+            reason: String?
+        ) {
+            val profile = context.loritta.pudding.users.getOrCreateUserProfile(UserId(context.user.idLong))
+            if (!profile.isAfk || profile.afkReason != reason) {
+                profile.enableAfk(reason)
+            }
+
+            context.reply(ephemeral = true) {
+                styled(
+                    context.i18nContext.get(
+                        OnExecutor.I18N_PREFIX.AfkModeActivated
+                    ),
+                    Emotes.LoriSleeping
+                )
+            }
+        }
+
+        suspend fun disable(context: UnleashedContext) {
             val profile = context.loritta.pudding.users.getUserProfile(UserId(context.user.idLong))
             if (profile?.isAfk == true)
                 profile.disableAfk()
@@ -79,20 +159,11 @@ class AfkCommand: SlashCommandDeclarationWrapper {
             context.reply(ephemeral = true) {
                 styled(
                     context.i18nContext.get(
-                        AfkCommand.I18N_PREFIX.Off.AfkModeDeactivated
+                        OffExecutor.I18N_PREFIX.AfkModeDeactivated
                     ),
                     Emotes.LoriZap
                 )
             }
         }
-
-        override suspend fun convertToInteractionsArguments(
-            context: LegacyMessageCommandContext,
-            args: List<String>
-        ): Map<OptionReference<*>, Any?>? = emptyMap()
-    }
-
-    private companion object {
-        private val I18N_PREFIX = I18nKeysData.Commands.Command.Afk
     }
 }

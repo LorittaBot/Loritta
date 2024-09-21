@@ -30,6 +30,7 @@ class PredefinedReasonsCommand: SlashCommandDeclarationWrapper {
             category = CommandCategory.MODERATION,
             uniqueId = UUID.fromString("e126bb95-1bbd-4117-bd42-db467276ece4")
         ) {
+            enableLegacyMessageSupport = true
             isGuildOnly = true
             defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)
             executor = PredefinedReasonsExecutor()

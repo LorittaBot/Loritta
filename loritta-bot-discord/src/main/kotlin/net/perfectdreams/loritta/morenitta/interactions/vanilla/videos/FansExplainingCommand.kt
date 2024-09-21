@@ -6,12 +6,15 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ga
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationBuilder
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.addFileData
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import java.util.UUID
 
@@ -25,10 +28,15 @@ class FansExplainingCommand(
             category = CommandCategory.VIDEOS,
             uniqueId = UUID.fromString("9a6a80dd-d97a-4117-97e0-1bc93f2d5f74")
         ) {
+            enableLegacyMessageSupport = true
+            alternativeLegacyAbsoluteCommandPaths.apply {
+                add("fasexplicando")
+            }
+
             executor = Executor()
         }
 
-    inner class Executor: LorittaSlashCommandExecutor() {
+    inner class Executor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val section1Line1 = string("celebrating_top", I18N_PREFIX.Options.Section1Line1)
             val section1Line2 = string("celebrating_bottom", I18N_PREFIX.Options.Section1Line2)
@@ -77,6 +85,40 @@ class FansExplainingCommand(
                     result
                 )
             }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // we'll separate by a `|` character for sections and a `,` character for lines
+            if (args.size < 10)
+                return null
+
+            val text = args.joinToString(" ")
+            val split = text.split("|")
+            if (split.size != 5)
+                return null
+
+            val texts = split.flatMap {
+                it.split(",")
+            }
+
+            if (texts.size != 10)
+                return null
+
+            return mapOf(
+                options.section1Line1 to texts[0],
+                options.section1Line2 to texts[1],
+                options.section2Line1 to texts[2],
+                options.section2Line2 to texts[3],
+                options.section3Line1 to texts[4],
+                options.section3Line2 to texts[5],
+                options.section4Line1 to texts[6],
+                options.section4Line2 to texts[7],
+                options.section5Line1 to texts[8],
+                options.section5Line2 to texts[9]
+            )
         }
     }
 

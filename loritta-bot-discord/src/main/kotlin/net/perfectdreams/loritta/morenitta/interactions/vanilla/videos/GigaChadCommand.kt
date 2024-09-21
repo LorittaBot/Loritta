@@ -6,12 +6,15 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ga
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationBuilder
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.addFileData
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import java.util.UUID
 
@@ -26,10 +29,13 @@ class GigaChadCommand(
             category = CommandCategory.VIDEOS,
             uniqueId = UUID.fromString("52de196f-4330-40b0-94e4-4ce540f19d55")
         ) {
+            enableLegacyMessageSupport = true
+            alternativeLegacyAbsoluteCommandPaths.add("chad")
+
             executor = Executor()
         }
 
-    inner class Executor : LorittaSlashCommandExecutor() {
+    inner class Executor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val averageFanText = string("average_fan_text", I18N_PREFIX.Options.AverageFanText)
             val averageEnjoyerText = string("average_enjoyer_text", I18N_PREFIX.Options.AverageEnjoyerText)
@@ -52,6 +58,26 @@ class GigaChadCommand(
             context.reply(ephemeral = false) {
                 addFileData("gigachad.mp4", result)
             }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            // we'll separate both texts by a | character
+
+            val text = args.joinToString(" ")
+            val split = text.split("|")
+            if (split.size != 2)
+                return null
+
+            val splitLeft = split[0].trim()
+            val splitRight = split[1].trim()
+
+            return mapOf(
+                options.averageFanText to splitLeft,
+                options.averageEnjoyerText to splitRight
+            )
         }
     }
 

@@ -41,7 +41,6 @@ class NotificationsCommand : SlashCommandDeclarationWrapper {
             enableLegacyMessageSupport = true
 
             alternativeLegacyAbsoluteCommandPaths.apply {
-                add("notificações")
                 add("notificacoes")
             }
 
