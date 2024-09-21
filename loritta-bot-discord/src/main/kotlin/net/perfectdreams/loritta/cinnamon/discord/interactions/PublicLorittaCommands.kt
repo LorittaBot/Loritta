@@ -80,7 +80,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(AchievementsCommand(languageManager))
 
 //            register(AfkCommand(languageManager))
-            register(GenderCommand(languageManager))
+//            register(GenderCommand(languageManager))
 
             // ===[ UNDERTALE ]===
             // register(UndertaleCommand(languageManager))
