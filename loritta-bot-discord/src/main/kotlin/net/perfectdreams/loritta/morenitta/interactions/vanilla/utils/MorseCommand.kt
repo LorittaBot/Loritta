@@ -32,7 +32,7 @@ class MorseCommand : SlashCommandDeclarationWrapper {
                 description = I18N_PREFIX.DescriptionFromMorse,
                 uniqueId = UUID.fromString("5e888d0e-3327-4113-b3fa-b673920ace2a")
             ) {
-                executor = FromExecutor()
+                executor = FromMorseExecutor()
             }
 
             subcommand(
@@ -40,11 +40,11 @@ class MorseCommand : SlashCommandDeclarationWrapper {
                 description = I18N_PREFIX.DescriptionToMorse,
                 uniqueId = UUID.fromString("96a7f234-422a-4361-820f-c0a376866ce5")
             ) {
-                executor = ToExecutor()
+                executor = ToMorseExecutor()
             }
         }
 
-    class FromExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class FromMorseExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options : ApplicationCommandOptions() {
             val text = string("text", I18N_PREFIX.Options.FromMorseToText)
         }
@@ -107,7 +107,7 @@ class MorseCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    class ToExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class ToMorseExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options : ApplicationCommandOptions() {
             val text = string("text", I18N_PREFIX.Options.FromTextToMorse)
         }

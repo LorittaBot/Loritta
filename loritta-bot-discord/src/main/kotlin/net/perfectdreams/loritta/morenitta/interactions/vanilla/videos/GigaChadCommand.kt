@@ -32,10 +32,10 @@ class GigaChadCommand(
             enableLegacyMessageSupport = true
             alternativeLegacyAbsoluteCommandPaths.add("chad")
 
-            executor = Executor()
+            executor = GigachadExecutor()
         }
 
-    inner class Executor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    inner class GigachadExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val averageFanText = string("average_fan_text", I18N_PREFIX.Options.AverageFanText)
             val averageEnjoyerText = string("average_enjoyer_text", I18N_PREFIX.Options.AverageEnjoyerText)

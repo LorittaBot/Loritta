@@ -32,11 +32,11 @@ class AfkCommand: SlashCommandDeclarationWrapper {
 
             alternativeLegacyAbsoluteCommandPaths.add("awayfromthekeyboard")
 
-            executor = ToggleExecutor()
+            executor = ToggleAfkExecutor()
 
             subcommand(
-                name = OnExecutor.I18N_PREFIX.Label,
-                description = OnExecutor.I18N_PREFIX.Description,
+                name = AfkOnExecutor.I18N_PREFIX.Label,
+                description = AfkOnExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("0633bb0a-bcdc-4274-bcd9-00d82d5ecf36")
             ) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -44,11 +44,11 @@ class AfkCommand: SlashCommandDeclarationWrapper {
                     add("ativar")
                 }
 
-                executor = OnExecutor()
+                executor = AfkOnExecutor()
             }
             subcommand(
-                name = OffExecutor.I18N_PREFIX.Label,
-                description = OffExecutor.I18N_PREFIX.Description,
+                name = AfkOffExecutor.I18N_PREFIX.Label,
+                description = AfkOffExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("92b44d1c-b479-463f-91fd-016018757f87")
             ) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -56,11 +56,11 @@ class AfkCommand: SlashCommandDeclarationWrapper {
                     add("desativar")
                 }
 
-                executor = OffExecutor()
+                executor = AfkOffExecutor()
             }
         }
 
-    class OnExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class AfkOnExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options: ApplicationCommandOptions() {
             val reason =
                 optionalString(
@@ -86,7 +86,7 @@ class AfkCommand: SlashCommandDeclarationWrapper {
         }
     }
 
-    class OffExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class AfkOffExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             disable(context)
         }
@@ -101,12 +101,12 @@ class AfkCommand: SlashCommandDeclarationWrapper {
         }
     }
 
-    class ToggleExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class ToggleAfkExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options: ApplicationCommandOptions() {
             val reason =
                 optionalString(
                     "reason",
-                    OnExecutor.I18N_PREFIX.Options.Reason
+                    AfkOnExecutor.I18N_PREFIX.Options.Reason
                 )
         }
 
@@ -144,7 +144,7 @@ class AfkCommand: SlashCommandDeclarationWrapper {
             context.reply(ephemeral = true) {
                 styled(
                     context.i18nContext.get(
-                        OnExecutor.I18N_PREFIX.AfkModeActivated
+                        AfkOnExecutor.I18N_PREFIX.AfkModeActivated
                     ),
                     Emotes.LoriSleeping
                 )
@@ -159,7 +159,7 @@ class AfkCommand: SlashCommandDeclarationWrapper {
             context.reply(ephemeral = true) {
                 styled(
                     context.i18nContext.get(
-                        OffExecutor.I18N_PREFIX.AfkModeDeactivated
+                        AfkOffExecutor.I18N_PREFIX.AfkModeDeactivated
                     ),
                     Emotes.LoriZap
                 )

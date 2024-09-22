@@ -3,16 +3,12 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
-import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotificationUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
@@ -45,8 +41,8 @@ class NotificationsCommand : SlashCommandDeclarationWrapper {
             }
 
             subcommand(
-                name = ListExecutor.I18N_PREFIX.Label,
-                description = ListExecutor.I18N_PREFIX.Description,
+                name = ListNotificationsExecutor.I18N_PREFIX.Label,
+                description = ListNotificationsExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("05d0a678-1962-4e69-afca-81546e71711b")
             ) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -55,12 +51,12 @@ class NotificationsCommand : SlashCommandDeclarationWrapper {
                     add("all")
                 }
 
-                executor = ListExecutor()
+                executor = ListNotificationsExecutor()
             }
 
             subcommand(
-                name = ViewExecutor.I18N_PREFIX.Label,
-                description = ViewExecutor.I18N_PREFIX.Description,
+                name = ViewNotificationsExecutor.I18N_PREFIX.Label,
+                description = ViewNotificationsExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("f3b3b3b4-3b3b-4b3b-8b3b-3b3b3b3b3b3b")
             ) {
                 alternativeLegacyAbsoluteCommandPaths.apply {
@@ -68,11 +64,11 @@ class NotificationsCommand : SlashCommandDeclarationWrapper {
                     add("visualizar")
                 }
 
-                executor = ViewExecutor()
+                executor = ViewNotificationsExecutor()
             }
         }
 
-    class ListExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class ListNotificationsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(ephemeral = true)
 
@@ -119,7 +115,7 @@ class NotificationsCommand : SlashCommandDeclarationWrapper {
         }
     }
 
-    class ViewExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class ViewNotificationsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         class Options : ApplicationCommandOptions() {
             val id = string("id", I18N_PREFIX.Options.Id.Text)
         }

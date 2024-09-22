@@ -26,29 +26,29 @@ class ColorInfoCommand(val loritta: LorittaBot): SlashCommandDeclarationWrapper 
             uniqueId = UUID.fromString("e5c4ecaa-77b6-4b01-bc75-ee068442b124")
         ) {
             subcommand(
-                name = RgbExecutor.I18N_PREFIX.Label,
-                description = RgbExecutor.I18N_PREFIX.Description,
+                name = ColorInfoRgbExecutor.I18N_PREFIX.Label,
+                description = ColorInfoRgbExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("8146f88f-a05a-4a6e-99aa-73131bd2853e")
             ) {
-                executor = RgbExecutor(handler)
+                executor = ColorInfoRgbExecutor(handler)
             }
             subcommand(
-                name = HexExecutor.I18N_PREFIX.Label,
-                description = HexExecutor.I18N_PREFIX.Description,
+                name = ColorInfoHexExecutor.I18N_PREFIX.Label,
+                description = ColorInfoHexExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("1133344b-4f69-4480-bf68-93368c6c7915")
             ) {
-                executor = HexExecutor(handler)
+                executor = ColorInfoHexExecutor(handler)
             }
             subcommand(
-                name = DecimalExecutor.I18N_PREFIX.Label,
-                description = DecimalExecutor.I18N_PREFIX.Description,
+                name = ColorInfoDecimalExecutor.I18N_PREFIX.Label,
+                description = ColorInfoDecimalExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("6f96d57b-bfec-4af4-bfa6-f21e4c73b065")
             ) {
-                executor = DecimalExecutor(handler)
+                executor = ColorInfoDecimalExecutor(handler)
             }
         }
 
-    class RgbExecutor(val handler: ColorInfoCommandHandler): LorittaSlashCommandExecutor() {
+    class ColorInfoRgbExecutor(val handler: ColorInfoCommandHandler): LorittaSlashCommandExecutor() {
         class Options : ApplicationCommandOptions() {
             // TODO: replace with integers
             val red = long(
@@ -91,7 +91,7 @@ class ColorInfoCommand(val loritta: LorittaBot): SlashCommandDeclarationWrapper 
         }
     }
 
-    class HexExecutor(val handler: ColorInfoCommandHandler): LorittaSlashCommandExecutor() {
+    class ColorInfoHexExecutor(val handler: ColorInfoCommandHandler): LorittaSlashCommandExecutor() {
         class Options : ApplicationCommandOptions() {
             val hex = string(
                 "hex",
@@ -123,7 +123,7 @@ class ColorInfoCommand(val loritta: LorittaBot): SlashCommandDeclarationWrapper 
         }
     }
 
-    class DecimalExecutor(val handler: ColorInfoCommandHandler): LorittaSlashCommandExecutor() {
+    class ColorInfoDecimalExecutor(val handler: ColorInfoCommandHandler): LorittaSlashCommandExecutor() {
         class Options : ApplicationCommandOptions() {
             val decimal = long(
                 "decimal",

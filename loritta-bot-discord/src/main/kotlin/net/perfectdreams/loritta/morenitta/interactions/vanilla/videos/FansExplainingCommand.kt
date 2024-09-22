@@ -33,10 +33,10 @@ class FansExplainingCommand(
                 add("fasexplicando")
             }
 
-            executor = Executor()
+            executor = FansExplainingExecutor()
         }
 
-    inner class Executor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    inner class FansExplainingExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val section1Line1 = string("celebrating_top", I18N_PREFIX.Options.Section1Line1)
             val section1Line2 = string("celebrating_bottom", I18N_PREFIX.Options.Section1Line2)
