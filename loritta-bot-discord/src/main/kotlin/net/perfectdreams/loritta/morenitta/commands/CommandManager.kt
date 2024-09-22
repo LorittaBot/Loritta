@@ -106,7 +106,7 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ SOCIAL ]======
 		commandMap.add(BackgroundCommand(loritta))
 		commandMap.add(RepCommand(loritta))
-		commandMap.add(AfkCommand(loritta))
+//		commandMap.add(AfkCommand(loritta))
 		commandMap.add(MarryCommand(loritta))
 		commandMap.add(DivorceCommand(loritta))
 		commandMap.add(GenderCommand(loritta))
@@ -117,7 +117,7 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(ColorInfoCommand(loritta))
 		commandMap.add(LembrarCommand(loritta))
 		commandMap.add(TempoCommand(loritta))
-		commandMap.add(MorseCommand(loritta))
+//		commandMap.add(MorseCommand(loritta))
 		commandMap.add(EncodeCommand(loritta))
 		commandMap.add(LyricsCommand(loritta))
 

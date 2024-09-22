@@ -3,15 +3,9 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AfkCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.FansExplainingCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.GigaChadCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
 
 /**
@@ -31,10 +25,10 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ MODERATION ]===
             register(BanCommand(languageManager))
-            register(PredefinedReasonsCommand(languageManager))
+//            register(PredefinedReasonsCommand(languageManager))
 
             // ===[ FUN ]===
-            register(TextTransformCommand(languageManager))
+//            register(TextTransformCommand(languageManager))
             register(SoundboxCommand(languageManager))
 
             // ===[ IMAGES ]===
@@ -62,14 +56,14 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // register(DrawnMaskCommand(languageManager))
 
             // ===[ VIDEOS ]===
-            register(FansExplainingCommand(languageManager))
-            register(GigaChadCommand(languageManager))
+//            register(FansExplainingCommand(languageManager))
+//            register(GigaChadCommand(languageManager))
 
             // ===[ UTILS ]===
-            register(MorseCommand(languageManager))
+//            register(MorseCommand(languageManager))
             register(ChooseCommand(languageManager))
-            register(ColorInfoCommand(languageManager))
-            register(NotificationsCommand(languageManager))
+//            register(ColorInfoCommand(languageManager))
+//            register(NotificationsCommand(languageManager))
             register(TranslateCommand(languageManager))
 
             // ===[ ECONOMY ]===
@@ -80,8 +74,8 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // ===[ SOCIAL ]===
             register(AchievementsCommand(languageManager))
 
-            register(AfkCommand(languageManager))
-            register(GenderCommand(languageManager))
+//            register(AfkCommand(languageManager))
+//            register(GenderCommand(languageManager))
 
             // ===[ UNDERTALE ]===
             // register(UndertaleCommand(languageManager))

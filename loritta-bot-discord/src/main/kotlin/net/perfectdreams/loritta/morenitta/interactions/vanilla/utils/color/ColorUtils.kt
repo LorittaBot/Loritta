@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.colorinfo
+package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.color
 
 import java.awt.Color
 import java.util.ArrayList

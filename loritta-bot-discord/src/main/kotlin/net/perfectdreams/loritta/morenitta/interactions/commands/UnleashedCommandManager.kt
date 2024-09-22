@@ -54,21 +54,28 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text.TextTransformCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.PredefinedReasonsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.AfkCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.GenderCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.ProfileCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.XpCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.UndertaleCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.color.ColorInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.AttackOnHeartCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.CarlyAaahCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.ChavesCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.FansExplainingCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.GigaChadCommand
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
@@ -273,6 +280,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ MODERATION ]===
         register(BanInfoCommand(loritta))
         register(DashboardCommand(loritta))
+        register(PredefinedReasonsCommand())
 
         // ===[ FUN ]===
         register(EventCommand(loritta))
@@ -286,6 +294,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(SummonCommand(loritta))
         register(JankenponCommand(loritta))
         register(RateCommand(loritta))
+        register(TextTransformCommand())
 
         // ===[ IMAGES ]==
         register(ArtCommand(loritta.gabrielaImageServerClient))
@@ -318,8 +327,12 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(AttackOnHeartCommand(loritta.gabrielaImageServerClient))
         register(CarlyAaahCommand(loritta.gabrielaImageServerClient))
         register(ChavesCommand(loritta.gabrielaImageServerClient))
+        register(FansExplainingCommand(loritta.gabrielaImageServerClient))
+        register(GigaChadCommand(loritta.gabrielaImageServerClient))
 
         // ===[ SOCIAL ]===
+        register(AfkCommand())
+        register(GenderCommand())
         register(ProfileCommand(loritta))
         register(RepCommand())
         register(XpCommand(loritta))
@@ -348,12 +361,15 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         // ===[ UTILS ]===
         register(AnagramCommand())
+        register(ColorInfoCommand(loritta))
         register(HelpCommand())
         register(CalculatorCommand())
         register(OCRSlashCommand(loritta))
         register(OCRMessageCommand(loritta))
         register(DictionaryCommand(loritta))
         register(MoneyCommand(loritta, loritta.ecbManager))
+        register(MorseCommand())
+        register(NotificationsCommand())
 
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
