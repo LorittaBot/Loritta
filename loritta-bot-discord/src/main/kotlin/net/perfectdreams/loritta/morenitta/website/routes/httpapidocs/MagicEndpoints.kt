@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.text.TextUtils
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPIParameter
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PostMusicalChairsRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PutGiveawayRoute
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import java.awt.Color
@@ -325,7 +326,44 @@ object MagicEndpoints {
                     listOf("12345")
                 }
             )
-        )
+        ),
+
+        LoriPublicHttpApiEndpoints.CREATE_GUILD_MUSICALCHAIRS to EndpointTesterOptions(
+            pathParameters = listOf(
+                APIParameter(
+                    Long::class.createType(),
+                    "guildId",
+                    I18nKeysData.DevDocs.Generic.GuildId,
+                    false
+                ) {
+                    listOf("297732013006389252")
+                },
+            ),
+            mainRequestBodyClazzName = PostMusicalChairsRoute.SpawnMusicalChairsRequest::class.simpleName!!,
+            clazzesParameters = mapOf(
+                PostMusicalChairsRoute.SpawnMusicalChairsRequest::class.simpleName!! to createAPIParametersFromClazz(
+                    PostMusicalChairsRoute.SpawnMusicalChairsRequest::class
+                ) {
+                    when (it) {
+                        "channelId" -> {
+                            { listOf("297732013006389252") }
+                        }
+                        else -> {
+                            { listOf() }
+                        }
+                    }
+                }
+            ),
+            jsonBodyBuilder = { call, params ->
+                Json.encodeToString(
+                    PostMusicalChairsRoute.SpawnMusicalChairsRequest(
+                        voiceChannelId = params.getOrFail("jsonparameter:voiceChannelId").toLong(),
+                        messageChannelId = params.getOrFail("jsonparameter:messageChannelId").toLong(),
+                        songId = params.get("jsonparameter:songId")?.ifBlank { null },
+                    )
+                )
+            },
+        ),
     )
 
     private fun createAPIParametersFromClazz(

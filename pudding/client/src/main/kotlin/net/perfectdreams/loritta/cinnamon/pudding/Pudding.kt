@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.CreatedEaste
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
@@ -251,11 +250,11 @@ class Pudding(
             GuildProfiles,
             Halloween2019Players,
             InteractionsData,
-            LoriTuberChannels,
-            LoriTuberCharacters,
-            LoriTuberMails,
-            LoriTuberPendingVideos,
-            LoriTuberServerInfos,
+            // LoriTuberChannels,
+            // LoriTuberCharacters,
+            // LoriTuberMails,
+            // LoriTuberPendingVideos,
+            // LoriTuberServerInfos,
             Marriages,
             MiscellaneousData,
             Mutes,

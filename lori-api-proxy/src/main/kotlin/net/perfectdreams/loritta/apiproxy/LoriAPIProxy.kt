@@ -50,6 +50,7 @@ class LoriAPIProxy(
         ProxiedRoute(LoriPublicHttpApiEndpoints.REROLL_GUILD_GIVEAWAY, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
         ProxiedRoute(LoriPublicHttpApiEndpoints.EMOJIFIGHT_GUILD_TOP_WINNERS_RANK, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
         ProxiedRoute(LoriPublicHttpApiEndpoints.EMOJIFIGHT_GUILD_VICTORIES, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.CREATE_GUILD_MUSICALCHAIRS, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
     )
 
     fun start() {

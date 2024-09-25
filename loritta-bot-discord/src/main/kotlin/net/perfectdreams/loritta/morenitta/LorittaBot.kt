@@ -114,6 +114,7 @@ import net.perfectdreams.loritta.morenitta.utils.devious.*
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
+import net.perfectdreams.loritta.morenitta.utils.musicalchairs.MusicalChairsManager
 import net.perfectdreams.loritta.morenitta.website.*
 import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
@@ -191,6 +192,10 @@ class LorittaBot(
 		val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
 	}
 
+	// This needs to be created BEFORE the commands is registered because this is used in the Musical Chairs init
+	val soundboard = Soundboard()
+	val musicalChairsManager = MusicalChairsManager(this)
+
 	@OptIn(KordUnsafe::class)
 	val rest = RestClient(
 		BetterSTRecoveringKtorRequestHandler(
@@ -238,7 +243,6 @@ class LorittaBot(
 		it.startUpdater()
 	}
 	val falatron = Falatron(config.loritta.falatron.url, config.loritta.falatron.key)
-	val soundboard = Soundboard()
 	// TODO: This is very hacky, maybe this could be improved somehow?
 	lateinit var commandMentions: CommandMentions
 	val unicodeEmojiManager = UnicodeEmojiManager()
