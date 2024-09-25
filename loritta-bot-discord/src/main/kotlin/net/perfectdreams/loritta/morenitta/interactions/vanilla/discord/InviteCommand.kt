@@ -148,7 +148,7 @@ class InviteCommand : SlashCommandDeclarationWrapper {
                     if (invite.guild!!.splashUrl != null) image = invite.guild!!.splashUrl + "?size=2048"
 
                     footer {
-                        val discordGuild = context.loritta.lorittaShards.getGuildById(invite.guild!!.id)
+                        val discordGuild = context.loritta.lorittaShards.queryGuildById(invite.guild!!.idLong)
 
                         name = if (discordGuild != null)
                             "${Emotes.Blush} ${context.i18nContext.get(

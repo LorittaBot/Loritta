@@ -15,9 +15,12 @@ import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 object DeviousConverter {
     const val CACHE_VERSION = 1
+    val INITIAL_SESSION_ID = UUID.fromString("07c70756-adfc-4229-b20d-2039f34bd146")
+    val GATEWAY_EXTRAS_ID = UUID.fromString("6a8702f0-4c50-4875-8555-4aee0609184d")
 
     private val parentChannelField = ThreadChannelImpl::class.java.getDeclaredField("parentChannel")
         .apply {

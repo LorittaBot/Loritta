@@ -20,6 +20,8 @@ devDocs:
       title: "Encerrar Sorteio"
     rerollGuildGiveaway:
       title: "Fazer Reroll em um Sorteio"
+    createGuildMusicalchairs:
+      title: "Iniciar um Evento de Dança das Cadeiras"
   parameterKinds:
     path: "Parâmetro no Path"
     query: "Parâmetro na Query"

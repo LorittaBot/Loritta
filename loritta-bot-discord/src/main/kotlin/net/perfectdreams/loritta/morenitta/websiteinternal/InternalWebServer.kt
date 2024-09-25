@@ -69,6 +69,7 @@ class InternalWebServer(val m: LorittaBot) {
         PostRerollGiveawayRoute(m),
         GetGuildEmojiFightTopWinnersRoute(m),
         GetGuildUserEmojiFightVictoriesRoute(m),
+        PostMusicalChairsRoute(m)
     )
     private val internalAPIRoutes = listOf(
         GuildJsonBenchmarkRoute(m)

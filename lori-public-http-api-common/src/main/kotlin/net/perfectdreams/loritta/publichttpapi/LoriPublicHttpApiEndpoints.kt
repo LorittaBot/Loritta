@@ -24,6 +24,8 @@ object LoriPublicHttpApiEndpoints {
     val EMOJIFIGHT_GUILD_TOP_WINNERS_RANK = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/guilds/{guildId}/emojifights/top-winners")
     val EMOJIFIGHT_GUILD_VICTORIES = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/guilds/{guildId}/members/{userId}/emojifight/victories")
 
+    val CREATE_GUILD_MUSICALCHAIRS = LoriPublicHttpApiEndpoint(HttpMethod.Post, "/guilds/{guildId}/musical-chairs")
+
     val all by lazy {
         LoriPublicHttpApiEndpoints::class.declaredMemberProperties
             .filter {
