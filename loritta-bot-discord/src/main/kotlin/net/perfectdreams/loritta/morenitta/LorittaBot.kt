@@ -812,7 +812,7 @@ class LorittaBot(
 
 												logger.info { "Writing session cache file for shard ${jdaImpl.shardInfo.shardId}..." }
 												SessionCacheMetadata.upsert(SessionCacheMetadata.id) {
-													it[SessionCacheMetadata.id] = UUID.fromString("07c70756-adfc-4229-b20d-2039f34bd146")
+													it[SessionCacheMetadata.id] = UUID.fromString(DeviousConverter.INITIAL_SESSION_ID)
 													it[SessionCacheMetadata.content] = Json.encodeToString(
 														GatewaySessionData(
 															sessionId,
@@ -824,7 +824,7 @@ class LorittaBot(
 												}
 
 												SessionCacheMetadata.upsert(SessionCacheMetadata.id) {
-													it[SessionCacheMetadata.id] = UUID.fromString("6a8702f0-4c50-4875-8555-4aee0609184d")
+													it[SessionCacheMetadata.id] = UUID.fromString(DeviousConverter.GATEWAY_EXTRAS_ID)
 													it[SessionCacheMetadata.content] = Json.encodeToString(
 														GatewayExtrasData(
 															shutdownBeganAt,

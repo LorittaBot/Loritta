@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewaySessionData
 import net.perfectdreams.loritta.morenitta.utils.devious.SessionCacheMetadata
@@ -134,8 +135,8 @@ object LorittaLauncher {
 					val metadata = SessionCacheMetadata.selectAll()
 						.toList()
 
-					val initialSessionRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == UUID.fromString("07c70756-adfc-4229-b20d-2039f34bd146") }?.get(SessionCacheMetadata.content)
-					val gatewayExtrasRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == UUID.fromString("6a8702f0-4c50-4875-8555-4aee0609184d") }?.get(SessionCacheMetadata.content)
+					val initialSessionRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.INITIAL_SESSION_ID }?.get(SessionCacheMetadata.content)
+					val gatewayExtrasRaw = metadata.firstOrNull { it[SessionCacheMetadata.id].value == DeviousConverter.GATEWAY_EXTRAS_ID }?.get(SessionCacheMetadata.content)
 
 					if (initialSessionRaw != null && gatewayExtrasRaw != null) {
 						logger.info { "Found initial session and gateway extras for shard $shard!" }
