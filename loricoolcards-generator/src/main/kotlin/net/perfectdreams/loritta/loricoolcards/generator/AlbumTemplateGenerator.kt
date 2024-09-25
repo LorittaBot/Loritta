@@ -445,25 +445,51 @@ fun main() {
         )
     }
 
-    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 4)', NOW(), '2024-09-01 00:00:00+00', '{}');")
-    println(
-        "UPDATE loricoolcardsevents SET template = '${Json.encodeToString(
-            StickerAlbumTemplate(
-                stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
-                unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
-                sonhosPrice = 5_000,
-                sonhosReward = 2_000_000,
-                stickersInPack = 5,
-                stickerProbabilityWeights = mapOf(
-                    CardRarity.COMMON to 30.0,
-                    CardRarity.UNCOMMON to 25.0,
-                    CardRarity.RARE to 19.0,
-                    CardRarity.EPIC to 12.0,
-                    CardRarity.LEGENDARY to 8.0,
-                    CardRarity.MYTHIC to 5.0,
-                ),
-                pages = pages
+    val resultAsJson = Json.encodeToString(
+        StickerAlbumTemplate(
+            stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
+            unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
+            sonhosPrice = 5_000,
+            sonhosReward = 2_500_000,
+            stickersInPack = 5,
+            stickerProbabilityWeights = mapOf(
+                CardRarity.COMMON to 26.0,
+                CardRarity.UNCOMMON to 23.0,
+                CardRarity.RARE to 20.0,
+                CardRarity.EPIC to 13.0,
+                CardRarity.LEGENDARY to 10.0,
+                CardRarity.MYTHIC to 8.0,
+            ),
+            minimumBoosterPacksToTrade = 150,
+            pages = pages,
             )
-        )}' WHERE id = 10;"
     )
+
+    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 5)', NOW(), '2024-10-01 00:00:00+00', '$resultAsJson');")
+    if (false) {
+        println(
+            "UPDATE loricoolcardsevents SET template = '${
+                Json.encodeToString(
+                    StickerAlbumTemplate(
+                        stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
+                        unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
+                        sonhosPrice = 5_000,
+                        sonhosReward = 2_000_000,
+                        stickersInPack = 5,
+                        stickerProbabilityWeights = mapOf(
+                            CardRarity.COMMON to 26.0,
+                            CardRarity.UNCOMMON to 23.0,
+                            CardRarity.RARE to 20.0,
+                            CardRarity.EPIC to 13.0,
+                            CardRarity.LEGENDARY to 10.0,
+                            CardRarity.MYTHIC to 8.0,
+                        ),
+                        minimumBoosterPacksToTrade = 150,
+                        pages = pages,
+
+                        )
+                )
+            }' WHERE id = 11;"
+        )
+    }
 }
