@@ -21,7 +21,7 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
     m,
     LoriPublicHttpApiEndpoints.GET_USER_TRANSACTIONS,
     RateLimitOptions(
-        5,
+        20,
         5.seconds
     )
 ) {
