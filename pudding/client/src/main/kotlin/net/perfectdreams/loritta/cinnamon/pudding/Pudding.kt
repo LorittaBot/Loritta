@@ -40,9 +40,7 @@ import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.common.lorituber.*
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
@@ -66,9 +64,8 @@ class Pudding(
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
-        private val ISOLATION_LEVEL =
-            IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-        private const val SCHEMA_VERSION = 51 // Bump this every time any table is added/updated!
+        private val ISOLATION_LEVEL = IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
+        private const val SCHEMA_VERSION = 62 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
 
         /**
@@ -256,6 +253,16 @@ class Pudding(
             LoriTuberMails,
             LoriTuberPendingVideos,
             LoriTuberServerInfos,
+            LoriTuberGroceryStocks,
+            LoriTuberGroceryItems,
+            LoriTuberCharacterInventoryItems,
+            LoriTuberVideos,
+            LoriTuberViewers,
+            LoriTuberViewerVideoPreferences,
+            LoriTuberViewerViews,
+            LoriTuberViewerLikes,
+            LoriTuberViewerDislikes,
+            LoriTuberViewerChannelRelationships,
             Marriages,
             MiscellaneousData,
             Mutes,
@@ -424,6 +431,8 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(CardRarity.values())
                 createOrUpdatePostgreSQLEnum(ColorTheme.values())
                 createOrUpdatePostgreSQLEnum(InteractionContextType.values())
+                // createOrUpdatePostgreSQLEnum(LoriTuberVideoStage.values())
+                createOrUpdatePostgreSQLEnum(LoriTuberVideoContentCategory.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

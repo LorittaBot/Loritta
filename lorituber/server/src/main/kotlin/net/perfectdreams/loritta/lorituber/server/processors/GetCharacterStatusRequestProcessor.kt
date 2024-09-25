@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.lorituber.server.processors
 
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacters
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
@@ -18,8 +17,8 @@ class GetCharacterStatusRequestProcessor : LoriTuberRpcProcessor {
             currentTick,
             lastUpdate,
             character[LoriTuberCharacters.name],
-            character[LoriTuberCharacters.energy],
-            character[LoriTuberCharacters.hunger],
+            character[LoriTuberCharacters.energyNeed],
+            character[LoriTuberCharacters.hungerNeed],
             character[LoriTuberCharacters.currentTask]?.let { Json.decodeFromString<LoriTuberTask>(it) }
         )
     }

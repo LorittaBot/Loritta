@@ -87,6 +87,7 @@ import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.lorituber.LoriTuberServer
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
@@ -1415,6 +1416,11 @@ class LorittaBot(
 			GlobalScope.launch(CoroutineName("BlueSky Posts Stream Relay")) {
 				blueSkyRelay.startRelay()
 			}
+		}
+
+		if (config.loritta.environment == EnvironmentType.CANARY && isMainInstance) {
+			val server = LoriTuberServer(pudding)
+			server.start()
 		}
 
 		scheduleCoroutineAtFixedRateIfMainReplica(PendingImportantNotificationsProcessor::class.simpleName!!, 1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))

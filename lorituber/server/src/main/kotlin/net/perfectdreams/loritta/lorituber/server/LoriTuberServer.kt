@@ -32,8 +32,11 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class LoriTuberServer(val pudding: Pudding) {
     companion object {
-        private const val TICKS_PER_SECOND = 4
-        private const val TICK_DELAY = 250
+        // For comparisons:
+        // The Sims 1: one in game minute = one real life second
+        // The Sims Online: one in game minute = five real life seconds
+        private const val TICKS_PER_SECOND = 1
+        private const val TICK_DELAY = 1_000
         private val logger = KotlinLogging.logger {}
         private const val GENERAL_INFO_KEY = "general"
     }
@@ -79,7 +82,21 @@ class LoriTuberServer(val pudding: Pudding) {
                     call.respondText("LoriTuber Server")
                 }
 
+                get("/servers/{serverName}") {
+                    call.respondText(
+                        Json.encodeToString(
+                            GetServerInfoResponse(
+                                currentTick,
+                                lastUpdate,
+                                averageTickDurations.map { it.inWholeMilliseconds }.average()
+                            )
+                        ),
+                        ContentType.Application.Json
+                    )
+                }
+
                 post("/rpc") {
+                    // TODO: How can we "unhook" the tick rate from things that do not affect the game state?
                     val request = Json.decodeFromString<LoriTuberRPCRequest>(call.receiveText())
                     val channel = Channel<LoriTuberRPCResponse>()
 
@@ -89,6 +106,21 @@ class LoriTuberServer(val pudding: Pudding) {
                     )
 
                     logger.info { "Received $request" }
+
+                    if (pendingRequest.request is GetServerInfoRequest) {
+                        call.respondText(
+                            Json.encodeToString<LoriTuberRPCResponse>(
+                                GetServerInfoResponse(
+                                    currentTick,
+                                    lastUpdate,
+                                    averageTickDurations.map { it.inWholeMilliseconds }.average()
+                                )
+                            ),
+                            ContentType.Application.Json
+                        )
+                        return@post
+                    }
+
                     mutex.withLock {
                         pendingGameLoopRequests.add(pendingRequest)
                     }
@@ -220,7 +252,7 @@ class LoriTuberServer(val pudding: Pudding) {
 
                                         // Is energy depleted?
                                         // TODO: Hunger
-                                        if (character[LoriTuberCharacters.energy] == 0.0) {
+                                        if (character[LoriTuberCharacters.energyNeed] == 0.0) {
                                             // If yes, we will reset the current task
                                             LoriTuberCharacters.update({ LoriTuberCharacters.id eq character[LoriTuberCharacters.id] }) {
                                                 it[LoriTuberCharacters.currentTask] = null
@@ -229,7 +261,7 @@ class LoriTuberServer(val pudding: Pudding) {
                                             // Increment the video progress
                                             LoriTuberPendingVideos.update({ LoriTuberPendingVideos.id eq task.pendingVideoId }) {
                                                 with(SqlExpressionBuilder) {
-                                                    it[LoriTuberPendingVideos.percentage] = LoriTuberPendingVideos.percentage + 1.0
+                                                    it[LoriTuberPendingVideos.renderingProgress] = LoriTuberPendingVideos.renderingProgress + 1.0
                                                 }
                                             }
                                         }
@@ -240,12 +272,12 @@ class LoriTuberServer(val pudding: Pudding) {
                             // Every 5s we are going to decrease their motives
                             if (currentTick % (TICKS_PER_SECOND * 5) == 0L) {
                                 LoriTuberCharacters.update({ LoriTuberCharacters.id eq character[LoriTuberCharacters.id] }) {
-                                    it[LoriTuberCharacters.hunger] = (character[LoriTuberCharacters.hunger] - 1.0).coerceAtLeast(0.0)
+                                    it[LoriTuberCharacters.hungerNeed] = (character[LoriTuberCharacters.hungerNeed] - 1.0).coerceAtLeast(0.0)
 
                                     if (isSleeping) {
-                                        it[LoriTuberCharacters.energy] = (character[LoriTuberCharacters.energy] + 1.0).coerceIn(0.0, 100.0)
+                                        it[LoriTuberCharacters.energyNeed] = (character[LoriTuberCharacters.energyNeed] + 1.0).coerceIn(0.0, 100.0)
                                     } else {
-                                        it[LoriTuberCharacters.energy] = (character[LoriTuberCharacters.energy] - 1.0).coerceAtLeast(0.0)
+                                        it[LoriTuberCharacters.energyNeed] = (character[LoriTuberCharacters.energyNeed] - 1.0).coerceAtLeast(0.0)
                                     }
                                 }
                             }
@@ -278,7 +310,7 @@ class LoriTuberServer(val pudding: Pudding) {
 
                 val timeToWait = TICK_DELAY - (System.currentTimeMillis() - beginProcessingTicksTime)
 
-                println("Waiting $timeToWait")
+                println("Waiting ${timeToWait}ms")
                 if (timeToWait > 0)
                     Thread.sleep(timeToWait)
                 else

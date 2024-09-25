@@ -4,25 +4,32 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.content.*
 import io.ktor.http.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacters
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedHook
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.CreateCharacterScreen
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.LoriTuberScreen
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.ReceivedMailScreen
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.ViewMotivesScreen
-import net.perfectdreams.loritta.serializable.lorituber.requests.*
+import net.perfectdreams.loritta.serializable.lorituber.requests.GetMailRequest
+import net.perfectdreams.loritta.serializable.lorituber.requests.LoriTuberRPCRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetCharactersByOwnerResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetMailResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.LoriTuberRPCResponse
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -31,6 +38,9 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("9692a1f9-0566-454d-9df7-c76950dc1f72")) {
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
+        this.interactionContexts = listOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM, InteractionContextType.PRIVATE_CHANNEL)
+
         executor = LoriTuberExecutor()
     }
 
@@ -40,16 +50,21 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             val hook = (context.deferChannelMessage(false) as UnleashedHook.InteractionHook)
                 .jdaHook
 
-            val character = sendLoriTuberRPCRequest<GetCharactersByOwnerResponse>(GetCharactersByOwnerRequest(context.user.idLong))
-                .characters
-                .firstOrNull()
+            val character = loritta.transaction {
+                LoriTuberCharacters.selectAll().where { LoriTuberCharacters.owner eq context.user.idLong }.map {
+                    GetCharactersByOwnerResponse.LoriTuberCharacter(
+                        it[LoriTuberCharacters.id].value,
+                        it[LoriTuberCharacters.name]
+                    )
+                }
+            }.firstOrNull()
 
             if (character != null) {
                 ViewMotivesScreen(
                     this@LoriTuberCommand,
                     context.user,
                     hook,
-                    PlayerCharacter(character.id, character.name, 100.0, 100.0)
+                    PlayerCharacter(character.id, character.name, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0)
                 ).render()
             } else {
                 CreateCharacterScreen(
@@ -71,6 +86,9 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     suspend fun switchScreen(screen: LoriTuberScreen) = screen.render()
 
     suspend fun checkMail(user: User, hook: InteractionHook, character: PlayerCharacter, currentScreen: LoriTuberScreen): Boolean {
+        if (true)
+            return false
+
         val mail = sendLoriTuberRPCRequest<GetMailResponse>(GetMailRequest(character.id))
             .mail
 
@@ -220,5 +238,14 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
         } */
     }
 
-    data class PlayerCharacter(val id: Long, val name: String, val hunger: Double, val energy: Double)
+    data class PlayerCharacter(
+        val id: Long,
+        val name: String,
+        val hungerNeed: Double,
+        val energyNeed: Double,
+        val funNeed: Double,
+        val hygieneNeed: Double,
+        val bladderNeed: Double,
+        val socialNeed: Double
+    )
 }
