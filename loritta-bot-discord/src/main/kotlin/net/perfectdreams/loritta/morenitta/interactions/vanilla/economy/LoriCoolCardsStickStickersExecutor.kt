@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsFinishedAlbumSonhosTransaction
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.vendors.ForUpdateOption
 import java.awt.Color
 import java.time.Instant
 import kotlin.time.measureTimedValue
