@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
@@ -23,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import org.jetbrains.exposed.sql.*
 import kotlin.math.ceil
@@ -139,14 +141,17 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                         disabled = page !in RankingGenerator.VALID_RANKING_PAGES
                     }
                 ) {
-                    it.updateMessageSetLoadingState()
+                    val hook = it.updateMessageSetLoadingState()
 
-                    val message = createRankMessage(loritta, it, page - 1, guild)
+                    val builtMessage = createRankMessage(loritta, it, page - 1, guild)
 
-                    it.editMessage {
-                        message()
+                    val asMessageEditData = MessageEdit {
+                        builtMessage()
                     }
+
+                    hook.editOriginal(asMessageEditData).await()
                 },
+                
                 // right button
                 loritta.interactivityManager.buttonForUser(
                     context.user,
@@ -157,13 +162,15 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                         disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
                     }
                 ) {
-                    it.updateMessageSetLoadingState()
+                    val hook = it.updateMessageSetLoadingState()
 
-                    val message = createRankMessage(loritta, it, page + 1, guild)
+                    val builtMessage = createRankMessage(loritta, it, page + 1, guild)
 
-                    it.editMessage {
-                        message()
+                    val asMessageEditData = MessageEdit {
+                        builtMessage()
                     }
+
+                    hook.editOriginal(asMessageEditData).await()
                 }
             )
         }
