@@ -172,9 +172,19 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                             // This is hard because we need to check if a sticker with the same card ID has been sticked (the user may have initiated the stickering in another command)
                             val eventId = cardsToBeSticked.first()[LoriCoolCardsUserOwnedCards.event]
 
-                            val alreadyStickedCards = LoriCoolCardsUserOwnedCards.select {
-                                LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq eventId) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                            }.toList()
+                            val alreadyStickedCards = LoriCoolCardsUserOwnedCards.selectAll()
+                                .where {
+                                    (LoriCoolCardsUserOwnedCards.event eq eventId) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                                }
+                                // THIS IS REQUIRED TO AVOID THE FOLLOWING BUG:
+                                // When you have multiple duplicate stickers and you spam the "stick stickers" command, this may cause PostgreSQL to select different stickers on the "cardsToBeSticked" list
+                                // And this causes an issue where both stickers are sticked, even tho that SHOULD NOT happen at all!
+                                // To avoid this, we tell PostgreSQL to lock ALL stickers rows for updates
+                                // This is also why we filter by sticked stickers manually later instead of the query, because we want to request ALL the sticker rows to be locked to avoid any issues,
+                                // not just sticked stickers
+                                .forUpdate(ForUpdateOption.PostgreSQL.ForUpdate())
+                                .toList()
+                                .filter { it[LoriCoolCardsUserOwnedCards.sticked] }
 
                             val alreadyStickedCardIds = alreadyStickedCards.map {
                                 it[LoriCoolCardsUserOwnedCards.card].value
