@@ -12,22 +12,25 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.lorituber.*
+import net.perfectdreams.loritta.lorituber.LoriTuberVibes
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoStage
 import net.perfectdreams.loritta.lorituber.items.LoriTuberGroceryItemData
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
 import net.perfectdreams.loritta.lorituber.recipes.LoriTuberRecipes
 import net.perfectdreams.loritta.lorituber.rpc.packets.*
 import net.perfectdreams.loritta.lorituber.server.processors.*
 import net.perfectdreams.loritta.lorituber.server.state.GameState
-import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberSuperViewerChannelRelationshipData
-import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberSuperViewerData
+import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberPendingVideoStageData
+import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberTrendData
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoData
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoEvent
-import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberSuperViewer
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberVideo
 import net.perfectdreams.loritta.lorituber.server.state.items.LoriTuberGroceryItem
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
+import java.util.*
 import kotlin.concurrent.thread
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -40,10 +43,10 @@ class LoriTuberServer(
         // For comparisons:
         // The Sims 1: one in game minute = one real life second
         // The Sims Online: one in game minute = five real life seconds
-        private const val TICKS_PER_SECOND = 1
-        private const val TICK_DELAY = 1_000
-        private const val ONE_HOUR_IN_TICKS = 60
-        private const val ONE_DAY_IN_TICKS = 1_440
+        const val TICKS_PER_SECOND = 1
+        const val TICK_DELAY = 1_000
+        const val ONE_HOUR_IN_TICKS = 60
+        const val ONE_DAY_IN_TICKS = 1_440
         private val logger = KotlinLogging.logger {}
         const val GENERAL_INFO_KEY = "general"
 
@@ -78,6 +81,8 @@ class LoriTuberServer(
     private val createPendingVideoProcessor = CreatePendingVideoProcessor(this)
     private val getPendingVideoByIdProcessor = GetPendingVideoByIdProcessor(this)
     private val startWorkingOnPendingVideoProcessor = StartWorkingOnPendingVideoProcessor(this)
+    private val finishPendingVideoProcessor = FinishPendingVideoProcessor(this)
+    private val getChannelVideosProcessor = GetChannelVideosProcessor(this)
 
     private var isFirstTick = false
     private var cantKeepUp = false
@@ -98,45 +103,53 @@ class LoriTuberServer(
     }
 
     fun start() {
-        // TODO: Remove this!
-        gameState.channels.forEach { it.data.channelRelationships.clear() }
-
         val bools = listOf(false, true)
+
+        for (category in LoriTuberVideoContentCategory.entries) {
+            val randomVibes = LoriTuberVibes(0)
+            randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE1, bools.random())
+            randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE2, bools.random())
+            randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE3, bools.random())
+            randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE4, bools.random())
+            randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE5, bools.random())
+            randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE6, bools.random())
+            // randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE7, bools.random())
+
+            gameState.trendsByCategory[category] = LoriTuberTrendData(randomVibes)
+        }
 
         val allPossibleCategoryCombinations = LoriTuberVideoContentCategory.entries.combinations(3)
 
         // In total there is 2304 possible combinations for each category
 
         var x = 0L
-        for (length in LoriTuberContentLength.entries) {
-            for (categories in allPossibleCategoryCombinations) {
-                for (vibe1 in bools) {
-                    for (vibe2 in bools) {
-                        for (vibe3 in bools) {
-                            for (vibe4 in bools) {
-                                for (vibe5 in bools) {
-                                    for (vibe6 in bools) {
-                                        for (vibe7 in bools) {
-                                            val vibes = LoriTuberVibes(0)
-                                            vibes.setVibe(LoriTuberVideoContentVibes.VIBE1, vibe1)
-                                            vibes.setVibe(LoriTuberVideoContentVibes.VIBE2, vibe2)
-                                            vibes.setVibe(LoriTuberVideoContentVibes.VIBE3, vibe3)
-                                            vibes.setVibe(LoriTuberVideoContentVibes.VIBE4, vibe4)
-                                            vibes.setVibe(LoriTuberVideoContentVibes.VIBE5, vibe5)
-                                            vibes.setVibe(LoriTuberVideoContentVibes.VIBE6, vibe6)
-                                            vibes.setVibe(LoriTuberVideoContentVibes.VIBE7, vibe7)
+        for (categories in allPossibleCategoryCombinations) {
+            for (vibe1 in bools) {
+                for (vibe2 in bools) {
+                    for (vibe3 in bools) {
+                        for (vibe4 in bools) {
+                            for (vibe5 in bools) {
+                                for (vibe6 in bools) {
+                                    for (vibe7 in bools) {
+                                        val vibes = LoriTuberVibes(0)
+                                        vibes.setVibe(LoriTuberVideoContentVibes.VIBE1, vibe1)
+                                        vibes.setVibe(LoriTuberVideoContentVibes.VIBE2, vibe2)
+                                        vibes.setVibe(LoriTuberVideoContentVibes.VIBE3, vibe3)
+                                        vibes.setVibe(LoriTuberVideoContentVibes.VIBE4, vibe4)
+                                        vibes.setVibe(LoriTuberVideoContentVibes.VIBE5, vibe5)
+                                        vibes.setVibe(LoriTuberVideoContentVibes.VIBE6, vibe6)
+                                        // vibes.setVibe(LoriTuberVideoContentVibes.VIBE7, vibe7)
 
-                                            val superViewerId = x++
-                                            gameState.superViewersById[superViewerId] = LoriTuberSuperViewer(
-                                                superViewerId,
-                                                LoriTuberSuperViewerData(
-                                                    categories,
-                                                    vibes,
-                                                    // It seems that 10 allocated engagement is a "healthy" default instead of 1
-                                                    10,
-                                                )
+                                        val superViewerId = x++
+                                        /* gameState.superViewersById[superViewerId] = LoriTuberSuperViewer(
+                                            superViewerId,
+                                            LoriTuberSuperViewerData(
+                                                categories,
+                                                vibes,
+                                                // It seems that 10 allocated engagement is a "healthy" default instead of 1
+                                                10,
                                             )
-                                        }
+                                        ) */
                                     }
                                 }
                             }
@@ -146,7 +159,7 @@ class LoriTuberServer(
             }
         }
 
-        logger.info { "Total SuperViewers: ${gameState.superViewersById.size}" }
+        // logger.info { "Total SuperViewers: ${gameState.superViewersById.size}" }
 
         // This is the LoriTuber server endpoint
         embeddedServer(CIO, port = 3001) {
@@ -174,6 +187,8 @@ class LoriTuberServer(
                             is CreatePendingVideoRequest -> createPendingVideoProcessor.process(request)
                             is GetPendingVideoByIdRequest -> getPendingVideoByIdProcessor.process(request)
                             is StartWorkingOnPendingVideoRequest -> startWorkingOnPendingVideoProcessor.process(request)
+                            is FinishPendingVideoRequest -> finishPendingVideoProcessor.process(request)
+                            is GetChannelVideosRequest -> getChannelVideosProcessor.process(request)
                         }
                     }
 
@@ -202,75 +217,145 @@ class LoriTuberServer(
                                 gameState.nextVideoId(),
                                 LoriTuberVideoData(
                                     channel.id,
+                                    UUID.randomUUID().toString(),
                                     true,
                                     gameState.worldInfo.currentTick,
                                     LoriTuberVideoContentCategory.GAMES,
-                                    LoriTuberContentLength.MEDIUM,
+                                    20,
                                     20, // 999,
                                     20, // 999,
                                     20, // 999, // 999, // gameState.random.nextInt(0, 1000),
                                     // LoriTuberVibes(gameState.random.nextLong(0, 128)),
                                     LoriTuberVibes(0),
+                                    LoriTuberVibes(0), // yes this is incorrect
                                     0,
                                     0,
                                     0,
-                                    videoEvents
+                                    videoEvents,
+                                    listOf()
                                 )
                             )
 
                             val startX = System.currentTimeMillis()
 
+
+                            val vibesOfTheCurrentCategory = gameState.trendsByCategory[video.data.contentCategory]!!
                             val videoGameplayScore = (video.data.recordingScore + video.data.editingScore + video.data.thumbnailScore) / 3
                             val videoGameplayProgress = videoGameplayScore / 999.0
+
+                            var matchedVibes = 0
+                            for (vibe in LoriTuberVideoContentVibes.entries) {
+                                if (vibesOfTheCurrentCategory.vibes.vibeType(vibe) == video.data.vibes.vibeType(vibe)) {
+                                    matchedVibes++
+                                }
+                            }
 
                             var targetViews = 0
                             var targetLikes = 0
                             var targetDislikes = 0
 
-                            // TODO: Process subs
+                            // Process sub views
                             var subViews = 0
+
                             for ((category, relationship) in channel.data.channelRelationshipsV2) {
                                 // For every sub you have = a view (yay)
                                 if (category == video.data.contentCategory) {
-                                    // All subs always view + like the video
+                                    // All subs always view the videos BUT they will only like if we are actually vibin
                                     subViews += relationship.subscribers
-                                    targetLikes++
+
+                                    if (matchedVibes >= 3)
+                                        targetLikes++
                                 }
+                            }
+
+                            val baseViews = when (matchedVibes) {
+                                6 -> 1_000_000
+                                5 -> 750_000
+                                4 -> 250_000
+                                3 -> 100_000
+                                2 -> 100_000
+                                1 -> 100_000
+                                0 -> 100_000
+                                else -> error("Unsupported matched vibes count $matchedVibes")
+                            }
+
+                            val chancesOfLiking: Float
+                            val chancesOfDisliking: Float
+
+                            // While we could just "reverse" the like/dislike output when it is a negative match, I think that this is better because it
+                            // feels more "realistic"
+                            when (matchedVibes) {
+                                6 -> {
+                                    chancesOfLiking = 0.06f
+                                    chancesOfDisliking = 0.0f
+                                }
+
+                                5 -> {
+                                    chancesOfLiking = 0.05f
+                                    chancesOfDisliking = 0.0004f
+                                }
+
+                                4 -> {
+                                    chancesOfLiking = 0.04f
+                                    chancesOfDisliking = 0.0008f
+                                }
+
+                                3 -> {
+                                    chancesOfLiking = 0.03f
+                                    chancesOfDisliking = 0.0012f
+                                }
+
+                                2 -> {
+                                    chancesOfLiking = 0.02f
+                                    chancesOfDisliking = 0.025f
+                                }
+
+                                1 -> {
+                                    chancesOfLiking = 0.01f
+                                    chancesOfDisliking = 0.035f
+                                }
+
+                                0 -> {
+                                    chancesOfLiking = 0.00f
+                                    chancesOfDisliking = 0.06f
+                                }
+
+                                else -> error("Unsupported matched vibes count $matchedVibes")
                             }
 
                             // TODO: Change the views to match the algorithm boost
                             // The algorithm boost is based on the current category vibes
-                            targetViews += subViews + (100_000 * easeInQuad(videoGameplayProgress)).toInt()
+                            targetViews += subViews + (baseViews * easeInQuad(videoGameplayProgress)).toInt()
 
                             repeat(targetViews) {
                                 val shouldILike = gameState.random.nextFloat()
 
-                                // Yeah, the likes and dislikes are just cosmetic
-                                if (0.03f >= shouldILike)
+                                // The likes and dislikes are actually NOT just cosmetic! They can be used to figure out if the vibes are good or not
+                                if (chancesOfLiking > shouldILike)
                                     targetLikes++
-                                else if (0.0312f >= shouldILike)
+                                else if ((chancesOfLiking + chancesOfDisliking) > shouldILike)
                                     targetDislikes++
                             }
 
-                            // Give a positive feedback to the category because we made a good video
-                            channel.addRelationshipOfCategory(
-                                video.data.contentCategory,
-                                // A short content takes ~1 day to make
-                                // A medium content takes ~3 days to make
-                                // A long content takes ~7 days to make
-                                // Then you consider that every day you lose -2 relationship
-                                when (video.data.contentLength) {
-                                    LoriTuberContentLength.SHORT -> {
-                                        4
-                                    }
-                                    LoriTuberContentLength.MEDIUM -> {
-                                        12
-                                    }
-                                    LoriTuberContentLength.LONG -> {
-                                        28
-                                    }
-                                }
-                            )
+                            // If the vibes match, then that's awesomesauce!!!
+                            // Bad content does not hurt your relationship, but it also doesn't increase it, so you do get punished by the daily decay
+                            if (matchedVibes >= 3) {
+                                // TODO: Give a different relationship reward depending on how many vibes we matched
+                                //   ^ Do we really need this?
+
+                                // Give a positive feedback to the category because we made a video that we viiibe
+                                channel.addRelationshipOfCategory(
+                                    video.data.contentCategory,
+                                    // A short content takes ~1 day to make
+                                    // A medium content takes ~3 days to make
+                                    // A long content takes ~7 days to make
+                                    // Then you consider that every day you lose -2 relationship
+                                    //
+                                    // Previously we let users create different video lengths
+                                    // But honestly that is a bit pointless, so now there's only a single video length
+                                    12
+                                )
+                            }
 
                             // TODO: Refactor this
                             fun easeOutQuint(x: Double): Double {
@@ -322,12 +407,14 @@ class LoriTuberServer(
                             gameState.videosById[video.id] = video
 
                             println("Result: ${video}")
+                            println("Matched vibes: $matchedVibes")
+                            println("Base Views: $baseViews")
                             println("Target Views: $targetViews")
                             println("Target Likes: $targetLikes")
                             println("Target Dislikes: $targetDislikes")
                         }
 
-                        if (line == "spawn_video") {
+                        /* if (line == "spawn_video") {
                             val channel = gameState.channels.first()
 
                             val videoEvents = mutableMapOf<Long, List<LoriTuberVideoEvent>>()
@@ -428,7 +515,7 @@ class LoriTuberServer(
                                 }
                             } */
 
-                            for (superViewer in gameState.superViewers) {
+                            /* for (superViewer in gameState.superViewers) {
                                 var superViewerLikedTheVideo = false
 
                                 println("Using ${superViewer}")
@@ -513,7 +600,7 @@ class LoriTuberServer(
 
                                     // We don't increase the relationship for each view because that would be very OP
                                     if (superViewerLikedTheVideo) {
-                                        channel.addRelationshipOfSuperViewer(
+                                        /* channel.addRelationshipOfSuperViewer(
                                             superViewer,
                                             // A short content takes ~1 day to make
                                             // A medium content takes ~3 days to make
@@ -530,7 +617,7 @@ class LoriTuberServer(
                                                     7
                                                 }
                                             }
-                                        )
+                                        ) */
                                     }
                                     /* if (video.data.thumbnailScore >= shouldISeeThisVideoBasedOnThumbnail && v >= shouldISeeThisVideoBasedOnVibes && contentLengthScore == 0) {
                                         // Okay, so I'm watching this video!
@@ -596,7 +683,7 @@ class LoriTuberServer(
                                         //   Bigger relationship = More subs generated
                                     } */
                                 }
-                            }
+                            } */
 
                             // TODO: Refactor this
                             fun easeOutQuint(x: Double): Double {
@@ -743,7 +830,7 @@ class LoriTuberServer(
                                     }
                                 )
                             }
-                        }
+                        } */
                     } catch (e: Exception) {
                         logger.warn(e) { "Something went wrong while trying to execute command!" }
                     }
@@ -918,26 +1005,98 @@ class LoriTuberServer(
                     if (channel != null) {
                         val pendingVideo = channel.data.pendingVideos.firstOrNull { it.id == task.pendingVideoId }
                         if (pendingVideo != null) {
-                            when (pendingVideo.currentStage) {
+                            when (task.stage) {
                                 LoriTuberVideoStage.RECORDING -> {
-                                    // How this works?
-                                    // We +1 for each tick
-                                    if (pendingVideo.currentStageProgressTicks == 20L) {
-                                        // Okay, so this stage is finished! Cancel the current task
+                                    val inProgress = pendingVideo.recordingStage as? LoriTuberPendingVideoStageData.InProgress
+                                    if (inProgress == null) {
+                                        // Invalid stage, reset!
                                         character.setTask(null)
-
-                                        // And set the new recording score
-                                        pendingVideo.recordingScore = gameState.random.nextInt(5, 15)
                                     } else {
-                                        pendingVideo.currentStageProgressTicks++
-                                    }
+                                        // How this works?
+                                        // We +1 for each tick
+                                        if (inProgress.progressTicks == 5L) {
+                                            // Okay, so this stage is finished! Cancel the current task
+                                            character.setTask(null)
 
-                                    channel.isDirty = true
+                                            // Set the new recording score...
+                                            pendingVideo.recordingStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
+
+                                            // And unlock two new stages!
+                                            pendingVideo.editingStage = LoriTuberPendingVideoStageData.InProgress(0)
+                                            pendingVideo.thumbnailStage = LoriTuberPendingVideoStageData.InProgress(0)
+                                        } else {
+                                            inProgress.progressTicks++
+                                        }
+                                        channel.isDirty = true
+                                    }
                                 }
-                                LoriTuberVideoStage.EDITING -> TODO()
-                                LoriTuberVideoStage.RENDERING -> TODO()
-                                LoriTuberVideoStage.THUMBNAIL -> TODO()
-                                LoriTuberVideoStage.FINISHED -> TODO()
+                                LoriTuberVideoStage.EDITING -> {
+                                    val inProgress = pendingVideo.editingStage as? LoriTuberPendingVideoStageData.InProgress
+                                    if (inProgress == null) {
+                                        // Invalid stage, reset!
+                                        character.setTask(null)
+                                    } else {
+                                        // How this works?
+                                        // We +1 for each tick
+                                        if (inProgress.progressTicks == 5L) {
+                                            // Okay, so this stage is finished! Cancel the current task
+                                            character.setTask(null)
+
+                                            // Set the new recording score...
+                                            pendingVideo.editingStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
+
+                                            // And unlock the next stage!
+                                            pendingVideo.renderingStage = LoriTuberPendingVideoStageData.InProgress(0)
+                                        } else {
+                                            inProgress.progressTicks++
+                                        }
+                                        channel.isDirty = true
+                                    }
+                                }
+                                LoriTuberVideoStage.RENDERING -> {
+                                    val inProgress = pendingVideo.renderingStage as? LoriTuberPendingVideoStageData.InProgress
+                                    if (inProgress == null) {
+                                        // Invalid stage, reset!
+                                        character.setTask(null)
+                                    } else {
+                                        // How this works?
+                                        // We +1 for each tick
+                                        if (inProgress.progressTicks == 5L) {
+                                            // Okay, so this stage is finished! Cancel the current task
+                                            character.setTask(null)
+
+                                            // Set the new recording score...
+                                            pendingVideo.renderingStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
+
+                                            // And now we don't need to unlock anything rn
+                                        } else {
+                                            inProgress.progressTicks++
+                                        }
+                                        channel.isDirty = true
+                                    }
+                                }
+                                LoriTuberVideoStage.THUMBNAIL -> {
+                                    val inProgress = pendingVideo.thumbnailStage as? LoriTuberPendingVideoStageData.InProgress
+                                    if (inProgress == null) {
+                                        // Invalid stage, reset!
+                                        character.setTask(null)
+                                    } else {
+                                        // How this works?
+                                        // We +1 for each tick
+                                        if (inProgress.progressTicks == 5L) {
+                                            // Okay, so this stage is finished! Cancel the current task
+                                            character.setTask(null)
+
+                                            // Set the new recording score...
+                                            pendingVideo.thumbnailStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
+
+                                            // And now we don't need to unlock anything rn
+                                        } else {
+                                            inProgress.progressTicks++
+                                        }
+                                        channel.isDirty = true
+                                    }
+                                }
                             }
                         } else {
                             // Unknown pending video, reset the task!
@@ -1004,20 +1163,6 @@ class LoriTuberServer(
 
                         video.isDirty = true
                     }
-
-                    is LoriTuberVideoEvent.AddRelationshipScore -> {
-                        val channel = gameState.channels.first { it.id == video.data.channelId }
-
-                        val relData = channel.data.channelRelationships.getOrPut(event.superViewerId) {
-                            LoriTuberSuperViewerChannelRelationshipData(
-                                0,
-                                0
-                            )
-                        }
-                        relData.relationshipScore += event.relationshipScore
-
-                        video.isDirty = true
-                    }
                 }
             }
 
@@ -1029,7 +1174,7 @@ class LoriTuberServer(
         for (channel in gameState.channels) {
             val characterOwner = gameState.characters.first { it.id == channel.data.characterId }
 
-            logger.info { "[Character ${channel.id}] ${characterOwner.data.ticksLived % ONE_DAY_IN_TICKS} - Subscribers: ${channel.data.channelRelationships.values.sumOf { it.subscribers }}" }
+            logger.info { "[Character ${channel.id}] ${characterOwner.data.ticksLived % ONE_DAY_IN_TICKS} - Subscribers: ${channel.data.channelRelationshipsV2.values.sumOf { it.subscribers }}" }
 
             if (characterOwner.data.ticksLived % ONE_DAY_IN_TICKS == 0L) {
                 // Every one day that the character has lived, decrease their relationship score with their viewers

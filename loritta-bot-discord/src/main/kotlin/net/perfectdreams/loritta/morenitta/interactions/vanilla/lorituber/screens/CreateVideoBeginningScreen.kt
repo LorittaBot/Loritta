@@ -5,11 +5,11 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberChannels
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
-import org.jetbrains.exposed.sql.selectAll
 
 class CreateVideoBeginningScreen(
     command: LoriTuberCommand,
@@ -19,26 +19,10 @@ class CreateVideoBeginningScreen(
     val channelId: Long,
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
-        val result = loritta.transaction {
-            val channel = LoriTuberChannels.selectAll()
-                .where {
-                    LoriTuberChannels.id eq channelId
-                }
-                .firstOrNull()
-
-            if (channel == null)
-                return@transaction CreateVideoBeginningResult.UnknownChannel
-
-            return@transaction CreateVideoBeginningResult.Channel(
-                LoriTuberChannel(
-                    channel[LoriTuberChannels.id].value,
-                    channel[LoriTuberChannels.name]
-                )
-            )
-        }
+        val result = sendLoriTuberRPCRequestNew<GetChannelByIdResponse>(GetChannelByIdRequest(channelId))
 
         when (result) {
-            CreateVideoBeginningResult.UnknownChannel -> {
+            GetChannelByIdResponse.UnknownChannel -> {
                 // Channel does not exist! Maybe it was deleted?
                 command.switchScreen(
                     CreateChannelScreen(
@@ -50,7 +34,7 @@ class CreateVideoBeginningScreen(
                 )
                 return
             }
-            is CreateVideoBeginningResult.Channel -> {
+            is GetChannelByIdResponse.Success -> {
                 val viewChannelButton = loritta.interactivityManager.buttonForUser(
                     user,
                     ButtonStyle.PRIMARY,
@@ -82,7 +66,6 @@ class CreateVideoBeginningScreen(
                             it.deferEdit(),
                             character,
                             result.channel.id,
-                            null,
                             null
                         )
                     )

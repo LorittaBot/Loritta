@@ -5,14 +5,14 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberChannels
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentCategory
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentVibes
+import net.perfectdreams.loritta.lorituber.LoriTuberVibes
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
-import org.jetbrains.exposed.sql.selectAll
 
 class CreateVideoGenreTypeScreen(
     command: LoriTuberCommand,
@@ -21,29 +21,12 @@ class CreateVideoGenreTypeScreen(
     val character: LoriTuberCommand.PlayerCharacter,
     val channelId: Long,
     private val contentCategory: LoriTuberVideoContentCategory?,
-    private val contentLength: LoriTuberContentLength?
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
-        val result = loritta.transaction {
-            val channel = LoriTuberChannels.selectAll()
-                .where {
-                    LoriTuberChannels.id eq channelId
-                }
-                .firstOrNull()
-
-            if (channel == null)
-                return@transaction CreateVideoGenreTypeResult.UnknownChannel
-
-            return@transaction CreateVideoGenreTypeResult.Channel(
-                LoriTuberChannel(
-                    channel[LoriTuberChannels.id].value,
-                    channel[LoriTuberChannels.name]
-                )
-            )
-        }
+        val result = sendLoriTuberRPCRequestNew<GetChannelByIdResponse>(GetChannelByIdRequest(channelId))
 
         when (result) {
-            CreateVideoGenreTypeResult.UnknownChannel -> {
+            GetChannelByIdResponse.UnknownChannel -> {
                 // Channel does not exist! Maybe it was deleted?
                 command.switchScreen(
                     CreateChannelScreen(
@@ -54,13 +37,13 @@ class CreateVideoGenreTypeScreen(
                     )
                 )
             }
-            is CreateVideoGenreTypeResult.Channel -> {
+            is GetChannelByIdResponse.Success -> {
                 val continueButton = loritta.interactivityManager.buttonForUser(
                     user,
                     ButtonStyle.PRIMARY,
                     "Continuar",
                     {
-                        disabled = contentCategory == null || contentLength == null
+                        disabled = contentCategory == null
                     }
                 ) {
                     command.switchScreen(
@@ -72,8 +55,7 @@ class CreateVideoGenreTypeScreen(
                             channelId,
                             // Shouldn't be null here
                             contentCategory!!,
-                            contentLength!!,
-                            mapOf(),
+                            LoriTuberVibes(0),
                             LoriTuberVideoContentVibes.VIBE1
                         )
                     )
@@ -109,7 +91,7 @@ class CreateVideoGenreTypeScreen(
                                 appendLine("$contentCategory")
                                 if (contentCategory != null) {
                                     when (contentCategory) {
-                                        LoriTuberVideoContentCategory.ANIMATION -> {}
+                                        LoriTuberVideoContentCategory.ANIMATION_AND_ART -> {}
                                         LoriTuberVideoContentCategory.GAMES -> {}
                                         LoriTuberVideoContentCategory.COMEDY -> {}
                                         LoriTuberVideoContentCategory.BEAUTY -> {}
@@ -123,8 +105,6 @@ class CreateVideoGenreTypeScreen(
                                         LoriTuberVideoContentCategory.POLITICS -> {}
                                     }
                                 }
-                                appendLine()
-                                appendLine("Duração: $contentLength")
                             }
                         }
 
@@ -132,8 +112,9 @@ class CreateVideoGenreTypeScreen(
                             loritta.interactivityManager.stringSelectMenu({
                                 placeholder = "Categoria do Vídeo"
 
-                                for (genre in LoriTuberVideoContentCategory.values()) {
-                                    addOption(genre.name, genre.name)
+                                for (genre in LoriTuberVideoContentCategory.entries) {
+                                    val categoryLevel = result.channel.contentLevels.getOrDefault(genre, 1)
+                                    addOption("${genre.name} [Nível $categoryLevel]", genre.name)
                                 }
 
                                 val selectedContentGenre = contentCategory?.name
@@ -147,34 +128,7 @@ class CreateVideoGenreTypeScreen(
                                         it.deferEdit(),
                                         character,
                                         result.channel.id,
-                                        LoriTuberVideoContentCategory.valueOf(values.first()),
-                                        contentLength
-                                    )
-                                )
-                            }
-                        )
-
-                        actionRow(
-                            loritta.interactivityManager.stringSelectMenu({
-                                placeholder = "Duração do Vídeo"
-
-                                for (type in LoriTuberContentLength.entries) {
-                                    addOption(type.name, type.name)
-                                }
-
-                                val selectedContentType = contentLength?.name
-                                if (selectedContentType != null)
-                                    setDefaultValues(selectedContentType)
-                            }) { it, values ->
-                                command.switchScreen(
-                                    CreateVideoGenreTypeScreen(
-                                        command,
-                                        user,
-                                        it.deferEdit(),
-                                        character,
-                                        result.channel.id,
-                                        contentCategory,
-                                        LoriTuberContentLength.valueOf(values.first())
+                                        LoriTuberVideoContentCategory.valueOf(values.first())
                                     )
                                 )
                             }

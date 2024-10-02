@@ -4,8 +4,10 @@ import net.perfectdreams.loritta.lorituber.LoriTuberVideoStage
 import net.perfectdreams.loritta.lorituber.rpc.packets.CreatePendingVideoRequest
 import net.perfectdreams.loritta.lorituber.rpc.packets.CreatePendingVideoResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberResponse
+import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
 import net.perfectdreams.loritta.lorituber.server.LoriTuberServer
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberPendingVideoData
+import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberPendingVideoStageData
 
 class CreatePendingVideoProcessor(val m: LoriTuberServer) : PacketProcessor<CreatePendingVideoRequest> {
     override suspend fun process(request: CreatePendingVideoRequest): LoriTuberResponse {
@@ -19,19 +21,25 @@ class CreatePendingVideoProcessor(val m: LoriTuberServer) : PacketProcessor<Crea
         if (channel.data.pendingVideos.isNotEmpty())
             return CreatePendingVideoResponse.CharacterIsAlreadyDoingAnotherVideo
 
-        channel.data.pendingVideos.add(
-            LoriTuberPendingVideoData(
-                channel.nextPendingVideoId(),
-                request.contentCategory,
-                request.contentLength,
-                LoriTuberVideoStage.RECORDING,
-                0,
-                null,
-                null,
-                null,
-                null
-            )
+        val character = m.gameState.characters.first { it.id == channel.data.characterId }
+
+        val contentCategoryLevel = channel.data.categoryLevels[request.contentCategory] ?: 1
+
+        val maxCategoryLevelValue = (20 * (contentCategoryLevel / 2)).coerceAtMost(999)
+
+        val pendingVideoData = LoriTuberPendingVideoData(
+            channel.nextPendingVideoId(),
+            request.contentCategory,
+            request.contentVibes,
+            LoriTuberPendingVideoStageData.Finished(m.gameState.random.nextInt(maxCategoryLevelValue - 10, maxCategoryLevelValue)),
+            LoriTuberPendingVideoStageData.InProgress(0),
+            LoriTuberPendingVideoStageData.Unavailable,
+            LoriTuberPendingVideoStageData.Unavailable,
+            LoriTuberPendingVideoStageData.Unavailable,
         )
+
+        channel.data.pendingVideos.add(pendingVideoData)
+        character.setTask(LoriTuberTask.WorkingOnVideo(channel.id, pendingVideoData.id, LoriTuberVideoStage.RECORDING))
 
         channel.isDirty = true
 

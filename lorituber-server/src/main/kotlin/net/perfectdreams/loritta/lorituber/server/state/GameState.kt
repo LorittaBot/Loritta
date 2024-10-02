@@ -8,11 +8,12 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.server.LoriTuberServer.Companion.GENERAL_INFO_KEY
 import net.perfectdreams.loritta.lorituber.server.WorldTime
+import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberTrendData
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberChannel
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
-import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberSuperViewer
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberVideo
 import net.perfectdreams.loritta.lorituber.server.tables.*
 import org.jetbrains.exposed.sql.Database
@@ -33,8 +34,10 @@ class GameState(
     val charactersById: HashMap<Long, LoriTuberCharacter>,
     val channelsById: HashMap<Long, LoriTuberChannel>,
     val videosById: HashMap<Long, LoriTuberVideo>,
-    val superViewersById: HashMap<Long, LoriTuberSuperViewer>,
-    val nelsonGroceryStore: GroceryStore
+    val trendsByCategory: EnumMap<LoriTuberVideoContentCategory, LoriTuberTrendData>,
+    val trendTargetsByCategory: EnumMap<LoriTuberVideoContentCategory, LoriTuberTrendData>,
+    val nelsonGroceryStore: GroceryStore,
+    val viewerHandles: List<String>
 ) {
     // Values removed from the collections ARE reflected on the map themselves
     val characters
@@ -43,8 +46,6 @@ class GameState(
         get() = channelsById.values
     val videos
         get() = videosById.values
-    val superViewers
-        get() = superViewersById.values
 
     companion object {
         private val logger = KotlinLogging.logger {}

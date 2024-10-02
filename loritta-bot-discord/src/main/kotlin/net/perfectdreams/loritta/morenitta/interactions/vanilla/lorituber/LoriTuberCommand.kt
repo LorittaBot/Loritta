@@ -10,9 +10,11 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.InteractionHook
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacters
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetCharactersByOwnerRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberResponse
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedHook
@@ -26,10 +28,8 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screen
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.ViewMotivesScreen
 import net.perfectdreams.loritta.serializable.lorituber.requests.GetMailRequest
 import net.perfectdreams.loritta.serializable.lorituber.requests.LoriTuberRPCRequest
-import net.perfectdreams.loritta.serializable.lorituber.responses.GetCharactersByOwnerResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetMailResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.LoriTuberRPCResponse
-import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -50,14 +50,9 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             val hook = (context.deferChannelMessage(false) as UnleashedHook.InteractionHook)
                 .jdaHook
 
-            val character = loritta.transaction {
-                LoriTuberCharacters.selectAll().where { LoriTuberCharacters.owner eq context.user.idLong }.map {
-                    GetCharactersByOwnerResponse.LoriTuberCharacter(
-                        it[LoriTuberCharacters.id].value,
-                        it[LoriTuberCharacters.name]
-                    )
-                }
-            }.firstOrNull()
+            val character = sendLoriTuberRPCRequestNew<net.perfectdreams.loritta.lorituber.rpc.packets.GetCharactersByOwnerResponse>(
+                GetCharactersByOwnerRequest(context.user.idLong)
+            ).characters.firstOrNull()
 
             if (character != null) {
                 ViewMotivesScreen(
@@ -74,6 +69,22 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                 ).render()
             }
         }
+    }
+
+    suspend inline fun <reified T> sendLoriTuberRPCRequestNew(request: LoriTuberRequest): T {
+        val response = loritta.http.post("http://127.0.0.1:3001/rpc") {
+            setBody(TextContent(Json.encodeToString<LoriTuberRequest>(request), ContentType.Application.Json))
+        }
+
+        val x = response.bodyAsText()
+        println("Response: $x")
+
+        val parsed = Json.decodeFromString<LoriTuberResponse>(x)
+
+        if (parsed !is T)
+            error("Result does not match what we expect! $parsed")
+
+        return parsed
     }
 
     suspend fun <T> sendLoriTuberRPCRequest(request: LoriTuberRPCRequest): T {

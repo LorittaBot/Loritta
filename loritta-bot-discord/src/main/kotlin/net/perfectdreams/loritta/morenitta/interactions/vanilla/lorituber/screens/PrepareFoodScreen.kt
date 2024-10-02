@@ -1,22 +1,18 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens
 
 import dev.minn.jda.ktx.messages.MessageEdit
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacterInventoryItems
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacters
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberServerInfos
-import net.perfectdreams.loritta.lorituber.*
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
+import net.perfectdreams.loritta.lorituber.rpc.packets.PrepareCraftingRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.PrepareCraftingResponse
+import net.perfectdreams.loritta.lorituber.rpc.packets.StartCraftingRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.StartCraftingResponse
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
 import java.awt.Color
 
 class PrepareFoodScreen(
@@ -24,7 +20,7 @@ class PrepareFoodScreen(
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val selectedItems: List<LoriTuberItem>
+    val selectedItems: List<LoriTuberItemId>
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
         val viewMotivesButton = loritta.interactivityManager.buttonForUser(
@@ -45,18 +41,8 @@ class PrepareFoodScreen(
             )
         }
 
-        val items = loritta.transaction {
-            LoriTuberCharacterInventoryItems
-                .selectAll()
-                .where {
-                    LoriTuberCharacterInventoryItems.owner eq character.id
-                }
-                .toList()
-                .groupBy { it[LoriTuberCharacterInventoryItems.item] }
-                .map {
-                    LoriTuberItems.getById(it.key) to it.value.size
-                }
-        }
+        val response = sendLoriTuberRPCRequestNew<PrepareCraftingResponse>(PrepareCraftingRequest(character.id))
+        val items = response.inventory
 
         hook.editOriginal(
             MessageEdit {
@@ -67,7 +53,7 @@ class PrepareFoodScreen(
                         appendLine("Faça uma gororoba!")
                         appendLine()
                         for (item in selectedItems) {
-                            appendLine(item.name)
+                            appendLine(item)
                         }
                     }
 
@@ -81,16 +67,15 @@ class PrepareFoodScreen(
                                     this.maxValues = 3
 
                                     for (item in items) {
-                                        addOption("${item.first.name} [${item.second}x]", item.first.id)
+                                        addOption("${item.id} [${item.quantity}x]", item.id.id.toString())
                                     }
 
                                     this.setDefaultValues(selectedItems.map { it.id })
                                 }
                             ) { context, values ->
-                                val selectedItems = LoriTuberItems.allItems
-                                    .filter {
-                                        it.id in values
-                                    }
+                                val selectedItems = items.filter {
+                                    it.id.id in values
+                                }
 
                                 command.switchScreen(
                                     PrepareFoodScreen(
@@ -98,7 +83,7 @@ class PrepareFoodScreen(
                                         user,
                                         context.deferEdit(),
                                         character,
-                                        selectedItems
+                                        selectedItems.map { it.id }
                                     )
                                 )
                             }
@@ -122,21 +107,7 @@ class PrepareFoodScreen(
                         ) { context ->
                             val defer = context.deferEdit()
 
-                            val matchedRecipe = LoriTuberRecipes.getMatchingRecipeForItems(selectedItems)
-
-                            loritta.transaction {
-                                val serverInfo = loritta.transaction {
-                                    LoriTuberServerInfos.selectAll()
-                                        .where { LoriTuberServerInfos.type eq LoriTuberServer.GENERAL_INFO_KEY }
-                                        .first()
-                                        .get(LoriTuberServerInfos.data)
-                                        .let { Json.decodeFromString<ServerInfo>(it) }
-                                }
-
-                                LoriTuberCharacters.update({ LoriTuberCharacters.id eq character.id }) {
-                                    it[LoriTuberCharacters.currentTask] = Json.encodeToString<LoriTuberTask>(LoriTuberTask.PreparingFood(matchedRecipe?.id, selectedItems.map { it.id }, serverInfo.currentTick))
-                                }
-                            }
+                            val response = sendLoriTuberRPCRequestNew<StartCraftingResponse>(StartCraftingRequest(character.id, selectedItems))
 
                             command.switchScreen(
                                 ViewMotivesScreen(

@@ -5,14 +5,14 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberChannels
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentCategory
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentVibes
+import net.perfectdreams.loritta.lorituber.LoriTuberVibes
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
-import org.jetbrains.exposed.sql.selectAll
 import kotlin.math.absoluteValue
 
 class CreateVideoVibesScreen(
@@ -22,13 +22,10 @@ class CreateVideoVibesScreen(
     val character: LoriTuberCommand.PlayerCharacter,
     val channelId: Long,
     private val contentCategory: LoriTuberVideoContentCategory,
-    private val contentLength: LoriTuberContentLength,
-    private val contentVibes: Map<LoriTuberVideoContentVibes, Int>,
+    private val contentVibes: LoriTuberVibes,
     private val editingVibe: LoriTuberVideoContentVibes,
 ) : LoriTuberScreen(command, user, hook) {
     companion object {
-        private val MAX_POINTS_ALLOCATION = 20
-
         val VIBES_WRAPPER = mutableMapOf(
             LoriTuberVideoContentVibes.VIBE1 to VibeWrapper(
                 "Sério",
@@ -53,35 +50,15 @@ class CreateVideoVibesScreen(
             LoriTuberVideoContentVibes.VIBE6 to VibeWrapper(
                 "Seguro",
                 "Polêmico"
-            ),
-            LoriTuberVideoContentVibes.VIBE7 to VibeWrapper(
-                "Amador",
-                "Profissional"
             )
         )
     }
 
     override suspend fun render() {
-        val result = loritta.transaction {
-            val channel = LoriTuberChannels.selectAll()
-                .where {
-                    LoriTuberChannels.id eq channelId
-                }
-                .firstOrNull()
-
-            if (channel == null)
-                return@transaction CreateVideoVibesResult.UnknownChannel
-
-            return@transaction CreateVideoVibesResult.Channel(
-                LoriTuberChannel(
-                    channel[LoriTuberChannels.id].value,
-                    channel[LoriTuberChannels.name]
-                )
-            )
-        }
+        val result = sendLoriTuberRPCRequestNew<GetChannelByIdResponse>(GetChannelByIdRequest(channelId))
 
         when (result) {
-            CreateVideoVibesResult.UnknownChannel -> {
+            GetChannelByIdResponse.UnknownChannel -> {
                 // Channel does not exist! Maybe it was deleted?
                 command.switchScreen(
                     CreateChannelScreen(
@@ -92,15 +69,13 @@ class CreateVideoVibesScreen(
                     )
                 )
             }
-            is CreateVideoVibesResult.Channel -> {
-                val allocatedPoints = contentVibes.values.sumOf { it.absoluteValue }
-
+            is GetChannelByIdResponse.Success -> {
                 val continueButton = loritta.interactivityManager.buttonForUser(
                     user,
                     ButtonStyle.PRIMARY,
                     "Continuar",
                     {
-                        disabled = contentCategory == null || contentLength == null
+                        disabled = contentCategory == null
                     }
                 ) {
                     command.switchScreen(
@@ -112,7 +87,6 @@ class CreateVideoVibesScreen(
                             channelId,
                             // Shouldn't be null here
                             contentCategory,
-                            contentLength,
                             contentVibes
                         )
                     )
@@ -134,7 +108,6 @@ class CreateVideoVibesScreen(
                             character,
                             result.channel.id,
                             contentCategory,
-                            contentLength,
                             contentVibes,
                             editingVibe,
                         )
@@ -155,14 +128,14 @@ class CreateVideoVibesScreen(
                                 val longestToneRight = VIBES_WRAPPER.map { it.value.toneRight }.maxOf { it.length }
                                 for (vibe in VIBES_WRAPPER) {
                                     append("${idx + 1}. ")
-                                    val vibeValue = contentVibes[vibe.key] ?: -1
-                                    if (vibeValue == -1)
+                                    val vibeValue = contentVibes.vibeType(vibe.key)
+                                    if (vibeValue == false)
                                         append("✓")
                                     else
                                         append(" ")
                                     append(" ")
                                     append("${vibe.value.toneLeft.padEnd(longestToneLeft, ' ')} ${vibe.value.toneRight.padStart(longestToneRight, ' ')} ")
-                                    if (vibeValue == 1)
+                                    if (vibeValue == true)
                                         append("✓")
                                     else
                                         append(" ")
@@ -189,7 +162,6 @@ class CreateVideoVibesScreen(
                                         character,
                                         result.channel.id,
                                         contentCategory,
-                                        contentLength,
                                         contentVibes,
                                         LoriTuberVideoContentVibes.valueOf(values.first()),
                                     )
@@ -204,8 +176,8 @@ class CreateVideoVibesScreen(
                                 VIBES_WRAPPER[editingVibe]!!.toneLeft,
                                 {}
                             ) { context ->
-                                val newVibes = contentVibes.toMutableMap()
-                                newVibes[editingVibe] = -1
+                                val newVibes = contentVibes.copy()
+                                newVibes.setVibe(editingVibe, false)
 
                                 command.switchScreen(
                                     CreateVideoVibesScreen(
@@ -215,7 +187,6 @@ class CreateVideoVibesScreen(
                                         character,
                                         result.channel.id,
                                         contentCategory,
-                                        contentLength,
                                         newVibes,
                                         editingVibe,
                                     )
@@ -227,8 +198,8 @@ class CreateVideoVibesScreen(
                                 VIBES_WRAPPER[editingVibe]!!.toneRight,
                                 {}
                             ) { context ->
-                                val newVibes = contentVibes.toMutableMap()
-                                newVibes[editingVibe] = 1
+                                val newVibes = contentVibes.copy()
+                                newVibes.setVibe(editingVibe, true)
 
                                 command.switchScreen(
                                     CreateVideoVibesScreen(
@@ -238,7 +209,6 @@ class CreateVideoVibesScreen(
                                         character,
                                         result.channel.id,
                                         contentCategory,
-                                        contentLength,
                                         newVibes,
                                         editingVibe,
                                     )

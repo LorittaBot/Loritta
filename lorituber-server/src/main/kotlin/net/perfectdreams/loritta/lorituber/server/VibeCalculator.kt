@@ -21,7 +21,7 @@ fun main() {
         randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE4, bools.random())
         randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE5, bools.random())
         randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE6, bools.random())
-        randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE7, bools.random())
+        // randomVibes.setVibe(LoriTuberVideoContentVibes.VIBE7, bools.random())
 
         var matchedVibes = 0
         for (vibe in LoriTuberVideoContentVibes.entries) {
@@ -35,7 +35,7 @@ fun main() {
 
     val total = vc.values.sum()
 
-    vc.forEach { t, u ->
+    vc.entries.sortedBy { it.key }.forEach { (t, u) ->
         println("$t: $u (${(u / total.toDouble()).toDouble() * 100}%)")
     }
 }

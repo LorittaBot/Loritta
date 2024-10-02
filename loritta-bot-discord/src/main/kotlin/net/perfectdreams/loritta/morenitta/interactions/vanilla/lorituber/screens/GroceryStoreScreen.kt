@@ -1,21 +1,17 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens
 
 import dev.minn.jda.ktx.messages.MessageEdit
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberGroceryItems
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberGroceryStocks
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberServerInfos
-import net.perfectdreams.loritta.lorituber.*
+import net.perfectdreams.loritta.lorituber.items.LoriTuberGroceryItemData
+import net.perfectdreams.loritta.lorituber.rpc.packets.GoToGroceryStoreRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.GoToGroceryStoreResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 
 class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: InteractionHook, val character: LoriTuberCommand.PlayerCharacter) : LoriTuberScreen(command, user, hook) {
@@ -24,8 +20,8 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
             command: LoriTuberCommand,
             user: User,
             character: LoriTuberCommand.PlayerCharacter,
-            groceryItems: List<LoriTuberGroceryItem>,
-            viewingItem: LoriTuberGroceryItem?
+            groceryItems: List<LoriTuberGroceryItemData>,
+            viewingItem: LoriTuberGroceryItemData?
         ): StringSelectMenu {
             val loritta = command.loritta
 
@@ -35,7 +31,7 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
                     addOption("Mercearia do Nelson", "store_overview")
 
                     for (groceryItem in groceryItems) {
-                        addOption("${groceryItem.item.name} [${groceryItem.inStock}x]", groceryItem.item.id)
+                        addOption("${groceryItem.item.id} [${groceryItem.inStock}x]", groceryItem.item.id)
                     }
 
                     setDefaultValues(viewingItem?.item?.id ?: "store_overview")
@@ -69,7 +65,9 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
     }
 
     override suspend fun render() {
-        val result = loritta.transaction {
+        val result = sendLoriTuberRPCRequestNew<GoToGroceryStoreResponse>(GoToGroceryStoreRequest(character.id))
+
+        /* val result = loritta.transaction {
             val serverInfo = LoriTuberServerInfos.selectAll()
                 .where { LoriTuberServerInfos.type eq LoriTuberServer.GENERAL_INFO_KEY }
                 .first()
@@ -99,7 +97,7 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
                 .toList()
 
             return@transaction GoToGroceryStoreResult.Success(items)
-        }
+        } */
 
         val viewMotivesButton = loritta.interactivityManager.buttonForUser(
             user,
@@ -120,7 +118,7 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
         }
 
         when (result) {
-            is GoToGroceryStoreResult.Success -> {
+            is GoToGroceryStoreResponse.Success -> {
                 hook.editOriginal(
                     MessageEdit {
                         embed {
@@ -133,21 +131,12 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
                             color = Color(255, 172, 51).rgb
                         }
 
-                        val groceryItems = result.items.map { it[LoriTuberGroceryItems.item] }
-                            .distinct()
-                            .map {
-                                LoriTuberGroceryItem(
-                                    LoriTuberItems.getById(it),
-                                    result.items.count { f -> f[LoriTuberGroceryItems.boughtBy] == null && f[LoriTuberGroceryItems.item] == it }
-                                )
-                            }
-
                         actionRow(
                             groceryStoreItemListViewer(
                                 command,
                                 user,
                                 character,
-                                groceryItems,
+                                result.items,
                                 null
                             )
                         )
@@ -156,7 +145,7 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
                     }
                 ).setReplace(true).await()
             }
-            GoToGroceryStoreResult.Closed -> {
+            GoToGroceryStoreResponse.Closed -> {
                 hook.editOriginal(
                     MessageEdit {
                         embed {

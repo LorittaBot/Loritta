@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.lorituber.server
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.lorituber.LoriTuberVibes
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
@@ -27,39 +26,42 @@ fun main() {
 
     val video = LoriTuberVideoData(
         0,
+        "Loritta is so cute!",
         true,
         0,
         LoriTuberVideoContentCategory.GAMES,
-        LoriTuberContentLength.MEDIUM,
+        20,
         20, // 999,
         20, // 999,
         20, // 999, // 999, // gameState.random.nextInt(0, 1000),
         // LoriTuberVibes(gameState.random.nextLong(0, 128)),
         LoriTuberVibes(0),
+        LoriTuberVibes(0),
         0,
         0,
         0,
-        mapOf()
+        mapOf(),
+        listOf()
     )
 
-    val bools = listOf(false, true)
+    repeat(7) { matchedVibes ->
+        val bools = listOf(false, true)
 
-    val vibers = mutableMapOf<LoriTuberVideoContentCategory, LoriTuberSimpleSuperViewerData>()
+        val vibers = mutableMapOf<LoriTuberVideoContentCategory, LoriTuberSimpleSuperViewerData>()
 
-    for (category in LoriTuberVideoContentCategory.entries) {
-        val vibes = LoriTuberVibes(0)
-        vibes.setVibe(LoriTuberVideoContentVibes.VIBE1, bools.random())
-        vibes.setVibe(LoriTuberVideoContentVibes.VIBE2, bools.random())
-        vibes.setVibe(LoriTuberVideoContentVibes.VIBE3, bools.random())
-        vibes.setVibe(LoriTuberVideoContentVibes.VIBE4, bools.random())
-        vibes.setVibe(LoriTuberVideoContentVibes.VIBE5, bools.random())
-        vibes.setVibe(LoriTuberVideoContentVibes.VIBE6, bools.random())
-        vibes.setVibe(LoriTuberVideoContentVibes.VIBE7, bools.random())
+        for (category in LoriTuberVideoContentCategory.entries) {
+            val vibes = LoriTuberVibes(0)
+            vibes.setVibe(LoriTuberVideoContentVibes.VIBE1, bools.random())
+            vibes.setVibe(LoriTuberVideoContentVibes.VIBE2, bools.random())
+            vibes.setVibe(LoriTuberVideoContentVibes.VIBE3, bools.random())
+            vibes.setVibe(LoriTuberVideoContentVibes.VIBE4, bools.random())
+            vibes.setVibe(LoriTuberVideoContentVibes.VIBE5, bools.random())
+            vibes.setVibe(LoriTuberVideoContentVibes.VIBE6, bools.random())
 
-        vibers[category] = LoriTuberSimpleSuperViewerData(LoriTuberVibes(vibes.vibes))
-    }
+            vibers[category] = LoriTuberSimpleSuperViewerData(LoriTuberVibes(vibes.vibes))
+        }
 
-    /* val allPossibleCategoryCombinations = LoriTuberVideoContentCategory.entries.combinations(3)
+        /* val allPossibleCategoryCombinations = LoriTuberVideoContentCategory.entries.combinations(3)
 
     val superViewers = mutableListOf<LoriTuberSuperViewerData>()
 
@@ -103,65 +105,126 @@ fun main() {
 
     println(superViewers.size) */
 
-    val random = SecureRandom.getInstance("SHA1PRNG")
+        val random = SecureRandom.getInstance("SHA1PRNG")
 
-    // The scaled thumbnail progress helps us actually setup that low thumbnail scores will have less views
+        // The scaled thumbnail progress helps us actually setup that low thumbnail scores will have less views
 
-    val vibesOfTheCurrentCategory = vibers[video.contentCategory]!!
-    val videoGameplayScore = (video.recordingScore + video.editingScore + video.thumbnailScore) / 3
-    val videoGameplayProgress = videoGameplayScore / 999.0
+        val vibesOfTheCurrentCategory = vibers[video.contentCategory]!!
+        val videoGameplayScore = (video.contentScore + video.recordingScore + video.editingScore + video.thumbnailScore) / 4
+        val videoGameplayProgress = videoGameplayScore / 999.0
 
-    println("Video score: $videoGameplayScore")
-    println("Progress: $videoGameplayProgress")
-    // println("Scaled: $videoScoreScaled")
-    println(vibesOfTheCurrentCategory)
+        println("Video score: $videoGameplayScore")
+        println("Progress: $videoGameplayProgress")
+        // println("Scaled: $videoScoreScaled")
+        println(vibesOfTheCurrentCategory)
 
-    var matchedVibes = 0
+        /* var matchedVibes = 0
     for (vibe in LoriTuberVideoContentVibes.entries) {
         if (vibesOfTheCurrentCategory.preferredVibes.vibeType(vibe) == video.vibes.vibeType(vibe)) {
             matchedVibes++
         }
+    } */
+        println("Matched vibes: $matchedVibes")
+
+        val baseViews = when (matchedVibes) {
+            6 -> 1_000_000
+            5 -> 750_000
+            4 -> 250_000
+            3 -> 100_000
+            2 -> 100_000
+            1 -> 100_000
+            0 -> 100_000
+            else -> error("Unsupported matched vibes count $matchedVibes")
+        }
+
+        val chancesOfLiking: Float
+        val chancesOfDisliking: Float
+
+        val positive1 = Pair(
+            0.06f,
+            0.0f
+        )
+        val positive2 = Pair(
+            0.05f,
+            0.0004f
+        )
+        val positive3 = Pair(
+            0.04f,
+            0.0008f
+        )
+
+        when (matchedVibes) {
+            6 -> {
+                chancesOfLiking = 0.06f
+                chancesOfDisliking = 0.0f
+            }
+
+            5 -> {
+                chancesOfLiking = 0.05f
+                chancesOfDisliking = 0.0004f
+            }
+
+            4 -> {
+                chancesOfLiking = 0.04f
+                chancesOfDisliking = 0.0008f
+            }
+
+            3 -> {
+                chancesOfLiking = 0.03f
+                chancesOfDisliking = 0.0012f
+            }
+
+            2 -> {
+                chancesOfLiking = 0.02f
+                chancesOfDisliking = 0.02f
+            }
+
+            1 -> {
+                chancesOfLiking = 0.01f
+                chancesOfDisliking = 0.03f
+            }
+
+            0 -> {
+                chancesOfLiking = 0.00f
+                chancesOfDisliking = 0.04f
+            }
+
+            else -> error("Unsupported matched vibes count $matchedVibes")
+        }
+
+        println("Base views: $baseViews")
+
+        // The target views should change depending on the current algo boost of the category + vibes
+        val targetViews = baseViews * easeInQuad(videoGameplayProgress)
+        val targetViewsAsInt = targetViews.toInt()
+
+        var targetLikes = 0
+        var targetDislikes = 0
+        var targetComments = 0
+        repeat(targetViewsAsInt) {
+            val shouldILike = random.nextFloat()
+            val shouldIComment = random.nextFloat()
+
+            // Yeah, the likes and dislikes are just cosmetic
+            if (chancesOfLiking > shouldILike)
+                targetLikes++
+            else if ((chancesOfLiking + chancesOfDisliking) > shouldILike)
+                targetDislikes++
+
+            if (0.0055f > shouldIComment)
+                targetComments++
+        }
+
+        // val targetLikesRatio = getTargetLikesRatio(targetViewsAsInt)
+        // println(targetLikesRatio)
+
+        // var targetLikes = (targetViews * targetLikesRatio).toInt()
+
+        println(targetViewsAsInt)
+        println(targetLikes)
+        println(targetDislikes)
+        println(targetComments)
     }
-    println("Matched vibes: $matchedVibes")
-
-    val baseViews = when (matchedVibes) {
-        7 -> 1_000_000
-        6 -> 750_000
-        5 -> 500_000
-        4 -> 250_000
-        3 -> 100_000
-        2 -> 100_000
-        1 -> 100_000
-        0 -> 100_000
-        else -> error("Unsupported matched vibes count $matchedVibes")
-    }
-
-    println("Base views: $baseViews")
-
-    // The target views should change depending on the current algo boost of the category + vibes
-    val targetViews = baseViews * easeInQuad(videoGameplayProgress)
-    val targetViewsAsInt = targetViews.toInt()
-
-    var targetLikes = 0
-    var targetDislikes = 0
-    repeat(targetViewsAsInt) {
-        val shouldILike = random.nextFloat()
-
-        // Yeah, the likes and dislikes are just cosmetic
-        if (0.03f >= shouldILike)
-            targetLikes++
-        else if (0.0312f >= shouldILike)
-            targetDislikes++
-    }
-
-    // val targetLikesRatio = getTargetLikesRatio(targetViewsAsInt)
-    // println(targetLikesRatio)
-
-    // var targetLikes = (targetViews * targetLikesRatio).toInt()
-
-    println(targetViewsAsInt)
-    println(targetLikes)
-    println(targetDislikes)
 }
 
 fun easeInQuad(x: Double): Double {

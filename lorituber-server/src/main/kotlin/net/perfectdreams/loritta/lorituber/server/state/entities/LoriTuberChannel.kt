@@ -13,7 +13,7 @@ data class LoriTuberChannel(
         return data.pendingVideoCounter++
     }
 
-    fun addRelationshipOfSuperViewer(superViewer: LoriTuberSuperViewer, score: Int) = addRelationshipOfSuperViewer(superViewer.id, score)
+    /* fun addRelationshipOfSuperViewer(superViewer: LoriTuberSuperViewer, score: Int) = addRelationshipOfSuperViewer(superViewer.id, score)
 
     fun addRelationshipOfSuperViewer(superViewerId: Long, score: Int) {
         val relData = data.channelRelationships.getOrPut(superViewerId) {
@@ -29,7 +29,7 @@ data class LoriTuberChannel(
             relData.relationshipScore = newValue
             isDirty = true
         }
-    }
+    } */
 
     fun addRelationshipOfCategory(category: LoriTuberVideoContentCategory, score: Int) {
         val relData = data.channelRelationshipsV2.getOrPut(category) {
@@ -45,5 +45,10 @@ data class LoriTuberChannel(
             relData.relationshipScore = newValue
             isDirty = true
         }
+    }
+
+    fun addCategoryLevel(category: LoriTuberVideoContentCategory, levelsToIncrease: Int) {
+        data.categoryLevels[category] = (data.categoryLevels.getOrDefault(category, 1) + levelsToIncrease).coerceIn(1..100)
+        isDirty = true
     }
 }

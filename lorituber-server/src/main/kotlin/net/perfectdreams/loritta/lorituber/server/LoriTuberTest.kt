@@ -12,7 +12,7 @@ fun main() {
     vibes.rightVibes(LoriTuberVideoContentVibes.VIBE4)
     vibes.rightVibes(LoriTuberVideoContentVibes.VIBE5)
     vibes.rightVibes(LoriTuberVideoContentVibes.VIBE6)
-    vibes.rightVibes(LoriTuberVideoContentVibes.VIBE7)
+    // vibes.rightVibes(LoriTuberVideoContentVibes.VIBE7)
 
     println(vibes.vibeType(LoriTuberVideoContentVibes.VIBE1))
 

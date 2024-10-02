@@ -2,35 +2,30 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.scree
 
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.*
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentCategory
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentVibes
-import net.perfectdreams.loritta.lorituber.*
+import net.perfectdreams.loritta.lorituber.LoriTuberUtils
+import net.perfectdreams.loritta.lorituber.WorldTime
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
+import net.perfectdreams.loritta.lorituber.recipes.LoriTuberRecipes
+import net.perfectdreams.loritta.lorituber.rpc.packets.*
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
 import java.awt.Color
-import java.util.*
 
 class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: InteractionHook, val character: LoriTuberCommand.PlayerCharacter) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
         if (command.checkMail(user, hook, character, this))
             return
 
-        val characterStatus = loritta.transaction {
+        val characterStatus = sendLoriTuberRPCRequestNew<ViewCharacterMotivesResponse>(ViewCharacterMotivesRequest(character.id))
+
+        /* val characterStatus = loritta.transaction {
             val serverInfo = loritta.transaction {
                 LoriTuberServerInfos.selectAll()
                     .where { LoriTuberServerInfos.type eq LoriTuberServer.GENERAL_INFO_KEY }
@@ -54,7 +49,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
                 character[LoriTuberCharacters.socialNeed],
                 character[LoriTuberCharacters.currentTask]?.let { Json.decodeFromString<LoriTuberTask>(it) }
             )
-        }
+        } */
 
         val button = loritta.interactivityManager.buttonForUser(
             user,
@@ -64,18 +59,9 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
                 emoji = Emoji.fromUnicode("\uD83C\uDF9E️")
             }
         ) {
-            val channel = loritta.transaction {
-                LoriTuberChannels.selectAll()
-                    .where { LoriTuberChannels.owner eq character.id }
-                    .limit(1)
-                    .firstOrNull()
-                    ?.let {
-                        LoriTuberChannel(
-                            it[LoriTuberChannels.id].value,
-                            it[LoriTuberChannels.name]
-                        )
-                    }
-            }
+            val channel = sendLoriTuberRPCRequestNew<GetChannelsByCharacterResponse>(GetChannelsByCharacterRequest(character.id))
+                .channels
+                .firstOrNull()
 
             if (channel != null) {
                 command.switchScreen(
@@ -112,11 +98,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
                 emoji = Emoji.fromUnicode("\uD83D\uDE34")
             }
         ) {
-            val result = loritta.transaction {
-                LoriTuberCharacters.update({ LoriTuberCharacters.id eq character.id }) {
-                    it[LoriTuberCharacters.currentTask] = Json.encodeToString<LoriTuberTask>(LoriTuberTask.Sleeping())
-                }
-            }
+            sendLoriTuberRPCRequestNew<SetCharacterSleepingResponse>(SetCharacterSleepingRequest(character.id))
 
             this.hook = it.deferEdit()
             command.switchScreen(this)
@@ -252,22 +234,24 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
             ButtonStyle.SECONDARY,
             "Resetar Necessidades",
         ) {
-            val result = loritta.transaction {
-                LoriTuberCharacters.update({ LoriTuberCharacters.id eq character.id }) {
-                    it[LoriTuberCharacters.energyNeed] = 100.0
-                    it[LoriTuberCharacters.hungerNeed] = 100.0
-                    it[LoriTuberCharacters.hygieneNeed] = 100.0
-                    it[LoriTuberCharacters.bladderNeed] = 100.0
-                    it[LoriTuberCharacters.funNeed] = 100.0
-                    it[LoriTuberCharacters.socialNeed] = 100.0
-                }
-            }
-
             this.hook = it.deferEdit()
+
+            sendLoriTuberRPCRequestNew<SetCharacterMotivesResponse>(
+                SetCharacterMotivesRequest(
+                    character.id,
+                    100.0,
+                    100.0,
+                    100.0,
+                    100.0,
+                    100.0,
+                    100.0
+                )
+            )
+
             command.switchScreen(this)
         }
 
-        val createViewers10k = loritta.interactivityManager.buttonForUser(
+        /* val createViewers10k = loritta.interactivityManager.buttonForUser(
             user,
             ButtonStyle.SECONDARY,
             "Criar Viewers (10k)",
@@ -477,7 +461,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
                 )
             }
             return@buttonForUser
-        }
+        } */
 
         val worldTime = WorldTime(characterStatus.currentTick)
         val worldHours = worldTime.hours
@@ -488,23 +472,23 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
                 embed {
                     title = characterStatus.name
 
-                    val currentTask = when (characterStatus.currentTask) {
-                        is LoriTuberTask.Sleeping -> "Dormindo"
-                        is LoriTuberTask.WorkingOnVideo -> "Trabalhando em um Vídeo"
-                        is LoriTuberTask.Eating -> {
-                            val item = LoriTuberItems.getById(characterStatus.currentTask.itemId)
+                    val currentTask = when (val task = characterStatus.currentTask) {
+                        is net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask.Sleeping -> "Dormindo"
+                        is net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask.WorkingOnVideo -> "Trabalhando em um Vídeo"
+                        is net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask.Eating -> {
+                            val item = LoriTuberItems.getById(task.itemId)
                             val foodAttributes = item.foodAttributes!!
 
-                            "Comendo ${LoriTuberItems.getById(characterStatus.currentTask.itemId).name} (${foodAttributes.ticks - (characterStatus.currentTick - characterStatus.currentTask.startedEatingAtTick)} ticks)"
+                            "Comendo ${LoriTuberItems.getById(task.itemId).id} (${foodAttributes.ticks - (characterStatus.currentTick - task.startedEatingAtTick)} ticks)"
                         }
-                        is LoriTuberTask.PreparingFood -> {
-                            val recipe = characterStatus.currentTask.recipeId?.let { LoriTuberRecipes.getById(it) }
+                        is net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask.PreparingFood -> {
+                            val recipe = task.recipeId?.let { LoriTuberRecipes.getById(it) }
                             val targetItem = recipe?.targetItemId?.let { LoriTuberItems.getById(it) } ?: LoriTuberItems.SLOP
 
                             val ticks = recipe?.ticks ?: 20 // Slop
 
                             // TODO: If you never made that recipe, show it as ??? (also show that for slop)
-                            "Preparando Comida ${targetItem.name} (${ticks - (characterStatus.currentTick - characterStatus.currentTask.startedPreparingAtTick)} ticks)"
+                            "Preparando Comida ${targetItem.id} (${ticks - (characterStatus.currentTick - task.startedPreparingAtTick)} ticks)"
                         }
                         null -> "Nada"
                     }
@@ -546,7 +530,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
                 actionRow(
                     sleep,
                     eatFood,
-                    if (characterStatus.currentTask != null) {
+                    /* if (characterStatus.currentTask != null) {
                         loritta.interactivityManager.buttonForUser(
                             user,
                             cancelActionButton
@@ -562,11 +546,11 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
                         }
                     } else {
                         cancelActionButton.asDisabled()
-                    }
+                    } */
                 )
                 actionRow(prepareFood)
-                actionRow(goToComputerPartsShop, goToGroceryStore, createViewers10k)
-                actionRow(refresh, resetMotives, createViewers, debugMenu, closeSession)
+                actionRow(goToComputerPartsShop, goToGroceryStore)
+                actionRow(refresh, resetMotives, debugMenu, closeSession)
             }
         ).await()
     }

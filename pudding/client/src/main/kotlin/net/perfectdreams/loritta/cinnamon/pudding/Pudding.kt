@@ -40,7 +40,10 @@ import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
-import net.perfectdreams.loritta.common.lorituber.*
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
+import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
@@ -263,6 +266,8 @@ class Pudding(
             LoriTuberViewerLikes,
             LoriTuberViewerDislikes,
             LoriTuberViewerChannelRelationships,
+            LoriTuberVideoTickEvents,
+            LoriTuberVideoSimulatedEngagements,
             Marriages,
             MiscellaneousData,
             Mutes,

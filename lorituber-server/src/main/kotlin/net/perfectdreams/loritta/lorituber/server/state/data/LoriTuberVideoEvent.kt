@@ -10,10 +10,4 @@ sealed class LoriTuberVideoEvent {
         val likes: Int,
         val dislikes: Int
     ) : LoriTuberVideoEvent()
-
-    @Serializable
-    data class AddRelationshipScore(
-        val superViewerId: Long,
-        val relationshipScore: Int
-    ) : LoriTuberVideoEvent()
 }

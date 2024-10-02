@@ -1,22 +1,16 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens
 
 import dev.minn.jda.ktx.messages.MessageEdit
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberMails
+import net.perfectdreams.loritta.lorituber.rpc.packets.CreateChannelRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.CreateChannelResponse
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberMail
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import java.time.Instant
 
 class CreateChannelScreen(command: LoriTuberCommand, user: User, hook: InteractionHook, val character: LoriTuberCommand.PlayerCharacter) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
@@ -33,7 +27,9 @@ class CreateChannelScreen(command: LoriTuberCommand, user: User, hook: Interacti
             ) { it, args ->
                 val channelName = args[characterNameOption]
 
-                val result = loritta.transaction {
+                val result = sendLoriTuberRPCRequestNew<CreateChannelResponse>(CreateChannelRequest(character.id, channelName))
+
+                /* val result = loritta.transaction {
                     val canCreateANewChannel = LoriTuberChannels.select {
                         LoriTuberChannels.owner eq character.id
                     }.count() == 0L
@@ -56,19 +52,19 @@ class CreateChannelScreen(command: LoriTuberCommand, user: User, hook: Interacti
 
                         return@transaction CreateChannelResult.Success(newChannel[LoriTuberChannels.id].value, newChannel[LoriTuberChannels.name])
                     }
-                }
+                } */
 
                 when (result) {
-                    is CreateChannelResult.Success -> command.switchScreen(
+                    is CreateChannelResponse.Success -> command.switchScreen(
                         ViewChannelScreen(
                             command,
                             user,
                             it.deferEdit().jdaHook,
                             character,
-                            result.channelId
+                            result.id
                         )
                     )
-                    is CreateChannelResult.CharacterAlreadyHasTooManyChannels -> it.deferEdit().jdaHook.editOriginal(
+                    is CreateChannelResponse.CharacterAlreadyHasTooManyChannels -> it.deferEdit().jdaHook.editOriginal(
                         MessageEdit {
                             content = "Você já tem muitos canais no LoriTube!"
                         }

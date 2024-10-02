@@ -9,6 +9,6 @@ data class LoriTuberChannelData(
     var pendingVideoCounter: Long,
     var name: String,
     val pendingVideos: MutableList<LoriTuberPendingVideoData>,
-    val channelRelationships: MutableMap<Long, LoriTuberSuperViewerChannelRelationshipData>,
+    val categoryLevels: MutableMap<LoriTuberVideoContentCategory, Int>,
     val channelRelationshipsV2: MutableMap<LoriTuberVideoContentCategory, LoriTuberSuperViewerChannelRelationshipData>
 )

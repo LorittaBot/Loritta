@@ -2,22 +2,16 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.scree
 
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacters
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberServerInfos
-import net.perfectdreams.loritta.lorituber.LoriTuberServer
-import net.perfectdreams.loritta.lorituber.ServerInfo
+import net.perfectdreams.loritta.lorituber.rpc.packets.CreateCharacterRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.CreateCharacterResponse
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 
 class CreateCharacterScreen(command: LoriTuberCommand, user: User, hook: InteractionHook) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
@@ -27,72 +21,44 @@ class CreateCharacterScreen(command: LoriTuberCommand, user: User, hook: Interac
             "Criar Personagem"
         ) {
             val characterNameOption = modalString("Nome do Personagem", TextInputStyle.SHORT)
+            val characterLastNameOption = modalString("Sobrenome do Personagem", TextInputStyle.SHORT)
 
             it.sendModal(
                 "Criação de Personagem",
-                listOf(ActionRow.of(characterNameOption.toJDA()))
+                listOf(ActionRow.of(characterNameOption.toJDA()), ActionRow.of(characterLastNameOption.toJDA()))
             ) { it, args ->
                 val characterName = args[characterNameOption]
+                val characterLastName = args[characterNameOption]
 
-                val result = loritta.transaction {
-                    val canCreateANewCharacter = LoriTuberCharacters.select {
-                        LoriTuberCharacters.owner eq user.idLong
-                    }.count() == 0L
+                val response = sendLoriTuberRPCRequestNew<CreateCharacterResponse>(CreateCharacterRequest(user.idLong, characterName, characterLastName))
 
-                    return@transaction if (!canCreateANewCharacter)
-                        CreateCharacterResult.UserAlreadyHasTooManyCharacters
-                    else {
-                        val serverInfo = loritta.transaction {
-                            LoriTuberServerInfos.selectAll()
-                                .where { LoriTuberServerInfos.type eq LoriTuberServer.GENERAL_INFO_KEY }
-                                .first()
-                                .get(LoriTuberServerInfos.data)
-                                .let { Json.decodeFromString<ServerInfo>(it) }
-                        }
-
-                        val newCharacter = LoriTuberCharacters.insert {
-                            it[LoriTuberCharacters.name] = characterName
-                            it[LoriTuberCharacters.owner] = user.idLong
-                            it[LoriTuberCharacters.energyNeed] = 100.0
-                            it[LoriTuberCharacters.hungerNeed] = 100.0
-                            it[LoriTuberCharacters.funNeed] = 100.0
-                            it[LoriTuberCharacters.hygieneNeed] = 100.0
-                            it[LoriTuberCharacters.bladderNeed] = 100.0
-                            it[LoriTuberCharacters.socialNeed] = 100.0
-                            it[LoriTuberCharacters.createdAtTick] = serverInfo.currentTick
-                            it[LoriTuberCharacters.ticksLived] = 0
-                        }
-
-                        CreateCharacterResult.Success(
-                            newCharacter[LoriTuberCharacters.id].value,
-                            newCharacter[LoriTuberCharacters.name]
-                        )
-                    }
-                }
-
-                when (result) {
-                    is CreateCharacterResult.Success -> command.switchScreen(
-                        ViewMotivesScreen(
-                            command,
-                            user,
-                            it.deferEdit().jdaHook,
-                            LoriTuberCommand.PlayerCharacter(
-                                result.id,
-                                result.name,
-                                100.0,
-                                100.0,
-                                100.0,
-                                100.0,
-                                100.0,
-                                100.0
+                when (response) {
+                    is CreateCharacterResponse.Success -> {
+                        command.switchScreen(
+                            ViewMotivesScreen(
+                                command,
+                                user,
+                                it.deferEdit().jdaHook,
+                                LoriTuberCommand.PlayerCharacter(
+                                    response.id,
+                                    response.name,
+                                    100.0,
+                                    100.0,
+                                    100.0,
+                                    100.0,
+                                    100.0,
+                                    100.0
+                                )
                             )
                         )
-                    )
-                    is CreateCharacterResult.UserAlreadyHasTooManyCharacters -> it.deferEdit().jdaHook.editOriginal(
-                        MessageEdit {
-                            content = "Você já tem muitos personagens vivendo na DreamLand!"
-                        }
-                    ).setReplace(true).await()
+                    }
+                    CreateCharacterResponse.UserAlreadyHasTooManyCharacters -> {
+                        it.deferEdit().jdaHook.editOriginal(
+                            MessageEdit {
+                                content = "Você já tem muitos personagens vivendo na DreamLand!"
+                            }
+                        ).setReplace(true).await()
+                    }
                 }
             }
         }

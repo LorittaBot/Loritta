@@ -5,7 +5,6 @@ import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
-import net.perfectdreams.loritta.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.lorituber.LoriTuberVibes
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoData
@@ -15,18 +14,21 @@ fun main() {
     val videos = (0 until 100_000).map {
         LoriTuberVideoData(
             0,
+            "Loritta is so cute!",
             true,
             0,
             LoriTuberVideoContentCategory.GAMES,
-            LoriTuberContentLength.MEDIUM,
+            10,
             10,
             10,
             10,
             LoriTuberVibes(0),
+            LoriTuberVibes(0),
             0,
             0,
             0,
-            mapOf()
+            mapOf(),
+            listOf()
         )
     }
 

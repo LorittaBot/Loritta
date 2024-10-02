@@ -7,6 +7,7 @@ import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.items.LoriTuberGroceryItemData
 import net.perfectdreams.loritta.lorituber.server.LoriTuberServer.Companion.GENERAL_INFO_KEY
 import net.perfectdreams.loritta.lorituber.server.state.GameState
@@ -24,6 +25,8 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -69,6 +72,11 @@ object LoriTuberServerLauncher {
                 LoriTuberGroceryStores
             )
         }
+
+        val viewerHandles = LoriTuberServerLauncher::class.java.getResourceAsStream("/viewer-handles.txt")
+            .readAllBytes()
+            .toString(Charsets.UTF_8)
+            .lines()
 
         logger.info { "Attempting to restore state..." }
 
@@ -150,8 +158,10 @@ object LoriTuberServerLauncher {
                         put(entity.id, entity)
                     }
                 },
-                HashMap(),
-                nelsonGroceryStore
+                EnumMap(LoriTuberVideoContentCategory::class.java),
+                EnumMap(LoriTuberVideoContentCategory::class.java),
+                nelsonGroceryStore,
+                viewerHandles
             )
         }
 

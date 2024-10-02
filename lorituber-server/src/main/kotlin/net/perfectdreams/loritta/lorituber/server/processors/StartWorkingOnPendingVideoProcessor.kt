@@ -32,7 +32,7 @@ class StartWorkingOnPendingVideoProcessor(val m: LoriTuberServer) : PacketProces
 
         if (mood >= 50.0) {
             // Set our new task!
-            character.setTask(LoriTuberTask.WorkingOnVideo(request.channelId, request.pendingVideoId))
+            character.setTask(LoriTuberTask.WorkingOnVideo(request.channelId, request.pendingVideoId, request.stage))
             return StartWorkingOnPendingVideoResponse.Success
         } else {
             return StartWorkingOnPendingVideoResponse.MoodTooLow

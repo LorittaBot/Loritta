@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.lorituber.server.processors
 
-import net.perfectdreams.loritta.lorituber.rpc.NetworkLoriTuberChannel
 import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdRequest
 import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberResponse
@@ -15,13 +14,7 @@ class GetChannelByIdProcessor(val m: LoriTuberServer) : PacketProcessor<GetChann
             return GetChannelByIdResponse.UnknownChannel
 
         return GetChannelByIdResponse.Success(
-            NetworkLoriTuberChannel(
-                channel.id,
-                channel.data.name,
-                channel.data.pendingVideos.map {
-                    NetworkConverter.toNetwork(it)
-                }
-            )
+            NetworkConverter.toNetwork(channel)
         )
     }
 }

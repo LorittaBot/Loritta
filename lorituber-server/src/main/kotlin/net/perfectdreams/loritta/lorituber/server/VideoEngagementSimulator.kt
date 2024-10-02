@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.lorituber.server
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.lorituber.LoriTuberVibes
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
@@ -27,19 +26,22 @@ fun main() {
 
     val video = LoriTuberVideoData(
         0,
+        "Loritta is so cute!",
         true,
         0,
         LoriTuberVideoContentCategory.GAMES,
-        LoriTuberContentLength.MEDIUM,
+        999,
         999, // 999,
         999, // 999,
         20, // 999, // 999, // gameState.random.nextInt(0, 1000),
         // LoriTuberVibes(gameState.random.nextLong(0, 128)),
         LoriTuberVibes(0),
+        LoriTuberVibes(0),
         0,
         0,
         0,
-        mapOf()
+        mapOf(),
+        listOf()
     )
 
     val bools = listOf(false, true)
@@ -63,7 +65,6 @@ fun main() {
                                     vibes.setVibe(LoriTuberVideoContentVibes.VIBE4, vibe4)
                                     vibes.setVibe(LoriTuberVideoContentVibes.VIBE5, vibe5)
                                     vibes.setVibe(LoriTuberVideoContentVibes.VIBE6, vibe6)
-                                    vibes.setVibe(LoriTuberVideoContentVibes.VIBE7, vibe7)
 
                                     superViewers.add(
                                         LoriTuberSuperViewerData(
@@ -121,11 +122,12 @@ fun main() {
 
             if (thumbnailScoreScaled >= shouldISeeThisVideoBasedOnThumbnail) {
                 // Throttle if the video is not up to snuff
-                val targetViewsRelativeToLength = when (video.contentLength) {
+                /* val targetViewsRelativeToLength = when (video.contentLength) {
                     LoriTuberContentLength.SHORT -> targetViews / 7
                     LoriTuberContentLength.MEDIUM -> targetViews / 3
                     LoriTuberContentLength.LONG -> targetViews
-                }
+                } */
+                val targetViewsRelativeToLength = targetViews / 3
 
                 val softViewCapForVideoScoreAverage = when {
                     videoScoreAverage in 0 until 100 -> 250
@@ -141,7 +143,7 @@ fun main() {
                         return@repeat
                 }
 
-                val newViews = when (video.contentLength) {
+                /* val newViews = when (video.contentLength) {
                     LoriTuberContentLength.SHORT -> {
                         // targetViews += 10
                         7
@@ -156,9 +158,9 @@ fun main() {
                         // targetViews += 10
                         1
                     }
-                }
+                } */
 
-                targetViews += newViews
+                targetViews += 3
 
                 /* repeat(newViews) {
                     val myFancyScore = random.nextInt(0, 1000)

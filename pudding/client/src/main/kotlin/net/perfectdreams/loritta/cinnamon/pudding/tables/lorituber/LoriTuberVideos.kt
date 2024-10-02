@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber
 
+import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentCategory
@@ -8,7 +9,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 object LoriTuberVideos : LongIdTable() {
     val owner = reference("owner", LoriTuberCharacters).index()
     val channel = reference("channel", LoriTuberChannels).index()
-
+    val public = bool("public").index()
     val postedAtTicks = long("posted_at_ticks").index()
 
     val contentCategory = enumerationByName("content_category", 64, LoriTuberVideoContentCategory::class).index()
@@ -17,6 +18,7 @@ object LoriTuberVideos : LongIdTable() {
     val editingScore = integer("editing_score")
     val thumbnailScore = integer("thumbnail_score")
 
+    val vibes = long("vibes")
     val vibe1 = integer("vibe1")
     val vibe2 = integer("vibe2")
     val vibe3 = integer("vibe3")
@@ -24,4 +26,13 @@ object LoriTuberVideos : LongIdTable() {
     val vibe5 = integer("vibe5")
     val vibe6 = integer("vibe6")
     val vibe7 = integer("vibe7")
+
+    // A lot of the data is actually faked!
+
+    val simulateEngagement = bool("simulate_engagement").index()
+    val engagementSimulations = jsonb("engagement_simulations")
+
+    val views = integer("views").index()
+    val likes = integer("likes").index()
+    val dislikes = integer("dislikes").index()
 }

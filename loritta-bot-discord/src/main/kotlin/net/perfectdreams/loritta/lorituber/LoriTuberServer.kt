@@ -6,13 +6,14 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.*
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoResolution
 import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoStage
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.statements.BatchUpdateStatement
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.time.Instant
 import java.util.Random
 import kotlin.concurrent.thread
@@ -36,9 +37,6 @@ class LoriTuberServer(val pudding: Pudding) {
             LoriTuberItems.MILK,
             LoriTuberItems.STRAWBERRY_YOGURT
         )
-
-        private const val MINIMUM_VIBE_SCORE = 30
-        private const val MAXIMUM_VIBE_SCORE = 70
     }
 
     val averageTickDurations = mutableListOf<Duration>()
@@ -567,649 +565,250 @@ class LoriTuberServer(val pudding: Pudding) {
     private fun tickViewers(currentTick: Long) {
         logger.info { "Ticking LoriTuber viewers..." }
 
-        // First we are going to tick the video that the user is watching
-        val viewersThatAreWatchingSomething = LoriTuberViewers
-            .innerJoin(LoriTuberVideos)
+        val start = System.currentTimeMillis()
+
+        // We need to "fake" the engagaments on the videos, because attempting to simulate each individual viewer would be a catastrophe due to laaaag
+        // Just like SimCity, we don't *need* to actually simulate single Sims, we can just *pretend* that there are a lot of viewers watching and interacting on videos
+        // The key of creating a good simulation is abstracting out what you can "get away with it" without the user knowing that you abstracted things away
+        //
+        // Instead of applying "tracts of lands" like SimCity 4 would to simulate multiple lots, we can "get away" with more things
+        // We calculate the maximum views/likes/dislikes that a video can get when the video is posted on LoriTube
+        // Then we just ease the values out based on real life data and stuffz
+        // And based on how many views we increased (we could pay out every day maybe?), we can know much money we need to deposit into the player's "character" account
+        //
+        // TODO: We can optimize this by only getting videos that need to have their engagement updated
+        //   ^ to do this, create a new table that only stores the engagement + start ticks and end ticks, then do a inner join to only get the active ones
+        val videoTickEvents = LoriTuberVideos
+            .innerJoin(LoriTuberVideoSimulatedEngagements)
             .selectAll()
             .where {
-                LoriTuberViewers.watchingVideo.isNotNull()
-            }
-
-        // Have we watched it enough tho?
-        for (viewer in viewersThatAreWatchingSomething) {
-            val watchCooldownTicks = viewer[LoriTuberViewers.watchCooldownTicks] ?: error("Viewer ${viewer[LoriTuberViewers.id]} is watching a video, but watchCooldownTicks is null! Bug?")
-
-            if (currentTick > watchCooldownTicks) {
-                println("I (${viewer[LoriTuberViewers.handle]}) finished video ${viewer[LoriTuberVideos.id]}")
-                // Hey, we finished the video, yay!!!
-                LoriTuberViewers.update({ LoriTuberViewers.id eq viewer[LoriTuberViewers.id] }) {
-                    it[LoriTuberViewers.watchingVideo] = null
-                    it[LoriTuberViewers.watchCooldownTicks] = null
-                }
-            }
-        }
-
-        // Now let's get all viewers that aren't watching something
-        val currentDayTick = currentTick % 1_440
-
-        val startR = System.currentTimeMillis()
-        val viewersThatArentWatchingSomethingAndAreActive = LoriTuberViewers
-            .selectAll()
-            .where {
-                LoriTuberViewers.watchingVideo.isNull() and (LoriTuberViewers.watchCooldownTicks greaterEq currentTick or LoriTuberViewers.watchCooldownTicks.isNull())
-            }
-            .toList()
-            .also {
-                println("viewersThatArentWatchingSomething: ${it.size}")
-            }
-            .filter {
-                return@filter true
-
-                // TODO: Can't we query them directly on the SQL query? For some reason Exposed can't do it yet...
-                val activityStartTicks = it[LoriTuberViewers.activityStartTicks]
-                val activityEndTicks = it[LoriTuberViewers.activityEndTicks]
-
-                if (activityEndTicks > activityStartTicks) {
-                    // The end tick is larger than the activityEndTicks, that means that everything is on a single day
-                    return@filter currentDayTick in activityStartTicks..activityEndTicks
-                } else {
-                    // The start tick is larger than the activityEndTicks, that means that it is overflowing to the next day
-                    if (currentDayTick > activityStartTicks)
-                        return@filter true
-
-                    if (activityEndTicks > currentDayTick)
-                        return@filter true
-
-                    return@filter false
-                }
-            }
-
-        println("viewersThatArentWatchingSomethingAndAreActive (currentDayTick: $currentDayTick): ${System.currentTimeMillis() - startR}ms ${viewersThatArentWatchingSomethingAndAreActive.size}")
-
-        // How viewer tick works?
-        // We simulate how YouTube viewers work:
-        // A user opens YouTube, they are presented with multiple recent videos that may be "cool" for them
-        // The user clicks a video that...
-        // TODO: Update the following description
-        // 1. has a good thumbnail
-        // 2. has a good title
-        // 3. is about a category that they like
-        // 4. the user does not have a bad relationship with the channel
-        //
-        // Then the user watches the video (the video gets a monetized view!), and in the video itself
-        // 1. does the user vibe with the video?
-        // 2. does the user like the video quality?
-        // The 1 and 2 are both 50% of the total video score, with a positive reception if >75% and negative reception if <25%
-        // And then stuff happens depending on if the user likes it or not
-        //
-        // To make things more realistic, we pretend that we DO NOT know what are the vibes of the video themselves, only the vibes of the NPCs
-        // The user only finds out the vibes WHEN watching the video
-        //
-        // TODO: How should we tick this?
-        //  How a good video should be handled?
-        // val recentVideos = LoriTuberVideos.selectAll()
-
-        // We'll now create a personalized home page for each viewer
-        // Optimization: Query all video preferences for all viewers BEFORE
-        val start0 = System.currentTimeMillis()
-        val startA = System.currentTimeMillis()
-
-        /* fun longToBitSet(value: Long): BitSet {
-            val bitSet = BitSet()
-            for (i in 0 until Long.SIZE_BITS) {
-                if ((value shr i) and 1L == 1L) {
-                    bitSet.set(i)
-                }
-            }
-            return bitSet
-        }
-
-        val viewersVideoPreferencesX = viewersThatArentWatchingSomethingAndAreActive.map {
-            val vibes1 = it[LoriTuberViewers.vibesCategory1]?.let { longToBitSet(it) }
-            val vibes2 = it[LoriTuberViewers.vibesCategory2]?.let { longToBitSet(it) }
-            val vibes3 = it[LoriTuberViewers.vibesCategory3]?.let { longToBitSet(it) }
-            val vibes4 = it[LoriTuberViewers.vibesCategory4]?.let { longToBitSet(it) }
-            val vibes5 = it[LoriTuberViewers.vibesCategory5]?.let { longToBitSet(it) }
-            val vibes6 = it[LoriTuberViewers.vibesCategory6]?.let { longToBitSet(it) }
-            val vibes7 = it[LoriTuberViewers.vibesCategory7]?.let { longToBitSet(it) }
-            val vibes8 = it[LoriTuberViewers.vibesCategory8]?.let { longToBitSet(it) }
-            val vibes9 = it[LoriTuberViewers.vibesCategory9]?.let { longToBitSet(it) }
-            val vibes10 = it[LoriTuberViewers.vibesCategory10]?.let { longToBitSet(it) }
-        }
-        println("just the map: ${System.currentTimeMillis() - startA}ms ${viewersVideoPreferencesX.size}") */
-
-        // test iteration
-        /* val justIter = System.currentTimeMillis()
-        for (iter in viewersVideoPreferencesX) {
-            continue
-        }
-        println("just the iteration: ${System.currentTimeMillis() - justIter}ms")
-        println("iteration #3: ${System.currentTimeMillis() - start0}ms") */
-
-        // val start1 = System.currentTimeMillis()
-        /* val viewersVideoPreferences = viewersThatArentWatchingSomethingAndAreActive.chunked(65_535).flatMap { chunk ->
-            LoriTuberViewerVideoPreferences.selectAll()
-                .where {
-                    LoriTuberViewerVideoPreferences.viewer inList chunk.map { it[LoriTuberViewers.id] }
-                }
-                .toList()
-        }.groupBy { it[LoriTuberViewerVideoPreferences.viewer].value } */
-        // println("viewersVideoPreferences: ${System.currentTimeMillis() - start1}ms (${viewersVideoPreferences.size})")
-
-        // Optimization: Querying videos for all viewers is also incredibly slow
-        // So, as an alternative, we'll query all videos
-        val startX = System.currentTimeMillis()
-        val recentVideos = LoriTuberVideos
-            .selectAll()
-            .where {
-                (LoriTuberVideos.postedAtTicks greater (currentTick - 1_440))
-            }
-            .toList()
-        println("recentVideos: ${System.currentTimeMillis() - startX}ms")
-
-        val startZ = System.currentTimeMillis()
-        val watchedVideos = LoriTuberViewerViews
-            .select(LoriTuberViewerViews.owner, LoriTuberViewerViews.video)
-            .where {
-                LoriTuberViewerViews.video inList recentVideos.map { it[LoriTuberVideos.id] }
+                LoriTuberVideoSimulatedEngagements.engagementStartTick lessEq currentTick and (LoriTuberVideoSimulatedEngagements.engagementEndTick greaterEq currentTick)
             }
             .toList()
 
-        val watchedVideosByViewers = mutableMapOf<Long, MutableSet<Long>>()
-        for (viewerViews in watchedVideos) {
-            val videoIds = watchedVideosByViewers.getOrPut(viewerViews[LoriTuberViewerViews.owner].value) { mutableSetOf() }
-            videoIds.add(viewerViews[LoriTuberViewerViews.video].value)
-        }
-        println("watchedVideos: ${System.currentTimeMillis() - startZ}ms")
+        // dirty epic
+        val dirtyVideosData = mutableListOf<DirtyVideoData>()
 
-        // Optimization: Batch insert new views/likes/dislikes
-        val newViewerLikes = mutableListOf<ViewerLike>()
-        val newViewerDislikes = mutableListOf<ViewerDislike>()
-        val newViewerViews = mutableListOf<ViewerView>()
-        val newRelationshipChanges = mutableListOf<ViewerRelationshipChange>()
+        logger.info { "Processing ${videoTickEvents.size} tick events" }
 
-        // Do not process all that noise if there isn't any recentVideos
-        if (recentVideos.isNotEmpty()) {
-            // TODO: How can we tick in a "trickle down" views manner?
-            //  (Somewhat solved by the active time, should also have less issues with more videos in the game)
-            val tickVideos = System.currentTimeMillis()
-            var idx = 0
-            for (viewer in viewersThatArentWatchingSomethingAndAreActive) {
-                if (idx % 1_000 == 0) {
-                    println("Current $idx")
+        for (video in videoTickEvents) {
+            val engagementStartTick = video[LoriTuberVideoSimulatedEngagements.engagementStartTick]
+            val engagementEndTick = video[LoriTuberVideoSimulatedEngagements.engagementEndTick]
+
+            if (currentTick == engagementEndTick) {
+                // The engagement is JOEVER, so let's move the views/likes/dislikes
+                LoriTuberVideos.update({ LoriTuberVideos.id eq video[LoriTuberVideos.id] }) {
+                    it[LoriTuberVideos.views] = video[LoriTuberVideoSimulatedEngagements.targetViews]
+                    it[LoriTuberVideos.likes] = video[LoriTuberVideoSimulatedEngagements.targetLikes]
+                    it[LoriTuberVideos.dislikes] = video[LoriTuberVideoSimulatedEngagements.targetDislikes]
+                    it[LoriTuberVideos.simulateEngagement] = false
                 }
-                idx++
-                // TODO: If we are subscribed to channels, check if we have any new videos from that channel first!
-                // val myVideoPreferences = viewersVideoPreferences[viewer[LoriTuberViewers.id].value]!!
-                val likedCategories = mutableSetOf<LoriTuberVideoContentCategory>()
-                if (viewer[LoriTuberViewers.vibesCategory1] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.ANIMATION)
-                if (viewer[LoriTuberViewers.vibesCategory2] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.GAMES)
-                if (viewer[LoriTuberViewers.vibesCategory3] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.COMEDY)
-                if (viewer[LoriTuberViewers.vibesCategory4] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.BEAUTY)
-                if (viewer[LoriTuberViewers.vibesCategory5] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.EDUCATION)
-                if (viewer[LoriTuberViewers.vibesCategory6] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.TECHNOLOGY)
-                if (viewer[LoriTuberViewers.vibesCategory7] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.REAL_LIFE)
-                if (viewer[LoriTuberViewers.vibesCategory8] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.DOCUMENTARY)
-                if (viewer[LoriTuberViewers.vibesCategory9] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.FINANCE)
-                if (viewer[LoriTuberViewers.vibesCategory10] != null)
-                    likedCategories.add(LoriTuberVideoContentCategory.POLITICS)
+            } else if (currentTick in engagementStartTick until engagementEndTick) {
+                val relTickStart = currentTick - engagementStartTick
+                val relTickEnd = engagementEndTick - engagementStartTick
+                val relViews = video[LoriTuberVideoSimulatedEngagements.targetViews] - video[LoriTuberVideoSimulatedEngagements.startViews]
+                val relLikes = video[LoriTuberVideoSimulatedEngagements.targetLikes] - video[LoriTuberVideoSimulatedEngagements.startLikes]
+                val relDislikes = video[LoriTuberVideoSimulatedEngagements.targetDislikes] - video[LoriTuberVideoSimulatedEngagements.startDislikes]
 
-                val videosIdsThatIHaveWatched = watchedVideosByViewers[viewer[LoriTuberViewers.id].value] ?: setOf()
+                val engagementCycleProgress = relTickStart / relTickEnd.toDouble()
 
-                // This is annoying as heck, but there isn't a clean way of doing everything on the PostgreSQL side
-                val recentVideosThatWeHaventWatchedYet = recentVideos
-                    .filter { it[LoriTuberVideos.id].value !in videosIdsThatIHaveWatched }
-                    // Also filter only the categories we like
-                    .filter { it[LoriTuberVideos.contentCategory] in likedCategories }
-
-                if (recentVideosThatWeHaventWatchedYet.isEmpty()) {
-                    // logger.warn { "I (${viewer[LoriTuberViewers.handle]}) don't have any available videos for me to watch!" }
-                    continue
+                fun easeOutQuint(x: Double): Double {
+                    return 1 - Math.pow(1 - x, 5.0)
                 }
 
-                // Now we'll filter the videos using the vibe boost algorithm™
-                val recentVideosWithVibeAlgo = mutableMapOf<ResultRow, Int>()
-                val start3 = System.currentTimeMillis()
-                for (video in recentVideosThatWeHaventWatchedYet) {
-                    var algoVibeBoostScore = 0
+                val simulatedEngagement = easeOutQuint(engagementCycleProgress)
 
-                    val myPreferencesOfThisCategory = when (video[LoriTuberVideos.contentCategory]) {
-                        LoriTuberVideoContentCategory.ANIMATION -> viewer[LoriTuberViewers.vibesCategory1]
-                        LoriTuberVideoContentCategory.GAMES -> viewer[LoriTuberViewers.vibesCategory2]
-                        LoriTuberVideoContentCategory.COMEDY -> viewer[LoriTuberViewers.vibesCategory3]
-                        LoriTuberVideoContentCategory.BEAUTY -> viewer[LoriTuberViewers.vibesCategory4]
-                        LoriTuberVideoContentCategory.EDUCATION -> viewer[LoriTuberViewers.vibesCategory5]
-                        LoriTuberVideoContentCategory.TECHNOLOGY -> viewer[LoriTuberViewers.vibesCategory6]
-                        LoriTuberVideoContentCategory.REAL_LIFE -> viewer[LoriTuberViewers.vibesCategory7]
-                        LoriTuberVideoContentCategory.DOCUMENTARY -> viewer[LoriTuberViewers.vibesCategory8]
-                        LoriTuberVideoContentCategory.FINANCE -> viewer[LoriTuberViewers.vibesCategory9]
-                        LoriTuberVideoContentCategory.POLITICS -> viewer[LoriTuberViewers.vibesCategory10]
-                    }!!
+                val views = (video[LoriTuberVideoSimulatedEngagements.targetViews] * simulatedEngagement).toInt()
+                val likes = (video[LoriTuberVideoSimulatedEngagements.targetLikes] * simulatedEngagement).toInt()
+                val dislikes = (video[LoriTuberVideoSimulatedEngagements.targetDislikes] * simulatedEngagement).toInt()
 
-                    val vibe1 = getVibeScore(myPreferencesOfThisCategory, 0)
-                    val vibe2 = getVibeScore(myPreferencesOfThisCategory, 1)
-                    val vibe3 = getVibeScore(myPreferencesOfThisCategory, 2)
-                    val vibe4 = getVibeScore(myPreferencesOfThisCategory, 3)
-                    val vibe5 = getVibeScore(myPreferencesOfThisCategory, 4)
-                    val vibe6 = getVibeScore(myPreferencesOfThisCategory, 5)
-                    val vibe7 = getVibeScore(myPreferencesOfThisCategory, 6)
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle Start: $engagementStartTick" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle End: $engagementEndTick" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle RelTickStart: $relTickStart" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle RelTickEnd: $relTickEnd" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle Progress: $engagementCycleProgress" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle Eased Cycle: $easedEngagement" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle Views: ${simulatedEngagement.views}" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle Likes: ${simulatedEngagement.likes}" }
+                // logger.info { "[${video[LoriTuberVideos.id]}] Engagement Cycle Dislikes: ${simulatedEngagement.dislikes}" }
 
-                    if (false) {
-                        val likes = LoriTuberViewerLikes.selectAll()
-                            .where {
-                                LoriTuberViewerLikes.video eq video[LoriTuberVideos.id]
-                            }.toList()
+                val isDirty = views != video[LoriTuberVideos.views] || likes != video[LoriTuberVideos.likes] || dislikes != video[LoriTuberVideos.dislikes]
 
-                        val dislikes = LoriTuberViewerDislikes.selectAll()
-                            .where {
-                                LoriTuberViewerDislikes.video eq video[LoriTuberVideos.id]
-                            }.toList()
-
-                        // At least FOUR users must have reacted postively/negatively to the video for us to use the vibe algo boost
-                        if (likes.size + dislikes.size > 4) {
-                            val vibe1Avg =
-                                (likes.map { it[LoriTuberViewerLikes.vibe1] } + dislikes.map { it[LoriTuberViewerDislikes.vibe1] }).average()
-                            val vibe2Avg =
-                                (likes.map { it[LoriTuberViewerLikes.vibe2] } + dislikes.map { it[LoriTuberViewerDislikes.vibe2] }).average()
-                            val vibe3Avg =
-                                (likes.map { it[LoriTuberViewerLikes.vibe3] } + dislikes.map { it[LoriTuberViewerDislikes.vibe3] }).average()
-                            val vibe4Avg =
-                                (likes.map { it[LoriTuberViewerLikes.vibe4] } + dislikes.map { it[LoriTuberViewerDislikes.vibe4] }).average()
-                            val vibe5Avg =
-                                (likes.map { it[LoriTuberViewerLikes.vibe5] } + dislikes.map { it[LoriTuberViewerDislikes.vibe5] }).average()
-                            val vibe6Avg =
-                                (likes.map { it[LoriTuberViewerLikes.vibe6] } + dislikes.map { it[LoriTuberViewerDislikes.vibe6] }).average()
-                            val vibe7Avg =
-                                (likes.map { it[LoriTuberViewerLikes.vibe7] } + dislikes.map { it[LoriTuberViewerDislikes.vibe7] }).average()
-
-                            fun calculatePreferenceBoostScore(myPreference: Int, averageVibe: Double): Int {
-                                if (myPreference == -1) {
-                                    if (averageVibe in -1.0..-0.5)
-                                        return 2
-                                    if (averageVibe in 0.5..1.0)
-                                        return 0
-                                    return 1
-                                }
-
-                                if (myPreference == 1) {
-                                    if (averageVibe in 0.5..1.0)
-                                        return 2
-                                    if (averageVibe in -1.0..-0.5)
-                                        return 0
-                                    return 1
-                                }
-
-                                error("Something went terribly wrong! My preference is $myPreference and that's not supported!")
-                            }
-
-                            algoVibeBoostScore += calculatePreferenceBoostScore(
-                                vibe1,
-                                vibe1Avg
-                            )
-                            algoVibeBoostScore += calculatePreferenceBoostScore(
-                                vibe2,
-                                vibe2Avg
-                            )
-                            algoVibeBoostScore += calculatePreferenceBoostScore(
-                                vibe3,
-                                vibe3Avg
-                            )
-                            algoVibeBoostScore += calculatePreferenceBoostScore(
-                                vibe4,
-                                vibe4Avg
-                            )
-                            algoVibeBoostScore += calculatePreferenceBoostScore(
-                                vibe5,
-                                vibe5Avg
-                            )
-                            algoVibeBoostScore += calculatePreferenceBoostScore(
-                                vibe6,
-                                vibe6Avg
-                            )
-                            algoVibeBoostScore += calculatePreferenceBoostScore(
-                                vibe7,
-                                vibe7Avg
-                            )
-                        }
-                    }
-
-                    recentVideosWithVibeAlgo[video] = algoVibeBoostScore
-                }
-                // println("recentVideosWithVibeAlgo: ${System.currentTimeMillis() - start3}ms")
-
-                val recentVideosSortedByVibeAlgo = recentVideosWithVibeAlgo
-                    .entries
-                    .sortedByDescending { it.value }
-                    .take(6) // Only 6 videos for us
-                    .map { it.key }
-
-                /* val myRelationshipWithTheChannels = LoriTuberViewerChannelRelationships.selectAll()
-                    .where {
-                        LoriTuberViewerChannelRelationships.channel inList recentVideosThatWeHaventWatchedYet.map { it[LoriTuberVideos.channel] } and (LoriTuberViewerChannelRelationships.owner eq viewer[LoriTuberViewers.id])
-                    } */
-                val myRelationshipWithTheChannels = listOf<ResultRow>()
-
-                val videoRanks = mutableMapOf<ResultRow, Int>()
-
-                // The "recentVideosSortedByVibeAlgo" is what is being "served" to the user (example: YouTube home page)
-                // Now it's the user's turn to figure out if they will click on the video or not
-                for (video in recentVideosSortedByVibeAlgo) {
-                    var videoPoints = 0
-
-                    // Keep in mind that here we are "shopping" a video to watch, we haven't clicked at the video yet, so we can only go over...
-                    // 1. the user relationship with the channel
-                    // 2. the thumbnail score
-                    // 3. the length of the content (can we watch it?)
-
-                    // TODO: Content preference + Will the video that I want to watch go over my activity hours?
-                    // val myPreferencesOfThisCategory = myVideoPreferences.first { it[LoriTuberViewerVideoPreferences.category] == video[LoriTuberVideos.contentCategory] }
-                    val myRelationshipPointsWithTheChannel = myRelationshipWithTheChannels.firstOrNull { it[LoriTuberViewerChannelRelationships.channel] == video[LoriTuberVideos.channel] }
-                        ?.get(LoriTuberViewerChannelRelationships.relationshipPoints) ?: 0
-
-                    videoPoints += myRelationshipPointsWithTheChannel
-                    videoPoints += video[LoriTuberVideos.thumbnailScore]
-
-                    videoRanks[video] = videoPoints
-                }
-
-                // logger.info { "Self video ranking (${viewer[LoriTuberViewers.handle]}): ${videoRanks.entries.sortedByDescending { it.value }}" }
-
-                val bestVideoForMeToWatch = videoRanks.entries
-                    .sortedByDescending { it.value }
-                    .maxBy { it.value }
-                    .key
-
-                val expiresAfterTicks = when (bestVideoForMeToWatch[LoriTuberVideos.contentLength]) {
-                    LoriTuberContentLength.SHORT -> {
-                        1
-                    }
-
-                    LoriTuberContentLength.MEDIUM -> {
-                        15
-                    }
-
-                    LoriTuberContentLength.LONG -> {
-                        60
-                    }
-                }
-
-                // If selected, then it means that the user has WATCHED the video
-                // So we insert a view!
-                // println("I'm (${viewer[LoriTuberViewers.handle]}) now watching ${bestVideoForMeToWatch[LoriTuberVideos.id]}")
-
-                val now = Instant.now()
-                newViewerViews.add(
-                    ViewerView(
-                        viewer[LoriTuberViewers.id].value,
-                        bestVideoForMeToWatch[LoriTuberVideos.id].value,
-                        currentTick
-                    )
-                )
-
-                // And we also update the user viewer cooldown
-                // The % 8 is used to add a bit of offset to avoid all viewers watching/finishing all at the same time
-                val watchCooldownTicks = currentTick + expiresAfterTicks + (viewer[LoriTuberViewers.id].value % 8)
-                /* LoriTuberViewers.update({ LoriTuberViewers.id eq viewer[LoriTuberViewers.id] }) {
-                    it[LoriTuberViewers.watchingVideo] = bestVideoForMeToWatch[LoriTuberVideos.id]
-                    it[LoriTuberViewers.watchCooldownTicks] = watchCooldownTicks
-                } */
-
-                // Check vibe match score
-                var vibeScore = 0
-                val myPreferencesOfThisCategory = when (bestVideoForMeToWatch[LoriTuberVideos.contentCategory]) {
-                    LoriTuberVideoContentCategory.ANIMATION -> viewer[LoriTuberViewers.vibesCategory1]
-                    LoriTuberVideoContentCategory.GAMES -> viewer[LoriTuberViewers.vibesCategory2]
-                    LoriTuberVideoContentCategory.COMEDY -> viewer[LoriTuberViewers.vibesCategory3]
-                    LoriTuberVideoContentCategory.BEAUTY -> viewer[LoriTuberViewers.vibesCategory4]
-                    LoriTuberVideoContentCategory.EDUCATION -> viewer[LoriTuberViewers.vibesCategory5]
-                    LoriTuberVideoContentCategory.TECHNOLOGY -> viewer[LoriTuberViewers.vibesCategory6]
-                    LoriTuberVideoContentCategory.REAL_LIFE -> viewer[LoriTuberViewers.vibesCategory7]
-                    LoriTuberVideoContentCategory.DOCUMENTARY -> viewer[LoriTuberViewers.vibesCategory8]
-                    LoriTuberVideoContentCategory.FINANCE -> viewer[LoriTuberViewers.vibesCategory9]
-                    LoriTuberVideoContentCategory.POLITICS -> viewer[LoriTuberViewers.vibesCategory10]
-                }!!
-
-                val vibe1 = getVibeScore(myPreferencesOfThisCategory, 0)
-                val vibe2 = getVibeScore(myPreferencesOfThisCategory, 1)
-                val vibe3 = getVibeScore(myPreferencesOfThisCategory, 2)
-                val vibe4 = getVibeScore(myPreferencesOfThisCategory, 3)
-                val vibe5 = getVibeScore(myPreferencesOfThisCategory, 4)
-                val vibe6 = getVibeScore(myPreferencesOfThisCategory, 5)
-                val vibe7 = getVibeScore(myPreferencesOfThisCategory, 6)
-                val myRelationshipPointsWithTheChannel = myRelationshipWithTheChannels.firstOrNull { it[LoriTuberViewerChannelRelationships.channel] == bestVideoForMeToWatch[LoriTuberVideos.channel] }
-                    ?.get(LoriTuberViewerChannelRelationships.relationshipPoints) ?: 0
-
-                if (vibe1 == bestVideoForMeToWatch[LoriTuberVideos.vibe1])
-                    vibeScore++
-                if (vibe2 == bestVideoForMeToWatch[LoriTuberVideos.vibe2])
-                    vibeScore++
-                if (vibe3 == bestVideoForMeToWatch[LoriTuberVideos.vibe3])
-                    vibeScore++
-                if (vibe4 == bestVideoForMeToWatch[LoriTuberVideos.vibe4])
-                    vibeScore++
-                if (vibe5 == bestVideoForMeToWatch[LoriTuberVideos.vibe5])
-                    vibeScore++
-                if (vibe6 == bestVideoForMeToWatch[LoriTuberVideos.vibe6])
-                    vibeScore++
-                if (vibe7 == bestVideoForMeToWatch[LoriTuberVideos.vibe7])
-                    vibeScore++
-
-                // The max vibe score is 7
-                // With vibes, a vibe score of vibeScore>=5 is VERY good
-                // While 2>=vibeScore is VERY bad
-                // Anything else is considered "neutral"
-                // println("${bestVideoForMeToWatch[LoriTuberVideos.id]} Vibe score for ${viewer[LoriTuberViewers.handle]}: $vibeScore")
-
-                // TODO: The video quality (recording, editing, video stream quality) should also affect the relative relationship points
-                val relativeRelationshipPoints = when (vibeScore) {
-                    0 -> -6
-                    1 -> -2
-                    2 -> 0
-                    3 -> 0
-                    4 -> 0
-                    5 -> 0
-                    6 -> 2
-                    7 -> 6
-                    else -> error("Invalid vibe score! $vibeScore")
-                }
-
-                // println("${viewer[LoriTuberViewers.handle]} is changing to $relativeRelationshipPoints")
-
-                newRelationshipChanges.add(
-                    ViewerRelationshipChange(
-                        viewer[LoriTuberViewers.id].value,
-                        bestVideoForMeToWatch[LoriTuberVideos.channel].value,
-                        relativeRelationshipPoints
-                    )
-                )
-                /* LoriTuberViewerChannelRelationships.upsert(
-                    LoriTuberViewerChannelRelationships.owner,
-                    LoriTuberViewerChannelRelationships.channel
-                ) {
-                    it[LoriTuberViewerChannelRelationships.owner] = viewer[LoriTuberViewers.id]
-                    it[LoriTuberViewerChannelRelationships.channel] = bestVideoForMeToWatch[LoriTuberVideos.channel]
-                    it[LoriTuberViewerChannelRelationships.relationshipPoints] =
-                        myRelationshipPointsWithTheChannel + relativeRelationshipPoints
-                } */
-
-                if (0 > relativeRelationshipPoints) {
-                    newViewerDislikes.add(
-                        ViewerDislike(
-                            viewer[LoriTuberViewers.id].value,
-                            bestVideoForMeToWatch[LoriTuberVideos.id].value,
-                            currentTick
+                // TODO: Only update if it was changed
+                if (isDirty) {
+                    dirtyVideosData.add(
+                        DirtyVideoData(
+                            video,
+                            video[LoriTuberVideos.id],
+                            views,
+                            likes,
+                            dislikes
                         )
                     )
-
-                    /* LoriTuberViewerDislikes.insert {
-                        it[LoriTuberViewerDislikes.owner] = viewer[LoriTuberViewers.id]
-                        it[LoriTuberViewerDislikes.video] = bestVideoForMeToWatch[LoriTuberVideos.id]
-                        it[LoriTuberViewerDislikes.dislikedAt] = now
-                        it[LoriTuberViewerDislikes.dislikedAtTicks] = currentTick
-
-                        // Store a snapshot of the vibes
-                        it[LoriTuberViewerDislikes.vibe1] = vibe1
-                        it[LoriTuberViewerDislikes.vibe2] = vibe2
-                        it[LoriTuberViewerDislikes.vibe3] = vibe3
-                        it[LoriTuberViewerDislikes.vibe4] = vibe4
-                        it[LoriTuberViewerDislikes.vibe5] = vibe5
-                        it[LoriTuberViewerDislikes.vibe6] = vibe6
-                        it[LoriTuberViewerDislikes.vibe7] = vibe7
-                    } */
-
-                    // println("${bestVideoForMeToWatch[LoriTuberVideos.id]} I do not vibe with this video! ${viewer[LoriTuberViewers.handle]}")
-                } else if (relativeRelationshipPoints > 0) {
-                    newViewerLikes.add(
-                        ViewerLike(
-                            viewer[LoriTuberViewers.id].value,
-                            bestVideoForMeToWatch[LoriTuberVideos.id].value,
-                            currentTick
-                        )
-                    )
-
-                    /* LoriTuberViewerLikes.insert {
-                        it[LoriTuberViewerLikes.owner] = viewer[LoriTuberViewers.id]
-                        it[LoriTuberViewerLikes.video] = bestVideoForMeToWatch[LoriTuberVideos.id]
-                        it[LoriTuberViewerLikes.likedAt] = now
-                        it[LoriTuberViewerLikes.likedAtTicks] = currentTick
-
-                        // Store a snapshot of the vibes
-                        it[LoriTuberViewerLikes.vibe1] = vibe1
-                        it[LoriTuberViewerLikes.vibe2] = vibe2
-                        it[LoriTuberViewerLikes.vibe3] = vibe3
-                        it[LoriTuberViewerLikes.vibe4] = vibe4
-                        it[LoriTuberViewerLikes.vibe5] = vibe5
-                        it[LoriTuberViewerLikes.vibe6] = vibe6
-                        it[LoriTuberViewerLikes.vibe7] = vibe7
-                    } */
-                    // println("${bestVideoForMeToWatch[LoriTuberVideos.id]} I vibe with this video! ${viewer[LoriTuberViewers.handle]}")
                 }
             }
+        }
 
-            // Now we process everything with batch inserts
-            LoriTuberViewerViews.batchInsert(newViewerViews, shouldReturnGeneratedValues = false) {
-                this[LoriTuberViewerViews.owner] = it.viewerId
-                this[LoriTuberViewerViews.video] = it.videoId
-                this[LoriTuberViewerViews.viewedAtTicks] = it.currentTick
-                this[LoriTuberViewerViews.viewedAt] = Instant.now() // TODO: Fix this!
-            }
+        // Set all tick events to be marked as "processed"
+        /* LoriTuberVideoTickEvents.update({ LoriTuberVideoTickEvents.id inList videoTickEvents.map { it[LoriTuberVideoTickEvents.id] }}) {
+            it[LoriTuberVideoTickEvents.processed] = true
+        } */
 
-            LoriTuberViewerLikes.batchInsert(newViewerLikes, shouldReturnGeneratedValues = false) {
-                this[LoriTuberViewerLikes.owner] = it.viewerId
-                this[LoriTuberViewerLikes.video] = it.videoId
-                this[LoriTuberViewerLikes.likedAtTicks] = it.currentTick
-                this[LoriTuberViewerLikes.likedAt] = Instant.now() // TODO: Fix this!
-                this[LoriTuberViewerLikes.vibe1] = -1
-                this[LoriTuberViewerLikes.vibe2] = -1
-                this[LoriTuberViewerLikes.vibe3] = -1
-                this[LoriTuberViewerLikes.vibe4] = -1
-                this[LoriTuberViewerLikes.vibe5] = -1
-                this[LoriTuberViewerLikes.vibe6] = -1
-                this[LoriTuberViewerLikes.vibe7] = -1
-            }
+        if (dirtyVideosData.isNotEmpty()) {
+            if (true) {
+                // This is the FASTEST one yet (yay)
+                // It is still a tad bit slow, but we technically don't need to update 10k videos every tick, we can somewhat spread them out
+                // https://stackoverflow.com/questions/1006969/why-are-batch-inserts-updates-faster-how-do-batch-updates-work
 
-            LoriTuberViewerDislikes.batchInsert(newViewerDislikes, shouldReturnGeneratedValues = false) {
-                this[LoriTuberViewerDislikes.owner] = it.viewerId
-                this[LoriTuberViewerDislikes.video] = it.videoId
-                this[LoriTuberViewerDislikes.dislikedAtTicks] = it.currentTick
-                this[LoriTuberViewerDislikes.dislikedAt] = Instant.now() // TODO: Fix this!
-                this[LoriTuberViewerDislikes.vibe1] = -1
-                this[LoriTuberViewerDislikes.vibe2] = -1
-                this[LoriTuberViewerDislikes.vibe3] = -1
-                this[LoriTuberViewerDislikes.vibe4] = -1
-                this[LoriTuberViewerDislikes.vibe5] = -1
-                this[LoriTuberViewerDislikes.vibe6] = -1
-                this[LoriTuberViewerDislikes.vibe7] = -1
-            }
-
-            // Relationship changes are a bit trickier, we need to group by channelId + new rel score
-            // TODO: This doesn't work because we also need to insert them if they aren't present, FUCK
-            /* newRelationshipChanges
-                .groupBy { it.channelId }
-                .forEach { (channelId, data) ->
-                    data.groupBy { it.relationshipChange }.forEach { (relChange, innerData) ->
-                        LoriTuberViewerChannelRelationships.update({ LoriTuberViewerChannelRelationships.channel eq channelId }) {
-                            with(SqlExpressionBuilder) {
-                                it[LoriTuberViewerChannelRelationships.relationshipPoints] = LoriTuberViewerChannelRelationships.relationshipPoints + relChange
-                            }
+                val batchUpdateV2 = System.currentTimeMillis()
+                val updateQuery3 = buildString {
+                    append("UPDATE loritubervideos")
+                    append(" SET ")
+                    append("views = myvalues.views,")
+                    append("likes = myvalues.likes,")
+                    append("dislikes = myvalues.dislikes")
+                    append(" FROM (")
+                    append("VALUES")
+                    for ((index, data) in dirtyVideosData.withIndex()) {
+                        if (index + 1 == dirtyVideosData.size) {
+                            append("(${data.videoId}, ${data.views}, ${data.likes}, ${data.dislikes})")
+                        } else {
+                            append("(${data.videoId}, ${data.views}, ${data.likes}, ${data.dislikes}),")
                         }
                     }
-                } */
+                    append(") AS myvalues (id, views, likes, dislikes)")
+                    append(" WHERE loritubervideos.id = myvalues.id")
+                }
+                // File("upd.sql").writeText(updateQuery2)
+                TransactionManager.current().exec(updateQuery3)
 
-            println("tickVideos: ${System.currentTimeMillis() - tickVideos}ms")
-        } else {
-            println("Skipping tickVideos...")
+                logger.info { "[$currentTick] Raw SQL batch update: ${System.currentTimeMillis() - batchUpdateV2}ms" }
+            } else {
+                val upsert = System.currentTimeMillis()
+                LoriTuberVideos.batchUpsert(dirtyVideosData, LoriTuberVideos.id, shouldReturnGeneratedValues = false) {
+                    this[LoriTuberVideos.id] = it.ogVideo[LoriTuberVideos.id].value
+                    this[LoriTuberVideos.channel] = it.ogVideo[LoriTuberVideos.channel]
+                    this[LoriTuberVideos.owner] = it.ogVideo[LoriTuberVideos.owner]
+                    this[LoriTuberVideos.public] = it.ogVideo[LoriTuberVideos.public]
+                    this[LoriTuberVideos.postedAtTicks] = it.ogVideo[LoriTuberVideos.postedAtTicks]
+                    this[LoriTuberVideos.contentCategory] = it.ogVideo[LoriTuberVideos.contentCategory]
+                    this[LoriTuberVideos.contentLength] = it.ogVideo[LoriTuberVideos.contentLength]
+                    this[LoriTuberVideos.recordingScore] = it.ogVideo[LoriTuberVideos.recordingScore]
+                    this[LoriTuberVideos.editingScore] = it.ogVideo[LoriTuberVideos.editingScore]
+                    this[LoriTuberVideos.thumbnailScore] = it.ogVideo[LoriTuberVideos.thumbnailScore]
+                    this[LoriTuberVideos.vibes] = it.ogVideo[LoriTuberVideos.vibes]
+                    this[LoriTuberVideos.vibe1] = it.ogVideo[LoriTuberVideos.vibe1]
+                    this[LoriTuberVideos.vibe2] = it.ogVideo[LoriTuberVideos.vibe2]
+                    this[LoriTuberVideos.vibe3] = it.ogVideo[LoriTuberVideos.vibe3]
+                    this[LoriTuberVideos.vibe4] = it.ogVideo[LoriTuberVideos.vibe4]
+                    this[LoriTuberVideos.vibe5] = it.ogVideo[LoriTuberVideos.vibe5]
+                    this[LoriTuberVideos.vibe6] = it.ogVideo[LoriTuberVideos.vibe6]
+                    this[LoriTuberVideos.vibe7] = it.ogVideo[LoriTuberVideos.vibe7]
+                    this[LoriTuberVideos.simulateEngagement] = it.ogVideo[LoriTuberVideos.simulateEngagement]
+                    this[LoriTuberVideos.engagementSimulations] = it.ogVideo[LoriTuberVideos.engagementSimulations]
+
+                    this[LoriTuberVideos.views] = it.views
+                    this[LoriTuberVideos.likes] = it.likes
+                    this[LoriTuberVideos.dislikes] = it.dislikes
+                }
+                logger.info { "[$currentTick] Batch Upsert: ${System.currentTimeMillis() - upsert}ms" }
+
+                val update = System.currentTimeMillis()
+
+                BatchUpdateStatement(LoriTuberVideos).apply {
+                    dirtyVideosData.forEach {
+                        addBatch(it.videoId)
+                        this[LoriTuberVideos.views] = it.views
+                        this[LoriTuberVideos.likes] = it.likes
+                        this[LoriTuberVideos.dislikes] = it.dislikes
+                    }
+                    execute(TransactionManager.current())
+                }
+                logger.info { "[$currentTick] Batch Update: ${System.currentTimeMillis() - update}ms" }
+
+                val raw = System.currentTimeMillis()
+                val updateQuery = dirtyVideosData.joinToString(separator = "; ") { data ->
+                    "UPDATE loritubervideos SET views = ${data.views}, likes = ${data.likes}, dislikes = ${data.dislikes} WHERE id = ${data.videoId}"
+                }
+                TransactionManager.current().exec(updateQuery)
+                logger.info { "[$currentTick] Raw SQL: ${System.currentTimeMillis() - raw}ms" }
+
+                val rawCase = System.currentTimeMillis()
+                val updateQuery2 = buildString {
+                    appendLine("UPDATE loritubervideos")
+                    appendLine("SET ")
+                    appendLine("views = CASE ")
+                    for (video in dirtyVideosData) {
+                        appendLine("WHEN id = ${video.videoId} THEN ${video.views}")
+                    }
+                    appendLine("END,")
+                    appendLine("likes = CASE ")
+                    for (video in dirtyVideosData) {
+                        appendLine("WHEN id = ${video.videoId} THEN ${video.likes}")
+                    }
+                    appendLine("END,")
+                    appendLine("dislikes = CASE ")
+                    for (video in dirtyVideosData) {
+                        appendLine("WHEN id = ${video.videoId} THEN ${video.dislikes}")
+                    }
+                    appendLine("END")
+                    appendLine("WHERE id in (${dirtyVideosData.joinToString { it.videoId.toString() }})")
+                }
+                // File("upd.sql").writeText(updateQuery2)
+                TransactionManager.current().exec(updateQuery2)
+                logger.info { "[$currentTick] Raw SQL rawCase: ${System.currentTimeMillis() - rawCase}ms" }
+
+                val batchUpdateV2 = System.currentTimeMillis()
+                // This is the FASTEST one yet (yay)
+                // It is still a tad bit slow, but we technically don't need to update 10k videos every tick, we can somewhat spread them out
+                // https://stackoverflow.com/questions/1006969/why-are-batch-inserts-updates-faster-how-do-batch-updates-work
+                val updateQuery3 = buildString {
+                    append("UPDATE loritubervideos")
+                    append(" SET ")
+                    append("views = myvalues.views,")
+                    append("likes = myvalues.likes,")
+                    append("dislikes = myvalues.dislikes")
+                    append(" FROM (")
+                    append("VALUES")
+                    for ((index, data) in dirtyVideosData.withIndex()) {
+                        if (index + 1 == dirtyVideosData.size) {
+                            append("(${data.videoId}, ${data.views}, ${data.likes}, ${data.dislikes})")
+                        } else {
+                            append("(${data.videoId}, ${data.views}, ${data.likes}, ${data.dislikes}),")
+                        }
+                    }
+                    append(") AS myvalues (id, views, likes, dislikes)")
+                    append(" WHERE loritubervideos.id = myvalues.id")
+                }
+                // File("upd.sql").writeText(updateQuery2)
+                TransactionManager.current().exec(updateQuery3)
+
+                logger.info { "[$currentTick] Raw SQL batch update: ${System.currentTimeMillis() - batchUpdateV2}ms" }
+            }
         }
 
-        logger.info { "Processing LoriTuber viewer decay..." }
-
-        val channelsToBeDecayed = LoriTuberCharacters
-            .innerJoin(LoriTuberChannels)
-            .select(LoriTuberChannels.id)
-            .where {
-                // We check by ticksLived to only process users that aren't offline
-                // We decay every 1 in game day
-                LoriTuberCharacters.ticksLived.mod(1_440) eq 0
-            }
-            .map { it[LoriTuberChannels.id] }
-
-        logger.info { "Decaying relationships of channels ${channelsToBeDecayed}" }
-
-        // Positive relations decay faster than bad relations
-        // Because when you hate something, you REALLY hate something
-        // TODO: Can't we use max/min?
-        LoriTuberViewerChannelRelationships.update({
-            LoriTuberViewerChannelRelationships.channel inList channelsToBeDecayed and (LoriTuberViewerChannelRelationships.relationshipPoints greater 1)
-        }) {
-            with(SqlExpressionBuilder) {
-                it[LoriTuberViewerChannelRelationships.relationshipPoints] = LoriTuberViewerChannelRelationships.relationshipPoints - 2
-            }
-        }
-
-        // Same thing as before but we do it like this to avoid a previously good relationship falling into -1
-        LoriTuberViewerChannelRelationships.update({
-            LoriTuberViewerChannelRelationships.channel inList channelsToBeDecayed and (LoriTuberViewerChannelRelationships.relationshipPoints eq 1)
-        }) {
-            with(SqlExpressionBuilder) {
-                it[LoriTuberViewerChannelRelationships.relationshipPoints] = LoriTuberViewerChannelRelationships.relationshipPoints - 1
-            }
-        }
-
-        LoriTuberViewerChannelRelationships.update({
-            LoriTuberViewerChannelRelationships.channel inList channelsToBeDecayed and (LoriTuberViewerChannelRelationships.relationshipPoints less 0)
-        }) {
-            with(SqlExpressionBuilder) {
-                it[LoriTuberViewerChannelRelationships.relationshipPoints] = LoriTuberViewerChannelRelationships.relationshipPoints + 1
-            }
-        }
-
-        // Trend shifts
-        logger.info { "Processing LoriTuber viewer trend shifts..." }
-        val viewersThatCanBeBeTrendShifted = LoriTuberViewers
-            .leftJoin(LoriTuberViewerChannelRelationships, { LoriTuberViewers.id }, { LoriTuberViewerChannelRelationships.owner })
-            .select(LoriTuberViewers.id)
-            .groupBy(LoriTuberViewers.id)
-            .having {
-                LoriTuberViewerChannelRelationships.relationshipPoints.max().isNull() or (LoriTuberViewerChannelRelationships.relationshipPoints.max() less 80)
-            }
-            .toList()
-
-        // For each trender
-        // logger.info { "Trend shifting viewers: ${viewersThatCanBeBeTrendShifted.map { it[LoriTuberViewers.id] }}" }
+        logger.info { "Finished ticking LoriTuber viewers... ${System.currentTimeMillis() - start}ms" }
     }
 
     fun getVibeScore(myPreferencesOfThisCategory: Long, bitPosition: Int) = if ((myPreferencesOfThisCategory and (1L shl bitPosition)) == 1L) {
         1
     } else -1
+
+    private fun easeOutExpo(x: Double): Double {
+        return if (x == 1.0) 1.0 else 1 - Math.pow(2.0, -10 * x)
+    }
+
+    private fun easeOutQuint(x: Double): Double {
+        return 1 - Math.pow(1 - x, 5.0)
+    }
+
+    data class DirtyVideoData(
+        val ogVideo: ResultRow,
+        val videoId: EntityID<Long>,
+        val views: Int,
+        val likes: Int,
+        val dislikes: Int
+    )
 
     data class ViewerLike(
         val viewerId: Long,

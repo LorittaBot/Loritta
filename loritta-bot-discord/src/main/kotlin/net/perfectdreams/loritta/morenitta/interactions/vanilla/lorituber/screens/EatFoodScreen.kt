@@ -1,28 +1,19 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens
 
 import dev.minn.jda.ktx.messages.MessageEdit
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacterInventoryItems
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberCharacters
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberServerInfos
-import net.perfectdreams.loritta.lorituber.LoriTuberItem
-import net.perfectdreams.loritta.lorituber.LoriTuberItems
-import net.perfectdreams.loritta.lorituber.LoriTuberServer
-import net.perfectdreams.loritta.lorituber.ServerInfo
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
+import net.perfectdreams.loritta.lorituber.rpc.packets.EatFoodRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.EatFoodResponse
+import net.perfectdreams.loritta.lorituber.rpc.packets.SelectFoodMenuRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.SelectFoodMenuResponse
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
 import java.awt.Color
 
 class EatFoodScreen(
@@ -30,7 +21,7 @@ class EatFoodScreen(
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val selectedFood: LoriTuberItem?
+    val selectedFood: LoriTuberItemId?
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
         val viewMotivesButton = loritta.interactivityManager.buttonForUser(
@@ -51,20 +42,14 @@ class EatFoodScreen(
             )
         }
 
-        val items = loritta.transaction {
-            LoriTuberCharacterInventoryItems
-                .selectAll()
-                .where {
-                    LoriTuberCharacterInventoryItems.owner eq character.id
-                }
-                .toList()
-                .groupBy { it[LoriTuberCharacterInventoryItems.item] }
-                .map {
-                    LoriTuberItems.getById(it.key) to it.value.size
-                }
-        }
+        data class ItemWrapper(
+            val item: net.perfectdreams.loritta.lorituber.items.LoriTuberItem,
+            val quantity: Int
+        )
 
-        val foods = items.filter { it.first.foodAttributes != null }
+        val response = sendLoriTuberRPCRequestNew<SelectFoodMenuResponse>(SelectFoodMenuRequest(character.id))
+        val items = response.inventory.map { ItemWrapper(LoriTuberItems.getById(it.id), it.quantity) }
+        val foods = items.filter { it.item.foodAttributes != null }
 
         hook.editOriginal(
             MessageEdit {
@@ -76,7 +61,8 @@ class EatFoodScreen(
 
                         if (selectedFood != null) {
                             appendLine()
-                            appendLine(selectedFood.description)
+                            // TODO: Description later
+                            // appendLine(selectedFood.description)
                         }
                     }
 
@@ -87,7 +73,7 @@ class EatFoodScreen(
                                 user,
                                 {
                                     for (item in items) {
-                                        addOption("${item.first.name} [${item.second}x]", item.first.id)
+                                        addOption("${item.item.id} [${item.quantity}x]", item.item.id.id)
                                     }
 
                                     if (selectedFood != null)
@@ -102,7 +88,7 @@ class EatFoodScreen(
                                         user,
                                         defer,
                                         character,
-                                        LoriTuberItems.getById(values[0])
+                                        foods.first { it.item.id.id == values[0] }.item.id
                                     )
                                 )
                             }
@@ -122,42 +108,21 @@ class EatFoodScreen(
                             ) { context ->
                                 val defer = context.deferEdit()
 
-                                loritta.transaction {
-                                    val serverInfo = loritta.transaction {
-                                        LoriTuberServerInfos.selectAll()
-                                            .where { LoriTuberServerInfos.type eq LoriTuberServer.GENERAL_INFO_KEY }
-                                            .first()
-                                            .get(LoriTuberServerInfos.data)
-                                            .let { Json.decodeFromString<ServerInfo>(it) }
-                                    }
-
-                                    // Attempt to remove the item from the player inventory
-                                    val itemToBeDeleted = LoriTuberCharacterInventoryItems.selectAll()
-                                        .where {
-                                            LoriTuberCharacterInventoryItems.item eq selectedFood.id and (LoriTuberCharacterInventoryItems.owner eq character.id)
-                                        }
-                                        .limit(1)
-                                        .firstOrNull()
-
-                                    // Whoops, you don't actually have the item!
-                                    if (itemToBeDeleted == null)
-                                        return@transaction EatFoodResult.ItemNotFound
-
-                                    LoriTuberCharacterInventoryItems.deleteWhere { LoriTuberCharacterInventoryItems.id eq itemToBeDeleted[LoriTuberCharacterInventoryItems.id] }
-
-                                    LoriTuberCharacters.update({ LoriTuberCharacters.id eq character.id }) {
-                                        it[LoriTuberCharacters.currentTask] = Json.encodeToString<LoriTuberTask>(LoriTuberTask.Eating(selectedFood.id, serverInfo.currentTick))
+                                val response = sendLoriTuberRPCRequestNew<EatFoodResponse>(EatFoodRequest(character.id, selectedFood))
+                                when (response) {
+                                    EatFoodResponse.ItemNotEdible -> TODO()
+                                    EatFoodResponse.ItemNotFound -> TODO()
+                                    EatFoodResponse.Success -> {
+                                        command.switchScreen(
+                                            ViewMotivesScreen(
+                                                command,
+                                                user,
+                                                defer,
+                                                character
+                                            )
+                                        )
                                     }
                                 }
-
-                                command.switchScreen(
-                                    ViewMotivesScreen(
-                                        command,
-                                        user,
-                                        defer,
-                                        character
-                                    )
-                                )
                             }
                         )
                     } else {
