@@ -24,8 +24,8 @@ object SparklyPowerLSXSonhosTransactionTransformer : SonhosTransactionTransforme
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.SparklyPowerLsx.ExchangedToSparklyPower(
                             transaction.sonhos,
                             transaction.playerName,
+                            "mc.sparklypower.net",
                             transaction.sparklyPowerSonhos,
-                            "mc.sparklypower.net"
                         )
                     )
                 )
@@ -37,8 +37,8 @@ object SparklyPowerLSXSonhosTransactionTransformer : SonhosTransactionTransforme
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.SparklyPowerLsx.ExchangedFromSparklyPower(
                             transaction.sparklyPowerSonhos,
                             transaction.playerName,
+                            "mc.sparklypower.net",
                             transaction.sonhos,
-                            "mc.sparklypower.net"
                         )
                     )
                 )
