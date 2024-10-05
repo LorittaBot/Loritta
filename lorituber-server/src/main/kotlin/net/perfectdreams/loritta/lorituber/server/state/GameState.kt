@@ -9,6 +9,7 @@ import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
+import net.perfectdreams.loritta.lorituber.PhoneCall
 import net.perfectdreams.loritta.lorituber.server.LoriTuberServer.Companion.GENERAL_INFO_KEY
 import net.perfectdreams.loritta.lorituber.server.WorldTime
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberTrendData
@@ -57,6 +58,62 @@ class GameState(
     val spRandom = SplittableRandom()
     private val gameStateSaveMutex = Mutex()
     var isShuttingDown = false
+
+    val oddCalls = listOf(
+        PhoneCall.OddCall0,
+        PhoneCall.OddCall1,
+        PhoneCall.OddCall2,
+        PhoneCall.OddCall3,
+        PhoneCall.OddCall4,
+        PhoneCall.OddCall5,
+        PhoneCall.OddCall6,
+        PhoneCall.OddCall7,
+        PhoneCall.OddCall8,
+        PhoneCall.OddCall9,
+        PhoneCall.OddCall10,
+        PhoneCall.OddCall11,
+        PhoneCall.OddCall12,
+        PhoneCall.OddCall13,
+        PhoneCall.OddCall14,
+        PhoneCall.OddCall15,
+        PhoneCall.OddCall16,
+        PhoneCall.OddCall17,
+        PhoneCall.OddCall18,
+        PhoneCall.OddCall19,
+        PhoneCall.OddCall20,
+        PhoneCall.OddCall21,
+        PhoneCall.OddCall22,
+        PhoneCall.OddCall23,
+        PhoneCall.OddCall24,
+        PhoneCall.OddCall25,
+        PhoneCall.OddCall26,
+    )
+
+    val sonhosRewardCalls = listOf(
+        PhoneCall.SonhosReward.SonhosRewardCall0,
+        PhoneCall.SonhosReward.SonhosRewardCall1,
+        PhoneCall.SonhosReward.SonhosRewardCall2,
+        PhoneCall.SonhosReward.SonhosRewardCall3,
+        PhoneCall.SonhosReward.SonhosRewardCall4,
+        PhoneCall.SonhosReward.SonhosRewardCall5,
+        PhoneCall.SonhosReward.SonhosRewardCall6,
+        PhoneCall.SonhosReward.SonhosRewardCall7,
+        PhoneCall.SonhosReward.SonhosRewardCall8,
+        PhoneCall.SonhosReward.SonhosRewardCall9,
+        PhoneCall.SonhosReward.SonhosRewardCall10,
+        PhoneCall.SonhosReward.SonhosRewardCall11,
+        PhoneCall.SonhosReward.SonhosRewardCall12,
+        PhoneCall.SonhosReward.SonhosRewardCall13,
+        PhoneCall.SonhosReward.SonhosRewardCall14,
+        PhoneCall.SonhosReward.SonhosRewardCall15,
+        PhoneCall.SonhosReward.SonhosRewardCall16,
+        PhoneCall.SonhosReward.SonhosRewardCall17,
+        PhoneCall.SonhosReward.SonhosRewardCall18,
+        PhoneCall.SonhosReward.SonhosRewardCall19,
+        PhoneCall.SonhosReward.SonhosRewardCall20,
+        PhoneCall.SonhosReward.SonhosRewardCall21,
+        PhoneCall.SonhosReward.SonhosRewardCall22,
+    )
 
     fun nextCharacterId() = worldInfo.characterCounter++
     fun nextChannelId() = worldInfo.channelCounter++

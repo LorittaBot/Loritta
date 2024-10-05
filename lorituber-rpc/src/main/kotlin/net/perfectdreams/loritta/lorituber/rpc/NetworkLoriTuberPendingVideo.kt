@@ -8,6 +8,7 @@ data class NetworkLoriTuberPendingVideo(
     var id: Long,
     var contentCategory: LoriTuberVideoContentCategory,
 
+    var contentStage: LoriTuberPendingVideoStageData,
     var recordingStage: LoriTuberPendingVideoStageData,
     var editingStage: LoriTuberPendingVideoStageData,
     var renderingStage: LoriTuberPendingVideoStageData,
@@ -19,9 +20,9 @@ data class NetworkLoriTuberPendingVideo(
         data object Unavailable : LoriTuberPendingVideoStageData()
 
         @Serializable
-        data class InProgress(var progressTicks: Long) : LoriTuberPendingVideoStageData()
+        data class InProgress(val progressTicks: Long) : LoriTuberPendingVideoStageData()
 
         @Serializable
-        data class Finished(var score: Int) : LoriTuberPendingVideoStageData()
+        data class Finished(val score: Int) : LoriTuberPendingVideoStageData()
     }
 }

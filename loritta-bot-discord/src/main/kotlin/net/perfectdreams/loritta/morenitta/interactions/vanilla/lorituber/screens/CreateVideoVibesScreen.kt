@@ -149,7 +149,8 @@ class CreateVideoVibesScreen(
                         actionRow(
                             loritta.interactivityManager.stringSelectMenu({
                                 for (type in LoriTuberVideoContentVibes.entries) {
-                                    addOption(type.name, type.name)
+                                    val wrapper = VIBES_WRAPPER[type]!!
+                                    addOption(wrapper.toneLeft + " X " + wrapper.toneRight, type.name)
                                 }
 
                                 setDefaultValues(editingVibe.name)

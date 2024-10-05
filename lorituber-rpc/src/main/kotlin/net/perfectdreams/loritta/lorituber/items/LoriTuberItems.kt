@@ -86,6 +86,48 @@ object LoriTuberItems {
         )
     )
 
+    val COMPUTER = register(
+        "computer_aaa",
+        // "Cereal do Gessy com Iogurte de Morango",
+        // "Cereal com iogurte delícia",
+        999
+    )
+
+    val PHONE = register(
+        "phone_aaa",
+        // "Cereal do Gessy com Iogurte de Morango",
+        // "Cereal com iogurte delícia",
+        999
+    )
+
+    val CHEAP_TOILET = register(
+        "cheap_toilet",
+        // "Cereal do Gessy com Iogurte de Morango",
+        // "Cereal com iogurte delícia",
+        999
+    )
+
+    val CHEAP_SHOWER = register(
+        "cheap_shower",
+        // "Cereal do Gessy com Iogurte de Morango",
+        // "Cereal com iogurte delícia",
+        999
+    )
+
+    val CHEAP_BED = register(
+        "cheap_bed",
+        // "Cereal do Gessy com Iogurte de Morango",
+        // "Cereal com iogurte delícia",
+        999
+    )
+
+    val CHEAP_FRIDGE = register(
+        "cheap_fridge",
+        // "Cereal do Gessy com Iogurte de Morango",
+        // "Cereal com iogurte delícia",
+        999
+    )
+
     fun register(
         id: String,
         price: Long,

@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 data class NetworkLoriTuberVideo(
     var id: Long,
     var title: String,
+    var postedAtTicks: Long,
     var contentCategory: LoriTuberVideoContentCategory,
 
     var vibes: LoriTuberVibes,

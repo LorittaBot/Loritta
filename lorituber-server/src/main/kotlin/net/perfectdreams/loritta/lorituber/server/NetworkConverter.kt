@@ -16,6 +16,11 @@ object NetworkConverter {
         return NetworkLoriTuberPendingVideo(
             pendingVideo.id,
             pendingVideo.contentCategory,
+            when (val stage = pendingVideo.contentStage) {
+                is LoriTuberPendingVideoStageData.Finished -> NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished(stage.score)
+                is LoriTuberPendingVideoStageData.InProgress -> NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.InProgress(stage.progressTicks)
+                LoriTuberPendingVideoStageData.Unavailable -> NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Unavailable
+            },
             when (val stage = pendingVideo.recordingStage) {
                 is LoriTuberPendingVideoStageData.Finished -> NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished(stage.score)
                 is LoriTuberPendingVideoStageData.InProgress -> NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.InProgress(stage.progressTicks)
@@ -43,6 +48,7 @@ object NetworkConverter {
         return NetworkLoriTuberVideo(
             pendingVideo.id,
             pendingVideo.data.title,
+            pendingVideo.data.postedAtTicks,
             pendingVideo.data.contentCategory,
             pendingVideo.data.vibes,
             LoriTuberVibes.vibeMatches(pendingVideo.data.vibes, pendingVideo.data.vibesAtTheTime),

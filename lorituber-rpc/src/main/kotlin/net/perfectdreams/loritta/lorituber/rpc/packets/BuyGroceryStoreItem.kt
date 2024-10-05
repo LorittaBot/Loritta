@@ -15,5 +15,8 @@ sealed class BuyGroceryStoreItemResponse : LoriTuberResponse() {
     data object NotInStock : BuyGroceryStoreItemResponse()
 
     @Serializable
+    data object NotEnoughSonhos : BuyGroceryStoreItemResponse()
+
+    @Serializable
     data object Success : BuyGroceryStoreItemResponse()
 }

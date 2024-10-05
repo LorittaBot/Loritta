@@ -265,9 +265,23 @@ class ViewPendingVideoScreen(
                                 // appendLine("**Etapa Atual:** ${result.pendingVideo.currentStage} (${result.pendingVideo.currentStageProgressTicks} ticks)")
 
                                 // We actually can support multiple pending videos, but for now we only allow one
-                                appendLine("**Gravação:** ${(result.pendingVideo.recordingStage as? NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished)?.score ?: "???"} pontos")
-                                appendLine("**Edição:** ${(result.pendingVideo.editingStage as? NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished)?.score ?: "???"} pontos")
-                                appendLine("**Thumbnail:** ${(result.pendingVideo.thumbnailStage as? NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished)?.score ?: "???"} pontos")
+                                fun appendStage(stageName: String, stageData: NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData) {
+                                    append("**$stageName:** ")
+                                    when (stageData) {
+                                        is NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished -> append("${stageData.score} pontos")
+                                        is NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.InProgress -> append("Em progresso (${stageData.progressTicks} ticks)")
+                                        NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Unavailable -> append("Indisponível")
+                                    }
+                                    appendLine()
+                                }
+                                appendStage("Conteúdo", result.pendingVideo.contentStage)
+                                appendStage("Gravação", result.pendingVideo.recordingStage)
+                                appendStage("Edição", result.pendingVideo.editingStage)
+                                appendStage("Thumbnail", result.pendingVideo.thumbnailStage)
+                                appendStage("Renderização", result.pendingVideo.renderingStage)
+                                // appendLine("**Gravação:** ${(result.pendingVideo.recordingStage as? NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished)?.score ?: "???"} pontos")
+                                // appendLine("**Edição:** ${(result.pendingVideo.editingStage as? NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished)?.score ?: "???"} pontos")
+                                // appendLine("**Thumbnail:** ${(result.pendingVideo.thumbnailStage as? NetworkLoriTuberPendingVideo.LoriTuberPendingVideoStageData.Finished)?.score ?: "???"} pontos")
                                 // appendLine("**Resolução do Vídeo:** ${result.pendingVideo.videoResolution ?: "???"}")
                             }
                         }

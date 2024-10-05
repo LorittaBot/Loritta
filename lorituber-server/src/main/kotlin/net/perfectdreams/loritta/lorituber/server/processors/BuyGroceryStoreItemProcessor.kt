@@ -15,11 +15,18 @@ class BuyGroceryStoreItemProcessor(val m: LoriTuberServer) : PacketProcessor<Buy
             return BuyGroceryStoreItemResponse.Closed
 
         val groceryItem = m.gameState.nelsonGroceryStore.items.firstOrNull { it.data.item == request.item }
+
         if (groceryItem == null || 0 >= groceryItem.inStock)
             return BuyGroceryStoreItemResponse.NotInStock
 
+        if (!character.hasSonhos(groceryItem.item.price))
+            return BuyGroceryStoreItemResponse.NotEnoughSonhos
+
         // Remove the item from the grocery stock
         groceryItem.inStock--
+
+        // Remove the sonhos
+        character.removeSonhos(groceryItem.item.price)
 
         // Add it to our character's inventory
         character.inventory.addItem(groceryItem.item, 1)

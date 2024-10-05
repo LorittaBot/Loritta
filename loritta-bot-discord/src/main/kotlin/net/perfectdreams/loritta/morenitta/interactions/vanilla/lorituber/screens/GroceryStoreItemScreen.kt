@@ -96,6 +96,7 @@ class GroceryStoreItemScreen(
                             title = "\uD83D\uDED2 ${item.id}"
 
                             description = buildString {
+                                appendLine("**Seus Sonhos:** ${result.characterSonhos}")
                                 // appendLine(groceryItem.item.description)
                                 appendLine()
                                 appendLine("**Preço:** ${item.price}")
@@ -132,6 +133,8 @@ class GroceryStoreItemScreen(
                         actionRow(
                             viewMotivesButton,
                             if (groceryItem.inStock == 0)
+                                buyButton.asDisabled()
+                            else if (item.price > result.characterSonhos)
                                 buyButton.asDisabled()
                             else
                                 loritta.interactivityManager.buttonForUser(user, buyButton) { context ->
@@ -180,6 +183,23 @@ class GroceryStoreItemScreen(
                                             context.reply(true) {
                                                 styled(
                                                     "Item fora de estoque!"
+                                                )
+                                            }
+
+                                            command.switchScreen(
+                                                GroceryStoreItemScreen(
+                                                    command,
+                                                    user,
+                                                    defer,
+                                                    character,
+                                                    itemId
+                                                )
+                                            )
+                                        }
+                                        BuyGroceryStoreItemResponse.NotEnoughSonhos -> {
+                                            context.reply(true) {
+                                                styled(
+                                                    "Você não tem sonhos suficientes para comprar isto!"
                                                 )
                                             }
 

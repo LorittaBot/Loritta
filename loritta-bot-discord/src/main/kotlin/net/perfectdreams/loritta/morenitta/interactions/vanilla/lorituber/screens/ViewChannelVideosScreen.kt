@@ -145,7 +145,7 @@ class ViewChannelVideosScreen(
                             loritta.interactivityManager.stringSelectMenuForUser(
                                 user,
                                 {
-                                    for (video in result.pendingVideo) {
+                                    for (video in result.pendingVideo.sortedByDescending { it.postedAtTicks }.take(25)) {
                                         addOption(video.title, video.id.toString())
                                     }
 

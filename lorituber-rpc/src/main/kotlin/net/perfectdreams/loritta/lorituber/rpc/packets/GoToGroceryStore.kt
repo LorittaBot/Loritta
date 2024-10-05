@@ -12,5 +12,8 @@ sealed class GoToGroceryStoreResponse : LoriTuberResponse() {
     data object Closed : GoToGroceryStoreResponse()
 
     @Serializable
-    data class Success(val items: List<LoriTuberGroceryItemData>) : GoToGroceryStoreResponse()
+    data class Success(
+        val characterSonhos: Long,
+        val items: List<LoriTuberGroceryItemData>
+    ) : GoToGroceryStoreResponse()
 }

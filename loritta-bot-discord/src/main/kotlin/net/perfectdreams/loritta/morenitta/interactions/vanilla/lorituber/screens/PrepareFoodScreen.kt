@@ -5,21 +5,23 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
-import net.perfectdreams.loritta.lorituber.rpc.packets.PrepareCraftingRequest
-import net.perfectdreams.loritta.lorituber.rpc.packets.PrepareCraftingResponse
-import net.perfectdreams.loritta.lorituber.rpc.packets.StartCraftingRequest
-import net.perfectdreams.loritta.lorituber.rpc.packets.StartCraftingResponse
+import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import java.awt.Color
+import java.util.*
 
 class PrepareFoodScreen(
     command: LoriTuberCommand,
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
+    val fridgeLocalId: UUID,
+    val response: CharacterUseItemResponse.Success.Fridge.PrepareFoodMenu,
     val selectedItems: List<LoriTuberItemId>
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
@@ -41,7 +43,8 @@ class PrepareFoodScreen(
             )
         }
 
-        val response = sendLoriTuberRPCRequestNew<PrepareCraftingResponse>(PrepareCraftingRequest(character.id))
+        // TODO: Remove this (migrated to use object interaction packets)
+        // val response = sendLoriTuberRPCRequestNew<PrepareCraftingResponse>(PrepareCraftingRequest(character.id))
         val items = response.inventory
 
         hook.editOriginal(
@@ -83,6 +86,8 @@ class PrepareFoodScreen(
                                         user,
                                         context.deferEdit(),
                                         character,
+                                        fridgeLocalId,
+                                        response,
                                         selectedItems.map { it.id }
                                     )
                                 )
@@ -107,7 +112,15 @@ class PrepareFoodScreen(
                         ) { context ->
                             val defer = context.deferEdit()
 
-                            val response = sendLoriTuberRPCRequestNew<StartCraftingResponse>(StartCraftingRequest(character.id, selectedItems))
+                            // TODO: Remove this (migrated to use object interaction packets)
+                            // val response = sendLoriTuberRPCRequestNew<StartCraftingResponse>(StartCraftingRequest(character.id, selectedItems))
+                            val response = sendLoriTuberRPCRequestNew<CharacterUseItemResponse>(
+                                CharacterUseItemRequest(
+                                    character.id,
+                                    fridgeLocalId,
+                                    ItemActionOption.PrepareFood(selectedItems)
+                                )
+                            )
 
                             command.switchScreen(
                                 ViewMotivesScreen(

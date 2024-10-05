@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.lorituber.server.processors
 
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoStage
+import net.perfectdreams.loritta.lorituber.bhav.LoriTuberItemBehaviorAttributes
+import net.perfectdreams.loritta.lorituber.bhav.UseItemAttributes
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
 import net.perfectdreams.loritta.lorituber.rpc.packets.StartWorkingOnPendingVideoRequest
@@ -21,21 +24,48 @@ class StartWorkingOnPendingVideoProcessor(val m: LoriTuberServer) : PacketProces
         if (pendingVideo == null)
             return StartWorkingOnPendingVideoResponse.UnknownPendingVideo
 
-        val mood = listOf(
-            character.data.energyNeed,
-            character.data.hungerNeed,
-            character.data.funNeed,
-            character.data.hygieneNeed,
-            character.data.bladderNeed,
-            character.data.socialNeed
-        ).average()
+        // You need to have a computer...
+        //
+        // Get the first computer
+        val computer = character.data.items.firstOrNull { it.behaviorAttributes is LoriTuberItemBehaviorAttributes.Computer }
+        val behaviorAttributes = computer?.behaviorAttributes as? LoriTuberItemBehaviorAttributes.Computer
 
-        if (mood >= 50.0) {
-            // Set our new task!
-            character.setTask(LoriTuberTask.WorkingOnVideo(request.channelId, request.pendingVideoId, request.stage))
+        if (computer == null || behaviorAttributes == null)
+            error("User does not have a computer!")
+
+        // TODO: Do not let someone use the computer while it is already being used
+        // TODO: Do not let work on a stage that is unavailable/finished
+
+        if (request.stage == LoriTuberVideoStage.RENDERING) {
+            // Rendering stage is a bit different
+            // You CAN render stuff in your computer while you are AFK
+            behaviorAttributes.videoRenderTask = LoriTuberItemBehaviorAttributes.Computer.RenderingVideo(
+                channel.id,
+                pendingVideo.id
+            )
+
             return StartWorkingOnPendingVideoResponse.Success
         } else {
-            return StartWorkingOnPendingVideoResponse.MoodTooLow
+            if (character.motives.isMoodAboveRequiredForWork()) {
+                if (behaviorAttributes.videoRenderTask != null)
+                    error("You can't use the computer while you are rendering a video!")
+
+                // Set our new task!
+                character.setTask(
+                    LoriTuberTask.UsingItem(
+                        computer.localId,
+                        UseItemAttributes.Computer.WorkOnVideo(
+                            request.channelId,
+                            request.pendingVideoId,
+                            request.stage
+                        )
+                    )
+                )
+
+                return StartWorkingOnPendingVideoResponse.Success
+            } else {
+                return StartWorkingOnPendingVideoResponse.MoodTooLow
+            }
         }
     }
 }

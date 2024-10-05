@@ -25,7 +25,11 @@ class CreatePendingVideoProcessor(val m: LoriTuberServer) : PacketProcessor<Crea
 
         val contentCategoryLevel = channel.data.categoryLevels[request.contentCategory] ?: 1
 
-        val maxCategoryLevelValue = (20 * (contentCategoryLevel / 2)).coerceAtMost(999)
+        // We coerce between 11 and 1_000 because when the user is a lil baby with only one level, it WILL have a "0" maxCategoryLevelValue, and we don't
+        // want that
+        // maxCategoryLevelValue - 10 = 1
+
+        val maxCategoryLevelValue = (20 * (contentCategoryLevel / 2)).coerceIn(11, 1_000)
 
         val pendingVideoData = LoriTuberPendingVideoData(
             channel.nextPendingVideoId(),

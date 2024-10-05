@@ -13,7 +13,10 @@ class GoToGroceryStoreProcessor(val m: LoriTuberServer) : PacketProcessor<GoToGr
         if (false && worldTime.hours !in 7..18)
             return GoToGroceryStoreResponse.Closed
 
+        val character = m.gameState.charactersById[request.characterId]!!
+
         return GoToGroceryStoreResponse.Success(
+            character.data.sonhos,
             m.gameState.nelsonGroceryStore.items.map { it.data }
         )
     }

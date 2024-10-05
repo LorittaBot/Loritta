@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberChanne
 class CreateChannelProcessor(val m: LoriTuberServer) : PacketProcessor<CreateChannelRequest> {
     override suspend fun process(request: CreateChannelRequest): LoriTuberResponse {
         val userAlreadyHasAChannel = m.gameState.channels.any {
-            it.id == request.characterId
+            it.data.characterId == request.characterId
         }
 
         if (userAlreadyHasAChannel)

@@ -1,11 +1,15 @@
 package net.perfectdreams.loritta.lorituber.server.processors
 
+import net.perfectdreams.loritta.lorituber.bhav.LoriTuberItemBehaviorAttributes
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
 import net.perfectdreams.loritta.lorituber.rpc.packets.CreateCharacterRequest
 import net.perfectdreams.loritta.lorituber.rpc.packets.CreateCharacterResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberResponse
 import net.perfectdreams.loritta.lorituber.server.LoriTuberServer
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberCharacterData
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
+import java.util.*
 
 class CreateCharacterProcessor(val m: LoriTuberServer) : PacketProcessor<CreateCharacterRequest> {
     override suspend fun process(request: CreateCharacterRequest): LoriTuberResponse {
@@ -71,7 +75,32 @@ class CreateCharacterProcessor(val m: LoriTuberServer) : PacketProcessor<CreateC
                 100.0,
                 100.0,
                 null,
-                mutableListOf()
+                mutableListOf(
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.COMPUTER.id,
+                        1,
+                        LoriTuberItemBehaviorAttributes.Computer(
+                            0,
+                            0,
+                            null
+                        )
+                    ),
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.PHONE.id,
+                        1,
+                        LoriTuberItemBehaviorAttributes.Phone(null)
+                    ),
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.CHEAP_TOILET.id,
+                        1,
+                        LoriTuberItemBehaviorAttributes.Toilet(0, false, 0)
+                    )
+                ),
+                null,
+                0,
             )
         )
 

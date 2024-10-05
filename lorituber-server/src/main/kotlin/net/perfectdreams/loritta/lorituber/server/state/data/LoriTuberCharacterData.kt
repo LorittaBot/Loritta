@@ -18,5 +18,9 @@ data class LoriTuberCharacterData(
     var bladderNeed: Double,
     var socialNeed: Double,
     var currentTask: LoriTuberTask?,
-    val items: MutableList<LoriTuberItemStackData>
+    val items: MutableList<LoriTuberItemStackData>,
+    // TODO: Remove default
+    var pendingPhoneCall: PendingPhoneCallData? = null,
+    // TODO: Remove default
+    var sonhos: Long = 0
 )

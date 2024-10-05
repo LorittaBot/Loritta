@@ -8,9 +8,9 @@ fun main() {
     }
 
     val clazz = LoriTuberVideoCommentType::class.nestedClasses.first {
-        it.simpleName == "LikedVideoCorrectVibe1AligmentLeft0"
+        it.simpleName == "LikedVideoCorrectVibe1AlignmentLeft0"
     }
 
     println(clazz.objectInstance)
-    LoriTuberVideoCommentType.LikedVideoCorrectVibe1AligmentLeft0
+    LoriTuberVideoCommentType.LikedVideoCorrectVibe1AlignmentLeft0
 }

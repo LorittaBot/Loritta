@@ -16,16 +16,16 @@ import net.perfectdreams.loritta.lorituber.LoriTuberVibes
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoStage
+import net.perfectdreams.loritta.lorituber.bhav.LoriTuberItemBehaviorAttributes
 import net.perfectdreams.loritta.lorituber.items.LoriTuberGroceryItemData
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
 import net.perfectdreams.loritta.lorituber.recipes.LoriTuberRecipes
 import net.perfectdreams.loritta.lorituber.rpc.packets.*
+import net.perfectdreams.loritta.lorituber.server.bhav.LoriTuberItemBehaviors
 import net.perfectdreams.loritta.lorituber.server.processors.*
 import net.perfectdreams.loritta.lorituber.server.state.GameState
-import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberPendingVideoStageData
-import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberTrendData
-import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoData
-import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoEvent
+import net.perfectdreams.loritta.lorituber.server.state.data.*
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberVideo
 import net.perfectdreams.loritta.lorituber.server.state.items.LoriTuberGroceryItem
 import org.jetbrains.exposed.sql.Database
@@ -83,6 +83,10 @@ class LoriTuberServer(
     private val startWorkingOnPendingVideoProcessor = StartWorkingOnPendingVideoProcessor(this)
     private val finishPendingVideoProcessor = FinishPendingVideoProcessor(this)
     private val getChannelVideosProcessor = GetChannelVideosProcessor(this)
+    private val answerPhoneProcessor = AnswerPhoneProcessor(this)
+    private val takingAShowerProcessor = SetCharacterTakingAShowerProcessor(this)
+    private val usingToiletProcessor = SetCharacterUsingToiletProcessor(this)
+    private val characterUseItemProcessor = CharacterUseItemProcessor(this)
 
     private var isFirstTick = false
     private var cantKeepUp = false
@@ -189,6 +193,10 @@ class LoriTuberServer(
                             is StartWorkingOnPendingVideoRequest -> startWorkingOnPendingVideoProcessor.process(request)
                             is FinishPendingVideoRequest -> finishPendingVideoProcessor.process(request)
                             is GetChannelVideosRequest -> getChannelVideosProcessor.process(request)
+                            is AnswerPhoneRequest -> answerPhoneProcessor.process(request)
+                            is SetCharacterTakingAShowerRequest -> takingAShowerProcessor.process(request)
+                            is SetCharacterUsingToiletRequest -> usingToiletProcessor.process(request)
+                            is CharacterUseItemRequest -> characterUseItemProcessor.process(request)
                         }
                     }
 
@@ -948,7 +956,80 @@ class LoriTuberServer(
         for (character in tickableCharacters) {
             logger.info { character.data.firstName }
 
+            // TODO: Remove this later!!!
+            // Give test items
+            if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_TOILET.id }) {
+                character.data.items.add(
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.CHEAP_TOILET.id,
+                        1,
+                        LoriTuberItemBehaviorAttributes.Toilet(0, false, 0)
+                    )
+                )
+            }
+
+            if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_BED.id }) {
+                character.data.items.add(
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.CHEAP_BED.id,
+                        1,
+                        null
+                    )
+                )
+            }
+
+            if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_FRIDGE.id }) {
+                character.data.items.add(
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.CHEAP_FRIDGE.id,
+                        1,
+                        null
+                    )
+                )
+            }
+
             when (val task = character.data.currentTask) {
+                is LoriTuberTask.Sleeping -> {
+                    // 8 hours
+                    character.motives.addEnergyPerTicks(100.0, 480)
+
+                    if (character.motives.energy >= 100.0)
+                        character.setTask(null)
+                }
+                is LoriTuberTask.TakingAShower -> {
+                    character.motives.addHygienePerTicks(100.0, 20)
+
+                    if (character.motives.hygiene >= 100.0)
+                        character.setTask(null)
+                }
+                is LoriTuberTask.UsingToilet -> {
+                    character.motives.addBladderPerTicks(100.0, 15)
+
+                    if (character.motives.bladder >= 100.0)
+                        character.setTask(null)
+                }
+                is LoriTuberTask.UsingItem -> {
+                    // TODO: Remove this maybe?
+                    /* val itemThatIsBeingUsed = character.data.items.firstOrNull { it.localId == task.itemLocalId }
+                    if (itemThatIsBeingUsed == null) {
+                        logger.warn { "Item that was being used magically disappeared from our inventory! Resetting task..." }
+                        character.setTask(null)
+                    } else {
+                        val bhav = LoriTuberItemBehaviors.itemToBehaviors[itemThatIsBeingUsed.id]
+
+                        if (bhav != null) {
+                            logger.info { "Ticking active item item ${itemThatIsBeingUsed} with $bhav, being used by ${character.id}" }
+
+                            // Tick item bhav
+                            bhav.activeCharacterTaskTick(gameState, currentTick, character, itemThatIsBeingUsed)
+                        } else {
+                            logger.warn { "Character ${character.id} is using a item (${itemThatIsBeingUsed} that doesn't have any behavior bound to it!" }
+                        }
+                    } */
+                }
                 is LoriTuberTask.Eating -> {
                     val item = LoriTuberItems.getById(task.itemId)
                     val foodAttributes = item.foodAttributes!!
@@ -959,6 +1040,7 @@ class LoriTuberServer(
                     } else {
                         // We are still eating, nom om om
                         character.motives.addHunger(foodAttributes.hunger.toDouble())
+                        character.motives.addBladderPerTicks(-100.0, 120)
                     }
                 }
                 is LoriTuberTask.PreparingFood -> {
@@ -994,121 +1076,171 @@ class LoriTuberServer(
                         // We are still preparing, do nothing
                     }
                 }
-                is LoriTuberTask.Sleeping -> {
-                    character.motives.addEnergy(1.0)
-
-                    if (character.motives.energy == 100.0)
-                        character.setTask(null)
-                }
                 is LoriTuberTask.WorkingOnVideo -> {
-                    val channel = gameState.channels.firstOrNull { it.id == task.channelId }
-                    if (channel != null) {
-                        val pendingVideo = channel.data.pendingVideos.firstOrNull { it.id == task.pendingVideoId }
-                        if (pendingVideo != null) {
-                            when (task.stage) {
-                                LoriTuberVideoStage.RECORDING -> {
-                                    val inProgress = pendingVideo.recordingStage as? LoriTuberPendingVideoStageData.InProgress
-                                    if (inProgress == null) {
-                                        // Invalid stage, reset!
-                                        character.setTask(null)
-                                    } else {
-                                        // How this works?
-                                        // We +1 for each tick
-                                        if (inProgress.progressTicks == 5L) {
-                                            // Okay, so this stage is finished! Cancel the current task
+                    if (character.motives.isMoodAboveRequiredForWork()) {
+                        val channel = gameState.channels.firstOrNull { it.id == task.channelId }
+                        if (channel != null) {
+                            val pendingVideo = channel.data.pendingVideos.firstOrNull { it.id == task.pendingVideoId }
+                            if (pendingVideo != null) {
+                                when (task.stage) {
+                                    LoriTuberVideoStage.RECORDING -> {
+                                        val inProgress = pendingVideo.recordingStage as? LoriTuberPendingVideoStageData.InProgress
+                                        if (inProgress == null) {
+                                            // Invalid stage, reset!
                                             character.setTask(null)
-
-                                            // Set the new recording score...
-                                            pendingVideo.recordingStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
-
-                                            // And unlock two new stages!
-                                            pendingVideo.editingStage = LoriTuberPendingVideoStageData.InProgress(0)
-                                            pendingVideo.thumbnailStage = LoriTuberPendingVideoStageData.InProgress(0)
                                         } else {
-                                            inProgress.progressTicks++
+                                            // How this works?
+                                            // We +1 for each tick
+                                            if (inProgress.progressTicks == 5L) {
+                                                // Okay, so this stage is finished! Cancel the current task
+                                                character.setTask(null)
+
+                                                // Set the new recording score...
+                                                pendingVideo.recordingStage = LoriTuberPendingVideoStageData.Finished(
+                                                    gameState.random.nextInt(
+                                                        10,
+                                                        21
+                                                    )
+                                                )
+
+                                                // And unlock two new stages!
+                                                pendingVideo.editingStage = LoriTuberPendingVideoStageData.InProgress(0)
+                                                pendingVideo.thumbnailStage = LoriTuberPendingVideoStageData.InProgress(0)
+                                            } else {
+                                                inProgress.progressTicks++
+                                            }
+                                            channel.isDirty = true
                                         }
-                                        channel.isDirty = true
+                                    }
+
+                                    LoriTuberVideoStage.EDITING -> {
+                                        val inProgress = pendingVideo.editingStage as? LoriTuberPendingVideoStageData.InProgress
+                                        if (inProgress == null) {
+                                            // Invalid stage, reset!
+                                            character.setTask(null)
+                                        } else {
+                                            // How this works?
+                                            // We +1 for each tick
+                                            if (inProgress.progressTicks == 5L) {
+                                                // Okay, so this stage is finished! Cancel the current task
+                                                character.setTask(null)
+
+                                                // Set the new recording score...
+                                                pendingVideo.editingStage = LoriTuberPendingVideoStageData.Finished(
+                                                    gameState.random.nextInt(
+                                                        10,
+                                                        21
+                                                    )
+                                                )
+
+                                                // And unlock the next stage!
+                                                pendingVideo.renderingStage = LoriTuberPendingVideoStageData.InProgress(0)
+                                            } else {
+                                                inProgress.progressTicks++
+                                            }
+                                            channel.isDirty = true
+                                        }
+                                    }
+
+                                    LoriTuberVideoStage.RENDERING -> {
+                                        val inProgress = pendingVideo.renderingStage as? LoriTuberPendingVideoStageData.InProgress
+                                        if (inProgress == null) {
+                                            // Invalid stage, reset!
+                                            character.setTask(null)
+                                        } else {
+                                            // How this works?
+                                            // We +1 for each tick
+                                            if (inProgress.progressTicks == 5L) {
+                                                // Okay, so this stage is finished! Cancel the current task
+                                                character.setTask(null)
+
+                                                // Set the new recording score...
+                                                pendingVideo.renderingStage = LoriTuberPendingVideoStageData.Finished(
+                                                    gameState.random.nextInt(
+                                                        10,
+                                                        21
+                                                    )
+                                                )
+
+                                                // And now we don't need to unlock anything rn
+                                            } else {
+                                                inProgress.progressTicks++
+                                            }
+                                            channel.isDirty = true
+                                        }
+                                    }
+
+                                    LoriTuberVideoStage.THUMBNAIL -> {
+                                        val inProgress =
+                                            pendingVideo.thumbnailStage as? LoriTuberPendingVideoStageData.InProgress
+                                        if (inProgress == null) {
+                                            // Invalid stage, reset!
+                                            character.setTask(null)
+                                        } else {
+                                            // How this works?
+                                            // We +1 for each tick
+                                            if (inProgress.progressTicks == 5L) {
+                                                // Okay, so this stage is finished! Cancel the current task
+                                                character.setTask(null)
+
+                                                // Set the new recording score...
+                                                pendingVideo.thumbnailStage = LoriTuberPendingVideoStageData.Finished(
+                                                    gameState.random.nextInt(
+                                                        10,
+                                                        21
+                                                    )
+                                                )
+
+                                                // And now we don't need to unlock anything rn
+                                            } else {
+                                                inProgress.progressTicks++
+                                            }
+                                            channel.isDirty = true
+                                        }
                                     }
                                 }
-                                LoriTuberVideoStage.EDITING -> {
-                                    val inProgress = pendingVideo.editingStage as? LoriTuberPendingVideoStageData.InProgress
-                                    if (inProgress == null) {
-                                        // Invalid stage, reset!
-                                        character.setTask(null)
-                                    } else {
-                                        // How this works?
-                                        // We +1 for each tick
-                                        if (inProgress.progressTicks == 5L) {
-                                            // Okay, so this stage is finished! Cancel the current task
-                                            character.setTask(null)
-
-                                            // Set the new recording score...
-                                            pendingVideo.editingStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
-
-                                            // And unlock the next stage!
-                                            pendingVideo.renderingStage = LoriTuberPendingVideoStageData.InProgress(0)
-                                        } else {
-                                            inProgress.progressTicks++
-                                        }
-                                        channel.isDirty = true
-                                    }
-                                }
-                                LoriTuberVideoStage.RENDERING -> {
-                                    val inProgress = pendingVideo.renderingStage as? LoriTuberPendingVideoStageData.InProgress
-                                    if (inProgress == null) {
-                                        // Invalid stage, reset!
-                                        character.setTask(null)
-                                    } else {
-                                        // How this works?
-                                        // We +1 for each tick
-                                        if (inProgress.progressTicks == 5L) {
-                                            // Okay, so this stage is finished! Cancel the current task
-                                            character.setTask(null)
-
-                                            // Set the new recording score...
-                                            pendingVideo.renderingStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
-
-                                            // And now we don't need to unlock anything rn
-                                        } else {
-                                            inProgress.progressTicks++
-                                        }
-                                        channel.isDirty = true
-                                    }
-                                }
-                                LoriTuberVideoStage.THUMBNAIL -> {
-                                    val inProgress = pendingVideo.thumbnailStage as? LoriTuberPendingVideoStageData.InProgress
-                                    if (inProgress == null) {
-                                        // Invalid stage, reset!
-                                        character.setTask(null)
-                                    } else {
-                                        // How this works?
-                                        // We +1 for each tick
-                                        if (inProgress.progressTicks == 5L) {
-                                            // Okay, so this stage is finished! Cancel the current task
-                                            character.setTask(null)
-
-                                            // Set the new recording score...
-                                            pendingVideo.thumbnailStage = LoriTuberPendingVideoStageData.Finished(gameState.random.nextInt(10, 21))
-
-                                            // And now we don't need to unlock anything rn
-                                        } else {
-                                            inProgress.progressTicks++
-                                        }
-                                        channel.isDirty = true
-                                    }
-                                }
+                            } else {
+                                // Unknown pending video, reset the task!
+                                character.setTask(null)
                             }
                         } else {
-                            // Unknown pending video, reset the task!
+                            // Unknown channel, reset the task!
                             character.setTask(null)
                         }
                     } else {
-                        // Unknown channel, reset the task!
+                        // I'm too depressed, reset the task!
                         character.setTask(null)
                     }
                 }
                 null -> {} // Mó paz
             }
+
+            val pendingPhoneCallData = character.data.pendingPhoneCall
+
+            if (pendingPhoneCallData != null) {
+                if (currentTick > pendingPhoneCallData.expiresAt) {
+                    character.setPendingPhoneCall(null)
+                }
+            } else {
+                if (character.data.ticksLived % 2 == 0L) {
+                    // Ring their phone!
+                    val worldTime = WorldTime(currentTick)
+
+                    val call = if (true || worldTime.hours in 8..20) {
+                        val isPrankCall = gameState.random.nextBoolean()
+                        if (isPrankCall) {
+                            gameState.oddCalls.random()
+                        } else {
+                            gameState.sonhosRewardCalls.random()
+                        }
+                    } else {
+                        gameState.oddCalls.random()
+                    }
+
+                    character.setPendingPhoneCall(PendingPhoneCallData(currentTick + 60, call))
+                }
+            }
+
             // var isSleeping = character.data.currentTask is LoriTuberTask.Sleeping
 
             // TODO: Implement character free will, automatically do actions automatically to fulfill their needs
@@ -1121,10 +1253,40 @@ class LoriTuberServer(
             //  Example: Hunger should decrease FASTER than sleep
             //  Also, should we store the motives in a JSON field? maybe it would be better if we end up adding new motives
             //  Also², how can we handle motives decrease? Just ALWAYS apply it no matter what? (I don't know how TS1 handles motives)
-            if (currentTick % (TICKS_PER_SECOND * 5) == 0L) {
+            /* if (character.data.ticksLived % (TICKS_PER_SECOND * 5) == 0L) {
                 character.motives.addHunger(-1.0)
                 character.motives.addEnergy(-1.0)
+            } */
+
+            // Process items that have custom behavior
+            for (item in character.data.items) {
+                val bhav = LoriTuberItemBehaviors.itemToBehaviors[item.id]
+
+                if (bhav != null) {
+                    logger.info { "Ticking item ${item} with $bhav" }
+
+                    // Tick item bhav
+                    bhav.tick(gameState, currentTick, character, item)
+                }
             }
+
+            // eat twice every day!
+            character.motives.addHungerPerTicks(-100.0, 60 * 12)
+
+            // take a bath daily!
+            character.motives.addHygienePerTicks(-100.0, 60 * 24)
+
+            // sleep daily!
+            // we multiply by * 18 instead of * 16
+            character.motives.addEnergyPerTicks(-100.0, 60 * 18)
+
+            // use the bathroom daily!
+            // (technically you'll need to use more than once a day because you also lose bladder when eating)
+            character.motives.addBladderPerTicks(-100.0, 60 * 24)
+
+            // fun!
+            // (technically you'll need to use more than once a day because you also lose bladder when eating)
+            character.motives.addFunPerTicks(-100.0, 60 * 8)
 
             // Update the character ticks lived
             character.data.ticksLived++
@@ -1303,5 +1465,9 @@ class LoriTuberServer(
 
             logger.info { "Total ChannelRels: ${channel.data.channelRelationships.size}" }
         } */
+    }
+
+    fun generateRandomRewardCall(currentTick: Long) {
+
     }
 }

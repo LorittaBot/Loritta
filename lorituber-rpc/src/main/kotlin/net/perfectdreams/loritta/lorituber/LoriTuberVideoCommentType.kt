@@ -7,111 +7,111 @@ sealed class LoriTuberVideoCommentType {
     @Serializable
     data object First0 : LoriTuberVideoCommentType()
     
-    @Serializable data object LikedVideoCorrectVibe1AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoCorrectVibe1AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe1AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe1AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoCorrectVibe2AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoCorrectVibe2AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe2AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe2AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoCorrectVibe3AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoCorrectVibe3AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe3AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe3AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoCorrectVibe4AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoCorrectVibe4AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe4AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe4AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoCorrectVibe5AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoCorrectVibe5AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe5AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe5AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoCorrectVibe6AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoCorrectVibe6AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe6AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoCorrectVibe6AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoIncorrectVibe1AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoIncorrectVibe1AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe1AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe1AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoIncorrectVibe2AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoIncorrectVibe2AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe2AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe2AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoIncorrectVibe3AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoIncorrectVibe3AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe3AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe3AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoIncorrectVibe4AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoIncorrectVibe4AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe4AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe4AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoIncorrectVibe5AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoIncorrectVibe5AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe5AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe5AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object LikedVideoIncorrectVibe6AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object LikedVideoIncorrectVibe6AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe6AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object LikedVideoIncorrectVibe6AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoCorrectVibe1AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoCorrectVibe1AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe1AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe1AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoCorrectVibe2AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoCorrectVibe2AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe2AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe2AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoCorrectVibe3AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoCorrectVibe3AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe3AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe3AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoCorrectVibe4AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoCorrectVibe4AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe4AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe4AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoCorrectVibe5AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoCorrectVibe5AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe5AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe5AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoCorrectVibe6AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoCorrectVibe6AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe6AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoCorrectVibe6AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoIncorrectVibe1AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoIncorrectVibe1AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe1AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe1AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoIncorrectVibe2AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoIncorrectVibe2AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe2AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe2AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoIncorrectVibe3AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoIncorrectVibe3AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe3AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe3AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoIncorrectVibe4AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoIncorrectVibe4AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe4AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe4AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoIncorrectVibe5AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoIncorrectVibe5AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe5AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe5AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object DislikedVideoIncorrectVibe6AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object DislikedVideoIncorrectVibe6AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe6AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object DislikedVideoIncorrectVibe6AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoCorrectVibe1AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoCorrectVibe1AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe1AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe1AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoCorrectVibe2AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoCorrectVibe2AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe2AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe2AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoCorrectVibe3AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoCorrectVibe3AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe3AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe3AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoCorrectVibe4AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoCorrectVibe4AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe4AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe4AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoCorrectVibe5AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoCorrectVibe5AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe5AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe5AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoCorrectVibe6AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoCorrectVibe6AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe6AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoCorrectVibe6AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoIncorrectVibe1AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoIncorrectVibe1AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe1AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe1AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoIncorrectVibe2AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoIncorrectVibe2AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe2AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe2AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoIncorrectVibe3AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoIncorrectVibe3AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe3AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe3AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoIncorrectVibe4AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoIncorrectVibe4AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe4AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe4AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoIncorrectVibe5AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoIncorrectVibe5AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe5AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe5AlignmentRight0 : LoriTuberVideoCommentType()
 
-    @Serializable data object NeutralVideoIncorrectVibe6AligmentLeft0 : LoriTuberVideoCommentType()
-    @Serializable data object NeutralVideoIncorrectVibe6AligmentRight0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe6AlignmentLeft0 : LoriTuberVideoCommentType()
+    @Serializable data object NeutralVideoIncorrectVibe6AlignmentRight0 : LoriTuberVideoCommentType()
 }

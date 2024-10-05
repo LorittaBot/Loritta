@@ -5,12 +5,11 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
-import net.perfectdreams.loritta.lorituber.rpc.packets.EatFoodRequest
-import net.perfectdreams.loritta.lorituber.rpc.packets.EatFoodResponse
-import net.perfectdreams.loritta.lorituber.rpc.packets.SelectFoodMenuRequest
-import net.perfectdreams.loritta.lorituber.rpc.packets.SelectFoodMenuResponse
+import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -21,6 +20,7 @@ class EatFoodScreen(
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
+    val response: CharacterUseItemResponse.Success.Fridge.EatFoodMenu,
     val selectedFood: LoriTuberItemId?
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
@@ -47,7 +47,8 @@ class EatFoodScreen(
             val quantity: Int
         )
 
-        val response = sendLoriTuberRPCRequestNew<SelectFoodMenuResponse>(SelectFoodMenuRequest(character.id))
+        // TODO: Remove this (migrated to use object interaction packets)
+        // val response = sendLoriTuberRPCRequestNew<SelectFoodMenuResponse>(SelectFoodMenuRequest(character.id))
         val items = response.inventory.map { ItemWrapper(LoriTuberItems.getById(it.id), it.quantity) }
         val foods = items.filter { it.item.foodAttributes != null }
 
@@ -88,6 +89,7 @@ class EatFoodScreen(
                                         user,
                                         defer,
                                         character,
+                                        response,
                                         foods.first { it.item.id.id == values[0] }.item.id
                                     )
                                 )
@@ -108,7 +110,8 @@ class EatFoodScreen(
                             ) { context ->
                                 val defer = context.deferEdit()
 
-                                val response = sendLoriTuberRPCRequestNew<EatFoodResponse>(EatFoodRequest(character.id, selectedFood))
+                                // TODO: Remove this (migrated to use object interaction packets)
+                                /* val response = sendLoriTuberRPCRequestNew<EatFoodResponse>(EatFoodRequest(character.id, selectedFood))
                                 when (response) {
                                     EatFoodResponse.ItemNotEdible -> TODO()
                                     EatFoodResponse.ItemNotFound -> TODO()
@@ -122,7 +125,25 @@ class EatFoodScreen(
                                             )
                                         )
                                     }
-                                }
+                                } */
+                                val matchedLocalId = response.inventory.first { it.id == selectedFood }
+
+                                val response = sendLoriTuberRPCRequestNew<CharacterUseItemResponse>(
+                                    CharacterUseItemRequest(
+                                        character.id,
+                                        matchedLocalId.localId,
+                                        ItemActionOption.EatFood
+                                    )
+                                )
+
+                                command.switchScreen(
+                                    ViewMotivesScreen(
+                                        command,
+                                        user,
+                                        defer,
+                                        character
+                                    )
+                                )
                             }
                         )
                     } else {
