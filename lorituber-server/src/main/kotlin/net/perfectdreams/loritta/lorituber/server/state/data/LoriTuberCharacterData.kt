@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
 @Serializable
 data class LoriTuberCharacterData(
     var ownerId: Long,
+    var currentPlaceId: Long,
     var firstName: String,
     var lastName: String,
     var createdAtTick: Long,

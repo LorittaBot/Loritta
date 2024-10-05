@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.lorituber.server.WorldTime
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberTrendData
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberChannel
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
+import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberPlace
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberVideo
 import net.perfectdreams.loritta.lorituber.server.tables.*
 import org.jetbrains.exposed.sql.Database
@@ -35,6 +36,7 @@ class GameState(
     val charactersById: HashMap<Long, LoriTuberCharacter>,
     val channelsById: HashMap<Long, LoriTuberChannel>,
     val videosById: HashMap<Long, LoriTuberVideo>,
+    val placesById: HashMap<Long, LoriTuberPlace>,
     val trendsByCategory: EnumMap<LoriTuberVideoContentCategory, LoriTuberTrendData>,
     val trendTargetsByCategory: EnumMap<LoriTuberVideoContentCategory, LoriTuberTrendData>,
     val nelsonGroceryStore: GroceryStore,
@@ -47,6 +49,8 @@ class GameState(
         get() = channelsById.values
     val videos
         get() = videosById.values
+    val places
+        get() = placesById.values
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -218,14 +222,14 @@ class GameState(
 
                     // ===[ CHARACTERS ]===
                     // Removed
-                    LoriTuberCharactersAlt.deleteWhere {
-                        LoriTuberCharactersAlt.id inList serializedCharacters.removed
+                    LoriTuberCharacters.deleteWhere {
+                        LoriTuberCharacters.id inList serializedCharacters.removed
                     }
 
                     // Dirty
-                    LoriTuberCharactersAlt.batchUpsert(serializedCharacters.entities, LoriTuberCharactersAlt.id) {
-                        this[LoriTuberCharactersAlt.id] = it.id
-                        this[LoriTuberCharactersAlt.data] = ExposedBlob(it.data)
+                    LoriTuberCharacters.batchUpsert(serializedCharacters.entities, LoriTuberCharacters.id) {
+                        this[LoriTuberCharacters.id] = it.id
+                        this[LoriTuberCharacters.data] = ExposedBlob(it.data)
                     }
 
                     // ===[ CHANNELS ]===

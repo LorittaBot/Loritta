@@ -35,8 +35,10 @@ sealed class BedBehavior : LoriTuberItemBehavior<Nothing?, UseItemAttributes.Bed
         behaviorAttributes: Nothing?,
         useItemAttributes: UseItemAttributes.Bed?
     ) {
+        println("Ticking bed $useItemAttributes")
         when (useItemAttributes) {
             UseItemAttributes.Bed.Sleeping -> {
+                println("Increasing energy motive of " + character.data.firstName)
                 // 8 hours
                 character.motives.addEnergyPerTicks(100.0, 480)
 

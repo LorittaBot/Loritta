@@ -64,6 +64,7 @@ class CreateCharacterProcessor(val m: LoriTuberServer) : PacketProcessor<CreateC
             m.gameState.nextCharacterId(),
             LoriTuberCharacterData(
                 request.userId,
+                0,
                 request.firstName,
                 request.lastName,
                 m.gameState.worldInfo.currentTick,

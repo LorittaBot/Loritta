@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
@@ -65,9 +64,8 @@ object LoriTuberServerLauncher {
         transaction(lorituberDatabase) {
             SchemaUtils.createMissingTablesAndColumns(
                 LoriTuberWorldTicks,
-                LoriTuberCharacters,
                 LoriTuberVideos,
-                LoriTuberCharactersAlt,
+                LoriTuberCharacters,
                 LoriTuberChannels,
                 LoriTuberGroceryStores
             )
@@ -89,11 +87,11 @@ object LoriTuberServerLauncher {
 
             logger.info { "Is this a new server? $isNewServer" }
 
-            val characters = LoriTuberCharactersAlt.selectAll()
+            val characters = LoriTuberCharacters.selectAll()
                 .map {
                     LoriTuberCharacter(
-                        it[LoriTuberCharactersAlt.id],
-                        ProtoBuf.decodeFromByteArray<LoriTuberCharacterData>(it[LoriTuberCharactersAlt.data].bytes)
+                        it[LoriTuberCharacters.id],
+                        ProtoBuf.decodeFromByteArray<LoriTuberCharacterData>(it[LoriTuberCharacters.data].bytes)
                     )
                 }
 
@@ -158,6 +156,7 @@ object LoriTuberServerLauncher {
                         put(entity.id, entity)
                     }
                 },
+                TODO(),
                 EnumMap(LoriTuberVideoContentCategory::class.java),
                 EnumMap(LoriTuberVideoContentCategory::class.java),
                 nelsonGroceryStore,
