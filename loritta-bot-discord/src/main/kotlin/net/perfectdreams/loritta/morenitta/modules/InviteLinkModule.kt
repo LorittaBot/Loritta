@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -38,7 +39,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		i18nContext: I18nContext
 	): Boolean {
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(loritta, ServerConfig::inviteBlockerConfig)
-				?: return false
+			?: return false
 
 		if (!inviteBlockerConfig.enabled)
 			return false
@@ -63,61 +64,14 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 		val message = event.message
 		val guild = message.guild
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(loritta, ServerConfig::inviteBlockerConfig)
-				?: return false
-
-		val content = message.contentRaw
-				// We need to strip the code marks to avoid this:
-				// https://cdn.discordapp.com/attachments/513405772911345664/760887806191992893/invite-bug.png
-				.stripCodeMarks()
-				.replace("\u200B", "")
-				// https://discord.gg\loritta is actually detected as https://discord.gg/loritta on Discord
-				// So we are going to flip all \ to /
-				.replace("\\", "/")
-				// https://discord.gg//loritta is actually detected as https://discord.gg/loritta on Discord
-				// (yes, two issues, wow)
-				// So we are going to replace all /+ to /, so https://discord.gg//loritta becomes https://discord.gg/loritta
-				.replace(Regex("/+"), "/")
-				// Fixes links like https://discord.com/../invite/sparklypower
-				.replace("../", "")
+			?: return false
 
 		val validMatchers = mutableListOf<Matcher>()
-		val contentMatcher = getMatcherIfHasInviteLink(content)
-		if (contentMatcher != null)
-			validMatchers.add(contentMatcher)
 
-		val embeds = message.embeds
-		if (!isYouTubeLink(content)) {
-			for (embed in embeds) {
-				val descriptionMatcher = getMatcherIfHasInviteLink(embed.description)
-				if (descriptionMatcher != null)
-					validMatchers.add(descriptionMatcher)
+		validMatchers.addAll(checkMessage(MessageWrapper.Message(message)))
 
-				val titleMatcher = getMatcherIfHasInviteLink(embed.title)
-				if (titleMatcher != null)
-					validMatchers.add(titleMatcher)
-
-				val urlMatcher = getMatcherIfHasInviteLink(embed.url)
-				if (urlMatcher != null)
-					validMatchers.add(urlMatcher)
-
-				val footerMatcher = getMatcherIfHasInviteLink(embed.footer?.text)
-				if (footerMatcher != null)
-					validMatchers.add(footerMatcher)
-
-				val authorNameMatcher = getMatcherIfHasInviteLink(embed.author?.name)
-				if (authorNameMatcher != null)
-					validMatchers.add(authorNameMatcher)
-
-				val authorUrlMatcher = getMatcherIfHasInviteLink(embed.author?.url)
-				if (authorUrlMatcher != null)
-					validMatchers.add(authorUrlMatcher)
-
-				for (field in embed.fields) {
-					val fieldMatcher = getMatcherIfHasInviteLink(field.value)
-					if (fieldMatcher != null)
-						validMatchers.add(fieldMatcher)
-				}
-			}
+		for (snapshot in message.messageSnapshots) {
+			validMatchers.addAll(checkMessage(MessageWrapper.MessageSnapshot(snapshot)))
 		}
 
 		// Se existe algum link na mensagem...
@@ -281,6 +235,88 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 			return matcher
 		} else {
 			return null
+		}
+	}
+
+	private fun stripAnythingThatCouldCauseIssues(contentToBeStripped: String): String {
+		return contentToBeStripped
+			// We need to strip the code marks to avoid this:
+			// https://cdn.discordapp.com/attachments/513405772911345664/760887806191992893/invite-bug.png
+			.stripCodeMarks()
+			.replace("\u200B", "")
+			// https://discord.gg\loritta is actually detected as https://discord.gg/loritta on Discord
+			// So we are going to flip all \ to /
+			.replace("\\", "/")
+			// https://discord.gg//loritta is actually detected as https://discord.gg/loritta on Discord
+			// (yes, two issues, wow)
+			// So we are going to replace all /+ to /, so https://discord.gg//loritta becomes https://discord.gg/loritta
+			.replace(Regex("/+"), "/")
+			// Fixes links like https://discord.com/../invite/sparklypower
+			.replace("../", "")
+	}
+
+	private fun checkMessage(message: MessageWrapper): List<Matcher> {
+		val content = stripAnythingThatCouldCauseIssues(message.contentRaw)
+
+		val validMatchers = mutableListOf<Matcher>()
+		val contentMatcher = getMatcherIfHasInviteLink(content)
+		if (contentMatcher != null)
+			validMatchers.add(contentMatcher)
+
+		val embeds = message.embeds
+		if (!isYouTubeLink(content)) {
+			for (embed in embeds) {
+				val descriptionMatcher = getMatcherIfHasInviteLink(embed.description)
+				if (descriptionMatcher != null)
+					validMatchers.add(descriptionMatcher)
+
+				val titleMatcher = getMatcherIfHasInviteLink(embed.title)
+				if (titleMatcher != null)
+					validMatchers.add(titleMatcher)
+
+				val urlMatcher = getMatcherIfHasInviteLink(embed.url)
+				if (urlMatcher != null)
+					validMatchers.add(urlMatcher)
+
+				val footerMatcher = getMatcherIfHasInviteLink(embed.footer?.text)
+				if (footerMatcher != null)
+					validMatchers.add(footerMatcher)
+
+				val authorNameMatcher = getMatcherIfHasInviteLink(embed.author?.name)
+				if (authorNameMatcher != null)
+					validMatchers.add(authorNameMatcher)
+
+				val authorUrlMatcher = getMatcherIfHasInviteLink(embed.author?.url)
+				if (authorUrlMatcher != null)
+					validMatchers.add(authorUrlMatcher)
+
+				for (field in embed.fields) {
+					val fieldMatcher = getMatcherIfHasInviteLink(field.value)
+					if (fieldMatcher != null)
+						validMatchers.add(fieldMatcher)
+				}
+			}
+		}
+
+		return validMatchers
+	}
+
+	sealed class MessageWrapper {
+		abstract val contentRaw: String
+		abstract val embeds: List<MessageEmbed>
+
+		class Message(val message: net.dv8tion.jda.api.entities.Message) : MessageWrapper() {
+			override val contentRaw
+				get() = message.contentRaw
+			override val embeds
+				get() = message.embeds
+		}
+
+		class MessageSnapshot(val messageSnapshot: net.dv8tion.jda.api.entities.messages.MessageSnapshot) : MessageWrapper() {
+			override val contentRaw
+				get() = messageSnapshot.contentRaw
+			override val embeds
+				get() = messageSnapshot.embeds
 		}
 	}
 }
