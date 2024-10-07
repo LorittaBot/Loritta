@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":discord-chat-message-renderer-entities"))
     implementation(project(":lori-public-http-api-common"))
     implementation(project(":yokye"))
+    implementation(project(":lorituber-rpc"))
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
@@ -45,6 +46,7 @@ dependencies {
     implementation("dev.kord:kord-core:0.8.x-lori-fork-20221109.172532-14")
     implementation("dev.kord:kord-voice:0.8.x-lori-fork-20221109.172532-15")
 
+    // Exposed & Databases
     // Exposed & Databases
     implementation(libs.postgresqljdbcdriver)
     implementation(libs.hikaricp)

@@ -5,180 +5,146 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.loritta.lorituber.LoriTuberVibes
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
+import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdRequest
+import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.serializable.lorituber.requests.GetChannelByIdRequest
-import net.perfectdreams.loritta.serializable.lorituber.responses.GetChannelByIdResponse
+import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
+import java.util.*
 
 class CreateVideoGenreTypeScreen(
     command: LoriTuberCommand,
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val channelId: Long,
-    private val contentGenre: LoriTuberContentGenre?,
-    private val contentType: LoriTuberContentType?,
-    private val contentLength: LoriTuberContentLength?
+    val channelId: UUID,
+    private val contentCategory: LoriTuberVideoContentCategory?,
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
-        val channel = sendLoriTuberRPCRequest<GetChannelByIdResponse>(GetChannelByIdRequest(channelId))
-            .channel
+        val result = sendLoriTuberRPCRequestNew<GetChannelByIdResponse>(GetChannelByIdRequest(channelId))
 
-        if (channel == null) {
-            // Channel does not exist! Maybe it was deleted?
-            command.switchScreen(
-                CreateChannelScreen(
-                    command,
-                    user,
-                    hook,
-                    character
+        when (result) {
+            GetChannelByIdResponse.UnknownChannel -> {
+                // Channel does not exist! Maybe it was deleted?
+                command.switchScreen(
+                    CreateChannelScreen(
+                        command,
+                        user,
+                        hook,
+                        character
+                    )
                 )
-            )
-            return
-        }
-
-        val continueButton = loritta.interactivityManager.buttonForUser(
-            user,
-            ButtonStyle.PRIMARY,
-            "Continuar",
-            {
-                disabled = contentType == null || contentGenre == null || contentLength == null
             }
-        ) {
-            command.switchScreen(
-                CreateVideoEndScreen(
-                    command,
+            is GetChannelByIdResponse.Success -> {
+                val continueButton = loritta.interactivityManager.buttonForUser(
                     user,
-                    it.deferEdit(),
-                    character,
-                    channelId,
-                    // Shouldn't be null here
-                    contentGenre!!,
-                    contentType!!,
-                    contentLength!!
-                )
-            )
-        }
-
-        val viewChannelButton = loritta.interactivityManager.buttonForUser(
-            user,
-            ButtonStyle.PRIMARY,
-            "Voltar",
-            {
-                emoji = Emoji.fromUnicode("\uD83C\uDF9E️")
-            }
-        ) {
-            command.switchScreen(
-                CreateVideoBeginningScreen(
-                    command,
-                    user,
-                    it.deferEdit(),
-                    character,
-                    channel.id
-                )
-            )
-        }
-
-        hook.editOriginal(
-            MessageEdit {
-                embed {
-                    title = "Criação de Vídeos [2/4]"
-
-                    description = """Escolha o conteúdo do vídeo
-                        |
-                        |Combinação:
-                        |**${contentGenre ?: "???"}** + **${contentType ?: "???"}** = **???** (Você nunca fez um vídeo com esta combinação!)
-                        |**${contentGenre ?: "???"}** + **${contentType ?: "???"}** + **${contentLength ?: "???"}** = **???** (Você nunca fez um vídeo com esta combinação!)
-                    """.trimMargin()
+                    ButtonStyle.PRIMARY,
+                    "Continuar",
+                    {
+                        disabled = contentCategory == null
+                    }
+                ) {
+                    command.switchScreen(
+                        CreateVideoVibesScreen(
+                            command,
+                            user,
+                            it.deferEdit(),
+                            character,
+                            channelId,
+                            // Shouldn't be null here
+                            contentCategory!!,
+                            LoriTuberVibes(0),
+                            LoriTuberVideoContentVibes.VIBE1
+                        )
+                    )
                 }
 
-                actionRow(
-                    loritta.interactivityManager.stringSelectMenu({
-                        placeholder = "Gênero do Vídeo"
+                val viewChannelButton = loritta.interactivityManager.buttonForUser(
+                    user,
+                    ButtonStyle.PRIMARY,
+                    "Voltar",
+                    {
+                        emoji = Emoji.fromUnicode("\uD83C\uDF9E️")
+                    }
+                ) {
+                    command.switchScreen(
+                        CreateVideoBeginningScreen(
+                            command,
+                            user,
+                            it.deferEdit(),
+                            character,
+                            result.channel.id
+                        )
+                    )
+                }
 
-                        for (genre in LoriTuberContentGenre.values()) {
-                            addOption(genre.name, genre.name)
+                hook.editOriginal(
+                    MessageEdit {
+                        embed {
+                            title = "Criação de Vídeos [2/4]"
+
+                            description = buildString {
+                                appendLine("Escolha o conteúdo do vídeo")
+                                appendLine()
+                                appendLine("$contentCategory")
+                                if (contentCategory != null) {
+                                    when (contentCategory) {
+                                        LoriTuberVideoContentCategory.ANIMATION_AND_ART -> {}
+                                        LoriTuberVideoContentCategory.GAMES -> {}
+                                        LoriTuberVideoContentCategory.COMEDY -> {}
+                                        LoriTuberVideoContentCategory.BEAUTY -> {}
+                                        LoriTuberVideoContentCategory.EDUCATION -> {
+                                            appendLine("É a sua chance de usar a fórmula de Bhaskara para alguma coisa útil na sua vida")
+                                        }
+                                        LoriTuberVideoContentCategory.TECHNOLOGY -> {}
+                                        LoriTuberVideoContentCategory.REAL_LIFE -> {}
+                                        LoriTuberVideoContentCategory.DOCUMENTARY -> {}
+                                        LoriTuberVideoContentCategory.FINANCE -> {}
+                                        LoriTuberVideoContentCategory.POLITICS -> {}
+                                    }
+                                }
+                            }
                         }
 
-                        val selectedContentGenre = contentGenre?.name
-                        if (selectedContentGenre != null)
-                            setDefaultValues(selectedContentGenre)
-                    }) { it, values ->
-                        command.switchScreen(
-                            CreateVideoGenreTypeScreen(
-                                command,
-                                user,
-                                it.deferEdit(),
-                                character,
-                                channel.id,
-                                LoriTuberContentGenre.valueOf(values.first()),
-                                contentType,
-                                contentLength
-                            )
+                        actionRow(
+                            loritta.interactivityManager.stringSelectMenu({
+                                placeholder = "Categoria do Vídeo"
+
+                                for (genre in LoriTuberVideoContentCategory.entries) {
+                                    val categoryLevel = result.channel.contentLevels.getOrDefault(genre, 1)
+                                    addOption("${genre.name} [Nível $categoryLevel]", genre.name)
+                                }
+
+                                val selectedContentGenre = contentCategory?.name
+                                if (selectedContentGenre != null)
+                                    setDefaultValues(selectedContentGenre)
+                            }) { it, values ->
+                                command.switchScreen(
+                                    CreateVideoGenreTypeScreen(
+                                        command,
+                                        user,
+                                        it.deferEdit(),
+                                        character,
+                                        result.channel.id,
+                                        LoriTuberVideoContentCategory.valueOf(values.first())
+                                    )
+                                )
+                            }
                         )
+
+                        actionRow(continueButton)
+                        actionRow(viewChannelButton)
                     }
-                )
-
-                actionRow(
-                    loritta.interactivityManager.stringSelectMenu({
-                        placeholder = "Tipo do Vídeo"
-
-                        for (type in LoriTuberContentType.values()) {
-                            addOption(type.name, type.name)
-                        }
-
-                        val selectedContentType = contentType?.name
-                        if (selectedContentType != null)
-                            setDefaultValues(selectedContentType)
-                    }) { it, values ->
-                        command.switchScreen(
-                            CreateVideoGenreTypeScreen(
-                                command,
-                                user,
-                                it.deferEdit(),
-                                character,
-                                channel.id,
-                                contentGenre,
-                                LoriTuberContentType.valueOf(values.first()),
-                                contentLength
-                            )
-                        )
-                    }
-                )
-
-                actionRow(
-                    loritta.interactivityManager.stringSelectMenu({
-                        placeholder = "Duração do Vídeo"
-
-                        for (type in LoriTuberContentLength.values()) {
-                            addOption(type.name, type.name)
-                        }
-
-                        val selectedContentType = contentLength?.name
-                        if (selectedContentType != null)
-                            setDefaultValues(selectedContentType)
-                    }) { it, values ->
-                        command.switchScreen(
-                            CreateVideoGenreTypeScreen(
-                                command,
-                                user,
-                                it.deferEdit(),
-                                character,
-                                channel.id,
-                                contentGenre,
-                                contentType,
-                                LoriTuberContentLength.valueOf(values.first())
-                            )
-                        )
-                    }
-                )
-
-                actionRow(continueButton)
-                actionRow(viewChannelButton)
+                ).setReplace(true).await()
             }
-        ).setReplace(true).await()
+        }
+    }
+
+    sealed class CreateVideoGenreTypeResult {
+        data object UnknownChannel : CreateVideoGenreTypeResult()
+        data class Channel(val channel: LoriTuberChannel) : CreateVideoGenreTypeResult()
     }
 }

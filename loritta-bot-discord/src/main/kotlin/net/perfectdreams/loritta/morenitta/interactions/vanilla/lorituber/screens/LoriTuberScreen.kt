@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.scree
 
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberRequest
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.serializable.lorituber.requests.LoriTuberRPCRequest
 
@@ -17,4 +18,6 @@ sealed class LoriTuberScreen(
     abstract suspend fun render()
 
     suspend fun <T> sendLoriTuberRPCRequest(request: LoriTuberRPCRequest) = command.sendLoriTuberRPCRequest<T>(request)
+
+    suspend inline fun <reified T> sendLoriTuberRPCRequestNew(request: LoriTuberRequest) = command.sendLoriTuberRPCRequestNew<T>(request)
 }

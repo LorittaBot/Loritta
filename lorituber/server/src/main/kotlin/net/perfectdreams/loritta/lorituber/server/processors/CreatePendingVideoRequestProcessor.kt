@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.lorituber.server.processors
 
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberPendingVideos
 import net.perfectdreams.loritta.serializable.lorituber.requests.CreatePendingVideoRequest
-import net.perfectdreams.loritta.serializable.lorituber.requests.StartTaskRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.CreatePendingVideoResponse
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
@@ -26,7 +25,7 @@ class CreatePendingVideoRequestProcessor : LoriTuberRpcProcessor {
             it[LoriTuberPendingVideos.recordingScore] = 0
             it[LoriTuberPendingVideos.editingScore] = 0
             it[LoriTuberPendingVideos.thumbnailScore] = 0
-            it[LoriTuberPendingVideos.percentage] = 0.0
+            it[LoriTuberPendingVideos.renderingProgress] = 0.0
         }
 
         return CreatePendingVideoResponse.Success(

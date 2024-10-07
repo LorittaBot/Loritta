@@ -42,6 +42,7 @@ dependencyResolutionManagement {
             library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
             library("exposed-javatime", "org.jetbrains.exposed", "exposed-java-time").versionRef(exposed)
             library("exposed-dao", "org.jetbrains.exposed", "exposed-dao").versionRef(exposed)
+            library("exposed-json", "org.jetbrains.exposed", "exposed-json").versionRef(exposed)
 
             library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
 
@@ -86,7 +87,8 @@ include(":web:dashboard:backend")
 include(":web:dashboard:spicy-frontend")
 
 // ===[ LORITUBER ]===
-include(":lorituber:server")
+include(":lorituber-rpc")
+include(":lorituber-server")
 
 // ===[ MISC ]===
 include(":temmie-discord-auth")

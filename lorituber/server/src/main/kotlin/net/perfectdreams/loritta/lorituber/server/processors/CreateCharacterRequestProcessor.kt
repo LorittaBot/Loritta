@@ -22,8 +22,8 @@ class CreateCharacterRequestProcessor : LoriTuberRpcProcessor {
             val newCharacter = LoriTuberCharacters.insert {
                 it[LoriTuberCharacters.name] = request.name
                 it[LoriTuberCharacters.owner] = request.ownerId
-                it[LoriTuberCharacters.energy] = 100.0
-                it[LoriTuberCharacters.hunger] = 100.0
+                it[LoriTuberCharacters.energyNeed] = 100.0
+                it[LoriTuberCharacters.hungerNeed] = 100.0
             }
 
             CreateCharacterResponse.Success(

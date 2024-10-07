@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoStage
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberMail
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
@@ -151,6 +152,7 @@ data class GetPendingVideosByChannelResponse(
 ) : LoriTuberRPCResponse {
     @Serializable
     data class PendingVideo(
+        val id: Long,
         val contentGenre: LoriTuberContentGenre,
         val contentType: LoriTuberContentType,
         val contentLength: LoriTuberContentLength,
@@ -158,7 +160,7 @@ data class GetPendingVideosByChannelResponse(
         val recordingScore: Int,
         val editingScore: Int,
         val thumbnailScore: Int,
-        val percentage: Double
+        val currentStage: LoriTuberVideoStage
     )
 }
 
