@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoData
 import java.security.SecureRandom
+import java.util.*
 
 @Serializable
 data class LoriTuberSuperViewerData(
@@ -25,7 +26,7 @@ fun main() {
     // ^ TODO: This is the hard part right now, we need to figure out a way to "nerf" bad videos somehow while rewarding good videos
 
     val video = LoriTuberVideoData(
-        0,
+        UUID.randomUUID(),
         "Loritta is so cute!",
         true,
         0,

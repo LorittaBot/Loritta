@@ -1,38 +1,22 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens
 
-import dev.minn.jda.ktx.messages.MessageEdit
-import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberPendingVideos
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberServerInfos
-import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberVideos
-import net.perfectdreams.loritta.common.lorituber.LoriTuberVideoStage
 import net.perfectdreams.loritta.lorituber.LoriTuberPendingVideo
-import net.perfectdreams.loritta.lorituber.LoriTuberServer
-import net.perfectdreams.loritta.lorituber.ServerInfo
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
+import java.util.*
 
 class ConfirmPendingVideoStageSwitchScreen(
     command: LoriTuberCommand,
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val channelId: Long,
+    val channelId: UUID,
     val pendingVideoId: Long
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
-        if (command.checkMail(user, hook, character, this))
+        /* if (command.checkMail(user, hook, character, this))
             return
 
         val result = loritta.transaction {
@@ -123,7 +107,7 @@ class ConfirmPendingVideoStageSwitchScreen(
                                 .first()
 
                             // The video has been posted (wowzers)
-                            LoriTuberVideos.insert {
+                            /* LoriTuberVideos.insert {
                                 it[LoriTuberVideos.owner] = character.id
                                 it[LoriTuberVideos.channel] = channelId
                                 it[LoriTuberVideos.postedAtTicks] = serverInfo.currentTick
@@ -139,7 +123,7 @@ class ConfirmPendingVideoStageSwitchScreen(
                                 it[LoriTuberVideos.vibe5] = pendingVideoData[LoriTuberPendingVideos.vibe5]
                                 it[LoriTuberVideos.vibe6] = pendingVideoData[LoriTuberPendingVideos.vibe6]
                                 it[LoriTuberVideos.vibe7] = pendingVideoData[LoriTuberPendingVideos.vibe7]
-                            }
+                            } */
 
                             LoriTuberPendingVideos.deleteWhere {
                                 LoriTuberPendingVideos.id eq pendingVideoId
@@ -202,7 +186,7 @@ class ConfirmPendingVideoStageSwitchScreen(
                     }
                 ).setReplace(true).await()
             }
-        }
+        } */
     }
 
     sealed class ViewPendingVideoResult {

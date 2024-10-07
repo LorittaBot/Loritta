@@ -1,19 +1,21 @@
 package net.perfectdreams.loritta.lorituber.server.bhav.behaviors
 
-import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.bhav.UseItemAttributes
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
 import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
-import net.perfectdreams.loritta.lorituber.server.bhav.LoriTuberItemBehavior
+import net.perfectdreams.loritta.lorituber.server.bhav.LotBoundItemBehavior
 import net.perfectdreams.loritta.lorituber.server.state.GameState
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 
-sealed class FoodBehavior : LoriTuberItemBehavior<Nothing?, UseItemAttributes.Food>() {
+sealed class FoodBehavior : LotBoundItemBehavior<Nothing?, UseItemAttributes.Food>() {
     fun menuActionEatFood(
-        actionOption: ItemActionOption.EatFood,
+        actionOption: ObjectActionOption.EatFood,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
@@ -37,39 +39,40 @@ sealed class FoodBehavior : LoriTuberItemBehavior<Nothing?, UseItemAttributes.Fo
 
     override fun tick(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
-        character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: Nothing?,
-        useItemAttributes: UseItemAttributes.Food?
+        characterInteractions: List<CharacterInteraction<UseItemAttributes.Food>>
     ) {
-        println("Ticking food $useItemAttributes")
-        when (useItemAttributes) {
-            is UseItemAttributes.Food.EatingFood -> {
-                val item = LoriTuberItems.getById(selfStack.id)
-                val foodAttributes = item.foodAttributes!!
-                if ((currentTick - useItemAttributes.startedEatingAtTick) > foodAttributes.ticks) {
-                    // Finished eating the item, remove the task!
-                    println("Finished food!")
-                    character.setTask(null)
-                } else {
-                    // We are still eating, nom om om
-                    character.motives.addHunger(foodAttributes.hunger.toDouble())
-                    character.motives.addBladderPerTicks(-100.0, 120)
+        for (activeInteraction in characterInteractions) {
+            when (activeInteraction.useItemAttributes) {
+                is UseItemAttributes.Food.EatingFood -> {
+                    val item = LoriTuberItems.getById(selfStack.id)
+                    val foodAttributes = item.foodAttributes!!
+                    if ((currentTick - activeInteraction.useItemAttributes.startedEatingAtTick) > foodAttributes.ticks) {
+                        // Finished eating the item, remove the task!
+                        println("Finished food!")
+                        activeInteraction.character.setTask(null)
+                    } else {
+                        // We are still eating, nom om om
+                        activeInteraction.character.motives.addHunger(foodAttributes.hunger.toDouble())
+                        activeInteraction.character.motives.addBladderPerTicks(-100.0, 120)
+                    }
                 }
             }
-            null -> {}
         }
     }
 
     override fun actionMenu(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: Nothing?
-    ): List<ItemActionOption> {
-        return listOf(ItemActionOption.EatFood)
+    ): List<ObjectActionOption> {
+        return listOf(ObjectActionOption.EatFood)
     }
 
     data object GenericFood : FoodBehavior()

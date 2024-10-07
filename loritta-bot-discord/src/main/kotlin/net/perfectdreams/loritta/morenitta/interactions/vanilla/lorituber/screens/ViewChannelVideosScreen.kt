@@ -14,14 +14,15 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTu
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.CreateVideoVibesScreen.Companion.VIBES_WRAPPER
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
+import java.util.*
 
 class ViewChannelVideosScreen(
     command: LoriTuberCommand,
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val channelId: Long,
-    val videoId: Long?
+    val channelId: UUID,
+    val videoId: UUID?
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {
         if (command.checkMail(user, hook, character, this))
@@ -159,7 +160,7 @@ class ViewChannelVideosScreen(
                                         context.deferEdit(),
                                         character,
                                         channelId,
-                                        values.first().toLong()
+                                        UUID.fromString(values.first())
                                     )
                                 )
                             }

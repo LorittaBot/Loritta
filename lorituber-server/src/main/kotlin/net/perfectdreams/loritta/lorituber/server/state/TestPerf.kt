@@ -8,12 +8,14 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import net.perfectdreams.loritta.lorituber.LoriTuberVibes
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoData
+import java.util.*
 import kotlin.time.measureTimedValue
 
 fun main() {
+    val uuid = UUID.randomUUID()
     val videos = (0 until 100_000).map {
         LoriTuberVideoData(
-            0,
+            uuid,
             "Loritta is so cute!",
             true,
             0,

@@ -17,7 +17,7 @@ class CreateChannelProcessor(val m: LoriTuberServer) : PacketProcessor<CreateCha
             return CreateChannelResponse.CharacterAlreadyHasTooManyChannels
 
         val channel = LoriTuberChannel(
-            m.gameState.nextChannelId(),
+            m.gameState.generateChannelId(),
             LoriTuberChannelData(
                 request.characterId,
                 0,

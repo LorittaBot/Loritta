@@ -17,13 +17,14 @@ import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalStri
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
+import java.util.*
 
 class ViewPendingVideoScreen(
     command: LoriTuberCommand,
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val channelId: Long,
+    val channelId: UUID,
     val pendingVideoId: Long
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {

@@ -1,9 +1,14 @@
 package net.perfectdreams.loritta.lorituber.rpc.packets
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
+import java.util.*
 
 @Serializable
-data class SetCharacterUsingToiletRequest(val characterId: Long) : LoriTuberRequest()
+data class SetCharacterUsingToiletRequest(
+    @Serializable(UUIDSerializer::class)
+    val characterId: UUID,
+) : LoriTuberRequest()
 
 @Serializable
 data object SetCharacterUsingToiletResponse : LoriTuberResponse()

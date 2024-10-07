@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens
 
-import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.items.LoriTuberGroceryItemData
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
 import net.perfectdreams.loritta.lorituber.rpc.packets.GoToGroceryStoreRequest
 import net.perfectdreams.loritta.lorituber.rpc.packets.GoToGroceryStoreResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.ResultRow
-import java.awt.Color
+import java.util.*
 
 class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: InteractionHook, val character: LoriTuberCommand.PlayerCharacter) : LoriTuberScreen(command, user, hook) {
     companion object {
@@ -20,7 +20,9 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
             command: LoriTuberCommand,
             user: User,
             character: LoriTuberCommand.PlayerCharacter,
+            browseStoreItemsOption: ObjectActionOption.BrowseStoreItems,
             groceryItems: List<LoriTuberGroceryItemData>,
+            itemStoreLocalId: UUID,
             viewingItem: LoriTuberGroceryItemData?
         ): StringSelectMenu {
             val loritta = command.loritta
@@ -41,11 +43,14 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
 
                 if (args[0] == "store_overview") {
                     command.switchScreen(
-                        GroceryStoreScreen(
+                        GroceryStoreItemScreen(
                             command,
                             user,
                             defer,
-                            character
+                            character,
+                            browseStoreItemsOption,
+                            itemStoreLocalId,
+                            null
                         )
                     )
                     return@stringSelectMenuForUser
@@ -57,7 +62,9 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
                         user,
                         defer,
                         character,
-                        args[0]
+                        browseStoreItemsOption,
+                        itemStoreLocalId,
+                        LoriTuberItemId(args[0])
                     )
                 )
             }
@@ -117,7 +124,7 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
             )
         }
 
-        when (result) {
+        /* when (result) {
             is GoToGroceryStoreResponse.Success -> {
                 hook.editOriginal(
                     MessageEdit {
@@ -137,7 +144,8 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
                                 user,
                                 character,
                                 result.items,
-                                null
+                                TODO(),
+                                TODO()
                             )
                         )
 
@@ -162,7 +170,7 @@ class GroceryStoreScreen(command: LoriTuberCommand, user: User, hook: Interactio
                     }
                 ).setReplace(true).await()
             }
-        }
+        } */
     }
 
     sealed class GoToGroceryStoreResult {

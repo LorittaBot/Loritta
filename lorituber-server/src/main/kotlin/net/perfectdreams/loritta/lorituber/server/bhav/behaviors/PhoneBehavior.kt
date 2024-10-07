@@ -1,26 +1,30 @@
 package net.perfectdreams.loritta.lorituber.server.bhav.behaviors
 
 import net.perfectdreams.loritta.lorituber.PhoneCall
-import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.bhav.LoriTuberItemBehaviorAttributes
 import net.perfectdreams.loritta.lorituber.bhav.UseItemAttributes
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
 import net.perfectdreams.loritta.lorituber.server.WorldTime
-import net.perfectdreams.loritta.lorituber.server.bhav.LoriTuberItemBehavior
+import net.perfectdreams.loritta.lorituber.server.bhav.CharacterActionInteraction
+import net.perfectdreams.loritta.lorituber.server.bhav.CharacterBoundItemBehavior
 import net.perfectdreams.loritta.lorituber.server.state.GameState
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 
-sealed class PhoneBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttributes.Phone, UseItemAttributes.Phone>() {
+sealed class PhoneBehavior : CharacterBoundItemBehavior<LoriTuberItemBehaviorAttributes.Phone, UseItemAttributes.Phone>() {
     override fun tick(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
-        character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Phone,
-        useItemAttributes: UseItemAttributes.Phone?
+        character: LoriTuberCharacter,
+        activeInteraction: CharacterActionInteraction<UseItemAttributes.Phone>?
     ) {
+        // TODO: Reimplement this, the issue with the current changes is that there isn't a "owner" for this phone, so we can't get the ticks lived nor the item attributes
         // This is the default behavior "in world" behavior
         val pendingPhoneCallData = behaviorAttributes.pendingPhoneCall
 
@@ -54,18 +58,20 @@ sealed class PhoneBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribut
             }
         }
 
-        when (useItemAttributes) {
-            UseItemAttributes.Phone.DoomscrollingSocialNetwork -> {
-                if (character.motives.isFunFull()) {
-                    // Stop current task when it is full
-                    character.setTask(null)
-                } else {
-                    character.motives.addFunPerTicks(100.0, 240)
+        if (activeInteraction != null) {
+            when (activeInteraction.useItemAttributes) {
+                UseItemAttributes.Phone.DoomscrollingSocialNetwork -> {
+                    if (character.motives.isFunFull()) {
+                        // Stop current task when it is full
+                        character.setTask(null)
+                    } else {
+                        character.motives.addFunPerTicks(100.0, 240)
+                    }
                 }
             }
-            null -> {}
         }
     }
+
 
     /* override fun onCharacterItemUse(
         gameState: GameState,
@@ -97,8 +103,9 @@ sealed class PhoneBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribut
     } */
 
     fun menuActionDoomscrollSocialNetwork(
-        actionOption: ItemActionOption.DoomscrollSocialNetwork,
+        actionOption: ObjectActionOption.DoomscrollSocialNetwork,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
@@ -114,8 +121,9 @@ sealed class PhoneBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribut
     }
 
     fun menuActionAnswerPhone(
-        actionOption: ItemActionOption.AnswerPhone,
+        actionOption: ObjectActionOption.AnswerPhone,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
@@ -141,18 +149,19 @@ sealed class PhoneBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribut
 
     override fun actionMenu(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Phone
-    ): List<ItemActionOption> {
-        val actions = mutableListOf<ItemActionOption>()
+    ): List<ObjectActionOption> {
+        val actions = mutableListOf<ObjectActionOption>()
 
         // TODO: Check if we are sleeping, we don't receive calls when we are sleeping
         if (behaviorAttributes.pendingPhoneCall != null)
-            actions.add(ItemActionOption.AnswerPhone)
+            actions.add(ObjectActionOption.AnswerPhone)
 
-        actions.add(ItemActionOption.DoomscrollSocialNetwork)
+        actions.add(ObjectActionOption.DoomscrollSocialNetwork)
         return actions
     }
 

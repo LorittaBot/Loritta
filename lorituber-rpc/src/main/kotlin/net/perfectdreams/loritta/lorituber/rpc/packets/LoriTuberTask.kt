@@ -33,7 +33,8 @@ sealed class LoriTuberTask {
 
     @Serializable
     class WorkingOnVideo(
-        val channelId: Long,
+        @Serializable(UUIDSerializer::class)
+        val channelId: UUID,
         val pendingVideoId: Long,
         val stage: LoriTuberVideoStage
     ) : LoriTuberTask()

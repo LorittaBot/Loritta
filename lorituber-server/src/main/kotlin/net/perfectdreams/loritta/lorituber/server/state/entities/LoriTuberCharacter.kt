@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.lorituber.server.state.data.PendingPhoneCallDat
 import java.util.*
 
 data class LoriTuberCharacter(
-    val id: Long,
+    val id: UUID,
     val data: LoriTuberCharacterData
 ) : LoriTuberEntity() {
     val motives = CharacterMotives(this)

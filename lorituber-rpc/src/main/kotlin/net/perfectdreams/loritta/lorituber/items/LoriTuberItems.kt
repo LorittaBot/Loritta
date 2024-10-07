@@ -128,6 +128,26 @@ object LoriTuberItems {
         999
     )
 
+    val CHARACTER_PORTAL = register(
+        "character_portal",
+        0
+    )
+
+    val BEACH_OCEAN = register(
+        "beach_ocean",
+        0
+    )
+
+    val DEBUG_MODE = register(
+        "debug_mode",
+        0
+    )
+
+    val ITEM_STORE = register(
+        "item_store",
+        0
+    )
+
     fun register(
         id: String,
         price: Long,

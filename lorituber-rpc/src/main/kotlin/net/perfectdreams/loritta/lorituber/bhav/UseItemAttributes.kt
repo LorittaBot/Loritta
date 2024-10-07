@@ -2,7 +2,9 @@ package net.perfectdreams.loritta.lorituber.bhav
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoStage
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
+import java.util.*
 
 /**
  * Use item attributes are used for "continuous" use of the item
@@ -13,7 +15,8 @@ sealed class UseItemAttributes {
     sealed class Computer : UseItemAttributes() {
         @Serializable
         class WorkOnVideo(
-            val channelId: Long,
+            @Serializable(UUIDSerializer::class)
+            val channelId: UUID,
             val pendingVideoId: Long,
             val stage: LoriTuberVideoStage,
         ) : Computer()
@@ -63,5 +66,11 @@ sealed class UseItemAttributes {
     sealed class Food : UseItemAttributes() {
         @Serializable
         data class EatingFood(val startedEatingAtTick: Long) : Food()
+    }
+
+    @Serializable
+    sealed class BeachOcean : UseItemAttributes() {
+        @Serializable
+        data object InTheOcean : BeachOcean()
     }
 }

@@ -4,6 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.content.*
 import io.ktor.http.*
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.User
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
 import net.perfectdreams.loritta.lorituber.rpc.packets.GetCharactersByOwnerRequest
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberRequest
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberResponse
@@ -24,11 +26,8 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDec
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.CreateCharacterScreen
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.LoriTuberScreen
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.ReceivedMailScreen
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.screens.ViewMotivesScreen
-import net.perfectdreams.loritta.serializable.lorituber.requests.GetMailRequest
 import net.perfectdreams.loritta.serializable.lorituber.requests.LoriTuberRPCRequest
-import net.perfectdreams.loritta.serializable.lorituber.responses.GetMailResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.LoriTuberRPCResponse
 import java.util.*
 
@@ -100,7 +99,7 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
         if (true)
             return false
 
-        val mail = sendLoriTuberRPCRequest<GetMailResponse>(GetMailRequest(character.id))
+        /* val mail = sendLoriTuberRPCRequest<GetMailResponse>(GetMailRequest(character.id))
             .mail
 
         if (mail != null) {
@@ -118,6 +117,7 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
             return true
         }
 
+        return false */
         return false
     }
 
@@ -250,7 +250,8 @@ class LoriTuberCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
     }
 
     data class PlayerCharacter(
-        val id: Long,
+        @Serializable(UUIDSerializer::class)
+        val id: UUID,
         val name: String,
         val hungerNeed: Double,
         val energyNeed: Double,

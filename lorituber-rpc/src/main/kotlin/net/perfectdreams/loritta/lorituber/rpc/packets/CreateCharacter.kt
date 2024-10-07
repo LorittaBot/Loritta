@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.lorituber.rpc.packets
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
+import java.util.*
 
 @Serializable
 data class CreateCharacterRequest(
@@ -13,7 +15,8 @@ data class CreateCharacterRequest(
 sealed class CreateCharacterResponse : LoriTuberResponse() {
     @Serializable
     data class Success(
-        val id: Long,
+        @Serializable(UUIDSerializer::class)
+        val id: UUID,
         val name: String
     ) : CreateCharacterResponse()
 

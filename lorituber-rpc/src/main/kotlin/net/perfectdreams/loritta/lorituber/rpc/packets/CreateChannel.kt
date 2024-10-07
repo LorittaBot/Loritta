@@ -1,10 +1,13 @@
 package net.perfectdreams.loritta.lorituber.rpc.packets
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
+import java.util.*
 
 @Serializable
 data class CreateChannelRequest(
-    val characterId: Long,
+    @Serializable(UUIDSerializer::class)
+    val characterId: UUID,
     val name: String
 ) : LoriTuberRequest()
 
@@ -12,7 +15,8 @@ data class CreateChannelRequest(
 sealed class CreateChannelResponse : LoriTuberResponse() {
     @Serializable
     data class Success(
-        val id: Long,
+        @Serializable(UUIDSerializer::class)
+        val id: UUID,
         val name: String
     ) : CreateChannelResponse()
 

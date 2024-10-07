@@ -12,20 +12,20 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.lorituber.LoriTuberVibes
-import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
-import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentVibes
-import net.perfectdreams.loritta.lorituber.LoriTuberVideoStage
+import net.perfectdreams.loritta.lorituber.*
 import net.perfectdreams.loritta.lorituber.bhav.LoriTuberItemBehaviorAttributes
 import net.perfectdreams.loritta.lorituber.items.LoriTuberGroceryItemData
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
 import net.perfectdreams.loritta.lorituber.recipes.LoriTuberRecipes
 import net.perfectdreams.loritta.lorituber.rpc.packets.*
+import net.perfectdreams.loritta.lorituber.server.bhav.CharacterBoundItemBehavior
 import net.perfectdreams.loritta.lorituber.server.bhav.LoriTuberItemBehaviors
+import net.perfectdreams.loritta.lorituber.server.bhav.LotBoundItemBehavior
 import net.perfectdreams.loritta.lorituber.server.processors.*
 import net.perfectdreams.loritta.lorituber.server.state.GameState
 import net.perfectdreams.loritta.lorituber.server.state.data.*
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberVideo
 import net.perfectdreams.loritta.lorituber.server.state.items.LoriTuberGroceryItem
 import org.jetbrains.exposed.sql.Database
@@ -107,6 +107,64 @@ class LoriTuberServer(
     }
 
     fun start() {
+        // TODO: Remove this (actually just move this somewhere else)
+        gameState.lotsById[SpecialLots.NELSON_GROCERY_STORE] = LoriTuberLot(
+            SpecialLots.NELSON_GROCERY_STORE,
+            LoriTuberLotData(
+                LotType.Community,
+                listOf(
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.ITEM_STORE.id,
+                        1,
+                        null
+                    ),
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.CHARACTER_PORTAL.id,
+                        1,
+                        null
+                    )
+                )
+            )
+        )
+
+        gameState.lotsById[SpecialLots.OUTSIDE] = LoriTuberLot(
+            SpecialLots.OUTSIDE,
+            LoriTuberLotData(
+                LotType.Community,
+                listOf(
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.CHARACTER_PORTAL.id,
+                        1,
+                        null
+                    )
+                )
+            )
+        )
+
+        gameState.lotsById[SpecialLots.STARRY_BEACH] = LoriTuberLot(
+            SpecialLots.STARRY_BEACH,
+            LoriTuberLotData(
+                LotType.Community,
+                listOf(
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.BEACH_OCEAN.id,
+                        1,
+                        null
+                    ),
+                    LoriTuberItemStackData(
+                        UUID.randomUUID(),
+                        LoriTuberItems.CHARACTER_PORTAL.id,
+                        1,
+                        null
+                    )
+                )
+            )
+        )
+
         val bools = listOf(false, true)
 
         for (category in LoriTuberVideoContentCategory.entries) {
@@ -222,7 +280,7 @@ class LoriTuberServer(
                             val videoEvents = mutableMapOf<Long, List<LoriTuberVideoEvent>>()
 
                             val video = LoriTuberVideo(
-                                gameState.nextVideoId(),
+                                gameState.generateVideoId(),
                                 LoriTuberVideoData(
                                     channel.id,
                                     UUID.randomUUID().toString(),
@@ -893,6 +951,7 @@ class LoriTuberServer(
                         tickTrends(currentTick)
                         tickVideos(currentTick)
                         tickCharacters(currentTick)
+                        tickLots(currentTick)
 
                         // This feels a bit wonky but that's what we need to do
                         val finishedUpdateAt = lastUpdate + TICK_DELAY
@@ -955,40 +1014,54 @@ class LoriTuberServer(
 
         for (character in tickableCharacters) {
             logger.info { character.data.firstName }
+            val currentLot = gameState.lotsById[character.data.currentLotId]!!
 
             // TODO: Remove this later!!!
             // Give test items
-            if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_TOILET.id }) {
-                character.data.items.add(
-                    LoriTuberItemStackData(
-                        UUID.randomUUID(),
-                        LoriTuberItems.CHEAP_TOILET.id,
-                        1,
-                        LoriTuberItemBehaviorAttributes.Toilet(0, false, 0)
+            if (false) {
+                if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_TOILET.id }) {
+                    character.data.items.add(
+                        LoriTuberItemStackData(
+                            UUID.randomUUID(),
+                            LoriTuberItems.CHEAP_TOILET.id,
+                            1,
+                            LoriTuberItemBehaviorAttributes.Toilet(0, false, 0)
+                        )
                     )
-                )
-            }
+                }
 
-            if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_BED.id }) {
-                character.data.items.add(
-                    LoriTuberItemStackData(
-                        UUID.randomUUID(),
-                        LoriTuberItems.CHEAP_BED.id,
-                        1,
-                        null
+                if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_BED.id }) {
+                    character.data.items.add(
+                        LoriTuberItemStackData(
+                            UUID.randomUUID(),
+                            LoriTuberItems.CHEAP_BED.id,
+                            1,
+                            null
+                        )
                     )
-                )
-            }
+                }
 
-            if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_FRIDGE.id }) {
-                character.data.items.add(
-                    LoriTuberItemStackData(
-                        UUID.randomUUID(),
-                        LoriTuberItems.CHEAP_FRIDGE.id,
-                        1,
-                        null
+                if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_SHOWER.id }) {
+                    character.data.items.add(
+                        LoriTuberItemStackData(
+                            UUID.randomUUID(),
+                            LoriTuberItems.CHEAP_SHOWER.id,
+                            1,
+                            LoriTuberItemBehaviorAttributes.Shower
+                        )
                     )
-                )
+                }
+
+                if (!character.data.items.any { it.id == LoriTuberItems.CHEAP_FRIDGE.id }) {
+                    character.data.items.add(
+                        LoriTuberItemStackData(
+                            UUID.randomUUID(),
+                            LoriTuberItems.CHEAP_FRIDGE.id,
+                            1,
+                            null
+                        )
+                    )
+                }
             }
 
             when (val task = character.data.currentTask) {
@@ -1258,15 +1331,22 @@ class LoriTuberServer(
                 character.motives.addEnergy(-1.0)
             } */
 
-            // Process items that have custom behavior
+            // Process character bound items that have custom behavior
+            // TODO: Remove this? Objects are now ticked on the lot themselves
             for (item in character.data.items) {
                 val bhav = LoriTuberItemBehaviors.itemToBehaviors[item.id]
 
-                if (bhav != null) {
+                if (bhav != null && bhav is CharacterBoundItemBehavior<*, *>) {
                     logger.info { "Ticking item ${item} with $bhav" }
 
                     // Tick item bhav
-                    bhav.tick(gameState, currentTick, character, item)
+                    bhav.tick(
+                        gameState,
+                        currentLot,
+                        currentTick,
+                        item,
+                        character
+                    )
                 }
             }
 
@@ -1467,7 +1547,50 @@ class LoriTuberServer(
         } */
     }
 
-    fun generateRandomRewardCall(currentTick: Long) {
+    private fun tickLots(currentTick: Long) {
+        logger.info { "Ticking lots..." }
 
+        // TODO: Don't tick inactive lots
+        // TODO: We need to store which characters are active + on the current lot
+        val tickableLots = gameState.lots
+
+        for (lot in tickableLots) {
+            // TODO: Maybe we should store the current characters on a list, because I think this is a bit expensive
+            //   Or maybe as a easy optimization: Store lot ID -> characters OUTSIDE of this loop
+            val activeCharactersOnTheCurrentLot = gameState.characters.filter { it.data.currentLotId == lot.id }
+
+            logger.info { "Active characters on lot ${lot.id}: ${activeCharactersOnTheCurrentLot.size}" }
+
+            for (item in lot.data.items) {
+                val bhav = LoriTuberItemBehaviors.itemToBehaviors[item.id]
+                val characterInteractions = mutableListOf<LotBoundItemBehavior.CharacterInteractionBuilder>()
+
+                if (bhav != null && bhav is LotBoundItemBehavior<*, *>) {
+                    logger.info { "Ticking item $item with $bhav" }
+
+                    val characterInteraction: LotBoundItemBehavior.CharacterInteractionBuilder? = null
+
+                    // From the active characters on this lot, is anyone using this item?
+                    for (character in activeCharactersOnTheCurrentLot) {
+                        val currentUseItemTask = (character.data.currentTask as? LoriTuberTask.UsingItem)
+
+                        if (currentUseItemTask != null && currentUseItemTask.itemLocalId == item.localId) {
+                            // The character is using THIS item!
+                            characterInteractions.add(
+                                LotBoundItemBehavior.CharacterInteractionBuilder(
+                                    character,
+                                    currentUseItemTask
+                                )
+                            )
+                        }
+                    }
+
+                    logger.info { "Ticking item $item with $bhav - Character Interaction: $characterInteraction" }
+
+                    // Tick item bhav
+                    bhav.tick(gameState, lot, currentTick, item, characterInteractions)
+                }
+            }
+        }
     }
 }

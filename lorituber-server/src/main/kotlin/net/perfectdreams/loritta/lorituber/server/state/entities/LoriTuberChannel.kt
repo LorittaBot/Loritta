@@ -3,9 +3,10 @@ package net.perfectdreams.loritta.lorituber.server.state.entities
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberChannelData
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberSuperViewerChannelRelationshipData
+import java.util.*
 
 data class LoriTuberChannel(
-    val id: Long,
+    val id: UUID,
     val data: LoriTuberChannelData
 ) : LoriTuberEntity() {
     fun nextPendingVideoId(): Long {

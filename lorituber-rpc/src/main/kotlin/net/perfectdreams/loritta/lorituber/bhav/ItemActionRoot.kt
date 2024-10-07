@@ -6,5 +6,5 @@ import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 @Serializable
 data class ItemActionRoot(
     val item: LoriTuberItemStackData,
-    val actionOptions: List<ItemActionOption>
+    val actionOptions: List<ObjectActionOption>
 )

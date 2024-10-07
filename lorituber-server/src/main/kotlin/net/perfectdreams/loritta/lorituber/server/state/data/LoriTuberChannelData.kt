@@ -2,10 +2,13 @@ package net.perfectdreams.loritta.lorituber.server.state.data
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.lorituber.LoriTuberVideoContentCategory
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
+import java.util.*
 
 @Serializable
 data class LoriTuberChannelData(
-    var characterId: Long,
+    @Serializable(UUIDSerializer::class)
+    var characterId: UUID,
     var pendingVideoCounter: Long,
     var name: String,
     val pendingVideos: MutableList<LoriTuberPendingVideoData>,

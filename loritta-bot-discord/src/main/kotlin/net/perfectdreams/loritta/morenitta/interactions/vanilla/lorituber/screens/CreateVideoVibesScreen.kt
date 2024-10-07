@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
+import java.util.*
 import kotlin.math.absoluteValue
 
 class CreateVideoVibesScreen(
@@ -20,7 +21,7 @@ class CreateVideoVibesScreen(
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val channelId: Long,
+    val channelId: UUID,
     private val contentCategory: LoriTuberVideoContentCategory,
     private val contentVibes: LoriTuberVibes,
     private val editingVibe: LoriTuberVideoContentVibes,

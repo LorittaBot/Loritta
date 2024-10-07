@@ -1,10 +1,15 @@
 package net.perfectdreams.loritta.lorituber.rpc.packets
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
 import net.perfectdreams.loritta.lorituber.items.LoriTuberGroceryItemData
+import java.util.*
 
 @Serializable
-data class GoToGroceryStoreRequest(val characterId: Long) : LoriTuberRequest()
+data class GoToGroceryStoreRequest(
+    @Serializable(UUIDSerializer::class)
+    val characterId: UUID,
+) : LoriTuberRequest()
 
 @Serializable
 sealed class GoToGroceryStoreResponse : LoriTuberResponse() {

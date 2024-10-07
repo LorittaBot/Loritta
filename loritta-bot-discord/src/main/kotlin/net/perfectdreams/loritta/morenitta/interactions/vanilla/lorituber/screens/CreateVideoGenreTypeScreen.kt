@@ -13,13 +13,14 @@ import net.perfectdreams.loritta.lorituber.rpc.packets.GetChannelByIdResponse
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
+import java.util.*
 
 class CreateVideoGenreTypeScreen(
     command: LoriTuberCommand,
     user: User,
     hook: InteractionHook,
     val character: LoriTuberCommand.PlayerCharacter,
-    val channelId: Long,
+    val channelId: UUID,
     private val contentCategory: LoriTuberVideoContentCategory?,
 ) : LoriTuberScreen(command, user, hook) {
     override suspend fun render() {

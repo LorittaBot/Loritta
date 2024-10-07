@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
 import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemRequest
 import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
@@ -118,7 +118,7 @@ class PrepareFoodScreen(
                                 CharacterUseItemRequest(
                                     character.id,
                                     fridgeLocalId,
-                                    ItemActionOption.PrepareFood(selectedItems)
+                                    ObjectActionOption.PrepareFood(selectedItems)
                                 )
                             )
 

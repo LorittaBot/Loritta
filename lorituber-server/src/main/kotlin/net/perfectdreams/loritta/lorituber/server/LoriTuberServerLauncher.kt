@@ -15,8 +15,10 @@ import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharac
 import net.perfectdreams.loritta.lorituber.server.state.WorldInfo
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberChannelData
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberCharacterData
+import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberLotData
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberVideoData
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberChannel
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberVideo
 import net.perfectdreams.loritta.lorituber.server.state.items.LoriTuberGroceryItem
 import net.perfectdreams.loritta.lorituber.server.tables.*
@@ -67,7 +69,8 @@ object LoriTuberServerLauncher {
                 LoriTuberVideos,
                 LoriTuberCharacters,
                 LoriTuberChannels,
-                LoriTuberGroceryStores
+                LoriTuberGroceryStores,
+                LoriTuberLots
             )
         }
 
@@ -111,6 +114,14 @@ object LoriTuberServerLauncher {
                     )
                 }
 
+            val lots = LoriTuberLots.selectAll()
+                .map {
+                    LoriTuberLot(
+                        it[LoriTuberLots.id],
+                        ProtoBuf.decodeFromByteArray<LoriTuberLotData>(it[LoriTuberLots.data].bytes)
+                    )
+                }
+
             val nelsonGroceryStore = LoriTuberGroceryStores.selectAll()
                 .where {
                     LoriTuberGroceryStores.shop eq "lorituber:nelson_grocery_store"
@@ -135,28 +146,28 @@ object LoriTuberServerLauncher {
                     ProtoBuf.decodeFromByteArray<WorldInfo>(it.bytes)
                 } ?: WorldInfo(
                     -1,
-                    System.currentTimeMillis(),
-                    0,
-                    0,
-                    0,
-                    0,
+                    System.currentTimeMillis()
                 ),
-                HashMap<Long, LoriTuberCharacter>(characters.size).apply {
+                HashMap<UUID, LoriTuberCharacter>(characters.size).apply {
                     for (entity in characters) {
                         put(entity.id, entity)
                     }
                 },
-                HashMap<Long, LoriTuberChannel>(channels.size).apply {
+                HashMap<UUID, LoriTuberChannel>(channels.size).apply {
                     for (entity in channels) {
                         put(entity.id, entity)
                     }
                 },
-                HashMap<Long, LoriTuberVideo>(videos.size).apply {
+                HashMap<UUID, LoriTuberVideo>(videos.size).apply {
                     for (entity in videos) {
                         put(entity.id, entity)
                     }
                 },
-                TODO(),
+                HashMap<UUID, LoriTuberLot>(lots.size).apply {
+                    for (entity in lots) {
+                        put(entity.id, entity)
+                    }
+                },
                 EnumMap(LoriTuberVideoContentCategory::class.java),
                 EnumMap(LoriTuberVideoContentCategory::class.java),
                 nelsonGroceryStore,

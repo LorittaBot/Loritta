@@ -2,9 +2,14 @@ package net.perfectdreams.loritta.lorituber.rpc.packets
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.lorituber.PhoneCall
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
+import java.util.*
 
 @Serializable
-data class AnswerPhoneRequest(val characterId: Long) : LoriTuberRequest()
+data class AnswerPhoneRequest(
+    @Serializable(UUIDSerializer::class)
+    val characterId: UUID
+) : LoriTuberRequest()
 
 @Serializable
 sealed class AnswerPhoneResponse : LoriTuberResponse() {

@@ -1,27 +1,32 @@
 package net.perfectdreams.loritta.lorituber.server.bhav.behaviors
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.bhav.LoriTuberItemBehaviorAttributes
 import net.perfectdreams.loritta.lorituber.bhav.UseItemAttributes
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
-import net.perfectdreams.loritta.lorituber.server.bhav.LoriTuberItemBehavior
+import net.perfectdreams.loritta.lorituber.server.bhav.LotBoundItemBehavior
 import net.perfectdreams.loritta.lorituber.server.state.GameState
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 
-sealed class ToiletBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttributes.Toilet, UseItemAttributes.Toilet>() {
+sealed class ToiletBehavior : LotBoundItemBehavior<LoriTuberItemBehaviorAttributes.Toilet, UseItemAttributes.Toilet>() {
     private val logger = KotlinLogging.logger {}
 
     fun menuActionUseToilet(
-        actionOption: ItemActionOption.UseToilet,
+        actionOption: ObjectActionOption.UseToilet,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Toilet
     ): CharacterUseItemResponse.Success.NoAction {
+        if (isSomeoneUsingThisItemThatIsNotMe(gameState, currentLot, selfStack, character))
+            CharacterUseItemResponse.AnotherCharacterIsAlreadyUsingThisItem
+
         character.data.currentTask = LoriTuberTask.UsingItem(
             selfStack.localId,
             UseItemAttributes.Toilet.UsingToilet
@@ -32,8 +37,9 @@ sealed class ToiletBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribu
     }
 
     fun menuActionUnclogToilet(
-        actionOption: ItemActionOption.UnclogToilet,
+        actionOption: ObjectActionOption.UnclogToilet,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
@@ -42,6 +48,9 @@ sealed class ToiletBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribu
         // Well, it isn't clogged, so just ignore!
         if (!behaviorAttributes.isClogged)
             return CharacterUseItemResponse.Success.NoAction
+
+        if (isSomeoneUsingThisItemThatIsNotMe(gameState, currentLot, selfStack, character))
+            CharacterUseItemResponse.AnotherCharacterIsAlreadyUsingThisItem
 
         character.data.currentTask = LoriTuberTask.UsingItem(
             selfStack.localId,
@@ -54,54 +63,59 @@ sealed class ToiletBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribu
 
     override fun tick(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
-        character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Toilet,
-        useItemAttributes: UseItemAttributes.Toilet?
+        characterInteractions: List<CharacterInteraction<UseItemAttributes.Toilet>>
     ) {
-        when (useItemAttributes) {
-            UseItemAttributes.Toilet.UncloggingToilet -> {
-                if (!behaviorAttributes.isClogged) {
-                    character.setTask(null)
-                    return
+        for (activeInteraction in characterInteractions) {
+            val useItemAttributes = activeInteraction.useItemAttributes
+
+            when (useItemAttributes) {
+                UseItemAttributes.Toilet.UncloggingToilet -> {
+                    if (!behaviorAttributes.isClogged) {
+                        activeInteraction.character.setTask(null)
+                        return
+                    }
+
+                    behaviorAttributes.unclogTicks--
+
+                    if (behaviorAttributes.unclogTicks == 0L) {
+                        activeInteraction.character.setTask(null)
+                        behaviorAttributes.ticksUsedSinceLastUnclog = 0
+                        behaviorAttributes.isClogged = false
+                    }
                 }
 
-                behaviorAttributes.unclogTicks--
+                UseItemAttributes.Toilet.UsingToilet -> {
+                    behaviorAttributes.ticksUsedSinceLastUnclog++
+                    activeInteraction.character.motives.addBladderPerTicks(100.0, 15)
 
-                if (behaviorAttributes.unclogTicks == 0L) {
-                    character.setTask(null)
-                    behaviorAttributes.ticksUsedSinceLastUnclog = 0
-                    behaviorAttributes.isClogged = false
+                    if (activeInteraction.character.motives.bladder >= 100.0) {
+                        activeInteraction.character.setTask(null)
+
+                        // TODO: Move this to a "cancelAction" function
+                        behaviorAttributes.isClogged = true
+                        behaviorAttributes.unclogTicks = 15
+                    }
                 }
             }
-            UseItemAttributes.Toilet.UsingToilet -> {
-                behaviorAttributes.ticksUsedSinceLastUnclog++
-                character.motives.addBladderPerTicks(100.0, 15)
-
-                if (character.motives.bladder >= 100.0) {
-                    character.setTask(null)
-
-                    // TODO: Move this to a "cancelAction" function
-                    behaviorAttributes.isClogged = true
-                    behaviorAttributes.unclogTicks = 15
-                }
-            }
-            null -> {}
         }
     }
 
     override fun actionMenu(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Toilet
-    ): List<ItemActionOption> {
+    ): List<ObjectActionOption> {
         return if (behaviorAttributes.isClogged) {
-            listOf(ItemActionOption.UnclogToilet)
+            listOf(ObjectActionOption.UnclogToilet)
         } else {
-            listOf(ItemActionOption.UseToilet)
+            listOf(ObjectActionOption.UseToilet)
         }
     }
 

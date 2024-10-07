@@ -9,9 +9,12 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.lorituber.LoriTuberUtils
+import net.perfectdreams.loritta.lorituber.LotType
+import net.perfectdreams.loritta.lorituber.SpecialLots
 import net.perfectdreams.loritta.lorituber.WorldTime
-import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.bhav.UseItemAttributes
+import net.perfectdreams.loritta.lorituber.items.LoriTuberItemId
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
 import net.perfectdreams.loritta.lorituber.recipes.LoriTuberRecipes
 import net.perfectdreams.loritta.lorituber.rpc.packets.*
@@ -32,6 +35,8 @@ class ViewMotivesScreen(
         if (command.checkMail(user, hook, character, this))
             return
 
+        // The "View Motives" request is the entrypoint to the game itself
+        // It returns information of the selected character, including motives, current lot, etc
         val characterStatus = sendLoriTuberRPCRequestNew<ViewCharacterMotivesResponse>(ViewCharacterMotivesRequest(character.id))
 
         /* val characterStatus = loritta.transaction {
@@ -226,7 +231,7 @@ class ViewMotivesScreen(
             }
         }
 
-        val goToComputerPartsShop = loritta.interactivityManager.buttonForUser(
+        /* val goToComputerPartsShop = loritta.interactivityManager.buttonForUser(
             user,
             ButtonStyle.PRIMARY,
             "Ir para a SparkBytes",
@@ -260,7 +265,7 @@ class ViewMotivesScreen(
                     character
                 )
             )
-        }
+        } */
 
         val debugMenu = loritta.interactivityManager.buttonForUser(
             user,
@@ -540,9 +545,12 @@ class ViewMotivesScreen(
         } */
 
         val itemActions = characterStatus.itemActions.map { itemActionRoot ->
+            val fancyObjectName = getFancyObjectName(itemActionRoot.item.id)
+
             val actionButton = UnleashedButton.of(
                 ButtonStyle.PRIMARY,
-                "${itemActionRoot.item.id.id}..."
+                "${fancyObjectName.label}...",
+                fancyObjectName.emoji
             )
 
             if (itemActionRoot.actionOptions.isNotEmpty()) {
@@ -571,24 +579,62 @@ class ViewMotivesScreen(
                             buttons.add(
                                 loritta.interactivityManager.buttonForUser(
                                     user,
-                                    ButtonStyle.PRIMARY,
+                                    ButtonStyle.SUCCESS,
                                     when (actionOption) {
-                                        ItemActionOption.PlayOnSparklyPower -> "Jogar no SparklyPower"
-                                        ItemActionOption.AnswerPhone -> "Atender"
-                                        ItemActionOption.UnclogToilet ->  "Desentupir"
-                                        ItemActionOption.UseToilet -> "Usar"
-                                        ItemActionOption.TakeAShower -> "Tomar Banho"
-                                        ItemActionOption.Sleep -> "Dormir"
-                                        ItemActionOption.DoomscrollSocialNetwork -> "Ficar vendo TikkerTokkerson"
-                                        ItemActionOption.PrepareFoodMenu -> "Preparar Comida"
-                                        ItemActionOption.EatFoodMenu -> "Comer"
+                                        ObjectActionOption.PlayOnSparklyPower -> "Jogar no SparklyPower"
+                                        ObjectActionOption.AnswerPhone -> "Atender"
+                                        ObjectActionOption.UnclogToilet ->  "Desentupir"
+                                        ObjectActionOption.UseToilet -> "Usar"
+                                        ObjectActionOption.TakeAShower -> "Tomar Banho"
+                                        ObjectActionOption.Sleep -> "Dormir"
+                                        ObjectActionOption.DoomscrollSocialNetwork -> "Ficar vendo TikkerTokkerson"
+                                        ObjectActionOption.PrepareFoodMenu -> "Preparar Comida"
+                                        ObjectActionOption.EatFoodMenu -> "Comer"
 
-                                        // Unused as a pie menu action
-                                        ItemActionOption.EatFood -> "Comer"
-                                        is ItemActionOption.PrepareFood -> "Preparar Comida"
+                                        ObjectActionOption.Give1000Sonhos -> "Adicionar 1k Sonhos"
+                                        ObjectActionOption.ViewCurrentLotInfo -> "Ver informações sobre o lote atual"
+
+                                        ObjectActionOption.GoBackToHome -> "Ir para Casa"
+                                        ObjectActionOption.GoIntoTheSea -> "Entrar no Mar"
+                                        ObjectActionOption.GoOutside -> "Sair para a Rua"
+                                        ObjectActionOption.GoToNelsonGroceryStore -> "Ir para a Mercearia do Nelson"
+                                        ObjectActionOption.GoToStarryBeach -> "Ir para a Praia Estrelada"
+                                        ObjectActionOption.BrowseStoreItems -> "Ver Produtos"
+
+                                        // These are unused as pie menus
+                                        ObjectActionOption.EatFood -> "## Comer"
+                                        is ObjectActionOption.PrepareFood -> "## Preparar Comida"
+                                        is ObjectActionOption.BuyStoreItem -> "## Comprar Item"
                                     }
                                 ) { context ->
                                     val hook = context.deferEdit()
+
+                                    when (actionOption) {
+                                        is ObjectActionOption.GenericOption -> {
+                                            // Pass it over to something else
+                                        }
+                                        is ObjectActionOption.SpecialFeedbackOption -> {
+                                            when (actionOption) {
+                                                ObjectActionOption.AnswerPhone -> TODO()
+                                            }
+                                        }
+                                    }
+
+                                    // SPECIAL HANDLING OF SOME OF THE ACTIONS
+                                    if (actionOption is ObjectActionOption.BrowseStoreItems) {
+                                        command.switchScreen(
+                                            GroceryStoreItemScreen(
+                                                command,
+                                                user,
+                                                hook,
+                                                character,
+                                                actionOption,
+                                                itemActionRoot.item.localId,
+                                                null
+                                            )
+                                        )
+                                        return@buttonForUser
+                                    }
 
                                     val response = sendLoriTuberRPCRequestNew<CharacterUseItemResponse>(
                                         CharacterUseItemRequest(
@@ -640,6 +686,36 @@ class ViewMotivesScreen(
                                             )
                                         }
                                         CharacterUseItemResponse.UnknownLocalItem -> TODO()
+                                        CharacterUseItemResponse.AnotherCharacterIsAlreadyUsingThisItem -> {
+                                            context.reply(true) {
+                                                styled(
+                                                    "Já tem outra pessoa usando este item!"
+                                                )
+                                            }
+                                        }
+
+                                        is CharacterUseItemResponse.Success.DebugMode.LotInfo -> {
+                                            context.reply(true) {
+                                                embed {
+                                                    title = "Lote ${response.id}"
+
+                                                    field(
+                                                        "Tipo do Lote",
+                                                        when (val lotType = response.lotType) {
+                                                            LotType.Community -> "Comunitário"
+                                                            is LotType.Residential -> "Residencial (Dono: ${lotType.ownerId})"
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        is CharacterUseItemResponse.Success.ItemStore.BrowseItems.Success -> TODO()
+                                        CharacterUseItemResponse.Success.ItemStore.BrowseItems.Closed -> TODO()
+                                        CharacterUseItemResponse.Success.ItemStore.BuyItem.Success -> TODO()
+                                        CharacterUseItemResponse.Success.ItemStore.BuyItem.Closed -> TODO()
+                                        CharacterUseItemResponse.Success.ItemStore.BuyItem.NotEnoughSonhos -> TODO()
+                                        CharacterUseItemResponse.Success.ItemStore.BuyItem.NotInStock -> TODO()
                                     }
                                 }
                             )
@@ -681,6 +757,7 @@ class ViewMotivesScreen(
                                     UseItemAttributes.Shower.TakingAShower -> "Tomando Banho"
                                     UseItemAttributes.Bed.Sleeping -> "Dormindo"
                                     UseItemAttributes.Phone.DoomscrollingSocialNetwork -> "Usando o Celular (Vendo Tikker&Tokkersons)"
+                                    UseItemAttributes.BeachOcean.InTheOcean -> "Dentro do Mar"
                                     is UseItemAttributes.Fridge.PreparingFood -> "Preparando Comida"
                                     is UseItemAttributes.Food.EatingFood -> "Comendo Comida (Item: ${itemRelatedToThisTask.id}; itemLocalId: ${task.itemLocalId})"
                                 }
@@ -840,6 +917,17 @@ class ViewMotivesScreen(
                     color = easeColors(LoriTuberUtils.FULLY_HAPPY, LoriTuberUtils.FULLY_SAD, moodColorProgress.toFloat()).rgb
 
                     image = "https://cdn.discordapp.com/attachments/739823666891849729/1285683692311806000/lorituber_yourhome.png?ex=66eb29bf&is=66e9d83f&hm=bc5caca9fb96aae04173f08abb908f5d6e515217a4d97e95cc4743624452afe6&"
+
+                    footer(
+                        buildString {
+                            append("Lot ID: ${characterStatus.currentLotId}")
+                            when (characterStatus.currentLotId) {
+                                SpecialLots.NELSON_GROCERY_STORE -> append(" (Mercearia do Nelson)")
+                                SpecialLots.OUTSIDE -> append(" (Fora de Casa)")
+                                SpecialLots.STARRY_BEACH -> append(" (Praia Estrelada)")
+                            }
+                        }
+                    )
                 }
 
                 // TODO: Readd this
@@ -899,10 +987,60 @@ class ViewMotivesScreen(
                     actionRow(it)
                 }
 
-                actionRow(goToComputerPartsShop, goToGroceryStore)
+                // TODO: Also remove this
+                // actionRow(goToComputerPartsShop, goToGroceryStore)
                 actionRow(refresh, resetMotives, resetMotivesDown, debugMenu, closeSession)
             }
         ).await()
+    }
+
+    private fun getFancyObjectName(item: LoriTuberItemId): ObjectLabelWithEmoji {
+        return when (item) {
+            LoriTuberItems.CHEAP_BED.id -> ObjectLabelWithEmoji(
+                "Cama",
+                Emoji.fromUnicode("\uD83D\uDECF\uFE0F")
+            )
+            LoriTuberItems.CHEAP_FRIDGE.id -> ObjectLabelWithEmoji(
+                "Geladeira",
+                Emoji.fromUnicode("\uD83C\uDF54")
+            )
+            LoriTuberItems.COMPUTER.id -> ObjectLabelWithEmoji(
+                "Computador",
+                Emoji.fromUnicode("\uD83D\uDCBB")
+            )
+            LoriTuberItems.DEBUG_MODE.id -> ObjectLabelWithEmoji(
+                "Debug",
+                Emoji.fromUnicode("\uD83D\uDC40")
+            )
+            LoriTuberItems.PHONE.id -> ObjectLabelWithEmoji(
+                "Celular",
+                Emoji.fromUnicode("\uD83D\uDCF1")
+            )
+            LoriTuberItems.CHEAP_TOILET.id -> ObjectLabelWithEmoji(
+                "Privada",
+                Emoji.fromUnicode("\uD83D\uDEBD")
+            )
+            LoriTuberItems.CHEAP_SHOWER.id -> ObjectLabelWithEmoji(
+                "Chuveiro",
+                Emoji.fromUnicode("\uD83D\uDEBF")
+            )
+            LoriTuberItems.CHARACTER_PORTAL.id -> ObjectLabelWithEmoji(
+                "Ir para",
+                Emoji.fromUnicode("\uD83D\uDC3E")
+            )
+            LoriTuberItems.BEACH_OCEAN.id -> ObjectLabelWithEmoji(
+                "Mar da Praia",
+                Emoji.fromUnicode("\uD83C\uDF0A")
+            )
+            LoriTuberItems.ITEM_STORE.id -> ObjectLabelWithEmoji(
+                "Loja de Produtos",
+                Emoji.fromUnicode("\uD83C\uDFEA")
+            )
+            else -> ObjectLabelWithEmoji(
+                item.id,
+                null
+            )
+        }
     }
 
     private fun easeColors(startColor: Color, endColor: Color, percent: Float): Color {
@@ -925,5 +1063,10 @@ class ViewMotivesScreen(
         val previousHygieneNeed: Double,
         val previousBladderNeed: Double,
         val previousSocialNeed: Double
+    )
+
+    data class ObjectLabelWithEmoji(
+        val label: String,
+        val emoji: Emoji?
     )
 }

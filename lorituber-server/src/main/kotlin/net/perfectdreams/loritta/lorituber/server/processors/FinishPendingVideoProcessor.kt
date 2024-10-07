@@ -40,7 +40,7 @@ class FinishPendingVideoProcessor(val m: LoriTuberServer) : PacketProcessor<Fini
         val comments = mutableListOf<LoriTuberVideoCommentData>()
 
         val video = LoriTuberVideo(
-            m.gameState.nextVideoId(),
+            m.gameState.generateVideoId(),
             LoriTuberVideoData(
                 channel.id,
                 request.videoTitle,

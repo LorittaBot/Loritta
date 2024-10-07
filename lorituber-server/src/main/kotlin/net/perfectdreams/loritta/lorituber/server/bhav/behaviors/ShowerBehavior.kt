@@ -1,27 +1,32 @@
 package net.perfectdreams.loritta.lorituber.server.bhav.behaviors
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.bhav.LoriTuberItemBehaviorAttributes
 import net.perfectdreams.loritta.lorituber.bhav.UseItemAttributes
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
-import net.perfectdreams.loritta.lorituber.server.bhav.LoriTuberItemBehavior
+import net.perfectdreams.loritta.lorituber.server.bhav.LotBoundItemBehavior
 import net.perfectdreams.loritta.lorituber.server.state.GameState
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 
-sealed class ShowerBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttributes.Shower, UseItemAttributes.Shower>() {
+sealed class ShowerBehavior : LotBoundItemBehavior<LoriTuberItemBehaviorAttributes.Shower, UseItemAttributes.Shower>() {
     private val logger = KotlinLogging.logger {}
 
     fun menuActionTakeAShower(
-        actionOption: ItemActionOption.TakeAShower,
+        actionOption: ObjectActionOption.TakeAShower,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Shower
     ): CharacterUseItemResponse.Success.NoAction {
+        if (isSomeoneUsingThisItemThatIsNotMe(gameState, currentLot, selfStack, character))
+            CharacterUseItemResponse.AnotherCharacterIsAlreadyUsingThisItem
+
         character.data.currentTask = LoriTuberTask.UsingItem(
             selfStack.localId,
             UseItemAttributes.Shower.TakingAShower
@@ -33,31 +38,34 @@ sealed class ShowerBehavior : LoriTuberItemBehavior<LoriTuberItemBehaviorAttribu
 
     override fun tick(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
-        character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Shower,
-        useItemAttributes: UseItemAttributes.Shower?
+        characterInteractions: List<CharacterInteraction<UseItemAttributes.Shower>>
     ) {
-        when (useItemAttributes) {
-            UseItemAttributes.Shower.TakingAShower -> {
-                character.motives.addHygienePerTicks(100.0, 20)
+        for (activeInteraction in characterInteractions) {
+            val useItemAttributes = activeInteraction.useItemAttributes
+            when (useItemAttributes) {
+                UseItemAttributes.Shower.TakingAShower -> {
+                    activeInteraction.character.motives.addHygienePerTicks(100.0, 20)
 
-                if (character.motives.hygiene >= 100.0)
-                    character.setTask(null)
+                    if (activeInteraction.character.motives.hygiene >= 100.0)
+                        activeInteraction.character.setTask(null)
+                }
             }
-            null -> {}
         }
     }
 
     override fun actionMenu(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: LoriTuberItemBehaviorAttributes.Shower
-    ): List<ItemActionOption> {
-        return listOf(ItemActionOption.TakeAShower)
+    ): List<ObjectActionOption> {
+        return listOf(ObjectActionOption.TakeAShower)
     }
 
     data object CheapShower : ShowerBehavior()

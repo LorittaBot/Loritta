@@ -1,21 +1,23 @@
 package net.perfectdreams.loritta.lorituber.server.bhav.behaviors
 
-import net.perfectdreams.loritta.lorituber.bhav.ItemActionOption
+import net.perfectdreams.loritta.lorituber.bhav.ObjectActionOption
 import net.perfectdreams.loritta.lorituber.bhav.UseItemAttributes
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItemStackData
 import net.perfectdreams.loritta.lorituber.items.LoriTuberItems
 import net.perfectdreams.loritta.lorituber.recipes.LoriTuberRecipes
 import net.perfectdreams.loritta.lorituber.rpc.packets.CharacterUseItemResponse
 import net.perfectdreams.loritta.lorituber.rpc.packets.LoriTuberTask
-import net.perfectdreams.loritta.lorituber.server.bhav.LoriTuberItemBehavior
+import net.perfectdreams.loritta.lorituber.server.bhav.LotBoundItemBehavior
 import net.perfectdreams.loritta.lorituber.server.state.GameState
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 import net.perfectdreams.loritta.lorituber.server.state.items.toItem
 
-sealed class FridgeBehavior : LoriTuberItemBehavior<Nothing?, UseItemAttributes.Fridge>() {
+sealed class FridgeBehavior : LotBoundItemBehavior<Nothing?, UseItemAttributes.Fridge>() {
     fun menuActionPrepareFoodMenu(
-        actionOption: ItemActionOption.PrepareFoodMenu,
+        actionOption: ObjectActionOption.PrepareFoodMenu,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
@@ -25,8 +27,9 @@ sealed class FridgeBehavior : LoriTuberItemBehavior<Nothing?, UseItemAttributes.
     }
 
     fun menuActionPrepareFood(
-        actionOption: ItemActionOption.PrepareFood,
+        actionOption: ObjectActionOption.PrepareFood,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
@@ -49,8 +52,9 @@ sealed class FridgeBehavior : LoriTuberItemBehavior<Nothing?, UseItemAttributes.
 
     // Technically this ain't the food themselves
     fun menuActionEatFoodMenu(
-        actionOption: ItemActionOption.EatFoodMenu,
+        actionOption: ObjectActionOption.EatFoodMenu,
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
@@ -77,58 +81,62 @@ sealed class FridgeBehavior : LoriTuberItemBehavior<Nothing?, UseItemAttributes.
 
     override fun tick(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
-        character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: Nothing?,
-        useItemAttributes: UseItemAttributes.Fridge?
+        characterInteractions: List<CharacterInteraction<UseItemAttributes.Fridge>>
     ) {
-        when (useItemAttributes) {
-            is UseItemAttributes.Fridge.PreparingFood -> {
-                val recipe = useItemAttributes.recipeId?.let { LoriTuberRecipes.getById(it) }
-                val targetItem = recipe?.targetItemId?.let { LoriTuberItems.getById(it) } ?: LoriTuberItems.SLOP
+        for (activeInteraction in characterInteractions) {
+            when (activeInteraction.useItemAttributes) {
+                is UseItemAttributes.Fridge.PreparingFood -> {
+                    val recipe = activeInteraction.useItemAttributes.recipeId?.let { LoriTuberRecipes.getById(it) }
+                    val targetItem = recipe?.targetItemId?.let { LoriTuberItems.getById(it) } ?: LoriTuberItems.SLOP
 
-                val ticks = recipe?.ticks ?: 20 // Slop
+                    val ticks = recipe?.ticks ?: 20 // Slop
 
-                if ((currentTick - useItemAttributes.startedPreparingAtTick) > ticks) {
-                    // Finished eating the item, remove the task!
-                    println("Finished preparing food!")
+                    if ((currentTick - activeInteraction.useItemAttributes.startedPreparingAtTick) > ticks) {
+                        // Finished eating the item, remove the task!
+                        println("Finished preparing food!")
 
-                    // Remove the items from the inventory if the user has them
-                    val itemsFromTheUserInventory = character.data.items.filter { it.id in useItemAttributes.items }
+                        // Remove the items from the inventory if the user has them
+                        val itemsFromTheUserInventory =
+                            activeInteraction.character.data.items.filter { it.id in activeInteraction.useItemAttributes.items }
 
-                    val hasEnoughItems = character.inventory.containsItems(useItemAttributes.items)
+                        val hasEnoughItems =
+                            activeInteraction.character.inventory.containsItems(activeInteraction.useItemAttributes.items)
 
-                    if (!hasEnoughItems) {
-                        // We don't have enough items! Just reset the task and bail out!
-                        character.setTask(null)
-                    } else {
-                        for (item in itemsFromTheUserInventory) {
-                            character.inventory.removeSingleItem(item.id)
+                        if (!hasEnoughItems) {
+                            // We don't have enough items! Just reset the task and bail out!
+                            activeInteraction.character.setTask(null)
+                        } else {
+                            for (item in itemsFromTheUserInventory) {
+                                activeInteraction.character.inventory.removeSingleItem(item.id)
+                            }
+
+                            // Add the new item to their inventory
+                            activeInteraction.character.inventory.addItem(targetItem, 1)
+
+                            // Update the task to null
+                            activeInteraction.character.setTask(null)
                         }
-
-                        // Add the new item to their inventory
-                        character.inventory.addItem(targetItem, 1)
-
-                        // Update the task to null
-                        character.setTask(null)
+                    } else {
+                        // We are still preparing, do nothing
                     }
-                } else {
-                    // We are still preparing, do nothing
                 }
             }
-            null -> {}
         }
     }
 
     override fun actionMenu(
         gameState: GameState,
+        currentLot: LoriTuberLot,
         currentTick: Long,
         character: LoriTuberCharacter,
         selfStack: LoriTuberItemStackData,
         behaviorAttributes: Nothing?
-    ): List<ItemActionOption> {
-        return listOf(ItemActionOption.EatFoodMenu, ItemActionOption.PrepareFoodMenu)
+    ): List<ObjectActionOption> {
+        return listOf(ObjectActionOption.EatFoodMenu, ObjectActionOption.PrepareFoodMenu)
     }
 
     data object CheapFridge : FridgeBehavior()

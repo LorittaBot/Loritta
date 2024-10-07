@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.lorituber.server.WorldTime
 import net.perfectdreams.loritta.lorituber.server.state.data.LoriTuberTrendData
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberChannel
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberCharacter
-import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberPlace
+import net.perfectdreams.loritta.lorituber.server.state.entities.lots.LoriTuberLot
 import net.perfectdreams.loritta.lorituber.server.state.entities.LoriTuberVideo
 import net.perfectdreams.loritta.lorituber.server.tables.*
 import org.jetbrains.exposed.sql.Database
@@ -33,10 +33,10 @@ class GameState(
     val lorituberDatabase: Database,
     var worldInfo: WorldInfo,
     // We map them from ID to object because it is way faster than manually filtering the list
-    val charactersById: HashMap<Long, LoriTuberCharacter>,
-    val channelsById: HashMap<Long, LoriTuberChannel>,
-    val videosById: HashMap<Long, LoriTuberVideo>,
-    val placesById: HashMap<Long, LoriTuberPlace>,
+    val charactersById: HashMap<UUID, LoriTuberCharacter>,
+    val channelsById: HashMap<UUID, LoriTuberChannel>,
+    val videosById: HashMap<UUID, LoriTuberVideo>,
+    val lotsById: HashMap<UUID, LoriTuberLot>,
     val trendsByCategory: EnumMap<LoriTuberVideoContentCategory, LoriTuberTrendData>,
     val trendTargetsByCategory: EnumMap<LoriTuberVideoContentCategory, LoriTuberTrendData>,
     val nelsonGroceryStore: GroceryStore,
@@ -49,8 +49,8 @@ class GameState(
         get() = channelsById.values
     val videos
         get() = videosById.values
-    val places
-        get() = placesById.values
+    val lots
+        get() = lotsById.values
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -119,10 +119,34 @@ class GameState(
         PhoneCall.SonhosReward.SonhosRewardCall22,
     )
 
-    fun nextCharacterId() = worldInfo.characterCounter++
-    fun nextChannelId() = worldInfo.channelCounter++
-    fun nextVideoId() = worldInfo.videoCounter++
-    fun nextSuperViewerId() = worldInfo.superViewerCounter++
+    /**
+     * Generates a unique character ID
+     */
+    fun generateCharacterId() = generateId(charactersById)
+
+    /**
+     * Generates a unique channel ID
+     */
+    fun generateChannelId() = generateId(channelsById)
+
+    /**
+     * Generates a unique video ID
+     */
+    fun generateVideoId() = generateId(videosById)
+
+    /**
+     * Generates a unique lot ID
+     */
+    fun generateLotId() = generateId(lotsById)
+
+    private fun generateId(idMap: Map<UUID, *>): UUID {
+        while (true) {
+            val randomId = UUID.randomUUID()
+            if (!idMap.containsKey(randomId)) {
+                return randomId
+            }
+        }
+    }
 
     /**
      * Gets the current world time
@@ -175,6 +199,22 @@ class GameState(
         return PreDatabaseUpdateResults(removed.map { it.id }, serialized)
     }
 
+    private fun processAndSerializeLots(): PreDatabaseUpdateResults {
+        val removed = lots.filter { it.isRemoved }
+        for (entity in removed)
+            lotsById.remove(entity.id)
+        // Dirty Epic: https://youtu.be/qxkrgDoRW0o
+        val dirty = lots.filter { it.isDirty }
+        val serialized = dirty.map {
+            SerializedEntityWrapper(
+                it.id,
+                ProtoBuf.encodeToByteArray(it.data)
+            )
+        }
+        dirty.forEach { it.isDirty = false }
+        return PreDatabaseUpdateResults(removed.map { it.id }, serialized)
+    }
+
     fun persist(): Job {
         logger.info { "Persisting state to disk... Hang tight!" }
 
@@ -186,6 +226,7 @@ class GameState(
         val serializedCharacters = processAndSerializeCharacters()
         val serializedChannels = processAndSerializeChannels()
         val serializedVideos = processAndSerializeVideos()
+        val serializedLots = processAndSerializeLots()
         val serializedGroceriesStores = mutableListOf<SerializedEntityWrapperStringId>()
         if (nelsonGroceryStore.isDirty) {
             serializedGroceriesStores.add(
@@ -256,6 +297,18 @@ class GameState(
                         this[LoriTuberVideos.data] = ExposedBlob(it.data)
                     }
 
+                    // ===[ LOTS ]===
+                    LoriTuberLots.deleteWhere {
+                        LoriTuberLots.id inList serializedLots.removed
+                    }
+
+                    // Dirty
+                    // Whoops, this didn't have the correct ID
+                    LoriTuberLots.batchUpsert(serializedLots.entities, LoriTuberLots.id) {
+                        this[LoriTuberLots.id] = it.id
+                        this[LoriTuberLots.data] = ExposedBlob(it.data)
+                    }
+
                     // ===[ GROCERY STORE ]===
                     LoriTuberGroceryStores.batchUpsert(serializedGroceriesStores, LoriTuberGroceryStores.shop) {
                         this[LoriTuberGroceryStores.shop] = it.id
@@ -274,7 +327,7 @@ class GameState(
     }
 
     data class PreDatabaseUpdateResults(
-        val removed: List<Long>,
+        val removed: List<UUID>,
         val entities: List<SerializedEntityWrapper>
     )
 
@@ -284,7 +337,7 @@ class GameState(
     )
 
     data class SerializedEntityWrapper(
-        val id: Long,
+        val id: UUID,
         val data: ByteArray
     )
 }

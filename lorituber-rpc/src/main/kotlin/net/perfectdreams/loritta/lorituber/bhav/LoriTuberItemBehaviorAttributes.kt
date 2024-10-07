@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.lorituber.bhav
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.lorituber.PhoneCall
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
+import java.util.*
 
 @Serializable
 sealed class LoriTuberItemBehaviorAttributes {
@@ -13,7 +15,8 @@ sealed class LoriTuberItemBehaviorAttributes {
     ) : LoriTuberItemBehaviorAttributes() {
         @Serializable
         data class RenderingVideo(
-            var channelId: Long,
+            @Serializable(UUIDSerializer::class)
+            val channelId: UUID,
             var pendingVideoId: Long
         )
     }

@@ -1,10 +1,13 @@
 package net.perfectdreams.loritta.lorituber.rpc.packets
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.lorituber.UUIDSerializer
+import java.util.*
 
 @Serializable
 data class FinishPendingVideoRequest(
-    val channelId: Long,
+    @Serializable(UUIDSerializer::class)
+    val channelId: UUID,
     val pendingVideoId: Long,
     val videoTitle: String
 ) : LoriTuberRequest()
