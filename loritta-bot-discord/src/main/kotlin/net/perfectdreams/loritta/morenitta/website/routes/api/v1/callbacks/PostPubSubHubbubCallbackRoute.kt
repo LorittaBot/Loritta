@@ -50,14 +50,16 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
 		}
 
-		logger.info { "Recebi payload do PubSubHubbub!" }
-		logger.trace { response }
+		logger.info { "Recebi payload do PubSubHubbub! Headers: ${call.request.headers}; Response: $response" }
 
 		val originalSignature = call.request.header("X-Hub-Signature")
-			?: throw WebsiteAPIException(
+		if (originalSignature == null) {
+			logger.warn { "Missing X-Hub-Signature Header from Request!" }
+			throw WebsiteAPIException(
 				HttpStatusCode.Unauthorized,
 				WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
 			)
+		}
 
 		val output = if (originalSignature.startsWith("sha1=")) {
 			val signingKey = SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
@@ -84,14 +86,20 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 			output
 		} else {
-			throw NotImplementedError("${originalSignature} is not implemented yet!")
+			throw NotImplementedError("$originalSignature is not implemented yet!")
 		}
 
-		if (originalSignature != output)
+		if (originalSignature != output) {
+			logger.warn { "Invalid X-Hub-Signature Header from Request!" }
 			throw WebsiteAPIException(
 				HttpStatusCode.Unauthorized,
-				WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.UNAUTHORIZED,
+					"Invalid X-Hub-Signature Header from Request"
+				)
 			)
+		}
 
 		val type = call.parameters["type"]
 
