@@ -33,9 +33,10 @@ class DonateView(
         DonationReward("ignore_me", 99.99, false),
 
         // ===[ RECOMMENDED ]===
+        DonationReward("Não pagar taxas em apostas", 39.99, false),
+        DonationReward("Poder colocar um emoji personalizados no Emoji Fight", 39.99, false),
         DonationReward(locale["${LOCALE_PREFIX}.rewards.exclusiveProfileBadge"], 39.99, false),
         DonationReward(locale["${LOCALE_PREFIX}.rewards.customProfileBackground"], 39.99, false),
-
         // DonationReward("Personalizar nome/avatar da Loritta nas notificações do YouTube/Twitch/Twitter", 39.99, false),
         // Removed because this needs to be revamped
         // DonationReward(locale["${LOCALE_PREFIX}.rewards.reducedCooldown"], 39.99, false),
