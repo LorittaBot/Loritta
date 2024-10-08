@@ -42,6 +42,20 @@ joinTheEmojiFight: "Participar"
 startTheEmojiFight: "Iniciar"
 
 joinState:
+  fightDescriptionForFun:
+    - "**Preço para participar da rinha:** Nada! É uma rinha apenas para se divertir! {emoji}"
+    - "**Prêmio:** Nada! Se está procurando prêmios, vá em `{prefix}emojifight bet`"
+    - "**Para participar**, clique em {joinEmoji}!"
+    - "-# Limite de {maxCount} jogadores"
+    - "O ganhador será revelado quando {creatorMention} clicar em {startEmoji} ou após ter passado 60 segundos desde o início da rinha ou quando tiver {maxCount} jogadores na partida!"
+  fightDescriptionBet:
+  - "**Preço para participar da rinha:** {sonhosEntryPrice} sonhos"
+  - "**Prêmio:** {prize} sonhos"
+  - "**Para participar**, clique em {joinEmoji}!"
+  - "-# Limite de {maxCount} jogadores, e não se esqueça que você precisa ter pego a recompensa diária do daily de hoje para poder participar"
+  - "O ganhador será revelado quando {creatorMention} clicar em {startEmoji} ou após ter passado 60 segundos desde o início da rinha ou quando tiver {maxCount} jogadores na partida!"
+  - "-# É proibido a criação de contas alts/secundárias para participar de rinhas de emoji que valem sonhos, já que isso aumenta as suas chances de ganhar!"
+
   successState:
     success1: "Você está participando da rinha com o seu habilidoso {emoji}, boa sorte para você e o seu bichano!"
     success2: "Você está participando da rinha com o seu charmoso {emoji}, boa sorte para você e o seu bichano!"

@@ -262,27 +262,27 @@ class EmojiFight(
             .setTitle("${Emotes.LORI_BAN_HAMMER} ${context.locale["commands.command.emojifight.fightTitle"]}")
             .setDescription(
                 if (entryPrice != null) {
-                    context.locale
-                        .getList(
-                            "commands.command.emojifightbet.fightDescription",
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.Command.Emojifight.JoinState.FightDescriptionBet(
                             entryPrice,
                             entryPrice * (participatingUsers.size - 1), // Needs to subtract -1 because the winner *won't* pay for his win
                             "\uD83D\uDC14",
+                            maxPlayers,
                             context.user.asMention,
                             "✅",
-                            maxPlayers
-                        ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
+                        )
+                    ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                 } else {
-                    context.locale
-                        .getList(
-                            "commands.command.emojifight.fightDescription",
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.Command.Emojifight.JoinState.FightDescriptionForFun(
                             Emotes.LORI_PAT,
                             context.config.commandPrefix,
                             "\uD83D\uDC14",
+                            maxPlayers,
                             context.user.asMention,
                             "✅",
-                            maxPlayers
-                        ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
+                        )
+                    ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                 }
             )
             .setColor(Constants.ROBLOX_RED)
