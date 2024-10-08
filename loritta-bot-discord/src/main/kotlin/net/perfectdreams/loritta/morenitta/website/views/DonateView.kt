@@ -42,7 +42,7 @@ class DonateView(
 
         // ===[  COMPLETE  ]===
 
-        // ===[   NUMBERS  ]===
+        // ===[  NUMBERS  ]===
         DonationReward(
             locale["${LOCALE_PREFIX}.rewards.everyMinuteSonhos"],
             39.99,

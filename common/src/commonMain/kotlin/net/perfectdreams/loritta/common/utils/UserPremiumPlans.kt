@@ -4,7 +4,6 @@ interface UserPremiumPlans {
 	val cost: Double
 	val doNotSendAds: Boolean
 	val lessCooldown: Boolean
-	val maxDreamsInDaily: Int
 	val loriReputationRetribution: Double
 	val dailyMultiplier: Double
 	val totalLoraffleReward: Double
@@ -18,6 +17,10 @@ interface UserPremiumPlans {
 
 	val isCoinFlipBetRewardTaxed: Boolean
 		get() = coinFlipRewardTax != 0.0
+
+	// The "1800" and "6.0" come from the daily reward code
+	val maxDreamsInDaily: Int
+		get() = (1800 * (6.0 + dailyMultiplier)).toInt()
 
 	companion object {
 		val plans = listOf(
@@ -43,7 +46,6 @@ interface UserPremiumPlans {
 		override val cost = 0.0
 		override val doNotSendAds = false
 		override val lessCooldown = false
-		override val maxDreamsInDaily = 3600
 		override val loriReputationRetribution = 2.5
 		// O "multiplier" apenas soma o valor do multiplicador final, então pode ser 0.0
 		override val dailyMultiplier = 0.0
@@ -61,7 +63,6 @@ interface UserPremiumPlans {
 		override val cost = 19.99
 		override val doNotSendAds = true
 		override val lessCooldown = false
-		override val maxDreamsInDaily = 4200
 		override val loriReputationRetribution = 5.0
 		override val dailyMultiplier = 1.0
 		override val totalLoraffleReward = 0.95
@@ -78,7 +79,6 @@ interface UserPremiumPlans {
 		override val cost = 39.99
 		override val doNotSendAds = true
 		override val lessCooldown = true
-		override val maxDreamsInDaily = 4800
 		override val loriReputationRetribution = 10.0
 		override val dailyMultiplier = 2.0
 		override val totalLoraffleReward = 1.0
@@ -95,7 +95,6 @@ interface UserPremiumPlans {
 		override val cost = 99.99
 		override val doNotSendAds = true
 		override val lessCooldown = true
-		override val maxDreamsInDaily = 7000
 		override val loriReputationRetribution = 20.0
 		override val dailyMultiplier = 6.0 // 6.0 em vez de 5.0 para ter aquele "wow"
 		override val totalLoraffleReward = 1.0
