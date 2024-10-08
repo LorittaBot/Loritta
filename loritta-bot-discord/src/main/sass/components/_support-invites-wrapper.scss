@@ -1,0 +1,33 @@
+.support-invites-wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  width: 75%;
+  max-width: 60em;
+  padding-bottom: 2em;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 1em;
+
+  @media screen and (max-width: 1000px) {
+    flex-direction: column;
+  }
+
+  .support-invite-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-width: 10em;
+    flex: 1;
+
+    .support-invite-content {
+      line-height: 1.58;
+      text-align: center;
+    }
+
+    .discord-support-invite-wrapper {
+      display: flex;
+      margin-top: auto;
+      justify-content: center;
+    }
+  }
+}

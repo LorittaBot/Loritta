@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
 
@@ -20,7 +21,7 @@ class SupportView(
     override fun getTitle() = locale["website.support.title"]
 
     override fun DIV.generateContent() {
-        div(classes = "even-wrapper") {
+        div(classes = "odd-wrapper") {
             div(classes = "media") {
                 div(classes = "media-figure") {
                     imgSrcSet(
@@ -53,56 +54,65 @@ class SupportView(
                 }
             }
         }
-        div(classes = "odd-wrapper wobbly-bg") {
-            div(classes = "media") {
-                div(classes = "media-body") {
-                    div {
-                        style = "text-align: center;"
+        div(classes = "even-wrapper wobbly-bg") {
+            div(classes = "support-invites-wrapper") {
+                div(classes = "support-invite-wrapper") {
+                    div(classes = "support-invite-content") {
+                        h2 {
+                            text(i18nContext.get(I18nKeysData.Website.Support.SupportAndCommunity))
+                        }
 
-                        div {
-                            style = "display: flex; justify-content: space-evenly; flex-wrap: wrap;"
-
-                            div {
-                                style = "min-width: 300px; width: 50%;"
-
-                                h2 {
-                                    + locale["website.support.supportServer.title"]
-                                }
-
-                                locale.getList("website.support.supportServer.description").forEach {
-                                    p {
-                                        + it
-                                    }
-                                }
-
-                                a(href = "https://discord.gg/loritta") {
-                                    img(src = "https://discordapp.com/api/guilds/420626099257475072/widget.png?style=banner3") {
-                                        style = "border-radius: 7px;"
-                                    }
-                                }
-                            }
-
-                            div {
-                                style = "min-width: 300px; width: 50%;"
-
-                                h2 {
-                                    + locale["website.support.communityServer.title"]
-                                }
-
-                                locale.getList("website.support.communityServer.description").forEach {
-                                    p {
-                                        + it
-                                    }
-                                }
-
-                                a(href = "https://discord.gg/lori") {
-                                    img(src = "https://discordapp.com/api/guilds/297732013006389252/widget.png?style=banner3") {
-                                        style = "border-radius: 7px;"
-                                    }
-                                }
+                        i18nContext.get(I18nKeysData.Website.Support.CommunityDescription).forEach {
+                            p {
+                                text(it)
                             }
                         }
                     }
+
+                    div(classes = "discord-support-invite-wrapper") {
+                        lorittaCommunityServerInvite(i18nContext)
+                    }
+                }
+            }
+        }
+    }
+
+    fun FlowContent.lorittaCommunityServerInvite(i18nContext: I18nContext) = discordInvite(
+        i18nContext,
+        "https://stuff.loritta.website/official-server-icons/loritta-community-256.gif",
+        "Apartamento da Loritta \uD83C\uDF07\uD83C\uDF03",
+        {
+            img(src = "https://assets.perfectdreams.media/loritta/emotes/lori-kiss.png") {
+                classes = setOf("inline-emoji")
+            }
+
+            +" ${i18nContext.get(I18nKeysData.Website.DiscordInvite.LorittaCommunityServerDetails)}"
+        },
+        "https://discord.gg/loritta"
+    )
+
+    fun FlowContent.discordInvite(i18nContext: I18nContext, icon: String, name: String, description: DIV.() -> (Unit), invite: String) {
+        div(classes = "discord-invite-wrapper") {
+            div(classes = "discord-invite-title") {
+                + i18nContext.get(I18nKeysData.Website.DiscordInvite.Title)
+            }
+
+            div(classes = "discord-server-details") {
+                div(classes = "discord-server-icon") {
+                    img(src = icon) {}
+                }
+
+                div(classes = "discord-server-info") {
+                    div(classes = "discord-server-name") {
+                        +name
+                    }
+                    div(classes = "discord-server-description") {
+                        description()
+                    }
+                }
+
+                a(classes = "discord-server-button", href = invite, target = "_blank") {
+                    +i18nContext.get(I18nKeysData.Website.DiscordInvite.Join)
                 }
             }
         }
