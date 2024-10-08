@@ -341,11 +341,13 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 val matchesThatWeParticipated = innerJoin.select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }.toList()
                 val matchCountColumn = EmojiFightParticipants.match.count()
                 // We need to do this like this to :sparkles: optimize the query :sparkles:, if not then it is TOO SLOW
-                val allParticipantsOfTheMatchesThatWeParticipated = EmojiFightParticipants
-                    .slice(EmojiFightParticipants.match, matchCountColumn)
-                    .select { EmojiFightParticipants.match inList matchesThatWeParticipated.map { it[EmojiFightMatches.id] } }
-                    .groupBy(EmojiFightParticipants.match)
-                    .toList()
+                val allParticipantsOfTheMatchesThatWeParticipated = matchesThatWeParticipated.chunked(65_535) { matchesThatWeParticipatedChunked ->
+                   EmojiFightParticipants
+                        .slice(EmojiFightParticipants.match, matchCountColumn)
+                        .select { EmojiFightParticipants.match inList matchesThatWeParticipatedChunked.map { it[EmojiFightMatches.id] } }
+                        .groupBy(EmojiFightParticipants.match)
+                        .toList()
+                }.flatten()
 
                 for (row in matchesThatWeParticipated) {
                     val didWeWinThisMatch = row[EmojiFightParticipants.user].value == user.idLong && row[EmojiFightParticipants.id] == row[EmojiFightMatchmakingResults.winner]
