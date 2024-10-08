@@ -10,9 +10,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
@@ -20,7 +18,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHa
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -31,7 +28,6 @@ import net.perfectdreams.loritta.morenitta.utils.AprilFools
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredEmojiFightBetSonhosTransaction
@@ -495,6 +491,7 @@ class EmojiFight(
                     .where {
                         WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
                     }
+                    .orderBy(WebsiteDiscountCoupons.total, SortOrder.ASC)
                     .firstOrNull()
 
                 val claimedWebsiteCoupon = if (couponData != null) {

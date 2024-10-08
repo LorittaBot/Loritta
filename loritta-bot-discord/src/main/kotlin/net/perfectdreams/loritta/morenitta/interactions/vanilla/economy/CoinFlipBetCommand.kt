@@ -525,6 +525,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 .where {
                                                     WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
                                                 }
+                                                .orderBy(WebsiteDiscountCoupons.total, SortOrder.ASC)
                                                 .firstOrNull()
 
                                             if (couponData != null) {
@@ -601,6 +602,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 .where {
                                                     WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
                                                 }
+                                                .orderBy(WebsiteDiscountCoupons.total, SortOrder.ASC)
                                                 .firstOrNull()
 
                                             if (couponData != null) {
