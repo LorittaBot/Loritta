@@ -187,7 +187,7 @@ class DonateView(
                             controls = true
                             width = "400"
                             source {
-                                src = "https://cdn.discordapp.com/attachments/510601125221761054/534473346642083851/Lorisemdinheiro.mp4"
+                                src = "https://stuff.loritta.website/premium/lori-sem-dinheiro.mp4"
                                 type = "video/mp4"
                             }
                             + "Your browser does not support HTML5 video."
