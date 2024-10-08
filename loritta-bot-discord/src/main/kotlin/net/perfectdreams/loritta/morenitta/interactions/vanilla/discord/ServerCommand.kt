@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.discord
 
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.string
 import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
@@ -16,6 +19,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -26,7 +30,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import java.util.*
 
-class ServerCommand : SlashCommandDeclarationWrapper {
+class ServerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Server
     }
@@ -89,21 +93,83 @@ class ServerCommand : SlashCommandDeclarationWrapper {
     }
 
     inner class ServerIconExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val serverIconId = optionalString("server_id", I18N_PREFIX.Icon.Options.ServerId.Text)
+        }
+
+        override val options = Options()
+
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val iconId = context.guild.iconId ?: context.fail(true) {
-                styled(
-                    context.i18nContext.get(
-                        I18N_PREFIX.Icon.NoIcon(Emotes.LoriPat)
+            val userProvidedServerIconId = args[options.serverIconId]
+
+            data class GuildIconWithName(
+                val id: Long,
+                val guildName: String,
+                val iconId: String?,
+            )
+
+            val iconData: GuildIconWithName?
+
+            if (userProvidedServerIconId != null) {
+                val userProvidedServerIconIdAsLong = userProvidedServerIconId.toLongOrNull()
+                    ?: context.fail(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.Icon.InvalidId),
+                            Emotes.Error
+                        )
+                    }
+
+                if (userProvidedServerIconIdAsLong == context.guildId) {
+                    // No need to query if it is on this instance
+                    iconData = GuildIconWithName(
+                        context.guild.idLong,
+                        context.guild.name,
+                        context.guild.iconId
                     )
+                } else {
+                    val guild = loritta.lorittaShards.queryGuildById(userProvidedServerIconIdAsLong)
+                        ?: context.fail(true) {
+                            // Unknown guild
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.Icon.UnknownGuild),
+                                Emotes.LoriSob
+                            )
+                        }
+
+                    val idElement = guild.get("id")
+                    val guildNameElement = guild.get("name")
+                    val iconIdElement = guild.get("iconId")
+                    iconData = GuildIconWithName(
+                        idElement.long,
+                        guildNameElement.string,
+                        iconIdElement.nullString
+                    )
+                }
+            } else {
+                iconData = GuildIconWithName(
+                    context.guild.idLong,
+                    context.guild.name,
+                    context.guild.iconId
                 )
             }
 
+            val (guildId, guildName, iconId) = iconData
+            if (iconId == null) {
+                context.fail(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18N_PREFIX.Icon.NoIcon(Emotes.LoriPat)
+                        )
+                    )
+                }
+            }
+
             val extension = if (iconId.startsWith("a_")) "gif" else "png"
-            val urlIcon = "https://cdn.discordapp.com/icons/${context.guild.id}/$iconId.$extension?size=2048"
+            val urlIcon = "https://cdn.discordapp.com/icons/$guildId/$iconId.$extension?size=2048"
 
             context.reply(false) {
                 embed {
-                    title = "${Emotes.Discord} ${context.guild.name}"
+                    title = "${Emotes.Discord} $guildName"
                     image = urlIcon
                     color = Constants.DISCORD_BLURPLE.rgb
                 }
@@ -121,7 +187,7 @@ class ServerCommand : SlashCommandDeclarationWrapper {
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
-            return LorittaLegacyMessageCommandExecutor.NO_ARGS
+            return mapOf(options.serverIconId to args.getOrNull(0))
         }
     }
 
