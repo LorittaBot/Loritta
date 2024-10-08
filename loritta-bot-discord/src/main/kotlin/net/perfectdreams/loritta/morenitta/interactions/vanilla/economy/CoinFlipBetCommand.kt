@@ -647,7 +647,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 styled(
                                                     context.i18nContext.get(
                                                         I18nKeysData.Commands.SonhosShopCouponCodeWithMaxUsesUpsell(
-                                                            TimeFormat.DATE_TIME_SHORT,
+                                                            TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
                                                             maxUses,
                                                             activeCoupon.code,
                                                             activeCoupon.discount
@@ -659,7 +659,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 styled(
                                                     context.i18nContext.get(
                                                         I18nKeysData.Commands.SonhosShopCouponCodeUpsell(
-                                                            TimeFormat.DATE_TIME_SHORT,
+                                                            TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
                                                             activeCoupon.code,
                                                             activeCoupon.discount
                                                         )

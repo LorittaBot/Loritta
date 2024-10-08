@@ -574,7 +574,7 @@ class EmojiFight(
                         styled(
                             context.i18nContext.get(
                                 I18nKeysData.Commands.SonhosShopCouponCodeWithMaxUsesUpsell(
-                                    TimeFormat.DATE_TIME_SHORT,
+                                    TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
                                     maxUses,
                                     result.activeCoupon.code,
                                     result.activeCoupon.discount
@@ -586,7 +586,7 @@ class EmojiFight(
                         styled(
                             context.i18nContext.get(
                                 I18nKeysData.Commands.SonhosShopCouponCodeUpsell(
-                                    TimeFormat.DATE_TIME_SHORT,
+                                    TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
                                     result.activeCoupon.code,
                                     result.activeCoupon.discount
                                 )
