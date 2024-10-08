@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.Payment
+import org.jetbrains.exposed.dao.id.EntityID
 import java.util.*
 
 class PerfectPaymentsClient(val url: String) {
@@ -95,8 +96,9 @@ class PerfectPaymentsClient(val url: String) {
         storedAmount: Long,
         paymentReason: PaymentReason,
         externalReference: String,
+        couponId: EntityID<Long>?,
         discount: Double? = null,
-        metadata: kotlinx.serialization.json.JsonObject? = null
+        metadata: kotlinx.serialization.json.JsonObject? = null,
     ): String {
         logger.info { "Requesting PerfectPayments payment URL for $userId" }
         val payments = loritta.http.post("${url}api/v1/payments") {
@@ -139,6 +141,7 @@ class PerfectPaymentsClient(val url: String) {
                 this.money = (storedAmount.toDouble() / 100).toBigDecimal()
                 this.createdAt = System.currentTimeMillis()
                 this.referenceId = partialPaymentId
+                this.couponId = couponId
             }
         }
 

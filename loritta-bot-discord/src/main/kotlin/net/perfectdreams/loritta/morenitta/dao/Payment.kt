@@ -18,4 +18,5 @@ class Payment(id: EntityID<Long>) : LongEntity(id) {
     var discount by Payments.discount
     var metadata by Payments.metadata
     var referenceId by Payments.referenceId
+    var couponId by Payments.coupon
 }

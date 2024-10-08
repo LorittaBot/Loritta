@@ -31,6 +31,8 @@ website:
       close: "Fechar"
     purchaseVariants:
       buyBRL: "Comprar (R$ {price,number})"
+      buyBRLWithDiscount: "Comprar (R$ {oldPrice}) (R$ {newPrice,number})"
+      priceNumber: "{price,number}"
     purchaseModal:
       title: "Confirmar Compra"
       buy: "Comprar"

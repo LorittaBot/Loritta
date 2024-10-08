@@ -10,16 +10,16 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -30,13 +30,11 @@ import net.perfectdreams.loritta.morenitta.utils.AprilFools
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredEmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
@@ -491,7 +489,30 @@ class EmojiFight(
                         ?.get(AprilFoolsCoinFlipBugs.bug)
                 } else null
 
-                DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize, aprilFoolsWinnerBugMessage)
+                val couponData = WebsiteDiscountCoupons.selectAll()
+                    .where {
+                        WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
+                    }
+                    .firstOrNull()
+
+                val claimedWebsiteCoupon = if (couponData != null) {
+                    val paymentsThatUsedTheCouponCount = Payments.selectAll()
+                        .where {
+                            Payments.coupon eq couponData[WebsiteDiscountCoupons.id]
+                        }
+                        .count()
+
+                    ClaimedWebsiteCoupon(
+                        couponData[WebsiteDiscountCoupons.id].value,
+                        couponData[WebsiteDiscountCoupons.code],
+                        couponData[WebsiteDiscountCoupons.endsAt],
+                        couponData[WebsiteDiscountCoupons.total],
+                        couponData[WebsiteDiscountCoupons.maxUses],
+                        paymentsThatUsedTheCouponCount,
+                    )
+                } else null
+
+                DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize, aprilFoolsWinnerBugMessage, claimedWebsiteCoupon)
             } else {
                 val resultId = EmojiFightMatchmakingResults.insertAndGetId {
                     it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key] ?: error("Participating user is null! This should never happen!!")
@@ -502,7 +523,7 @@ class EmojiFight(
                     it[EmojiFightMatchmakingResults.match] = emojiFightMatch
                 }
 
-                DbResponse(winner, losers, 0, 0, null)
+                DbResponse(winner, losers, 0, 0, null, null)
             }
         }
 
@@ -546,6 +567,36 @@ class EmojiFight(
                     ],
                     Emotes.LORI_RICH.asMention,
                 )
+
+                if (result.activeCoupon != null && result.activeCoupon.hasRemainingUses) {
+                    val maxUses = result.activeCoupon.maxUses
+                    if (maxUses != null) {
+                        styled(
+                            context.i18nContext.get(
+                                I18nKeysData.Commands.SonhosShopCouponCodeWithMaxUsesUpsell(
+                                    TimeFormat.DATE_TIME_SHORT,
+                                    maxUses,
+                                    result.activeCoupon.code,
+                                    result.activeCoupon.discount
+                                )
+                            ),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                        )
+                    } else {
+                        styled(
+                            context.i18nContext.get(
+                                I18nKeysData.Commands.SonhosShopCouponCodeUpsell(
+                                    TimeFormat.DATE_TIME_SHORT,
+                                    result.activeCoupon.code,
+                                    result.activeCoupon.discount
+                                )
+                            ),
+                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                        )
+                    }
+
+                    actionRow(Button.of(ButtonStyle.LINK, GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", "bet-emojifight", "sonhos-bundles-upsell", "coupon-code"), context.i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)))
+                }
             }
         } else {
             context.reply(false) {
@@ -573,7 +624,8 @@ class EmojiFight(
         val losers: MutableSet<MutableMap.MutableEntry<User, String>>,
         val realPrize: Long,
         val taxedPrize: Long,
-        val aprilFoolsWinnerBugMessage: String?
+        val aprilFoolsWinnerBugMessage: String?,
+        val activeCoupon: ClaimedWebsiteCoupon?
     )
 
     sealed class EmojiFightJoinState {

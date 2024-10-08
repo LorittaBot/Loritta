@@ -5,6 +5,15 @@ website:
       title: "Lojinha de Sonhos"
       bundleTitle: "{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}"
       bundleBonus: "{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de bônus"
+      couponCodes:
+        discountCoupon: "Cupom de Desconto"
+        activatedCoupon: "{couponCode} ativado!"
+        couponDiscount: "{discountPercentage,number,#%} de desconto"
+        remainingUses: "{sonhos,plural, =0 {# usos restantes} one {# uso restante} other {# usos restantes}}"
+        unlimitedUses: "Usos ilimitados"
+        expiredCoupon: "Cupom expirado"
+        enableCouponButton: "Ativar Cupom"
+        removeCouponButton: "Remover Cupom"
       faq:
         whyCanIBuySonhos:
           title: "Por que vocês vendem sonhos? Isso não é injusto com quem não tem dinheiro?"

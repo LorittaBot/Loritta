@@ -9,11 +9,14 @@ import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.WebsiteDiscountCoupons
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -29,12 +32,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
+import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
@@ -462,6 +463,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                     val winner: User
                                     val loser: User
                                     val now = Instant.now()
+                                    var activeCoupon: ClaimedWebsiteCoupon? = null
 
                                     if (isTails) {
                                         winner = context.user
@@ -515,6 +517,30 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     .lastOrNull()
                                                     ?.get(AprilFoolsCoinFlipBugs.bug)
                                             }
+
+
+                                            val couponData = WebsiteDiscountCoupons.selectAll()
+                                                .where {
+                                                    WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
+                                                }
+                                                .firstOrNull()
+
+                                            if (couponData != null) {
+                                                val paymentsThatUsedTheCouponCount = Payments.selectAll()
+                                                    .where {
+                                                        Payments.coupon eq couponData[WebsiteDiscountCoupons.id]
+                                                    }
+                                                    .count()
+
+                                                ClaimedWebsiteCoupon(
+                                                    couponData[WebsiteDiscountCoupons.id].value,
+                                                    couponData[WebsiteDiscountCoupons.code],
+                                                    couponData[WebsiteDiscountCoupons.endsAt],
+                                                    couponData[WebsiteDiscountCoupons.total],
+                                                    couponData[WebsiteDiscountCoupons.maxUses],
+                                                    paymentsThatUsedTheCouponCount,
+                                                )
+                                            } else null
                                         }
                                     } else {
                                         winner = invitedUser
@@ -567,6 +593,30 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     .lastOrNull()
                                                     ?.get(AprilFoolsCoinFlipBugs.bug)
                                             }
+
+
+                                            val couponData = WebsiteDiscountCoupons.selectAll()
+                                                .where {
+                                                    WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
+                                                }
+                                                .firstOrNull()
+
+                                            if (couponData != null) {
+                                                val paymentsThatUsedTheCouponCount = Payments.selectAll()
+                                                    .where {
+                                                        Payments.coupon eq couponData[WebsiteDiscountCoupons.id]
+                                                    }
+                                                    .count()
+
+                                                ClaimedWebsiteCoupon(
+                                                    couponData[WebsiteDiscountCoupons.id].value,
+                                                    couponData[WebsiteDiscountCoupons.code],
+                                                    couponData[WebsiteDiscountCoupons.endsAt],
+                                                    couponData[WebsiteDiscountCoupons.total],
+                                                    couponData[WebsiteDiscountCoupons.maxUses],
+                                                    paymentsThatUsedTheCouponCount,
+                                                )
+                                            } else null
                                         }
                                     }
 
@@ -590,6 +640,36 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             context.locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
                                             Emotes.LORI_RICH
                                         )
+
+                                        if (activeCoupon != null && activeCoupon.hasRemainingUses) {
+                                            val maxUses = activeCoupon.maxUses
+                                            if (maxUses != null) {
+                                                styled(
+                                                    context.i18nContext.get(
+                                                        I18nKeysData.Commands.SonhosShopCouponCodeWithMaxUsesUpsell(
+                                                            TimeFormat.DATE_TIME_SHORT,
+                                                            maxUses,
+                                                            activeCoupon.code,
+                                                            activeCoupon.discount
+                                                        )
+                                                    ),
+                                                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                                                )
+                                            } else {
+                                                styled(
+                                                    context.i18nContext.get(
+                                                        I18nKeysData.Commands.SonhosShopCouponCodeUpsell(
+                                                            TimeFormat.DATE_TIME_SHORT,
+                                                            activeCoupon.code,
+                                                            activeCoupon.discount
+                                                        )
+                                                    ),
+                                                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+                                                )
+                                            }
+
+                                            actionRow(Button.of(ButtonStyle.LINK, GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", "bet-coinflip", "sonhos-bundles-upsell", "coupon-code"), context.i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)))
+                                        }
                                     }
 
                                     context.giveAchievementAndNotify(winner, AchievementType.COIN_FLIP_BET_WIN, false)
