@@ -21,7 +21,7 @@ commands:
   userDoesntHavePermissionDiscord: "Você não pode executar este comando, pois você precisa ter `{requiredPermissions}` na sua lista de permissões para que eu possa completar este comando!"
   lorittaPendingUpdate: "Em breve a Loritta irá reiniciar para atualizações e, durante a atualização, não poderei estar respondendo seus comandos. Mas não se preocupe, estarei de volta em alguns minutinhos! ...isso se não der algum problema durante a atualização rsrs."
   sonhosShopCouponCodeUpsell: "Psiu, está rolando descontos na minha lojinha de sonhos! Corra, pois o cupom só está disponível até às {expiresAt}! **Cupom:** `{couponCode}` ({discountPercentage,number,#%} de desconto)"
-  sonhosShopCouponCodeWithMaxUsesUpsell: "Psiu, está rolando descontos na minha lojinha de sonhos! Corra, pois o cupom só está disponível até às {expiresAt} para os {maxUses,plural, =0 {# pagamentos} one {# pagamento} other {# pagamentos}} que usarem o cupom! **Cupom:** `{couponCode}` ({discountPercentage,number,#%} de desconto)"
+  sonhosShopCouponCodeWithMaxUsesUpsell: "Psiu, está rolando descontos na minha lojinha de sonhos! Corra, pois o cupom só está disponível até às {expiresAt} para os {maxUses,plural, =0 {# primeiros pagamentos} one {# primeiro pagamento} other {# primeiros pagamentos}} que usarem o cupom! **Cupom:** `{couponCode}` ({discountPercentage,number,#%} de desconto)"
   youAreLorittaBannedPermanent:
     - "Você está **banido(a) permanentemente**! {loriHmpf}"
     - ""
