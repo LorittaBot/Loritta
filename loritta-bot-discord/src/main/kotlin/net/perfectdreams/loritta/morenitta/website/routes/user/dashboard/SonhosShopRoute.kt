@@ -39,7 +39,7 @@ class SonhosShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashbo
 				loritta.getLegacyLocaleById(locale.id),
 				userIdentification,
 				UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())),
-				ColorTheme.DARK,
+				colorTheme,
 				sonhosBundles.map {
 					SonhosBundle(
 						it[SonhosBundles.id].value,
