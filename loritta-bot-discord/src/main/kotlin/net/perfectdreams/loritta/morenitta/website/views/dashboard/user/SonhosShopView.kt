@@ -358,7 +358,10 @@ class SonhosShopView(
                                                     attributes["hx-disabled-elt"] = "this"
                                                     attributes["hx-vals"] = buildJsonObject {
                                                         put("bundleId", sonhosBundle.id.toString())
-                                                        put("couponCode", activeCoupon?.code)
+                                                        val activeCouponCode = activeCoupon?.code
+                                                        if (activeCouponCode != null) {
+                                                            put("couponCode", activeCouponCode)
+                                                        }
                                                     }.toString()
 
                                                     div(classes = "htmx-discord-like-loading-button") {
