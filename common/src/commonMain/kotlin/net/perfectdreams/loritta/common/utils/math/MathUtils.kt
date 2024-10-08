@@ -42,4 +42,11 @@ object MathUtils {
         }
         return result
     }
+
+    /**
+     * Truncates a double to two decimal places
+     */
+    fun truncateToTwoDecimalPlaces(number: Double): Double {
+        return (number * 100).toInt() / 100.0
+    }
 }
