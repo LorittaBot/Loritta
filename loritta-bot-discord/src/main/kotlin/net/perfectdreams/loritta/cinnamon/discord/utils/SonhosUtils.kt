@@ -5,6 +5,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinLocalDateTime
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
@@ -21,6 +24,8 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
+import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.select
 import java.time.DayOfWeek
@@ -41,6 +46,49 @@ object SonhosUtils {
 
     fun insufficientSonhos(profile: PuddingUserProfile?, howMuch: Long) = insufficientSonhos(profile?.money ?: 0L, howMuch)
     fun insufficientSonhos(sonhos: Long, howMuch: Long) = I18nKeysData.Commands.InsufficientFunds(howMuch, howMuch - sonhos)
+
+    fun InlineMessage<*>.appendCouponSonhosBundleUpsellInformationIfNotNull(
+        loritta: LorittaBot,
+        i18nContext: I18nContext,
+        activeCoupon: ClaimedWebsiteCoupon?,
+        upsellMedium: String
+    ) {
+        if (activeCoupon != null && activeCoupon.hasRemainingUses) {
+            val maxUses = activeCoupon.maxUses
+            if (maxUses != null) {
+                styled(
+                    i18nContext.get(
+                        I18nKeysData.Commands.SonhosShopCouponCodeWithMaxUsesUpsell(
+                            TimeFormat.DATE_TIME_SHORT.format(activeCoupon.endsAt),
+                            maxUses,
+                            activeCoupon.code,
+                            activeCoupon.discount
+                        )
+                    ),
+                    Emotes.LoriLurk
+                )
+            } else {
+                styled(
+                    i18nContext.get(
+                        I18nKeysData.Commands.SonhosShopCouponCodeUpsell(
+                            TimeFormat.DATE_TIME_SHORT.format(activeCoupon.endsAt),
+                            activeCoupon.code,
+                            activeCoupon.discount
+                        )
+                    ),
+                    Emotes.LoriLurk
+                )
+            }
+
+            actionRow(
+                Button.of(
+                    ButtonStyle.LINK,
+                    GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", upsellMedium, "sonhos-bundles-upsell", "coupon-code"),
+                    i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)
+                ).withEmoji(Emotes.Sonhos3.toJDA())
+            )
+        }
+    }
 
     suspend fun MessageBuilder.appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
         loritta: LorittaBot,

@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
@@ -32,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
@@ -641,35 +643,12 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             Emotes.LORI_RICH
                                         )
 
-                                        if (activeCoupon != null && activeCoupon.hasRemainingUses) {
-                                            val maxUses = activeCoupon.maxUses
-                                            if (maxUses != null) {
-                                                styled(
-                                                    context.i18nContext.get(
-                                                        I18nKeysData.Commands.SonhosShopCouponCodeWithMaxUsesUpsell(
-                                                            TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
-                                                            maxUses,
-                                                            activeCoupon.code,
-                                                            activeCoupon.discount
-                                                        )
-                                                    ),
-                                                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
-                                                )
-                                            } else {
-                                                styled(
-                                                    context.i18nContext.get(
-                                                        I18nKeysData.Commands.SonhosShopCouponCodeUpsell(
-                                                            TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
-                                                            activeCoupon.code,
-                                                            activeCoupon.discount
-                                                        )
-                                                    ),
-                                                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
-                                                )
-                                            }
-
-                                            actionRow(Button.of(ButtonStyle.LINK, GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", "bet-coinflip", "sonhos-bundles-upsell", "coupon-code"), context.i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)))
-                                        }
+                                        appendCouponSonhosBundleUpsellInformationIfNotNull(
+                                            loritta,
+                                            context.i18nContext,
+                                            activeCoupon,
+                                            "bet-coinflip"
+                                        )
                                     }
 
                                     context.giveAchievementAndNotify(winner, AchievementType.COIN_FLIP_BET_WIN, false)

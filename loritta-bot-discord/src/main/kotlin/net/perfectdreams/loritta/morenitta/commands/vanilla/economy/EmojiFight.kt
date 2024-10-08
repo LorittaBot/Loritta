@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
@@ -30,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.utils.AprilFools
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredEmojiFightBetSonhosTransaction
@@ -568,35 +570,12 @@ class EmojiFight(
                     Emotes.LORI_RICH.asMention,
                 )
 
-                if (result.activeCoupon != null && result.activeCoupon.hasRemainingUses) {
-                    val maxUses = result.activeCoupon.maxUses
-                    if (maxUses != null) {
-                        styled(
-                            context.i18nContext.get(
-                                I18nKeysData.Commands.SonhosShopCouponCodeWithMaxUsesUpsell(
-                                    TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
-                                    maxUses,
-                                    result.activeCoupon.code,
-                                    result.activeCoupon.discount
-                                )
-                            ),
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
-                        )
-                    } else {
-                        styled(
-                            context.i18nContext.get(
-                                I18nKeysData.Commands.SonhosShopCouponCodeUpsell(
-                                    TimeFormat.DATE_TIME_SHORT.format(result.activeCoupon.endsAt),
-                                    result.activeCoupon.code,
-                                    result.activeCoupon.discount
-                                )
-                            ),
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
-                        )
-                    }
-
-                    actionRow(Button.of(ButtonStyle.LINK, GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", "bet-emojifight", "sonhos-bundles-upsell", "coupon-code"), context.i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)))
-                }
+                appendCouponSonhosBundleUpsellInformationIfNotNull(
+                    loritta,
+                    context.i18nContext,
+                    result.activeCoupon,
+                    "bet-coinflip"
+                )
             }
         } else {
             context.reply(false) {
