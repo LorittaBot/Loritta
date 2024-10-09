@@ -165,6 +165,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                             multipliedBy = 2.5
                                             sponsoredBy = bestServerInfo
                                             sponsoredByUserId = null
+                                            return@newSuspendedTransaction
                                         }
 
                                         // We are going to sort by the donation value of the server (so a higher plan = more priority) and then by the multiplier guild ID priority
