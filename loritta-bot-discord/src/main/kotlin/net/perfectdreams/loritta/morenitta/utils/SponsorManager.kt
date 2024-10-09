@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import com.google.gson.JsonParser
 import kotlinx.coroutines.runBlocking
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sponsors
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.*
@@ -20,7 +19,7 @@ object SponsorManager {
 			Sponsor(
 				it[Sponsors.name],
 				it[Sponsors.slug],
-				it[Payments.money],
+				it[Sponsors.sponsorValue],
 				it[Sponsors.link],
 				JsonParser.parseString(it[Sponsors.banners])
 			)

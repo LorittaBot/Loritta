@@ -4,12 +4,11 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonElement
-import java.math.BigDecimal
 
 data class Sponsor(
 		val name: String,
 		val slug: String,
-		val paid: BigDecimal,
+		val paid: Double,
 		val link: String,
 		val banners: JsonElement
 ) {
