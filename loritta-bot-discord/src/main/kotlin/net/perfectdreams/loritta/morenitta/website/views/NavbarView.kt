@@ -214,6 +214,10 @@ abstract class NavbarView(
                                 i(classes = "fab fa-github") {}
                             }
 
+                            a(href = "https://x.com/LorittaBot") {
+                                i(classes = "fab fa-square-x-twitter") {}
+                            }
+
                             a(href = "https://bsky.app/profile/loritta.website") {
                                 i(classes = "fab fa-bluesky") {}
                             }
