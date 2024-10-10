@@ -15,6 +15,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import java.io.Closeable
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -95,9 +96,9 @@ class Falatron(private val apiUrl: String, private val apiKey: String) : Closeab
             val body = response.bodyAsText()
             // println("tryAndRepeatTask $taskId ${response.bodyAsText()}")
             if (response.status == HttpStatusCode.OK)
-                return Json.decodeFromString<FalatronResponse>(body)
+                return JsonIgnoreUnknownKeys.decodeFromString<FalatronResponse>(body)
             if (response.status == HttpStatusCode.Accepted) {
-                val b = Json.decodeFromString<FalatronTaskRequestCheckResponse>(body)
+                val b = JsonIgnoreUnknownKeys.decodeFromString<FalatronTaskRequestCheckResponse>(body)
                 queuePositionCallback.invoke(b.queue)
             } else {
                 // We will only increase the "i" if it wasn't accepted, if it was, then it means we are on the queue and it should hopefully be generated after a while
@@ -134,8 +135,5 @@ class Falatron(private val apiUrl: String, private val apiKey: String) : Closeab
     )
 
     @Serializable
-    data class FalatronResponse(
-        val emojis: String,
-        val voice: String
-    )
+    data class FalatronResponse(val voice: String)
 }

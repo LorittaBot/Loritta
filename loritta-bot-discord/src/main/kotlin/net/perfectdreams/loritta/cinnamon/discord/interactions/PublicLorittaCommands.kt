@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
 
@@ -27,7 +26,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ FUN ]===
 //            register(TextTransformCommand(languageManager))
-            register(SoundboxCommand(languageManager))
+//            register(SoundboxCommand(languageManager))
 
             // ===[ IMAGES ]===
             // register(DrakeCommand(languageManager))
