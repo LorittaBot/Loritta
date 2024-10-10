@@ -176,7 +176,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// 	commandMap.add(AntiRaidCommand(loritta))
 
 		// =======[ ECONOMIA ]========
-		commandMap.add(PagarCommand(loritta))
 		commandMap.add(LigarCommand(loritta))
 	}
 

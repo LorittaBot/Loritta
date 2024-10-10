@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
@@ -38,6 +37,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await

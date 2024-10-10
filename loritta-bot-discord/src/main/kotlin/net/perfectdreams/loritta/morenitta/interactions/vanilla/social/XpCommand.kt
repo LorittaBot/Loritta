@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
@@ -29,6 +28,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import org.jetbrains.exposed.sql.SortOrder

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
 
 /**
@@ -62,7 +61,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 //            register(NotificationsCommand(languageManager))
 
             // ===[ ECONOMY ]===
-            register(SonhosCommand(languageManager))
+//            register(SonhosCommand(languageManager))
             // register(BrokerCommand(languageManager))
             // register(BetCommand(languageManager))
 

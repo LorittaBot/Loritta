@@ -13,10 +13,11 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
         val I18N_PREFIX = I18nKeysData.Commands.Command.Sonhos
         val CATEGORY_I18N_PREFIX = I18nKeysData.Commands.Category.Economy
         val TRANSACTIONS_I18N_PREFIX = I18nKeysData.Commands.Command.Transactions
+        val PAY_I18N_PREFIX = I18nKeysData.Commands.Command.Pay
         val SONHOS_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Sonhosrank
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label2, CATEGORY_I18N_PREFIX.RootCommandDescription, CommandCategory.ECONOMY, UUID.fromString("a2f8ef4e-ba83-4fb0-a14f-12a7168acf48")) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, CATEGORY_I18N_PREFIX.RootCommandDescription, CommandCategory.ECONOMY, UUID.fromString("a2f8ef4e-ba83-4fb0-a14f-12a7168acf48")) {
         this.enableLegacyMessageSupport = true
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
@@ -28,6 +29,13 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
                 add("balance")
             }
             executor = SonhosAtmExecutor(loritta)
+        }
+
+        subcommand(PAY_I18N_PREFIX.Label, PAY_I18N_PREFIX.Description, UUID.fromString("5cd60131-5e1b-407e-8f73-b20a7370a504")) {
+            this.alternativeLegacyAbsoluteCommandPaths.apply {
+                add("pagar")
+            }
+            executor = SonhosPayExecutor(loritta)
         }
 
         subcommand(TRANSACTIONS_I18N_PREFIX.Label, TRANSACTIONS_I18N_PREFIX.Description, UUID.fromString("d5e873bf-98e6-3770-a4e3-03f08eb80297")) {

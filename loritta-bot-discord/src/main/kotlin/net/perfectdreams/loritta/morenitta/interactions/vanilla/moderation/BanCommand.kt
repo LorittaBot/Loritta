@@ -25,7 +25,6 @@ class BanCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("1de71daf-fed4-4c2e-9988-83dc721ad04f")) {
         defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)
 
-        this.enableLegacyMessageSupport = true
         alternativeLegacyLabels.apply {
             add("banir")
             add("hackban")
