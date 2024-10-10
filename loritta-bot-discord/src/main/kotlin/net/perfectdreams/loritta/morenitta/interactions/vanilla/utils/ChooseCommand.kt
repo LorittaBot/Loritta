@@ -27,6 +27,10 @@ class ChooseCommand : SlashCommandDeclarationWrapper {
 
         this.enableLegacyMessageSupport = true
 
+        alternativeLegacyLabels.apply {
+            add("escolher")
+        }
+
         executor = ChooseExecutor()
     }
 
