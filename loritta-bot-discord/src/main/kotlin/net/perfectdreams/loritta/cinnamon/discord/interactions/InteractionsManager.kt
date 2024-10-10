@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.s
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanButtonExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class InteractionsManager(
@@ -59,9 +58,6 @@ class InteractionsManager(
         register(CancelSonhosTransferButtonExecutor(loritta))
 
         register(ChangeSonhosRankPageButtonExecutor(loritta))
-
-        // ===[ SOCIAL ]===
-        register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))
 
         // ===[ ROBLOX ]===
     }
