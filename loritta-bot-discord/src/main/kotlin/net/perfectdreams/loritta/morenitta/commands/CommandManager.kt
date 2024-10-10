@@ -99,7 +99,7 @@ class CommandManager(val loritta: LorittaBot) {
 
 		// =======[ MISC ]======
 		commandMap.add(SayCommand(loritta))
-		commandMap.add(EscolherCommand(loritta))
+// 		commandMap.add(EscolherCommand(loritta))
 		// commandMap.add(LanguageCommand(loritta))
 		commandMap.add(PatreonCommand(loritta))
 

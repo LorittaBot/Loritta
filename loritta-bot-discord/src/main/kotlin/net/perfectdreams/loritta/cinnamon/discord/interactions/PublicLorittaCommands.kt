@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.d
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.TranslateCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
 
 /**
@@ -61,7 +61,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
 
             // ===[ UTILS ]===
 //            register(MorseCommand(languageManager))
-            register(ChooseCommand(languageManager))
+//            register(ChooseCommand(languageManager))
 //            register(ColorInfoCommand(languageManager))
 //            register(NotificationsCommand(languageManager))
             register(TranslateCommand(languageManager))
