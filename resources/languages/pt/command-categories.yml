@@ -90,10 +90,8 @@ commands:
           text: "A razão de punição predefinida, se alguma punição predefinida estiver configurada no painel de controle"
         skipConfirmation:
           text: "Pula a confirmação da punição"
-        sendViaDirectMessage:
-          text: "Se a punição será enviada ao usuário via mensagem direta"
-        sendToPunishmentLog:
-          text: "Se a punição será enviada ao registro de punições do servidor"
+        isSilent:
+          text: "Se ativo, a punição será silenciosa, ou seja, eu não enviarei avisos no privado e no servidor"
     utils:
       name: "Utilitários"
       description:

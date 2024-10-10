@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.common.locale.LanguageManager
 
 /**
@@ -21,7 +20,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             // register(EmojiCommand(languageManager))
 
             // ===[ MODERATION ]===
-            register(BanCommand(languageManager))
+//            register(BanCommand(languageManager))
 //            register(PredefinedReasonsCommand(languageManager))
 
             // ===[ FUN ]===

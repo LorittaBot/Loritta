@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.p
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.ChangeSonhosRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanButtonExecutor
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class InteractionsManager(
@@ -33,9 +32,6 @@ class InteractionsManager(
         publicLorittaCommands.commands().forEach {
             register(it)
         }
-
-        // ===[ MODERATION ]===
-        register(ConfirmBanButtonExecutor(loritta))
 
         /* commandManager.register(
             BomDiaECiaCommand,

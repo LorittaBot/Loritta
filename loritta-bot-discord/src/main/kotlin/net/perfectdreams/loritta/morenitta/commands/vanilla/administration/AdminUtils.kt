@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.common.commands.ArgumentType
@@ -10,12 +12,17 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WarnAction
+import net.perfectdreams.loritta.morenitta.interactions.InteractionMessage
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanCommand
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
@@ -82,6 +89,7 @@ object AdminUtils {
 		return warnActions
 	}
 
+	@Deprecated("Please use InteraKTions Unleashed")
 	suspend fun checkAndRetrieveAllValidUsersFromMessages(context: CommandContext): UserMatchesResult? {
 		val split = context.rawArgs
 		var matchedCount = 0
@@ -114,6 +122,44 @@ object AdminUtils {
 					Emotes.LORI_HM
 				)
 			)
+			return null
+		}
+
+		return UserMatchesResult(validUsers, split.drop(matchedCount).joinToString(" "))
+	}
+
+	suspend fun checkAndRetrieveAllValidUsersFromString(context: UnleashedContext, usersAsString: String): UserMatchesResult? {
+		val split = usersAsString.split(" ")
+		var matchedCount = 0
+
+		val validUsers = mutableListOf<User>()
+		for (input in split) {
+			// We don't want to query via other means, this would cause issues with Loritta detecting users as messages
+			val shouldUseExtensiveMatching = validUsers.isEmpty()
+
+			val matchedUser = DiscordUtils.extractUserFromString(
+				context.loritta,
+				input,
+				context.mentions.users,
+				context.guild,
+				extractUserViaEffectiveName = shouldUseExtensiveMatching,
+				extractUserViaUsername = shouldUseExtensiveMatching
+			)
+
+			if (matchedUser != null) {
+				matchedCount++
+				validUsers.add(matchedUser)
+			}
+			else break
+		}
+
+		if (validUsers.isEmpty()) {
+			context.reply(false) {
+				styled(
+					context.locale["commands.userDoesNotExist", split[0].stripCodeMarks()],
+					Emotes.LORI_HM
+				)
+			}
 			return null
 		}
 
@@ -196,6 +242,7 @@ object AdminUtils {
 		return true
 	}
 
+	@Deprecated("Please use InteraKTions Unleashed")
 	suspend fun checkForPermissions(context: CommandContext, member: Member): Boolean {
 		if (!context.guild.selfMember.canInteract(member)) {
 			val reply = buildString {
@@ -237,13 +284,81 @@ object AdminUtils {
 		return true
 	}
 
+	suspend fun checkForPermissions(context: UnleashedContext, member: Member): Boolean {
+		if (member.isOwner) {
+			context.reply(false) {
+				styled(
+					context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsOwner(member.asMention)),
+					net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk
+				)
+			}
+			return false
+		}
+
+		if (member.idLong == member.guild.selfMember.idLong) {
+			context.reply(false) {
+				styled(
+					context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsLoritta),
+					net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk
+				)
+			}
+			return false
+		}
+
+		if (member.idLong == context.user.idLong) {
+			context.reply(false) {
+				styled(
+					context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsSelf(context.user.asMention)),
+					net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk
+				)
+			}
+			return false
+		}
+
+		if (!context.guild.selfMember.canInteract(member)) {
+			context.reply(false) {
+				styled(
+					context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.RoleTooLow(member.asMention)),
+					net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk
+				)
+
+				if (context.member.hasPermission(Permission.MANAGE_ROLES)) {
+					styled(
+						context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.RoleTooLowHowToFix),
+						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+					)
+				}
+			}
+			return false
+		}
+
+		if (!context.member.canInteract(member)) {
+			context.reply(false) {
+				styled(
+					context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.PunisherRoleTooLow(member.asMention)),
+					net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk
+				)
+
+				if (context.member.hasPermission(Permission.MANAGE_ROLES)) {
+					styled(
+						context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.PunisherRoleTooLowHowToFix),
+						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+					)
+				}
+			}
+			return false
+		}
+		return true
+	}
+
+	@Deprecated("Please use InteraKTions Unleashed")
 	suspend fun sendConfirmationMessage(context: CommandContext, users: List<User>, hasSilent: Boolean, type: String): Message {
 		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["commands.command.$type.punishName"], users.joinToString { it.asMention }, users.joinToString { it.asTag }, users.joinToString { it.id }]
 
 		val replies = mutableListOf(
 			LorittaReply(
 				str,
-				"⚠"
+				"⚠\uFE0F"
 			)
 		)
 
@@ -265,6 +380,47 @@ object AdminUtils {
 		return context.reply(*replies.toTypedArray())
 	}
 
+	suspend fun sendConfirmationMessage(
+		context: UnleashedContext,
+		users: List<User>,
+		reason: String,
+		type: String,
+		onBanClick: suspend (UnleashedContext) -> (Unit)
+	): InteractionMessage {
+		return context.reply(false) {
+			styled(
+				context.i18nContext.get(
+					I18nKeysData.Commands.Category.Moderation.YouAreReadyToPunish(
+						users.joinToString { it.asMention },
+						reason
+					)
+				),
+				net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+			)
+
+			if (!context.config.getUserData(context.loritta, context.user.idLong).quickPunishment) {
+				styled(
+					context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
+				)
+			}
+
+			actionRow(
+				context.loritta.interactivityManager.buttonForUser(
+					context.user,
+					ButtonStyle.PRIMARY,
+					context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ConfirmPunishment),
+					{
+						loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+					}
+				) {
+					it.deferChannelMessage(false)
+					onBanClick.invoke(it)
+				}
+			)
+		}
+	}
+
+	@Deprecated("Please use InteraKTions Unleashed")
 	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String, sendDiscordReportAdvise: Boolean) {
 		val replies = mutableListOf(
 			LorittaReply(
@@ -292,6 +448,32 @@ object AdminUtils {
 		context.reply(
 			*replies.toTypedArray()
 		)
+	}
+
+	suspend fun sendSuccessfullyPunishedMessage(context: UnleashedContext, reason: String) {
+		context.reply(false) {
+			styled(
+				context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
+				"\uD83C\uDF89"
+			)
+
+			val reportExplanation = when {
+				reason.contains("raid", true) -> context.locale["${LOCALE_PREFIX}.reports.raidReport"]
+				reason.contains("porn", true) || reason.contains(
+					"nsfw",
+					true
+				) -> context.locale["${LOCALE_PREFIX}.reports.nsfwReport"]
+
+				else -> null
+			}
+
+			if (reportExplanation != null) {
+				styled(
+					context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]}>"],
+					Emotes.LORI_HM
+				)
+			}
+		}
 	}
 
 	fun generateAuditLogMessage(locale: BaseLocale, punisher: User, reason: String) = locale["${LOCALE_PREFIX}.punishedLog", "${punisher.name}#${punisher.discriminator}", reason].substringIfNeeded(0 until 512)
@@ -326,6 +508,7 @@ object AdminUtils {
 		return messageConfig?.get(ModerationPunishmentMessagesConfig.punishLogMessage) ?: settings.punishLogMessage
 	}
 
+	@Deprecated("Please use InteraKTions Unleashed")
 	suspend fun getOptions(context: CommandContext, rawReason: String): AdministrationOptions? {
 		var reason = rawReason
 
@@ -377,6 +560,73 @@ object AdminUtils {
 
 		if (attachment != null)
 			reason += " " + attachment.url
+
+		return AdministrationOptions(reason, skipConfirmation, silent, delDays)
+	}
+
+	suspend fun getOptions(context: UnleashedContext, rawReason: String): AdministrationOptions? {
+		var reason = rawReason
+
+		val pipedReason = reason.split("|")
+
+		var usingPipedArgs = false
+		var skipConfirmation = context.config.getUserData(context.loritta, context.user.idLong).quickPunishment
+		var delDays = 0
+
+		var silent = false
+
+		if (pipedReason.size > 1) {
+			val pipedArgs = pipedReason.toMutableList()
+			val _reason = pipedArgs[0]
+			pipedArgs.removeAt(0)
+
+			pipedArgs.forEach {
+				val arg = it.trim()
+				if (arg == "force" || arg == "f") {
+					skipConfirmation = true
+					usingPipedArgs = true
+				}
+				if (arg == "s" || arg == "silent") {
+					skipConfirmation = true
+					usingPipedArgs = true
+					silent = true
+				}
+				if (arg.endsWith("days") || arg.endsWith("dias") || arg.endsWith("day") || arg.endsWith("dia")) {
+					delDays = arg.split(" ")[0].toIntOrNull() ?: 0
+
+					if (delDays > 7) {
+						context.reply(false) {
+							styled(
+								context.locale["$LOCALE_PREFIX.cantDeleteMessagesMoreThan7Days"],
+								Constants.ERROR
+							)
+						}
+						return null
+					}
+					if (0 > delDays) {
+						context.reply(false) {
+							styled(
+								context.locale["$LOCALE_PREFIX.cantDeleteMessagesLessThan0Days"],
+								Constants.ERROR
+							)
+						}
+						return null
+					}
+
+					usingPipedArgs = true
+				}
+			}
+
+			if (usingPipedArgs)
+				reason = _reason
+		}
+
+		if (context is LegacyMessageCommandContext) {
+			val attachment = context.event.message.attachments.firstOrNull { it.isImage }
+
+			if (attachment != null)
+				reason += " " + attachment.url
+		}
 
 		return AdministrationOptions(reason, skipConfirmation, silent, delDays)
 	}

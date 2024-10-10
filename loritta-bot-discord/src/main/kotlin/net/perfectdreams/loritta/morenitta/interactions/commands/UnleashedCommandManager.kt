@@ -59,6 +59,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.PredefinedReasonsCommand
@@ -288,6 +289,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(RateCommand(loritta))
         register(TextTransformCommand())
         register(SoundboxCommand(loritta))
+        register(BanCommand(loritta))
 
         // ===[ IMAGES ]==
         register(ArtCommand(loritta.gabrielaImageServerClient))
