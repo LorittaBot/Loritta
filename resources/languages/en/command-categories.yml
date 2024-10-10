@@ -83,10 +83,6 @@ commands:
           text: "The predefined punishment reason, if any predefined punishment reasons are configured in the dashboard"
         skipConfirmation:
           text: "Skips the punishment confirmation"
-        sendViaDirectMessage:
-          text: "Sets if the punishment will be sent to the user via direct message"
-        sendToPunishmentLog:
-          text: "Sets if the punishment will be sent to the punishment log"
     utils:
       name: "Utilities"
       description:
