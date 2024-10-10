@@ -1,17 +1,16 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
 import kotlinx.html.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxUtils
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdGenerator
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.adWrapper
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayVideoAd
+import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdGenerator
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 
 class DailyView(
@@ -107,21 +106,6 @@ class DailyView(
         div(classes = "odd-wrapper") {
             style = "text-align: center;"
 
-            adWrapper {
-                generateNitroPayAdOrSponsor(
-                    loritta,
-                    0,
-                    "daily-top1",
-                    NitroPayAdGenerator.ALL_SIZES
-                )
-                generateNitroPayAdOrSponsor(
-                    loritta,
-                    1,
-                    "daily-top2",
-                    NitroPayAdGenerator.ALL_SIZES_EXCEPT_PHONES
-                )
-            }
-
             div(classes = "media") {
                 div(classes = "media-body") {
                     div(classes = "daily-attention") {
@@ -176,6 +160,15 @@ class DailyView(
                 }
             }
 
+            adWrapper {
+                generateNitroPayAdOrSponsor(
+                    loritta,
+                    0,
+                    "daily-top1",
+                    NitroPayAdGenerator.ALL_SIZES
+                )
+            }
+            
             div(classes = "media") {
                 div(classes = "media-body") {
                     div {
@@ -190,12 +183,6 @@ class DailyView(
                     2,
                     "daily-bottom1",
                     NitroPayAdGenerator.ALL_SIZES
-                )
-                generateNitroPayAdOrSponsor(
-                    loritta,
-                    3,
-                    "daily-bottom2",
-                    NitroPayAdGenerator.ALL_SIZES_EXCEPT_PHONES
                 )
             }
 
