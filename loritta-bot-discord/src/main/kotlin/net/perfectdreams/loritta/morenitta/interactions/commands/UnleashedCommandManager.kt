@@ -364,6 +364,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(MorseCommand())
         register(NotificationsCommand())
         register(ChooseCommand())
+        register(TranslateCommand(loritta))
 
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))
