@@ -184,9 +184,7 @@ fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: Str
 }
 
 fun DIV.generateSponsor(sponsor: Sponsor) {
-    div(classes = "media") {
-        generateSponsorNoWrap(sponsor)
-    }
+    generateSponsorNoWrap(sponsor)
 }
 
 fun DIV.generateSponsorNoWrap(sponsor: Sponsor) {
