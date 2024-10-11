@@ -16,7 +16,7 @@ otherAccountIsTooNew: "Eu sei que é legal ajudar os outros... Mas a conta do {u
 cantTransferToSelf: "Transferência concluída com sucesso! Você recebeu *nada* de si mesmo, porque você está tentando transferir sonhos para si mesmo!"
 tryingToTransferZeroSonhos: "Uau, incrível! Você vai transferir *zero* sonhos, maravilha! Menos trabalho para mim, porque isso significa que não preciso preparar uma transação para você."
 tryingToTransferLessThanZeroSonhos: "Uau, excelente! Você vai transferir sonhos *negativos*, extraordinário! Será que sonhos negativos seriam... *pesadelos*? Eu sei, eu sei... Sou um gênio."
-youArentInvolvedInThisTransaction: "Que isso? Tá tentando roubar os sonhos dos outros? Se você é um pobre morando de baixo da ponte... bem, isso não é problema meu! Essa transação não é para você!"
+youArentInvolvedInThisTransaction: "Que isso? Tá tentando roubar os sonhos dos outros? O problema não é meu que você quer roubar sonhos só porque você é um mísero pobre que mora de baixo de uma ponte! Essa transação não é para você!"
 thisTransactionHasAlreadyBeenTransferred: "Eita, parece que esta transferência já foi realizada!"
 failReasons:
   expired: "Transferência Expirada"
