@@ -33,6 +33,7 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
 
         subcommand(PAY_I18N_PREFIX.Label, PAY_I18N_PREFIX.Description, UUID.fromString("5cd60131-5e1b-407e-8f73-b20a7370a504")) {
             this.alternativeLegacyAbsoluteCommandPaths.apply {
+                add("pay")
                 add("pagar")
             }
             executor = SonhosPayExecutor(loritta)

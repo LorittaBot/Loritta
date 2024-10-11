@@ -141,7 +141,7 @@ object AdminUtils {
 				context.loritta,
 				input,
 				context.mentions.users,
-				context.guild,
+				context.guildOrNull,
 				extractUserViaEffectiveName = shouldUseExtensiveMatching,
 				extractUserViaUsername = shouldUseExtensiveMatching
 			)
