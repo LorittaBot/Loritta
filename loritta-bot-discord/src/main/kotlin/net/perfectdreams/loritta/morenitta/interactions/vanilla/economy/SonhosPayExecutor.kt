@@ -124,19 +124,19 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
 
         val now = Instant.now()
         for (receiver in users) {
-            val isLoritta = receiver.idLong == context.guild.selfMember.idLong
+            val isLoritta = receiver.idLong == context.jda.selfUser.idLong
 
             checkIfOtherAccountIsOldEnough(context, receiver)
             // checkIfSelfAccountGotDailyRecently(context)
 
             if (context.user.idLong == receiver.idLong) {
-                context.reply(true) {
+                context.reply(false) {
                     styled(
                         context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.CantTransferToSelf),
                         Emotes.Error
                     )
                 }
-                return
+                continue
             }
 
             if (AccountUtils.checkAndSendMessageIfUserIsBanned(loritta, context, receiver))
@@ -282,7 +282,7 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                 context.loritta,
                 input,
                 context.mentions.users,
-                context.guild,
+                context.guildOrNull,
                 extractUserViaEffectiveName = shouldUseExtensiveMatching,
                 extractUserViaUsername = shouldUseExtensiveMatching
             )
