@@ -41,6 +41,8 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
         val quantity = string("quantity", SonhosCommand.PAY_I18N_PREFIX.Options.Quantity.Text) {
             // autocomplete(ShortenedToLongSonhosAutocompleteExecutor(loritta))
         }
+        val autoAccept = optionalBoolean("auto_accept", SonhosCommand.PAY_I18N_PREFIX.Options.AutoAccept.Text) {
+        }
         val ttlDuration = optionalString("expires_after", SonhosCommand.PAY_I18N_PREFIX.Options.ExpiresAfter.Text) {
             choice(I18nKeysData.Time.Minutes(1), "1m")
             choice(I18nKeysData.Time.Minutes(5), "5m")
@@ -66,6 +68,7 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
 
         val users = checkAndRetrieveAllValidUsersFromString(context, args[options.user])
         val howMuch = NumberUtils.convertShortenedNumberOrUserSonhosSpecificToLong(args[options.quantity], userProfile.money)
+        val autoAccept = args[options.autoAccept] ?: false
         val ttlDuration = args[options.ttlDuration]?.let { Duration.parse(it) } ?: 15.minutes
 
         if (users.isEmpty()) {
@@ -140,13 +143,29 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                 continue
 
             // All preliminary checks have passed! Let's create a sonhos transfer request
+
+            // We WANT to store on the database due to two things:
+            // 1. We want to control the interaction TTL
+            // 2. We want to block duplicate transactions by buttom spamming (with this, we can block this on transaction level)
+            val nowPlusTimeToLive = now.plusMillis(ttlDuration.inWholeMilliseconds)
+
+            var acceptedQuantity = 0
+            if (autoAccept)
+                acceptedQuantity++
+            if (isLoritta)
+                acceptedQuantity++
+
             val sonhosTransferRequestId = loritta.transaction {
                 SonhosTransferRequests.insertAndGetId {
                     it[giver] = context.user.idLong
                     it[SonhosTransferRequests.receiver] = receiver.idLong
                     it[quantity] = howMuch
                     it[requestedAt] = now
-                    it[expiresAt] = now.plusMillis(ttlDuration.inWholeMilliseconds)
+                    it[expiresAt] = nowPlusTimeToLive
+
+                    // TODO: This causes a bug: If the user is auto accepting + Loritta automatically accepts the button, the button will be 2/2 but the transaction will not automatically go thru
+                    if (autoAccept)
+                        it[giverAcceptedAt] = now
 
                     // If it is Loritta, we will mimick that she is *actually* accepting the transfer!
                     if (isLoritta)
@@ -161,11 +180,6 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                 // tellUserLorittaIsGrateful -> context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()
                 else -> null
             }
-
-            // We WANT to store on the database due to two things:
-            // 1. We want to control the interaction TTL
-            // 2. We want to block duplicate transactions by buttom spamming (with this, we can block this on transaction level)
-            val nowPlusTimeToLive = Clock.System.now() + ttlDuration
 
             context.reply(false) {
                 // Allow mentioning the receiver
@@ -195,8 +209,8 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                     context.i18nContext.get(
                         SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(
                             receiver.asMention,
-                            TimeFormat.DATE_TIME_LONG.format(nowPlusTimeToLive.toJavaInstant()),
-                            TimeFormat.RELATIVE.format(nowPlusTimeToLive.toJavaInstant())
+                            TimeFormat.DATE_TIME_LONG.format(nowPlusTimeToLive),
+                            TimeFormat.RELATIVE.format(nowPlusTimeToLive)
                         )
                     ),
                     Emotes.LoriZap
@@ -207,7 +221,7 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                     Button.of(
                         ButtonStyle.PRIMARY,
                         "$SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX:${sonhosTransferRequestId.value}",
-                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer(0)),
+                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer(acceptedQuantity)),
                         Emotes.Handshake.toJDA()
                     )
                 )

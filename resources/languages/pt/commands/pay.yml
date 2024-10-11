@@ -39,5 +39,7 @@ options:
     text: "O usuário que irá receber os sonhos"
   quantity:
     text: "A quantidade de sonhos que você deseja enviar"
+  autoAccept:
+    text: "Se ativado, você irá automaticamente aceitar o pedido crioado sem precisar clicar no botão"
   expiresAfter:
     text: "Após quanto tempo a transação será automaticamente cancelada"
