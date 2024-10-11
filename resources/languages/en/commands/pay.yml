@@ -1,9 +1,7 @@
 label: "pay"
 description: "Transfer sonhos to other users"
-acceptTransfer: "Accept Transfer"
 cancel: "Cancel"
 youAreGoingToTransfer: "You are about to transfer **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to {receiver}!"
-confirmTheTransaction: "To confirm the transaction, {receiver} must accept the transaction by {time} ({timeRelative})!"
 transferAccepted: "Transfer Accepted"
 transferFailed: "Transfer Failed - {failReason}"
 transferCancelled: "Transfer Cancelled"
@@ -16,7 +14,6 @@ otherAccountIsTooNew: "I know it's nice to help others... But {user}'s account i
 tryingToTransferZeroSonhos: "Wow, awesome! You are going to transfer *zero* sonhos, wonderful! Less work for me, because that means that I don't need to prepare a transaction for you."
 tryingToTransferLessThanZeroSonhos: "Wow, outstanding! You are going to transfer *negative* sonhos, extraordinary! Isn't negative sonhos... *nightmares*? I know, I know... I'm a genius."
 failReasons:
-  expired: "Expired"
   insufficientSonhos: "Insufficient Sonhos"
 randomQuirkyRichMessages:
   - "Do you want to show off by transferring so much sonhos?"
