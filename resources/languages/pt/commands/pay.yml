@@ -1,6 +1,6 @@
 label: "pagar"
 description: "Transfira sonhos para outros usuários"
-acceptTransfer: "Aceitar Transferência"
+acceptTransfer: "Aceitar Transferência ({acceptedQuantity,number}/2)"
 cancel: "Cancelar"
 youAreGoingToTransfer: "Você está prestes a transferir **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para {receiver}!"
 confirmTheTransaction: "Para confirmar a transação, {receiver} deve aceitar a transação até {time} ({timeRelative})!"
@@ -16,9 +16,12 @@ otherAccountIsTooNew: "Eu sei que é legal ajudar os outros... Mas a conta do {u
 cantTransferToSelf: "Transferência concluída com sucesso! Você recebeu *nada* de si mesmo, porque você está tentando transferir sonhos para si mesmo!"
 tryingToTransferZeroSonhos: "Uau, incrível! Você vai transferir *zero* sonhos, maravilha! Menos trabalho para mim, porque isso significa que não preciso preparar uma transação para você."
 tryingToTransferLessThanZeroSonhos: "Uau, excelente! Você vai transferir sonhos *negativos*, extraordinário! Será que sonhos negativos seriam... *pesadelos*? Eu sei, eu sei... Sou um gênio."
+youArentInvolvedInThisTransaction: "Tá tentando fazer o que?"
+thisTransactionHasAlreadyBeenTransferred: "Eita, parece que esta transferência já foi realizada!"
 failReasons:
-  expired: "Expirada"
+  expired: "Transferência Expirada"
   insufficientSonhos: "Sonhos Insuficientes"
+  unknownRequest: "Transferência Desconhecida"
 randomQuirkyRichMessages:
   - "Tá querendo ostentar transferindo tanto dinheiro assim?"
   - "iala olha o rico kkk"
