@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import dev.kord.common.entity.Snowflake
 import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -12,7 +11,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -26,7 +24,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
-import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.UserId
 import java.util.*
 import kotlin.time.Duration.Companion.hours
@@ -68,7 +66,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                 }
 
             val results = context.loritta.pudding.bets.addToCoinFlipBetGlobalMatchmakingQueue(
-                UserId(Snowflake(context.user.idLong)),
+                UserId(context.user.idLong),
                 context.discordInteraction.token,
                 context.loritta.languageManager.getIdByI18nContext(context.i18nContext),
                 quantity
@@ -95,8 +93,8 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                     }
 
                     is BetsService.CoinFlipResult -> {
-                        val winnerCachedUserInfo = context.loritta.getCachedUserInfo(result.winner)
-                        val loserCachedUserInfo = context.loritta.getCachedUserInfo(result.loser)
+                        val winnerCachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoById(result.winner)
+                        val loserCachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoById(result.loser)
                         val now24HoursAgo = Clock.System.now()
                             .minus(24.hours)
                         val winnerBetStats = context.loritta.pudding.bets.getCoinFlipBetGlobalUserBetsStats(
@@ -108,14 +106,14 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                             now24HoursAgo
                         )
 
-                        val isSelfUserTheWinner = result.winner == UserId(Snowflake(context.user.idLong))
+                        val isSelfUserTheWinner = result.winner == UserId(context.user.idLong)
 
                         context.reply(true) {
                             apply(
                                 createCoinFlipResultMessage(
                                     context.loritta,
                                     context.i18nContext,
-                                    UserId(Snowflake(context.user.idLong)),
+                                    UserId(context.user.idLong),
                                     result,
                                     quantity,
                                     winnerCachedUserInfo,
@@ -179,7 +177,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                             appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
                                 context.loritta,
                                 context.i18nContext,
-                                UserId(Snowflake(context.user.idLong)),
+                                UserId(context.user.idLong),
                                 "bet-coinflip-global",
                                 "removed-from-mm"
                             )
@@ -200,7 +198,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                             appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
                                 context.loritta,
                                 context.i18nContext,
-                                UserId(Snowflake(context.user.idLong)),
+                                UserId(context.user.idLong),
                                 "bet-coinflip-global",
                                 "mm-check"
                             )
@@ -262,7 +260,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                             I18N_PREFIX.CongratulationsJustForFun(
                                 user = "<@${selfUser.value}>",
                                 loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
-                                loserId = loserCachedUserInfo?.id?.value.toString()
+                                loserId = loserCachedUserInfo?.id.toString()
                             )
                         ),
                         Emotes.LoriRich
@@ -273,7 +271,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                             I18N_PREFIX.LostJustForFun(
                                 user = "<@${selfUser.value}>",
                                 winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
-                                winnerId = winnerCachedUserInfo?.id?.value.toString()
+                                winnerId = winnerCachedUserInfo?.id.toString()
                             )
                         ),
                         Emotes.LoriSob
@@ -289,7 +287,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                                 sonhosCount = result.quantityAfterTax,
                                 sonhosCountWithoutTax = result.quantity,
                                 loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
-                                loserId = loserCachedUserInfo?.id?.value.toString()
+                                loserId = loserCachedUserInfo?.id.toString()
                             )
                         ),
                         Emotes.LoriRich
@@ -302,7 +300,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                                 sonhosCount = result.quantityAfterTax,
                                 sonhosCountWithoutTax = result.quantity,
                                 winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
-                                winnerId = winnerCachedUserInfo?.id?.value.toString()
+                                winnerId = winnerCachedUserInfo?.id.toString()
                             )
                         ),
                         Emotes.LoriSob
@@ -316,7 +314,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                                 user = "<@${selfUser.value}>",
                                 sonhosCount = result.quantityAfterTax,
                                 loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
-                                loserId = loserCachedUserInfo?.id?.value.toString()
+                                loserId = loserCachedUserInfo?.id.toString()
                             )
                         ),
                         Emotes.LoriRich
@@ -344,7 +342,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                                 user = "<@${selfUser.value}>",
                                 sonhosCount = result.quantityAfterTax,
                                 winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
-                                winnerId = winnerCachedUserInfo?.id?.value.toString()
+                                winnerId = winnerCachedUserInfo?.id.toString()
                             )
                         ),
                         Emotes.LoriSob
@@ -426,7 +424,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                     }
 
                     val matchmakingStats = context.loritta.pudding.bets.getUserCoinFlipBetGlobalMatchmakingStats(
-                        UserId(Snowflake(context.event.user.idLong)),
+                        UserId(context.event.user.idLong),
                         matchedChoices.toList(),
                         Clock.System.now().minus(5.minutes)
                     )
@@ -545,7 +543,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
 
             if (isRemoveFromQueueRequest) {
                 val leftQueue = context.loritta.pudding.bets.removeFromCoinFlipBetGlobalMatchmakingQueue(
-                    UserId(Snowflake(context.user.idLong)),
+                    UserId(context.user.idLong),
                     quantity
                 )
 

@@ -1,12 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.discord.voice
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.voice.VoiceConnection
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.ConcurrentHashMap
 
@@ -18,8 +15,8 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
         private val logger = KotlinLogging.logger {}
     }
 
-    val voiceConnections = ConcurrentHashMap<Snowflake, LorittaVoiceConnection>()
-    val voiceConnectionsMutexes = ConcurrentHashMap<Snowflake, Mutex>()
+    val voiceConnections = ConcurrentHashMap<Long, LorittaVoiceConnection>()
+    val voiceConnectionsMutexes = ConcurrentHashMap<Long, Mutex>()
 
     /**
      * Gets or creates a [LorittaVoiceConnection] on the [guildId] and [channelId]
@@ -29,8 +26,8 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
      * @return a [LorittaVoiceConnection] instance
      */
     suspend fun getOrCreateVoiceConnection(
-        guildId: Snowflake,
-        channelId: Snowflake
+        guildId: Long,
+        channelId: Long
     ): LorittaVoiceConnection {
         voiceConnectionsMutexes.getOrPut(guildId) { Mutex() }.withLock {
             val lorittaVoiceConnection = voiceConnections[guildId]
@@ -42,14 +39,14 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
 
             val notificationChannel = Channel<Unit>()
 
-            val guild = loritta.lorittaShards.getGuildById(guildId.value.toLong())!!
+            val guild = loritta.lorittaShards.getGuildById(guildId)!!
 
             // TODO: Send a UpdateVoiceState to disconnect Loritta from any voice channel, useful if our cache doesn't match the "reality"
             val audioProvider = LorittaAudioProvider(notificationChannel)
 
             val audioManager = guild.audioManager
             audioManager.sendingHandler = audioProvider
-            guild.audioManager.openAudioConnection(guild.getVoiceChannelById(channelId.value.toLong()))
+            guild.audioManager.openAudioConnection(guild.getVoiceChannelById(channelId))
 
             val loriVC = LorittaVoiceConnection(guild, channelId, audioManager, audioProvider, notificationChannel)
             voiceConnections[guildId] = loriVC
@@ -68,7 +65,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
      * @param guildId the guild ID
      * @param voiceConnection the voice connection that will be shutdown
      */
-    suspend fun shutdownVoiceConnection(guildId: Snowflake, voiceConnection: LorittaVoiceConnection) {
+    suspend fun shutdownVoiceConnection(guildId: Long, voiceConnection: LorittaVoiceConnection) {
         logger.info { "Shutting down voice connection $voiceConnection related to $guildId" }
         voiceConnections.remove(guildId, voiceConnection)
         voiceConnection.shutdown()
@@ -77,12 +74,12 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
     /**
      * Validates Loritta's voice state in [guildId] for [userId]
      */
-    suspend fun validateVoiceState(guildId: Snowflake, userId: Snowflake): VoiceStateValidationResult {
+    suspend fun validateVoiceState(guildId: Long, userId: Long): VoiceStateValidationResult {
         val userConnectedVoiceChannel = loritta.cache.getUserConnectedVoiceChannel(guildId, userId) ?: return VoiceStateValidationResult.UserNotConnectedToAVoiceChannel
 
         // Can we talk there?
         if (!userConnectedVoiceChannel.guild.selfMember.hasPermission(userConnectedVoiceChannel, net.dv8tion.jda.api.Permission.VOICE_CONNECT, net.dv8tion.jda.api.Permission.VOICE_SPEAK))
-            return VoiceStateValidationResult.LorittaDoesntHavePermissionToTalkOnChannel(Snowflake(userConnectedVoiceChannel.idLong)) // Looks like we can't...
+            return VoiceStateValidationResult.LorittaDoesntHavePermissionToTalkOnChannel(userConnectedVoiceChannel.idLong) // Looks like we can't...
 
         // Are we already playing something in another channel already?
         val currentlyActiveVoiceConnection = voiceConnections[guildId]
@@ -90,27 +87,27 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
         if (currentlyActiveVoiceConnection != null) {
             if (currentlyActiveVoiceConnection.isPlaying() && currentlyActiveVoiceConnection.channelId.toLong() != userConnectedVoiceChannel.idLong)
                 return VoiceStateValidationResult.AlreadyPlayingInAnotherChannel(
-                    Snowflake(userConnectedVoiceChannel.idLong),
+                    userConnectedVoiceChannel.idLong,
                     currentlyActiveVoiceConnection.channelId
                 )
         }
 
         return VoiceStateValidationResult.VoiceStateValidationData(
-            Snowflake(userConnectedVoiceChannel.idLong),
+            userConnectedVoiceChannel.idLong,
             currentlyActiveVoiceConnection?.channelId
         )
     }
 
     sealed class VoiceStateValidationResult {
         object UserNotConnectedToAVoiceChannel : VoiceStateValidationResult()
-        class LorittaDoesntHavePermissionToTalkOnChannel(val userConnectedVoiceChannel: Snowflake) : VoiceStateValidationResult()
+        class LorittaDoesntHavePermissionToTalkOnChannel(val userConnectedVoiceChannel: Long) : VoiceStateValidationResult()
         class AlreadyPlayingInAnotherChannel(
-            val userConnectedVoiceChannel: Snowflake,
-            val lorittaConnectedVoiceChannel: Snowflake
+            val userConnectedVoiceChannel: Long,
+            val lorittaConnectedVoiceChannel: Long
         ) : VoiceStateValidationResult()
         data class VoiceStateValidationData(
-            val userConnectedVoiceChannel: Snowflake,
-            val lorittaConnectedVoiceChannel: Snowflake?
+            val userConnectedVoiceChannel: Long,
+            val lorittaConnectedVoiceChannel: Long?
         ) : VoiceStateValidationResult()
     }
 }

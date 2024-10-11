@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.rpc.processors
 
 import io.ktor.server.application.*
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession

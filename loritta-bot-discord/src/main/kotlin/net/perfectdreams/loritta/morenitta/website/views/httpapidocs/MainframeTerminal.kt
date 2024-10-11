@@ -167,7 +167,7 @@ fun FlowContent.mainframeTerminalLorifetchStats(
         text(
             DateUtils.formatDateDiff(
                 loritta.languageManager.getI18nContextById("en"), // Yes, we want the english version of this!
-                TimeUtil.getTimeCreated(loritta.config.loritta.discord.applicationId.value.toLong()).toInstant().toEpochMilli(),
+                TimeUtil.getTimeCreated(loritta.config.loritta.discord.applicationId).toInstant().toEpochMilli(),
                 System.currentTimeMillis(),
                 maxParts = 3
             )

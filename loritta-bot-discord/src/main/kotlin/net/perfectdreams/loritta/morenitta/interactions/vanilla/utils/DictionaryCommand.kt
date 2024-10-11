@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
-import dev.kord.common.Color
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -16,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import org.jsoup.Jsoup
+import java.awt.Color
 import java.net.URLEncoder
 import java.util.*
 

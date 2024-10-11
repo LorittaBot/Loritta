@@ -145,7 +145,7 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 value = 100
                 isLoveYourself = true
                 isNatural = false // Not a natural ship
-            } else if (user1Id == context.loritta.config.loritta.discord.applicationId.value.toLong() || user2Id == context.loritta.config.loritta.discord.applicationId.value.toLong()) {
+            } else if (user1Id == context.loritta.config.loritta.discord.applicationId || user2Id == context.loritta.config.loritta.discord.applicationId) {
                 // Easter Egg: Shipping you/someone with Loritta
                 val shipEffects = mutableListOf<PuddingShipEffect>()
 

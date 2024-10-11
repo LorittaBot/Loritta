@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile.badges
 
 import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.Badge

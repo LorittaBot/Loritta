@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.Au
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.serializable.UserId
 import java.util.*
 
 class RepCommand : SlashCommandDeclarationWrapper {
@@ -133,7 +132,7 @@ class RepCommand : SlashCommandDeclarationWrapper {
 
                     append("[$day/$month/$year $hour:$minute] ")
 
-                    val user = context.loritta.getCachedUserInfo(UserId(reputation.givenById))
+                    val user = context.loritta.lorittaShards.retrieveUserInfoById(reputation.givenById)
                     if (user == null)
                         append("Unknown: ")
                     else

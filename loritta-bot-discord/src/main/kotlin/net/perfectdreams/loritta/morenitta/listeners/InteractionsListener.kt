@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
@@ -993,7 +992,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
     private fun updateCommands(guildId: Long, action: (List<CommandData>) -> (List<Command>)): List<DiscordCommand> {
         logger.info { "Updating slash command on guild $guildId..." }
 
-        val applicationCommands = manager.slashCommands.map { manager.convertDeclarationToJDA(it) } + loritta.interactionsManager.interaKTions.manager.applicationCommandsDeclarations.map { manager.convertInteraKTionsDeclarationToJDA(it) } + manager.userCommands.map { manager.convertDeclarationToJDA(it) } + manager.messageCommands.map { manager.convertDeclarationToJDA(it) }
+        val applicationCommands = manager.slashCommands.map { manager.convertDeclarationToJDA(it) } + manager.userCommands.map { manager.convertDeclarationToJDA(it) } + manager.messageCommands.map { manager.convertDeclarationToJDA(it) }
         logger.info { "Successfully converted all application command declarations to JDA! Total commands: ${applicationCommands.size}" }
         Command.Type.entries.filter { it != Command.Type.UNKNOWN }.forEach { type ->
             logger.info { "Command Type ${type.name}: ${applicationCommands.filter { type == it.type }.size} commands" }

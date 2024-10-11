@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import dev.kord.common.entity.Snowflake
 import dev.minn.jda.ktx.interactions.components.option
 import dev.minn.jda.ktx.messages.InlineEmbed
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TransactionType
@@ -25,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transact
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.*
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import kotlin.math.ceil
 
 class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -45,7 +44,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             val transactionTypeFilter = userFacingTransactionTypeFilter.ifEmpty { TransactionType.entries.toList() }
 
             val transactions = loritta.pudding.sonhos.getUserTransactions(
-                UserId(Snowflake(viewingTransactionsOfUserId)),
+                UserId(viewingTransactionsOfUserId),
                 transactionTypeFilter,
                 TRANSACTIONS_PER_PAGE,
                 (page * TRANSACTIONS_PER_PAGE),
@@ -54,7 +53,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             )
 
             val totalTransactions = loritta.pudding.sonhos.getUserTotalTransactions(
-                UserId(Snowflake(viewingTransactionsOfUserId)),
+                UserId(viewingTransactionsOfUserId),
                 transactionTypeFilter,
                 null,
                 null
@@ -62,7 +61,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
             val totalPages = ceil((totalTransactions / TRANSACTIONS_PER_PAGE.toDouble())).toLong()
             val isSelf = viewingTransactionsOfUserId == userId
-            val cachedUserInfo = loritta.getCachedUserInfo(Snowflake(viewingTransactionsOfUserId)) ?: error("Missing cached user info!")
+            val cachedUserInfo = loritta.lorittaShards.retrieveUserInfoById(viewingTransactionsOfUserId) ?: error("Missing cached user info!")
 
             content = i18nContext.get(
                 SonhosCommand.TRANSACTIONS_I18N_PREFIX.NotAllTransactionsAreHere
@@ -217,8 +216,8 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             page: Long,
             totalTransactions: Long
         ) {
-            val cachedUserInfos = mutableMapOf<UserId, CachedUserInfo?>(
-                cachedUserInfo.id to cachedUserInfo
+            val cachedUserInfos = mutableMapOf<UserId, net.perfectdreams.loritta.morenitta.utils.CachedUserInfo?>(
+                UserId(cachedUserInfo.id) to cachedUserInfo
             )
 
             title = buildString {

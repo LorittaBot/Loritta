@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.discord.voice
 
-import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
@@ -9,12 +8,11 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.managers.AudioManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import kotlin.time.Duration.Companion.minutes
 
 data class LorittaVoiceConnection(
     private val guild: Guild,
-    var channelId: Snowflake, // Users can move Loritta to another channel
+    var channelId: Long, // Users can move Loritta to another channel
     private val audioManager: AudioManager,
     private val audioProvider: LorittaAudioProvider,
     private val audioClipProviderNotificationChannel: Channel<Unit>
@@ -34,10 +32,10 @@ data class LorittaVoiceConnection(
         audioClips.send(audioClip)
     }
 
-    suspend fun switchChannel(channelId: Snowflake) {
+    suspend fun switchChannel(channelId: Long) {
         if (this.channelId != channelId) {
             this.channelId = channelId
-            audioManager.openAudioConnection(guild.getVoiceChannelById(channelId.toLong()))
+            audioManager.openAudioConnection(guild.getVoiceChannelById(channelId))
         }
     }
 
@@ -77,6 +75,6 @@ data class LorittaVoiceConnection(
 
     class AudioClipInfo(
         val frames: List<ByteArray>,
-        val channelId: Snowflake
+        val channelId: Long
     )
 }

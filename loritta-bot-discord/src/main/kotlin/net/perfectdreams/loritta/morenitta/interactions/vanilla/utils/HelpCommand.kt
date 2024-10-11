@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
-import dev.kord.common.Color
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -9,6 +8,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import java.awt.Color
 import java.util.*
 
 class HelpCommand : SlashCommandDeclarationWrapper {

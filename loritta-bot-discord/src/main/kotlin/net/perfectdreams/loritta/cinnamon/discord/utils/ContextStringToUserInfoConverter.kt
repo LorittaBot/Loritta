@@ -1,9 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.serializable.CachedUserInfo
-import net.perfectdreams.loritta.serializable.UserId
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 
 /**
  * Converts a String, using a CommandContext, to a CachedUserInfo object
@@ -19,7 +17,7 @@ object ContextStringToUserInfoConverter {
 
             val user = context.mentions.users.firstOrNull { it.idLong == userId } ?: return null // If there isn't any matching user, then return null
             return CachedUserInfo(
-                UserId(user.idLong),
+                user.idLong,
                 user.name,
                 user.discriminator,
                 user.globalName,
@@ -28,14 +26,14 @@ object ContextStringToUserInfoConverter {
         }
 
         val snowflake = try {
-            Snowflake(input)
+            input.toLong()
         } catch (e: NumberFormatException) {
             null
         }
 
         // If the snowflake is not null, then it *may* be a user ID!
         if (snowflake != null) {
-            val cachedUserInfo = context.loritta.getCachedUserInfo(UserId(snowflake.value))
+            val cachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoById(snowflake)
             if (cachedUserInfo != null)
                 return cachedUserInfo
         }

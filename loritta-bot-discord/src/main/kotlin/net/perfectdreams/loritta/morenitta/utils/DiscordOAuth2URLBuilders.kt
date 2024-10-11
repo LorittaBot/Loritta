@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import io.ktor.http.*
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 /**

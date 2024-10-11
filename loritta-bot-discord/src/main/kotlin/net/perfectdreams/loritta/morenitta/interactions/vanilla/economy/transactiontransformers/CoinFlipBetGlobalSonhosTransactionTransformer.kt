@@ -4,11 +4,12 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.CoinFlipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
-object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransformer<CoinFlipBetGlobalSonhosTransaction> {
+object CoinFlipBetGlobalSonhosTransactionTransformer :
+    SonhosTransactionTransformer<CoinFlipBetGlobalSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,
@@ -17,8 +18,10 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
         transaction: CoinFlipBetGlobalSonhosTransaction
     ): suspend StringBuilder.() -> (Unit) = {
         val wonTheBet = transaction.user == transaction.winner
-        val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
-        val loserUserInfo = cachedUserInfos.getOrPut(transaction.loser) { loritta.getCachedUserInfo(transaction.loser) }
+        val winnerUserInfo =
+            cachedUserInfos.getOrPut(transaction.winner) { loritta.lorittaShards.retrieveUserInfoById(transaction.winner) }
+        val loserUserInfo =
+            cachedUserInfos.getOrPut(transaction.loser) { loritta.lorittaShards.retrieveUserInfoById(transaction.loser) }
 
         if (transaction.tax != null && transaction.taxPercentage != null) {
             // Taxed earning

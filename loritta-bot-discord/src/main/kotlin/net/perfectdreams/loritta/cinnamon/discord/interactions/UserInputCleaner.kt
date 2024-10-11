@@ -1,26 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
-import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-
-/**
- * Clean up and escape user input, useful when displaying user input
- */
-suspend fun cleanUpForOutput(
-    context: InteractionContext,
-    input: String,
-    escapeMentions: Boolean = true,
-    stripCodeBackticks: Boolean = true,
-    stripInvites: Boolean = true
-): String {
-    val gContext = context as? GuildApplicationCommandContext
-    return cleanUpForOutput(context.loritta, gContext?.guildId, gContext?.member?.roleIds, input, escapeMentions, stripCodeBackticks, stripInvites)
-}
 
 /**
  * Clean up and escape user input, useful when displaying user input
@@ -32,33 +16,7 @@ suspend fun cleanUpForOutput(
     stripCodeBackticks: Boolean = true,
     stripInvites: Boolean = true
 ): String {
-    return cleanUpForOutput(context.loritta, context.guildOrNull?.idLong?.let { Snowflake(it) }, context.memberOrNull?.roles?.map { Snowflake(it.idLong) }?.toSet() ?: emptySet(), input, escapeMentions, stripCodeBackticks, stripInvites)
-}
-
-/**
- * Clean up and escape user input, useful when displaying user input
- */
-suspend fun cleanUpForOutput(
-    loritta: LorittaBot,
-    guildId: Snowflake?,
-    memberRoleIds: Set<Snowflake>?,
-    input: String,
-    escapeMentions: Boolean = true,
-    stripCodeBackticks: Boolean = true,
-    stripInvites: Boolean = true
-): String {
-    val canBypassInviteBlocker = if (guildId != null && memberRoleIds != null)
-        loritta.pudding.serverConfigs.hasLorittaPermission(guildId.value, memberRoleIds.map { it.value }, LorittaPermission.ALLOW_INVITES)
-    else
-        true // This is in a DM then, so let's allow the user to bypass the check
-
-    return cleanUpForOutput(
-        input,
-        canBypassInviteBlocker,
-        escapeMentions,
-        stripCodeBackticks,
-        stripInvites
-    )
+    return cleanUpForOutput(context.loritta, context.guildOrNull?.idLong, context.memberOrNull?.roles?.map { it.idLong }?.toSet() ?: emptySet(), input, escapeMentions, stripCodeBackticks, stripInvites)
 }
 
 /**

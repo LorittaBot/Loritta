@@ -1,13 +1,8 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.rest.Image
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordUserAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.dao.ProfileSettings
-import net.perfectdreams.loritta.common.utils.EnvironmentType
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
@@ -140,8 +135,8 @@ object RankingGenerator {
 
 				graphics.font = oswaldRegular10
 
-				val userAvatar = DiscordUserAvatar(loritta.kord, Snowflake(member.id), member.discriminator, member.avatarId)
-				val avatar = (ImageUtils.downloadImage(userAvatar.cdnUrl.toUrl { format = Image.Format.PNG }) ?: ImageUtils.DEFAULT_DISCORD_AVATAR).getResizedInstance(286, 286, InterpolationType.BILINEAR)
+				val userAvatar = member.getEffectiveAvatarUrl(ImageFormat.PNG)
+				val avatar = (ImageUtils.downloadImage(userAvatar) ?: ImageUtils.DEFAULT_DISCORD_AVATAR).getResizedInstance(286, 286, InterpolationType.BILINEAR)
 
 				var editedAvatar = BufferedImage(286, 286, BufferedImage.TYPE_INT_ARGB)
 				val avatarGraphics = editedAvatar.graphics as Graphics2D

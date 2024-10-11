@@ -4,8 +4,8 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.BrokerSonhosTransaction
-import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.serializable.UserId
 
 object BrokerSonhosTransactionTransformer : SonhosTransactionTransformer<BrokerSonhosTransaction> {
@@ -29,6 +29,7 @@ object BrokerSonhosTransactionTransformer : SonhosTransactionTransformer<BrokerS
                     )
                 )
             }
+
             LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES -> {
                 appendMoneyEarnedEmoji()
                 append(

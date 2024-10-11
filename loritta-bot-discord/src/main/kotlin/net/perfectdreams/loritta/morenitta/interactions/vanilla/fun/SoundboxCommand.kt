@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`
 
-import dev.kord.common.Color
-import dev.kord.common.entity.Snowflake
 import io.ktor.client.plugins.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.filter
@@ -12,7 +10,6 @@ import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -24,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import java.awt.Color
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -85,7 +83,7 @@ class SoundboxCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
             // TODO: Reenable de defer after we remove the warning above
             // context.deferChannelMessage()
 
-            val userConnectedVoiceChannel = loritta.cache.getUserConnectedVoiceChannel(Snowflake(guildId), Snowflake(context.user.id))
+            val userConnectedVoiceChannel = loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.idLong)
 
             if (userConnectedVoiceChannel == null) {
                 context.reply(false) {
@@ -105,7 +103,7 @@ class SoundboxCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
             }
 
             // Are we already playing something in another channel already?
-            val currentlyActiveVoiceConnection = loritta.voiceConnectionsManager.voiceConnections[Snowflake(guildId)]
+            val currentlyActiveVoiceConnection = loritta.voiceConnectionsManager.voiceConnections[guildId]
 
             if (currentlyActiveVoiceConnection != null) {
                 if (currentlyActiveVoiceConnection.isPlaying() && currentlyActiveVoiceConnection.channelId.toLong() != userConnectedVoiceChannel.idLong) {
@@ -171,7 +169,7 @@ class SoundboxCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
 
             // Let's create a voice connection!
             val lorittaVoiceConnection = try {
-                loritta.voiceConnectionsManager.getOrCreateVoiceConnection(Snowflake(guildId), Snowflake(userConnectedVoiceChannel.idLong))
+                loritta.voiceConnectionsManager.getOrCreateVoiceConnection(guildId, userConnectedVoiceChannel.idLong)
             } catch (e: Exception) {
                 // Welp, something went wrong
                 message.editMessage {
@@ -187,7 +185,7 @@ class SoundboxCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
             lorittaVoiceConnection.queue(
                 LorittaVoiceConnection.AudioClipInfo(
                     opusFrames,
-                    Snowflake(userConnectedVoiceChannel.idLong)
+                    userConnectedVoiceChannel.idLong
                 )
             )
 

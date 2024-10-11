@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -41,7 +41,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 	companion object {
 		internal val logger = KotlinLogging.logger {}
 	}
-	val gatewayManager = JDAToKordDiscordGatewayManager(this)
+
 	val cachedRetrievedUsers = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)
 		.build<Long, Optional<User>>()
 
@@ -92,6 +92,8 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 	suspend fun retrieveUserById(id: String?) = retrieveUserById(id?.toLongOrNull())
 
+	suspend fun retrieveUserInfoById(id: UserId) = retrieveUserInfoById(id.value.toLong())
+
 	suspend fun retrieveUserInfoById(id: Long?): CachedUserInfo? {
 		if (id == null)
 			return null
@@ -117,6 +119,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 				cachedUser[CachedDiscordUsers.id].value,
 				cachedUser[CachedDiscordUsers.name],
 				cachedUser[CachedDiscordUsers.discriminator],
+				cachedUser[CachedDiscordUsers.globalName],
 				cachedUser[CachedDiscordUsers.avatarId]
 			)
 
@@ -156,6 +159,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 				cachedUser[CachedDiscordUsers.id].value,
 				cachedUser[CachedDiscordUsers.name],
 				cachedUser[CachedDiscordUsers.discriminator],
+				cachedUser[CachedDiscordUsers.discriminator],
 				cachedUser[CachedDiscordUsers.avatarId]
 			)
 
@@ -168,6 +172,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 				result["id"].long,
 				result["name"].string,
 				result["discriminator"].string,
+				result["globalName"].string,
 				result["avatarId"].nullString
 			)
 		}
@@ -227,6 +232,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		user.idLong,
 		user.name,
 		user.discriminator,
+		user.globalName,
 		user.avatarId
 	)
 

@@ -175,7 +175,7 @@ object ImageUtils {
                     }
                 }
                 is DrawableDiscordEmote -> {
-                    val emoteImage = emojiImageCache.getDiscordEmoji(section.emoteId, dev.kord.rest.Image.Size.Size64)
+                    val emoteImage = emojiImageCache.getDiscordEmoji(section.emoteId, 64)
 
                     if (emoteImage != null) {
                         graphics.drawImage(

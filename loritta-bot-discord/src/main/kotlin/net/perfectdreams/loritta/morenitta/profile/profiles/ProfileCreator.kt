@@ -1,19 +1,12 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.rest.Image
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import java.awt.FontMetrics
 import java.awt.Graphics
 import kotlin.streams.toList
@@ -92,7 +85,7 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
                 }
                 is ImageUtils.DrawableDiscordEmote -> {
                     if (allowedDiscordEmojis == null || section.emoteId in allowedDiscordEmojis) {
-                        val emoteImage = loritta.emojiImageCache.getDiscordEmoji(section.emoteId, Image.Size.Size64)
+                        val emoteImage = loritta.emojiImageCache.getDiscordEmoji(section.emoteId, 64)
 
                         if (emoteImage != null) {
                             if (currentX + emojiWidth > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")

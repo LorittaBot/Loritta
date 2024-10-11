@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import dev.kord.common.entity.Snowflake
 import net.dv8tion.jda.api.entities.User.UserFlag
 import java.util.*
 

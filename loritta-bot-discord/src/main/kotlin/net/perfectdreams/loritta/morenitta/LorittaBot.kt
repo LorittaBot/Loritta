@@ -8,17 +8,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import dev.kord.common.annotation.KordExperimental
-import dev.kord.common.annotation.KordUnsafe
-import dev.kord.common.entity.Snowflake
-import dev.kord.core.Kord
-import dev.kord.core.entity.User
-import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
-import dev.kord.rest.ratelimit.ParallelRequestRateLimiter
-import dev.kord.rest.request.KtorRequestException
-import dev.kord.rest.request.KtorRequestHandler
-import dev.kord.rest.request.StackTraceRecoveringKtorRequestHandler
-import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.plugins.*
@@ -39,6 +28,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -55,14 +45,9 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.GuildImpl
-import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
-import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
-import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
@@ -195,37 +180,7 @@ class LorittaBot(
 	// This needs to be created BEFORE the commands is registered because this is used in the Musical Chairs init
 	val soundboard = Soundboard()
 	val musicalChairsManager = MusicalChairsManager(this)
-
-	@OptIn(KordUnsafe::class)
-	val rest = RestClient(
-		BetterSTRecoveringKtorRequestHandler(
-			KtorRequestHandler(
-				config.loritta.discord.token,
-				// By default, Kord uses ExclusionRequestRateLimiter, and that suspends all coroutines if a request is ratelimited
-				// So we need to use the ParallelRequestRateLimiter
-				requestRateLimiter = ParallelRequestRateLimiter()
-			)
-		)
-	)
-
-	@OptIn(KordExperimental::class)
-	val kord = Kord.restOnly(config.loritta.discord.token) {
-		requestHandler {
-			StackTraceRecoveringKtorRequestHandler(KtorRequestHandler(it.token))
-		}
-	}
-
 	val cache = DiscordCacheService(this)
-
-	val interaKTions = DiscordInteraKTions(
-		kord,
-		config.loritta.discord.applicationId
-	)
-
-	val interactionsManager = InteractionsManager(
-		this,
-		interaKTions
-	)
 
 	val gabrielaImageServerClient = GabrielaImageServerClient(
 		config.loritta.gabrielaImageServer.url,
@@ -267,7 +222,6 @@ class LorittaBot(
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
-	val gatewayRelayerListener = GatewayEventRelayerListener(this)
 	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(this)
 	val boostGuildListener = BoostGuildListener(this)
 	val interactionsListener = InteractionsListener(this)
@@ -487,7 +441,6 @@ class LorittaBot(
 				eventLogListener,
 				messageListener,
 				voiceChannelListener,
-				gatewayRelayerListener,
 				addReactionFurryAminoPtListener,
 				boostGuildListener,
 				interactionsListener,
@@ -570,36 +523,6 @@ class LorittaBot(
 		} catch(e: Exception) {
 			logger.info(e) { "Failed to start Loritta's webserver" }
 		}
-
-		logger.info { "Registering interactions features..." }
-		interactionsManager.register()
-
-		// Validate if we don't have more commands than Discord allows
-		val slashCommandCount = interaKTions.manager.applicationCommandsDeclarations.filterIsInstance<SlashCommandDeclaration>().size + interactionsListener.manager.slashCommands.size
-
-		if (slashCommandCount > 100) {
-			logger.error { "Currently there are $slashCommandCount root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
-			exitProcess(1)
-		}
-
-		val userCommandCount = interaKTions.manager.applicationCommandsDeclarations.filterIsInstance<UserCommandDeclaration>().size + interactionsListener.manager.userCommands.size
-
-		if (userCommandCount > 5) {
-			logger.error { "Currently there are $slashCommandCount user commands registered, however Discord has a 5 user command limit! You need to remove some of the commands!" }
-			exitProcess(1)
-		}
-
-		val messageCommandCount = interaKTions.manager.applicationCommandsDeclarations.filterIsInstance<MessageCommandDeclaration>().size + interactionsListener.manager.messageCommands.size
-
-		if (messageCommandCount > 5) {
-			logger.error { "Currently there are $slashCommandCount message commands registered, however Discord has a 5 message command limit! You need to remove some of the commands!" }
-			exitProcess(1)
-		}
-
-		logger.info { "Total Root Commands: $slashCommandCount/100" }
-		logger.info { "Total User Commands: $userCommandCount/5" }
-		logger.info { "Total Message Commands: $messageCommandCount/5" }
-
 		logger.info { "Starting Pudding tasks..." }
 		pudding.startPuddingTasks()
 		GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
@@ -1186,134 +1109,8 @@ class LorittaBot(
 		}
 	}
 
-	fun isOwner(userId: String) = isOwner(Snowflake(userId))
-	fun isOwner(userId: Long) = isOwner(Snowflake(userId))
-	fun isOwner(userId: Snowflake) = userId in config.loritta.ownerIds
-
-	suspend fun getCachedUserInfo(userId: Snowflake) = getCachedUserInfo(UserId(userId.value))
-
-	suspend fun getCachedUserInfo(userId: UserId): net.perfectdreams.loritta.serializable.CachedUserInfo? {
-		// First, try getting the cached user info from the database
-		val cachedUserInfoFromDatabase = pudding.users.getCachedUserInfoById(userId)
-		if (cachedUserInfoFromDatabase != null)
-			return cachedUserInfoFromDatabase
-
-		// If not present, get it from Discord!
-		val restUser = try {
-			rest.user.getUser(Snowflake(userId.value))
-		} catch (e: KtorRequestException) {
-			null
-		}
-
-		if (restUser != null) {
-			// If the REST user really exists, then let's update it in our database and then return the cached user info
-			pudding.users.insertOrUpdateCachedUserInfo(
-				UserId(restUser.id.value),
-				restUser.username,
-				restUser.discriminator,
-				null,
-				restUser.avatar
-			)
-
-			return net.perfectdreams.loritta.serializable.CachedUserInfo(
-				UserId(restUser.id.value),
-				restUser.username,
-				restUser.discriminator,
-				null,
-				restUser.avatar
-			)
-		}
-
-		return null
-	}
-
-	suspend fun insertOrUpdateCachedUserInfo(user: User) {
-		pudding.users.insertOrUpdateCachedUserInfo(
-			UserId(user.id.value),
-			user.username,
-			user.discriminator,
-			null,
-			user.data.avatar
-		)
-	}
-
-	suspend inline fun <reified T> encodeDataForComponentOnDatabase(data: T, ttl: Duration = 15.minutes): ComponentOnDatabaseStoreResult<T> {
-		// Can't fit on a button... Let's store it on the database!
-		val now = Clock.System.now()
-
-		val interactionDataId = pudding.interactionsData.insertInteractionData(
-			Json.encodeToJsonElement<T>(
-				data
-			).jsonObject,
-			now,
-			now + ttl
-		)
-
-		val storedGenericInteractionData = StoredGenericInteractionData(ComponentDataUtils.KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY, interactionDataId)
-
-		return ComponentOnDatabaseStoreResult(
-			interactionDataId,
-			storedGenericInteractionData,
-			ComponentDataUtils.encode(storedGenericInteractionData)
-		)
-	}
-
-	suspend inline fun <reified T> decodeDataFromComponentOnDatabase(data: String): ComponentOnDatabaseQueryResult<T> {
-		val genericInteractionData = ComponentDataUtils.decode<StoredGenericInteractionData>(data)
-
-		val dataFromDatabase = pudding.interactionsData.getInteractionData(genericInteractionData.interactionDataId)
-			?.jsonObject ?: return ComponentOnDatabaseQueryResult(genericInteractionData, null)
-
-		return ComponentOnDatabaseQueryResult(genericInteractionData, Json.decodeFromJsonElement<T>(dataFromDatabase))
-	}
-
-	/**
-	 * Encodes the [data] to fit on a button. If it doesn't fit in a button, a [StoredGenericInteractionData] will be encoded instead and the data will be stored on the database.
-	 */
-	suspend inline fun <reified T> encodeDataForComponentOrStoreInDatabase(data: T, ttl: Duration = 15.minutes): String {
-		val encoded = ComponentDataUtils.encode(data)
-
-		// Let's suppose that all components always have 5 characters at the start
-		// (Technically it is true: Discord InteraKTions uses ":" as the separator, and we only use 4 chars for ComponentExecutorIds)
-		val padStart = 5 // "0000:"
-
-		if (100 - padStart >= encoded.length) {
-			// Can fit on a button! So let's just return what we currently have
-			return encoded
-		} else {
-			// Can't fit on a button... Let's store it on the database!
-			return encodeDataForComponentOnDatabase(data, ttl).serializedData
-		}
-	}
-
-	/**
-	 * Decodes the [data] based on the source data:
-	 * * If [data] is a [StoredGenericInteractionData], the data will be retrieved from the database and deserialized using [T]
-	 * * If else, the data will be deserialized using [T]
-	 *
-	 * This should be used in conjuction with [encodeDataForComponentOrStoreInDatabase]
-	 */
-	suspend inline fun <reified T> decodeDataFromComponentOrFromDatabase(data: String): T? {
-		return try {
-			val result = decodeDataFromComponentOnDatabase<T>(data)
-			result.data
-		} catch (e: SerializationException) {
-			// If the deserialization failed, then let's try deserializing as T
-			ComponentDataUtils.decode<T>(data)
-		}
-	}
-
-	data class ComponentOnDatabaseStoreResult<T>(
-		val interactionDataId: Long,
-		val data: StoredGenericInteractionData,
-		val serializedData: String
-	)
-
-	data class ComponentOnDatabaseQueryResult<T>(
-		val genericInteractionData: StoredGenericInteractionData,
-		val data: T?
-	)
-
+	fun isOwner(userId: String) = isOwner(userId.toLong())
+	fun isOwner(userId: Long) = userId in config.loritta.ownerIds
 
 	private fun launchEventJob(
 		coroutineName: String,
@@ -1346,30 +1143,7 @@ class LorittaBot(
 	 * Gets the current registered Loritta commands count
 	 */
 	fun getCommandCount() = commandMap.commands.size + // Legacy commands
-			interactionsManager.interaKTions.manager.applicationCommandsExecutors.size + // Legacy InteraKTions commands
 			interactionsListener.manager.applicationCommands.size // InteraKTions Unleashed commands
-
-	/**
-	 * Sends the [builder] message to the [userId] via the user's direct message channel.
-	 *
-	 * The ID of the direct message channel is cached.
-	 */
-	suspend fun sendMessageToUserViaDirectMessage(userId: Snowflake, builder: UserMessageCreateBuilder.() -> (Unit)) = sendMessageToUserViaDirectMessage(
-		UserId(userId),
-		builder
-	)
-
-	/**
-	 * Sends the [builder] message to the [userId] via the user's direct message channel.
-	 *
-	 * The ID of the direct message channel is cached.
-	 */
-	suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) = UserUtils.sendMessageToUserViaDirectMessage(
-		pudding,
-		rest,
-		userId,
-		builder
-	)
 
 	/**
 	 * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay]

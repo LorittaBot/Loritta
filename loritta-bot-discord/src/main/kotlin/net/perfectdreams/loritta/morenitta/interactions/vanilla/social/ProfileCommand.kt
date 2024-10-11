@@ -1,11 +1,9 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 
-import dev.kord.common.entity.Snowflake
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
@@ -13,7 +11,6 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -37,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.profiles.ProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
@@ -287,9 +285,8 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val newAboutMe = args[options.aboutMe]
 
-            val userSettings =
-                context.loritta.pudding.users.getOrCreateUserProfile(UserId(Snowflake(context.user.idLong)))
-                    .getProfileSettings()
+            val userSettings = context.loritta.pudding.users.getOrCreateUserProfile(UserId(context.user.idLong))
+                .getProfileSettings()
 
             userSettings.setAboutMe(newAboutMe)
 

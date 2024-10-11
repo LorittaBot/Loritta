@@ -39,12 +39,6 @@ dependencies {
     // Used to serialize state on components
     implementation("io.github.netvl.ecoji:ecoji:1.0.0")
 
-    // We want to use Kord on our project too!
-    implementation("dev.kord:kord-rest:0.8.x-lori-fork-20221109.172532-14")
-    implementation("dev.kord:kord-gateway:0.8.x-lori-fork-20221109.172532-15")
-    implementation("dev.kord:kord-core:0.8.x-lori-fork-20221109.172532-14")
-    implementation("dev.kord:kord-voice:0.8.x-lori-fork-20221109.172532-15")
-
     // Exposed & Databases
     implementation(libs.postgresqljdbcdriver)
     implementation(libs.hikaricp)

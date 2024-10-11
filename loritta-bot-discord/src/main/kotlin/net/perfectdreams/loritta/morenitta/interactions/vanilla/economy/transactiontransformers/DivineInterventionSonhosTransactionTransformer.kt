@@ -4,11 +4,12 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
-object DivineInterventionSonhosTransactionTransformer : SonhosTransactionTransformer<DivineInterventionSonhosTransaction> {
+object DivineInterventionSonhosTransactionTransformer :
+    SonhosTransactionTransformer<DivineInterventionSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,
@@ -25,6 +26,7 @@ object DivineInterventionSonhosTransactionTransformer : SonhosTransactionTransfo
                     )
                 )
             }
+
             DivineInterventionTransactionEntryAction.REMOVED_SONHOS -> {
                 appendMoneyLostEmoji()
                 append(

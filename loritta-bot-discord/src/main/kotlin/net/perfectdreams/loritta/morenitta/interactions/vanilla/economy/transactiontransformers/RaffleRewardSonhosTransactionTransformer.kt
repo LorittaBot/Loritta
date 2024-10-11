@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transac
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.RaffleRewardSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
@@ -20,7 +20,10 @@ object RaffleRewardSonhosTransactionTransformer : SonhosTransactionTransformer<R
         if (transaction.tax != null && transaction.taxPercentage != null) {
             append(
                 i18nContext.get(
-                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Raffle.WonRaffleTaxed(transaction.quantityAfterTax, transaction.quantity)
+                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Raffle.WonRaffleTaxed(
+                        transaction.quantityAfterTax,
+                        transaction.quantity
+                    )
                 )
             )
         } else {

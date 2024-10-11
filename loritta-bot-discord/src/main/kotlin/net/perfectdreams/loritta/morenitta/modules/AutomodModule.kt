@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.google.common.collect.Queues
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -101,7 +100,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 		locale: BaseLocale,
 		i18nContext: I18nContext
 	): Boolean {
-		if (ANTIRAID_ENABLED && (loritta.config.loritta.antiRaidIds.contains(Snowflake(event.channel.id))) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
+		if (ANTIRAID_ENABLED && (loritta.config.loritta.antiRaidIds.contains(event.channel.idLong)) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {

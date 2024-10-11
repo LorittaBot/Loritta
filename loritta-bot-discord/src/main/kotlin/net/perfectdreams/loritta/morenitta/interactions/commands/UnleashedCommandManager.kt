@@ -1,34 +1,24 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
-import dev.kord.common.Locale
 import dev.minn.jda.ktx.interactions.commands.*
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Message.Attachment
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.DiscordLocale
-import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
-import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.StringListCommandOption
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.UserListCommandOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
@@ -49,7 +39,6 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.easter2023.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
@@ -83,50 +72,6 @@ import java.util.*
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
     companion object {
         private val logger = KotlinLogging.logger {}
-
-        // TODO: THIS IS A HACK, will be removed after all Discord InteraKTions commands are migrated do InteraKTions Unleashed
-        private val legacyInteraKTionsGuildAndUserInstallableCommandLabels = setOf(
-            "sonhos",
-            "rate",
-            "summon",
-            "text",
-            "achievements",
-            "afk",
-            "gender",
-            "undertale",
-            "colorinfo",
-            "choose",
-            "morse",
-            "translate",
-            "notifications",
-            "attackonheart",
-            "carlyaaah",
-            "chaves",
-            "fansexplaining",
-            "gigachad",
-            "art",
-            "bobburningpaper",
-            "brmemes",
-            "buckshirt",
-            "drake",
-            "drawnmask",
-            "getoverhere",
-            "invert",
-            "lorisign",
-            "markmeta",
-            "mememaker",
-            "discordping",
-            "passingpaper",
-            "pepedream",
-            "petpet",
-            "riptv",
-            "sonic",
-            "scared",
-            "terminatoranime",
-            "tobecontinued",
-            "trump",
-            "wolverineframe"
-        )
     }
 
     val slashCommands = mutableListOf<SlashCommandDeclaration>()
@@ -785,123 +730,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         }
     }
 
-    /**
-     * Converts a Discord InteraKTions [declaration] to JDA
-     *
-     * This is provided for backwards compatibility!
-     */
-    fun convertInteraKTionsDeclarationToJDA(declaration: ApplicationCommandDeclaration): CommandData {
-        when (declaration) {
-            is net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration -> {
-                return Commands.user(declaration.name).apply {
-                    declaration.nameLocalizations?.mapKeysToJDALocales()
-                        ?.also { setNameLocalizations(it) }
-                    val defPermissions = declaration.defaultMemberPermissions
-                    if (defPermissions != null)
-                        defaultPermissions = DefaultMemberPermissions.enabledFor(defPermissions.code.value.toLong())
-                    val dmPermission = declaration.dmPermission
-                    if (dmPermission != null)
-                        isGuildOnly = !dmPermission
-                }
-            }
-
-            is net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration -> {
-                return Commands.message(declaration.name).apply {
-                    declaration.nameLocalizations?.mapKeysToJDALocales()
-                        ?.also { setNameLocalizations(it) }
-                    val defPermissions = declaration.defaultMemberPermissions
-                    if (defPermissions != null)
-                        defaultPermissions = DefaultMemberPermissions.enabledFor(defPermissions.code.value.toLong())
-                    val dmPermission = declaration.dmPermission
-                    if (dmPermission != null)
-                        isGuildOnly = !dmPermission
-                }
-            }
-
-            is net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration -> {
-                return Commands.slash(declaration.name, declaration.description).apply {
-                    declaration.nameLocalizations?.mapKeysToJDALocales()
-                        ?.also { setNameLocalizations(it) }
-                    declaration.descriptionLocalizations?.mapKeysToJDALocales()
-                        ?.also { setDescriptionLocalizations(it) }
-                    val defPermissions = declaration.defaultMemberPermissions
-                    if (defPermissions != null)
-                        defaultPermissions = DefaultMemberPermissions.enabledFor(defPermissions.code.value.toLong())
-                    val dmPermission = declaration.dmPermission
-
-                    this.setContexts(net.dv8tion.jda.api.interactions.InteractionContextType.GUILD, net.dv8tion.jda.api.interactions.InteractionContextType.BOT_DM, net.dv8tion.jda.api.interactions.InteractionContextType.PRIVATE_CHANNEL)
-                    if (dmPermission != null) {
-                        if (!dmPermission) {
-                            this.setContexts(net.dv8tion.jda.api.interactions.InteractionContextType.GUILD)
-                        }
-                    }
-
-                    // TODO: THIS IS A HACK, will be removed after all Discord InteraKTions commands are migrated do InteraKTions Unleashed
-                    if (declaration.name in legacyInteraKTionsGuildAndUserInstallableCommandLabels) {
-                        this.setIntegrationTypes(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
-                    }
-
-                    // We can only have (subcommands OR subcommand groups) OR arguments
-                    if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
-                        for (subcommandDeclaration in declaration.subcommands) {
-                            subcommand(subcommandDeclaration.name, subcommandDeclaration.description) {
-                                val executor = subcommandDeclaration.executor
-
-                                require(executor != null) { "Subcommand command without a executor!" }
-
-                                subcommandDeclaration.nameLocalizations?.mapKeysToJDALocales()
-                                    ?.also { setNameLocalizations(it) }
-                                subcommandDeclaration.descriptionLocalizations?.mapKeysToJDALocales()
-                                    ?.also { setDescriptionLocalizations(it) }
-
-                                for (option in executor.options.registeredOptions) {
-                                    addOptions(*createOption(option).toTypedArray())
-                                }
-                            }
-                        }
-
-                        for (subcommandGroupDeclaration in declaration.subcommandGroups) {
-                            group(subcommandGroupDeclaration.name, subcommandGroupDeclaration.description) {
-                                subcommandGroupDeclaration.nameLocalizations?.mapKeysToJDALocales()
-                                    ?.also { setNameLocalizations(it) }
-                                subcommandGroupDeclaration.descriptionLocalizations?.mapKeysToJDALocales()
-                                    ?.also { setDescriptionLocalizations(it) }
-
-                                for (subcommandDeclaration in subcommandGroupDeclaration.subcommands) {
-                                    subcommand(subcommandDeclaration.name, subcommandDeclaration.description) {
-                                        val executor = subcommandDeclaration.executor
-
-                                        require(executor != null) { "Subcommand command without a executor!" }
-
-                                        subcommandDeclaration.nameLocalizations?.mapKeysToJDALocales()
-                                            ?.also { setNameLocalizations(it) }
-                                        subcommandDeclaration.descriptionLocalizations?.mapKeysToJDALocales()
-                                            ?.also { setDescriptionLocalizations(it) }
-
-                                        for (option in executor.options.registeredOptions) {
-                                            addOptions(*createOption(option).toTypedArray())
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        val executor = declaration.executor
-
-                        require(executor != null) { "Root command without a executor!" }
-
-                        for (option in executor.options.registeredOptions) {
-                            addOptions(*createOption(option).toTypedArray())
-                        }
-                    }
-                }
-            }
-            is SlashCommandGroupDeclaration -> {
-                error("This should never be called because the convertInteraKTionsDeclarationToJDA method is only called on a root command!")
-            }
-        }
-    }
-
     private fun createOption(interaKTionsOption: OptionReference<*>): List<OptionData> {
         when (interaKTionsOption) {
             is DiscordOptionReference -> {
@@ -1053,243 +881,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                     )
                 )
             }
-        }
-    }
-
-    /**
-     * Converts a Discord InteraKTions [InteraKTionsCommandOption] to JDA
-     *
-     * This is provided for backwards compatibility!
-     */
-    private fun createOption(interaKTionsOption: InteraKTionsCommandOption<*>): List<OptionData> {
-        when (interaKTionsOption) {
-            is StringCommandOption -> {
-                return listOf(
-                    Option<String>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                        autocomplete = interaKTionsOption.autocompleteExecutor != null,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                        interaKTionsOption.minLength?.let {
-                            if (it != 0)
-                                setMinLength(it)
-                        }
-                        interaKTionsOption.maxLength?.let {
-                            if (it != 0)
-                                setMaxLength(it)
-                        }
-
-                        interaKTionsOption.choices?.forEach {
-                            this.addChoices(
-                                net.dv8tion.jda.api.interactions.commands.Command.Choice(it.name, it.value)
-                                    .apply {
-                                        val localizedOptionNames = it.nameLocalizations?.mapKeysToJDALocales()
-                                        if (localizedOptionNames != null)
-                                            this.setNameLocalizations(localizedOptionNames)
-                                    }
-                            )
-                        }
-                    }
-                )
-            }
-            is IntegerCommandOption -> {
-                return listOf(
-                    Option<Long>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                        autocomplete = interaKTionsOption.autocompleteExecutor != null,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                        interaKTionsOption.minValue?.let {
-                            setMinValue(it)
-                        }
-                        interaKTionsOption.maxValue?.let {
-                            setMaxValue(it)
-                        }
-
-                        interaKTionsOption.choices?.forEach {
-                            this.addChoices(
-                                net.dv8tion.jda.api.interactions.commands.Command.Choice(it.name, it.value)
-                                    .apply {
-                                        val localizedOptionNames = it.nameLocalizations?.mapKeysToJDALocales()
-                                        if (localizedOptionNames != null)
-                                            this.setNameLocalizations(localizedOptionNames)
-                                    }
-                            )
-                        }
-                    }
-                )
-            }
-            is NumberCommandOption -> {
-                return listOf(
-                    Option<Double>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                        autocomplete = interaKTionsOption.autocompleteExecutor != null,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                        interaKTionsOption.minValue?.let {
-                            setMinValue(it)
-                        }
-                        interaKTionsOption.maxValue?.let {
-                            setMaxValue(it)
-                        }
-
-                        interaKTionsOption.choices?.forEach {
-                            this.addChoices(
-                                net.dv8tion.jda.api.interactions.commands.Command.Choice(it.name, it.value)
-                                    .apply {
-                                        val localizedOptionNames = it.nameLocalizations?.mapKeysToJDALocales()
-                                        if (localizedOptionNames != null)
-                                            this.setNameLocalizations(localizedOptionNames)
-                                    }
-                            )
-                        }
-                    }
-                )
-            }
-            is BooleanCommandOption -> {
-                return listOf(
-                    Option<Boolean>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                )
-            }
-            is UserCommandOption -> {
-                return listOf(
-                    Option<User>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                )
-            }
-            is RoleCommandOption -> {
-                return listOf(
-                    Option<Role>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                )
-            }
-            is ChannelCommandOption -> {
-                return listOf(
-                    Option<Channel>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                )
-            }
-            is MentionableCommandOption -> {
-                return listOf(
-                    Option<IMentionable>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                )
-            }
-            is AttachmentCommandOption -> {
-                return listOf(
-                    Option<Attachment>(
-                        name = interaKTionsOption.name,
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.required,
-                    ) {
-                        val localizedNames = interaKTionsOption.nameLocalizations?.mapKeysToJDALocales()
-                        if (localizedNames != null)
-                            this.setNameLocalizations(localizedNames)
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                )
-            }
-            is UserListCommandOption -> {
-                return (1..interaKTionsOption.maximum).map {
-                    Option<User>(
-                        name = "${interaKTionsOption.name}$it",
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.minimum >= it,
-                    ) {
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                }
-            }
-            is StringListCommandOption -> {
-                return (1..interaKTionsOption.maximum).map {
-                    Option<String>(
-                        name = "${interaKTionsOption.name}$it",
-                        description = interaKTionsOption.description,
-                        required = interaKTionsOption.minimum >= it,
-                    ) {
-                        val localizedDescriptions = interaKTionsOption.descriptionLocalizations?.mapKeysToJDALocales()
-                        if (localizedDescriptions != null)
-                            this.setDescriptionLocalizations(localizedDescriptions)
-                    }
-                }
-            }
-            else -> error("Unknown Discord InteraKTions option type ${interaKTionsOption::class}")
         }
     }
 

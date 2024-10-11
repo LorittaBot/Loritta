@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils.config
 
-import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -10,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 @Serializable
 data class LorittaConfig(
     val environment: EnvironmentType,
-    val ownerIds: List<Snowflake>,
+    val ownerIds: List<Long>,
     val clusterReadTimeout: Int,
     val clusterConnectionTimeout: Int,
     val webhookSecret: String,
@@ -45,12 +44,12 @@ data class LorittaConfig(
     val quirky: QuirkyConfig,
     val donatorsOstentation: DonatorsOstentationConfig,
     val connectionManager: ConnectionManagerConfig,
-    val antiRaidIds: List<Snowflake>
+    val antiRaidIds: List<Long>
 ) {
     @Serializable
     data class DiscordConfig(
         val token: String,
-        val applicationId: Snowflake,
+        val applicationId: Long,
         val clientSecret: String,
         val maxShards: Int,
         val maxRequestsPerHost: Int,
@@ -79,7 +78,7 @@ data class LorittaConfig(
     @Serializable
     data class InteractionsConfig(
         val registerGlobally: Boolean,
-        val guildsToBeRegistered: List<Snowflake>
+        val guildsToBeRegistered: List<Long>
     )
 
     @Serializable
@@ -266,7 +265,7 @@ data class LorittaConfig(
     class QuirkyConfig(
         val randomReactions: RandomReactionsConfig,
         val tioDoPave: TioDoPaveConfig,
-        val canecaUsers: List<Snowflake>
+        val canecaUsers: List<Long>
     ) {
         @Serializable
         class RandomReactionsConfig(

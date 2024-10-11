@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.dailytax
 
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
@@ -27,8 +25,7 @@ object DailyTaxUtils {
      * @param dayOffset offsets (plusDays) the current day by [dayOffset]
      * @param block     block that will be executed when a inactive daily user is found
      */
-    fun getAndProcessInactiveDailyUsers(lorittaId: Snowflake, dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
-        val lorittaId = lorittaId.toLong()
+    fun getAndProcessInactiveDailyUsers(lorittaId: Long, dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
         val moneySum = Payments.money.sum()
 
         val cheapestPlanWithoutDailyInactivityTaxCost = UserPremiumPlans.getPlansThatDoNotHaveDailyInactivityTax()

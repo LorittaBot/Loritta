@@ -4,8 +4,8 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.BotVoteSonhosTransaction
-import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.serializable.UserId
 
 object BotVoteTransactionTransformer : SonhosTransactionTransformer<BotVoteSonhosTransaction> {

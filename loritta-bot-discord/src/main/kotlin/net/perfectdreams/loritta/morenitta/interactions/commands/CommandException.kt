@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
 import dev.minn.jda.ktx.messages.InlineMessage
-import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 
 /**
  * Useful for command control flow, this allows you a quick and easy way to "halt" the execution of an command.

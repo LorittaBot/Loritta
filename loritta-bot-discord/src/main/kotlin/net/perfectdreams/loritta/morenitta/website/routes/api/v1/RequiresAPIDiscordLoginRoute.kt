@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1
 import io.ktor.http.*
 import io.ktor.server.application.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException

@@ -1,20 +1,18 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
-import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
+import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import java.util.concurrent.TimeUnit
 
 class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
@@ -35,7 +33,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		if (event.guild.selfMember == event.member && channelLeft != null && channelJoined == null) {
 			// Clean up voice connection if Loritta disconnected and didn't join a new channel
 			GlobalScope.launch {
-				val guildId = Snowflake(channelLeft.guild.idLong)
+				val guildId = channelLeft.guild.idLong
 				logger.info { "Cleaning up Loritta's voice connection @ $guildId" }
 
 				loritta.voiceConnectionsManager.voiceConnectionsMutexes.getOrPut(guildId) { Mutex() }.withLock {

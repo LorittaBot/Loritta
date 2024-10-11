@@ -3,11 +3,12 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transac
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
-object PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionTransformer : SonhosTransactionTransformer<PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction> {
+object PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionTransformer :
+    SonhosTransactionTransformer<PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,

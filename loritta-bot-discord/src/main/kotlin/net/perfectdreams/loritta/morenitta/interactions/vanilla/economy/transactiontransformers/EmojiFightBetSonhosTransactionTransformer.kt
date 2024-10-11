@@ -4,7 +4,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
@@ -17,7 +17,8 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
         transaction: EmojiFightBetSonhosTransaction
     ): suspend StringBuilder.() -> (Unit) = {
         val wonTheBet = transaction.user == transaction.winner
-        val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
+        val winnerUserInfo =
+            cachedUserInfos.getOrPut(transaction.winner) { loritta.lorittaShards.retrieveUserInfoById(transaction.winner) }
         // We don't store the loser because there may be multiple losers, so we only check that if the user isn't the "winner", then they are the loser
         val loserUserInfo = cachedUserInfo.id
 

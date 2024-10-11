@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import dev.minn.jda.ktx.messages.InlineMessage
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.*
@@ -12,7 +11,7 @@ object NotificationUtils {
         i18nContext: I18nContext,
         notification: UserNotification,
         lorittaWebsiteUrl: String
-    ): MessageBuilder.() -> Unit {
+    ): InlineMessage<*>.() -> Unit {
         when (notification) {
             is DailyTaxTaxedUserNotification -> {
                 return UserUtils.buildDailyTaxMessage(

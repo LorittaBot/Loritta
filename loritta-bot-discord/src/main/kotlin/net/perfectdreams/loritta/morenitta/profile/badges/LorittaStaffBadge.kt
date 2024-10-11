@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.profile.badges
 
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Birthday2020Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedBirthday2020Points
 import net.perfectdreams.loritta.cinnamon.pudding.utils.BirthdayTeam

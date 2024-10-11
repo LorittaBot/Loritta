@@ -1,10 +1,11 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 class CachedUserInfo(
-		val id: Long,
-		val name: String,
-		val discriminator: String,
-		val avatarId: String?
+	val id: Long,
+	val name: String,
+	val discriminator: String,
+	val globalName: String?,
+	val avatarId: String?
 ) {
 	val avatarUrl: String?
 		get() {

@@ -4,11 +4,12 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
-object SonhosBundlePurchaseSonhosTransactionTransformer : SonhosTransactionTransformer<SonhosBundlePurchaseSonhosTransaction> {
+object SonhosBundlePurchaseSonhosTransactionTransformer :
+    SonhosTransactionTransformer<SonhosBundlePurchaseSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,
