@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
@@ -32,7 +33,7 @@ import java.time.Instant
 
 class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdapter() {
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
-        val guild = event.guild ?: return
+        val guild = event.guild
 
         if (event.componentId.startsWith(SonhosPayExecutor.SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX + ":")) {
             val dbId = event.componentId.substringAfter(":").toLong()
@@ -40,8 +41,12 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
             GlobalScope.launch {
                 val deferredReply = event.interaction.deferEdit().await()
 
-                val serverConfig = loritta.getOrCreateServerConfig(guild.idLong, true)
-                val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+                val i18nContext = if (guild != null) {
+                    val serverConfig = loritta.getOrCreateServerConfig(guild.idLong, true)
+                    loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+                } else {
+                    I18nContextUtils.convertDiscordLocaleToI18nContext(loritta.languageManager, event.interaction.userLocale) ?: loritta.languageManager.defaultI18nContext
+                }
 
                 val result = loritta.transaction {
                     val now = Instant.now()
