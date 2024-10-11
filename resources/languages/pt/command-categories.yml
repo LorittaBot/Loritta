@@ -92,6 +92,8 @@ commands:
           text: "Pula a confirmação da punição"
         isSilent:
           text: "Se ativo, a punição será silenciosa, ou seja, eu não enviarei avisos no privado e no servidor"
+        deleteDays:
+          text: "Quantos dias irei procurar no histórico de mensagens do usuário para que elas sejam deletadas"
     utils:
       name: "Utilitários"
       description:

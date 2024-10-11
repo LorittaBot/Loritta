@@ -45,7 +45,7 @@ class BanCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             // TODO: Delete days
-            val deleteDays = optionalLong("delete_days", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
+            val deleteDays = optionalLong("delete_days", CATEGORY_I18N_PREFIX.Options.DeleteDays.Text)
             val skipConfirmation = optionalBoolean("skip_confirmation", CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
             val isSilent = optionalBoolean("is_silent", CATEGORY_I18N_PREFIX.Options.IsSilent.Text)
         }
