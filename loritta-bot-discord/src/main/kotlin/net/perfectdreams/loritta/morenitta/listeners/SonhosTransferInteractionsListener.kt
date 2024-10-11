@@ -4,7 +4,6 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -203,7 +202,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                                         "dummy",
                                         i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferAccepted),
                                         Emotes.LoriCard.toJDA()
-                                    ).withDisabled(true)
+                                    ).asDisabled()
                                 )
                             }
                         ).setReplace(false).await()
@@ -277,7 +276,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                                         "dummy",
                                         i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.InsufficientSonhos),
                                         Emotes.LoriSob.toJDA()
-                                    )
+                                    ).asDisabled()
                                 )
                             }
                         ).setReplace(false).await()
@@ -301,7 +300,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                                         "dummy",
                                         i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.Expired),
                                         Emotes.LoriSob.toJDA()
-                                    )
+                                    ).asDisabled()
                                 )
                             }
                         ).setReplace(false).await()
@@ -315,7 +314,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                                         "dummy",
                                         i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.UnknownRequest),
                                         Emotes.LoriSob.toJDA()
-                                    )
+                                    ).asDisabled()
                                 )
                             }
                         ).setReplace(false).await()
