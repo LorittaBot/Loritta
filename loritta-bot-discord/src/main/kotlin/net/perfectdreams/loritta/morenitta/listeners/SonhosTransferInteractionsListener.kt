@@ -209,6 +209,12 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
 
                         deferredReply.sendMessage(
                             MessageCreate {
+                                mentions {
+                                    // Allow mentioning the giver AND the receiver!
+                                    user(result.giverId)
+                                    user(result.receiverId)
+                                }
+
                                 styled(
                                     i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SuccessfullyTransferred("<@${result.receiverId}>", result.howMuch)),
                                     Emotes.Handshake

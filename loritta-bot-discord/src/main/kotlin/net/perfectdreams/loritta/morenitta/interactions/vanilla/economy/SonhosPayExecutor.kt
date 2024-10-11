@@ -168,6 +168,11 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
             val nowPlusTimeToLive = Clock.System.now() + ttlDuration
 
             context.reply(false) {
+                // Allow mentioning the receiver
+                mentions {
+                    user(receiver)
+                }
+
                 styled(
                     buildString {
                         append(
