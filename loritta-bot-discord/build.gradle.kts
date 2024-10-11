@@ -36,9 +36,6 @@ dependencies {
     implementation("club.minnced:jda-ktx:0.12.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
 
-    // Used to serialize state on components
-    implementation("io.github.netvl.ecoji:ecoji:1.0.0")
-
     // Exposed & Databases
     implementation(libs.postgresqljdbcdriver)
     implementation(libs.hikaricp)
