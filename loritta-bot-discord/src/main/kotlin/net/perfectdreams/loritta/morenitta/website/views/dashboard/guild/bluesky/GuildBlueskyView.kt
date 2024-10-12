@@ -247,18 +247,6 @@ class GuildBlueskyView(
                         p {
                             text("Anuncie para seus membros quando você posta algo no Bluesky! Assim, seus fãs não irão perder as suas opiniões filosóficas.")
                         }
-
-                        div(classes = "alert alert-danger") {
-                            div {
-                                b {
-                                    text("Atenção: Funcionalidade experimental!")
-                                }
-                            }
-
-                            div {
-                                text("As vezes tem uns bugs no painel, como a Loritta não conseguindo carregar o perfil da pessoa e outras instabilidades no Bluesky, mas não se preocupe, a Loritta *tenta* repostar todas as suas opiniões filosoficas instantaneamente!")
-                            }
-                        }
                     }
                 }
 
