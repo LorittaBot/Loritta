@@ -44,6 +44,11 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
         }
 
         subcommand(SONHOS_RANK_I18N_PREFIX.Label, SONHOS_RANK_I18N_PREFIX.Description, UUID.fromString("edb411ac-25a1-3c7e-98bb-45881f979ac2")) {
+            this.alternativeLegacyAbsoluteCommandPaths.apply {
+                add("sonhos top")
+                add("sonhos atm")
+            }
+
             executor = SonhosRankExecutor(loritta)
         }
     }

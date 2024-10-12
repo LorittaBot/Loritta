@@ -56,8 +56,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			LoriToolsCommand(loritta),
 
 			// ===[ ECONOMY ]===
-			SonhosTopCommand(loritta),
-			SonhosTopLocalCommand(loritta),
 			TransactionsCommand(loritta),
 			GuessNumberCommand(loritta),
 			ScratchCardCommand(loritta),

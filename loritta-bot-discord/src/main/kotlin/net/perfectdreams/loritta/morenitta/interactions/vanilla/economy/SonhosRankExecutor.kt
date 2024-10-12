@@ -206,7 +206,20 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
     override suspend fun convertToInteractionsArguments(
         context: LegacyMessageCommandContext,
         args: List<String>
-    ): Map<OptionReference<*>, Any?>? {
-        return null
+    ): Map<OptionReference<*>, Any?> {
+        val arg0 = args.getOrNull(0)
+        val arg1 = args.getOrNull(1)
+        val isLocal = arg0 == "local"
+
+        val page = if (isLocal) {
+            arg1?.toLongOrNull()
+        } else {
+            arg0?.toLongOrNull()
+        }
+
+        return mapOf(
+            options.rankType to if (isLocal) SonhosRankType.LOCAL.name else SonhosRankType.GLOBAL.name,
+            options.page to page
+        )
     }
 }
