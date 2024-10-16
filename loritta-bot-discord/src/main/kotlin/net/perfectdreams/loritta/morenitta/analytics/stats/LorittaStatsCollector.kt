@@ -2,9 +2,13 @@ package net.perfectdreams.loritta.morenitta.analytics.stats
 
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
+import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ClusterNotReadyException
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.sum
 
 class LorittaStatsCollector(val m: LorittaBot) : RunnableCoroutine {
     companion object {
@@ -30,16 +34,33 @@ class LorittaStatsCollector(val m: LorittaBot) : RunnableCoroutine {
                 return
             }
 
+            val (totalSonhos, totalSonhosOfBannedUsers) = m.transaction {
+                val sumField = Profiles.money.sum()
+                val totalSonhos = Profiles.select(sumField)
+                    .where {
+                        Profiles.money greater 0
+                    }
+                    .first()[sumField] ?: 0
+
+                val totalSonhosOfBannedUsers = Profiles.select(sumField)
+                    .where {
+                        Profiles.money greater 0 and (Profiles.id inSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                    }
+                    .first()[sumField] ?: 0
+
+                return@transaction Pair(totalSonhos, totalSonhosOfBannedUsers)
+            }
+
             senders.forEach {
                 try {
-                    it.send(guildCount.toLong())
+                    it.send(guildCount.toLong(), totalSonhos, totalSonhosOfBannedUsers)
                     logger.info { "Successfully sent Loritta's stats data to ${it}!" }
                 } catch (e: Exception) {
                     logger.warn(e) { "Something went wrong while trying to send Loritta's stats data to ${it}!" }
                 }
             }
         } catch (e: Exception) {
-            logger.warn { "Something went wrong while collecting and sending stats data!" }
+            logger.warn(e) { "Something went wrong while collecting and sending stats data!" }
         }
     }
 }

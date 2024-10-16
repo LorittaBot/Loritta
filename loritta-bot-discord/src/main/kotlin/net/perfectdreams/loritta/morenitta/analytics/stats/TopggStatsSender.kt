@@ -20,7 +20,7 @@ class TopggStatsSender(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun send(guildCount: Long) {
+    override suspend fun send(guildCount: Long, totalSonhos: Long, totalSonhosOfBannedUsers: Long) {
         val result = http.post("https://top.gg/api/bots/$clientId/stats") {
             header("Authorization", token)
             accept(ContentType.Application.Json)
