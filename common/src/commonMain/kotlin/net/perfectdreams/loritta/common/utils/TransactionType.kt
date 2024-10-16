@@ -90,4 +90,9 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.Loricoolcards.Description,
         Emotes.LoriCoolSticker,
     ),
+    LORITTA_ITEM_SHOP(
+        I18nKeysData.Commands.Command.Transactions.Types.LorittaItemShop.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.LorittaItemShop.Description,
+        Emotes.ShoppingBags,
+    ),
 }

@@ -110,6 +110,11 @@ types:
     finishedAlbum: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter acabado o álbum nas Figurittas da Loritta"
     sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para `{receiverTag}` (`{receiverId}`) em uma troca de figurinhas"
     received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de `{giverTag}` (`{giverId}`) em uma troca de figurinhas"
+  lorittaItemShop:
+    title: "Loja de Itens da Loritta"
+    description: "Transações relacionadas aos itens da Loritta, como backgrounds e designs de perfil"
+    boughtBackground: "Comprou um background por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na Loja de Itens da Loritta"
+    boughtProfileDesign: "Comprou um design de perfil por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na Loja de Itens da Loritta"
 options:
   user:
     text: "O usuário que você deseja ver as transações"

@@ -14,7 +14,9 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
@@ -22,9 +24,12 @@ import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredLorittaItemShopBoughtBackgroundTransaction
+import net.perfectdreams.loritta.serializable.StoredLorittaItemShopBoughtProfileDesignTransaction
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.*
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/daily-shop/buy") {
@@ -92,6 +97,15 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 						it[BackgroundPayments.cost] = cost.toLong()
 					}
 
+					// Cinnamon transaction system
+					SimpleSonhosTransactionsLogUtils.insert(
+						profile.userId,
+						Instant.now(),
+						TransactionType.LORITTA_ITEM_SHOP,
+						cost.toLong(),
+						StoredLorittaItemShopBoughtBackgroundTransaction(background[Backgrounds.id].value)
+					)
+
 					val createdBy = background[Backgrounds.createdBy]
 					val creatorReceived = (cost.toDouble() * 0.1).toLong()
 					for (creatorId in createdBy) {
@@ -146,6 +160,15 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 						it[boughtAt] = System.currentTimeMillis()
 						it[ProfileDesignsPayments.cost] = cost.toLong()
 					}
+
+					// Cinnamon transaction system
+					SimpleSonhosTransactionsLogUtils.insert(
+						profile.userId,
+						Instant.now(),
+						TransactionType.LORITTA_ITEM_SHOP,
+						cost.toLong(),
+						StoredLorittaItemShopBoughtProfileDesignTransaction(background[ProfileDesigns.id].value)
+					)
 
 					val createdBy = background[ProfileDesigns.createdBy]
 					val creatorReceived = (cost.toDouble() * 0.1).toLong()

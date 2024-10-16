@@ -116,3 +116,13 @@ data class StoredLoriCoolCardsPaymentSonhosTradeTransaction(
     val receivedBy: Long,
     val figurittasTradeId: Long
 ) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLorittaItemShopBoughtProfileDesignTransaction(
+    val internalProfileDesignId: String
+) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLorittaItemShopBoughtBackgroundTransaction(
+    val internalBackgroundId: String
+) : StoredSonhosTransaction()
