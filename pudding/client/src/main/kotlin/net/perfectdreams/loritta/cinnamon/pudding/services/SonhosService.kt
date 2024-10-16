@@ -368,6 +368,16 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             it[SimpleSonhosTransactionsLog.sonhos]
                         )
 
+                        is StoredGarticosTransferTransaction -> GarticosTransferTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.garticos,
+                            stored.transferRate
+                        )
+
                         is StoredEmojiFightBetSonhosTransaction -> {
                             val emojiFightMatchmakingResult = emojiFightMatchmakingResults.first { it[EmojiFightMatchmakingResults.id].value == stored.emojiFightMatchmakingResultsId }
 

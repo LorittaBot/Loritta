@@ -99,5 +99,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.BomDiaECia.Title,
         I18nKeysData.Commands.Command.Transactions.Types.BomDiaECia.Description,
         Emotes.Telephone,
+    ),
+    GARTICOS(
+        I18nKeysData.Commands.Command.Transactions.Types.Garticos.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Garticos.Description,
+        Emotes.Wave,
     )
 }

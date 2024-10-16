@@ -1,20 +1,20 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy
 
-import com.github.salomonbrys.kotson.double
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.string
+import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredGarticosTransferTransaction
+import java.time.Instant
 
 class PostTransferBalanceExternalRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/economy/transfer/garticos") {
 	companion object {
@@ -37,6 +37,17 @@ class PostTransferBalanceExternalRoute(loritta: LorittaBot) : RequiresAPIAuthent
 			profile.addSonhosAndAddToTransactionLogNested(
 				finalMoney.toLong(),
 				SonhosPaymentReason.GARTICOS_TRANSFER
+			)
+
+			SimpleSonhosTransactionsLogUtils.insert(
+				profile.userId,
+				Instant.now(),
+				TransactionType.GARTICOS,
+				finalMoney.toLong(),
+				StoredGarticosTransferTransaction(
+					garticos,
+					transferRate
+				)
 			)
 		}
 

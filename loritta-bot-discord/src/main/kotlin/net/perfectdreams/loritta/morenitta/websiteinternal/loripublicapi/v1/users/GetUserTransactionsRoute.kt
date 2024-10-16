@@ -351,6 +351,15 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.user,
                     transaction.sonhos
                 )
+                is net.perfectdreams.loritta.serializable.GarticosTransferTransaction -> GarticosTransferTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.garticos,
+                    transaction.transferRate
+                )
                 is net.perfectdreams.loritta.serializable.UnknownSonhosTransaction -> UnknownSonhosTransaction(
                     transaction.id,
                     transaction.transactionType,
@@ -678,6 +687,18 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         @Serializable(UserIdAsStringSerializer::class)
         override val user: UserId,
         val sonhos: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class GarticosTransferTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val garticos: Long,
+        val transferRate: Double
     ) : SonhosTransaction()
 
     @Serializable
