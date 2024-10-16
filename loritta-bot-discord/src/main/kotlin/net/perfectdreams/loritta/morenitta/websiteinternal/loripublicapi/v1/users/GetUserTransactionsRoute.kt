@@ -337,6 +337,20 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.sonhos,
                     transaction.internalProfileDesignId
                 )
+                is net.perfectdreams.loritta.serializable.BomDiaECiaCallCalledTransaction -> BomDiaECiaCallCalledTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos
+                )
+                is net.perfectdreams.loritta.serializable.BomDiaECiaCallWonTransaction -> BomDiaECiaCallWonTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos
+                )
                 is net.perfectdreams.loritta.serializable.UnknownSonhosTransaction -> UnknownSonhosTransaction(
                     transaction.id,
                     transaction.transactionType,
@@ -644,6 +658,26 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         override val user: UserId,
         val sonhos: Long,
         val internalBackgroundId: String
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BomDiaECiaCallCalledTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class BomDiaECiaCallWonTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long
     ) : SonhosTransaction()
 
     @Serializable

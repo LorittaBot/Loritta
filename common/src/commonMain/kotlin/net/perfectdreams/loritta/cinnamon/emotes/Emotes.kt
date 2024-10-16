@@ -160,6 +160,7 @@ object Emotes {
     val Map = UnicodeEmote("\uD83D\uDDFA")
     val MagnifyingGlassLeft = UnicodeEmote("\uD83D\uDD0D")
     val BlueBook = UnicodeEmote("\uD83D\uDCD8")
+    val Telephone = UnicodeEmote("\uD83D\uDCDE")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)

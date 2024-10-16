@@ -4,9 +4,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
@@ -14,9 +16,11 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredBomDiaECiaCallCalledTransaction
+import net.perfectdreams.loritta.serializable.StoredBomDiaECiaCallWonTransaction
 import org.jetbrains.exposed.sql.insert
+import java.time.Instant
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
@@ -64,6 +68,15 @@ class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", cate
 					profile.takeSonhosAndAddToTransactionLogNested(
 						75,
 						SonhosPaymentReason.BOM_DIA_E_CIA
+					)
+
+					// Cinnamon transaction system
+					SimpleSonhosTransactionsLogUtils.insert(
+						profile.userId,
+						Instant.now(),
+						TransactionType.BOM_DIA_E_CIA,
+						75,
+						StoredBomDiaECiaCallCalledTransaction
 					)
 				}
 
@@ -120,6 +133,15 @@ class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", cate
 								SonhosPaymentReason.BOM_DIA_E_CIA,
 								receivedBy = context.userHandle.idLong,
 								givenAtMillis = wonMillis
+							)
+
+							// Cinnamon transaction system
+							SimpleSonhosTransactionsLogUtils.insert(
+								profile.userId,
+								Instant.now(),
+								TransactionType.BOM_DIA_E_CIA,
+								randomPrize,
+								StoredBomDiaECiaCallWonTransaction
 							)
 						}
 

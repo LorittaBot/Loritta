@@ -123,6 +123,12 @@ data class StoredLorittaItemShopBoughtProfileDesignTransaction(
 ) : StoredSonhosTransaction()
 
 @Serializable
+data object StoredBomDiaECiaCallCalledTransaction : StoredSonhosTransaction()
+
+@Serializable
+data object StoredBomDiaECiaCallWonTransaction : StoredSonhosTransaction()
+
+@Serializable
 data class StoredLorittaItemShopBoughtBackgroundTransaction(
     val internalBackgroundId: String
 ) : StoredSonhosTransaction()

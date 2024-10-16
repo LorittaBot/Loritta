@@ -115,6 +115,11 @@ types:
     description: "Transações relacionadas aos itens da Loritta, como backgrounds e designs de perfil"
     boughtBackground: "Comprou um background por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na Loja de Itens da Loritta"
     boughtProfileDesign: "Comprou um design de perfil por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na Loja de Itens da Loritta"
+  bomDiaECia:
+    title: "Bom Dia & Cia"
+    description: "Transações relacionadas ao Bom Dia & Cia"
+    called: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para ligar no Bom Dia & Cia"
+    won: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter ligado para o Bom Dia & Cia"
 options:
   user:
     text: "O usuário que você deseja ver as transações"

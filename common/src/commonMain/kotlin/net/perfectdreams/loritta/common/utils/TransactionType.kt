@@ -95,4 +95,9 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.LorittaItemShop.Description,
         Emotes.ShoppingBags,
     ),
+    BOM_DIA_E_CIA(
+        I18nKeysData.Commands.Command.Transactions.Types.BomDiaECia.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.BomDiaECia.Description,
+        Emotes.Telephone,
+    )
 }
