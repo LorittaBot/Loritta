@@ -19,8 +19,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.datetime.Clock
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
@@ -28,7 +26,6 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -50,7 +47,6 @@ import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
 import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
@@ -129,7 +125,6 @@ import kotlin.concurrent.thread
 import kotlin.io.path.*
 import kotlin.math.ceil
 import kotlin.reflect.KClass
-import kotlin.system.exitProcess
 import kotlin.time.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -200,6 +195,7 @@ class LorittaBot(
 	val falatron = Falatron(config.loritta.falatron.url, config.loritta.falatron.key)
 	// TODO: This is very hacky, maybe this could be improved somehow?
 	lateinit var commandMentions: CommandMentions
+	val emojiManager = LorittaEmojiManager(this)
 	val unicodeEmojiManager = UnicodeEmojiManager()
 	val emojiImageCache = EmojiImageCache()
 	val graphicsFonts = GraphicsFonts()
@@ -492,9 +488,6 @@ class LorittaBot(
 		.asMap()
 
 	// Inicia a Loritta
-	@OptIn(ExperimentalTime::class, ExperimentalSerializationApi::class, ExperimentalSerializationApi::class,
-		ExperimentalSerializationApi::class
-	)
 	fun start() {
 		logger.info { "Starting Debug Web Server..." }
 		internalWebServer.start()

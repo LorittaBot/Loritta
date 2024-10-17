@@ -60,6 +60,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
     }
     val manager = UnleashedCommandManager(loritta, loritta.languageManager)
     private var hasAlreadyGloballyUpdatedTheCommands = false
+    private var hasAlreadyUpdatedTheEmojis = false
 
     override fun onReady(event: ReadyEvent) {
         // Update Slash Commands
@@ -97,6 +98,14 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                         loritta.commandMentions = CommandMentions(registeredCommands)
                     }
+            }
+        }
+
+        // Update emojis
+        if (!hasAlreadyUpdatedTheEmojis) {
+            hasAlreadyUpdatedTheEmojis = true
+            GlobalScope.launch {
+                loritta.emojiManager.syncEmojis(event.jda)
             }
         }
     }

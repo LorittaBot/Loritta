@@ -180,7 +180,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                                     description = i18nContext.get(
                                         transactionType.description
                                     ),
-                                    emoji = transactionType.emote.toJDA(),
+                                    emoji = loritta.emojiManager.get(transactionType.emote).toJDA(),
                                     default = transactionType in userFacingTransactionTypeFilter
                                 )
                             }

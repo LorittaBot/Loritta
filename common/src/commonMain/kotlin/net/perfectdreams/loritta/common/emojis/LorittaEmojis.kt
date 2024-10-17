@@ -1,0 +1,21 @@
+package net.perfectdreams.loritta.common.emojis
+
+/**
+ * A list of the emojis Loritta uses
+ *
+ * This only stores an "emoji reference", that is, application "Discord" emojis do not store enough data to create a chat mention from it,
+ * it only stores a name to map them to uploaded application emojis.
+ */
+object LorittaEmojis {
+    val applicationEmojis = mutableListOf<LorittaEmojiReference.ApplicationEmoji>()
+
+    val GarticBot = applicationEmoji("garticbot")
+
+    private fun applicationEmoji(emojiName: String): LorittaEmojiReference.ApplicationEmoji {
+        val ref = LorittaEmojiReference.ApplicationEmoji(emojiName)
+        applicationEmojis.add(ref)
+        return ref
+    }
+
+    private fun unicodeEmoji(unicodeEmoji: String) = LorittaEmojiReference.UnicodeEmoji(unicodeEmoji)
+}
