@@ -298,6 +298,12 @@ suspend fun main() {
                             emojiFightMatchmakingResults[EmojiFightMatchmakingResults.taxPercentage]
                         ) */
                     }
+
+                    StoredBomDiaECiaCallCalledTransaction -> TODO()
+                    StoredBomDiaECiaCallWonTransaction -> TODO()
+                    is StoredGarticosTransferTransaction -> TODO()
+                    is StoredLorittaItemShopBoughtBackgroundTransaction -> TODO()
+                    is StoredLorittaItemShopBoughtProfileDesignTransaction -> TODO()
                 }
             }
     }
