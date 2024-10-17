@@ -1,12 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.dao.id.LongIdTable
 
-object DiscordLorittaApplicationEmojis : IdTable<String>() {
-    override val id: Column<EntityID<String>> = text("emoji_name").uniqueIndex().entityId()
-
+object DiscordLorittaApplicationEmojis : LongIdTable() {
+    val emojiName = text("emoji_name").uniqueIndex()
     val emojiId = long("emoji_id")
     val animated = bool("animated")
     val imageHash = binary("image_hash")

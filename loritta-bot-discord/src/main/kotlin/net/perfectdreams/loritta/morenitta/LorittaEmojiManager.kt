@@ -62,7 +62,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
             // Just a FYI: DiscordLorittaApplicationEmojis.id is the emoji name, NOT the emoji snowflake!
             if (allEmojisAreUpToDate) {
                 for (remoteEmoji in remoteApplicationEmojis) {
-                    val localEmoji = LorittaEmojis.applicationEmojis.firstOrNull { it.name == remoteEmoji[DiscordLorittaApplicationEmojis.id].value }
+                    val localEmoji = LorittaEmojis.applicationEmojis.firstOrNull { it.name == remoteEmoji[DiscordLorittaApplicationEmojis.emojiName] }
                     if (localEmoji == null) {
                         logger.warn { "Remote emoji ${remoteEmoji[DiscordLorittaApplicationEmojis.id].value} does not exist on our local emojis! Emojis should be resynced!" }
                         allEmojisAreUpToDate = false
@@ -92,7 +92,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
 
                     registeredApplicationEmojis[localEmoji] = DiscordEmote(
                         remoteEmoji[DiscordLorittaApplicationEmojis.emojiId],
-                        remoteEmoji[DiscordLorittaApplicationEmojis.id].value,
+                        remoteEmoji[DiscordLorittaApplicationEmojis.emojiName],
                         remoteEmoji[DiscordLorittaApplicationEmojis.animated],
                     )
                 }
@@ -110,7 +110,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
                 val rawLocalApplicationEmojiNames = LorittaEmojis.applicationEmojis.map { it.name }
 
                 val deletedCount = DiscordLorittaApplicationEmojis.deleteWhere {
-                    DiscordLorittaApplicationEmojis.id notInList rawLocalApplicationEmojiNames
+                    DiscordLorittaApplicationEmojis.emojiName notInList rawLocalApplicationEmojiNames
                 }
 
                 logger.info { "Deleted $deletedCount emojis that were stored in our database, but that aren't used anymore" }
@@ -137,7 +137,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
                     val hash = sha256Hash(imageData)
 
                     val remoteApplicationEmoji = remoteApplicationEmojis.firstOrNull {
-                        it[DiscordLorittaApplicationEmojis.id].value == localApplicationEmoji.name
+                        it[DiscordLorittaApplicationEmojis.emojiName] == localApplicationEmoji.name
                     }
                     val discordEmoji = discordApplicationEmojis.firstOrNull { it.name == localApplicationEmoji.name }
 
@@ -153,7 +153,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
                         logger.info { "Successfully uploaded emoji ${localApplicationEmoji.name}!" }
 
                         DiscordLorittaApplicationEmojis.upsert(DiscordLorittaApplicationEmojis.id) {
-                            it[DiscordLorittaApplicationEmojis.id] = localApplicationEmoji.name
+                            it[DiscordLorittaApplicationEmojis.emojiName] = localApplicationEmoji.name
                             it[DiscordLorittaApplicationEmojis.emojiId] = newEmoji.idLong
                             it[DiscordLorittaApplicationEmojis.animated] = newEmoji.isAnimated
                             it[DiscordLorittaApplicationEmojis.imageHash] = hash
