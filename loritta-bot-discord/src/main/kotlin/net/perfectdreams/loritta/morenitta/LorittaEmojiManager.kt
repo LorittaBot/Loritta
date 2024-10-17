@@ -59,23 +59,22 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
                 allEmojisAreUpToDate = false
             }
 
-            // Just a FYI: DiscordLorittaApplicationEmojis.id is the emoji name, NOT the emoji snowflake!
             if (allEmojisAreUpToDate) {
                 for (remoteEmoji in remoteApplicationEmojis) {
                     val localEmoji = LorittaEmojis.applicationEmojis.firstOrNull { it.name == remoteEmoji[DiscordLorittaApplicationEmojis.emojiName] }
                     if (localEmoji == null) {
-                        logger.warn { "Remote emoji ${remoteEmoji[DiscordLorittaApplicationEmojis.id].value} does not exist on our local emojis! Emojis should be resynced!" }
+                        logger.warn { "Remote emoji ${remoteEmoji[DiscordLorittaApplicationEmojis.emojiName]} does not exist on our local emojis! Emojis should be resynced!" }
                         allEmojisAreUpToDate = false
                         break
                     }
 
-                    var imageInputStream = LorittaEmojiManager::class.java.getResourceAsStream("/application_emojis/${remoteEmoji[DiscordLorittaApplicationEmojis.id].value}.png")
+                    var imageInputStream = LorittaEmojiManager::class.java.getResourceAsStream("/application_emojis/${remoteEmoji[DiscordLorittaApplicationEmojis.emojiName]}.png")
                     if (imageInputStream == null) {
                         imageInputStream =
-                            LorittaEmojiManager::class.java.getResourceAsStream("/application_emojis/${remoteEmoji[DiscordLorittaApplicationEmojis.id].value}.gif")
+                            LorittaEmojiManager::class.java.getResourceAsStream("/application_emojis/${remoteEmoji[DiscordLorittaApplicationEmojis.emojiName]}.gif")
 
                         if (imageInputStream == null) {
-                            logger.warn { "Database emoji ${remoteEmoji[DiscordLorittaApplicationEmojis.id].value} is not present on the application_emojis folder! Emojis should be resynced!" }
+                            logger.warn { "Database emoji ${remoteEmoji[DiscordLorittaApplicationEmojis.emojiName]} is not present on the application_emojis folder! Emojis should be resynced!" }
                             allEmojisAreUpToDate = false
                             break
                         }
@@ -85,7 +84,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
                     val hash = sha256Hash(imageData)
 
                     if (!remoteEmoji[DiscordLorittaApplicationEmojis.imageHash].contentEquals(hash)) {
-                        logger.warn { "Database emoji ${remoteEmoji[DiscordLorittaApplicationEmojis.id]} does not match our local application_emojis copy! Emojis should be resynced!" }
+                        logger.warn { "Database emoji ${remoteEmoji[DiscordLorittaApplicationEmojis.emojiName]} does not match our local application_emojis copy! Emojis should be resynced!" }
                         allEmojisAreUpToDate = false
                         break
                     }
