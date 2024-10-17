@@ -85,7 +85,7 @@ class ChooseCommand : SlashCommandDeclarationWrapper {
                 context.explain()
                 return null
             }
-            
+
             return options.choices.mapIndexed { index, stringDiscordOptionReference ->
                 stringDiscordOptionReference to choices.getOrNull(index)
             }.toMap()
