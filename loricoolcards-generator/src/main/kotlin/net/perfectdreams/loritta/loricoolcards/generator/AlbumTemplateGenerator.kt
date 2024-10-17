@@ -465,7 +465,7 @@ fun main() {
             )
     )
 
-    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 5)', NOW(), '2024-10-01 00:00:00+00', '$resultAsJson');")
+    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 6)', NOW(), '2024-11-01 00:00:00+00', '$resultAsJson');")
     if (false) {
         println(
             "UPDATE loricoolcardsevents SET template = '${
