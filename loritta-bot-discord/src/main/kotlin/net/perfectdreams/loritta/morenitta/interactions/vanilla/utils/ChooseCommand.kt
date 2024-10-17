@@ -80,6 +80,12 @@ class ChooseCommand : SlashCommandDeclarationWrapper {
 
             val choices = args.joinToString(" ").split(",").map { it.trim() }
 
+            if (choices.size > 25) {
+                // Too many choices!
+                context.explain()
+                return null
+            }
+            
             return options.choices.mapIndexed { index, stringDiscordOptionReference ->
                 stringDiscordOptionReference to choices.getOrNull(index)
             }.toMap()
