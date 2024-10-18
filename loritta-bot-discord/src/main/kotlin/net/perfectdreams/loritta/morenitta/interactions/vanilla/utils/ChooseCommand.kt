@@ -68,7 +68,7 @@ class ChooseCommand : SlashCommandDeclarationWrapper {
                 return null
             }
 
-            return mapOf(options.choices to args.joinToString(","))
+            return mapOf(options.choices to args.joinToString(" "))
         }
     }
 }
