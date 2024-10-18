@@ -36,25 +36,15 @@ class ChooseCommand : SlashCommandDeclarationWrapper {
 
     inner class ChooseExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
-            val choices = (0 until 25).map {
-                // Sneaky!
-                if (it in 0..1) {
-                    string("choice${it + 1}", I18N_PREFIX.Options.Choice)
-                } else {
-                    optionalString("choice${it + 1}", I18N_PREFIX.Options.Choice)
-                }
-            }
+            val choices = string("choices", I18N_PREFIX.Options.Choice)
         }
 
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val validChoices = mutableListOf<String>()
-            for (choiceOption in options.choices) {
-                val result = args[choiceOption]
-                if (result != null)
-                    validChoices.add(result)
-            }
+            val validChoices = args[options.choices]
+                .split(",")
+                .map { it.trim() }
 
             context.reply(false) {
                 styled(
@@ -78,17 +68,7 @@ class ChooseCommand : SlashCommandDeclarationWrapper {
                 return null
             }
 
-            val choices = args.joinToString(" ").split(",").map { it.trim() }
-
-            if (choices.size > 25) {
-                // Too many choices!
-                context.explain()
-                return null
-            }
-
-            return options.choices.mapIndexed { index, stringDiscordOptionReference ->
-                stringDiscordOptionReference to choices.getOrNull(index)
-            }.toMap()
+            return mapOf(options.choices to args.joinToString(","))
         }
     }
 }
