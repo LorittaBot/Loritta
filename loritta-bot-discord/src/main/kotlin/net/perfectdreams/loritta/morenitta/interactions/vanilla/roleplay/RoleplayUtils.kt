@@ -270,8 +270,6 @@ object RoleplayUtils {
                     ) { context ->
                         context.invalidateComponentCallback()
 
-                        context.deferChannelMessage(false)
-
                         // Retribute
                         val (achievementTargets, message) = handleRoleplayMessage(
                             context.loritta,
