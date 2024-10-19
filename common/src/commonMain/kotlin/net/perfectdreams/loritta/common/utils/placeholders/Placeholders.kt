@@ -32,6 +32,7 @@ object Placeholders {
     val EXPERIENCE_NEXT_LEVEL = LorittaPlaceholder(EXPERIENCE_NEXT_LEVEL_PREFIX)
     val EXPERIENCE_NEXT_LEVEL_REQUIRED_XP = LorittaPlaceholder("$EXPERIENCE_NEXT_LEVEL_PREFIX.required-xp")
     val EXPERIENCE_NEXT_LEVEL_TOTAL_XP = LorittaPlaceholder("$EXPERIENCE_NEXT_LEVEL_PREFIX.total-xp")
+    val EXPERIENCE_NEXT_ROLE_REWARD = LorittaPlaceholder("$EXPERIENCE_PREFIX.next-role-reward")
 
     // ===[ PUNISHMENT ]===
     private const val PUNISHMENT_PREFIX = "punishment"

@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.R
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
@@ -176,6 +177,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 		var receivedNewRoles = false
 		val givenNewRoles = mutableSetOf<Role>()
+		val nextLevelRoles = mutableSetOf<Role>()
 
 		if (guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) {
 			val configs = loritta.newSuspendedTransaction {
@@ -186,6 +188,8 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 			val matched = configs.filter { guildProfile.xp >= it[RolesByExperience.requiredExperience] }
 				.sortedByDescending { it[RolesByExperience.requiredExperience] }
+			val nextLevelMatches = configs.filter { it[RolesByExperience.requiredExperience] > guildProfile.xp }
+				.minByOrNull { it[RolesByExperience.requiredExperience] }
 
 			if (matched.isNotEmpty()) {
 				val guildRoles = matched.flatMap { it[RolesByExperience.roles]
@@ -223,6 +227,16 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 						}
 					}
 				}
+			}
+
+			if (nextLevelMatches != null) {
+				val guildRoles = nextLevelMatches[RolesByExperience.roles]
+					.mapNotNull { guild.getRoleById(it) }
+					.distinct()
+					.filterOnlyGiveableRoles()
+					.toList()
+
+				nextLevelRoles.addAll(guildRoles)
 			}
 		}
 
@@ -266,7 +280,8 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 					mutableMapOf(
 						"previous-level" to previousLevel.toString(),
 						"previous-xp" to previousXp.toString(),
-						"new-roles" to givenNewRoles.joinToString(transform = { it.asMention })
+						"new-roles" to givenNewRoles.joinToString(transform = { it.asMention }),
+						Placeholders.EXPERIENCE_NEXT_ROLE_REWARD.name to nextLevelRoles.joinToString(transform = { it.asMention }),
 					).apply {
 						putAll(
 							ExperienceUtils.getExperienceCustomTokens(
