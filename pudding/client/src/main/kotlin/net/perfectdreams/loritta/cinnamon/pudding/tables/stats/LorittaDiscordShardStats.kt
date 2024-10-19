@@ -5,9 +5,12 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 
 object LorittaDiscordShardStats : LongIdTable() {
     val timestamp = timestampWithTimeZone("timestamp").index()
+    val clusterId = integer("cluster_id").index()
     val shardId = integer("shard_id").index()
-    val status = text("status")
-    val gatewayStartupResumeStatus = text("gateway_startup_resume_status").nullable()
+    // We don't use enumerations because we don't have access to JDA.Status nor the GW Startup Resume Status here
+    // And we can't use text because they are BIG and FAT
+    val status = integer("status")
+    val gatewayStartupResumeStatus = integer("gateway_startup_resume_status").nullable()
     val gatewayPing = long("gateway_ping")
     val responseTotal = long("response_total")
     val guildsCount = long("guild_count")

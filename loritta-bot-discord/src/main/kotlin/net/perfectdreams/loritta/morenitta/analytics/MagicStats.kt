@@ -58,7 +58,7 @@ class MagicStats(val loritta: LorittaBot) : RunnableCoroutine {
                     it[TotalSonhosStats.totalSonhosBroker] = totalSonhosBroker
                 }
             }
-            
+
             val mb = 1024 * 1024
             val runtime = Runtime.getRuntime()
             val freeMemory = runtime.freeMemory() / mb
@@ -82,9 +82,10 @@ class MagicStats(val loritta: LorittaBot) : RunnableCoroutine {
             val shardManager = loritta.lorittaShards.shardManager
             LorittaDiscordShardStats.batchInsert(shardManager.shardCache, shouldReturnGeneratedValues = false) {
                 this[LorittaDiscordShardStats.timestamp] = now
+                this[LorittaDiscordShardStats.clusterId] = loritta.clusterId
                 this[LorittaDiscordShardStats.shardId] = it.shardInfo.shardId
-                this[LorittaDiscordShardStats.status] = it.status.name
-                this[LorittaDiscordShardStats.gatewayStartupResumeStatus] = loritta.gatewayShardsStartupResumeStatus[it.shardInfo.shardId]?.name
+                this[LorittaDiscordShardStats.status] = it.status.ordinal
+                this[LorittaDiscordShardStats.gatewayStartupResumeStatus] = loritta.gatewayShardsStartupResumeStatus[it.shardInfo.shardId]?.ordinal
                 this[LorittaDiscordShardStats.gatewayPing] = it.gatewayPing
                 this[LorittaDiscordShardStats.responseTotal] = it.responseTotal
                 this[LorittaDiscordShardStats.guildsCount] = it.guildCache.size()
