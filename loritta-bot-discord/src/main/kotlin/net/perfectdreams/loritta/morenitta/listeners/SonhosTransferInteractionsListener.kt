@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor.Companion.SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredPaymentSonhosTransaction
@@ -39,8 +38,9 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
             val dbId = event.componentId.substringAfter(":").toLong()
 
             GlobalScope.launch {
-                val deferredReply = event.interaction.deferEdit().await()
-
+                // WE DO NOT DEFER THE MESSAGE BECAUSE THAT WILL HORRIBLE ISSUES!!!
+                // Horrible issues = users SPAMMING the message causing SHARED RATE LIMITS that cannot be properly ratelimited by nirn-proxy or JDA because THERE ISN'T ANYTHING ON THE PATH
+                // TO LET THE LIBRARY WAIT THE REQUEST
                 val i18nContext = if (guild != null) {
                     val serverConfig = loritta.getOrCreateServerConfig(guild.idLong, true)
                     loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
@@ -199,7 +199,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                 when (result) {
                     is TransferResult.Success -> {
                         // Let's go!!
-                        deferredReply.editOriginal(
+                        val hook = event.editMessage(
                             MessageEdit {
                                 actionRow(
                                     Button.of(
@@ -212,7 +212,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                             }
                         ).setReplace(false).await()
 
-                        deferredReply.sendMessage(
+                        hook.sendMessage(
                             MessageCreate {
                                 mentions {
                                     // Allow mentioning the giver AND the receiver!
@@ -255,12 +255,12 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).await()
                     }
                     is TransferResult.RequestUpdated -> {
-                        deferredReply.editOriginal(
+                        event.editMessage(
                             MessageEdit {
                                 actionRow(
                                     Button.of(
                                         ButtonStyle.PRIMARY,
-                                        "$SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX:${dbId}",
+                                        "${SonhosPayExecutor.SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX}:${dbId}",
                                         i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer(result.quantityApproved)),
                                         Emotes.Handshake.toJDA()
                                     )
@@ -269,7 +269,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).setReplace(false).await()
                     }
                     TransferResult.AlreadyTransferred -> {
-                        deferredReply.sendMessage(
+                        event.reply(
                             MessageCreate {
                                 styled(
                                     i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.ThisTransactionHasAlreadyBeenTransferred),
@@ -279,7 +279,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).setEphemeral(true).await()
                     }
                     TransferResult.NotEnoughSonhos -> {
-                        deferredReply.editOriginal(
+                        event.editMessage(
                             MessageEdit {
                                 actionRow(
                                     Button.of(
@@ -293,7 +293,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).setReplace(false).await()
                     }
                     TransferResult.NotTheUser -> {
-                        deferredReply.sendMessage(
+                        event.reply(
                             MessageCreate {
                                 styled(
                                     i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.YouArentInvolvedInThisTransaction),
@@ -303,7 +303,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).setEphemeral(true).await()
                     }
                     TransferResult.RequestExpired -> {
-                        deferredReply.editOriginal(
+                        event.editMessage(
                             MessageEdit {
                                 actionRow(
                                     Button.of(
@@ -317,7 +317,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).setReplace(false).await()
                     }
                     TransferResult.UnknownRequest -> {
-                        deferredReply.editOriginal(
+                        event.editMessage(
                             MessageEdit {
                                 actionRow(
                                     Button.of(
