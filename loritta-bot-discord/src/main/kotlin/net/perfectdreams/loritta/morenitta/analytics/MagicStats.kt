@@ -31,36 +31,39 @@ class MagicStats(val loritta: LorittaBot) : RunnableCoroutine {
         loritta.transaction {
             val now = Instant.now()
 
+            if (loritta.isMainInstance) {
+                val sumField = Profiles.money.sum()
+                val totalSonhos = Profiles.select(sumField)
+                    .where {
+                        Profiles.money greater 0
+                    }
+                    .first()[sumField] ?: 0
+
+                val totalSonhosOfBannedUsers = Profiles.select(sumField)
+                    .where {
+                        Profiles.money greater 0 and (Profiles.id inSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                    }
+                    .first()[sumField] ?: 0
+
+                val sonhosBrokerSumField = TickerPrices.value.sum()
+                val totalSonhosBroker =
+                    BoughtStocks.innerJoin(TickerPrices, { BoughtStocks.ticker }, { TickerPrices.ticker })
+                        .select(sonhosBrokerSumField)
+                        .first()[sonhosBrokerSumField] ?: 0
+
+                TotalSonhosStats.insert {
+                    it[TotalSonhosStats.timestamp] = Instant.now()
+                    it[TotalSonhosStats.totalSonhos] = totalSonhos
+                    it[TotalSonhosStats.totalSonhosOfBannedUsers] = totalSonhosOfBannedUsers
+                    it[TotalSonhosStats.totalSonhosBroker] = totalSonhosBroker
+                }
+            }
+            
             val mb = 1024 * 1024
             val runtime = Runtime.getRuntime()
             val freeMemory = runtime.freeMemory() / mb
             val maxMemory = runtime.maxMemory() / mb
             val totalMemory = runtime.totalMemory() / mb
-
-            val sumField = Profiles.money.sum()
-            val totalSonhos = Profiles.select(sumField)
-                .where {
-                    Profiles.money greater 0
-                }
-                .first()[sumField] ?: 0
-
-            val totalSonhosOfBannedUsers = Profiles.select(sumField)
-                .where {
-                    Profiles.money greater 0 and (Profiles.id inSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
-                }
-                .first()[sumField] ?: 0
-
-            val sonhosBrokerSumField = TickerPrices.value.sum()
-            val totalSonhosBroker = BoughtStocks.innerJoin(TickerPrices, { BoughtStocks.ticker }, { TickerPrices.ticker })
-                .select(sonhosBrokerSumField)
-                .first()[sonhosBrokerSumField] ?: 0
-
-            TotalSonhosStats.insert {
-                it[TotalSonhosStats.timestamp] = Instant.now()
-                it[TotalSonhosStats.totalSonhos] = totalSonhos
-                it[TotalSonhosStats.totalSonhosOfBannedUsers] = totalSonhosOfBannedUsers
-                it[TotalSonhosStats.totalSonhosBroker] = totalSonhosBroker
-            }
 
             LorittaClusterStats.insert {
                 it[LorittaClusterStats.timestamp] = now

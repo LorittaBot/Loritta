@@ -1204,7 +1204,7 @@ class LorittaBot(
 		GlobalScope.launch(CoroutineName("Create Twitch Subscriptions Loop")) {
 			twitchSubscriptionsHandler.createSubscriptionsLoop()
 		}
-		scheduleCoroutineAtFixedRateIfMainReplica(MagicStats::class.simpleName!!, 15.seconds, action = MagicStats(this))
+		scheduleCoroutineAtFixedRate(MagicStats::class.simpleName!!, 15.seconds, action = MagicStats(this))
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {
