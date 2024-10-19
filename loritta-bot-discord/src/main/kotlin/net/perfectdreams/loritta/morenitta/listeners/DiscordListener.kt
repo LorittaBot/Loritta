@@ -203,7 +203,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val input = buffer.readUtf8()
 			val length = body?.contentLength()
 
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; Content Length: $length; -> ${event.response?.code}\n$input")
+			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; Content Length: $length; -> ${event.response?.code}; Body: $input")
 		} else if (originalMediaType != null) {
 			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; -> ${event.response?.code}")
 		} else {
