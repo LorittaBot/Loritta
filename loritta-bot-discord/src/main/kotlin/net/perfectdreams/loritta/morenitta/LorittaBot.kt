@@ -68,6 +68,7 @@ import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.morenitta.analytics.MagicStats
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
@@ -1203,6 +1204,7 @@ class LorittaBot(
 		GlobalScope.launch(CoroutineName("Create Twitch Subscriptions Loop")) {
 			twitchSubscriptionsHandler.createSubscriptionsLoop()
 		}
+		scheduleCoroutineAtFixedRateIfMainReplica(MagicStats::class.simpleName!!, 15.seconds, action = MagicStats(this))
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {

@@ -20,7 +20,7 @@ class DiscordBotsStatsSender(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun send(guildCount: Long, totalSonhos: Long, totalSonhosOfBannedUsers: Long) {
+    override suspend fun send(guildCount: Long) {
         val result = http.post("https://discord.bots.gg/api/v1/bots/$clientId/stats") {
             header("Authorization", token)
             accept(ContentType.Application.Json)
