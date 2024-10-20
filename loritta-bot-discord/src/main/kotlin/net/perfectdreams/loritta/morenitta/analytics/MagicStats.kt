@@ -1,37 +1,47 @@
 package net.perfectdreams.loritta.morenitta.analytics
 
-import net.dv8tion.jda.internal.JDAImpl
+import io.micrometer.core.instrument.Gauge
+import io.micrometer.core.instrument.MeterRegistry
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TotalSonhosStats
-import net.perfectdreams.loritta.cinnamon.pudding.tables.stats.LorittaClusterStats
-import net.perfectdreams.loritta.cinnamon.pudding.tables.stats.LorittaDiscordShardStats
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import org.jetbrains.exposed.sql.*
-import java.lang.management.ManagementFactory
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.innerJoin
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.sum
 import java.time.Instant
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * A class that periodically stores stats to the database, "poor man's Prometheus"
- *
- * The reason I didn't want to use Prometheus is because I wanted to have more control on how I could store the data and stuffz, and because I already have more knowledge on how
- * PostgreSQL works compared to Prometheus, so I don't want to lose my stats because Prometheus decided to delete it or something like that.
- *
- * I also have more control of when the stats should be deleted.
- *
- * Yeah, one of the bad things is that I can't decide which stats gets deleted (because they are all in the same table)
- *
- * But well you ALSO CAN'T DO THAT IN PROMETHEUS (you can do that with VictoriaMetrics... Enterprise)
  */
 class MagicStats(val loritta: LorittaBot) : RunnableCoroutine {
-    override suspend fun run() {
-        loritta.transaction {
-            val now = Instant.now()
+    private val totalSonhosGauge = LazyGauge(
+        registry = LorittaMetrics.appMicrometerRegistry,
+        gaugeName = "loritta.total_sonhos"
+    )
+    private val totalSonhosOfBannedUsersGauge = LazyGauge(
+        registry = LorittaMetrics.appMicrometerRegistry,
+        gaugeName = "loritta.total_sonhos_of_banned_users"
+    )
+    private val totalSonhosBrokerGauge = LazyGauge(
+        registry = LorittaMetrics.appMicrometerRegistry,
+        gaugeName = "loritta.total_sonhos_broker"
+    )
 
-            if (loritta.isMainInstance) {
+    override suspend fun run() {
+        class Result(
+            val totalSonhos: Long,
+            val totalSonhosOfBannedUsers: Long,
+            val totalSonhosBroker: Long
+        )
+
+        if (loritta.isMainInstance) {
+            val result = loritta.transaction {
                 val sumField = Profiles.money.sum()
                 val totalSonhos = Profiles.select(sumField)
                     .where {
@@ -57,48 +67,47 @@ class MagicStats(val loritta: LorittaBot) : RunnableCoroutine {
                     it[TotalSonhosStats.totalSonhosOfBannedUsers] = totalSonhosOfBannedUsers
                     it[TotalSonhosStats.totalSonhosBroker] = totalSonhosBroker
                 }
+
+                return@transaction Result(totalSonhos, totalSonhosOfBannedUsers, totalSonhosBroker)
             }
 
-            val mb = 1024 * 1024
-            val runtime = Runtime.getRuntime()
-            val freeMemory = runtime.freeMemory() / mb
-            val maxMemory = runtime.maxMemory() / mb
-            val totalMemory = runtime.totalMemory() / mb
+            totalSonhosGauge.setValue(result.totalSonhos)
+            totalSonhosOfBannedUsersGauge.setValue(result.totalSonhosOfBannedUsers)
+            totalSonhosBrokerGauge.setValue(result.totalSonhosBroker)
+        }
+    }
 
-            LorittaClusterStats.insert {
-                it[LorittaClusterStats.timestamp] = now
-                it[LorittaClusterStats.clusterId] = loritta.clusterId
-                it[LorittaClusterStats.pendingMessagesCount] = loritta.pendingMessages.size
-                it[LorittaClusterStats.freeMemory] = freeMemory
-                it[LorittaClusterStats.maxMemory] = maxMemory
-                it[LorittaClusterStats.totalMemory] = totalMemory
-                it[LorittaClusterStats.threadCount] = ManagementFactory.getThreadMXBean().threadCount
-                it[LorittaClusterStats.uptime] = ManagementFactory.getRuntimeMXBean().uptime
-                it[LorittaClusterStats.puddingIdleConnections] = loritta.pudding.hikariDataSource.hikariPoolMXBean.idleConnections
-                it[LorittaClusterStats.puddingActiveConnections] = loritta.pudding.hikariDataSource.hikariPoolMXBean.activeConnections
-                it[LorittaClusterStats.puddingTotalConnections] = loritta.pudding.hikariDataSource.hikariPoolMXBean.totalConnections
-            }
+    data class LazyGauge(
+        private val registry: MeterRegistry,
+        private val gaugeName: String
+    ) {
+        private val atomicLong = AtomicLong()
 
-            val shardManager = loritta.lorittaShards.shardManager
-            LorittaDiscordShardStats.batchInsert(shardManager.shardCache, shouldReturnGeneratedValues = false) {
-                this[LorittaDiscordShardStats.timestamp] = now
-                this[LorittaDiscordShardStats.clusterId] = loritta.clusterId
-                this[LorittaDiscordShardStats.shardId] = it.shardInfo.shardId
-                this[LorittaDiscordShardStats.status] = it.status.ordinal
-                this[LorittaDiscordShardStats.gatewayStartupResumeStatus] = loritta.gatewayShardsStartupResumeStatus[it.shardInfo.shardId]?.ordinal
-                this[LorittaDiscordShardStats.gatewayPing] = it.gatewayPing
-                this[LorittaDiscordShardStats.responseTotal] = it.responseTotal
-                this[LorittaDiscordShardStats.guildsCount] = it.guildCache.size()
-                this[LorittaDiscordShardStats.cachedUsersCount] = it.userCache.size()
-                this[LorittaDiscordShardStats.cachedChannelsCount] = it.channelCache.size()
-                this[LorittaDiscordShardStats.cachedRolesCount] = it.roleCache.size()
-                this[LorittaDiscordShardStats.cachedEmojisCount] = it.emojiCache.size()
-                this[LorittaDiscordShardStats.cachedAudioManagerCount] = it.audioManagerCache.size()
-                this[LorittaDiscordShardStats.cachedScheduledEventsCount] = it.scheduledEventCache.size()
+        // Flag to ensure that gauge is registered only once
+        @Volatile
+        private var isGaugeCreated = false
 
-                // Stuff that requires casting
-                this[LorittaDiscordShardStats.unavailableGuildsCount] = (it as JDAImpl).guildSetupController.unavailableGuilds.size().toLong()
+        // Function to set the value to AtomicLong and lazily create a gauge
+        fun setValue(value: Long) {
+            atomicLong.set(value)
+
+            if (!isGaugeCreated) {
+                synchronized(this) {
+                    if (!isGaugeCreated) {
+                        createGauge()
+                        isGaugeCreated = true
+                    }
+                }
             }
         }
+
+        // The actual gauge creation logic
+        private fun createGauge() {
+            Gauge.builder(gaugeName) { atomicLong.get().toDouble() }
+                .register(registry)
+        }
+
+        // Getter for AtomicLong value
+        fun getValue(): Long = atomicLong.get()
     }
 }

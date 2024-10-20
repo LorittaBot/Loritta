@@ -68,6 +68,7 @@ import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.analytics.MagicStats
 import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
@@ -338,6 +339,8 @@ class LorittaBot(
 	val starboardModule = StarboardModule(this)
 	val activityUpdater = ActivityUpdater(this)
 	val loriCoolCardsManager = LoriCoolCardsManager(this.graphicsFonts)
+	val magicStats = MagicStats(this)
+	val metrics = LorittaMetrics(this)
 
 	// Stores if a gateway was successfully resumed during startup
 	val gatewayShardsStartupResumeStatus = ConcurrentHashMap<Int, GatewayShardStartupResumeStatus>()
@@ -529,6 +532,7 @@ class LorittaBot(
 			this,
 			shardManager
 		)
+		metrics.registerMetrics()
 
 		logger.info { "Starting Loritta tasks..." }
 		startTasks()
@@ -1204,7 +1208,7 @@ class LorittaBot(
 		GlobalScope.launch(CoroutineName("Create Twitch Subscriptions Loop")) {
 			twitchSubscriptionsHandler.createSubscriptionsLoop()
 		}
-		scheduleCoroutineAtFixedRate(MagicStats::class.simpleName!!, 15.seconds, action = MagicStats(this))
+		scheduleCoroutineAtFixedRate(MagicStats::class.simpleName!!, 15.seconds, action = magicStats)
 
 		// Update Fan Arts
 		scheduleCoroutineAtFixedRate("GalleryOfDreamsFanArtsUpdater", 1.minutes) {

@@ -11,6 +11,7 @@ import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
+import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.statuspages.*
@@ -26,6 +27,7 @@ import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.Processors
 import net.perfectdreams.loritta.morenitta.website.utils.SVGIconManager
@@ -269,6 +271,11 @@ class LorittaWebsite(
 			}
 
 			install(Compression)
+
+			install(MicrometerMetrics) {
+				metricName = "lorittawebserver.ktor.http.server.requests"
+				registry = LorittaMetrics.appMicrometerRegistry
+			}
 
 			routing {
 				static {

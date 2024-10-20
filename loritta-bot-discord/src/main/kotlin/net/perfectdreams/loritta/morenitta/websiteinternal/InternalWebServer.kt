@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
+import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
@@ -24,6 +25,7 @@ import net.perfectdreams.loritta.common.utils.placeholders.BlueskyPostMessagePla
 import net.perfectdreams.loritta.common.utils.placeholders.TwitchStreamOnlineMessagePlaceholders
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.PendingUpdate
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
@@ -89,6 +91,11 @@ class InternalWebServer(val m: LorittaBot) {
                 }
             }
 
+            install(MicrometerMetrics) {
+                metricName = "internalwebserver.ktor.http.server.requests"
+                registry = LorittaMetrics.appMicrometerRegistry
+            }
+
             routing {
                 post("/rpc") {
                     val body = withContext(Dispatchers.IO) { call.receiveText() }
@@ -106,6 +113,10 @@ class InternalWebServer(val m: LorittaBot) {
                     val ps = PrintStream(os)
                     DebugProbes.dumpCoroutines(ps)
                     call.respondText(os.toString(Charsets.UTF_8))
+                }
+
+                get("/metrics") {
+                    call.respond(LorittaMetrics.appMicrometerRegistry.scrape())
                 }
 
                 // Dumps all pending messages on the event queue

@@ -6,11 +6,13 @@ import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.yokye.BlueskyFirehoseClient
 import org.jetbrains.exposed.sql.selectAll
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.time.Duration.Companion.seconds
 
 class LorittaBlueskyRelay(val loritta: LorittaBot) {
@@ -20,6 +22,7 @@ class LorittaBlueskyRelay(val loritta: LorittaBot) {
 
     val firehoseClient = BlueskyFirehoseClient()
     val postStream = firehoseClient.postStream
+    private val postsReceivedGauge = LorittaMetrics.appMicrometerRegistry.gauge("loritta.bluesky.posts_received", AtomicLong(0))
 
     suspend fun startRelay() {
         firehoseClient.connect()
@@ -34,6 +37,7 @@ class LorittaBlueskyRelay(val loritta: LorittaBot) {
                 // We chunk due to limits on IN queries
                 posts.chunked(65_535)
                     .forEach { chunkPosts ->
+                        postsReceivedGauge.incrementAndGet()
                         val repos = chunkPosts.map { it.repo }
 
                         // To avoid spamming all Loritta instances with useless posts, we'll do a "pre-filter" here to know if we need to relay something or not

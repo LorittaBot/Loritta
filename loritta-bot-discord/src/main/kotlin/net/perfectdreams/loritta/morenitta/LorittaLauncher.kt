@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
+import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.DeviousConverter
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayExtrasData
@@ -102,7 +103,9 @@ object LorittaLauncher {
 			config.loritta.pudding.database,
 			config.loritta.pudding.username,
 			config.loritta.pudding.password
-		)
+		) {
+			metricRegistry = LorittaMetrics.appMicrometerRegistry
+		}
 		services.setupShutdownHook()
 
 		logger.info { "Started Pudding client!" }
