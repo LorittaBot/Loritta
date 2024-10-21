@@ -13,7 +13,7 @@ dependencies {
     implementation(project(":loritta-serializable-commons"))
     implementation(project(":pudding:client"))
     // Discord
-    implementation("com.github.LorittaBot:DeviousJDA:40ea50aea7")
+    implementation(libs.deviousjda)
     implementation("club.minnced:jda-ktx:0.12.0")
     // DreamStorageService
     implementation("net.perfectdreams.dreamstorageservice:client:2.0.2")

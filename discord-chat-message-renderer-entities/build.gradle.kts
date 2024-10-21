@@ -16,5 +16,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
 
     // Discord
-    implementation("com.github.LorittaBot:DeviousJDA:40ea50aea7")
+    implementation(libs.deviousjda)
 }

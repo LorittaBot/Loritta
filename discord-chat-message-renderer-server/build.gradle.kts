@@ -36,7 +36,7 @@ dependencies {
     implementation("com.microsoft.playwright:playwright:1.45.0")
 
     // Discord
-    implementation("com.github.LorittaBot:DeviousJDA:40ea50aea7")
+    implementation(libs.deviousjda)
 
     // Logging Stuff
     implementation(libs.kotlin.logging)
