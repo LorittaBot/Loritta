@@ -77,6 +77,8 @@ class InternalWebServer(val m: LorittaBot) {
         GuildJsonBenchmarkRoute(m)
     )
 
+    private var counter = 0
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
         // 3003 = 30/03, Loritta's birthday!
@@ -116,6 +118,7 @@ class InternalWebServer(val m: LorittaBot) {
                 }
 
                 get("/metrics") {
+                    m.metrics.updateMetrics()
                     call.respond(LorittaMetrics.appMicrometerRegistry.scrape())
                 }
 
