@@ -113,7 +113,7 @@ class LorittaWebsite(
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig(loritta)
 	val svgIconManager = SVGIconManager(this)
-	lateinit var server: CIOApplicationEngine
+	lateinit var server: EmbeddedServer<CIOApplicationEngine, *>
 	private val typesToCache = listOf(
 		ContentType.Text.CSS,
 		ContentType.Text.JavaScript,
@@ -422,7 +422,7 @@ class LorittaWebsite(
 				}
 			}
 
-			this.environment.monitor.subscribe(Routing.RoutingCallStarted) { call: RoutingApplicationCall ->
+			this.monitor.subscribe(RoutingRoot.RoutingCallStarted) { call: RoutingCall ->
 				call.attributes.put(TimeToProcess, System.currentTimeMillis())
 				val userAgent = call.request.userAgent()
 				val trueIp = call.request.trueIp
@@ -432,7 +432,7 @@ class LorittaWebsite(
 				logger.info("${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}")
 			}
 
-			this.environment.monitor.subscribe(Routing.RoutingCallFinished) { call: RoutingApplicationCall ->
+			this.monitor.subscribe(RoutingRoot.RoutingCallFinished) { call: RoutingCall ->
 				val originalStartTime = call.attributes[TimeToProcess]
 
 				val queryString = call.request.urlQueryString

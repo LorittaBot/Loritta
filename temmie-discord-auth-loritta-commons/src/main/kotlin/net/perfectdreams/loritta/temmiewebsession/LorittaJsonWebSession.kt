@@ -13,6 +13,7 @@ import mu.KotlinLogging
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.*
 
+@Serializable
 data class LorittaJsonWebSession(
     val base64CachedIdentification: String?,
     val base64StoredDiscordAuthTokens: String?

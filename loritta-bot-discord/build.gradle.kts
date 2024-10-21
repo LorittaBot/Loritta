@@ -88,7 +88,6 @@ dependencies {
 
     // Sequins
     implementation("net.perfectdreams.sequins.text:text-utils:1.0.1")
-    implementation("net.perfectdreams.sequins.ktor:base-route:1.0.4")
 
     implementation("net.perfectdreams.randomroleplaypictures:client:1.0.1")
     implementation("org.gagravarr:vorbis-java-core:0.8")

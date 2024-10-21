@@ -2,7 +2,7 @@ object Versions {
     const val LORITTA = "2023-SNAPSHOT"
     const val PUDDING = "0.0.3-SNAPSHOT"
     const val KOTLIN = "2.0.20"
-    const val KTOR = "2.3.6"
+    const val KTOR = "3.0.0"
     const val KOTLIN_SERIALIZATION = "1.6.0"
     const val KOTLIN_COROUTINES = "1.6.0"
     const val KOTLIN_LOGGING = "2.1.16"

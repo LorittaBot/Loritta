@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.dashboard.backend.utils
+package net.perfectdreams.sequins.ktor
 
 import io.ktor.http.*
 import io.ktor.server.application.*

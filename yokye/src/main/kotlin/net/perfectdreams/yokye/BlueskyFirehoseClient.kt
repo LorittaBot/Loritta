@@ -16,7 +16,7 @@ class BlueskyFirehoseClient {
         private val client = HttpClient(CIO) {
             install(WebSockets) {
                 // We DON'T WANT to use the pingInterval, because we already do our own "ping at home" that automatically restarts the session if we haven't received an event for a looong time
-                pingInterval = -1L
+                pingInterval = null
             }
         }
         private val logger = KotlinLogging.logger {}
