@@ -731,6 +731,9 @@ class DiscordMessageRenderer(
                                                 EmbedType.IMAGE -> {}
                                                 EmbedType.VIDEO -> {}
                                                 EmbedType.AUTO_MODERATION -> {}
+                                                EmbedType.GIFV -> {}
+                                                EmbedType.ARTICLE -> {}
+                                                EmbedType.POLL_RESULT -> {}
                                             }
                                         }
 
