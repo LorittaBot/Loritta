@@ -32,6 +32,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTimedValue
 
 
@@ -56,24 +57,43 @@ class DiscordChatMessageRendererServer {
     private var failedRenders = 0
     private val pendingRequests = AtomicInteger()
 
+    private suspend fun downloadFonts(): String {
+        val fontStylesheetResponse = try {
+            logger.info { "Attempting to download fonts..." }
+            withTimeout(5_000) {
+                http.get("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap&family=Pacifico&display=swap&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap") {
+                    // Google Fonts serves different stylesheets depending on the browser
+                    header(
+                        "User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
+                    )
+                }
+            }
+        } catch (e: TimeoutCancellationException) {
+            logger.warn(e) { "Failed to download fonts! Retrying in 2s..." }
+            delay(2.seconds)
+            return downloadFonts()
+        }
+
+        val fontStylesheetAsText = fontStylesheetResponse.bodyAsText()
+        val fontStylesheetAsTextReplacedFontsToBase64 = Regex("url\\((.+?)\\)")
+            .replace(fontStylesheetAsText) {
+                val fontData = runBlocking { http.get(it.groupValues[1]).readBytes() }
+                "url(data:application/octet-stream;base64,${Base64.getEncoder().encodeToString(fontData)})"
+            }
+
+        return fontStylesheetAsTextReplacedFontsToBase64
+    }
+
     fun start() {
         scheduleWithFixedDelay(DebugSender(), 0L, 15L, TimeUnit.SECONDS)
 
         logger.info { "Downloading fonts..." }
 
         val fontStylesheetAsTextReplacedFontsToBase64 = runBlocking {
-            val fontStylesheetResponse = http.get("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap&family=Pacifico&display=swap&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap") {
-                // Google Fonts serves different stylesheets depending on the browser
-                header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0")
-            }
-            val fontStylesheetAsText = fontStylesheetResponse.bodyAsText()
-            val fontStylesheetAsTextReplacedFontsToBase64 = Regex("url\\((.+?)\\)")
-                .replace(fontStylesheetAsText) {
-                    val fontData = runBlocking { http.get(it.groupValues[1]).readBytes() }
-                    "url(data:application/octet-stream;base64,${Base64.getEncoder().encodeToString(fontData)})"
-                }
-            fontStylesheetAsTextReplacedFontsToBase64
+            downloadFonts()
         }
+
         logger.info { "Successfully downloaded all fonts!" }
 
         logger.info { "Using ${rendererManagers.size} renderers" }
