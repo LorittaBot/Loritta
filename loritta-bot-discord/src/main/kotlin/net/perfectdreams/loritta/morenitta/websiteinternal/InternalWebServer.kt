@@ -122,6 +122,26 @@ class InternalWebServer(val m: LorittaBot) {
                     call.respond(LorittaMetrics.appMicrometerRegistry.scrape())
                 }
 
+                get("/prom-sd") {
+                    call.respondJson(
+                        buildJsonArray {
+                            for (cluster in m.config.loritta.clusters.instances) {
+                                addJsonObject {
+                                    val targetUrl = cluster.rpcUrl + "metrics"
+
+                                    putJsonArray("targets") {
+                                        add(targetUrl)
+                                    }
+
+                                    putJsonObject("labels") {
+                                        put("loritta_cluster", "cluster-${cluster.id.toString()}")
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+
                 // Dumps all pending messages on the event queue
                 get("/pending-messages") {
                     val coroutinesInfo = DebugProbes.dumpCoroutinesInfo()
@@ -311,7 +331,7 @@ class InternalWebServer(val m: LorittaBot) {
                                     trackedTwitchAccount[TrackedTwitchAccounts.message],
                                     guild,
                                     TwitchStreamOnlineMessagePlaceholders,
-                                     {
+                                    {
                                         when (it) {
                                             TwitchStreamOnlineMessagePlaceholders.GuildIconUrlPlaceholder -> guild.iconUrl ?: ""
                                             TwitchStreamOnlineMessagePlaceholders.GuildNamePlaceholder -> guild.name
