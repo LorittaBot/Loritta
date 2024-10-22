@@ -61,7 +61,8 @@ Nesta página, quando estamos dizendo que é para "esperar X meses", significa q
 * **Exemplo:** Se você foi banido por "Criar múltiplas contas para farmar sonhos no daily" e "Comércio de Sonhos (Venda)", você deverá somar 18 + (9 / 2), que dá 22,5. Logo você terá que esperar 22,5 meses antes de enviar um apelo.
 
 ### Evasão de Ban
-* Caso você tenha tentado evadir bans em outras contas, o tempo que você deverá esperar está na lista abaixo, somando mais um mês para cada conta que você criou para evadir o ban.
+* Caso você tenha tentado evadir bans em outras contas, o seu ban é permanente e você não poderá fazer um apelo para ser desbanido.
+* Usar outra conta do Discord enquanto você está banido da Loritta na sua principal não é "evasão de ban", desde que você não use funcionalidades da Loritta enquanto usa a outra conta. Mas no momento que você usar quaisquer funcionalidades da Loritta, você pode ser banido por evasão de ban. Ou seja, você não precisa se preocupar em levar ban por evasão ao entrar no servidor da Loritta para fazer um apelo. Entretanto, a equipe pode ter outros critérios que possa fazer você ser banido na sua outra conta mesmo se você não tiver usado funcionalidades da Loritta nela, por exemplo, se você ficar provocando a equipe para te desbanir, dependendo do seu motivo do seu ban original, entre outros motivos.
 
 ### Mentir para a equipe da Loritta
 * Se você mentiu para a equipe da Loritta, o tempo que você deverá esperar está na lista abaixo, e aí você soma mais três meses.
