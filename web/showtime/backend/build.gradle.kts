@@ -36,9 +36,6 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.30")
     implementation("com.charleskorn.kaml:kaml:0.36.0")
 
-    // Sequins
-    api("net.perfectdreams.sequins.ktor:base-route:1.0.4")
-
     implementation("net.perfectdreams.etherealgambi:client:1.0.0")
 
     api("commons-codec:commons-codec:1.15")
