@@ -17,6 +17,7 @@ abstract class ReactionEvent {
     abstract val endsAt: Instant
     abstract val reactionSets: List<ReactionSet>
     abstract val rewards: List<ReactionEventReward>
+    open val guildMemberThreshold = 1_000
 
     abstract fun createJoinMessage(context: UnleashedContext): InlineMessage<*>.() -> (Unit)
 

@@ -48,13 +48,13 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         if (lorittaProfile == null)
             return false
 
-        if (event.guild == null)
-            return false
-
         val now = Instant.now()
 
         // Get the current active event
         val activeEvent = ReactionEventsAttributes.getActiveEvent(now) ?: return false
+
+        if (event.guild == null || activeEvent.guildMemberThreshold > event.guild.memberCount)
+            return false
 
         val date = System.currentTimeMillis()
 
