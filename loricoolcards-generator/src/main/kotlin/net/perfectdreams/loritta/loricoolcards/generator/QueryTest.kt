@@ -304,6 +304,7 @@ suspend fun main() {
                     is StoredGarticosTransferTransaction -> TODO()
                     is StoredLorittaItemShopBoughtBackgroundTransaction -> TODO()
                     is StoredLorittaItemShopBoughtProfileDesignTransaction -> TODO()
+                    is StoredReactionEventSonhosTransaction -> TODO()
                 }
             }
     }
