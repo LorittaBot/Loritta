@@ -1,0 +1,11 @@
+reactionEvents:
+  event:
+    halloween2024:
+      craftItem: "Criar Cesta de Doces"
+      currentlyYouHave: "Atualmente você possui {craftedCount,plural, =0 {# cestas de doces} one {# cesta de doces} other {# cestas de doces}}! Veja suas recompensas em {commandMention}."
+      itemsInYourInventory: "Itens no seu inventário:"
+      yourNextCraftIngredientsAre: "Você precisa dos seguintes itens para fazer a sua próxima cesta:"
+      youDontHaveEnoughItems: "Você não tem itens suficientes para criar uma cesta de doces!"
+      youCraftedAnItem: "Você criou uma cesta de doces!"
+      youCraftedXItems: "Você criou **{quantity,plural, =0 {# cestas de doces} one {# cesta de doces} other {# cestas de doces}}** {emoji}! Crie cestas de doces com os itens coletados em {commandMention}"
+      shortCraftedItem: "{quantity,plural, =0 {# cestas} one {# cesta} other {# cestas}}"

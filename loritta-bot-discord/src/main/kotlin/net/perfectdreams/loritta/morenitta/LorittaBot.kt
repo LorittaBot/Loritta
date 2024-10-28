@@ -225,6 +225,7 @@ class LorittaBot(
 	val interactionsListener = InteractionsListener(this)
 	val christmasListener = ReactionListener(this)
 	val easter2023Listener = Easter2023ReactionListener(this)
+	val reactionListener = net.perfectdreams.loritta.morenitta.reactionevents.ReactionListener(this)
 	val giveawayInteractionsListener = GiveawayInteractionsListener(this)
 	val coinFlipBetGlobalListener = CoinFlipBetGlobalListener(this)
 	val sonhosTransferInteractionsListener = SonhosTransferInteractionsListener(this)
@@ -448,6 +449,7 @@ class LorittaBot(
 				giveawayInteractionsListener,
 				coinFlipBetGlobalListener,
 				easter2023Listener,
+				reactionListener,
 				sonhosTransferInteractionsListener
 			)
 			.addEventListenerProvider {

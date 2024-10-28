@@ -281,6 +281,9 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         // ===[ EASTER 2023 ]===
                         is Easter2023SonhosTransaction -> Easter2023SonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
+                        // ===[ REACTION EVENTS ]===
+                        is ReactionEventSonhosTransaction -> ReactionEventSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
                         // ===[ POWERSTREAM ]===
                         is PowerStreamClaimedFirstSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
                         is PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> PowerStreamClaimedLimitedTimeSonhosRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)

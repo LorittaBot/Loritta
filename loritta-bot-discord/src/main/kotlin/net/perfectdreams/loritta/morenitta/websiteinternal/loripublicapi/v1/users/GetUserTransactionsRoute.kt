@@ -253,6 +253,15 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.sonhos,
                     transaction.baskets
                 )
+                is net.perfectdreams.loritta.serializable.ReactionEventSonhosTransaction -> ReactionEventSonhosTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.eventInternalId,
+                    transaction.craftedCount
+                )
                 is net.perfectdreams.loritta.serializable.ShipEffectSonhosTransaction -> ShipEffectSonhosTransaction(
                     transaction.id,
                     transaction.transactionType,
@@ -551,6 +560,18 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         override val user: UserId,
         val sonhos: Long,
         val baskets: Int
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class ReactionEventSonhosTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val eventInternalId: String,
+        val craftedCount: Int
     ) : SonhosTransaction()
 
     @Serializable

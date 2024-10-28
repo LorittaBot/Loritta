@@ -18,7 +18,7 @@ import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.seconds
 
-class TemmieDiscordAuth(
+class DiscordTemmieDiscordAuth(
 	val clientId: String,
 	val clientSecret: String,
 	val authCode: String?,

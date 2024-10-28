@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.modules.*
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
+import net.perfectdreams.loritta.morenitta.reactionevents.DropPointsStuffModule
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.chance
@@ -59,12 +60,14 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	private val quirkyModule = QuirkyModule(loritta)
 	private val christmasStuffModule = DropChristmasStuffModule(loritta)
 	private val dropEaster2023StuffModule = DropEaster2023StuffModule(loritta)
+	private val dropPointsStuffModule = DropPointsStuffModule(loritta)
 
 	private val messageReceivedModules = mutableListOf(
 		automodModule,
 		inviteLinkModule,
 		christmasStuffModule,
 		dropEaster2023StuffModule,
+		dropPointsStuffModule,
 		experienceModule,
 		afkModule,
 		bomDiaECiaModule,

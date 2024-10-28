@@ -286,6 +286,16 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             stored.baskets
                         )
 
+                        is StoredReactionEventSonhosTransaction -> ReactionEventSonhosTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.eventInternalId,
+                            stored.craftedCount
+                        )
+
                         is StoredPowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
                             it[SimpleSonhosTransactionsLog.type],

@@ -10,6 +10,9 @@ object LorittaEmojis {
     val applicationEmojis = mutableListOf<LorittaEmojiReference.ApplicationEmoji>()
 
     val GarticBot = applicationEmoji("garticbot")
+    val LoriHead = applicationEmoji("lori_head")
+    val PantufaHead = applicationEmoji("pantufa_head")
+    val GabrielaHead = applicationEmoji("gabi_head")
 
     private fun applicationEmoji(emojiName: String): LorittaEmojiReference.ApplicationEmoji {
         val ref = LorittaEmojiReference.ApplicationEmoji(emojiName)

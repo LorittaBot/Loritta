@@ -168,6 +168,17 @@ data class Easter2023SonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class ReactionEventSonhosTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val eventInternalId: String,
+    val craftedCount: Int
+) : SonhosTransaction()
+
+@Serializable
 data class ShipEffectSonhosTransaction(
     override val id: Long,
     override val transactionType: TransactionType,

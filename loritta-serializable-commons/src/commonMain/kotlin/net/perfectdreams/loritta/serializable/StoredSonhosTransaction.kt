@@ -87,6 +87,9 @@ data class StoredChristmas2022SonhosTransaction(val gifts: Int) : StoredSonhosTr
 data class StoredEaster2023SonhosTransaction(val baskets: Int) : StoredSonhosTransaction()
 
 @Serializable
+data class StoredReactionEventSonhosTransaction(val eventInternalId: String, val craftedCount: Int) : StoredSonhosTransaction()
+
+@Serializable
 data class StoredPowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction(
     val liveId: String,
     val streamId: Long
