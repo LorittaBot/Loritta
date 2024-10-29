@@ -255,7 +255,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     class InventoryEventExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
-        private suspend fun response(context: UnleashedContext, target: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)) {
+        private suspend fun response(context: UnleashedContext, combo: Int, target: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)) {
             val now = Instant.now()
             val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
 
@@ -439,7 +439,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 }
 
                                 CraftCreationResult.Success -> {
-                                    val message = activeEvent.createYouCraftedAItemMessage(context.i18nContext)
+                                    val message = activeEvent.createYouCraftedAItemMessage(context.i18nContext, combo)
 
                                     context.reply(false) {
                                         styled(
@@ -448,7 +448,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                         )
                                     }
 
-                                    response(context) {
+                                    response(context, combo + 1) {
                                         context.event.message.editMessage(
                                             MessageEdit {
                                                 it.invoke(this)
@@ -503,7 +503,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
-            response(context) {
+            response(context, 1) {
                 context.reply(false) {
                     it.invoke(this)
                 }
@@ -519,8 +519,8 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
 
         sealed class CraftCreationResult {
-            object Success : CraftCreationResult()
-            object InsufficientItems : CraftCreationResult()
+            data object Success : CraftCreationResult()
+            data object InsufficientItems : CraftCreationResult()
         }
     }
 

@@ -237,10 +237,19 @@ object Halloween2024ReactionEvent : ReactionEvent() {
 
     override fun createYouDontHaveEnoughItemsMessage(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2024.YouDontHaveEnoughItems)
 
-    override fun createYouCraftedAItemMessage(i18nContext: I18nContext) = TextAndEmoji(
-        i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2024.YouCraftedAnItem),
-        pumpkin
-    )
+    override fun createYouCraftedAItemMessage(i18nContext: I18nContext, combo: Int): TextAndEmoji {
+        return if (combo >= 3) {
+            TextAndEmoji(
+                i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2024.YouCreatedAnItemCombo(combo)),
+                LorittaEmojiReference.UnicodeEmoji("\uD83D\uDD25"),
+            )
+        } else {
+            TextAndEmoji(
+                i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2024.YouCraftedAnItem),
+                pumpkin
+            )
+        }
+    }
 
     override fun createShortCraftedItemMessage(i18nContext: I18nContext, quantity: Int) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2024.ShortCraftedItem(quantity))
 
