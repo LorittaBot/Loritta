@@ -41,7 +41,7 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         // Get the current active event
         val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
 
-        return false && event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && activeEvent != null
+        return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && activeEvent != null
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext): Boolean {
