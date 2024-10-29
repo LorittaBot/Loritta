@@ -41,7 +41,7 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         // Get the current active event
         val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
 
-        return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && activeEvent != null
+        return false && event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && activeEvent != null
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext): Boolean {
@@ -71,42 +71,40 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         if (10_000 >= date - userDropTime)
             return false
 
-        if (event.message.contentStripped.hashCode() != lorittaProfile.lastMessageSentHash && event.message.contentRaw.length >= 5) {
-            for (reactionSet in activeEvent.reactionSets) {
-                val randomNumber = LorittaBot.RANDOM.nextFloat()
+        for (reactionSet in activeEvent.reactionSets) {
+            val randomNumber = LorittaBot.RANDOM.nextFloat()
 
-                if (reactionSet.chance >= randomNumber) {
-                    val shouldAddReaction = m.newSuspendedTransaction {
-                        val spawnTheCandy = ReactionEventPlayers.selectAll()
-                            .where {
-                                ReactionEventPlayers.userId eq lorittaProfile.id.value and (ReactionEventPlayers.event eq activeEvent.internalId)
-                            }.count() != 0L
+            if (reactionSet.chance >= randomNumber) {
+                val shouldAddReaction = m.newSuspendedTransaction {
+                    val spawnTheCandy = ReactionEventPlayers.selectAll()
+                        .where {
+                            ReactionEventPlayers.userId eq lorittaProfile.id.value and (ReactionEventPlayers.event eq activeEvent.internalId)
+                        }.count() != 0L
 
-                        if (spawnTheCandy) {
-                            lastDropsAt[id] = date
-                            lastDropsByUserAt[event.author.idLong] = date
+                    if (spawnTheCandy) {
+                        lastDropsAt[id] = date
+                        lastDropsByUserAt[event.author.idLong] = date
 
-                            // TODO: Fix this
-                            // val type = LorittaEaster2023Event.easterEggColors.random()
-                            // val emoji = LorittaEaster2023Event.easterEggColorToEmoji(type)
-                            ReactionEventDrops.insert {
-                                it[ReactionEventDrops.event] = activeEvent.internalId
-                                it[ReactionEventDrops.reactionSetId] = reactionSet.reactionSetId
-                                it[ReactionEventDrops.guildId] = event.guild.idLong
-                                it[ReactionEventDrops.channelId] = event.channel.idLong
-                                it[ReactionEventDrops.messageId] = event.message.idLong
-                                it[ReactionEventDrops.createdAt] = Instant.now()
-                            }
-                            return@newSuspendedTransaction true
+                        // TODO: Fix this
+                        // val type = LorittaEaster2023Event.easterEggColors.random()
+                        // val emoji = LorittaEaster2023Event.easterEggColorToEmoji(type)
+                        ReactionEventDrops.insert {
+                            it[ReactionEventDrops.event] = activeEvent.internalId
+                            it[ReactionEventDrops.reactionSetId] = reactionSet.reactionSetId
+                            it[ReactionEventDrops.guildId] = event.guild.idLong
+                            it[ReactionEventDrops.channelId] = event.channel.idLong
+                            it[ReactionEventDrops.messageId] = event.message.idLong
+                            it[ReactionEventDrops.createdAt] = Instant.now()
                         }
-
-                        return@newSuspendedTransaction false
+                        return@newSuspendedTransaction true
                     }
 
-                    if (shouldAddReaction) {
-                        event.message.addReaction(m.emojiManager.get(reactionSet.reaction).toJDA()).queue {
-                            dropInMessageAt[event.message.idLong] = date
-                        }
+                    return@newSuspendedTransaction false
+                }
+
+                if (shouldAddReaction) {
+                    event.message.addReaction(m.emojiManager.get(reactionSet.reaction).toJDA()).queue {
+                        dropInMessageAt[event.message.idLong] = date
                     }
                 }
             }
