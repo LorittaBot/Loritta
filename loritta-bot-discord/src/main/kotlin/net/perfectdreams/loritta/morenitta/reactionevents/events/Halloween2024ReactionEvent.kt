@@ -28,7 +28,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         UUID.fromString("3bc7fb15-6ad0-4ccb-aab1-ca37aef1588e"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83C\uDF6C"),
-        0.088,
+        0.176,
         1
     )
 
@@ -36,7 +36,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         UUID.fromString("faf26ac1-9171-41ad-a0a7-da0e85e13df9"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83C\uDF6D"),
-        0.088,
+        0.176,
         1
     )
 
@@ -44,7 +44,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         UUID.fromString("a5361937-6fd3-472d-be55-0fc9db6afd78"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83C\uDF6B"),
-        0.088,
+        0.176,
         1
     )
 
@@ -52,7 +52,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         UUID.fromString("6f9981d2-320d-4f64-beaa-4378eb3f627c"),
         null,
         LorittaEmojiReference.UnicodeEmoji("\uD83E\uDDC1"),
-        0.088,
+        0.176,
         1
     )
 
@@ -60,7 +60,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         UUID.fromString("3b6cdfc7-8989-4b30-b13e-46d0805d13f5"),
         null,
         LorittaEmojis.LoriHead,
-        0.006,
+        0.012,
         1
     )
 
@@ -68,7 +68,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         UUID.fromString("a7ae0952-a704-480f-9f62-efcd15b9bb8d"),
         null,
         LorittaEmojis.PantufaHead,
-        0.006,
+        0.012,
         1
     )
 
@@ -76,7 +76,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         UUID.fromString("0242ab28-9c61-4e59-99bc-f607655af03d"),
         null,
         LorittaEmojis.GabrielaHead,
-        0.006,
+        0.012,
         1
     )
 
