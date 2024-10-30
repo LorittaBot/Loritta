@@ -9,4 +9,4 @@ website:
         eventIsHappening: "Atualmente está acontecendo o evento de reações {eventName} na Loritta!"
         eventIsNotHappening: "Nenhum evento de reações da Loritta está acontecendo no momento..."
       enableReactionEvents: "Ativar Eventos de Reações da Loritta"
-      descriptionReactionEvents: "Se você acha que a Loritta ficar adicionando reações nas mensagens dos membros do seu servidor que estão participando de eventos de reações da Loritta te irrita, você pode desativá-las! Assim tirando o flood de reações e deixando o chat do seu servidor com papo cabeça... Se é que os membros do seu servidor conversam seriamente sobre os problemas da nossa sociedade."
+      descriptionReactionEvents: "Se você acha que a Loritta ficar adicionando reações nas mensagens dos membros do seu servidor que estão participando de eventos de reações da Loritta é irritante, você pode desativá-las! Assim tirando o flood de reações e deixando o chat do seu servidor com papo cabeça... Se é que os membros do seu servidor conversam seriamente sobre os problemas da nossa sociedade."
