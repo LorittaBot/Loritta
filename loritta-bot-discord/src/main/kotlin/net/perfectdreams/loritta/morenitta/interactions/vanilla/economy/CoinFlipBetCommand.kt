@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
@@ -32,7 +31,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
-import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
@@ -519,7 +517,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     ?.get(AprilFoolsCoinFlipBugs.bug)
                                             }
 
-
                                             val couponData = WebsiteDiscountCoupons.selectAll()
                                                 .where {
                                                     WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
@@ -534,7 +531,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     }
                                                     .count()
 
-                                                ClaimedWebsiteCoupon(
+                                                activeCoupon = ClaimedWebsiteCoupon(
                                                     couponData[WebsiteDiscountCoupons.id].value,
                                                     couponData[WebsiteDiscountCoupons.code],
                                                     couponData[WebsiteDiscountCoupons.endsAt],
@@ -542,7 +539,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     couponData[WebsiteDiscountCoupons.maxUses],
                                                     paymentsThatUsedTheCouponCount,
                                                 )
-                                            } else null
+                                            }
                                         }
                                     } else {
                                         winner = invitedUser
@@ -611,7 +608,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     }
                                                     .count()
 
-                                                ClaimedWebsiteCoupon(
+                                                activeCoupon = ClaimedWebsiteCoupon(
                                                     couponData[WebsiteDiscountCoupons.id].value,
                                                     couponData[WebsiteDiscountCoupons.code],
                                                     couponData[WebsiteDiscountCoupons.endsAt],
@@ -619,7 +616,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     couponData[WebsiteDiscountCoupons.maxUses],
                                                     paymentsThatUsedTheCouponCount,
                                                 )
-                                            } else null
+                                            }
                                         }
                                     }
 
