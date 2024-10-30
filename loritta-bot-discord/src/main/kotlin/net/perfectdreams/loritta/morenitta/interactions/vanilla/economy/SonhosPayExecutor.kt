@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransferRequests
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -26,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -127,7 +129,9 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
             val isLoritta = receiver.idLong == context.jda.selfUser.idLong
 
             checkIfOtherAccountIsOldEnough(context, receiver)
-            // checkIfSelfAccountGotDailyRecently(context)
+            checkIfSelfAccountGotDailyAtLeastOnce(context)
+            if (!isLoritta)
+                checkIfOtherAccountGotDailyAtLeastOnce(context, receiver)
 
             if (context.user.idLong == receiver.idLong) {
                 context.reply(false) {
@@ -241,6 +245,51 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                         SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(
                             TimeFormat.DATE_TIME_LONG.format(allowedAfterTimestamp.toJavaInstant()),
                             TimeFormat.RELATIVE.format(allowedAfterTimestamp.toJavaInstant())
+                        )
+                    ),
+                    Emotes.LoriSob
+                )
+            }
+        }
+    }
+
+    private suspend fun checkIfSelfAccountGotDailyAtLeastOnce(context: UnleashedContext) {
+        val gotDailyAtLeastOnce = loritta.transaction {
+            Dailies.selectAll()
+                .where {
+                    Dailies.receivedById eq context.user.idLong
+                }
+                .count() != 0L
+        }
+
+        if (!gotDailyAtLeastOnce) {
+            context.fail(false) {
+                styled(
+                    context.i18nContext.get(
+                        SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily(loritta.commandMentions.daily)
+                    ),
+                    Emotes.LoriSob
+                )
+            }
+        }
+    }
+
+    private suspend fun checkIfOtherAccountGotDailyAtLeastOnce(context: UnleashedContext, target: User) {
+        val gotDailyAtLeastOnce = loritta.transaction {
+            Dailies.selectAll()
+                .where {
+                    Dailies.receivedById eq target.idLong
+                }
+                .count() != 0L
+        }
+
+        if (!gotDailyAtLeastOnce) {
+            context.fail(false) {
+                styled(
+                    context.i18nContext.get(
+                        SonhosCommand.PAY_I18N_PREFIX.OtherAccountNeedsToGetDaily(
+                            target.asMention,
+                            loritta.commandMentions.daily
                         )
                     ),
                     Emotes.LoriSob
