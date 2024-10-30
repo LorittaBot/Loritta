@@ -229,6 +229,8 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         styled("Lembre-se que os itens apenas aparecem em servidores que possuem mais de mil membros!")
                         styled("**Itens a serem coletados:** ${activeEvent.reactionSets.joinToString(" ") { loritta.emojiManager.get(it.reaction).toJDA().formatted }}")
 
+                        val maxPoints = activeEvent.rewards.maxOf { it.requiredPoints }
+
                         for (reward in activeEvent.rewards.sortedBy { it.requiredPoints }) {
                             when (reward) {
                                 is ReactionEventReward.SonhosReward -> {
@@ -288,6 +290,14 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 } */
                             }
                         }
+
+                        styled(
+                            buildString {
+                                append("**[${activeEvent.createShortCraftedItemMessage(context.i18nContext, maxPoints)}]")
+                                append("** Zerou o Evento! ${Emotes.LoriYay}!")
+                            },
+                            prefix = if (result.collectedPoints >= maxPoints) "✅" else "❌"
+                        )
 
                         styled("*Itens apenas aparecem em mensagens de membros que estão participando do evento. Você precisa de um servidor com membros participando? Então entre na Comunidade da Loritta! https://discord.gg/loritta *")
                     }

@@ -112,7 +112,8 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         ReactionEventReward.SonhosReward(850, false, 475000),
         ReactionEventReward.SonhosReward(900, false, 505000),
         ReactionEventReward.SonhosReward(950, false, 550000),
-        ReactionEventReward.SonhosReward(1000, false, 590000),
+        ReactionEventReward.SonhosReward(1_000, false, 590000),
+        ReactionEventReward.BadgeReward(1_000, false),
     )
 
     override fun createEventTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2024.EventName)
