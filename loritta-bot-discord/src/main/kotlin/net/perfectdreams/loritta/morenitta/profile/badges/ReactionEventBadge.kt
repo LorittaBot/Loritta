@@ -44,8 +44,8 @@ sealed class ReactionEventBadge(
 	class Halloween2024ReactionEventSuperBadge(pudding: Pudding) : ReactionEventBadge(
 		pudding,
 		UUID.fromString("01b1ee02-53ee-4a2c-a094-8c1d6b40c680"),
-		ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2024.Title,
-		ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2024.Description,
+		ProfileDesignManager.I18N_BADGES_PREFIX.SuperHalloween2024.Title,
+		ProfileDesignManager.I18N_BADGES_PREFIX.SuperHalloween2024.Description,
 		"halloween2024_super.png",
 		100,
 		Halloween2024ReactionEvent,
