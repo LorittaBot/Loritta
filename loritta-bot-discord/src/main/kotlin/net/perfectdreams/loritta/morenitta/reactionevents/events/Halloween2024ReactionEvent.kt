@@ -160,7 +160,7 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         )
 
         styled(
-            "Feliz Halloween! Se você quer saber mais sobre o evento e encontrar outras pessoas que estão participando do evento, então entre no servidor da comunidade da Loritta! <https://discord.gg/loritta>",
+            "Feliz Halloween! Se você quer saber mais sobre o evento, entre no servidor da comunidade da Loritta! <https://discord.gg/loritta>",
             Emotes.LoriHeart
         )
     }
