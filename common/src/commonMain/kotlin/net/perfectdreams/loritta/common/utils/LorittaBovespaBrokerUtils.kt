@@ -113,11 +113,6 @@ object LorittaBovespaBrokerUtils {
             "Nubank",
             CompanyCategory.FINANCE
         ),
-        StockTickerInfo(
-            "CIEL3",
-            "Cielo",
-            CompanyCategory.FINANCE
-        ),
 
         // ===[ PUBLIC SERVICES ]===
         StockTickerInfo(
