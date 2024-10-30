@@ -9,7 +9,6 @@ successfullyTransferred: "Transfer successfully completed! {receiver} received *
 transferredSonhos: "{user} now has {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**!"
 transferredSonhosWithRanking: "{user} now has {sonhosEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** and is in **#{rankingPosition,number} place** in the ranking!"
 selfAccountIsTooNew: "Hold on, your account is too new! Before you can transfer sonhos, you need to wait until {time} ({timeRelative}) before you can start transferring sonhos."
-selfAccountNeedsToGetDaily: "Looks like you haven't got your daily reward in the last 14 days, you can only send sonhos after you get your daily reward. Why not get it now? {dailyCommand}"
 otherAccountIsTooNew: "I know it's nice to help others... But {user}'s account is too new! You need to wait until {time} ({timeRelative}) before {user} can receive sonhos transfers."
 tryingToTransferZeroSonhos: "Wow, awesome! You are going to transfer *zero* sonhos, wonderful! Less work for me, because that means that I don't need to prepare a transaction for you."
 tryingToTransferLessThanZeroSonhos: "Wow, outstanding! You are going to transfer *negative* sonhos, extraordinary! Isn't negative sonhos... *nightmares*? I know, I know... I'm a genius."
