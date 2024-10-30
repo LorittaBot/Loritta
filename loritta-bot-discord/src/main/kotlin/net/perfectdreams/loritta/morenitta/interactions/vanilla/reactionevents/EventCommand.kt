@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.CollectedReactionEventPoints
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.CraftedReactionEventItems
@@ -566,9 +567,10 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val (totalCount, profiles) = loritta.pudding.transaction {
                 val totalCount = CraftedReactionEventItems
+                    .innerJoin(ReactionEventPlayers)
                     .select(CraftedReactionEventItems.user)
                     .where {
-                        CraftedReactionEventItems.event eq event.internalId
+                        CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
                     }
                     .groupBy(CraftedReactionEventItems.user)
                     .count()
@@ -578,7 +580,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         .innerJoin(ReactionEventPlayers)
                         .select(ReactionEventPlayers.userId, countColumn)
                         .where {
-                            CraftedReactionEventItems.event eq event.internalId
+                            CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
                         }
                         .groupBy(ReactionEventPlayers.userId)
                         .orderBy(countColumn to SortOrder.DESC)
