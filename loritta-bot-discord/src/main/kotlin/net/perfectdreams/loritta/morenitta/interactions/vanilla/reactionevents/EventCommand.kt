@@ -89,9 +89,10 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     ReactionEventsConfigs
                         .selectAll()
                         .where {
-                            ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                            ReactionEventsConfigs.id eq guild.idLong
                         }
-                        .count() == 1L
+                        .firstOrNull()
+                        ?.get(ReactionEventsConfigs.enabled) ?: true
                 }
 
                 if (eventsEnabled) {
@@ -180,9 +181,10 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     ReactionEventsConfigs
                         .selectAll()
                         .where {
-                            ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                            ReactionEventsConfigs.id eq guild.idLong
                         }
-                        .count() == 1L
+                        .firstOrNull()
+                        ?.get(ReactionEventsConfigs.enabled) ?: true
                 }
 
                 if (eventsEnabled) {
@@ -320,9 +322,10 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     ReactionEventsConfigs
                         .selectAll()
                         .where {
-                            ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                            ReactionEventsConfigs.id eq guild.idLong
                         }
-                        .count() == 1L
+                        .firstOrNull()
+                        ?.get(ReactionEventsConfigs.enabled) ?: true
                 }
 
                 if (eventsEnabled) {

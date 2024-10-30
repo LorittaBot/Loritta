@@ -48,9 +48,10 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
             ReactionEventsConfigs
                 .selectAll()
                 .where {
-                    ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                    ReactionEventsConfigs.id eq guild.idLong
                 }
-                .count() == 1L
+                .firstOrNull()
+                ?.get(ReactionEventsConfigs.enabled) ?: true
         }
 
         return event.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION) && activeEvent != null && eventsEnabled
