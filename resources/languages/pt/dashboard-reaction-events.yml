@@ -4,7 +4,7 @@ website:
       title: "Eventos de Reações da Loritta"
       description:
         - "Eventos de Reações da Loritta são eventos globais que acontecem na Loritta, onde os usuários participantes podem ganhar vários frufrus na Loritta, desde insígnias, backgrounds, e até mesmo sonhos! Usuários podem entrar em eventos usando {commandMention}."
-        - "Se o seu servidor tem usuários que gostam da Loritta, principalmente se eles gostma dos sonhos dela, incentivar o seu servidor a participar do evento poderá deixar o seu chat mais movimentado e fazer o seu servidor ficar mais ativo."
+        - "Se o seu servidor tem usuários que gostam da Loritta, principalmente se eles gostam de usar os sonhos dela, incentivar o seu servidor a participar do evento poderá deixar o seu chat mais movimentado e fazer o seu servidor ficar mais ativo."
       eventStatus:
         eventIsHappening: "Atualmente está acontecendo o evento de reações {eventName} na Loritta!"
         eventIsNotHappening: "Nenhum evento de reações da Loritta está acontecendo no momento..."
