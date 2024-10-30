@@ -5,7 +5,6 @@ import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.TimeFormat
-import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
@@ -691,18 +690,15 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         disabled = page !in RankingGenerator.VALID_RANKING_PAGES
                     }
                 ) {
-                    it.deferEdit()
-                        .editOriginal(
-                            InlineMessage(MessageEditBuilder())
-                                .apply {
-                                    createRankMessage(
-                                        context,
-                                        page - 1,
-                                        event
-                                    )()
-                                }.build()
-                        )
-                        .await()
+                    val hook = it.updateMessageSetLoadingState()
+
+                    val builtMessage = createRankMessage(it, page - 1, event)
+
+                    val asMessageEditData = MessageEdit {
+                        builtMessage()
+                    }
+
+                    hook.editOriginal(asMessageEditData).await()
                 },
                 loritta.interactivityManager.buttonForUser(
                     context.user,
@@ -712,18 +708,15 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
                     }
                 ) {
-                    it.deferEdit()
-                        .editOriginal(
-                            InlineMessage(MessageEditBuilder())
-                                .apply {
-                                    createRankMessage(
-                                        context,
-                                        page + 1,
-                                        event
-                                    )()
-                                }.build()
-                        )
-                        .await()
+                    val hook = it.updateMessageSetLoadingState()
+
+                    val builtMessage = createRankMessage(it, page + 1, event)
+
+                    val asMessageEditData = MessageEdit {
+                        builtMessage()
+                    }
+
+                    hook.editOriginal(asMessageEditData).await()
                 },
             )
         }
