@@ -4,6 +4,7 @@ import kotlinx.html.*
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.views.NavbarView
@@ -131,6 +132,8 @@ abstract class LegacyGuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/autorole", true, locale["modules.sectionNames.autorole"], "fa fa-briefcase", "autorole")
                     appendEntry("/guild/${guild.id}/configure/invite-blocker", true, locale["modules.sectionNames.inviteBlocker"], "fa fa-ban", "invite_blocker")
                     appendEntry("/guild/${guild.id}/configure/member-counter", true, locale["modules.sectionNames.memberCounter"], "fas fa-sort-amount-up", "member_counter")
+                    appendEntry("/guild/${guild.id}/configure/reaction-events", false, i18nContext.get(I18nKeysData.Website.Dashboard.ReactionEvents.Title)
+                        , "fa-solid fa-hand-point-up", "reaction_events")
                     appendExternalEntry(
                         "${loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/starboard",
                         locale["modules.sectionNames.starboard"],

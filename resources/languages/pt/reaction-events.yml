@@ -1,6 +1,7 @@
 reactionEvents:
   event:
     halloween2024:
+      eventName: "Halloween 2024"
       craftItem: "Criar Cesta de Doces"
       currentlyYouHave: "Atualmente você possui {craftedCount,plural, =0 {# cestas de doces} one {# cesta de doces} other {# cestas de doces}}! Veja suas recompensas em {commandMention}."
       itemsInYourInventory: "Itens no seu inventário:"

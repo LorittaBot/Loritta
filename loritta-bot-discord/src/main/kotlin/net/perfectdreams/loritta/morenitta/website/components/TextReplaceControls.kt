@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.components
 
 import kotlinx.html.FlowContent
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 
 object TextReplaceControls {
     fun FlowContent.appendAsFormattedText(i18nContext: I18nContext, map: Map<String, Any?>): (String) -> (Unit) = {
@@ -10,6 +11,19 @@ object TextReplaceControls {
                 it,
                 map
             )
+        )
+    }
+
+    fun FlowContent.handleI18nString(
+        i18nContext: I18nContext,
+        key: StringI18nKey,
+        onText: (String) -> (Unit),
+        onControl: (String) -> (ControlResult)
+    ) {
+        handleI18nString(
+            i18nContext.language.textBundle.strings[key.key]!!,
+            onText,
+            onControl
         )
     }
 

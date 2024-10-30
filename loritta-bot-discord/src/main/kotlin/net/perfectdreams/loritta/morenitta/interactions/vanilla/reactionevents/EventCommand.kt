@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.Collecte
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.CraftedReactionEventItems
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventDrops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventPlayers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionEventsConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -81,6 +82,28 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
                 }
                 return
+            }
+
+            val guild = context.guildOrNull
+            if (guild != null) {
+                val eventsEnabled = loritta.transaction {
+                    ReactionEventsConfigs
+                        .selectAll()
+                        .where {
+                            ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                        }
+                        .count() == 1L
+                }
+
+                if (eventsEnabled) {
+                    context.reply(true) {
+                        styled(
+                            "A equipe do servidor atual desativou meus eventos neste servidor! Para entrar no evento, vá em outro servidor que os meus eventos estejam ativados.",
+                            Emotes.LoriSob
+                        )
+                    }
+                    return
+                }
             }
 
             // Attempt to join the active event
@@ -150,6 +173,28 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
                 }
                 return
+            }
+
+            val guild = context.guildOrNull
+            if (guild != null) {
+                val eventsEnabled = loritta.transaction {
+                    ReactionEventsConfigs
+                        .selectAll()
+                        .where {
+                            ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                        }
+                        .count() == 1L
+                }
+
+                if (eventsEnabled) {
+                    context.reply(true) {
+                        styled(
+                            "A equipe do servidor atual desativou meus eventos neste servidor! Para ver as suas estatísticas do evento, vá em outro servidor que os meus eventos estejam ativados.",
+                            Emotes.LoriSob
+                        )
+                    }
+                    return
+                }
             }
 
             val result = loritta.newSuspendedTransaction {
@@ -268,6 +313,28 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
                 }
                 return
+            }
+
+            val guild = context.guildOrNull
+            if (guild != null) {
+                val eventsEnabled = loritta.transaction {
+                    ReactionEventsConfigs
+                        .selectAll()
+                        .where {
+                            ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                        }
+                        .count() == 1L
+                }
+
+                if (eventsEnabled) {
+                    context.reply(true) {
+                        styled(
+                            "A equipe do servidor atual desativou meus eventos neste servidor! Para ver o seu inventário do evento, vá em outro servidor que os meus eventos estejam ativados.",
+                            Emotes.LoriSob
+                        )
+                    }
+                    return
+                }
             }
 
             val reactionSetIdCount = ReactionEventDrops.reactionSetId.count()

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.Permission
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventDrops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventPlayers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionEventsConfigs
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -33,6 +34,8 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         .asMap()
 
     override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext): Boolean {
+        val guild = event.guild ?: return false
+
         if (lorittaProfile == null)
             return false
 
@@ -41,7 +44,16 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         // Get the current active event
         val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
 
-        return event.guild?.selfMember?.hasPermission(Permission.MESSAGE_ADD_REACTION) == true && activeEvent != null
+        val eventsEnabled = m.transaction {
+            ReactionEventsConfigs
+                .selectAll()
+                .where {
+                    ReactionEventsConfigs.id eq guild.idLong and (ReactionEventsConfigs.enabled eq true)
+                }
+                .count() == 1L
+        }
+
+        return event.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION) && activeEvent != null && eventsEnabled
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext): Boolean {

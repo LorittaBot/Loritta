@@ -111,6 +111,7 @@ abstract class GuildDashboardView(
             appendEntry("/guild/${guild.id}/configure/autorole", false, locale["modules.sectionNames.autorole"], "fa fa-briefcase", false)
             appendEntry("/guild/${guild.id}/configure/invite-blocker", false, locale["modules.sectionNames.inviteBlocker"], "fa fa-ban", false)
             appendEntry("/guild/${guild.id}/configure/member-counter", false, locale["modules.sectionNames.memberCounter"], "fas fa-sort-amount-up", false)
+            appendEntry("/guild/${guild.id}/configure/reaction-events", true, i18nContext.get(I18nKeysData.Website.Dashboard.ReactionEvents.Title), "fa-solid fa-hand-point-up", true)
             appendEntry(
                 "${lorittaWebsite.loritta.config.loritta.website.spicyMorenittaDashboardUrl.removeSuffix("/")}/guilds/${guild.id}/configure/starboard",
                 false,

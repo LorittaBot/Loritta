@@ -25,6 +25,8 @@ abstract class ReactionEvent {
     fun getCurrentActiveCraft(user: User, alreadyCraftedQuantity: Long): Map<UUID, Int> = getCurrentActiveCraft(user.idLong, alreadyCraftedQuantity)
     abstract fun getCurrentActiveCraft(userId: Long, alreadyCraftedQuantity: Long): Map<UUID, Int>
 
+    abstract fun createEventTitle(i18nContext: I18nContext): String
+
     /**
      * Creates the message used in the transaction command
      */

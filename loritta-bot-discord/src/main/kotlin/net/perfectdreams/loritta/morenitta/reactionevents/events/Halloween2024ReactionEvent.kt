@@ -115,6 +115,8 @@ object Halloween2024ReactionEvent : ReactionEvent() {
         ReactionEventReward.SonhosReward(1000, false, 590000),
     )
 
+    override fun createEventTitle(i18nContext: I18nContext) = i18nContext.get(I18nKeysData.ReactionEvents.Event.Halloween2024.EventName)
+
     override fun createJoinMessage(context: UnleashedContext): InlineMessage<*>.() -> (Unit) = {
         styled(
             "Chegando perto do Halloween, você descobriu que a sua cidade está recompensando pessoas que estão distribuindo cestas de doces para as pessoas, para incentivar o espírito do Halloween.",
