@@ -22,6 +22,10 @@ commands:
   lorittaPendingUpdate: "Em breve a Loritta irá reiniciar para atualizações e, durante a atualização, não poderei estar respondendo seus comandos. Mas não se preocupe, estarei de volta em alguns minutinhos! ...isso se não der algum problema durante a atualização rsrs."
   sonhosShopCouponCodeUpsell: "Psiu, está rolando descontos na minha lojinha de sonhos! Corra, pois o cupom só está disponível até às {expiresAt}! **Cupom:** `{couponCode}` ({discountPercentage,number,#%} de desconto)"
   sonhosShopCouponCodeWithMaxUsesUpsell: "Psiu, está rolando descontos na minha lojinha de sonhos! Corra, pois o cupom só está disponível até às {expiresAt} para os {maxUses,plural, =0 {# primeiros pagamentos} one {# primeiro pagamento} other {# primeiros pagamentos}} que usarem o cupom! **Cupom:** `{couponCode}` ({discountPercentage,number,#%} de desconto)"
+  activeReactionEvent:
+    buttonLabel: "Participe do Evento de Reações {eventName} da Loritta!"
+    eventUpsell: "Atualmente está acontecendo o evento de reações **{reactionEventName}** na Loritta! Participe do evento e ganhe até {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, mas corra, pois o evento acabará às {endsAt}! Para entrar no evento, use {eventJoinMention}, para ver as recompensas use {eventStatsMention} e, para criar os itens, use {eventInventoryMention}."
+
   youAreLorittaBannedPermanent:
     - "Você está **banido(a) permanentemente**! {loriHmpf}"
     - ""

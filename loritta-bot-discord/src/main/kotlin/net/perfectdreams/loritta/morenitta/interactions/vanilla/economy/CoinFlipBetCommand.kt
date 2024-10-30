@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendActiveReactionEventUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.pudding.tables.AprilFoolsCoinFlipBugs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
@@ -29,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
@@ -593,7 +595,6 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     ?.get(AprilFoolsCoinFlipBugs.bug)
                                             }
 
-
                                             val couponData = WebsiteDiscountCoupons.selectAll()
                                                 .where {
                                                     WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
@@ -641,12 +642,27 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             Emotes.LORI_RICH
                                         )
 
+                                        val buttons = mutableListOf<Button>()
+
                                         appendCouponSonhosBundleUpsellInformationIfNotNull(
                                             loritta,
                                             context.i18nContext,
                                             activeCoupon,
                                             "bet-coinflip"
-                                        )
+                                        )?.let { buttons += it }
+
+                                        appendActiveReactionEventUpsellInformationIfNotNull(
+                                            loritta,
+                                            context.i18nContext,
+                                            ReactionEventsAttributes.getActiveEvent(now)
+                                        )?.let { buttons += it }
+
+                                        if (buttons.isNotEmpty()) {
+                                            buttons.chunked(5)
+                                                .forEach {
+                                                    actionRow(it)
+                                                }
+                                        }
                                     }
 
                                     context.giveAchievementAndNotify(winner, AchievementType.COIN_FLIP_BET_WIN, false)

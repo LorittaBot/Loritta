@@ -19,8 +19,9 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
+import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventReward
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
@@ -50,7 +51,7 @@ object SonhosUtils {
         i18nContext: I18nContext,
         activeCoupon: ClaimedWebsiteCoupon?,
         upsellMedium: String
-    ) {
+    ): Button? {
         if (activeCoupon != null && activeCoupon.hasRemainingUses) {
             val maxUses = activeCoupon.maxUses
             if (maxUses != null) {
@@ -78,13 +79,52 @@ object SonhosUtils {
                 )
             }
 
-            actionRow(
-                Button.of(
-                    ButtonStyle.LINK,
-                    GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", upsellMedium, "sonhos-bundles-upsell", "coupon-code"),
-                    i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)
-                ).withEmoji(Emotes.Sonhos3.toJDA())
-            )
+            return Button.of(
+                ButtonStyle.LINK,
+                GACampaigns.sonhosBundlesUpsellUrl("https://loritta.website/", "discord", upsellMedium, "sonhos-bundles-upsell", "coupon-code"),
+                i18nContext.get(I18nKeysData.Website.Dashboard.SonhosShop.Title)
+            ).withEmoji(Emotes.Sonhos3.toJDA())
+        } else {
+            return null
+        }
+    }
+
+    fun InlineMessage<*>.appendActiveReactionEventUpsellInformationIfNotNull(
+        loritta: LorittaBot,
+        i18nContext: I18nContext,
+        activeReactionEvent: ReactionEvent?
+    ): Button? {
+        if (activeReactionEvent != null) {
+            val emoji = loritta.emojiManager.get(activeReactionEvent.createCraftItemButtonMessage(i18nContext).emoji)
+
+            return loritta.interactivityManager.button(
+                ButtonStyle.SECONDARY,
+                i18nContext.get(I18nKeysData.Commands.ActiveReactionEvent.ButtonLabel(activeReactionEvent.createEventTitle(i18nContext))),
+                {
+                    this.loriEmoji = emoji
+                }
+            ) { context ->
+                val userSonhos = activeReactionEvent.rewards.filterIsInstance<ReactionEventReward.SonhosReward>().sumOf { it.sonhos }
+
+                context.reply(true) {
+                    styled(
+                        i18nContext.get(
+                            I18nKeysData.Commands.ActiveReactionEvent.EventUpsell(
+                                activeReactionEvent.createEventTitle(i18nContext),
+                                getSonhosEmojiOfQuantity(userSonhos),
+                                userSonhos,
+                                TimeFormat.DATE_TIME_SHORT.format(activeReactionEvent.endsAt),
+                                loritta.commandMentions.eventJoin,
+                                loritta.commandMentions.eventStats,
+                                loritta.commandMentions.eventInventory
+                            )
+                        ),
+                        emoji
+                    )
+                }
+            }
+        } else {
+            return null
         }
     }
 

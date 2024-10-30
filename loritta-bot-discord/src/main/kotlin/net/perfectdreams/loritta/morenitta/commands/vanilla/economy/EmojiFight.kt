@@ -10,9 +10,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendActiveReactionEventUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
@@ -23,6 +25,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.AprilFools
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -555,24 +558,39 @@ class EmojiFight(
 
                 styled(
                     context.locale[
-                            localeKey,
-                            winner.value,
-                            winner.key.asMention,
-                            taxedRealPrize,
-                            tax,
-                            losers.size,
-                            entryPrice,
-                            context.user.asMention
+                        localeKey,
+                        winner.value,
+                        winner.key.asMention,
+                        taxedRealPrize,
+                        tax,
+                        losers.size,
+                        entryPrice,
+                        context.user.asMention
                     ],
                     Emotes.LORI_RICH.asMention,
                 )
+
+                val buttons = mutableListOf<Button>()
 
                 appendCouponSonhosBundleUpsellInformationIfNotNull(
                     loritta,
                     context.i18nContext,
                     result.activeCoupon,
                     "bet-coinflip"
-                )
+                )?.let { buttons += it }
+
+                appendActiveReactionEventUpsellInformationIfNotNull(
+                    loritta,
+                    context.i18nContext,
+                    ReactionEventsAttributes.getActiveEvent(Instant.now())
+                )?.let { buttons += it }
+
+                if (buttons.isNotEmpty()) {
+                    buttons.chunked(5)
+                        .forEach {
+                            actionRow(it)
+                        }
+                }
             }
         } else {
             context.reply(false) {
@@ -584,10 +602,10 @@ class EmojiFight(
 
                 styled(
                     context.locale[
-                            "commands.command.emojifight.wonBet",
-                            winner.value,
-                            winner.key.asMention,
-                            context.user.asMention
+                        "commands.command.emojifight.wonBet",
+                        winner.value,
+                        winner.key.asMention,
+                        context.user.asMention
                     ],
                     Emotes.LORI_SMILE.asMention
                 )
