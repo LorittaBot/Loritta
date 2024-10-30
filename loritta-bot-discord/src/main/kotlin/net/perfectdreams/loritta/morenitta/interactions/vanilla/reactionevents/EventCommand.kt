@@ -95,7 +95,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         ?.get(ReactionEventsConfigs.enabled) ?: true
                 }
 
-                if (eventsEnabled) {
+                if (!eventsEnabled) {
                     context.reply(true) {
                         styled(
                             "A equipe do servidor atual desativou meus eventos neste servidor! Para entrar no evento, vá em outro servidor que os meus eventos estejam ativados.",
@@ -187,7 +187,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         ?.get(ReactionEventsConfigs.enabled) ?: true
                 }
 
-                if (eventsEnabled) {
+                if (!eventsEnabled) {
                     context.reply(true) {
                         styled(
                             "A equipe do servidor atual desativou meus eventos neste servidor! Para ver as suas estatísticas do evento, vá em outro servidor que os meus eventos estejam ativados.",
@@ -328,7 +328,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         ?.get(ReactionEventsConfigs.enabled) ?: true
                 }
 
-                if (eventsEnabled) {
+                if (!eventsEnabled) {
                     context.reply(true) {
                         styled(
                             "A equipe do servidor atual desativou meus eventos neste servidor! Para ver o seu inventário do evento, vá em outro servidor que os meus eventos estejam ativados.",
