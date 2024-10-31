@@ -7,4 +7,5 @@ object ReactionEventPlayers : LongIdTable() {
     val userId = long("user").index()
     val event = text("event").index()
     val joinedAt = timestampWithTimeZone("joined_at")
+    val leftAt = timestampWithTimeZone("left_at").nullable()
 }

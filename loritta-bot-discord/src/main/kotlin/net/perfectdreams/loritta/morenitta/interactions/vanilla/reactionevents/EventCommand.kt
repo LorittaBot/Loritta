@@ -62,6 +62,10 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         subcommand(I18N_PREFIX.Rank.Label, I18N_PREFIX.Rank.Description, UUID.fromString("39a1ba04-ad37-45cb-a3ba-7497cb1d28e7")) {
             executor = StatsRankExecutor()
         }
+
+        subcommand(I18N_PREFIX.Leave.Label, I18N_PREFIX.Leave.Description, UUID.fromString("a8d1d088-ce63-4dfc-a234-c9a4fbd68ece")) {
+            executor = LeaveEventExecutor(loritta)
+        }
     }
 
     class JoinEventExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
@@ -108,16 +112,22 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             // Attempt to join the active event
             val result = loritta.transaction {
-                val alreadyJoined = ReactionEventPlayers.selectAll()
+                val joinState = ReactionEventPlayers.selectAll()
                     .where {
                         ReactionEventPlayers.userId eq context.user.idLong and (ReactionEventPlayers.event eq activeEvent.internalId)
-                    }.count() != 0L
+                    }
+                    .firstOrNull()
 
-                if (!alreadyJoined) {
+                if (joinState == null) {
                     ReactionEventPlayers.insert {
                         it[ReactionEventPlayers.event] = activeEvent.internalId
                         it[ReactionEventPlayers.userId] = context.user.idLong
                         it[ReactionEventPlayers.joinedAt] = now
+                    }
+                    return@transaction JoinEventResult.JoinedEvent
+                } else if (joinState[ReactionEventPlayers.leftAt] != null) {
+                    ReactionEventPlayers.update({ ReactionEventPlayers.id eq joinState[ReactionEventPlayers.id] }) {
+                        it[ReactionEventPlayers.leftAt] = null
                     }
                     return@transaction JoinEventResult.JoinedEvent
                 }
@@ -138,7 +148,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 JoinEventResult.YouHaveAlreadyJoinedTheEvent -> {
                     context.reply(false) {
                         styled(
-                            "Você já está participando do evento!",
+                            "Você já está participando do evento! Se você quer sair dele, use ${loritta.commandMentions.eventLeave}",
                             Emotes.LoriShrug
                         )
                     }
@@ -732,6 +742,97 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     hook.editOriginal(asMessageEditData).await()
                 },
             )
+        }
+    }
+
+    class LeaveEventExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val now = Instant.now()
+
+            // Get the current active event
+            val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
+
+            if (activeEvent == null) {
+                context.reply(true) {
+                    styled(
+                        "Nenhum evento ativo...",
+                        Emotes.LoriSob
+                    )
+                }
+                return
+            }
+
+            val guild = context.guildOrNull
+            if (guild != null) {
+                val eventsEnabled = loritta.transaction {
+                    ReactionEventsConfigs
+                        .selectAll()
+                        .where {
+                            ReactionEventsConfigs.id eq guild.idLong
+                        }
+                        .firstOrNull()
+                        ?.get(ReactionEventsConfigs.enabled) ?: true
+                }
+
+                if (!eventsEnabled) {
+                    context.reply(true) {
+                        styled(
+                            "A equipe do servidor atual desativou meus eventos neste servidor! Para entrar no evento, vá em outro servidor que os meus eventos estejam ativados.",
+                            Emotes.LoriSob
+                        )
+                    }
+                    return
+                }
+            }
+
+            // Attempt to leave the active event
+            val result = loritta.transaction {
+                val joinState = ReactionEventPlayers.selectAll()
+                    .where {
+                        ReactionEventPlayers.userId eq context.user.idLong and (ReactionEventPlayers.event eq activeEvent.internalId)
+                    }
+                    .firstOrNull()
+
+                if (joinState != null) {
+                    if (joinState[ReactionEventPlayers.leftAt] != null)
+                        return@transaction LeaveEventResult.YouNeedToRejoinTheEvent
+
+                    ReactionEventPlayers.update({ ReactionEventPlayers.id eq joinState[ReactionEventPlayers.id] }) {
+                        it[ReactionEventPlayers.leftAt] = Instant.now()
+                    }
+                    return@transaction LeaveEventResult.LeftEvent
+                } else {
+                    return@transaction LeaveEventResult.YouHaventJoinedYet
+                }
+            }
+
+            when (result) {
+                LeaveEventResult.LeftEvent -> {
+                    context.reply(false) {
+                        styled(context.i18nContext.get(I18nKeysData.Commands.Command.Reactionevents.Leave.YouLeftTheEvent(loritta.commandMentions.eventJoin)))
+                    }
+                }
+
+                LeaveEventResult.YouHaventJoinedYet -> {
+                    context.reply(false) {
+                        styled(context.i18nContext.get(I18nKeysData.Commands.Command.Reactionevents.Leave.YouHaventJoinedYet(loritta.commandMentions.eventJoin)))
+                    }
+                }
+
+                LeaveEventResult.YouNeedToRejoinTheEvent -> {
+                    context.reply(false) {
+                        styled(context.i18nContext.get(I18nKeysData.Commands.Command.Reactionevents.Leave.YouNeedToRejoinTheEvent(loritta.commandMentions.eventJoin)))
+                    }
+                }
+            }
+        }
+
+        sealed class LeaveEventResult {
+            data object LeftEvent : LeaveEventResult()
+            data object YouHaventJoinedYet : LeaveEventResult()
+            data object YouNeedToRejoinTheEvent : LeaveEventResult()
         }
     }
 }

@@ -16,3 +16,10 @@ inventory:
 rank:
   label: "rank"
   description: "Ranking de quem pegou mais presentes no Evento de Reações da Loritta"
+
+leave:
+  label: "sair"
+  description: "Sai do Evento de Reações da Loritta"
+  youLeftTheEvent: "Você saiu do evento! Itens não irão mais aparecer nas suas mensagens, e você não poderá pegar itens nas mensagens de outras pessoas. Não se preocupe, o seu progresso será mantido e, se você quiser voltar ao evento, basta usar {joinEventMention}"
+  youHaventJoinedYet: "Você não pode sair de um evento que você nem entrou! Para entrar no evento, use {joinEventMention}"
+  youNeedToRejoinTheEvent: "Você já tinha pedido para sair deste evento! Para entrar no evento novamente, use {joinEventMention}"

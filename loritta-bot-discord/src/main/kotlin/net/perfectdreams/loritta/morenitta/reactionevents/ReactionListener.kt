@@ -37,7 +37,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
             m.newSuspendedTransaction {
                 val playerData = ReactionEventPlayers.selectAll()
                     .where {
-                        ReactionEventPlayers.userId eq lorittaProfile.id.value and (ReactionEventPlayers.event eq activeEvent.internalId)
+                        ReactionEventPlayers.userId eq lorittaProfile.id.value and (ReactionEventPlayers.event eq activeEvent.internalId) and (ReactionEventPlayers.leftAt.isNull())
                     }.firstOrNull()
 
                 // Bye

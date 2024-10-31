@@ -29,6 +29,7 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val eventJoin = commandMention("evento entrar")
     val eventStats = commandMention("evento stats")
     val eventInventory = commandMention("evento inventário")
+    val eventLeave = commandMention("evento sair")
 
     val profileView = commandMention("profile view")
 

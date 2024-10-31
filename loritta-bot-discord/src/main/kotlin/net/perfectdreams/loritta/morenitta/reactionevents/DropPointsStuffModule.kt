@@ -84,7 +84,7 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
                 val shouldAddReaction = m.newSuspendedTransaction {
                     val spawnTheCandy = ReactionEventPlayers.selectAll()
                         .where {
-                            ReactionEventPlayers.userId eq lorittaProfile.id.value and (ReactionEventPlayers.event eq activeEvent.internalId)
+                            ReactionEventPlayers.userId eq lorittaProfile.id.value and (ReactionEventPlayers.event eq activeEvent.internalId) and (ReactionEventPlayers.leftAt.isNull())
                         }.count() != 0L
 
                     if (spawnTheCandy) {
