@@ -13,10 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserOwnedCards
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -36,6 +33,7 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsFinishedAlbumSonhosTransaction
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
 import org.jetbrains.exposed.sql.vendors.ForUpdateOption
 import java.awt.Color
 import java.time.Instant
@@ -218,7 +216,6 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
 
                             val hasStickedAllAlbumCards = alreadyStickedCardIdsCountPlusOne == totalEventCards.toInt()
 
-                            // TODO: If hasStickedAllAlbumCards = true, give the rewards!
                             if (hasStickedAllAlbumCards) {
                                 val completionId = LoriCoolCardsFinishedAlbumUsers.insertAndGetId {
                                     it[LoriCoolCardsFinishedAlbumUsers.user] = context.user.idLong
@@ -229,6 +226,19 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                 val howManyCompletionsWeAreInRightNow = LoriCoolCardsFinishedAlbumUsers.select {
                                     LoriCoolCardsFinishedAlbumUsers.user eq context.user.idLong
                                 }.count()
+
+                                // Have we finished the album? If yes, in what position are we in?
+                                val rankOverField = rank().over().orderBy(LoriCoolCardsFinishedAlbumUsers.finishedAt, SortOrder.ASC)
+                                val albumRank = LoriCoolCardsFinishedAlbumUsers.select(
+                                    LoriCoolCardsFinishedAlbumUsers.user,
+                                    LoriCoolCardsFinishedAlbumUsers.finishedAt,
+                                    rankOverField
+                                ).where {
+                                    // We cannot filter by user here, if we do an "eq userToBeViewed.idLong" here, the rank position will always be 1 (or null, if the user hasn't completed the album)
+                                    // So we filter it after the fact
+                                    LoriCoolCardsFinishedAlbumUsers.event eq eventId
+                                }.first { it[LoriCoolCardsFinishedAlbumUsers.user] == context.user.idLong }[rankOverField]
+                                // ^ This should NEVER be not present considering that we have inserted the user before
 
                                 // Process rewards
                                 Profiles.update({ Profiles.id eq context.user.idLong }) {
@@ -256,13 +266,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                     3L to "loriCoolCardsStickerReceivedRare",
                                     4L to "loriCoolCardsStickerReceivedEpic",
                                     5L to "loriCoolCardsStickerReceivedLegendary",
-                                    6L to "loriCoolCardsStickerReceivedMythic",
-                                    7L to "loriCoolCardsStickerReceivedPlainCommon",
-                                    8L to "loriCoolCardsStickerReceivedPlainUncommon",
-                                    9L to "loriCoolCardsStickerReceivedPlainRare",
-                                    10L to "loriCoolCardsStickerReceivedPlainEpic",
-                                    11L to "loriCoolCardsStickerReceivedPlainLegendary",
-                                    12L to "loriCoolCardsStickerReceivedPlainMythic"
+                                    6L to "loriCoolCardsStickerReceivedMythic"
                                 )
 
                                 val profileDesignInternalNameToBeGiven = profileDesignInternalNamesToBeGiven[howManyCompletionsWeAreInRightNow]
@@ -273,6 +277,41 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         it[cost] = 0
                                         it[profile] = profileDesignInternalNameToBeGiven
                                         it[boughtAt] = System.currentTimeMillis()
+                                    }
+                                }
+
+                                // If we finished the album quickly, we can pay out a special design to the user
+                                if (albumRank >= 100) {
+                                    LoriCoolCardsQuickestUserTracks.insert {
+                                        it[LoriCoolCardsQuickestUserTracks.userId] = context.user.idLong
+                                        it[LoriCoolCardsQuickestUserTracks.finished] = completionId
+                                        it[LoriCoolCardsQuickestUserTracks.type] = 1
+                                    }
+
+                                    val quickCount = LoriCoolCardsQuickestUserTracks.selectAll()
+                                        .where {
+                                            LoriCoolCardsQuickestUserTracks.userId eq context.user.idLong and (LoriCoolCardsQuickestUserTracks.type eq 1)
+                                        }
+                                        .count()
+
+                                    val specialProfileDesignInternalNamesToBeGiven = mapOf(
+                                        1L to "loriCoolCardsStickerReceivedPlainCommon",
+                                        2L to "loriCoolCardsStickerReceivedPlainUncommon",
+                                        3L to "loriCoolCardsStickerReceivedPlainRare",
+                                        4L to "loriCoolCardsStickerReceivedPlainEpic",
+                                        5L to "loriCoolCardsStickerReceivedPlainLegendary",
+                                        6L to "loriCoolCardsStickerReceivedPlainMythic"
+                                    )
+
+                                    val specialProfileDesignInternalNameToBeGiven = specialProfileDesignInternalNamesToBeGiven[quickCount]
+
+                                    if (specialProfileDesignInternalNameToBeGiven != null) {
+                                        ProfileDesignsPayments.insert {
+                                            it[ProfileDesignsPayments.userId] = context.user.idLong
+                                            it[cost] = 0
+                                            it[profile] = specialProfileDesignInternalNameToBeGiven
+                                            it[boughtAt] = System.currentTimeMillis()
+                                        }
                                     }
                                 }
                             }
