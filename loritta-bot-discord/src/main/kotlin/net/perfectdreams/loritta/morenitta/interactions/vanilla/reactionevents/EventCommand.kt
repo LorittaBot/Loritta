@@ -41,7 +41,9 @@ import java.util.*
 import kotlin.math.ceil
 
 class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
-    private val I18N_PREFIX = I18nKeysData.Commands.Command.Reactionevents
+    companion object {
+        private val I18N_PREFIX = I18nKeysData.Commands.Command.Reactionevents
+    }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("a1a03b03-b23d-43b8-93f5-0c714307220d")) {
         subcommand(I18N_PREFIX.Join.Label, I18N_PREFIX.Description, UUID.fromString("a9df2f98-5e35-4716-a8bc-906e566cb5ed")) {
@@ -167,15 +169,39 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     class StatsEventExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val event = string("event", I18N_PREFIX.Stats.Options.Event.Text) {
+                autocomplete { context ->
+                    val now = Instant.now()
+
+                    val reactionEvents = ReactionEventsAttributes.attributes
+                        .values
+                        .filter {
+                            now >= it.startsAt
+                        }
+                        .filter {
+                            it.createEventTitle(context.i18nContext).startsWith(context.event.focusedOption.value, true)
+                        }
+                        .take(25)
+
+                    reactionEvents.associate {
+                        it.createEventTitle(context.i18nContext) to it.internalId
+                    }
+                }
+            }
+        }
+
+        override val options = Options()
+
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
             val now = Instant.now()
-            val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
+            val activeEvent = ReactionEventsAttributes.attributes[args[options.event]]
             if (activeEvent == null) {
                 context.reply(false) {
                     styled(
-                        "Nenhum evento ativo...",
+                        "Evento desconhecido!",
                         Emotes.LoriSob
                     )
                 }
@@ -622,6 +648,26 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     inner class StatsRankExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
+            val event = string("event", I18N_PREFIX.Stats.Options.Event.Text) {
+                autocomplete { context ->
+                    val now = Instant.now()
+
+                    val reactionEvents = ReactionEventsAttributes.attributes
+                        .values
+                        .filter {
+                            now >= it.startsAt
+                        }
+                        .filter {
+                            it.createEventTitle(context.i18nContext).startsWith(context.event.focusedOption.value, true)
+                        }
+                        .take(25)
+
+                    reactionEvents.associate {
+                        it.createEventTitle(context.i18nContext) to it.internalId
+                    }
+                }
+            }
+
             val rankType = string("rank_type", I18nKeysData.Commands.Command.Reactionevents.Rank.Options.RankType.Text) {
                 choice(I18nKeysData.Commands.Command.Reactionevents.Rank.FinishedFirstRank, ReactionEventRankType.FINISHED_FIRST.name)
                 choice(I18nKeysData.Commands.Command.Reactionevents.Rank.TotalCraftedItemsRank, ReactionEventRankType.TOTAL_CRAFTED_ITEMS.name)
@@ -638,14 +684,13 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val page = (args[options.page]?.minus(1)) ?: 0
 
             context.deferChannelMessage(false)
-            val now = Instant.now()
 
-            val activeEvent = ReactionEventsAttributes.getActiveEvent(now)
+            val activeEvent = ReactionEventsAttributes.attributes[args[options.event]]
 
             if (activeEvent == null) {
-                context.reply(true) {
+                context.reply(false) {
                     styled(
-                        "Nenhum evento ativo...",
+                        "Evento desconhecido!",
                         Emotes.LoriSob
                     )
                 }

@@ -114,7 +114,7 @@ trade:
 
   options:
     user:
-      text: "O usuário que você deseja trocar  figurinhas com ele"
+      text: "O usuário que você deseja trocar figurinhas com ele"
 
 stats:
   label: "stats"

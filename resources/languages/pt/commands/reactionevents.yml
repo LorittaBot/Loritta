@@ -8,6 +8,9 @@ join:
 stats:
   label: "stats"
   description: "Suas estatísticas no Evento de Reações da Loritta"
+  options:
+    event:
+      text: "Qual evento você quer ver as estatísticas dele"
 
 inventory:
   label: "inventário"
@@ -21,6 +24,8 @@ rank:
   options:
     rankType:
       text: "Qual tipo de rank do evento você deseja ver"
+    event:
+      text: "Qual evento você quer ver"
 
 leave:
   label: "sair"
