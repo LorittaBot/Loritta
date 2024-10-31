@@ -281,7 +281,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                 }
 
                                 // If we finished the album quickly, we can pay out a special design to the user
-                                if (albumRank >= 100) {
+                                if (100 >= albumRank) {
                                     LoriCoolCardsQuickestUserTracks.insert {
                                         it[LoriCoolCardsQuickestUserTracks.userId] = context.user.idLong
                                         it[LoriCoolCardsQuickestUserTracks.finished] = completionId
