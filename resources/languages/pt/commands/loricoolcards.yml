@@ -155,3 +155,7 @@ missing:
   options:
     user:
       text: "O usuário que você deseja ver as figurinhas que estão faltando no seu álbum"
+
+rank:
+  label: "rank"
+  description: "Ranking de quem terminou os álbums da Loritta mais rápido"
