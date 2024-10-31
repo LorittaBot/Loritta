@@ -30,6 +30,8 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         .asMap()
     private val lastDropsAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<Long, Long>()
         .asMap()
+    private val lastDropsByUserAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<Long, Long>()
+        .asMap()
 
     override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext): Boolean {
         val guild = event.guild ?: return false
@@ -77,6 +79,11 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         if (1_000 >= lastDropDiff)
             return false
 
+        val userDropTime = lastDropsByUserAt.getOrDefault(event.author.idLong, 0L)
+
+        if (10_000 >= date - userDropTime)
+            return false
+
         for (reactionSet in activeEvent.reactionSets) {
             val randomNumber = LorittaBot.RANDOM.nextFloat()
 
@@ -89,6 +96,7 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
 
                     if (spawnTheCandy) {
                         lastDropsAt[id] = date
+                        lastDropsByUserAt[event.author.idLong] = date
 
                         // TODO: Fix this
                         // val type = LorittaEaster2023Event.easterEggColors.random()
