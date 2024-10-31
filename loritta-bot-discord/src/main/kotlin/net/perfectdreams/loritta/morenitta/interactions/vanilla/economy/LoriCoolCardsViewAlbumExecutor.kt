@@ -39,7 +39,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
     inner class Options : ApplicationCommandOptions() {
         val album = string("album", I18N_PREFIX.Options.Album.Text) {
-            autocomplete {
+            autocomplete { context ->
                 val now = Instant.now()
 
                 // Autocomplete all albums
@@ -47,13 +47,15 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                     LoriCoolCardsEvents.select(LoriCoolCardsEvents.id, LoriCoolCardsEvents.eventName)
                         .where { LoriCoolCardsEvents.startsAt lessEq now }
                         .orderBy(LoriCoolCardsEvents.endsAt, SortOrder.DESC)
-                        .limit(25)
                         .toList()
                 }
 
-                activeAlbums.associate {
-                    it[LoriCoolCardsEvents.eventName] to it[LoriCoolCardsEvents.id].value.toString()
-                }
+                activeAlbums
+                    .filter { it[LoriCoolCardsEvents.eventName].startsWith(context.event.focusedOption.value, true) }
+                    .take(25)
+                    .associate {
+                        it[LoriCoolCardsEvents.eventName] to it[LoriCoolCardsEvents.id].value.toString()
+                    }
             }
         }
         val user = optionalUser("user", I18N_PREFIX.Options.User.Text)

@@ -91,7 +91,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
     inner class LoriCoolCardsViewExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val album = string("album", I18N_PREFIX.View.Options.Album.Text) {
-                autocomplete {
+                autocomplete { context ->
                     val now = Instant.now()
 
                     // Autocomplete all albums
@@ -99,13 +99,15 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                         LoriCoolCardsEvents.select(LoriCoolCardsEvents.id, LoriCoolCardsEvents.eventName)
                             .where { LoriCoolCardsEvents.startsAt lessEq now }
                             .orderBy(LoriCoolCardsEvents.endsAt, SortOrder.DESC)
-                            .limit(25)
                             .toList()
                     }
 
-                    activeAlbums.associate {
-                        it[LoriCoolCardsEvents.eventName] to it[LoriCoolCardsEvents.id].value.toString()
-                    }
+                    activeAlbums
+                        .filter { it[LoriCoolCardsEvents.eventName].startsWith(context.event.focusedOption.value, true) }
+                        .take(25)
+                        .associate {
+                            it[LoriCoolCardsEvents.eventName] to it[LoriCoolCardsEvents.id].value.toString()
+                        }
                 }
             }
 
