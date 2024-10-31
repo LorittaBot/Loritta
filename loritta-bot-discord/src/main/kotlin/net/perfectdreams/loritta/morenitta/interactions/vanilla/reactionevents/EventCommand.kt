@@ -736,7 +736,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
                             }
                             .groupBy(ReactionEventPlayers.userId)
-                            .orderBy(minFinishedAtColumn to SortOrder.ASC)
+                            .orderBy(minFinishedAtColumn to SortOrder.ASC, ReactionEventPlayers.id to SortOrder.ASC)
                             .limit(5, page * 5)
                             .toList()
 
@@ -761,7 +761,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
                                 }
                                 .groupBy(ReactionEventPlayers.userId)
-                                .orderBy(countColumn to SortOrder.DESC, minFinishedAtColumn to SortOrder.ASC)
+                                .orderBy(countColumn to SortOrder.DESC, minFinishedAtColumn to SortOrder.ASC, ReactionEventPlayers.id to SortOrder.ASC)
                                 .limit(5, page * 5)
                                 .toList()
 
