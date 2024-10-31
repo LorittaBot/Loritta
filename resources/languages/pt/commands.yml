@@ -30,7 +30,7 @@ commands:
       buttonLabel: "Seja Imortalizado na Loritta!"
       eventUpsell1: "Você já imaginou ter a sua jornada imortalizada na Loritta? Conquiste o seu espaço no alto escalão dos **Top 500 Sonhadores da Loritta** e imortalize o seu legado! Todo o mês um Álbum de Figurittas imortalizando as 500 pessoas mais ricas na Loritta do mês é lançado."
       eventUpsell2: "Álbuns de Figurittas da Loritta são iguais a Álbuns de Figurinhas na vida real. Compre pacotinhos de figurinhas por sonhos, para depois colar as figurinhas no álbum e trocar figurinhas com outras pessoas. E completando o álbum você ganha sonhos, designs para o seu perfil, insígnias e muito mais!"
-      eventUpsell3: "Para você aparecer no álbum, basta você estar no **Top 500 Sonhadores** quando as figurittas forem geradas. Enquanto não tem uma data e horário específico para que elas sejam geradas, elas normalmente são geradas na parte da tarde no primeiro dia do mês. Para mais informações, entre no servidor da Loritta! {lorittaGuildInvite}"
+      eventUpsell3: "Para você aparecer no álbum, basta você estar no **Top 500 Sonhadores** quando as figurittas forem geradas. Para mais informações, e para saber quando as figurinhas forem geradas, entre no servidor da Loritta! {lorittaGuildInvite}"
       eventUpsell4: "Mas eu dúvido que você vá conseguir chegar no **Top 500 Sonhadores**..."
     eventStarted:
       buttonLabel: "Participe do Evento de Figurittas da Loritta!"
