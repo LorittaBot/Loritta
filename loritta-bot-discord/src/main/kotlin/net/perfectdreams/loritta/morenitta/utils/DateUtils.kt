@@ -95,6 +95,13 @@ object DateUtils {
 		maxParts
 	)
 
+	fun formatDateDiff(i18nContext: I18nContext, fromEpochMilli: Instant, toEpochMilli: Instant, maxParts: Int = Int.MAX_VALUE) = formatDateDiff(
+		i18nContext,
+		LocalDateTime.ofInstant(fromEpochMilli, Constants.LORITTA_TIMEZONE),
+		LocalDateTime.ofInstant(toEpochMilli, Constants.LORITTA_TIMEZONE),
+		maxParts
+	)
+
 	fun formatDateDiff(i18nContext: I18nContext, argumentFromDateTime: LocalDateTime, argumentToDateTime: LocalDateTime, maxParts: Int = Int.MAX_VALUE): String {
 		// https://stackoverflow.com/a/59119149/7271796
 		val fromDateTime: LocalDateTime

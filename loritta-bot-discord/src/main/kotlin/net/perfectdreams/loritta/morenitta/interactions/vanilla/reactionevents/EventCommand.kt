@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCo
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventReward
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
@@ -721,6 +722,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     ReactionEventRankType.FINISHED_FIRST -> {
                         val totalCount = CraftedReactionEventItems
                             .innerJoin(ReactionEventPlayers)
+                            .innerJoin(ReactionEventFinishedEventUsers)
                             .select(CraftedReactionEventItems.user)
                             .where {
                                 CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
@@ -735,7 +737,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             .where {
                                 CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
                             }
-                            .groupBy(ReactionEventPlayers.userId)
+                            .groupBy(ReactionEventPlayers.userId, ReactionEventPlayers.id)
                             .orderBy(minFinishedAtColumn to SortOrder.ASC, ReactionEventPlayers.id to SortOrder.ASC)
                             .limit(5, page * 5)
                             .toList()
@@ -760,7 +762,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 .where {
                                     CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
                                 }
-                                .groupBy(ReactionEventPlayers.userId)
+                                .groupBy(ReactionEventPlayers.userId, ReactionEventPlayers.id)
                                 .orderBy(countColumn to SortOrder.DESC, minFinishedAtColumn to SortOrder.ASC, ReactionEventPlayers.id to SortOrder.ASC)
                                 .limit(5, page * 5)
                                 .toList()
@@ -778,15 +780,21 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 RankingGenerator.generateRanking(
                     loritta,
                     page * 5,
-                    "Evento",
+                    event.createEventTitle(context.i18nContext),
                     null,
                     profiles.map {
                         val presentesCount = it[countColumn]
 
                         RankingGenerator.UserRankInformation(
-                            it[ReactionEventPlayers.userId]
-                            ,
-                            event.createShortCraftedItemMessage(context.i18nContext, presentesCount.toInt())
+                            it[ReactionEventPlayers.userId],
+                            when (rankType) {
+                                ReactionEventRankType.FINISHED_FIRST -> {
+                                    DateUtils.formatDateDiff(context.i18nContext, event.startsAt, it[minFinishedAtColumn]!!)
+                                }
+                                ReactionEventRankType.TOTAL_CRAFTED_ITEMS -> {
+                                    event.createShortCraftedItemMessage(context.i18nContext, presentesCount.toInt())
+                                }
+                            }
                         )
                     }
                 ) {
