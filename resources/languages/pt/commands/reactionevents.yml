@@ -16,6 +16,11 @@ inventory:
 rank:
   label: "rank"
   description: "Ranking de quem pegou mais presentes no Evento de Reações da Loritta"
+  finishedFirstRank: "Rank de Quem Acabou Primeiro"
+  totalCraftedItemsRank: "Rank de Quem Craftou Mais Itens"
+  options:
+    rankType:
+      text: "Qual tipo de rank do evento você deseja ver"
 
 leave:
   label: "sair"

@@ -12,10 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.CollectedReactionEventPoints
-import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.CraftedReactionEventItems
-import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventDrops
-import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventPlayers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionEventsConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -515,6 +512,15 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     }
                                 }
 
+                                val maxPoints = activeEvent.rewards.maxOf { it.requiredPoints }
+                                if (maxPoints == newBasketCount) {
+                                    ReactionEventFinishedEventUsers.insert {
+                                        it[ReactionEventFinishedEventUsers.user] = playerData[ReactionEventPlayers.id]
+                                        it[ReactionEventFinishedEventUsers.event] = activeEvent.internalId
+                                        it[ReactionEventFinishedEventUsers.finishedAt] = Instant.now()
+                                    }
+                                }
+
                                 return@newSuspendedTransaction CraftCreationResult.Success
                             }
 
@@ -616,6 +622,11 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     inner class StatsRankExecutor : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
+            val rankType = string("rank_type", I18nKeysData.Commands.Command.Reactionevents.Rank.Options.RankType.Text) {
+                choice(I18nKeysData.Commands.Command.Reactionevents.Rank.FinishedFirstRank, ReactionEventRankType.FINISHED_FIRST.name)
+                choice(I18nKeysData.Commands.Command.Reactionevents.Rank.TotalCraftedItemsRank, ReactionEventRankType.TOTAL_CRAFTED_ITEMS.name)
+            }
+
             val page = optionalLong("page", XpCommand.XP_RANK_I18N_PREFIX.Options.Page.Text) /* {
                 // range = RankingGenerator.VALID_RANKING_PAGES
             } */
@@ -642,41 +653,76 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             context.reply(false) {
-                createRankMessage(context, page, activeEvent)()
+                createRankMessage(context, page, activeEvent, ReactionEventRankType.valueOf(args[options.rankType]))()
             }
         }
 
-        private suspend fun createRankMessage(context: UnleashedContext, page: Long, event: ReactionEvent): suspend InlineMessage<*>.() -> (Unit) = {
+        private suspend fun createRankMessage(
+            context: UnleashedContext,
+            page: Long,
+            event: ReactionEvent,
+            rankType: ReactionEventRankType
+        ): suspend InlineMessage<*>.() -> (Unit) = {
             styled(
                 context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
                 Emotes.LoriReading
             )
 
             val countColumn = CraftedReactionEventItems.user.count()
+            val minFinishedAtColumn = ReactionEventFinishedEventUsers.finishedAt.min()
 
             val (totalCount, profiles) = loritta.pudding.transaction {
-                val totalCount = CraftedReactionEventItems
-                    .innerJoin(ReactionEventPlayers)
-                    .select(CraftedReactionEventItems.user)
-                    .where {
-                        CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                when (rankType) {
+                    ReactionEventRankType.FINISHED_FIRST -> {
+                        val totalCount = CraftedReactionEventItems
+                            .innerJoin(ReactionEventPlayers)
+                            .select(CraftedReactionEventItems.user)
+                            .where {
+                                CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                            }
+                            .groupBy(CraftedReactionEventItems.user)
+                            .count()
+
+                        val profilesInTheQuery = CraftedReactionEventItems
+                            .innerJoin(ReactionEventPlayers)
+                            .innerJoin(ReactionEventFinishedEventUsers)
+                            .select(ReactionEventPlayers.userId, minFinishedAtColumn, countColumn)
+                            .where {
+                                CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                            }
+                            .groupBy(ReactionEventPlayers.userId)
+                            .orderBy(minFinishedAtColumn to SortOrder.ASC)
+                            .limit(5, page * 5)
+                            .toList()
+
+                        Pair(totalCount, profilesInTheQuery)
                     }
-                    .groupBy(CraftedReactionEventItems.user)
-                    .count()
+                    ReactionEventRankType.TOTAL_CRAFTED_ITEMS -> {
+                        val totalCount = CraftedReactionEventItems
+                            .innerJoin(ReactionEventPlayers)
+                            .select(CraftedReactionEventItems.user)
+                            .where {
+                                CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                            }
+                            .groupBy(CraftedReactionEventItems.user)
+                            .count()
 
-                val profilesInTheQuery =
-                    CraftedReactionEventItems
-                        .innerJoin(ReactionEventPlayers)
-                        .select(ReactionEventPlayers.userId, countColumn)
-                        .where {
-                            CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
-                        }
-                        .groupBy(ReactionEventPlayers.userId)
-                        .orderBy(countColumn to SortOrder.DESC)
-                        .limit(5, page * 5)
-                        .toList()
+                        val profilesInTheQuery =
+                            CraftedReactionEventItems
+                                .innerJoin(ReactionEventPlayers)
+                                .leftJoin(ReactionEventFinishedEventUsers)
+                                .select(ReactionEventPlayers.userId, minFinishedAtColumn, countColumn)
+                                .where {
+                                    CraftedReactionEventItems.event eq event.internalId and (ReactionEventPlayers.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                                }
+                                .groupBy(ReactionEventPlayers.userId)
+                                .orderBy(countColumn to SortOrder.DESC, minFinishedAtColumn to SortOrder.ASC)
+                                .limit(5, page * 5)
+                                .toList()
 
-                Pair(totalCount, profilesInTheQuery)
+                        Pair(totalCount, profilesInTheQuery)
+                    }
+                }
             }
 
             // Calculates the max page
@@ -715,7 +761,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 ) {
                     val hook = it.updateMessageSetLoadingState()
 
-                    val builtMessage = createRankMessage(it, page - 1, event)
+                    val builtMessage = createRankMessage(it, page - 1, event, rankType)
 
                     val asMessageEditData = MessageEdit {
                         builtMessage()
@@ -733,7 +779,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 ) {
                     val hook = it.updateMessageSetLoadingState()
 
-                    val builtMessage = createRankMessage(it, page + 1, event)
+                    val builtMessage = createRankMessage(it, page + 1, event, rankType)
 
                     val asMessageEditData = MessageEdit {
                         builtMessage()
