@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards
 
+import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import org.jetbrains.exposed.dao.id.LongIdTable
@@ -11,4 +12,5 @@ object LoriCoolCardsEventCards : LongIdTable() {
     val title = text("title")
     val cardFrontImageUrl = text("card_front_image_url")
     val cardReceivedImageUrl = text("card_received_image_url")
+    val metadata = jsonb("metadata").nullable()
 }
