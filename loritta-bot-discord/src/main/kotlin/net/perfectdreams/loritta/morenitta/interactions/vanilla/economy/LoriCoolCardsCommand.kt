@@ -88,7 +88,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
         }
 
         subcommand(I18N_PREFIX.Rank.Label, I18N_PREFIX.Rank.Description, UUID.fromString("e4df802c-7c19-455e-80b6-35fe23ece398")) {
-            // Trade stickers
+            // Sticker ranks
             executor = LoriCoolCardsRankExecutor(loritta, this@LoriCoolCardsCommand)
         }
     }

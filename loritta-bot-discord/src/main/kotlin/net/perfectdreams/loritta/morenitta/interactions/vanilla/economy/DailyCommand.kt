@@ -5,6 +5,7 @@ import kotlinx.datetime.TimeZone
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendActiveReactionEventUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendCouponSonhosBundleUpsellInformationIfNotNull
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
@@ -150,6 +151,11 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 } else null
             }
 
+            val loriCoolCardsUpsellButton = SonhosUtils.createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
+                loritta,
+                context.i18nContext
+            )
+
             context.reply(true) {
                 styled(
                     context.i18nContext.get(I18N_PREFIX.DailyLink(url, "<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:t>")),
@@ -273,6 +279,9 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     context.i18nContext,
                     ReactionEventsAttributes.getActiveEvent(java.time.Instant.now())
                 )?.let { buttons += it }
+
+                if (loriCoolCardsUpsellButton != null)
+                    buttons.add(loriCoolCardsUpsellButton)
 
                 if (buttons.isNotEmpty()) {
                     buttons.chunked(5)

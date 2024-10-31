@@ -39,6 +39,9 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val verifyMessageUrl = commandMention("verificarmensagem url")
     val verifyMessageFile = commandMention("verificarmensagem arquivo")
 
+    val loriCoolCardsBuy = commandMention("figurittas comprar")
+    val loriCoolCardsStick = commandMention("figurittas colar")
+
     /**
      * Creates a command mention of [path]. If the command doesn't exist, an error will be thrown.
      */

@@ -644,6 +644,11 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                                         val buttons = mutableListOf<Button>()
 
+                                        val loriCoolCardsUpsellButton = SonhosUtils.createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
+                                            loritta,
+                                            context.i18nContext
+                                        )
+
                                         appendCouponSonhosBundleUpsellInformationIfNotNull(
                                             loritta,
                                             context.i18nContext,
@@ -656,6 +661,9 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             context.i18nContext,
                                             ReactionEventsAttributes.getActiveEvent(now)
                                         )?.let { buttons += it }
+
+                                        if (loriCoolCardsUpsellButton != null)
+                                            buttons.add(loriCoolCardsUpsellButton)
 
                                         if (buttons.isNotEmpty()) {
                                             buttons.chunked(5)

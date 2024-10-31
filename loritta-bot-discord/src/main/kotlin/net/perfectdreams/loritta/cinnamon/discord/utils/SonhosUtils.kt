@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -13,12 +14,14 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventReward
@@ -26,14 +29,17 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
+import org.jetbrains.exposed.sql.selectAll
+import java.time.*
+import java.time.temporal.TemporalAdjusters
 import java.util.*
 
 object SonhosUtils {
+    private val UPSELL_LORICOOLCARDS_AFTER = ZonedDateTime.of(2024, 11, 1, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE)
+    private val UPSELL_LORICOOLCARDS_AFTER_INSTANT = UPSELL_LORICOOLCARDS_AFTER.toInstant()
+
     val DISABLED_ECONOMY_ID = UUID.fromString("3da6d95b-edb4-4ae9-aa56-4b13e91f3844")
 
     val HANGLOOSE_EMOTES = listOf(
@@ -126,6 +132,109 @@ object SonhosUtils {
         } else {
             return null
         }
+    }
+
+    suspend fun createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
+        loritta: LorittaBot,
+        i18nContext: I18nContext
+    ): Button? {
+        val now = Instant.now()
+        
+        // TODO: Remove this later!
+        if (now.isBefore(UPSELL_LORICOOLCARDS_AFTER_INSTANT))
+            return null
+
+        val activeLoriCoolCardsEvent = loritta.transaction {
+            LoriCoolCardsEvents.selectAll()
+                .where {
+                    LoriCoolCardsEvents.startsAt lessEq now and (LoriCoolCardsEvents.endsAt greater now)
+                }
+                .firstOrNull()
+        }
+
+        val nowZDT = ZonedDateTime.ofInstant(now, Constants.LORITTA_TIMEZONE)
+        val lastDayOfTheMonth = nowZDT.with(TemporalAdjusters.lastDayOfMonth()).dayOfMonth
+
+        if (activeLoriCoolCardsEvent != null) {
+            // First 7 days
+            val notifyUser = 7 >= nowZDT.dayOfMonth || nowZDT.dayOfMonth >= lastDayOfTheMonth - 3
+            if (notifyUser) {
+                val template = Json.decodeFromString<StickerAlbumTemplate>(activeLoriCoolCardsEvent[LoriCoolCardsEvents.template])
+
+                return loritta.interactivityManager.button(
+                    ButtonStyle.SECONDARY,
+                    i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.EventStarted.ButtonLabel),
+                    {
+                        this.loriEmoji = Emotes.LoriCoolSticker
+                    }
+                ) { context ->
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(
+                                I18nKeysData.Commands.LoriCoolCardsEvent.EventStarted.EventUpsell1(
+                                    activeLoriCoolCardsEvent[LoriCoolCardsEvents.eventName],
+                                )
+                            ),
+                            Emotes.LoriCoolSticker
+                        )
+
+                        styled(
+                            i18nContext.get(
+                                I18nKeysData.Commands.LoriCoolCardsEvent.EventStarted.EventUpsell2(
+                                    SonhosUtils.getSonhosEmojiOfQuantity(template.sonhosReward),
+                                    template.sonhosReward,
+                                    TimeFormat.DATE_TIME_SHORT.format(activeLoriCoolCardsEvent[LoriCoolCardsEvents.endsAt])
+                                )
+                            ),
+                            Emotes.Sonhos3
+                        )
+
+                        styled(
+                            i18nContext.get(
+                                I18nKeysData.Commands.LoriCoolCardsEvent.EventStarted.EventUpsell3(
+                                    loritta.commandMentions.loriCoolCardsBuy,
+                                    loritta.commandMentions.loriCoolCardsStick,
+                                    "<https://discord.gg/loritta>"
+                                )
+                            ),
+                            Emotes.LoriLurk
+                        )
+                    }
+                }
+            }
+        } else if (nowZDT.dayOfMonth == 1 || nowZDT.dayOfMonth == lastDayOfTheMonth) {
+            return loritta.interactivityManager.button(
+                ButtonStyle.SECONDARY,
+                i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.PreEvent.ButtonLabel),
+                {
+                    this.loriEmoji = Emotes.StickerRarityLegendary
+                }
+            ) { context ->
+                context.reply(true) {
+                    styled(
+                        i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.PreEvent.EventUpsell1),
+                        Emotes.LoriLurk
+                    )
+
+                    styled(
+                        i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.PreEvent.EventUpsell2),
+                        Emotes.StickerRarityLegendary
+                    )
+
+                    styled(
+                        i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.PreEvent.EventUpsell3("<https://discord.gg/loritta>")),
+                        Emotes.Sonhos3
+                    )
+
+                    styled(
+                        i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.PreEvent.EventUpsell4),
+                        Emotes.LoriDemon
+                    )
+                }
+            }
+        }
+
+        return null
     }
 
     suspend fun InlineMessage<*>.appendUserHaventGotDailyTodayOrUpsellSonhosBundles(

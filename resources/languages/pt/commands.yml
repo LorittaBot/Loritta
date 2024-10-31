@@ -24,8 +24,19 @@ commands:
   sonhosShopCouponCodeWithMaxUsesUpsell: "Psiu, está rolando descontos na minha lojinha de sonhos! Corra, pois o cupom só está disponível até {expiresAt} para os {maxUses,plural, =0 {# primeiros pagamentos} one {# primeiro pagamento} other {# primeiros pagamentos}} que usarem o cupom! **Cupom:** `{couponCode}` ({discountPercentage,number,#%} de desconto)"
   activeReactionEvent:
     buttonLabel: "Participe do Evento de Reações {eventName} da Loritta!"
-    eventUpsell: "Atualmente está acontecendo o evento de reações **{reactionEventName}** na Loritta! Participe do evento e ganhe até {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, mas corra, pois o evento acabará {endsAt}! Para entrar no evento, use {eventJoinMention}, para ver as recompensas use {eventStatsMention} e, para criar os itens, use {eventInventoryMention}."
-
+    eventUpsell: "Atualmente está acontecendo o evento de reações **{reactionEventName}** na Loritta! Participe do evento e ganhe até {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, mas corra, pois o evento acabará {endsAt}! Para entrar no evento, use {eventJoinMention}, para ver as recompensas, use {eventStatsMention} e, para criar os itens, use {eventInventoryMention}."
+  loriCoolCardsEvent:
+    preEvent:
+      buttonLabel: "Seja Imortalizado na Loritta!"
+      eventUpsell1: "Você já imaginou ter a sua jornada imortalizada na Loritta? Conquiste o seu espaço no alto escalão dos **Top 500 Sonhadores da Loritta** e imortalize o seu legado! Todo o mês um Álbum de Figurittas imortalizando as 500 pessoas mais ricas na Loritta do mês é lançado."
+      eventUpsell2: "Álbuns de Figurittas da Loritta são iguais a Álbuns de Figurinhas na vida real. Compre pacotinhos de figurinhas por sonhos, para depois colar as figurinhas no álbum e trocar figurinhas com outras pessoas. E completando o álbum você ganha sonhos, designs para o seu perfil, insígnias e muito mais!"
+      eventUpsell3: "Para você aparecer no álbum, basta você estar no **Top 500 Sonhadores** quando as figurittas forem geradas. Enquanto não tem uma data e horário específico para que elas sejam geradas, elas normalmente são geradas na parte da tarde no primeiro dia do mês. Para mais informações, entre no servidor da Loritta! {lorittaGuildInvite}"
+      eventUpsell4: "Mas eu dúvido que você vá conseguir chegar no **Top 500 Sonhadores**..."
+    eventStarted:
+      buttonLabel: "Participe do Evento de Figurittas da Loritta!"
+      eventUpsell1: "Atualmente está rolando o Álbum de Figurittas **{albumEventName}** na Loritta! Compre pacotinhos de figurinhas por sonhos, para depois colar as figurinhas no álbum e trocar as suas figurinhas repetidas com outras pessoas, igual colecionar um álbum na vida real. Infelizmente, a parte de ficar batendo bafo não tem... Afinal, você bateria como?"
+      eventUpsell2: "Se você conseguir completar o álbum, você ganhará {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, designs para o seu perfil, insígnias, e muito mais! Mas corra, pois o álbum acabará {endsAt}! Será que você vai conseguir acabar o álbum a tempo?"
+      eventUpsell3: "Para comprar pacotinhos de figurinhas, use {buyStickersMention}, para colar as figurinhas, use {stickStickersMention}. Se você precisa encontrar outros Loritters para trocar figurinhas com eles, entre no servidor da Loritta! {lorittaGuildInvite}"
   youAreLorittaBannedPermanent:
     - "Você está **banido(a) permanentemente**! {loriHmpf}"
     - ""

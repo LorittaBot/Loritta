@@ -541,6 +541,11 @@ class EmojiFight(
         }
 
         if (entryPrice != null) {
+            val loriCoolCardsUpsellButton = SonhosUtils.createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
+                loritta,
+                context.i18nContext
+            )
+
             val tax = (realPrize - taxedRealPrize)
 
             // If the tax == 0, then it means that the user is premium!
@@ -584,6 +589,9 @@ class EmojiFight(
                     context.i18nContext,
                     ReactionEventsAttributes.getActiveEvent(Instant.now())
                 )?.let { buttons += it }
+
+                if (loriCoolCardsUpsellButton != null)
+                    buttons.add(loriCoolCardsUpsellButton)
 
                 if (buttons.isNotEmpty()) {
                     buttons.chunked(5)
