@@ -376,39 +376,39 @@ object UserInfoExecutor {
                 val termsOfServiceUrl = applicationInfo?.termsOfServiceUrl
                 val privacyPolicyUrl = applicationInfo?.privacyPolicyUrl
 
-                if (inviteUrl != null || termsOfServiceUrl != null || privacyPolicyUrl != null) {
+                if (applicationInfo?.botPublic == true && (inviteUrl != null || termsOfServiceUrl != null || privacyPolicyUrl != null)) {
                     val components = mutableListOf<ItemComponent>()
 
-                    if (applicationInfo?.botPublic == true) {
-                        if (inviteUrl != null) {
-                            components.add(
-                                Button.link(
-                                    inviteUrl,
-                                    context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.AddToServer)
-                                )
+                    if (inviteUrl != null) {
+                        components.add(
+                            Button.link(
+                                inviteUrl,
+                                context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.AddToServer)
                             )
-                        }
-
-                        if (termsOfServiceUrl != null) {
-                            components.add(
-                                Button.link(
-                                    termsOfServiceUrl,
-                                    context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.TermsOfService)
-                                )
-                            )
-                        }
-
-                        if (privacyPolicyUrl != null) {
-                            components.add(
-                                Button.link(
-                                    privacyPolicyUrl,
-                                    context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.PrivacyPolicy)
-                                )
-                            )
-                        }
+                        )
                     }
 
-                    actionRow(*components.toTypedArray())
+                    if (termsOfServiceUrl != null) {
+                        components.add(
+                            Button.link(
+                                termsOfServiceUrl,
+                                context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.TermsOfService)
+                            )
+                        )
+                    }
+
+                    if (privacyPolicyUrl != null) {
+                        components.add(
+                            Button.link(
+                                privacyPolicyUrl,
+                                context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.PrivacyPolicy)
+                            )
+                        )
+                    }
+
+                    if (components.isNotEmpty()) {
+                        actionRow(*components.toTypedArray())
+                    }
                 }
             }
         }
