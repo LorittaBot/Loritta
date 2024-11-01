@@ -102,7 +102,7 @@ class GuildReactionEventsView(
                                 }
                             }
                         } else {
-                            div(classes = "alert alert-warning") {
+                            div(classes = "alert alert-danger") {
                                 text(i18nContext.get(I18nKeysData.Website.Dashboard.ReactionEvents.EventStatus.EventIsNotHappening))
                             }
                         }
