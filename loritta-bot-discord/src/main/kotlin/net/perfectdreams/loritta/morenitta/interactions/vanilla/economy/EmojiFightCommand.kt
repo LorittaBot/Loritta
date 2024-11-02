@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
+import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import org.jetbrains.exposed.sql.*
 import java.util.*
 
@@ -256,6 +257,13 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             val newEmoji = if (discordEmoji != null) {
                 discordEmoji.asMention
             } else {
+                if (emojiInput.isValidSnowflake())
+                    context.jda.getEmojiById(emojiInput) ?: context.fail(true) {
+                        styled(
+                            "Não encontrei nenhum emoji com o ID `$emojiInput`...",
+                        )
+                    }
+
                 val match = loritta.unicodeEmojiManager.regex.find(emojiInput)
                     ?: context.fail(true) {
                         styled(
