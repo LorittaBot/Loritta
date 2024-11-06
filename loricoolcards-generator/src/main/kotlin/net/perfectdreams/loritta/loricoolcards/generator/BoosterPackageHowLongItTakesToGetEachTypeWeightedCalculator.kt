@@ -13,8 +13,8 @@ fun main() {
         CardRarity.UNCOMMON to 23.0,
         CardRarity.RARE to 20.0,
         CardRarity.EPIC to 13.0,
-        CardRarity.LEGENDARY to 10.0,
-        CardRarity.MYTHIC to 8.0,
+        CardRarity.LEGENDARY to 8.0,
+        CardRarity.MYTHIC to 4.0,
     )
 
     println("Total weight value: ${weights.values.sum()}")

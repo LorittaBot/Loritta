@@ -8,6 +8,8 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.datetime.Clock
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.UserSnowflake
@@ -30,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
+import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.badges.*
@@ -70,7 +73,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v6_befopti"
+    val folderName = "production_v7_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -89,7 +92,11 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         .awaitReady()
 
     val sqlCommandsFile = File("D:\\Pictures\\Loritta\\LoriCoolCards\\$folderName\\sql_commands.sql")
-    sqlCommandsFile.delete()
+    if (sqlCommandsFile.exists()) {
+        println("SQL commands file already exists!")
+        readLine()
+        sqlCommandsFile.delete()
+    }
 
     val cardGensData = mutableListOf<LoriCoolCardsManager.CardGenData>()
 
@@ -131,7 +138,9 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         // LorittaStaffBadge(loritta),
         // SparklyStaffBadge(loritta),
         StonksBadge(pudding),
-        StickerFanBadge(pudding)
+        StickerFanBadge(pudding),
+        ReactionEventBadge.Halloween2024ReactionEventBadge(pudding),
+        ReactionEventBadge.Halloween2024ReactionEventSuperBadge(pudding)
     )
 
     // Badges that requires a "Loritta" instance, so, to avoid changing the badges too much, we just pretend that the badge is valid and carry on with our lives
@@ -182,6 +191,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
 
     // Avatars that will be falled back to user avatar
     val blacklistedUserAvatarsIds = mapOf<Long, String>(
+        492701937347723265L to "https://cdn.discordapp.com/attachments/739823666891849729/1302006414738194563/avatar_nsfw.png?ex=67268b77&is=672539f7&hm=ddf2388347944804ac19749b76787fd9c16a055a67bba9393b0d724b1b46a421&"
         // 755138747938504871L to "https://cdn.discordapp.com/attachments/1082340413156892682/1257402203015221360/IMG_5412.jpg?ex=6684468e&is=6682f50e&hm=c6efc25a8f97c0b0df7573c50b29b06f3685d292b3782936425a4b865dd82b31&"
     )
 
@@ -382,7 +392,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                         println("Took ${Clock.System.now() - start} to generate everything for ${user.idLong}")
 
                         fileMutex.withLock {
-                            sqlCommandsFile.appendText("INSERT INTO loricoolcardseventcards (event, card_id, rarity, title, card_front_image_url, card_received_image_url) VALUES (1, '#$id', '${rarity.name}', '$name', 'https://stuff.loritta.website/loricoolcards/production/v4/stickers/sticker-$outputName-front.png', 'https://stuff.loritta.website/loricoolcards/production/v4/stickers/sticker-$outputName-animated.gif');\n")
+                            sqlCommandsFile.appendText("INSERT INTO loricoolcardseventcards (event, card_id, rarity, title, card_front_image_url, card_received_image_url, metadata) VALUES (1, '#$id', '${rarity.name}', '$name', 'https://stuff.loritta.website/loricoolcards/production/v4/stickers/sticker-$outputName-front.png', 'https://stuff.loritta.website/loricoolcards/production/v4/stickers/sticker-$outputName-animated.gif', '${Json.encodeToString<StickerMetadata>(StickerMetadata.DiscordUserStickerMetadata(user.idLong))}');\n")
                         }
                     }
                 } catch (e: Exception) {
