@@ -2,31 +2,19 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
-import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.CachedUserInfo
-import net.perfectdreams.loritta.serializable.UserBannedState
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import org.jetbrains.exposed.sql.SortOrder
+import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.serializable.CachedUserInfo
+import net.perfectdreams.loritta.serializable.UserBannedState
+import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
 
 class UsersService(private val pudding: Pudding) : Service(pudding) {
     companion object {
