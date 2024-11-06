@@ -174,9 +174,14 @@ object LorittaBovespaBrokerUtils {
     fun checkIfTickerIsActive(currentSession: String): Boolean {
         val now = Clock.System.now().toLocalDateTime(BOVESPA_TIMEZONE)
 
-        return currentSession == LorittaBovespaBrokerUtils.MARKET &&
-                now.hour in TIME_OPEN.first..TIME_CLOSING.first &&
-                now.minute in TIME_OPEN.second..TIME_CLOSING.second
+        val isWithinOpeningHours = when {
+            now.hour < TIME_OPEN.first || now.hour > TIME_CLOSING.first -> false
+            now.hour == TIME_OPEN.first && now.minute < TIME_OPEN.second -> false
+            now.hour == TIME_CLOSING.first && now.minute > TIME_CLOSING.second -> false
+            else -> true
+        }
+
+        return currentSession == LorittaBovespaBrokerUtils.MARKET && isWithinOpeningHours
     }
 
     fun checkIfTickerDataIsStale(lastUpdatedAt: Instant) = Clock.System.now() > lastUpdatedAt.plus(LorittaBovespaBrokerUtils.OUTDATED_STOCKS_TIME)
