@@ -167,7 +167,6 @@ object DefaultRoutes {
 		GetLanguageInfoRoute(loritta),
 		GetCommandsRoute(loritta),
 		GetApplicationCommandsRoute(loritta),
-		GetFanArtsController(loritta),
 		GetLocaleRoute(loritta),
 		GetLorittaActionRoute(loritta),
 		GetRaffleStatusRoute(loritta),

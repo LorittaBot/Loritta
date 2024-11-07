@@ -581,7 +581,7 @@ object TrinketsStuff {
         createBackground("londrinaAves", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("londrina-aves", ContentType.Image.JPEG, Rectangle(230, 0, 900, 675))
         }
-        createBackground("birthday2020GabrielaItsGabi", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = listOf("its-gabi"), availableToBuyViaSonhos = false) {
+        createBackground("birthday2020GabrielaItsGabi", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = listOf("its_gabi"), availableToBuyViaSonhos = false) {
             addDefaultVariant("birthday2020-gabriela-itsgabi", ContentType.Image.PNG)
         }
         createBackground("sonicSonika", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = listOf("508651783330070538")) {
@@ -950,7 +950,7 @@ object TrinketsStuff {
         createBackground("lorittaCodeDark", true, Rarity.UNCOMMON, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("loritta-code-dark", ContentType.Image.PNG)
         }
-        createBackground("loriSketchSprites", true, Rarity.UNCOMMON, LocalDate.of(2021, 11, 11), createdBy = listOf("its-gabi")) {
+        createBackground("loriSketchSprites", true, Rarity.UNCOMMON, LocalDate.of(2021, 11, 11), createdBy = listOf("its_gabi")) {
             addDefaultVariant("lori-sketch-sprites", ContentType.Image.PNG)
         }
         createBackground("gamblingLifeLight", true, Rarity.RARE, LocalDate.of(2021, 11, 11)) {

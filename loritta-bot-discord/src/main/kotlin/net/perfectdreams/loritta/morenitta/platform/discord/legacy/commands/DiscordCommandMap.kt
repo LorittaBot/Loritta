@@ -77,7 +77,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			UnwarnCommand(loritta),
 
 			// ===[ MISC ]===
-			FanArtsCommand(loritta),
 			DiscordBotListCommand(loritta),
 			DiscordBotListStatusCommand(loritta),
 			DiscordBotListTopCommand(loritta),

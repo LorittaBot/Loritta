@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
@@ -207,6 +206,34 @@ class DailyShopView(
                                                                 }
                                                             }
                                                         }
+
+                                                        val artists = lorittaWebsite.loritta.cachedGalleryOfDreamsDataResponse!!.artists
+                                                            .filter { it.slug in shopItem.background.createdBy }
+
+                                                        if (artists.isNotEmpty()) {
+                                                            div {
+                                                                b {
+                                                                    text(i18nContext.get(I18nKeysData.Website.Dashboard.DailyShop.MadeBy))
+                                                                    text(" ")
+                                                                }
+
+                                                                for ((index, artist) in artists.withIndex()) {
+                                                                    if (index != 0) {
+                                                                        text(", ")
+                                                                    }
+
+                                                                    i {
+                                                                        a(
+                                                                            classes = "fan-arts",
+                                                                            href = "https://fanarts.perfectdreams.net/pt/artists/${artist.slug}",
+                                                                            target = "_blank"
+                                                                        ) {
+                                                                            text(artist.name)
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             },
@@ -291,6 +318,34 @@ class DailyShopView(
                                                                             } else TextReplaceControls.AppendControlAsIsResult
                                                                         }
                                                                     )
+                                                                }
+                                                            }
+                                                        }
+
+                                                        val artists = lorittaWebsite.loritta.cachedGalleryOfDreamsDataResponse!!.artists
+                                                            .filter { it.slug in shopItem.profileDesign.createdBy }
+
+                                                        if (artists.isNotEmpty()) {
+                                                            div {
+                                                                b {
+                                                                    text(i18nContext.get(I18nKeysData.Website.Dashboard.DailyShop.MadeBy))
+                                                                    text(" ")
+                                                                }
+
+                                                                for ((index, artist) in artists.withIndex()) {
+                                                                    if (index != 0) {
+                                                                        text(", ")
+                                                                    }
+
+                                                                    i {
+                                                                        a(
+                                                                            classes = "fan-arts",
+                                                                            href = "https://fanarts.perfectdreams.net/pt/artists/${artist.slug}",
+                                                                            target = "_blank"
+                                                                        ) {
+                                                                            text(artist.name)
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                         }

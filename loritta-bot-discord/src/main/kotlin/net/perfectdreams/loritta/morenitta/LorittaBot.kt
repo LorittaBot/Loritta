@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
@@ -112,7 +111,6 @@ import okhttp3.Protocol
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
 import java.io.File
-import java.io.InputStream
 import java.lang.reflect.Modifier
 import java.nio.file.*
 import java.security.SecureRandom
@@ -296,15 +294,6 @@ class LorittaBot(
 
 	val random = SecureRandom()
 	val gifsicle = Gifsicle(config.loritta.binaries.gifsicle)
-
-	val fanArtArtists = LorittaBot::class.getPathFromResources("/fan_arts_artists/")!!
-		.let { Files.list(it).toList() }
-		.map {
-			loadFanArtArtist(it.inputStream())
-		}
-
-	val fanArts: List<FanArt>
-		get() = fanArtArtists.flatMap { it.fanArts }
 
 	/**
 	 * Cached Gallery of Dreams Data response, used for fan art stuff
@@ -815,13 +804,6 @@ class LorittaBot(
 		newWebsite?.stop()
 		newWebsiteThread?.interrupt()
 	}
-
-	/**
-	 * Loads an specific fan art artist
-	 */
-	private fun loadFanArtArtist(inputStream: InputStream): FanArtArtist = Constants.HOCON_MAPPER.readValue(inputStream)
-
-	fun getFanArtArtistByFanArt(fanArt: FanArt) = fanArtArtists.firstOrNull { fanArt in it.fanArts }
 
 	/**
 	 * Initializes the available locales and adds missing translation strings to non-default languages

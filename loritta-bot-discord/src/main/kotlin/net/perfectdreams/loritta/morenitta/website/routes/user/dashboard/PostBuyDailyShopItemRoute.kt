@@ -12,13 +12,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
@@ -47,6 +47,9 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 		discordAuth: TemmieDiscordAuth,
 		userIdentification: LorittaJsonWebSession.UserIdentification
 	) {
+		// A bit hacky but hey, there's nothing a lot we can do rn
+		val galleryOfDreamsResponse = loritta.cachedGalleryOfDreamsDataResponse!!
+
 		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
 		val params = call.receiveParameters()
@@ -109,10 +112,9 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 					val createdBy = background[Backgrounds.createdBy]
 					val creatorReceived = (cost.toDouble() * 0.1).toLong()
 					for (creatorId in createdBy) {
-						val author = loritta.fanArtArtists.firstOrNull { it.id == creatorId } ?: continue
+						val author = galleryOfDreamsResponse.artists.firstOrNull { it.slug == creatorId } ?: continue
 
-						val discordId = author.socialNetworks?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.firstOrNull()?.id
-							?: continue
+						val discordId = author.socialConnections.filterIsInstance<DiscordSocialConnection>().firstOrNull()?.id ?: continue
 
 						val creator = loritta.getOrCreateLorittaProfile(discordId)
 
@@ -173,10 +175,9 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 					val createdBy = background[ProfileDesigns.createdBy]
 					val creatorReceived = (cost.toDouble() * 0.1).toLong()
 					for (creatorId in createdBy) {
-						val author = loritta.fanArtArtists.firstOrNull { it.id == creatorId } ?: continue
+						val author = galleryOfDreamsResponse.artists.firstOrNull { it.slug == creatorId } ?: continue
 
-						val discordId = author.socialNetworks?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.firstOrNull()?.id
-							?: continue
+						val discordId = author.socialConnections.filterIsInstance<DiscordSocialConnection>().firstOrNull()?.id ?: continue
 
 						val creator = loritta.getOrCreateLorittaProfile(discordId)
 

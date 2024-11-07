@@ -50,7 +50,6 @@ object DebugLog {
 		logger.info("> Invite Stuff")
 		logger.info("cachedInviteLinks.size: ${InviteLinkModule.cachedInviteLinks.size}")
 		logger.info("> Misc Stuff")
-		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
 		logger.info("Cached Retrieved Users: ${loritta.lorittaShards.cachedRetrievedUsers.size()}")
 		logger.info("> Executors")

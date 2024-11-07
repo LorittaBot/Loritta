@@ -8,7 +8,7 @@ class ProfileDesign(
 	val internalName: String,
 	val enabled: Boolean,
 	val rarity: Rarity,
-	val createdBy: List<String>? = null,
+	val createdBy: List<String>,
 	val set: String? = null,
 	var tag: String? = null
 )
