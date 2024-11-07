@@ -1128,6 +1128,12 @@ object TrinketsStuff {
         createBackground("lorittaHalloweenBibbosz", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("aressz")) {
             addDefaultVariant("loritta-halloween-bibbosz", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("sonicVsShadowSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("sonic-vs-shadow-sonic-movie-3", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("shadowBikeSkidSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("shadow-bike-skid-sonic-movie-3", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createProfileDesign(
