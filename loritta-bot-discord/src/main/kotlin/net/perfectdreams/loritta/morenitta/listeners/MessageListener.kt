@@ -441,8 +441,16 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						return@launch
 				}
 
-				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, i18nContext, lorittaUser))
-					return@launch
+				// When executing commands from an edited message, we will only execute them if the message itself is marked as edited
+				// We need to do that because nowadays, Discord sends the full message object when a message is edited, instead of only sending what was edited
+				// While this doesn't seem that bad, that also means that if you paste a link in chat, Discord will send the original message (without embed) and then send that the message was edited (to include the link preview)
+				// And that's bad when you are using commands that you can paste a link
+				// Of course, that means that if you edit a message to include a link the issue would still trigger, but hey, better this than nothing!
+				// (Because to really fix this issue, we would need to cache messages and check if the message was ACTUALLY edited or not, and that's harder)
+				if (event.message.isEdited) {
+					if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, i18nContext, lorittaUser))
+						return@launch
+				}
 			}
 		}
 	}
