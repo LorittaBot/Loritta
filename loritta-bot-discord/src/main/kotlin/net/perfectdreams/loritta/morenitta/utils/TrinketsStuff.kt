@@ -1140,6 +1140,33 @@ object TrinketsStuff {
         createBackground("shadowAndMariaDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
             addDefaultVariant("shadow-and-maria-dark-beginnings", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("lorittaHalloweenYafyr", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("yafyr")) {
+            addDefaultVariant("loritta-halloween-yafyr", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("crocodileClothingBlue", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("crocodile-clothing-blue", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "crocodile-clothing-blue-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("crocodileClothingRed", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("crocodile-clothing-red", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "crocodile-clothing-red-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("crocodileClothingGreen", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("crocodile-clothing-green", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "crocodile-clothing-green-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("crocodileClothingOrange", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("crocodile-clothing-orange", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "crocodile-clothing-orange-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("crocodileClothingPink", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("crocodile-clothing-pink", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "crocodile-clothing-pink-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("crocodileClothingPurple", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("crocodile-clothing-purple", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "crocodile-clothing-purple-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createProfileDesign(
