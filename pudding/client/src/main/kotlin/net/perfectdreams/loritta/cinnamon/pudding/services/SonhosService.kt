@@ -362,6 +362,26 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             stored.internalProfileDesignId
                         )
 
+                        is StoredLorittaItemShopComissionBackgroundTransaction -> LorittaItemShopComissionBackgroundTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.boughtUserId,
+                            stored.internalBackgroundId
+                        )
+
+                        is StoredLorittaItemShopComissionProfileDesignTransaction -> LorittaItemShopComissionProfileDesignTransaction(
+                            it[SimpleSonhosTransactionsLog.id].value,
+                            it[SimpleSonhosTransactionsLog.type],
+                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SimpleSonhosTransactionsLog.user].value),
+                            it[SimpleSonhosTransactionsLog.sonhos],
+                            stored.boughtUserId,
+                            stored.internalProfileDesignId
+                        )
+
                         is StoredBomDiaECiaCallCalledTransaction -> BomDiaECiaCallCalledTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
                             it[SimpleSonhosTransactionsLog.type],
