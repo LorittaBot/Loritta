@@ -463,7 +463,7 @@ fun User.asUserNameCodeBlockPreviewTag(
         "$previewName#${discriminator}"
     }
 
-    return "${safeInlineCodeBlock(previewName)} (`${safeInlineCodeBlock(nameDisplay)}` | `$id`)"
+    return "${safeInlineCodeBlock(previewName)} (${safeInlineCodeBlock(nameDisplay)} | `$id`)"
 }
 
 /**
