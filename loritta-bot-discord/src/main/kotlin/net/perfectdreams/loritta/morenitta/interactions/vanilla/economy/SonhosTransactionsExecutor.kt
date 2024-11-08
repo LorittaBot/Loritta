@@ -64,10 +64,6 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             val isSelf = viewingTransactionsOfUserId == userId
             val cachedUserInfo = loritta.lorittaShards.retrieveUserInfoById(viewingTransactionsOfUserId) ?: error("Missing cached user info!")
 
-            content = i18nContext.get(
-                SonhosCommand.TRANSACTIONS_I18N_PREFIX.NotAllTransactionsAreHere
-            )
-
             if (page >= totalPages && totalPages != 0L) {
                 apply(
                     createTooManyPagesMessage(
