@@ -305,6 +305,10 @@ suspend fun main() {
                     is StoredLorittaItemShopBoughtBackgroundTransaction -> TODO()
                     is StoredLorittaItemShopBoughtProfileDesignTransaction -> TODO()
                     is StoredReactionEventSonhosTransaction -> TODO()
+                    is StoredChargebackedSonhosBundleTransaction -> TODO()
+                    is StoredLorittaItemShopComissionBackgroundTransaction -> TODO()
+                    is StoredLorittaItemShopComissionProfileDesignTransaction -> TODO()
+                    is StoredMarriageMarryTransaction -> TODO()
                 }
             }
     }
