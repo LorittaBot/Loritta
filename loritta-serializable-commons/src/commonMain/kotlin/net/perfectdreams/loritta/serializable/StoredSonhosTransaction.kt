@@ -144,3 +144,6 @@ data class StoredLorittaItemShopBoughtBackgroundTransaction(
 
 @Serializable
 data class StoredMarriageMarryTransaction(val marriedWithUserId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredChargebackedSonhosBundleTransaction(val triggeredByUserId: Long) : StoredSonhosTransaction()
