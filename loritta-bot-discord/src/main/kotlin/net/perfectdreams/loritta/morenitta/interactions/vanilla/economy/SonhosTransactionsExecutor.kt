@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.options.UserAndMember
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers.*
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
@@ -439,15 +440,6 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
     override suspend fun convertToInteractionsArguments(
         context: LegacyMessageCommandContext,
         args: List<String>
-    ): Map<OptionReference<*>, Any?>? {
-        return null
-    }
-
-    /* TODO: Implement this when the legacy command is removed
-
-    override suspend fun convertToInteractionsArguments(
-        context: LegacyMessageCommandContext,
-        args: List<String>
     ): Map<OptionReference<*>, Any?> {
         val user = context.getUser(0) ?: context.user
         val page = args.getOrNull(0)?.toLongOrNull() ?: args.getOrNull(1)?.toLongOrNull() ?: 1
@@ -460,5 +452,4 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             options.page to page
         )
     }
-     */
 }

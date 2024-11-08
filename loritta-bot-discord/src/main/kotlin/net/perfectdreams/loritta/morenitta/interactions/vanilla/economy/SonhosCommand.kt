@@ -40,6 +40,12 @@ class SonhosCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWr
         }
 
         subcommand(TRANSACTIONS_I18N_PREFIX.Label, TRANSACTIONS_I18N_PREFIX.Description, UUID.fromString("d5e873bf-98e6-3770-a4e3-03f08eb80297")) {
+            this.alternativeLegacyAbsoluteCommandPaths.apply {
+                add("transactions")
+                add("transações")
+                add("transacoes")
+                add("transaçoes")
+            }
             executor = SonhosTransactionsExecutor(loritta)
         }
 

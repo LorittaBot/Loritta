@@ -1,28 +1,30 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
-import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator.isValidRankingPage
+import net.perfectdreams.loritta.morenitta.utils.extensions.doReactions
+import net.perfectdreams.loritta.morenitta.utils.extensions.edit
+import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
+import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
-class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações", "transacoes", "transaçoes"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("transactionsold", "transaçõesold", "transacoesold", "transaçoesold"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command.transactions"
 		private const val ENTRIES_PER_PAGE = 10
