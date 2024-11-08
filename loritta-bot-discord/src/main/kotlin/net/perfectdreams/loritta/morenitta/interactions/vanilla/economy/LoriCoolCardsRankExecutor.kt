@@ -76,6 +76,11 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
         eventId: Long,
         page: Long
     ): suspend InlineMessage<*>.() -> (Unit) = {
+        styled(
+            context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
+            Emotes.LoriReading
+        )
+
         val now = Instant.now()
 
         val result = loritta.transaction {
