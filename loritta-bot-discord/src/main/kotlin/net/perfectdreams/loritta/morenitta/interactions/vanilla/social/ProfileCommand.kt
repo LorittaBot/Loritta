@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
@@ -17,6 +18,8 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -29,16 +32,44 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.profiles.ProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.update
+import java.sql.Connection
+import java.sql.ResultSet
+import java.time.Instant
 import java.util.*
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.filter
+import kotlin.collections.first
+import kotlin.collections.firstOrNull
+import kotlin.collections.joinToString
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mapOf
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.plusAssign
+import kotlin.collections.set
+import kotlin.collections.setOf
+import kotlin.collections.take
+import kotlin.collections.toMutableList
+import kotlin.collections.toSet
+import kotlin.math.ceil
 
 class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -78,7 +109,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             val newAboutMe = args[aboutMeOption]
 
                             val userSettings = it.loritta.pudding.users.getOrCreateUserProfile(
-                                net.perfectdreams.loritta.serializable.UserId(
+                                UserId(
                                     it.user.idLong
                                 )
                             )
@@ -115,6 +146,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     private val I18N_PREFIX = I18nKeysData.Commands.Command.Profile
     private val PROFILE_VIEW_I18N_PREFIX = I18nKeysData.Commands.Command.Profileview
     private val PROFILE_BADGES_I18N_PREFIX = I18nKeysData.Commands.Command.Profilebadges
+    private val PROFILE_SHOP_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Profileshoprank
     private val ABOUT_ME_I18N_PREFIX = I18nKeysData.Commands.Command.Aboutme
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("785a6cf3-8cec-4cbc-8b70-ee97dfa27582")) {
@@ -150,6 +182,10 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             executor = ProfileBadgesExecutor()
+        }
+
+        subcommand(PROFILE_SHOP_RANK_I18N_PREFIX.Label, PROFILE_BADGES_I18N_PREFIX.Description, UUID.fromString("e8ab00e5-ad4c-42b2-b72d-921d5674bb0e")) {
+            executor = ShopRankExecutor(loritta)
         }
     }
 
@@ -469,5 +505,178 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?> = LorittaLegacyMessageCommandExecutor.NO_ARGS
+    }
+
+    class ShopRankExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val page = optionalLong("page", XpCommand.XP_RANK_I18N_PREFIX.Options.Page.Text)
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(false)
+
+            val page = (args[options.page]?.minus(1)) ?: 0
+
+            context.reply(false) {
+                createRankMessage(context, page)()
+            }
+        }
+
+        private suspend fun createRankMessage(
+            context: UnleashedContext,
+            page: Long
+        ): suspend InlineMessage<*>.() -> (Unit) = {
+            styled(
+                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
+                Emotes.LoriReading
+            )
+
+            val users = mutableListOf<RankingGenerator.UserRankInformation>()
+            var totalUsers: Long? = null
+
+            // We do raw SQL queries because implementing these with Exposed would a bit painful
+            loritta.transaction {
+                // Get the JDBC connection from the current transaction
+                val jdbcConnection: Connection = (TransactionManager.current().connection as JdbcConnectionImpl).connection
+
+                jdbcConnection.prepareStatement(
+                    """
+                        SELECT COUNT(*) FROM (
+                                SELECT FROM (
+                                SELECT "user" FROM backgroundpayments INNER JOIN backgrounds ON backgrounds.internal_name = backgroundpayments.background WHERE backgrounds.enabled = true AND available_to_buy_via_dreams = true
+                                UNION ALL
+                                SELECT "user" FROM profiledesignspayments INNER JOIN profiledesigns ON profiledesigns.internal_name = profiledesignspayments.profile WHERE profiledesigns.enabled = true AND available_to_buy_via_dreams = true
+                            ) combined GROUP BY "user"
+                        ) AS a;
+                    """.trimIndent()
+                ).use { statement ->
+                    val resultSet: ResultSet = statement.executeQuery()
+
+                    // Iterate over the ResultSet
+                    while (resultSet.next()) {
+                        // Access columns by index or name
+                        val count = resultSet.getLong("count")
+
+                        totalUsers = count
+                    }
+                }
+
+                // Use the connection to create a statement and execute your raw SQL query
+                jdbcConnection.prepareStatement(
+                    """
+                    SELECT
+                      background_subquery."user",
+                      COALESCE(background_total, 0) AS background_total, 
+                      COALESCE(design_total, 0) AS design_total,
+                      COALESCE(background_total, 0) + COALESCE(design_total, 0) AS total_items,
+                      GREATEST(max_bought_at_background, max_bought_at_profile) AS bought_at
+                    FROM (
+                      SELECT 
+                        "user",
+                        COUNT(*) AS background_total,
+                        MAX(bought_at) AS max_bought_at_background
+                      FROM backgroundpayments
+                      INNER JOIN backgrounds ON backgrounds.internal_name = backgroundpayments.background WHERE backgrounds.enabled = true AND available_to_buy_via_dreams = true
+                      GROUP BY "user"
+                    ) background_subquery
+                    FULL OUTER JOIN (
+                      SELECT 
+                        "user", 
+                        COUNT(*) AS design_total,
+                        MAX(bought_at) AS max_bought_at_profile
+                      FROM profiledesignspayments
+                      INNER JOIN profiledesigns ON profiledesigns.internal_name = profiledesignspayments.profile WHERE profiledesigns.enabled = true AND available_to_buy_via_dreams = true
+                      GROUP BY "user"
+                    ) design_subquery
+                      ON background_subquery.user = design_subquery.user
+                    ORDER BY total_items DESC, bought_at ASC LIMIT 5 OFFSET ?;
+                """
+                ).use { statement ->
+                    statement.setLong(1, page * 5)
+
+                    val resultSet: ResultSet = statement.executeQuery()
+
+                    // Iterate over the ResultSet
+                    while (resultSet.next()) {
+                        // Access columns by index or name
+                        val user = resultSet.getLong("user")
+                        val totalItems = resultSet.getLong("total_items")
+                        // val boughtAt = resultSet.getLong("bought_at")
+
+                        users.add(
+                            RankingGenerator.UserRankInformation(
+                                user,
+                                context.i18nContext.get(I18nKeysData.Commands.Command.Profileshoprank.BoughtThings(totalItems))
+                            )
+                        )
+                    }
+                }
+            }
+
+            // Calculates the max page
+            val maxPage = ceil((totalUsers ?: 1) / 5.0)
+            val maxPageZeroIndexed = maxPage - 1
+
+            files += FileUpload.fromData(
+                RankingGenerator.generateRanking(
+                    loritta,
+                    page * 5,
+                    "ayaya",
+                    null,
+                    users
+                ) {
+                    null
+                }.toByteArray(ImageFormatType.PNG).inputStream(),
+                "rank.png"
+            )
+
+            actionRow(
+                loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    ButtonStyle.PRIMARY,
+                    builder = {
+                        loriEmoji = Emotes.ChevronLeft
+                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES
+                    }
+                ) {
+                    val hook = it.updateMessageSetLoadingState()
+
+                    val builtMessage = createRankMessage(it, page - 1)
+
+                    val asMessageEditData = MessageEdit {
+                        builtMessage()
+                    }
+
+                    hook.editOriginal(asMessageEditData).await()
+                },
+                loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    ButtonStyle.PRIMARY,
+                    builder = {
+                        loriEmoji = Emotes.ChevronRight
+                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
+                    }
+                ) {
+                    val hook = it.updateMessageSetLoadingState()
+
+                    val builtMessage = createRankMessage(it, page + 1)
+
+                    val asMessageEditData = MessageEdit {
+                        builtMessage()
+                    }
+
+                    hook.editOriginal(asMessageEditData).await()
+                }
+            )
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            return mapOf()
+        }
     }
 }

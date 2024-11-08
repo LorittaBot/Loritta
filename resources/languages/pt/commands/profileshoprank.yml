@@ -1,0 +1,4 @@
+label: "lojarank"
+description: "Veja quais usuários mais compraram itens na loja diária da Loritta!"
+
+boughtThings: "{quantity,plural, =0 {# bugigangas} one {# bugiganga} other {# bugigangas}} compradas"
