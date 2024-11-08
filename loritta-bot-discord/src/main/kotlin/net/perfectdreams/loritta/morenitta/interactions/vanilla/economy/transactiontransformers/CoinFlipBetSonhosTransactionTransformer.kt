@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.serializable.CoinFlipBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
@@ -31,8 +31,12 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.WonTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
-                            loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
-                            loserId = transaction.loser.value
+                            loserUserPreview = convertToUserNameCodeBlockPreviewTag(
+                                transaction.loser.value.toLong(),
+                                loserUserInfo?.name,
+                                loserUserInfo?.globalName,
+                                loserUserInfo?.discriminator,
+                            )
                         )
                     )
                 )
@@ -43,8 +47,12 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.LostTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
-                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
-                            winnerId = transaction.winner.value
+                            winnerUserPreview = convertToUserNameCodeBlockPreviewTag(
+                                transaction.winner.value.toLong(),
+                                winnerUserInfo?.name,
+                                winnerUserInfo?.globalName,
+                                winnerUserInfo?.discriminator,
+                            )
                         )
                     )
                 )
@@ -56,8 +64,12 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                     i18nContext.get(
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.Won(
                             quantityAfterTax = transaction.quantity,
-                            loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
-                            loserId = transaction.loser.value
+                            loserUserPreview = convertToUserNameCodeBlockPreviewTag(
+                                transaction.loser.value.toLong(),
+                                loserUserInfo?.name,
+                                loserUserInfo?.globalName,
+                                loserUserInfo?.discriminator,
+                            )
                         )
                     )
                 )
@@ -67,8 +79,12 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                     i18nContext.get(
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.Lost(
                             quantity = transaction.quantity,
-                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
-                            winnerId = transaction.winner.value
+                            winnerUserPreview = convertToUserNameCodeBlockPreviewTag(
+                                transaction.winner.value.toLong(),
+                                winnerUserInfo?.name,
+                                winnerUserInfo?.globalName,
+                                winnerUserInfo?.discriminator,
+                            )
                         )
                     )
                 )

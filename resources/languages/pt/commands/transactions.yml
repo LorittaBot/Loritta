@@ -29,8 +29,8 @@ types:
   payment:
     title: "Pagamentos"
     description: "Transações relacionadas a transferências de sonhos para outros usuários"
-    sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para `{receiverTag}` (`{receiverId}`)"
-    received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de `{giverTag}` (`{giverId}`)"
+    sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receiverUserPreview}"
+    received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview}"
   dailyReward:
     title: "Prêmio Diário"
     description: "Transações relacionadas ao prêmio diário da Loritta"
@@ -43,24 +43,24 @@ types:
   coinFlipBet:
     title: "Apostas de Lançamento de Moedas"
     description: "Transações relacionadas a apostas de lançamento de moedas"
-    wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de `{loserTag}` (`{loserId}`) em apostas de sonhos girando uma moeda"
-    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para `{winnerTag}` (`{winnerId}`) em apostas de sonhos girando uma moeda"
-    won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de `{loserTag}` (`{loserId}`) em apostas de sonhos girando uma moeda"
-    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para `{winnerTag}` (`{winnerId}`) em apostas de sonhos girando uma moeda"
+    wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de {loserUserPreview} em apostas de sonhos girando uma moeda"
+    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para {winnerUserPreview} em apostas de sonhos girando uma moeda"
+    won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de {loserUserPreview} em apostas de sonhos girando uma moeda"
+    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para {winnerUserPreview} em apostas de sonhos girando uma moeda"
   coinFlipBetGlobal:
     title: "Apostas Globais de Lançamento de Moedas"
     description: "Transações relacionadas a apostas de lançamento de moedas... globalmente!"
-    wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de `{loserTag}` (`{loserId}`) em apostas globais de sonhos girando uma moeda"
-    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para `{winnerTag}` (`{winnerId}`) em apostas globais de sonhos girando uma moeda"
-    won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de `{loserTag}` (`{loserId}`) em apostas globais de sonhos girando uma moeda"
-    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para `{winnerTag}` (`{winnerId}`) em apostas globais de sonhos girando uma moeda"
+    wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de {loserUserPreview} em apostas globais de sonhos girando uma moeda"
+    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para {winnerUserPreview} em apostas globais de sonhos girando uma moeda"
+    won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de {loserUserPreview} em apostas globais de sonhos girando uma moeda"
+    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para {winnerUserPreview} em apostas globais de sonhos girando uma moeda"
   emojiFightBet:
     title: "Apostas em Rinha de Emojis"
     description: "Transações relacionadas a apostas em rinhas de emojis"
     wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de {userInEmojiFight,plural, =0 {# usuários} one {# usuário} other {# usuários}} em uma rinha de emoji pois todos temeram o poderoso {emojiFightEmoji}"
-    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para o {emojiFightEmoji} de `{winnerTag}` (`{winnerId}`) em uma apostas de sonhos em rinha de emojis"
+    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para o {emojiFightEmoji} de {winnerUserPreview} em uma apostas de sonhos em rinha de emojis"
     won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de {userInEmojiFight,plural, =0 {# usuários} one {# usuário} other {# usuários}} em uma rinha de emoji pois todos temeram o poderoso {emojiFightEmoji}"
-    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para o {emojiFightEmoji} de `{winnerTag}` (`{winnerId}`) em uma apostas de sonhos em rinha de emojis"
+    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para o {emojiFightEmoji} de {winnerUserPreview} em uma apostas de sonhos em rinha de emojis"
   shipEffect:
     title: "Subornos de Ship"
     description: "Transações relacionadas com subornos ao oráculo do amor"
@@ -109,8 +109,8 @@ types:
     description: "Transações relacionadas aos eventos das Figurittas da Loritta"
     boughtBoosterPack: "Comprou um pacotinho de figurinhas por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} nas Figurittas da Loritta"
     finishedAlbum: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} por ter acabado o álbum nas Figurittas da Loritta"
-    sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para `{receiverTag}` (`{receiverId}`) em uma troca de figurinhas"
-    received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de `{giverTag}` (`{giverId}`) em uma troca de figurinhas"
+    sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receiverUserPreview} em uma troca de figurinhas"
+    received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview} em uma troca de figurinhas"
   lorittaItemShop:
     title: "Loja de Itens da Loritta"
     description: "Transações relacionadas aos itens da Loritta, como backgrounds e designs de perfil"
@@ -128,7 +128,7 @@ types:
   marriage:
     title: "Casamento"
     description: "Transações relacionadas a casamentos na Loritta"
-    married: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para casar com `{marriedWithTag}` (`{marriedWithId}`)"
+    married: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para casar com {marriedWithUserPreview}"
     marryDailyTax: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em impostos para continuar casado com {user}"
 options:
   user:

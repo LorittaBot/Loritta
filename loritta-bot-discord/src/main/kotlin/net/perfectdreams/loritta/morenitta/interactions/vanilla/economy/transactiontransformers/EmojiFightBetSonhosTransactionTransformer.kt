@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.serializable.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
 
@@ -45,8 +45,12 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.EmojiFightBet.LostTaxed(
                             quantity = transaction.entryPrice,
                             quantityAfterTax = transaction.entryPriceAfterTax,
-                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
-                            winnerId = transaction.winner.value,
+                            winnerUserPreview = convertToUserNameCodeBlockPreviewTag(
+                                transaction.winner.value.toLong(),
+                                winnerUserInfo?.name,
+                                winnerUserInfo?.globalName,
+                                winnerUserInfo?.discriminator,
+                            ),
                             emojiFightEmoji = transaction.emoji
                         )
                     )
@@ -70,8 +74,12 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                     i18nContext.get(
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.EmojiFightBet.Lost(
                             quantity = transaction.entryPrice,
-                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
-                            winnerId = transaction.winner.value,
+                            winnerUserPreview = convertToUserNameCodeBlockPreviewTag(
+                                transaction.winner.value.toLong(),
+                                winnerUserInfo?.name,
+                                winnerUserInfo?.globalName,
+                                winnerUserInfo?.discriminator,
+                            ),
                             emojiFightEmoji = transaction.emoji
                         )
                     )

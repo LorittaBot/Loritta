@@ -440,7 +440,27 @@ fun User.asUserNameCodeBlockPreviewTag(
     stripCodeMarksFromInput: Boolean = true,
     stripLinksFromInput: Boolean = true
 ): String {
-    val globalName = this.globalName
+    return convertToUserNameCodeBlockPreviewTag(
+        this.idLong,
+        this.name,
+        this.globalName,
+        this.discriminator,
+        stripCodeMarksFromInput,
+        stripLinksFromInput
+    )
+}
+
+/**
+ * Converts user information to a fancy markdown inline code block, with their name mention and ID.
+ */
+fun convertToUserNameCodeBlockPreviewTag(
+    userId: Long,
+    name: String?,
+    globalName: String?,
+    discriminator: String?,
+    stripCodeMarksFromInput: Boolean = true,
+    stripLinksFromInput: Boolean = true
+): String {
     var globalPreviewName = globalName
 
     // We only remove code marks and links from global names because usernames cannot have codemarks or links
@@ -452,7 +472,12 @@ fun User.asUserNameCodeBlockPreviewTag(
             globalPreviewName = globalPreviewName.stripLinks()
     }
 
-    val hasPomelo = this.discriminator == "0000"
+    val hasPomelo = discriminator == "0000"
+
+    if (name == null) {
+        // If the name is null, it means that we don't have information about the user, so let's bail out
+        return "??? (??? | `$userId`)"
+    }
 
     // We DO remove if they don't have pomelo tho
     val previewName = globalPreviewName ?: if (hasPomelo) name else name.stripCodeMarks().stripLinks()
@@ -463,7 +488,7 @@ fun User.asUserNameCodeBlockPreviewTag(
         "$previewName#${discriminator}"
     }
 
-    return "${safeInlineCodeBlock(previewName)} (${safeInlineCodeBlock(nameDisplay)} | `$id`)"
+    return "${safeInlineCodeBlock(previewName)} (${safeInlineCodeBlock(nameDisplay)} | `$userId`)"
 }
 
 /**
