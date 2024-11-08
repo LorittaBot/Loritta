@@ -1134,6 +1134,12 @@ object TrinketsStuff {
         createBackground("shadowBikeSkidSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
             addDefaultVariant("shadow-bike-skid-sonic-movie-3", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("mariaRobotnikDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("maria-robotnik-dark-beginnings", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("shadowAndMariaDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+            addDefaultVariant("shadow-and-maria-dark-beginnings", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createProfileDesign(

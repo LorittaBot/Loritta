@@ -1091,3 +1091,9 @@ backgrounds:
   shadowBikeSkidSonicMovie3:
     title: "Shadow"
     description: "Se continuar a ficar freiando assim, a luva dele vai queimar"
+  mariaRobotnikDarkBeginnings:
+    title: "Maria Robotnik"
+    description: "\"Why did you make that choice?\""
+  shadowAndMariaDarkBeginnings:
+    title: "Shadow & Maria"
+    description: "What you do is what defines you"
