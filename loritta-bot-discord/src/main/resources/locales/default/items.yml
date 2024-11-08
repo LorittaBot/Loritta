@@ -18,6 +18,7 @@ sets:
   leagueOfLegends: "League of Legends"
   adventureTime: "Hora de Aventura"
   amongUs: "Among Us"
+  luckyStar: "Lucky Star"
 profileDesigns:
   name: "Design para Perfil"
   defaultDark:
@@ -1118,3 +1119,18 @@ backgrounds:
   crocodileClothingPurple:
     title: "Moda de Crocodilo"
     description: "Essa obra-prima da Labosta que está abençoando os seus olhos foi forjada com as lágrimas de crocodilos mais falsas de exilados da Loritta. Com décadas de expertise, a Labosta conseguiu a fórmula quase perfeita de puro choro, contendo apenas 0,69% de água, permitindo a conjuração da oitava maravilha do mundo. Crocodilos foram machucados durante a criação deste background, mas o resultado é uma verdadeira joia pra você exibir no seu perfil."
+  myDeerFriendNokotanYouDeer:
+    title: "You Deer"
+    description: "Shikanoko Nokonoko Koshitantan"
+  luckyStarChocolateCornet:
+    title: "Corneta de Chocolate"
+    description: "Por qual lado você começa a comer uma corneta de chocolate? Você começa pelo lado fininho, ou pelo lado mais gordinho? Enquanto os especialistas ainda estão quebrando a cabeça com essa questão, descobrimos que uma certa garota de cabelo azul da cidade de Kasukabe gosta de começar pelo lado gordinho."
+  luckyStarGirls:
+    title: "Lucky Star"
+    description: "Motteke! Sailor Fuku"
+  luckyStarClothes:
+    title: "Uniforme Escolar"
+    description: "Com esse simples uniforme escolar de marinheiro, tudo parece mais simples e divertido. E o melhor de tudo, ele é muito fofo!"
+  lorittaHalloweenBoloDeCaco:
+    title: "Noite de Halloween"
+    description: "A Pantufa deu a ideia de irem de monstrinhas clássicas de um desenho aí, mas alguém esqueceu de ler o grupo... Talvez exista algum monstro clássico de pudim no futuro."
