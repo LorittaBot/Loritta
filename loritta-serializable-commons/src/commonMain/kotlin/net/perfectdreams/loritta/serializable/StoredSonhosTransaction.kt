@@ -141,3 +141,6 @@ data class StoredGarticosTransferTransaction(
 data class StoredLorittaItemShopBoughtBackgroundTransaction(
     val internalBackgroundId: String
 ) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredMarriageMarryTransaction(val marriedWithUserId: Long) : StoredSonhosTransaction()

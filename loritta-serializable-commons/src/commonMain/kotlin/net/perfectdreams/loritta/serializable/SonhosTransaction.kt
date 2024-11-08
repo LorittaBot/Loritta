@@ -312,6 +312,16 @@ data class GarticosTransferTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class MarriageMarryTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val marriedWithUserId: Long
+) : SonhosTransaction()
+
+@Serializable
 data class UnknownSonhosTransaction(
     override val id: Long,
     override val transactionType: TransactionType,

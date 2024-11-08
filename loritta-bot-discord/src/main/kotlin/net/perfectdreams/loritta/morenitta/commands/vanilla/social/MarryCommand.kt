@@ -1,17 +1,21 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Marriage
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
-import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
+import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredMarriageMarryTransaction
+import java.time.Instant
 
 class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", listOf("casar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
@@ -207,6 +211,27 @@ class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", list
 						proposeToProfile.takeSonhosAndAddToTransactionLogNested(
 							splitCostAsLong,
 							SonhosPaymentReason.MARRIAGE
+						)
+
+						// Cinnamon transactions log
+						SimpleSonhosTransactionsLogUtils.insert(
+							profile.id.value,
+							Instant.now(),
+							TransactionType.MARRIAGE,
+							splitCostAsLong,
+							StoredMarriageMarryTransaction(
+								proposeToProfile.id.value
+							)
+						)
+
+						SimpleSonhosTransactionsLogUtils.insert(
+							proposeToProfile.id.value,
+							Instant.now(),
+							TransactionType.MARRIAGE,
+							splitCostAsLong,
+							StoredMarriageMarryTransaction(
+								profile.id.value
+							)
 						)
 					}
 

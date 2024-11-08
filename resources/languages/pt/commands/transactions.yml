@@ -125,6 +125,11 @@ types:
     title: "Garticos"
     description: "Transações relacionadas ao GarticBot"
     exchangedFromGarticBot: "Transferiu {garticosQuantity,plural, =0 {# garticos} one {# gartico} other {# garticos}} do GarticBot para {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na Loritta"
+  marriage:
+    title: "Casamento"
+    description: "Transações relacionadas a casamentos na Loritta"
+    married: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para casar com `{marriedWithTag}` (`{marriedWithId}`)"
+    marryDailyTax: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em impostos para continuar casado com {user}"
 options:
   user:
     text: "O usuário que você deseja ver as transações"

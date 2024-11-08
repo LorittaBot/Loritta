@@ -106,5 +106,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.Garticos.Title,
         I18nKeysData.Commands.Command.Transactions.Types.Garticos.Description,
         LorittaEmojis.GarticBot,
+    ),
+    MARRIAGE(
+        I18nKeysData.Commands.Command.Transactions.Types.Marriage.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Marriage.Description,
+        Emotes.MarriageRing.toLorittaEmojiReference(),
     )
 }
