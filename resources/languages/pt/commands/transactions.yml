@@ -74,6 +74,8 @@ types:
     title: "Compra de Pacotes de Sonhos"
     description: "Transações relacionadas a compras de pacotes de sonhos"
     purchasedSonhos: "Comprou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na loja de sonhos da Loritta. Obrigada por apoiar a Loritta! {loriKiss}"
+    chargebackedSelf: "Uma internveção divina removeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} pois o usuário comprou pacotes de sonhos e pediu reembolso do pagamento"
+    chargebackedOther: "Uma intervenção divina removeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} foram retirados pois o usuário recebeu sonhos de outro usuário ({chargebackUserPreview}) que comprou pacotes de sonhos e pediu reembolso do pagamento"
   inactiveDailyTax:
     title: "Imposto de Inatividade no Prêmio Diário"
     description: "Transações relacionadas ao imposto de inatividade no prêmio diário"

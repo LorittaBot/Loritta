@@ -262,6 +262,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
                         // ===[ SONHOS BUNDLES ]===
                         is SonhosBundlePurchaseSonhosTransaction -> SonhosBundlePurchaseSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is ChargebackedSonhosBundleTransaction -> ChargebackedSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ DAILY TAX ]===
                         is DailyTaxSonhosTransaction -> DailyTaxSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)

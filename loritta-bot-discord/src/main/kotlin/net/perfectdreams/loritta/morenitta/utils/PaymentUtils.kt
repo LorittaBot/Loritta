@@ -5,14 +5,18 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.serializable.StoredChargebackedSonhosBundleTransaction
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import java.time.Instant
 
 object PaymentUtils {
     private val logger = KotlinLogging.logger {}
@@ -95,6 +99,15 @@ object PaymentUtils {
                             SonhosPaymentReason.CHARGEBACK,
                             // Maybe the user was spending stuff while we were checking for their sonhos, so let's ignore negative money issues
                             failIfQuantityIsSmallerThanWhatUserHas = false
+                        )
+
+                        // Cinnamon transactions log
+                        SimpleSonhosTransactionsLogUtils.insert(
+                            entry.key,
+                            Instant.now(),
+                            TransactionType.SONHOS_BUNDLE_PURCHASE,
+                            totalQuantity,
+                            StoredChargebackedSonhosBundleTransaction(userId)
                         )
                     }
                 }
