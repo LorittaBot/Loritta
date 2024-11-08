@@ -283,6 +283,28 @@ data class LorittaItemShopBoughtBackgroundTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class LorittaItemShopComissionProfileDesignTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val boughtUserId: Long,
+    val internalProfileDesignId: String
+) : SonhosTransaction()
+
+@Serializable
+data class LorittaItemShopComissionBackgroundTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val boughtUserId: Long,
+    val internalBackgroundId: String
+) : SonhosTransaction()
+
+@Serializable
 data class BomDiaECiaCallCalledTransaction(
     override val id: Long,
     override val transactionType: TransactionType,

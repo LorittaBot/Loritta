@@ -346,6 +346,22 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.sonhos,
                     transaction.internalProfileDesignId
                 )
+                is net.perfectdreams.loritta.serializable.LorittaItemShopComissionBackgroundTransaction -> LorittaItemShopComissionProfileDesignTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.internalBackgroundId
+                )
+                is net.perfectdreams.loritta.serializable.LorittaItemShopComissionProfileDesignTransaction -> LorittaItemShopComissionProfileDesignTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos,
+                    transaction.internalProfileDesignId
+                )
                 is net.perfectdreams.loritta.serializable.BomDiaECiaCallCalledTransaction -> BomDiaECiaCallCalledTransaction(
                     transaction.id,
                     transaction.transactionType,
@@ -697,6 +713,28 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
 
     @Serializable
     data class LorittaItemShopBoughtBackgroundTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val internalBackgroundId: String
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class LorittaItemShopComissionProfileDesignTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long,
+        val internalProfileDesignId: String,
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class LorittaItemShopComissionBackgroundTransaction(
         override val id: Long,
         override val transactionType: TransactionType,
         override val timestamp: kotlinx.datetime.Instant,

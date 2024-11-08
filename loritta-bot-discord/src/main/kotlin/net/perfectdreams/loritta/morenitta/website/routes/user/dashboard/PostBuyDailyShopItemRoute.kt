@@ -22,10 +22,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
-import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
-import net.perfectdreams.loritta.serializable.StoredLorittaItemShopBoughtBackgroundTransaction
-import net.perfectdreams.loritta.serializable.StoredLorittaItemShopBoughtProfileDesignTransaction
+import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.*
@@ -122,6 +119,18 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 							creatorReceived,
 							SonhosPaymentReason.BACKGROUND
 						)
+
+						// Cinnamon transaction system
+						SimpleSonhosTransactionsLogUtils.insert(
+							creator.userId,
+							Instant.now(),
+							TransactionType.LORITTA_ITEM_SHOP,
+							creatorReceived,
+							StoredLorittaItemShopComissionBackgroundTransaction(
+								profile.userId,
+								background[Backgrounds.id].value
+							)
+						)
 					}
 
 					return@newSuspendedTransaction Result.Success
@@ -184,6 +193,18 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 						creator.addSonhosAndAddToTransactionLogNested(
 							creatorReceived,
 							SonhosPaymentReason.PROFILE
+						)
+
+						// Cinnamon transaction system
+						SimpleSonhosTransactionsLogUtils.insert(
+							creator.userId,
+							Instant.now(),
+							TransactionType.LORITTA_ITEM_SHOP,
+							creatorReceived,
+							StoredLorittaItemShopComissionProfileDesignTransaction(
+								profile.userId,
+								background[ProfileDesigns.id].value
+							)
 						)
 					}
 

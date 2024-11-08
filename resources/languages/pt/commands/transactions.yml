@@ -118,6 +118,8 @@ types:
     description: "Transações relacionadas aos itens da Loritta, como backgrounds e designs de perfil"
     boughtBackground: "Comprou um background por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na Loja de Itens da Loritta"
     boughtProfileDesign: "Comprou um design de perfil por {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na Loja de Itens da Loritta"
+    comissionBackground: "Ganhou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de comissão por alguém ter comprado um background na Loja de Itens da Loritta feito por ele"
+    comissionProfileDesign: "Ganhou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de comissão por alguém ter comprado um design de perfil na Loja de Itens da Loritta feito por ele"
   bomDiaECia:
     title: "Bom Dia & Cia"
     description: "Transações relacionadas ao Bom Dia & Cia"

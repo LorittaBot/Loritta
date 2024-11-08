@@ -294,6 +294,8 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         // ===[ LORITTA ITEM SHOP ]===
                         is LorittaItemShopBoughtBackgroundTransaction -> LorittaItemShopBoughtBackgroundSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
                         is LorittaItemShopBoughtProfileDesignTransaction -> LorittaItemShopBoughtProfileDesignSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is LorittaItemShopComissionBackgroundTransaction -> LorittaItemShopComissionBackgroundSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is LorittaItemShopComissionProfileDesignTransaction -> LorittaItemShopComissionProfileDesignSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ BOM DIA & CIA ]===
                         is BomDiaECiaCallCalledTransaction -> BomDiaECiaCallCalledSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)

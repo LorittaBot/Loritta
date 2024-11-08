@@ -126,6 +126,23 @@ data class StoredLorittaItemShopBoughtProfileDesignTransaction(
 ) : StoredSonhosTransaction()
 
 @Serializable
+data class StoredLorittaItemShopBoughtBackgroundTransaction(
+    val internalBackgroundId: String
+) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLorittaItemShopComissionProfileDesignTransaction(
+    val boughtUserId: Long,
+    val internalProfileDesignId: String
+) : StoredSonhosTransaction()
+
+@Serializable
+data class StoredLorittaItemShopComissionBackgroundTransaction(
+    val boughtUserId: Long,
+    val internalBackgroundId: String
+) : StoredSonhosTransaction()
+
+@Serializable
 data object StoredBomDiaECiaCallCalledTransaction : StoredSonhosTransaction()
 
 @Serializable
@@ -135,11 +152,6 @@ data object StoredBomDiaECiaCallWonTransaction : StoredSonhosTransaction()
 data class StoredGarticosTransferTransaction(
     val garticos: Long,
     val transferRate: Double
-) : StoredSonhosTransaction()
-
-@Serializable
-data class StoredLorittaItemShopBoughtBackgroundTransaction(
-    val internalBackgroundId: String
 ) : StoredSonhosTransaction()
 
 @Serializable
