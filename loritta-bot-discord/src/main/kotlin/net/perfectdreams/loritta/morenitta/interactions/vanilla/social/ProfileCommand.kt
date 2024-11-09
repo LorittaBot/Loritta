@@ -623,7 +623,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 RankingGenerator.generateRanking(
                     loritta,
                     page * 5,
-                    "ayaya",
+                    context.i18nContext.get(I18nKeysData.Commands.Command.Profileshoprank.RankTitle),
                     null,
                     users
                 ) {
