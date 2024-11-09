@@ -84,7 +84,8 @@ object TrinketsStuff {
         "adventureTime",
         "amongUs",
         "luckyStar",
-        "sonic"
+        "sonic",
+        "myDeerFriendNokotan"
     )
 
     fun updateTrinkets(pudding: Pudding) {
@@ -1169,7 +1170,7 @@ object TrinketsStuff {
             addDefaultVariant("crocodile-clothing-purple", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "crocodile-clothing-purple-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("myDeerFriendNokotanYouDeer", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+        createBackground("myDeerFriendNokotanYouDeer", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "myDeerFriendNokotan") {
             addDefaultVariant("my-deer-friend-nokotan-you-deer", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("luckyStarChocolateCornet", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "luckyStar") {
@@ -1183,6 +1184,61 @@ object TrinketsStuff {
         }
         createBackground("lorittaHalloweenBoloDeCaco", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("1234564295115935817")) {
             addDefaultVariant("loritta-halloween-bolodecaco", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarKonataDaDaDa", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-konata-da-da-da", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarKonataAndKagami", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-konata-and-kagami", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarKonataThree", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-konata-three", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarLegs", true, Rarity.RARE, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-legs", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarSchoolPhoto", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-school-photo", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarSchoolPhoto2", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-school-photo2", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarCheerleaders", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-cheerleaders", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("smartDachshund", true, Rarity.UNCOMMON, LocalDate.of(2024, 11, 9)) {
+            addDefaultVariant("smart-dachshund", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("myDeerFriendNokotanNokotanDoor", true, Rarity.RARE, LocalDate.of(2024, 11, 9), set = "myDeerFriendNokotan") {
+            addDefaultVariant("my-deer-friend-nokotan-nokotan-door", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("myDeerFriendNokotanNokotanBallet", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "myDeerFriendNokotan") {
+            addDefaultVariant("my-deer-friend-nokotan-nokotan-ballet", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("myDeerFriendNokotanKoshitanHi", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "myDeerFriendNokotan") {
+            addDefaultVariant("my-deer-friend-nokotan-koshitan-hi", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("myDeerFriendNokotanNokotanSerious", true, Rarity.RARE, LocalDate.of(2024, 11, 9), set = "myDeerFriendNokotan") {
+            addDefaultVariant("my-deer-friend-nokotan-nokotan-serious", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("myDeerFriendNokotanKoshitanDeerFight", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "myDeerFriendNokotan") {
+            addDefaultVariant("my-deer-friend-nokotan-koshitan-deer-fight", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("myDeerFriendNokotanMiyajimaOtorii", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "myDeerFriendNokotan") {
+            addDefaultVariant("my-deer-friend-nokotan-miyajima-otorii", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("darkBeginningsShadowAndMariaFear", true, Rarity.RARE, LocalDate.of(2024, 11, 9), set = "sonic") {
+            addDefaultVariant("dark-beginnings-shadow-and-maria-fear", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarKonataBunnyEars", true, Rarity.RARE, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-konata-bunny-ears", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarRain", true, Rarity.EPIC, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-rain", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("luckyStarMoeRaincoat", true, Rarity.UNCOMMON, LocalDate.of(2024, 11, 9), set = "luckyStar") {
+            addDefaultVariant("lucky-star-moe-raincoat", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "lucky-star-moe-raincoat-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 

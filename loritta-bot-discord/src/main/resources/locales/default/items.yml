@@ -19,6 +19,7 @@ sets:
   adventureTime: "Hora de Aventura"
   amongUs: "Among Us"
   luckyStar: "Lucky Star"
+  myDeerFriendNokotan: "My Deer Friend Nokotan"
 profileDesigns:
   name: "Design para Perfil"
   defaultDark:
@@ -1097,7 +1098,7 @@ backgrounds:
     description: "\"Why did you make that choice?\""
   shadowAndMariaDarkBeginnings:
     title: "Shadow & Maria"
-    description: "What you do is what defines you"
+    description: "Suas ações é o que te definem, e não a sua origem."
   lorittaHalloweenYafyr:
     title: "Pantufa Drácula"
     description: "Rawr!!"
@@ -1121,7 +1122,7 @@ backgrounds:
     description: "Essa obra-prima da Labosta que está abençoando os seus olhos foi forjada com as lágrimas de crocodilos mais falsas de exilados da Loritta. Com décadas de expertise, a Labosta conseguiu a fórmula quase perfeita de puro choro, contendo apenas 0,69% de água, permitindo a conjuração da oitava maravilha do mundo. Crocodilos foram machucados durante a criação deste background, mas o resultado é uma verdadeira joia pra você exibir no seu perfil."
   myDeerFriendNokotanYouDeer:
     title: "You Deer"
-    description: "Shikanoko Nokonoko Koshitantan"
+    description: "Lutar contra um cervo é difícil."
   luckyStarChocolateCornet:
     title: "Corneta de Chocolate"
     description: "Por qual lado você começa a comer uma corneta de chocolate? Você começa pelo lado fininho, ou pelo lado mais gordinho? Enquanto os especialistas ainda estão quebrando a cabeça com essa questão, descobrimos que uma certa garota de cabelo azul da cidade de Kasukabe gosta de começar pelo lado gordinho."
@@ -1134,3 +1135,57 @@ backgrounds:
   lorittaHalloweenBoloDeCaco:
     title: "Noite de Halloween"
     description: "A Pantufa deu a ideia de irem de monstrinhas clássicas de um desenho aí, mas alguém esqueceu de ler o grupo... Talvez exista algum monstro clássico de pudim no futuro."
+  luckyStarKonataDaDaDa:
+    title: "Konata Izumi"
+    description: "Importunando a tudo e todos."
+  luckyStarKonataAndKagami:
+    title: "Konata & Kagami"
+    description: "Talvez eu goste de você... calma, espera... introvertida, miss praça de alimentação... Hey, dá para parar com isso?!"
+  luckyStarKonataThree:
+    title: "Konata Izumi"
+    description: "Enquanto você está na escola, uma das suas maiores preocupações é descobrir se dá para burlar a regra da saia do uniforme escolar precisar ser 3 centímetros."
+  luckyStarLegs:
+    title: "Conversas Filosóficas"
+    description: "Sério, eu realmente não entendo o que todo mundo vê de tão incrível na nova guria, amam ela como ela fosse a última bolacha do pacote... Será que as outras pessoas estão loucas? Ela só é uma aluna igual qualquer outra!"
+  luckyStarSchoolPhoto:
+    title: "Foto Escolar"
+    description: "Xís!"
+  luckyStarSchoolPhoto2:
+    title: "Foto Escolar"
+    description: "Xís!"
+  luckyStarCheerleaders:
+    title: "Líderes de Torcida"
+    description: "O quarteto sortudo de líderes de torcidas que adoram pompons."
+  smartDachshund:
+    title: "Dachshund Esperto"
+    description: "Diferente dos dachshunds comuns que você encontra por aí, esse foi além: ele fez um MBA em Harvard. O curso? Especialização em como pegar bolinhas."
+  myDeerFriendNokotanNokotanDoor:
+    title: "O Andar de um Cervo"
+    description: "Você se prendeu de novo? Acorda pra vida!"
+  myDeerFriendNokotanNokotanBallet:
+    title: "Dança de Cervos"
+    description: "Nokotan mostrando ao mundo a majestosidade de ser um cervo... Ou será que é uma cerva? Eu pensava que só cervos machos tinham chifres!"
+  myDeerFriendNokotanKoshitanHi:
+    title: "Pureza no Coração"
+    description: "Seus uniformes brancos refletem a pureza de seus corações. Afinal, você acha que uma garota dessas seria uma delinquente?"
+  myDeerFriendNokotanNokotanSerious:
+    title: "Clima Tenso"
+    description: "Disseram que só porque algo foi desenhado em um estilo mais realista, não significa que é uma JoJo's Bizarre Adventure... mas eu prefiro acreditar que seja."
+  myDeerFriendNokotanKoshitanDeerFight:
+    title: "Koshitan vs Cervo"
+    description: "Parece que alguém não captou a notícia que cervos são sagrados e que não devemos machucar eles."
+  myDeerFriendNokotanMiyajimaOtorii:
+    title: "Miyajima Otorii"
+    description: "Nokotan e um cervo posando na frente do grande Torii do Santuário de Itsukushima. Algo legal da ilha de Itsukushima é que cervos podem circular livremente nela!"
+  darkBeginningsShadowAndMariaFear:
+    title: "Shadow & Maria"
+    description: "Alerta! Alerta! Ruptura na blindagem da ala de armas experimentais! Vários cobaias fugiram da contenção!"
+  luckyStarKonataBunnyEars:
+    title: "Orelhas de Coelho"
+    description: "Para mim você é uma coelinha, já que você sempre está sozinha e tals."
+  luckyStarRain:
+    title: "Na Chuva"
+    description: "Sempre tive curiosidade de saber o do por que garotos não se preocupam em se molharem na chuva... Pensando bem, eu acho que eu não quero saber a resposta..."
+  luckyStarMoeRaincoat:
+    title: "Capa de Chuva"
+    description: "Vocês já tiveram a sensação que quando você usa capa de chuva, você fica parecendo um palerma? Engraçado que, em animes e tals, os personagens ficam cheios de vibe moe usando capas de chuva..."
