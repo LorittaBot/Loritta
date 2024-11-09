@@ -8,7 +8,7 @@ xpNeededForTheNextLevel: "XP necessário para o próximo nível ({nextLevel,numb
 nextReward: "Próxima Recompensa"
 getXPToEarnRoles: "Ganhe +{xpCount,number} XP para ganhar {roleMentions}!"
 bonusXPForRoles: "Bônus de XP do Cargo"
-becauseYouHaveRole: "Como você tem {roleMention}, você tem um XP boost de {xpBoostPercentage, number,#.##%}!"
+becauseYouHaveRole: "Como você tem {roleMention}, você ganha {xpBoostRate, number}x mais XP que outras pessoas!"
 loriTipsAndTricks: "Dicas e Manhas de Loritta Morenitta"
 keepTalkingToEarnXp: "Continue conversando para passar de nível. Eu sei que você vai conseguir!"
 xp: "{xp,number} XP"
