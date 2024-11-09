@@ -163,7 +163,6 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
 
                     if (activeRoleRate != null) {
-                        // We do "Rate - 1.0" because, if we have a Rate of 1.1x, then it means that the user has a 10% XP boost, not a 110% XP boost.
                         field("${Emotes.LoriHappy} ${context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.BonusXPForRoles)}", context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.BecauseYouHaveRole("<@&${activeRoleRate[ExperienceRoleRates.role]}>", activeRoleRate[ExperienceRoleRates.rate])), true)
                     }
 
