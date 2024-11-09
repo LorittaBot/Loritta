@@ -83,7 +83,8 @@ object TrinketsStuff {
         "leagueOfLegends",
         "adventureTime",
         "amongUs",
-        "luckyStar"
+        "luckyStar",
+        "sonic"
     )
 
     fun updateTrinkets(pudding: Pudding) {
@@ -630,19 +631,19 @@ object TrinketsStuff {
         createBackground("loboGuara", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("lobo-guara", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1400))
         }
-        createBackground("titanicMonarch", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
+        createBackground("titanicMonarch", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sonic") {
             addDefaultVariant("titanic-monarch", ContentType.Image.PNG)
         }
-        createBackground("emeraldHill", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
+        createBackground("emeraldHill", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "sonic") {
             addDefaultVariant("emerald-hill", ContentType.Image.PNG, Rectangle(250, 0, 1424, 1080))
         }
         createBackground("starAngryPigeon", true, Rarity.UNCOMMON, LocalDate.of(2020, 7, 24), createdBy = listOf("469709885710270484")) {
             addDefaultVariant("star-angry-pigeon", ContentType.Image.PNG)
         }
-        createBackground("chemicalPlant", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
+        createBackground("chemicalPlant", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sonic") {
             addDefaultVariant("chemical-plant", ContentType.Image.PNG, Rectangle(0, 0, 1440, 1080))
         }
-        createBackground("stardustSpeedwayAct2", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
+        createBackground("stardustSpeedwayAct2", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sonic") {
             addDefaultVariant("stardust-speedway-act2", ContentType.Image.PNG)
         }
         createBackground("ultimateStonks", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1)) {
@@ -986,7 +987,7 @@ object TrinketsStuff {
         createBackground("redditRplace2", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
             addDefaultVariant("reddit-rplace-2", ContentType.Image.PNG)
         }
-        createBackground("sonicMovie2Poster", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
+        createBackground("sonicMovie2Poster", true, Rarity.EPIC, LocalDate.of(2021, 12, 8), set = "sonic") {
             addDefaultVariant("sonic-movie-2-poster", ContentType.Image.PNG)
         }
         createBackground("ehMoleAnime", true, Rarity.EPIC, LocalDate.of(2022, 12, 19)) {
@@ -1129,16 +1130,16 @@ object TrinketsStuff {
         createBackground("lorittaHalloweenBibbosz", true, Rarity.RARE, LocalDate.of(2024, 11, 7), createdBy = listOf("aressz")) {
             addDefaultVariant("loritta-halloween-bibbosz", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("sonicVsShadowSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+        createBackground("sonicVsShadowSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "sonic") {
             addDefaultVariant("sonic-vs-shadow-sonic-movie-3", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("shadowBikeSkidSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+        createBackground("shadowBikeSkidSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "sonic") {
             addDefaultVariant("shadow-bike-skid-sonic-movie-3", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("mariaRobotnikDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+        createBackground("mariaRobotnikDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "sonic") {
             addDefaultVariant("maria-robotnik-dark-beginnings", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("shadowAndMariaDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
+        createBackground("shadowAndMariaDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "sonic") {
             addDefaultVariant("shadow-and-maria-dark-beginnings", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("lorittaHalloweenYafyr", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("yafyr")) {
