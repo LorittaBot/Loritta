@@ -23,35 +23,18 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.p
 import kotlinx.html.style
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.common.utils.Rarity
-import net.perfectdreams.loritta.serializable.Background
-import net.perfectdreams.loritta.serializable.BackgroundStorageType
-import net.perfectdreams.loritta.serializable.BackgroundWithVariations
-import net.perfectdreams.loritta.serializable.DefaultBackgroundVariation
-import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.FanArtArtist
-import net.perfectdreams.spicymorenitta.utils.LockerUtils
-import net.perfectdreams.spicymorenitta.utils.SaveUtils
-import net.perfectdreams.spicymorenitta.utils.awaitLoad
-import net.perfectdreams.spicymorenitta.utils.loriUrl
-import net.perfectdreams.spicymorenitta.utils.onClick
-import net.perfectdreams.spicymorenitta.utils.page
-import net.perfectdreams.spicymorenitta.utils.select
+import net.perfectdreams.spicymorenitta.utils.*
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
-import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLButtonElement
-import org.w3c.dom.HTMLCanvasElement
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.Image
+import org.w3c.dom.*
 import org.w3c.files.FileReader
 import kotlin.js.Date
 
@@ -107,21 +90,6 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             val settingsWrapper = result.settings ?: throw IllegalArgumentException("Settings Wrapper is not present! Bug?")
             val donationsWrapper = result.donations ?: throw IllegalArgumentException("Donations Wrapper is not present! Bug?")
             val profileWrapper = profileWrapperJob.await()
-
-            val fanArtArtistsJob = m.async {
-                val allArtists = backgroundsWrapper.backgrounds.flatMap { it.background.createdBy }.distinct()
-
-                if (allArtists.isEmpty())
-                    return@async listOf<FanArtArtist>()
-
-                val payload = http.get {
-                    url("${window.location.origin}/api/v1/loritta/fan-arts?query=all&filter=${allArtists.joinToString(",")}")
-                }.bodyAsText()
-
-                JSON.nonstrict.decodeFromString(ListSerializer(FanArtArtist.serializer()), payload)
-            }
-
-            val fanArtArtists = fanArtArtistsJob.await()
 
             val entriesDiv = document.select<HTMLDivElement>("#bundles-content")
 
@@ -325,12 +293,12 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                         val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, backgroundsWrapper.dreamStorageServiceUrl, backgroundsWrapper.dreamStorageServiceNamespace, backgroundsWrapper.etherealGambiUrl, backgroundVariation, canvasPreview)
 
                         canvasPreview.parentElement!!.parentElement!!.onClick {
-                            updateActiveBackground(profileWrapper, background, backgroundVariation, image, fanArtArtists)
+                            updateActiveBackground(profileWrapper, background, backgroundVariation, image, listOf())
                         }
 
                         if (background.id == (settingsWrapper.activeBackground ?: "defaultBlue")) {
                             enabledBackground = background
-                            updateActiveBackground(profileWrapper, background, backgroundVariation, image, fanArtArtists)
+                            updateActiveBackground(profileWrapper, background, backgroundVariation, image, listOf())
                         }
                     }
                 }
