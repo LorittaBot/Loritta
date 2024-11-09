@@ -254,25 +254,39 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             val discordEmoji = Emoji.fromFormatted(emojiInput) as? CustomEmoji
 
-            val newEmoji = if (discordEmoji != null) {
-                discordEmoji.asMention
-            } else {
-                if (emojiInput.isValidSnowflake())
-                    context.jda.getEmojiById(emojiInput) ?: context.fail(true) {
-                        styled(
-                            "Não encontrei nenhum emoji com o ID `$emojiInput`...",
-                        )
-                    }
+            fun getEmojiContextAsMention(): String {
+                if (discordEmoji != null) {
+                    return discordEmoji.asMention
+                } else {
+                    val match = loritta.unicodeEmojiManager.regex.find(emojiInput)
 
-                val match = loritta.unicodeEmojiManager.regex.find(emojiInput)
-                    ?: context.fail(true) {
-                        styled(
-                            "Não encontrei nenhum emoji na sua mensagem..."
-                        )
-                    }
+                    if (match != null) {
+                        return match.value
+                    } else {
+                        if (!emojiInput.isValidSnowflake()) {
+                            context.fail(true) {
+                                styled(
+                                    "Não encontrei nenhum emoji na sua mensagem..."
+                                )
+                            }
+                        }
 
-                match.value
+                        val emojiById = context.jda.getEmojiById(emojiInput)
+
+                        if (emojiById == null) {
+                            context.fail(true) {
+                                styled(
+                                    "Não encontrei nenhum emoji com o ID `$emojiInput`... Se você realmente sabe que o emoji existe, tente usar o comando no servidor onde o emoji está!",
+                                )
+                            }
+                        }
+
+                        return emojiById.asMention
+                    }
+                }
             }
+
+            val newEmoji = getEmojiContextAsMention()
 
             loritta.newSuspendedTransaction {
                 loritta.getOrCreateLorittaProfile(context.user.idLong)
