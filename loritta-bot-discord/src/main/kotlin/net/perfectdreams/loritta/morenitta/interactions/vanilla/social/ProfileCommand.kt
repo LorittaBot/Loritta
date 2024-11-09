@@ -184,7 +184,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             executor = ProfileBadgesExecutor()
         }
 
-        subcommand(PROFILE_SHOP_RANK_I18N_PREFIX.Label, PROFILE_BADGES_I18N_PREFIX.Description, UUID.fromString("e8ab00e5-ad4c-42b2-b72d-921d5674bb0e")) {
+        subcommand(PROFILE_SHOP_RANK_I18N_PREFIX.Label, PROFILE_SHOP_RANK_I18N_PREFIX.Description, UUID.fromString("e8ab00e5-ad4c-42b2-b72d-921d5674bb0e")) {
             executor = ShopRankExecutor(loritta)
         }
     }
