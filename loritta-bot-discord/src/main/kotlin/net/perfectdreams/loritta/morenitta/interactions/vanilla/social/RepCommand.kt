@@ -22,6 +22,9 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.Au
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
+import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
+import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.perfectdreams.loritta.serializable.Reputation
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -187,8 +190,19 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     else
                         append("${user.name}#${user.discriminator}: ")
 
-                    append(reputation.content?.shortenAndStripCodeBackticks(50))
-                }
+                    val reputationContent = reputation.content
+                    if (reputationContent != null) {
+                        append(
+                            reputationContent.stripCodeMarks()
+                                // Strip new lines and replace them with " "
+                                .stripLinks()
+                                .replace(Regex("[\\r\\n]"), " ")
+                                .substringIfNeeded(0..250)
+                        )
+                    } else {
+                        append("*vazio*")
+                    }
+                }.shortenAndStripCodeBackticks(DiscordResourceLimits.Command.Options.Description.Length)
             }
         }
 
