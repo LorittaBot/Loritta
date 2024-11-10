@@ -85,7 +85,8 @@ object TrinketsStuff {
         "amongUs",
         "luckyStar",
         "sonic",
-        "myDeerFriendNokotan"
+        "myDeerFriendNokotan",
+        "lorittaHalloween2024"
     )
 
     fun updateTrinkets(pudding: Pudding) {
@@ -1119,16 +1120,16 @@ object TrinketsStuff {
             addDefaultVariant("loritta-hey-hey-my-my-yo-yo", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-hey-hey-my-my-yo-yo-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaHalloweenBecheshire", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("begames")) {
+        createBackground("lorittaHalloweenBecheshire", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("begames"), set = "lorittaHalloween2024") {
             addDefaultVariant("loritta-halloween-becheshire", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaHalloweenMonsterHighPandastica", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("597259977803169835")) {
+        createBackground("lorittaHalloweenMonsterHighPandastica", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("597259977803169835"), set = "lorittaHalloween2024") {
             addDefaultVariant("loritta-halloween-monster-high-pandastica", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaHalloweenQualquerCoisa", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("kouhay")) {
+        createBackground("lorittaHalloweenQualquerCoisa", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("kouhay"), set = "lorittaHalloween2024") {
             addDefaultVariant("loritta-halloween-qualquercoisa", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaHalloweenBibbosz", true, Rarity.RARE, LocalDate.of(2024, 11, 7), createdBy = listOf("1013252734381735936")) {
+        createBackground("lorittaHalloweenBibbosz", true, Rarity.RARE, LocalDate.of(2024, 11, 7), createdBy = listOf("1013252734381735936"), set = "lorittaHalloween2024") {
             addDefaultVariant("loritta-halloween-bibbosz", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("sonicVsShadowSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "sonic") {
@@ -1143,7 +1144,7 @@ object TrinketsStuff {
         createBackground("shadowAndMariaDarkBeginnings", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "sonic") {
             addDefaultVariant("shadow-and-maria-dark-beginnings", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaHalloweenYafyr", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("yafyr")) {
+        createBackground("lorittaHalloweenYafyr", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("yafyr"), set = "lorittaHalloween2024") {
             addDefaultVariant("loritta-halloween-yafyr", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("crocodileClothingBlue", true, Rarity.EPIC, LocalDate.of(2024, 11, 7)) {
