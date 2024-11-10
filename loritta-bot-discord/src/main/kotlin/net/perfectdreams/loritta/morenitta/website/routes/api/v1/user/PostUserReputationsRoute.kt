@@ -6,44 +6,33 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.dao.Reputation
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
-import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
-import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.MiscUtils
-import net.perfectdreams.loritta.morenitta.utils.chance
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
-import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
-import net.perfectdreams.loritta.morenitta.website.LoriWebCode
-import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.dao.Reputation
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
 import net.perfectdreams.loritta.morenitta.utils.locale.getPersonalPronoun
+import net.perfectdreams.loritta.morenitta.website.LoriWebCode
+import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
@@ -181,6 +170,13 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 						LoriWebCode.COOLDOWN
 					)
 				)
+
+			val reputationsEnabled = loritta.transaction {
+				Profile.findById(receiver.toLong())?.settings?.reputationsEnabled ?: true
+			}
+
+			if (!reputationsEnabled)
+				throw WebsiteAPIException(HttpStatusCode.Forbidden, WebsiteUtils.createErrorPayload(loritta, LoriWebCode.FORBIDDEN))
 
 			val userIdentification = discordAuth.getUserIdentification()
 			val status = MiscUtils.verifyAccount(loritta, userIdentification, ip)

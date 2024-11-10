@@ -274,7 +274,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(AfkCommand())
         register(GenderCommand())
         register(ProfileCommand(loritta))
-        register(RepCommand())
+        register(RepCommand(loritta))
         register(XpCommand(loritta))
         register(AchievementsCommand(loritta))
 

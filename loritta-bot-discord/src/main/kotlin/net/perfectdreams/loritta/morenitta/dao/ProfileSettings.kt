@@ -19,4 +19,5 @@ class ProfileSettings(id: EntityID<Long>) : LongEntity(id) {
 	var language by UserSettings.language
 	var emojiFightEmoji by UserSettings.emojiFightEmoji
 	var activeBadge by UserSettings.activeBadge
+	var reputationsEnabled by UserSettings.reputationsEnabled
 }

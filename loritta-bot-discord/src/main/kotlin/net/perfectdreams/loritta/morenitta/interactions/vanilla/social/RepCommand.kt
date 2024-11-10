@@ -11,6 +11,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
@@ -21,20 +23,30 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import java.util.*
 
-class RepCommand : SlashCommandDeclarationWrapper {
-    private val I18N_PREFIX = I18nKeysData.Commands.Command.Rep
+class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Rep
+    }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("912b9e16-bb52-47eb-afba-87ffabe9b6c9")) {
         subcommand(I18N_PREFIX.Give.Label, I18N_PREFIX.Give.Description, UUID.fromString("fb361757-9bf8-443c-83bb-733f24f482ae")) {
-            executor = GiveRepExecutor()
+            executor = GiveRepExecutor(loritta)
         }
 
         subcommand(I18N_PREFIX.Delete.Label, I18N_PREFIX.Delete.Description, UUID.fromString("76c36a28-7eb1-4dac-86df-36b4da6cf13c")) {
             executor = DeleteRepExecutor()
         }
+
+        subcommand(I18N_PREFIX.On.Label, I18N_PREFIX.On.Description, UUID.fromString("eaf66820-f596-4bda-9d98-589d9b20abee")) {
+            executor = RepOnExecutor(loritta)
+        }
+
+        subcommand(I18N_PREFIX.Off.Label, I18N_PREFIX.Off.Description, UUID.fromString("8ba3c346-7c58-447b-ad69-69ed9e80042e")) {
+            executor = RepOffExecutor(loritta)
+        }
     }
 
-    inner class GiveRepExecutor : LorittaSlashCommandExecutor() {
+    class GiveRepExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
             val user = user("user", I18N_PREFIX.Give.Options.User.Description)
         }
@@ -84,6 +96,20 @@ class RepCommand : SlashCommandDeclarationWrapper {
                         )
                     }
                 }
+            }
+
+            val reputationsEnabled = loritta.transaction {
+                Profile.findById(user.idLong)?.settings?.reputationsEnabled ?: true
+            }
+
+            if (!reputationsEnabled) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Give.UserHasDisabledReputations(user.asMention)),
+                        Constants.ERROR
+                    )
+                }
+                return
             }
 
             var url = "${context.loritta.config.loritta.website.url}user/${user.id}/rep"
@@ -163,6 +189,38 @@ class RepCommand : SlashCommandDeclarationWrapper {
                 this.styled(
                     context.i18nContext.get(I18N_PREFIX.Delete.SuccessfullyDeleted),
                     Emotes.LoriHappy
+                )
+            }
+        }
+    }
+
+    class RepOnExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(true)
+
+            loritta.transaction {
+                context.lorittaUser.profile.settings.reputationsEnabled = true
+            }
+
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.On.ReputationsEnabled)
+                )
+            }
+        }
+    }
+
+    class RepOffExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(true)
+
+            loritta.transaction {
+                context.lorittaUser.profile.settings.reputationsEnabled = false
+            }
+
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.Off.ReputationsDisabled)
                 )
             }
         }

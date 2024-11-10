@@ -16,4 +16,5 @@ object UserSettings : LongIdTable() {
     val emojiFightEmoji = text("emoji_fight_emoji").nullable()
     val activeBadge = uuid("active_badge").nullable()
     val badgesSettings = jsonb("badges_settings").nullable()
+    val reputationsEnabled = bool("reputations_enabled").default(true)
 }

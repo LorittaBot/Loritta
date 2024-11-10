@@ -7,6 +7,7 @@ give:
   repSelf: "Você não pode dar reputação para si mesmo, bobinho!"
   wait: "Você pode dar uma nova reputação **{time}**!"
   reputationLink: "Quase pronto! Para dar a reputação, confirme ela em {repLink}"
+  userHasDisabledReputations: "Você não pode dar uma reputação para {mention} pois ele desativou o recebimento de novas reputações."
 
   options:
     user:
@@ -21,3 +22,13 @@ delete:
   options:
     rep:
       description: "A reputação que você deseja deletar, digite para filtrar"
+
+'on':
+  label: "ligar"
+  description: "Ativa o sistema de reputações para você poder receber reputações de outras pessoas"
+  reputationsEnabled: "Você ativou as suas reputações! Agora usuários podem te enviar reputações novamente."
+
+'off':
+  label: "desligar"
+  description: "Desliga o sistema de reputações para você não poder receber reputações de outras pessoas"
+  reputationsDisabled: "Você desativou as suas reputações! Usuários não podem mais te enviar novas reputações, mas as suas reputações atuais ainda continuarão."

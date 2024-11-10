@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
 import net.dv8tion.jda.api.utils.TimeFormat
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Reputation
@@ -16,6 +17,8 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.RepCommand.Companion.I18N_PREFIX
 
 class RepCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rep", listOf("reputation", "reputação", "reputacao"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.reputation.description")
@@ -68,6 +71,20 @@ class RepCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rep", listOf("
 								locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
 								Constants.ERROR
 						)
+				)
+				return
+			}
+
+			val reputationsEnabled = loritta.transaction {
+				Profile.findById(user.idLong)?.settings?.reputationsEnabled ?: true
+			}
+
+			if (!reputationsEnabled) {
+				context.reply(
+					LorittaReply(
+						context.i18nContext.get(I18N_PREFIX.Give.UserHasDisabledReputations(user.asMention)),
+						Constants.ERROR
+					)
 				)
 				return
 			}
