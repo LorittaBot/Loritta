@@ -220,7 +220,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             title = buildString {
                 if (isSelf)
                     append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.YourTransactions))
-                else append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UserTransactions("${cachedUserInfo.name.stripCodeBackticks()}#${cachedUserInfo.discriminator}")))
+                else append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UserTransactions(cachedUserInfo.name.stripCodeBackticks())))
 
                 append(" — ")
 
