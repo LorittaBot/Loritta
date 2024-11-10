@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -21,6 +22,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.Au
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.serializable.Reputation
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -34,7 +39,7 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
 
         subcommand(I18N_PREFIX.Delete.Label, I18N_PREFIX.Delete.Description, UUID.fromString("76c36a28-7eb1-4dac-86df-36b4da6cf13c")) {
-            executor = DeleteRepExecutor()
+            executor = DeleteRepExecutor(loritta)
         }
 
         subcommand(I18N_PREFIX.On.Label, I18N_PREFIX.On.Description, UUID.fromString("eaf66820-f596-4bda-9d98-589d9b20abee")) {
@@ -128,17 +133,35 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
     }
 
-    inner class DeleteRepExecutor : LorittaSlashCommandExecutor() {
+    class DeleteRepExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor() {
         inner class Options : ApplicationCommandOptions() {
             val rep = string("rep", I18N_PREFIX.Delete.Options.Rep.Description) {
                 autocomplete { context ->
-                    val reputations = context.loritta.pudding.reputations.getReceivedReputationsByUser(
-                        context.event.user.id.toLong()
-                    )
+                    val reputations = loritta.transaction {
+                        Reputations.selectAll()
+                            .where {
+                                Reputations.receivedById eq context.event.user.idLong and (Reputations.content.like("%${context.event.focusedOption.value.replace("%", "")}%"))
+                            }
+                            .orderBy(Reputations.receivedAt, SortOrder.DESC)
+                            .map {
+                                // TODO: This is from Pudding's Service class, we moved it here because it is a extension method there, can't we refactor this?
+                                PuddingReputation(
+                                    loritta.pudding,
+                                    Reputation(
+                                        it[Reputations.id].value,
+                                        it[Reputations.givenById],
+                                        it[Reputations.givenByIp],
+                                        it[Reputations.givenByEmail],
+                                        it[Reputations.receivedById],
+                                        it[Reputations.receivedAt],
+                                        it[Reputations.content],
+                                    )
+                                )
+                            }
+                    }
 
-                    return@autocomplete reputations.sortedByDescending { it.receivedAt }
+                    return@autocomplete reputations
                         .associate { formatReputation(it, context) to it.id.toString() }
-                        .filterKeys { it.contains(context.event.interaction.focusedOption.value, true) }
                         .entries
                         .take(DiscordResourceLimits.Command.Options.ChoicesCount)
                         .associate { it.key to it.value }
