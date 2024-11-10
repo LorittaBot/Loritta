@@ -143,6 +143,7 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 Reputations.receivedById eq context.event.user.idLong and (Reputations.content.like("%${context.event.focusedOption.value.replace("%", "")}%"))
                             }
                             .orderBy(Reputations.receivedAt, SortOrder.DESC)
+                            .limit(DiscordResourceLimits.Command.Options.ChoicesCount)
                             .map {
                                 // TODO: This is from Pudding's Service class, we moved it here because it is a extension method there, can't we refactor this?
                                 PuddingReputation(
@@ -163,7 +164,6 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     return@autocomplete reputations
                         .associate { formatReputation(it, context) to it.id.toString() }
                         .entries
-                        .take(DiscordResourceLimits.Command.Options.ChoicesCount)
                         .associate { it.key to it.value }
                 }
             }
