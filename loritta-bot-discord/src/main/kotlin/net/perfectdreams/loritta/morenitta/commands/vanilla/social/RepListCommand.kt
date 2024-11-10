@@ -1,21 +1,21 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.doReactions
 import net.perfectdreams.loritta.morenitta.utils.extensions.edit
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.common.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
+import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
@@ -163,6 +163,7 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
                     val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
                     val content = reputation[Reputations.content]?.stripCodeMarks()
                         // Strip new lines and replace them with " "
+                        ?.stripLinks()
                         ?.replace(Regex("[\\r\\n]"), " ")
                         ?.substringIfNeeded(0..250)
 
