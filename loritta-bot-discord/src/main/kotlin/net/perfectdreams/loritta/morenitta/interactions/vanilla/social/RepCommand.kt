@@ -188,7 +188,7 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     if (user == null)
                         append("Unknown: ")
                     else
-                        append("${user.name}#${user.discriminator}: ")
+                        append("${user.name}: ")
 
                     val reputationContent = reputation.content
                     if (reputationContent != null) {
