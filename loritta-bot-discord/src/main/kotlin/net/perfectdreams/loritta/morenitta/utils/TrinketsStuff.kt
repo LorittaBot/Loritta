@@ -1128,7 +1128,7 @@ object TrinketsStuff {
         createBackground("lorittaHalloweenQualquerCoisa", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), createdBy = listOf("kouhay")) {
             addDefaultVariant("loritta-halloween-qualquercoisa", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaHalloweenBibbosz", true, Rarity.RARE, LocalDate.of(2024, 11, 7), createdBy = listOf("aressz")) {
+        createBackground("lorittaHalloweenBibbosz", true, Rarity.RARE, LocalDate.of(2024, 11, 7), createdBy = listOf("1013252734381735936")) {
             addDefaultVariant("loritta-halloween-bibbosz", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
         createBackground("sonicVsShadowSonicMovie3", true, Rarity.EPIC, LocalDate.of(2024, 11, 7), set = "sonic") {
