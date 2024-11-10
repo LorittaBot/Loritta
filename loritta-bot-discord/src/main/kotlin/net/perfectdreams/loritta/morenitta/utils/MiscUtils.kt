@@ -4,21 +4,20 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.website.LoriWebCode
-import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.website.LoriWebCode
+import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
 import java.io.File
 import java.net.InetAddress
-import java.util.concurrent.TimeUnit
 
 object MiscUtils {
 	private val logger = KotlinLogging.logger {}
@@ -46,15 +45,12 @@ object MiscUtils {
 	 */
 	fun stripLinks(string: String): String {
 		var output = string
-		val matcher = Constants.URL_PATTERN.matcher(
-				string.replace("\u200B", "")
-						.replace("\\", "")
-		)
 
-		while (matcher.find()) {
-			val url = matcher.group()
-			output = string.replace(url, "")
-		}
+		output = output
+			.replace("\u200B", "")
+			.replace("\\", "")
+			.replace(Constants.URL_WITH_OPTIONAL_HTTP_PATTERN.toRegex(), "")
+
 		return output
 	}
 
