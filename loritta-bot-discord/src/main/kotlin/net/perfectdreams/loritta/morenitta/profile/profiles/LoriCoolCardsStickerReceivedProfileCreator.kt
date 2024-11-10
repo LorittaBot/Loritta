@@ -22,17 +22,28 @@ import java.awt.image.BufferedImage
 import java.net.URL
 import javax.imageio.ImageIO
 
-open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, internalName: String, val rarity: CardRarity) : RawProfileCreator(loritta, internalName) {
+open class LoriCoolCardsStickerReceivedProfileCreator(
+	loritta: LorittaBot,
+	internalName: String,
+	val rarity: CardRarity,
+	val useLorittaBackground: Boolean
+) : RawProfileCreator(loritta, internalName) {
 	companion object {
 		private const val PADDING = 8
 	}
 
-	class LoriCoolCardsStickerReceivedCommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedCommon", CardRarity.COMMON)
-	class LoriCoolCardsStickerReceivedUncommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedUncommon", CardRarity.UNCOMMON)
-	class LoriCoolCardsStickerReceivedRareProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedRare", CardRarity.RARE)
-	class LoriCoolCardsStickerReceivedEpicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedEpic", CardRarity.EPIC)
-	class LoriCoolCardsStickerReceivedLegendaryProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedLegendary", CardRarity.LEGENDARY)
-	class LoriCoolCardsStickerReceivedMythicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedMythic", CardRarity.MYTHIC)
+	class LoriCoolCardsStickerReceivedCommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedCommon", CardRarity.COMMON, false)
+	class LoriCoolCardsStickerReceivedUncommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedUncommon", CardRarity.UNCOMMON, false)
+	class LoriCoolCardsStickerReceivedRareProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedRare", CardRarity.RARE, false)
+	class LoriCoolCardsStickerReceivedEpicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedEpic", CardRarity.EPIC, false)
+	class LoriCoolCardsStickerReceivedLegendaryProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedLegendary", CardRarity.LEGENDARY, false)
+	class LoriCoolCardsStickerReceivedMythicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedMythic", CardRarity.MYTHIC, false)
+	class LoriCoolCardsStickerReceivedCommonUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedCommonUserBackground", CardRarity.COMMON, true)
+	class LoriCoolCardsStickerReceivedUncommonUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedUncommonUserBackground", CardRarity.UNCOMMON, true)
+	class LoriCoolCardsStickerReceivedRareUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedRareUserBackground", CardRarity.RARE, true)
+	class LoriCoolCardsStickerReceivedEpicUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedEpicUserBackground", CardRarity.EPIC, true)
+	class LoriCoolCardsStickerReceivedLegendaryUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedLegendaryUserBackground", CardRarity.LEGENDARY, true)
+	class LoriCoolCardsStickerReceivedMythicUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedProfileCreator(loritta, "loriCoolCardsStickerReceivedMythicUserBackground", CardRarity.MYTHIC, true)
 
 	override suspend fun create(
 		sender: ProfileUserInfoData,
@@ -83,7 +94,21 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 				.generateStickerReceivedGIF(
 					rarity,
 					frontFacingStickerImage,
-					LoriCoolCardsManager.StickerReceivedRenderType.ProfileDesignWithInfo { graphics2d, cardX, _, imageRenderType ->
+					LoriCoolCardsManager.StickerReceivedRenderType.ProfileDesignWithInfo(
+						if (useLorittaBackground) {
+							{ graphics2d, cardX, _, imageRenderType ->
+								graphics2d.drawImage(
+									background.getScaledInstance(
+										imageRenderType.width,
+										imageRenderType.height,
+										BufferedImage.SCALE_SMOOTH
+									), 0, 0, null
+								)
+							}
+						} else {
+							null
+						}
+					) { graphics2d, cardX, _, imageRenderType ->
 						// The padding on everything here is 8px!!!
 						graphics2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f)
 						graphics2d.setRenderingHint(
@@ -110,7 +135,13 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 
 						// This is weird as hell, isn't there's a way to make this EASIER TO UNDERSTAND???
 						if (guild != null) {
-							val guildIcon = (guild.iconUrl?.replace("jpg", "png")?.let { LorittaUtils.downloadImage(loritta, it) } ?: Constants.MISSING_DISCORD_ICON_FALLBACK_IMAGE).getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
+							val guildIcon =
+								(guild.iconUrl?.replace("jpg", "png")?.let { LorittaUtils.downloadImage(loritta, it) }
+									?: Constants.MISSING_DISCORD_ICON_FALLBACK_IMAGE).getScaledInstance(
+									38,
+									38,
+									BufferedImage.SCALE_SMOOTH
+								)
 
 							val xpLocal = localProfile?.xp
 
@@ -149,7 +180,13 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 						graphics2d.drawImage(profileSonhosIconImage, 72, PADDING + 17 + 17 + PADDING, null)
 
 						graphics2d.font = sectionTitleFont
-						graphics2d.drawText(loritta, "Reputações", 114, PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING + 17, 800 - 6)
+						graphics2d.drawText(
+							loritta,
+							"Reputações",
+							114,
+							PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING + 17,
+							800 - 6
+						)
 						graphics2d.font = sectionSubtitleFont
 						graphics2d.drawText(
 							loritta,
@@ -159,7 +196,12 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 							800 - 6
 						)
 
-						graphics2d.drawImage(profileRepsIconImage, 72, PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING, null)
+						graphics2d.drawImage(
+							profileRepsIconImage,
+							72,
+							PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING,
+							null
+						)
 
 						if (marriageInfo != null) {
 							graphics2d.font = sectionTitleFont
@@ -193,7 +235,12 @@ open class LoriCoolCardsStickerReceivedProfileCreator(loritta: LorittaBot, inter
 							)
 
 							if (marriagePartnerAvatar != null)
-								graphics2d.drawImage(marriagePartnerAvatar.toBufferedImage().makeRoundedCorners(38), 72, PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING, null)
+								graphics2d.drawImage(
+									marriagePartnerAvatar.toBufferedImage().makeRoundedCorners(38),
+									72,
+									PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING + 17 + 17 + PADDING,
+									null
+								)
 						}
 
 

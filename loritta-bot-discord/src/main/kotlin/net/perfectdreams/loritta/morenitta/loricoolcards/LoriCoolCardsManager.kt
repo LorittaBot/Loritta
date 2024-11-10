@@ -966,32 +966,8 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
             // println("Frame $it")
             val newImage = BufferedImage(imageRenderType.width, imageRenderType.height, BufferedImage.TYPE_3BYTE_BGR)
             val bg = newImage.createGraphics()
-
-            bg.color = colorJava
-            bg.fillRect(0, 0, newImage.width, newImage.height)
-
             val originalComposite = bg.composite
-            val alphaComposite = AlphaComposite.getInstance(
-                AlphaComposite.SRC_OVER,
-                0.1f
-            )
-            bg.composite = alphaComposite
 
-            var x = 0
-            while (newImage.width > x) {
-                var y = 0
-                while (newImage.height > y) {
-                    bg.drawImage(starPattern, x, y, null)
-                    y += starPattern.height
-                }
-                x += starPattern.width
-            }
-
-            // Reset to the original composite
-            bg.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f)
-
-            // Set the color to 100% black
-            bg.color = Color.BLACK
             val cardY = (38 + Easings.easeInOutSine(it / frames.toDouble()) * 20).toInt()
             // Calculate the center of the image
             // (actually this is the "center of where the card should be rendered")
@@ -1000,6 +976,37 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
             else
                 (imageRenderType.width / 2)
             val cardX = imageXCenter - (441 / 2)
+
+            if (imageRenderType is StickerReceivedRenderType.ProfileDesignWithInfo && imageRenderType.renderBackgroundCallbackOverride != null) {
+                imageRenderType.renderBackgroundCallbackOverride.invoke(bg, cardX, cardY, imageRenderType)
+            } else if (imageRenderType is StickerReceivedRenderType.ProfileDesignPlain && imageRenderType.renderBackgroundCallbackOverride != null) {
+                imageRenderType.renderBackgroundCallbackOverride.invoke(bg, cardX, cardY)
+            } else {
+                bg.color = colorJava
+                bg.fillRect(0, 0, newImage.width, newImage.height)
+
+                val alphaComposite = AlphaComposite.getInstance(
+                    AlphaComposite.SRC_OVER,
+                    0.1f
+                )
+                bg.composite = alphaComposite
+
+                var x = 0
+                while (newImage.width > x) {
+                    var y = 0
+                    while (newImage.height > y) {
+                        bg.drawImage(starPattern, x, y, null)
+                        y += starPattern.height
+                    }
+                    x += starPattern.width
+                }
+            }
+
+            // Reset to the original composite
+            bg.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f)
+
+            // Set the color to 100% black
+            bg.color = Color.BLACK
 
             bg.drawImage(
                 cloned,
@@ -1502,12 +1509,22 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
         /**
          * The sticker received GIF render type design used for user profiles, this is the version without any bells and whistles
          */
-        data object ProfileDesignPlain : StickerReceivedRenderType(960, 720, true, null)
+        class ProfileDesignPlain(
+            /**
+             * The callback that will be invoked when rendering the background, if null, the default LoriCoolCards background will be used
+             */
+            val renderBackgroundCallbackOverride: ((graphics2d: Graphics2D, cardX: Int, cardY: Int) -> (Unit))? = null,
+        ) : StickerReceivedRenderType(960, 720, true, null)
 
         /**
          * The sticker received GIF render type design used for user profiles, this is the version containing user stats
          */
         class ProfileDesignWithInfo(
+            /**
+             * The callback that will be invoked when rendering the background, if null, the default LoriCoolCards background will be used
+             */
+            val renderBackgroundCallbackOverride: ((graphics2d: Graphics2D, cardX: Int, cardY: Int, imageRenderType: ProfileDesignWithInfo) -> (Unit))? = null,
+
             /**
              * The callback that will be invoked after rendering the frame
              */

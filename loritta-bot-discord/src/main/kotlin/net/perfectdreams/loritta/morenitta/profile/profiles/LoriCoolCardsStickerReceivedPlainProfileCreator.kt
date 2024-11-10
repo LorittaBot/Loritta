@@ -14,13 +14,25 @@ import java.awt.image.BufferedImage
 import java.net.URL
 import javax.imageio.ImageIO
 
-open class LoriCoolCardsStickerReceivedPlainProfileCreator(loritta: LorittaBot, internalName: String, val rarity: CardRarity) : RawProfileCreator(loritta, internalName) {
-	class LoriCoolCardsStickerReceivedPlainCommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainCommon", CardRarity.COMMON)
-	class LoriCoolCardsStickerReceivedPlainUncommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainUncommon", CardRarity.UNCOMMON)
-	class LoriCoolCardsStickerReceivedPlainRareProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainRare", CardRarity.RARE)
-	class LoriCoolCardsStickerReceivedPlainEpicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainEpic", CardRarity.EPIC)
-	class LoriCoolCardsStickerReceivedPlainLegendaryProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainLegendary", CardRarity.LEGENDARY)
-	class LoriCoolCardsStickerReceivedPlainMythicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainMythic", CardRarity.MYTHIC)
+open class LoriCoolCardsStickerReceivedPlainProfileCreator(
+	loritta: LorittaBot,
+	internalName: String,
+	val rarity: CardRarity,
+	val useLorittaBackground: Boolean
+) : RawProfileCreator(loritta, internalName) {
+	class LoriCoolCardsStickerReceivedPlainCommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainCommon", CardRarity.COMMON, false)
+	class LoriCoolCardsStickerReceivedPlainUncommonProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainUncommon", CardRarity.UNCOMMON, false)
+	class LoriCoolCardsStickerReceivedPlainRareProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainRare", CardRarity.RARE, false)
+	class LoriCoolCardsStickerReceivedPlainEpicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainEpic", CardRarity.EPIC, false)
+	class LoriCoolCardsStickerReceivedPlainLegendaryProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainLegendary", CardRarity.LEGENDARY, false)
+	class LoriCoolCardsStickerReceivedPlainMythicProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainMythic", CardRarity.MYTHIC, false)
+
+	class LoriCoolCardsStickerReceivedPlainCommonUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainCommonUserBackground", CardRarity.COMMON, true)
+	class LoriCoolCardsStickerReceivedPlainUncommonUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainUncommonUserBackground", CardRarity.UNCOMMON, true)
+	class LoriCoolCardsStickerReceivedPlainRareUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainRareUserBackground", CardRarity.RARE, true)
+	class LoriCoolCardsStickerReceivedPlainEpicUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainEpicUserBackground", CardRarity.EPIC, true)
+	class LoriCoolCardsStickerReceivedPlainLegendaryUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainLegendaryUserBackground", CardRarity.LEGENDARY, true)
+	class LoriCoolCardsStickerReceivedPlainMythicUserBackgroundProfileCreator(loritta: LorittaBot) : LoriCoolCardsStickerReceivedPlainProfileCreator(loritta, "loriCoolCardsStickerReceivedPlainMythicUserBackground", CardRarity.MYTHIC, true)
 
 	override suspend fun create(
 		sender: ProfileUserInfoData,
@@ -57,7 +69,21 @@ open class LoriCoolCardsStickerReceivedPlainProfileCreator(loritta: LorittaBot, 
 				.generateStickerReceivedGIF(
 					rarity,
 					frontFacingStickerImage,
-					LoriCoolCardsManager.StickerReceivedRenderType.ProfileDesignPlain
+					LoriCoolCardsManager.StickerReceivedRenderType.ProfileDesignPlain(
+						if (useLorittaBackground) {
+							{ graphics2d, cardX, _ ->
+								graphics2d.drawImage(
+									background.getScaledInstance(
+										960,
+										720,
+										BufferedImage.SCALE_SMOOTH
+									), 0, 0, null
+								)
+							}
+						} else {
+							null
+						}
+					)
 				),
 			ImageFormat.GIF
 		)

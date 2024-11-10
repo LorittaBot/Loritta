@@ -197,18 +197,32 @@ object TrinketsStuff {
         createProfileDesign("defaultYellow", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
         createProfileDesign("defaultOrange", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
         createProfileDesign("defaultEaster2023", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15), availableToBuyViaSonhos = false)
+
         createProfileDesign("loriCoolCardsStickerReceivedCommon", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedUncommon", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedRare", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedEpic", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedLegendary", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedMythic", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedCommonUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedUncommonUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedRareUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedEpicUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedLegendaryUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedMythicUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+
         createProfileDesign("loriCoolCardsStickerReceivedPlainCommon", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedPlainUncommon", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedPlainRare", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedPlainEpic", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedPlainLegendary", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
         createProfileDesign("loriCoolCardsStickerReceivedPlainMythic", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedPlainCommonUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedPlainUncommonUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedPlainRareUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedPlainEpicUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedPlainLegendaryUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
+        createProfileDesign("loriCoolCardsStickerReceivedPlainMythicUserBackground", true, Rarity.LEGENDARY, LocalDate.of(2024, 10, 11), availableToBuyViaSonhos = false)
     }
 
     private fun backgrounds() {

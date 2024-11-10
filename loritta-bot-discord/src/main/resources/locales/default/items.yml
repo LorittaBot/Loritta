@@ -125,6 +125,24 @@ profileDesigns:
   loriCoolCardsStickerReceivedMythic:
     title: "Figurinha Especial"
     description: "Eita, você virou uma figurinha de raridade especial! E ainda por cima ganhou uns stats maneiros ao seu lado."
+  loriCoolCardsStickerReceivedCommonUserBackground:
+    title: "Figurinha Comum (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade comum! E ainda por cima ganhou uns stats maneiros ao seu lado."
+  loriCoolCardsStickerReceivedUncommonUserBackground:
+    title: "Figurinha Incomum (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade incomum! E ainda por cima ganhou uns stats maneiros ao seu lado."
+  loriCoolCardsStickerReceivedRareUserBackground:
+    title: "Figurinha Rara (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade rara! E ainda por cima ganhou uns stats maneiros ao seu lado."
+  loriCoolCardsStickerReceivedEpicUserBackground:
+    title: "Figurinha Épica (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade épica! E ainda por cima ganhou uns stats maneiros ao seu lado."
+  loriCoolCardsStickerReceivedLegendaryUserBackground:
+    title: "Figurinha Lendária (Background Personalizado) "
+    description: "Eita, você virou uma figurinha de raridade lendária! E ainda por cima ganhou uns stats maneiros ao seu lado."
+  loriCoolCardsStickerReceivedMythicUserBackground:
+    title: "Figurinha Especial (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade especial! E ainda por cima ganhou uns stats maneiros ao seu lado."
   loriCoolCardsStickerReceivedPlainCommon:
     title: "Figurinha Comum"
     description: "Eita, você virou uma figurinha de raridade comum! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
@@ -143,6 +161,25 @@ profileDesigns:
   loriCoolCardsStickerReceivedPlainMythic:
     title: "Figurinha Especial"
     description: "Eita, você virou uma figurinha de raridade especial! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
+  loriCoolCardsStickerReceivedPlainCommonUserBackground:
+    title: "Figurinha Comum (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade comum! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
+  loriCoolCardsStickerReceivedPlainUncommonUserBackground:
+    title: "Figurinha Incomum (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade incomum! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
+  loriCoolCardsStickerReceivedPlainRareUserBackground:
+    title: "Figurinha Rara (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade rara! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
+  loriCoolCardsStickerReceivedPlainEpicUserBackground:
+    title: "Figurinha Épica (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade épica! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
+  loriCoolCardsStickerReceivedPlainLegendaryUserBackground:
+    title: "Figurinha Lendária (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade lendária! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
+  loriCoolCardsStickerReceivedPlainMythicUserBackground:
+    title: "Figurinha Especial (Background Personalizado)"
+    description: "Eita, você virou uma figurinha de raridade especial! E dessa vez sem os stats maneiros... bem, eu sempre gostei de coisas mais clean."
+
 backgrounds:
   name: "Fundo para Perfil"
   defaultBlue:

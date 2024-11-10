@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsFinishedAlbumSonhosTransaction
 import org.jetbrains.exposed.sql.*
@@ -37,6 +38,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
 import org.jetbrains.exposed.sql.vendors.ForUpdateOption
 import java.awt.Color
 import java.time.Instant
+import java.time.ZonedDateTime
 import kotlin.time.measureTimedValue
 
 class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -260,14 +262,33 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                 )
 
                                 // Give the sticker profile
-                                val profileDesignInternalNamesToBeGiven = mapOf(
-                                    1L to "loriCoolCardsStickerReceivedCommon",
-                                    2L to "loriCoolCardsStickerReceivedUncommon",
-                                    3L to "loriCoolCardsStickerReceivedRare",
-                                    4L to "loriCoolCardsStickerReceivedEpic",
-                                    5L to "loriCoolCardsStickerReceivedLegendary",
-                                    6L to "loriCoolCardsStickerReceivedMythic"
-                                )
+                                // TODO: Remove the old code later after the event finishes!
+                                val includeNewDesigns = now >= ZonedDateTime.of(2024, 12, 1, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE).toInstant()
+                                val profileDesignInternalNamesToBeGiven = if (includeNewDesigns) {
+                                    mapOf(
+                                        1L to "loriCoolCardsStickerReceivedCommon",
+                                        2L to "loriCoolCardsStickerReceivedUncommon",
+                                        3L to "loriCoolCardsStickerReceivedRare",
+                                        4L to "loriCoolCardsStickerReceivedEpic",
+                                        5L to "loriCoolCardsStickerReceivedLegendary",
+                                        6L to "loriCoolCardsStickerReceivedMythic",
+                                        7L to "loriCoolCardsStickerReceivedCommonUserBackground",
+                                        8L to "loriCoolCardsStickerReceivedUncommonUserBackground",
+                                        9L to "loriCoolCardsStickerReceivedRareUserBackground",
+                                        10L to "loriCoolCardsStickerReceivedEpicUserBackground",
+                                        11L to "loriCoolCardsStickerReceivedLegendaryUserBackground",
+                                        12L to "loriCoolCardsStickerReceivedMythicUserBackground"
+                                    )
+                                } else {
+                                    mapOf(
+                                        1L to "loriCoolCardsStickerReceivedCommon",
+                                        2L to "loriCoolCardsStickerReceivedUncommon",
+                                        3L to "loriCoolCardsStickerReceivedRare",
+                                        4L to "loriCoolCardsStickerReceivedEpic",
+                                        5L to "loriCoolCardsStickerReceivedLegendary",
+                                        6L to "loriCoolCardsStickerReceivedMythic"
+                                    )
+                                }
 
                                 val profileDesignInternalNameToBeGiven = profileDesignInternalNamesToBeGiven[howManyCompletionsWeAreInRightNow]
 
@@ -294,14 +315,31 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         }
                                         .count()
 
-                                    val specialProfileDesignInternalNamesToBeGiven = mapOf(
-                                        1L to "loriCoolCardsStickerReceivedPlainCommon",
-                                        2L to "loriCoolCardsStickerReceivedPlainUncommon",
-                                        3L to "loriCoolCardsStickerReceivedPlainRare",
-                                        4L to "loriCoolCardsStickerReceivedPlainEpic",
-                                        5L to "loriCoolCardsStickerReceivedPlainLegendary",
-                                        6L to "loriCoolCardsStickerReceivedPlainMythic"
-                                    )
+                                    val specialProfileDesignInternalNamesToBeGiven = if (includeNewDesigns) {
+                                        mapOf(
+                                            1L to "loriCoolCardsStickerReceivedPlainCommon",
+                                            2L to "loriCoolCardsStickerReceivedPlainUncommon",
+                                            3L to "loriCoolCardsStickerReceivedPlainRare",
+                                            4L to "loriCoolCardsStickerReceivedPlainEpic",
+                                            5L to "loriCoolCardsStickerReceivedPlainLegendary",
+                                            6L to "loriCoolCardsStickerReceivedPlainMythic",
+                                            7L to "loriCoolCardsStickerReceivedPlainCommonUserBackground",
+                                            8L to "loriCoolCardsStickerReceivedPlainUncommonUserBackground",
+                                            9L to "loriCoolCardsStickerReceivedPlainRareUserBackground",
+                                            10L to "loriCoolCardsStickerReceivedPlainEpicUserBackground",
+                                            11L to "loriCoolCardsStickerReceivedPlainLegendaryUserBackground",
+                                            12L to "loriCoolCardsStickerReceivedPlainMythicUserBackground"
+                                        )
+                                    } else {
+                                        mapOf(
+                                            1L to "loriCoolCardsStickerReceivedPlainCommon",
+                                            2L to "loriCoolCardsStickerReceivedPlainUncommon",
+                                            3L to "loriCoolCardsStickerReceivedPlainRare",
+                                            4L to "loriCoolCardsStickerReceivedPlainEpic",
+                                            5L to "loriCoolCardsStickerReceivedPlainLegendary",
+                                            6L to "loriCoolCardsStickerReceivedPlainMythic"
+                                        )
+                                    }
 
                                     val specialProfileDesignInternalNameToBeGiven = specialProfileDesignInternalNamesToBeGiven[quickCount]
 
