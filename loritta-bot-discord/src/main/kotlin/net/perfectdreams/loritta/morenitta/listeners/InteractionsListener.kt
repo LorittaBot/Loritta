@@ -837,8 +837,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 modalCallback.invoke(context, ModalArguments(event))
             } catch (e: Exception) {
-                // TODO: Proper catch and throw
-                e.printStackTrace()
+                val errorId = LorittaUtils.generateErrorId(loritta)
+                logger.warn(e) { "Something went wrong while executing modal interaction! Error ID: $errorId" }
             }
         }
     }
@@ -992,8 +992,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     else -> error("Unsupported option reference for autocomplete ${autocompletingOption::class.simpleName}")
                 }
             } catch (e: Exception) {
-                // TODO: Proper catch and throw
-                e.printStackTrace()
+                val errorId = LorittaUtils.generateErrorId(loritta)
+                logger.warn(e) { "Something went wrong while executing auto complete interaction! Error ID: $errorId" }
             }
         }
     }
