@@ -7,7 +7,7 @@ examples:
 changeAboutMe: "Alterar Sobre Mim"
 changeProfileLayout: "Alterar Layout"
 changeBackground: "Alterar Background"
-lorittaDailyItemShop: "Loja Diária da Loritta"
+lorittaDailyItemShop: "Loja Diária de Bugigangas da Loritta"
 profileImageAltText: "Perfil do usuário {user}"
 options:
   user:
