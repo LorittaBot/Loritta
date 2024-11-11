@@ -66,8 +66,7 @@ open class LoriCoolCardsStickerReceivedPlainProfileCreator(
 		// While we could use 1280x720 (16:9) for the profile design, we will keep the good old 4:3 ratio
 		return Pair(
 			loritta.loriCoolCardsManager
-				.generateStickerReceivedWEBP(
-					loritta,
+				.generateStickerReceivedGIF(
 					rarity,
 					frontFacingStickerImage,
 					LoriCoolCardsManager.StickerReceivedRenderType.ProfileDesignPlain(
@@ -88,7 +87,7 @@ open class LoriCoolCardsStickerReceivedPlainProfileCreator(
 						}
 					)
 				),
-			ImageFormat.WEBP
+			ImageFormat.GIF
 		)
 	}
 }

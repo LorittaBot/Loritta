@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.common.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.utils.math.Easings
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.AnimatedWebPUtils
 import net.perfectdreams.loritta.morenitta.utils.GraphicsFonts
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.images.MultiplyComposite
@@ -26,9 +27,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URI
 import java.net.URL
-import java.util.*
 import javax.imageio.ImageIO
-import kotlin.concurrent.thread
 
 
 class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
@@ -1224,48 +1223,6 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
             false
         )
 
-        val id = UUID.randomUUID()
-        val fileOutput = File("${loritta.config.loritta.folders.temp}\\profile-$id.webp")
-
-        val processBuilder = ProcessBuilder(
-            loritta.config.loritta.binaries.ffmpeg,
-            "-framerate",
-            "20",
-            "-f",
-            "rawvideo",
-            "-pixel_format",
-            "bgr24", // This is what the "BufferedImage.TYPE_3BYTE_BGR" uses behind the scenes
-            "-video_size",
-            "960x720",
-            "-i",
-            "-", // We will write to output stream
-            "-c:v",
-            "libwebp",
-            "-preset",
-            "none",
-            "-loop",
-            "0", // always loop
-            "-quality",
-            "85", // this is the default quality in img2webp
-            "-compression_level",
-            "4", // less = bigger file size, faster
-            "-y",
-            // Due to the way WEBP containers work (it goes back after writing all data! like mp4 containers), we need to write directly to a file
-            fileOutput.toString()
-        ).redirectErrorStream(true)
-            .start()
-
-        thread {
-            while (true) {
-                val r = processBuilder.inputStream.read()
-                if (r == -1) // Keep reading until end of input
-                    return@thread
-
-                // TODO: I think we should remove this later...
-                print(r.toChar())
-            }
-        }
-
         val indexedFrames = mutableListOf<AlbumPasteFrame>()
 
         indexedFrames.addAll(f)
@@ -1279,19 +1236,15 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
                 .reversed()
         )
 
-        for (frame in indexedFrames) {
-            // println("Writing frame $frame")
-            processBuilder.outputStream.write((frame.image.raster.dataBuffer as DataBufferByte).data)
-            processBuilder.outputStream.flush()
-        }
+        val webp = AnimatedWebPUtils.renderAnimatedWebP(
+            loritta,
+            "960x720",
+            20,
+            0,
+            indexedFrames.map { it.image }
+        )
 
-        processBuilder.outputStream.close()
-        processBuilder.waitFor()
-
-        val bytes = fileOutput.readBytes()
-        fileOutput.delete()
-
-        return bytes
+        return webp
     }
 
     fun generateBuyingBoosterPackGIF(): ByteArray {
