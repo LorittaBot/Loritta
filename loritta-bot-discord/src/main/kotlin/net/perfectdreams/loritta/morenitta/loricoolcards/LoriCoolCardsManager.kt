@@ -1246,9 +1246,9 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
             "-loop",
             "0", // always loop
             "-quality",
-            "75", // this is the default quality in img2webp
+            "85", // this is the default quality in img2webp
             "-compression_level",
-            "0", // less = bigger file size, faster
+            "4", // less = bigger file size, faster
             "-y",
             // Due to the way WEBP containers work (it goes back after writing all data! like mp4 containers), we need to write directly to a file
             fileOutput.toString()
