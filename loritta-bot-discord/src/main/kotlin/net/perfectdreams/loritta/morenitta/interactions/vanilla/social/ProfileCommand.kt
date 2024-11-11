@@ -3,8 +3,10 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.FileUpload
@@ -41,6 +43,7 @@ import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
@@ -137,7 +140,25 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 }
                             ).setReplace(true).await()
                         }
-                    }
+                    },
+                    Button.of(
+                        ButtonStyle.LINK,
+                        "${loritta.config.loritta.website.url}dashboard/profiles?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content-self-profile",
+                        i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeProfileLayout),
+                        Emotes.Eyes.toJDA()
+                    ),
+                    Button.of(
+                        ButtonStyle.LINK,
+                        "${loritta.config.loritta.website.url}dashboard/backgrounds?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content-self-profile",
+                        i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeBackground),
+                        Emoji.fromUnicode("\uD83D\uDDBC\uFE0F")
+                    ),
+                    Button.of(
+                        ButtonStyle.LINK,
+                        "${loritta.config.loritta.website.url}dashboard/daily-shop?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content-self-profile",
+                        i18nContext.get(I18nKeysData.Commands.Command.Profileview.LorittaDailyItemShop),
+                        Emotes.ShoppingBags.toJDA()
+                    )
                 )
             }
         }
