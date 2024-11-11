@@ -39,6 +39,8 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             page: Long,
             userFacingTransactionTypeFilter: List<TransactionType>
         ): suspend InlineMessage<*>.() -> (Unit) = {
+            content = ""
+            
             // If the list is empty, we will use *all* transaction types in the filter
             // This makes it easier because you don't need to manually deselect every single filter before you can filter by a specific
             // transaction type.
