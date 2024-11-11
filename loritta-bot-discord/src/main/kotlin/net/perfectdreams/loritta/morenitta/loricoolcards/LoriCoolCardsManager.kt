@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.common.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.utils.math.Easings
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.GraphicsFonts
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.images.MultiplyComposite
@@ -25,7 +26,10 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URI
 import java.net.URL
+import java.util.*
 import javax.imageio.ImageIO
+import kotlin.concurrent.thread
+
 
 class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
     companion object {
@@ -922,13 +926,12 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
         return stickerReceivedGIF
     }
 
-    fun generateStickerReceivedGIF(
+    private fun generateStickerReceivedFrames(
         rarity: CardRarity,
         frontFacingCardImage: BufferedImage,
-        imageRenderType: StickerReceivedRenderType
-    ): ByteArray {
-        val start = Clock.System.now()
-
+        imageRenderType: StickerReceivedRenderType,
+        cropMiddleForGIFs: Boolean
+    ): List<AlbumPasteFrame> {
         val colorJava = imageRenderType.backgroundColorOverride ?: rarity.color.toJavaColor()
 
         val sparkles1CompositeMode = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f)
@@ -955,8 +958,6 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
                 cloned.setRGB(x, y, ImageUtils.packRGBA(0, 0, 0, unpack[3]))
             }
         }
-
-        val baos = ByteArrayOutputStream()
 
         val f = mutableListOf<AlbumPasteFrame>()
 
@@ -1120,7 +1121,7 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
             f.add(
                 AlbumPasteFrame(
                     // We copy the cropped image because we do not want to share an array to avoid issues when we use the backing array directly
-                    if (it == 0) newImage else ImageUtils.copyToBufferedImageBGR(newImage.getSubimage(modificationsStartAtX, 0, modificationsWidth, 720)),
+                    if (it == 0 || !cropMiddleForGIFs) newImage else ImageUtils.copyToBufferedImageBGR(newImage.getSubimage(modificationsStartAtX, 0, modificationsWidth, 720)),
                     if (it == 0) 0 else modificationsStartAtX,
                     0
                 )
@@ -1132,6 +1133,23 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
 
             // ImageIO.write(newImage, "png", File("D:\\Pictures\\Loritta\\LoriCoolCards\\bg.png"))
         }
+
+        return f
+    }
+
+    fun generateStickerReceivedGIF(
+        rarity: CardRarity,
+        frontFacingCardImage: BufferedImage,
+        imageRenderType: StickerReceivedRenderType
+    ): ByteArray {
+        val f = generateStickerReceivedFrames(
+            rarity,
+            frontFacingCardImage,
+            imageRenderType,
+            true
+        )
+
+        val baos = ByteArrayOutputStream()
 
         // TODO: We need to figure out a way to make a FIXED palette GIF
         // TODO: Maybe to do that, because we know that every frame should ALWAYS have the same color, use a HashMap lookup color table?
@@ -1191,6 +1209,89 @@ class LoriCoolCardsManager(val graphicsFonts: GraphicsFonts) {
         animatedGifEncoder.finish()
 
         return baos.toByteArray()
+    }
+
+    fun generateStickerReceivedWEBP(
+        loritta: LorittaBot,
+        rarity: CardRarity,
+        frontFacingCardImage: BufferedImage,
+        imageRenderType: StickerReceivedRenderType
+    ): ByteArray {
+        val f = generateStickerReceivedFrames(
+            rarity,
+            frontFacingCardImage,
+            imageRenderType,
+            false
+        )
+
+        val id = UUID.randomUUID()
+        val fileOutput = File("${loritta.config.loritta.folders.temp}\\profile-$id.webp")
+
+        val processBuilder = ProcessBuilder(
+            loritta.config.loritta.binaries.ffmpeg,
+            "-framerate",
+            "20",
+            "-f",
+            "rawvideo",
+            "-pixel_format",
+            "bgr24", // This is what the "BufferedImage.TYPE_3BYTE_BGR" uses behind the scenes
+            "-video_size",
+            "960x720",
+            "-i",
+            "-", // We will write to output stream
+            "-c:v",
+            "libwebp",
+            "-preset",
+            "none",
+            "-loop",
+            "0", // always loop
+            "-quality",
+            "75", // this is the default quality in img2webp
+            "-compression_level",
+            "0", // less = bigger file size, faster
+            "-y",
+            // Due to the way WEBP containers work (it goes back after writing all data! like mp4 containers), we need to write directly to a file
+            fileOutput.toString()
+        ).redirectErrorStream(true)
+            .start()
+
+        thread {
+            while (true) {
+                val r = processBuilder.inputStream.read()
+                if (r == -1) // Keep reading until end of input
+                    return@thread
+
+                // TODO: I think we should remove this later...
+                print(r.toChar())
+            }
+        }
+
+        val indexedFrames = mutableListOf<AlbumPasteFrame>()
+
+        indexedFrames.addAll(f)
+
+        // add backwards
+        // we need to remove the first and last frames
+        indexedFrames.addAll(
+            indexedFrames
+                .drop(1)
+                .dropLast(1)
+                .reversed()
+        )
+
+        for (frame in indexedFrames) {
+            // println("Writing frame $frame")
+            processBuilder.outputStream.write((frame.image.raster.dataBuffer as DataBufferByte).data)
+            processBuilder.outputStream.flush()
+        }
+
+        processBuilder.outputStream.close()
+        processBuilder.waitFor()
+
+        val bytes = fileOutput.readBytes()
+        fileOutput.delete()
+
+        return bytes
     }
 
     fun generateBuyingBoosterPackGIF(): ByteArray {

@@ -66,26 +66,29 @@ open class LoriCoolCardsStickerReceivedPlainProfileCreator(
 		// While we could use 1280x720 (16:9) for the profile design, we will keep the good old 4:3 ratio
 		return Pair(
 			loritta.loriCoolCardsManager
-				.generateStickerReceivedGIF(
+				.generateStickerReceivedWEBP(
+					loritta,
 					rarity,
 					frontFacingStickerImage,
 					LoriCoolCardsManager.StickerReceivedRenderType.ProfileDesignPlain(
 						if (useLorittaBackground) {
-							{ graphics2d, cardX, _ ->
-								graphics2d.drawImage(
-									background.getScaledInstance(
-										960,
-										720,
-										BufferedImage.SCALE_SMOOTH
-									), 0, 0, null
+							run {
+								val scaledBackground = background.getScaledInstance(
+									960,
+									720,
+									BufferedImage.SCALE_SMOOTH
 								)
+
+								return@run { graphics2d, cardX, _ ->
+									graphics2d.drawImage(scaledBackground, 0, 0, null)
+								}
 							}
 						} else {
 							null
 						}
 					)
 				),
-			ImageFormat.GIF
+			ImageFormat.WEBP
 		)
 	}
 }

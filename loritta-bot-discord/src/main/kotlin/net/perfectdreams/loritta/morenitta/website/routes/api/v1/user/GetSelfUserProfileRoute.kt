@@ -152,6 +152,8 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 						ImageFormat.PNG -> ContentType.Image.PNG
 						ImageFormat.JPG -> ContentType.Image.JPEG
 						ImageFormat.GIF -> ContentType.Image.GIF
+						// Ktor does not have ContentType.Image.WEBP yet
+						ImageFormat.WEBP -> ContentType.parse("image/webp")
 					},
 					HttpStatusCode.OK
 				)
