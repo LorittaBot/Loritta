@@ -63,7 +63,7 @@ object AchievementUtils {
         if (wasAchievementGiven)
             context.reply(ephemeral) {
                 styled(
-                    content = "${context.user.asMention} **${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
+                    content = "${userId.asMention} **${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
                     prefix = Emotes.Sparkles
                 )
 
