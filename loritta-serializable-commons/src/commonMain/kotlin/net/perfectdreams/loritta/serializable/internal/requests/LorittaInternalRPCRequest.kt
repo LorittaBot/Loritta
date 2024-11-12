@@ -39,4 +39,7 @@ sealed class LorittaInternalRPCRequest {
             val message: String
         )
     }
+
+    @Serializable
+    data class DailyShopRefreshedRequest(val dailyShopId: Long) : LorittaInternalRPCRequest()
 }

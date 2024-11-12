@@ -30,4 +30,7 @@ sealed class LorittaInternalRPCResponse {
 
     @Serializable
     data class BlueskyPostRelayResponse(val notifiedGuilds: List<Long>) : LorittaInternalRPCResponse()
+
+    @Serializable
+    data object DailyShopRefreshedResponse : LorittaInternalRPCResponse()
 }
