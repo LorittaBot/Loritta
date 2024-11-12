@@ -515,6 +515,37 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				return
 			}
 
+			if (arg0 == "coinflip_total_tax") {
+				if (!context.loritta.isOwner(context.userHandle.id) && !context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+					context.reply(
+						LorittaReply(
+							"Você não tem permissão para executar esse comando.",
+							Constants.ERROR
+						)
+					)
+					return
+				}
+
+				val totalTax = loritta.pudding.transaction {
+					val sumField = CoinFlipBetMatchmakingResults.tax.sum()
+					CoinFlipBetMatchmakingResults
+						.select(sumField)
+						.first()[sumField] ?: 0L
+				}
+
+				context.reply(
+					LorittaReply(
+						context.i18nContext.formatter.format(
+							"O total de taxas cobradas no Coin Flip Bet é **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**",
+							mapOf(
+								"sonhos" to totalTax
+							)
+						),
+					)
+				)
+				return
+			}
+
 			if (arg0 == "emojifight_total_tax") {
 				if (!context.loritta.isOwner(context.userHandle.id) && !context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
 					context.reply(
@@ -543,6 +574,59 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 						),
 					)
 				)
+				return
+			}
+
+			if (arg0 == "coinflip_daily_tax") {
+				if (!context.loritta.isOwner(context.userHandle.id) && !context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+					context.reply(
+						LorittaReply(
+							"Você não tem permissão para executar esse comando.",
+							Constants.ERROR
+						)
+					)
+					return
+				}
+
+				val daysToSeconds: Long = 14 * 24 * 60 * 60;
+
+				val map = loritta.pudding.transaction {
+					val dateField = CoinFlipBetMatchmakingResults.timestamp.date()
+					val taxSumField = CoinFlipBetMatchmakingResults.tax.sum()
+
+					CoinFlipBetMatchmakingResults
+						.select(dateField, taxSumField)
+						.groupBy(dateField)
+						.orderBy(dateField, SortOrder.DESC)
+						.where { CoinFlipBetMatchmakingResults.timestamp greaterEq Instant.now().minusSeconds(daysToSeconds) }
+						.associate {
+							it[dateField] to it[taxSumField]
+						}
+				}
+
+				val replies = mutableListOf<LorittaReply>()
+				val today = LocalDate.now(Constants.LORITTA_TIMEZONE)
+				var checkDateTax = today.minusWeeks(2)
+
+				while (today >= checkDateTax) {
+					val taxTotal = map[checkDateTax] ?: 0L
+
+					replies.add(
+						LorittaReply(
+							context.i18nContext.formatter.format(
+								"Data: **{date}** Quantia de sonhos: **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**",
+								mapOf(
+									"date" to checkDateTax.toString(),
+									"sonhos" to taxTotal
+								)
+							),
+							mentionUser = false
+						)
+					)
+					checkDateTax = checkDateTax.plusDays(1)
+				}
+
+				context.reply(*replies.reversed().toTypedArray())
 				return
 			}
 
