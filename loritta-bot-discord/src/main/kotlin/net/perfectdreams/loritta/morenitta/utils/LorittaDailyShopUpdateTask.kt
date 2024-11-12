@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 	companion object {
@@ -23,17 +24,35 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 			logger.info { "Generating a new daily shop..." }
 
 			runBlocking {
-				loritta.pudding.transaction {
+				val resultId = loritta.pudding.transaction {
 					val newShop = DailyShops.insertAndGetId {
 						it[generatedAt] = System.currentTimeMillis()
 					}
 
 					getAndAddRandomBackgroundsToShop(newShop)
 					getAndAddRandomProfileDesignsToShop(newShop)
+
+					newShop
+				}
+
+				// Notify that it was refreshed
+				val shards = loritta.config.loritta.clusters.instances
+
+				shards.map {
+					GlobalScope.launch {
+						try {
+							logger.info { "Sending daily shop refresh request to other clusters..." }
+							loritta.httpWithoutTimeout.post("${it.getUrl(loritta)}/daily-shop-refreshed?dailyShopId=${resultId}") {
+								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+							}
+						} catch (e: Exception) {
+							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+						}
+					}
 				}
 			}
 		}
-		
+
 		private fun getAndAddRandomBackgroundsToShop(shopId: EntityID<Long>) {
 			val allBackgrounds = Backgrounds.select {
 				Backgrounds.enabled eq true and (Backgrounds.availableToBuyViaDreams eq true)

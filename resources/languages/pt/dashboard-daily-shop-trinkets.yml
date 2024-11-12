@@ -1,0 +1,16 @@
+website:
+  dashboard:
+    dailyShopTrinkets:
+      title: "Loja Diária da Loritta"
+      description:
+        - "Notificações sobre a Loja Diária de Bugigangas da Loritta. A loja diária da Loritta é onde usuários podem comprar itens para personalizar os perfis do usuário na Loritta, para deixar eles com mais frufrus."
+      shopRefresh:
+        notifyWhenRefresh: "Notificar quando a loja diária da Loritta atualizar"
+        notifyWhenRefreshDescription: "A Loritta enviará as bugigangas que estão na rotação diária no canal configurado."
+        channelWhereTheMessagesWillBeSent: "Canal onde será enviado as mensagens"
+        messageWhenTheShopUpdates: "Mensagem quando a loja diária da Loritta atualizar"
+      newTrinkets:
+        notifyWhenNew: "Notificar quando tiver novas bugigangas na loja diária da Loritta"
+        notifyWhenNewDescription: "A Loritta enviará cada bugiganga nova no canal configurado. Se não tiver nenhuma bugiganga nova na loja diária, a Loritta não enviará uma mensagem."
+        channelWhereTheMessagesWillBeSent: "Canal onde será enviado as mensagens"
+        messageWhenNewTrinkets: "Mensagem quando novas bugigangas forem lançadas na Loritta"

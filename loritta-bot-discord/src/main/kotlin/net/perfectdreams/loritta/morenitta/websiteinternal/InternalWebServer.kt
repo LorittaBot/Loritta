@@ -32,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.websiteinternal.loriinternalapi.DailyShopRefreshedRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loriinternalapi.GuildJsonBenchmarkRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.WebsitePublicAPIException
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.*
@@ -74,7 +75,8 @@ class InternalWebServer(val m: LorittaBot) {
         PostMusicalChairsRoute(m)
     )
     private val internalAPIRoutes = listOf(
-        GuildJsonBenchmarkRoute(m)
+        GuildJsonBenchmarkRoute(m),
+        DailyShopRefreshedRoute(m)
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)

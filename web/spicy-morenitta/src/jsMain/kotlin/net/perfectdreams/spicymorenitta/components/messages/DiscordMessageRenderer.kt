@@ -839,7 +839,7 @@ data class MessagePlaceholderNode(val placeholder: String) : MessageNode()
 private fun parseStringToNodes(input: String): List<MessageNode> {
     val nodes = mutableListOf<MessageNode>()
     // YES THE \\ IS NEEDED ON THE END OF THE } TO AVOID "raw bracket is not allowed in regular expression with unicode flag"
-    val regex = "\\{([@A-z0-9.]+)\\}".toRegex()
+    val regex = "\\{([@A-z0-9.-]+)\\}".toRegex()
     var lastIndex = 0
 
     regex.findAll(input).forEach { matchResult ->

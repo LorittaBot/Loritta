@@ -1,0 +1,10 @@
+dailyShopTrinketsRelayer:
+  rarity: "Raridade"
+  set: "Coleção"
+  creator: "Criador"
+  raritiesWithSonhos:
+    common: "Comum ({quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+    uncommon: "Incomum ({quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+    rare: "Raro ({quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+    epic: "Épico ({quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+    legendary: "Lendário ({quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"

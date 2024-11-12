@@ -99,7 +99,8 @@ abstract class GuildDashboardView(
             appendEntry("/guild/${guild.id}/configure/event-log", true, locale["modules.sectionNames.eventLog"], "fa fa-eye", false)
             appendEntry("/guild/${guild.id}/configure/youtube", true, "YouTube", "fab fa-youtube", false)
             appendEntry("/guild/${guild.id}/configure/twitch", true, "Twitch", "fab fa-twitch", false)
-            appendEntry("/guild/${guild.id}/configure/bluesky", true, "Bluesky", "fab fa-bluesky", true)
+            appendEntry("/guild/${guild.id}/configure/bluesky", true, "Bluesky", "fab fa-bluesky", false)
+            appendEntry("/guild/${guild.id}/configure/daily-shop-trinkets", true, i18nContext.get(I18nKeysData.Website.Dashboard.DailyShopTrinkets.Title), "fa-solid fa-store", true)
 
             hr(classes = "divider") {}
 

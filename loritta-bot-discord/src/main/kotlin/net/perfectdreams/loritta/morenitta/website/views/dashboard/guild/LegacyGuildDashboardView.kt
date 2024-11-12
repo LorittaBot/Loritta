@@ -121,6 +121,7 @@ abstract class LegacyGuildDashboardView(
                     appendEntry("/guild/${guild.id}/configure/youtube", false, "YouTube", "fab fa-youtube", "youtube")
                     appendEntry("/guild/${guild.id}/configure/twitch", false, "Twitch", "fab fa-twitch", "twitch")
                     appendEntry("/guild/${guild.id}/configure/bluesky", false, "Bluesky", "fab fa-bluesky", "bluesky")
+                    appendEntry("/guild/${guild.id}/configure/daily-shop-trinkets", false, i18nContext.get(I18nKeysData.Website.Dashboard.DailyShopTrinkets.Title), "fa-solid fa-store", "daily_shop_trinkets")
 
                     hr(classes = "divider") {}
 

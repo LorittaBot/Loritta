@@ -7,7 +7,8 @@ sealed interface SectionPlaceholders<T : MessagePlaceholder> {
             LeaveMessagePlaceholders,
             TwitchStreamOnlineMessagePlaceholders,
             BlueskyPostMessagePlaceholders,
-            YouTubePostMessagePlaceholders
+            YouTubePostMessagePlaceholders,
+            DailyShopTrinketsNotificationMessagePlaceholders
         )
 
         init {

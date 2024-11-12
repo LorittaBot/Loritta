@@ -18,6 +18,8 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.bluesky.*
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.commands.ConfigureCommandsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.commands.PutConfigureCommandsRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.dailyshoptrinkets.ConfigureDailyShopTrinketsNotificationsRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.dailyshoptrinkets.PutConfigureDailyShopTrinketsNotificationsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.reactionevents.ConfigureReactionEventsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.reactionevents.PutConfigureReactionEventsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.*
@@ -108,6 +110,9 @@ object DefaultRoutes {
 
 		ConfigureReactionEventsRoute(loritta),
 		PutConfigureReactionEventsRoute(loritta),
+
+		ConfigureDailyShopTrinketsNotificationsRoute(loritta),
+		PutConfigureDailyShopTrinketsNotificationsRoute(loritta),
 
 		// Reps
 		UserReputationRoute(loritta),
