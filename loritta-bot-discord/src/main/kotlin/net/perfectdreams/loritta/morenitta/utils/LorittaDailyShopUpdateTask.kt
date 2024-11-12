@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import io.ktor.client.request.*
-import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
+import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 
@@ -38,16 +39,23 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 				// Notify that it was refreshed
 				val shards = loritta.config.loritta.clusters.instances
 
-				shards.map {
-					GlobalScope.launch {
-						try {
-							logger.info { "Sending daily shop refresh request to other clusters..." }
-							loritta.httpWithoutTimeout.post("${it.getUrl(loritta)}/daily-shop-refreshed?dailyShopId=${resultId}") {
-								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-							}
-						} catch (e: Exception) {
-							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+				val jobs = shards.map { cluster ->
+					cluster to GlobalScope.async {
+						withTimeout(25_000) {
+							loritta.makeRPCRequest<LorittaInternalRPCResponse.DailyShopRefreshedResponse>(
+								cluster,
+								LorittaInternalRPCRequest.DailyShopRefreshedRequest(resultId.value)
+							)
 						}
+					}
+				}
+
+				for (job in jobs) {
+					try {
+						job.second.await()
+						logger.info { "Successfully notified Cluster ${job.first.id} (${job.first.name}) that the daily shop was refreshed!" }
+					} catch (e: Exception) {
+						logger.warn(e) { "Something went wrong when notifying Cluster ${job.first.id} (${job.first.name}) that the daily shop was refreshed..." }
 					}
 				}
 			}

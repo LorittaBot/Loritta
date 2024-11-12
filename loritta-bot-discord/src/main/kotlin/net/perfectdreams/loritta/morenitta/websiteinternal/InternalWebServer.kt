@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
-import net.perfectdreams.loritta.morenitta.websiteinternal.loriinternalapi.DailyShopRefreshedRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loriinternalapi.GuildJsonBenchmarkRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.WebsitePublicAPIException
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.*
@@ -75,8 +74,7 @@ class InternalWebServer(val m: LorittaBot) {
         PostMusicalChairsRoute(m)
     )
     private val internalAPIRoutes = listOf(
-        GuildJsonBenchmarkRoute(m),
-        DailyShopRefreshedRoute(m)
+        GuildJsonBenchmarkRoute(m)
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -300,6 +298,9 @@ class InternalWebServer(val m: LorittaBot) {
                     processors.executeDashGuildScopedProcessor.process(call, request)
                 }
 
+                is LorittaInternalRPCRequest.DailyShopRefreshedRequest -> {
+                    processors.dailyShopRefreshedProcessor.process(call, request)
+                }
                 is LorittaInternalRPCRequest.UpdateTwitchSubscriptionsRequest -> {
                     if (m.isMainInstance) {
                         GlobalScope.launch {

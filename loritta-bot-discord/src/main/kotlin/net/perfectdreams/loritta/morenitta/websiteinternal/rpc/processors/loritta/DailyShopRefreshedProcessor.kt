@@ -1,10 +1,9 @@
-package net.perfectdreams.loritta.morenitta.websiteinternal.loriinternalapi
+package net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.loritta
 
 import dev.minn.jda.ktx.messages.MessageCreate
 import io.ktor.server.application.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.buildJsonObject
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -34,22 +33,27 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChann
 import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.LorittaInternalRpcProcessor
 import net.perfectdreams.loritta.serializable.*
-import net.perfectdreams.sequins.ktor.BaseRoute
+import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
+import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
-class DailyShopRefreshedRoute(val loritta: LorittaBot) : BaseRoute("/daily-shop-refreshed") {
+class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcProcessor<LorittaInternalRPCRequest.DailyShopRefreshedRequest, LorittaInternalRPCResponse.DailyShopRefreshedResponse> {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun onRequest(call: ApplicationCall) {
-        val dailyShopId = call.parameters["dailyShopId"]?.toLong()
+    override suspend fun process(
+        call: ApplicationCall,
+        request: LorittaInternalRPCRequest.DailyShopRefreshedRequest
+    ): LorittaInternalRPCResponse.DailyShopRefreshedResponse {
+        val dailyShopId = request.dailyShopId
+        logger.info { "Received information that the daily shop was refreshed! dailyShopId: $dailyShopId" }
 
         val result = loritta.transaction {
             val backgrounds = DailyShopItems
@@ -366,9 +370,9 @@ class DailyShopRefreshedRoute(val loritta: LorittaBot) : BaseRoute("/daily-shop-
             }
         }
 
-        // We don't await to avoid timing out, keep it in separate tasks
-        call.respondJson(buildJsonObject {})
+        return LorittaInternalRPCResponse.DailyShopRefreshedResponse
     }
+
 
     private data class Result(
         val backgrounds: List<DailyShopBackgroundEntry>,
