@@ -149,6 +149,11 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                                     embed {
                                         val tag = item.tag
                                         title = buildString {
+                                            when (item) {
+                                                is BackgroundItemWrapper -> append("\uD83D\uDDBC\uFE0F ")
+                                                is ProfileDesignItemWrapper -> append("${Emotes.LoriIdentificationCard} ")
+                                            }
+
                                             if (tag != null) {
                                                 append("[${legacyBaseLocale[tag].uppercase()}] ")
                                             }

@@ -145,7 +145,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         ButtonStyle.LINK,
                         "${loritta.config.loritta.website.url}dashboard/profiles?utm_source=discord&utm_medium=profile-command&utm_campaign=daily-item-shop&utm_content-self-profile",
                         i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeProfileLayout),
-                        Emotes.Eyes.toJDA()
+                        Emotes.LoriIdentificationCard.toJDA()
                     ),
                     Button.of(
                         ButtonStyle.LINK,
