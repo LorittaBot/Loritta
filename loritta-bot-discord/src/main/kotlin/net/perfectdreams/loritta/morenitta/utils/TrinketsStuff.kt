@@ -87,7 +87,8 @@ object TrinketsStuff {
         "sonic",
         "myDeerFriendNokotan",
         "lorittaHalloween2024",
-        "loriCoolCards"
+        "loriCoolCards",
+        "valorant"
     )
 
     fun updateTrinkets(pudding: Pudding) {
@@ -1255,6 +1256,9 @@ object TrinketsStuff {
         createBackground("luckyStarMoeRaincoat", true, Rarity.UNCOMMON, LocalDate.of(2024, 11, 9), set = "luckyStar") {
             addDefaultVariant("lucky-star-moe-raincoat", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "lucky-star-moe-raincoat-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("valorantYoruDimensionalDrift", true, Rarity.EPIC, LocalDate.of(2024, 11, 12), set = "valorant") {
+            addDefaultVariant("valorant-yoru-dimensional-drift", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 
