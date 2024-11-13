@@ -23,6 +23,7 @@ sets:
   lorittaHalloween2024: "Halloween da Loritta 2024"
   loriCoolCards: "Figurittas da Loritta"
   valorant: "VALORANT"
+  brat: "brat"
 profileDesigns:
   name: "Design para Perfil"
   defaultDark:
@@ -1232,3 +1233,30 @@ backgrounds:
   valorantYoruDimensionalDrift:
     title: "Espionagem Dimensional"
     description: "A máscara do Yoru não é uma máscara comum, a máscara dele são de ancestrais que eram samurais durante o período Edo no Japão, e a máscara possui propriedades que permitem o Yoru entrar em outras dimensões. E quando ele entra em outra dimensão, tome cuidado, pois o demônio azul vai lhe pegar."
+  charliXcxBratLori:
+    title: "lori"
+    description: "Se a Charli xcx pode ter um álbum com uma capa... assim... então EU TAMBÉM posso ter um background assim! Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBrat:
+    title: "brat"
+    description: "Bumpin' that. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBratPantufa:
+    title: "pantufa"
+    description: "Infelizmente o nome da pobre Pantufinha não cabe em apenas 4 letras, então não tem o mesmo tchan. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBratGabi:
+    title: "gabi"
+    description: "When I go to the club, I wanna hear those club classics. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBratPirralha:
+    title: "pirralha"
+    description: "Meu Deus, abrasileiraram o meu brat. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBratRawr:
+    title: "rawr"
+    description: "Eis que você gosta de escutar Charli xcx, mas você não consegue resistir a tentação de ser um furry. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBratCoy:
+    title: ":3"
+    description: "Eis que você gosta de escutar Charli xcx, mas você não consegue resistir a tentação de ser um furry. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBratOwo:
+    title: "owo"
+    description: "Eis que você gosta de escutar Charli xcx, mas você não consegue resistir a tentação de ser um furry. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  charliXcxBratUwu:
+    title: "uwu"
+    description: "Eis que você gosta de escutar Charli xcx, mas você não consegue resistir a tentação de ser um furry. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"

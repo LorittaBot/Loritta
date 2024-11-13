@@ -88,7 +88,8 @@ object TrinketsStuff {
         "myDeerFriendNokotan",
         "lorittaHalloween2024",
         "loriCoolCards",
-        "valorant"
+        "valorant",
+        "brat"
     )
 
     fun updateTrinkets(pudding: Pudding) {
@@ -1259,6 +1260,42 @@ object TrinketsStuff {
         }
         createBackground("valorantYoruDimensionalDrift", true, Rarity.EPIC, LocalDate.of(2024, 11, 12), set = "valorant") {
             addDefaultVariant("valorant-yoru-dimensional-drift", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratLori", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-lori", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-lori-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBrat", true, Rarity.LEGENDARY, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratPantufa", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-pantufa", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-pantufa-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratGabi", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-gabi", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-gabi-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratPirralha", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-pirralha", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-pirralha-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratRawr", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-rawr", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-rawr-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratCoy", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-coy", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-coy-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratOwo", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-owo", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-owo-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("charliXcxBratUwu", true, Rarity.RARE, LocalDate.of(2024, 11, 13), set = "brat") {
+            addDefaultVariant("charli-xcx-brat-uwu", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-uwu-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 
