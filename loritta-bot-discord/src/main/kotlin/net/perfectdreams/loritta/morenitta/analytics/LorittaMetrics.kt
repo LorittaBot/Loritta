@@ -35,6 +35,8 @@ class LorittaMetrics(private val loritta: LorittaBot) {
         registry = LorittaMetrics.appMicrometerRegistry,
         gaugeName = "loritta.banned_users"
     )
+    private val activeBackgrounds = mutableMapOf<String, AtomicLong>()
+    private val activeProfileDesigns = mutableMapOf<String, AtomicLong>()
 
     fun registerMetrics() {
         appMicrometerRegistry.gaugeCollectionSize("loritta.pending_messages", emptyList(), loritta.pendingMessages)
@@ -101,7 +103,9 @@ class LorittaMetrics(private val loritta: LorittaBot) {
             val totalSonhos: Long,
             val totalSonhosOfBannedUsers: Long,
             val totalSonhosBroker: Long,
-            val bannedUsers: Long
+            val bannedUsers: Long,
+            val activeBackgrounds: Map<String?, Long>,
+            val activeProfileDesigns: Map<String?, Long>
         )
 
         if (loritta.isMainInstance) {
@@ -138,13 +142,56 @@ class LorittaMetrics(private val loritta: LorittaBot) {
                     }
                     .first()[countDistinct]
 
-                return@transaction Result(totalSonhos, totalSonhosOfBannedUsers, totalSonhosBroker, bannedUsers)
+                val activeBackgroundCount = UserSettings.activeBackground.count()
+                val activeBackgrounds = UserSettings.select(UserSettings.activeBackground, activeBackgroundCount)
+                    .groupBy(UserSettings.activeBackground)
+                    .toList()
+                    .associate {
+                        it[UserSettings.activeBackground]?.value to it[activeBackgroundCount]
+                    }
+
+                val activeProfileDesignCount = UserSettings.activeProfileDesign.count()
+                val activeProfileDesigns = UserSettings.select(UserSettings.activeProfileDesign, activeProfileDesignCount)
+                    .groupBy(UserSettings.activeProfileDesign)
+                    .toList()
+                    .associate {
+                        it[UserSettings.activeProfileDesign]?.value to it[activeProfileDesignCount]
+                    }
+
+                return@transaction Result(
+                    totalSonhos,
+                    totalSonhosOfBannedUsers,
+                    totalSonhosBroker,
+                    bannedUsers,
+                    activeBackgrounds,
+                    activeProfileDesigns
+                )
             }
 
             totalSonhosGauge.set(result.totalSonhos)
             totalSonhosOfBannedUsersGauge.set(result.totalSonhosOfBannedUsers)
             totalSonhosBrokerGauge.set(result.totalSonhosBroker)
             bannedUsersGauge.set(result.bannedUsers)
+
+            activeBackgrounds.forEach { (t, u) ->
+                u.set(0)
+            }
+
+            for (activeBackground in result.activeBackgrounds) {
+                activeBackgrounds.getOrPut(activeBackground.key ?: "__notset__") {
+                    appMicrometerRegistry.gauge("loritta.active_backgrounds", listOf(Tag.of("internal_name", activeBackground.key ?: "__notset__")), AtomicLong(0))
+                }.set(activeBackground.value)
+            }
+
+            activeProfileDesigns.forEach { (t, u) ->
+                u.set(0)
+            }
+
+            for (activeProfileDesign in result.activeProfileDesigns) {
+                activeProfileDesigns.getOrPut(activeProfileDesign.key ?: "__notset__") {
+                    appMicrometerRegistry.gauge("loritta.active_profiledesigns", listOf(Tag.of("internal_name", activeProfileDesign.key ?: "__notset__")), AtomicLong(0))
+                }.set(activeProfileDesign.value)
+            }
         }
     }
 
