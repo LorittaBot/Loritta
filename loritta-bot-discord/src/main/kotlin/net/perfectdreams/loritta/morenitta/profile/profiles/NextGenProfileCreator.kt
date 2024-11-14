@@ -108,7 +108,7 @@ class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 
 		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 8, 508, 796, 600, allowedDiscordEmojis)
 
-		return base.makeRoundedCorners(15)
+		return base
 	}
 
 	fun drawAvatar(avatar: Image, graphics: Graphics) {

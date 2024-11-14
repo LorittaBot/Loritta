@@ -104,7 +104,7 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 				graphics.drawText(loritta, "???", 562, 78, 800 - 6)
 			}
 
-			graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
+			graphics.drawImage(guildIcon.toBufferedImage(), 520, 44, null)
 		}
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)

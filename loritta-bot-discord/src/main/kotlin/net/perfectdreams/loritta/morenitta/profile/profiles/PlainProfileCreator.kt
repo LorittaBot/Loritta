@@ -91,7 +91,7 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 
 		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, allowedDiscordEmojis)
 
-		return base.makeRoundedCorners(15)
+		return base
 	}
 
 	fun drawAvatar(avatar: Image, graphics: Graphics) {

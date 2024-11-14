@@ -127,6 +127,6 @@ class LoriAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 			y += 14
 		}
 
-		return base.makeRoundedCorners(15)
+		return base
 	}
 }

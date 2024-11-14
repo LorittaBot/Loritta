@@ -85,7 +85,7 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
 
 		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 162, 529, 773 - biggestStrWidth - 4, 600, allowedDiscordEmojis)
 
-		return base.makeRoundedCorners(15)
+		return base
 	}
 
 	fun drawAvatar(avatar: Image, graphics: Graphics) {
