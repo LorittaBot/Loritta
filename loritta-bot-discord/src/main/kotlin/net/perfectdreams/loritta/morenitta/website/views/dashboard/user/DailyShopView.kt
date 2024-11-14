@@ -35,6 +35,7 @@ class DailyShopView(
     userPremiumPlan: UserPremiumPlans,
     colorTheme: ColorTheme,
     private val profile: Profile?,
+    private val activeProfileDesignId: String,
     private val activeBackgroundId: String,
     private val shopId: Long,
     private val dailyShop: DailyShopResult,
@@ -165,14 +166,14 @@ class DailyShopView(
                                                         div(classes = "canvas-preview-wrapper") {
                                                             img(
                                                                 classes = "canvas-preview-only-bg",
-                                                                src = "/background/${shopItem.internalName}"
+                                                                src = "/background/${shopItem.internalName}?profileDesign=${activeProfileDesignId}"
                                                             ) {
                                                                 style = "width: 400px; aspect-ratio: 4/3;"
                                                             }
 
                                                             img(
                                                                 classes = "canvas-preview",
-                                                                src = "/api/v1/users/@me/profile"
+                                                                src = "/api/v1/users/@me/profile?type=${activeProfileDesignId}"
                                                             ) {
                                                                 style = "width: 400px; aspect-ratio: 4/3;"
                                                             }

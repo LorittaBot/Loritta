@@ -29,10 +29,11 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboa
 	override suspend fun onDashboardAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, colorTheme: ColorTheme) {
 		val dreamStorageServiceNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 
-		val (profile, activeBackgroundId, shopId, generatedAt, backgroundsInShop, profileDesignsInShop, backgroundsWrapper, boughtProfileDesigns) = loritta.transaction {
+		val (profile, activeProfileDesignId, activeBackgroundId, shopId, generatedAt, backgroundsInShop, profileDesignsInShop, backgroundsWrapper, boughtProfileDesigns) = loritta.transaction {
 			val shop = DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
 
 			val profile = loritta.getLorittaProfile(userIdentification.id.toLong())
+			val activeProfileDesignId = profile?.settings?.activeProfileDesignInternalName?.value ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID
 			val activeBackgroundId = profile?.settings?.activeBackgroundInternalName?.value ?: Background.DEFAULT_BACKGROUND_ID
 
 			val backgroundsInShopResults = (DailyShopItems innerJoin Backgrounds)
@@ -109,7 +110,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboa
 				)!!
 			)
 
-			Result(profile, activeBackgroundId, shop[DailyShops.id].value, shop[DailyShops.generatedAt], backgroundsInShop, profileDesignsInShop, backgroundsWrapper, boughtProfileDesigns)
+			Result(profile, activeProfileDesignId, activeBackgroundId, shop[DailyShops.id].value, shop[DailyShops.generatedAt], backgroundsInShop, profileDesignsInShop, backgroundsWrapper, boughtProfileDesigns)
 		}
 
 		val view = DailyShopView(
@@ -122,6 +123,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboa
 			UserPremiumPlans.getPlanFromValue(loritta.getActiveMoneyFromDonations(userIdentification.id.toLong())),
 			colorTheme,
 			profile,
+			activeProfileDesignId,
 			activeBackgroundId,
 			shopId,
 			DailyShopResult(
@@ -173,6 +175,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboa
 
 	private data class Result(
 		val profile: Profile?,
+		val activeProfileDesignId: String,
 		val activeBackgroundId: String,
 		val shopId: Long,
 		val generatedAt: Long,
