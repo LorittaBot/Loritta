@@ -173,7 +173,7 @@ class DailyShopView(
 
                                                             img(
                                                                 classes = "canvas-preview",
-                                                                src = "/api/v1/users/@me/profile?type=${activeProfileDesignId}"
+                                                                src = "/api/v1/users/@me/profile?type=${activeProfileDesignId}&background=${shopItem.internalName}"
                                                             ) {
                                                                 style = "width: 400px; aspect-ratio: 4/3;"
                                                             }
@@ -280,14 +280,7 @@ class DailyShopView(
                                                     div(classes = "canvas-preview-wrapper-wrapper") {
                                                         div(classes = "canvas-preview-wrapper") {
                                                             img(
-                                                                classes = "canvas-preview-only-bg",
-                                                                src = "/api/v1/users/@me/profile?type=${shopItem.internalName}&background=${activeBackgroundId}"
-                                                            ) {
-                                                                style = "width: 400px; aspect-ratio: 4/3;"
-                                                            }
-
-                                                            img(
-                                                                classes = "canvas-preview",
+                                                                classes = "canvas-preview-profile-design",
                                                                 src = "/api/v1/users/@me/profile?type=${shopItem.internalName}&background=${activeBackgroundId}"
                                                             ) {
                                                                 style = "width: 400px; aspect-ratio: 4/3;"
@@ -371,7 +364,7 @@ class DailyShopView(
                                                 }
 
                                                 is ProfileDesignItemWrapper -> {
-                                                    "/api/v1/users/@me/profile?type=${shopItem.internalName}"
+                                                    "/api/v1/users/@me/profile?type=${shopItem.internalName}&background=${activeBackgroundId}"
                                                 }
                                             }
 

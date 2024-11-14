@@ -177,6 +177,15 @@
   max-width: 100%;
 }
 
+.canvas-preview-profile-design {
+  transition-duration: 0.3s;
+  height: auto;
+  transform: rotateY(-10deg);
+  margin-bottom: 50px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
+  max-width: 100%;
+}
+
 .canvas-preview:hover {
   opacity: 0;
   transition-duration: 0.3s;
