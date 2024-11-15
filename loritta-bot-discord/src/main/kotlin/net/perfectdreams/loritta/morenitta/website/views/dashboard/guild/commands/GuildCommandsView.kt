@@ -120,8 +120,23 @@ class GuildCommandsView(
                                 it.category
                             }
 
+                        h3 {
+                            text(i18nContext.get(I18nKeysData.Website.Dashboard.Commands.SummaryTitle))
+                        }
+
+                        ul {
+                            for ((category, _) in groupedByCategories) {
+                                li {
+                                    a(href = "#${category.name}") {
+                                        text(i18nContext.get(category.localizedName))
+                                    }
+                                }
+                            }
+                        }
+
                         for ((category, commands) in groupedByCategories) {
                             div {
+                                id = category.name
                                 val color = getCategoryColor(category)
                                 style =
                                     "--loritta-blue: ${
