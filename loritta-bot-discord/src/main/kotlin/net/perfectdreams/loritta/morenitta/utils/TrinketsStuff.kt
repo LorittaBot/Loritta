@@ -191,14 +191,14 @@ object TrinketsStuff {
         createProfileDesign("halloween2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
         createProfileDesign("christmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
         createProfileDesign("lorittaChristmas2019", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
-        createProfileDesign("defaultBlurple", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultRed", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultBlue", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultGreen", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultPurple", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultPink", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultYellow", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
-        createProfileDesign("defaultOrange", true, Rarity.COMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultBlurple", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultRed", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultBlue", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultGreen", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultPurple", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultPink", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultYellow", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
+        createProfileDesign("defaultOrange", true, Rarity.UNCOMMON, LocalDate.of(2020, 11, 22))
         createProfileDesign("defaultEaster2023", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15), availableToBuyViaSonhos = false)
 
         createProfileDesign("loriCoolCardsStickerReceivedCommon", true, Rarity.LEGENDARY, LocalDate.of(2024, 4, 18), availableToBuyViaSonhos = false, set = "loriCoolCards")
@@ -235,22 +235,22 @@ object TrinketsStuff {
         createBackground("custom", true, Rarity.COMMON, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false)
 
         // ===[ DEFAULT BACKGROUND STYLES ]===
-        createBackground("defaultRed", true, Rarity.COMMON, LocalDate.of(0, 1, 1)) {
+        createBackground("defaultRed", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("default-red", ContentType.Image.PNG)
         }
-        createBackground("defaultGreen", true, Rarity.COMMON, LocalDate.of(0, 1, 1)) {
+        createBackground("defaultGreen", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("default-green", ContentType.Image.PNG)
         }
-        createBackground("defaultOrange", true, Rarity.COMMON, LocalDate.of(0, 1, 1)) {
+        createBackground("defaultOrange", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("default-orange", ContentType.Image.PNG)
         }
-        createBackground("defaultPink", true, Rarity.COMMON, LocalDate.of(0, 1, 1)) {
+        createBackground("defaultPink", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("default-pink", ContentType.Image.PNG)
         }
-        createBackground("defaultPurple", true, Rarity.COMMON, LocalDate.of(0, 1, 1)) {
+        createBackground("defaultPurple", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("default-purple", ContentType.Image.PNG)
         }
-        createBackground("defaultBlue", true, Rarity.COMMON, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false) {
+        createBackground("defaultBlue", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), availableToBuyViaSonhos = false) {
             addDefaultVariant("default-blue", ContentType.Image.PNG)
         }
 
