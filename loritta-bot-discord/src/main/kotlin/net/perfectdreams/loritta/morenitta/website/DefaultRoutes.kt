@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.*
 import net.perfectdreams.loritta.morenitta.website.routes.sponsors.SponsorsRedirectRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.UserReputationRoute
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.*
+import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.profilepresets.*
 
 object DefaultRoutes {
 	fun defaultRoutes(loritta: LorittaBot, website: LorittaWebsite) = listOf(
@@ -138,6 +139,11 @@ object DefaultRoutes {
 		LorittaUserAppRoute(loritta),
 		LorittaUserAPIKeysRoute(loritta),
 		PostGenerateNewLorittaUserAPIKeyRoute(loritta),
+		ProfilePresetsListRoute(loritta),
+		CreateProfilePresetRoute(loritta),
+		PostCreateProfilePresetRoute(loritta),
+		PostApplyProfilePresetRoute(loritta),
+		DeleteProfilePresetRoute(loritta),
 
 		// ===[ API ROUTES ]===
 		// Callbacks

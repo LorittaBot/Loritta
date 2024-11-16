@@ -54,6 +54,7 @@ abstract class ProfileDashboardView(
 
             appendEntry("/dashboard/profiles", false, locale["website.dashboard.profile.sectionNames.profileLayout"], "far fa-id-card", false)
             appendEntry("/dashboard/backgrounds", false, "Backgrounds", "far fa-images", false)
+            appendEntry("/dashboard/profile-presets", true, i18nContext.get(I18nKeysData.Website.Dashboard.ProfilePresets.Title), "fa-solid fa-object-group", true)
             appendEntry("/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", false)
             appendEntry("/dashboard/api-keys", true, i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title), "fa fa-code", true)
 

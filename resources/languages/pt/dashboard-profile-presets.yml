@@ -1,0 +1,10 @@
+website:
+  dashboard:
+    profilePresets:
+      title: "Pré-definições de Perfil"
+      yourProfilePresets: "Suas pré-definições de perfil"
+      accounts: "{presetCount,plural, =0 {# pré-definições} one {# pré-definição} other {# pré-definições}}"
+      createPreset: "Criar pré-definição"
+
+      presetCreation:
+        profilePresetName: "Nome da sua Obra de Arte"

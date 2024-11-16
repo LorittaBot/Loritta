@@ -40,7 +40,6 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.discord.*
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.reactionevents.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text.TextTransformCommand
@@ -52,6 +51,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanCo
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.PredefinedReasonsCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.reactionevents.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.UndertaleCommand

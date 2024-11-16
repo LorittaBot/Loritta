@@ -37,7 +37,7 @@
 
 .loritta-items-wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 8px;
 
   // Loritta still uses this on the background and profile design routes, when they are redesigned this can be removed!
