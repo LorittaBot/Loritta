@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
@@ -56,7 +57,7 @@ object RankingGenerator {
 			val member = loritta.lorittaShards.retrieveUserInfoById(profile.userId) ?: onNullUser?.invoke(profile.userId)
 
 			if (member != null) {
-				val rankBackground = loritta.profileDesignManager.getUserProfileBackground(member.id)
+				val rankBackground = loritta.profileDesignManager.getUserProfileBackground(member.id, ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
 				graphics.drawImage(rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
 					.getSubimage(0, idx * 104, 800, 106), 0, currentY, null)
 

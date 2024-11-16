@@ -515,7 +515,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param id the user's ID
 	 * @return the background image
 	 */
-	suspend fun getUserProfileBackground(id: Long) = getUserProfileBackground(loritta.getOrCreateLorittaProfile(id))
+	suspend fun getUserProfileBackground(id: Long, profileDesignInternalNameOverride: String? = null) = getUserProfileBackground(loritta.getOrCreateLorittaProfile(id), profileDesignInternalNameOverride)
 
 	/**
 	 * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
@@ -526,8 +526,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param background the user's background
 	 * @return the background image
 	 */
-	suspend fun getUserProfileBackground(profile: PuddingUserProfile): BufferedImage {
-		val backgroundUrl = getUserProfileBackgroundUrl(profile)
+	suspend fun getUserProfileBackground(profile: PuddingUserProfile, profileDesignInternalNameOverride: String? = null): BufferedImage {
+		val backgroundUrl = getUserProfileBackgroundUrl(profile, profileDesignInternalNameOverride)
 		val response = loritta.http.get(backgroundUrl) {
 			userAgent(loritta.lorittaCluster.getUserAgent(this@ProfileDesignManager.loritta))
 		}
@@ -546,8 +546,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param background the user's background
 	 * @return the background image
 	 */
-	suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
-		val backgroundUrl = getUserProfileBackgroundUrl(profile)
+	suspend fun getUserProfileBackground(profile: Profile, profileDesignInternalNameOverride: String? = null): BufferedImage {
+		val backgroundUrl = getUserProfileBackgroundUrl(profile, profileDesignInternalNameOverride)
 		val response = loritta.http.get(backgroundUrl) {
 			userAgent(loritta.lorittaCluster.getUserAgent(this@ProfileDesignManager.loritta))
 		}
@@ -567,8 +567,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param profileCreator the profile creator being used, overrides the [ProfileSettings.activeProfileDesign] option
 	 * @return the background image
 	 */
-	suspend fun getUserProfileBackground(profile: Profile, profileCreator: ProfileCreator): BufferedImage {
-		val backgroundUrl = getUserProfileBackgroundUrl(profile, profileCreator)
+	suspend fun getUserProfileBackground(profile: Profile, profileCreator: ProfileCreator, profileDesignInternalNameOverride: String? = null): BufferedImage {
+		val backgroundUrl = getUserProfileBackgroundUrl(profile, profileCreator, profileDesignInternalNameOverride)
 		val response = loritta.http.get(backgroundUrl) {
 			userAgent(loritta.lorittaCluster.getUserAgent(this@ProfileDesignManager.loritta))
 		}
@@ -594,7 +594,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param profile the user's profile
 	 * @return the background image
 	 */
-	suspend fun getUserProfileBackgroundUrl(profile: Profile): String {
+	suspend fun getUserProfileBackgroundUrl(profile: Profile, profileDesignInternalNameOverride: String? = null): String {
 		// This is bad
 		val (settingsId, activeProfileDesignInternalName, activeBackgroundInternalName) = loritta.newSuspendedTransaction {
 			val settingsId = profile.settings.id.value
@@ -604,7 +604,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			Triple(settingsId, activeProfileDesignInternalName, activeBackgroundInternalName)
 		}
 
-		return getUserProfileBackgroundUrl(profile.userId, settingsId, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
+		return getUserProfileBackgroundUrl(profile.userId, settingsId, profileDesignInternalNameOverride ?: activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
 	}
 
 	/**
@@ -616,7 +616,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param profileCreator the profile creator being used, overrides the [ProfileSettings.activeProfileDesign] option
 	 * @return the background image
 	 */
-	suspend fun getUserProfileBackgroundUrl(profile: Profile, profileCreator: ProfileCreator): String {
+	suspend fun getUserProfileBackgroundUrl(profile: Profile, profileCreator: ProfileCreator, profileDesignInternalNameOverride: String? = null): String {
 		// This is bad
 		val (settingsId, _, activeBackgroundInternalName) = loritta.newSuspendedTransaction {
 			val settingsId = profile.settings.id.value
@@ -626,7 +626,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			Triple(settingsId, activeProfileDesignInternalName, activeBackgroundInternalName)
 		}
 
-		return getUserProfileBackgroundUrl(profile.userId, settingsId, profileCreator.internalName, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
+		return getUserProfileBackgroundUrl(profile.userId, settingsId, profileCreator.internalName, profileDesignInternalNameOverride ?: activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
 	}
 
 	/**
@@ -637,12 +637,11 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param profile the user's profile
 	 * @return the background image
 	 */
-	suspend fun getUserProfileBackgroundUrl(profile: PuddingUserProfile): String {
+	suspend fun getUserProfileBackgroundUrl(profile: PuddingUserProfile, profileDesignInternalNameOverride: String? = null): String {
 		val profileSettings = profile.getProfileSettings()
 		val activeProfileDesignInternalName = profileSettings.activeProfileDesign
 		val activeBackgroundInternalName = profileSettings.activeBackground
-		// TODO: Fix default profile design ID
-		return getUserProfileBackgroundUrl(profile.id.value.toLong(), profileSettings.id, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
+		return getUserProfileBackgroundUrl(profile.id.value.toLong(), profileSettings.id, profileDesignInternalNameOverride ?: activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
 	}
 
 	/**
