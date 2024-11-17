@@ -185,59 +185,7 @@ class ProfilePresetsListView(
 
                                             div {
                                                 style = "flex-grow: 1;"
-                                                /* p {
-                                                    text(locale["profileDesigns.${shopItem.internalName}.description"])
-                                                }
-
-                                                if (shopItem.profileDesign.set != null) {
-                                                    div {
-                                                        i {
-                                                            handleI18nString(
-                                                                locale["website.dailyShop.partOfTheSet"],
-                                                                {
-                                                                    text(it)
-                                                                },
-                                                                { num ->
-                                                                    if (num == "0") {
-                                                                        TextReplaceControls.ComposableFunctionResult {
-                                                                            b {
-                                                                                text(locale["sets.${shopItem.profileDesign.set}"])
-                                                                            }
-                                                                        }
-                                                                    } else TextReplaceControls.AppendControlAsIsResult
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
-
-                                                val artists = lorittaWebsite.loritta.cachedGalleryOfDreamsDataResponse!!.artists
-                                                    .filter { it.slug in shopItem.profileDesign.createdBy }
-
-                                                if (artists.isNotEmpty()) {
-                                                    div {
-                                                        b {
-                                                            text(i18nContext.get(I18nKeysData.Website.Dashboard.DailyShop.MadeBy))
-                                                            text(" ")
-                                                        }
-
-                                                        for ((index, artist) in artists.withIndex()) {
-                                                            if (index != 0) {
-                                                                text(", ")
-                                                            }
-
-                                                            i {
-                                                                a(
-                                                                    classes = "fan-arts",
-                                                                    href = "https://fanarts.perfectdreams.net/pt/artists/${artist.slug}",
-                                                                    target = "_blank"
-                                                                ) {
-                                                                    text(artist.name)
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                } */
+                                                // TODO: Maybe add some stats here, like when the user last used the preset?
                                             }
                                         }
                                     },
@@ -265,40 +213,6 @@ class ProfilePresetsListView(
                                         }
                                     }
                                 }
-
-                                /* div {
-                                    button(classes = "discord-button success") {
-                                        attributes["hx-post"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/profile-presets/${preset[UserCreatedProfilePresets.id].value}/apply"
-                                        attributes["hx-swap"] = "none"
-                                        attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
-                                        attributes["hx-disabled-elt"] = "this"
-
-                                        type = ButtonType.button
-
-                                        div(classes = "htmx-discord-like-loading-button") {
-                                            text("Aplicar Pré-definição")
-                                        }
-                                    }
-
-                                    button(classes = "discord-button danger") {
-                                        attributes["hx-delete"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/profile-presets/${preset[UserCreatedProfilePresets.id].value}"
-                                        attributes["hx-disabled-elt"] = "this"
-                                        attributes["hx-include"] = "[name='handle']"
-                                        // show:top - Scroll to the top
-                                        // settle:0ms - We don't want the settle animation beccause it is a full page swap
-                                        // swap:0ms - We don't want the swap animation because it is a full page swap
-                                        attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
-                                        attributes["hx-select"] = "#right-sidebar-contents"
-                                        attributes["hx-target"] = "#right-sidebar-contents"
-                                        attributes["hx-indicator"] = "find .htmx-discord-like-loading-button"
-
-                                        type = ButtonType.button
-
-                                        div(classes = "htmx-discord-like-loading-button") {
-                                            text("Deletar Pré-definição")
-                                        }
-                                    }
-                                } */
                             }
                         }
                     }
