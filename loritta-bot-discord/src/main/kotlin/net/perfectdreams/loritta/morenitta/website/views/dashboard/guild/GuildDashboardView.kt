@@ -48,25 +48,7 @@ abstract class GuildDashboardView(
                 text(guild.name)
             }
 
-            a(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard") {
-                // TODO - htmx-adventures: Can't we reuse the appendEntry somehow?
-                //  we need to replace the entire inner-wrapper because we are switching from two different "dashboards", the left sidebar is completely different
-                attributes["hx-select"] = "#wrapper"
-                attributes["hx-target"] = "#wrapper"
-                attributes["hx-get"] = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard"
-                attributes["hx-indicator"] = "#right-sidebar-wrapper"
-                attributes["hx-push-url"] = "true"
-                // show:top - Scroll to the top
-                // settle:0ms - We don't want the settle animation beccause it is a full page swap
-                // swap:0ms - We don't want the swap animation because it is a full page swap
-                attributes["hx-swap"] = "outerHTML show:top settle:0ms swap:0ms"
-                attributes["_"] = """
-                                                            on click
-                                                                remove .is-open from #left-sidebar
-                                                                add .is-closed to #left-sidebar
-                                                            end
-                                                """.trimIndent()
-
+            a(href = "${lorittaWebsite.loritta.config.loritta.website.url}${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard") {
                 button(classes = "discord-button no-background-theme-dependent-dark-text") {
                     style = "width: 100%;"
                     type = ButtonType.button
