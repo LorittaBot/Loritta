@@ -24,13 +24,26 @@ import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class PostCreateProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboardRoute(loritta, "/dashboard/profile-presets/create") {
+	companion object {
+		const val MAX_PRESET_LENGTH = 50
+	}
+
 	override suspend fun onDashboardAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, colorTheme: ColorTheme) {
 		val parameters = call.receiveParameters()
 		val activeProfileDesignId = parameters.getOrFail("activeProfileDesignId")
 		val activeBackgroundId = parameters.getOrFail("activeBackgroundId")
 		val presetName = parameters.getOrFail("presetName").trim()
 
-		if (presetName.length !in 0..50)
+		if (presetName.length == 0) {
+			call.response.headerHXTrigger {
+				playSoundEffect = "config-error"
+				closeSpicyModal = true
+				showSpicyToast(EmbeddedSpicyToast.Type.WARN, "Você precisa dar um nome para a sua pré-definição!")
+			}
+			return
+		}
+
+		if (presetName.length !in 1..MAX_PRESET_LENGTH)
 			error("Preset name too long")
 
 		val result = loritta.transaction {

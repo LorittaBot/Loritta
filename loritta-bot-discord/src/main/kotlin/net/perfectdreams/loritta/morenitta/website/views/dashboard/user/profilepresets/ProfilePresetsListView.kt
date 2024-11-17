@@ -46,6 +46,24 @@ class ProfilePresetsListView(
 
     override fun DIV.generateRightSidebarContents() {
         div {
+            div(classes = "hero-wrapper") {
+                // etherealGambiImg("https://stuff.loritta.website/loritta-daily-shop-allouette.png", classes = "hero-image", sizes = "(max-width: 900px) 100vw, 360px") {}
+
+                div(classes = "hero-text") {
+                    h1 {
+                        text(i18nContext.get(I18nKeysData.Website.Dashboard.ProfilePresets.Title))
+                    }
+
+                    for (line in i18nContext.get(I18nKeysData.Website.Dashboard.ProfilePresets.Description)) {
+                        p {
+                            text(line)
+                        }
+                    }
+                }
+            }
+
+            hr {}
+
             div(classes = "cards-with-header") {
                 div(classes = "card-header") {
                     div(classes = "card-header-info") {
