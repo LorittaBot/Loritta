@@ -102,7 +102,7 @@ class ProfilePresetsListView(
 
                 if (profilePresets.isNotEmpty()) {
                     div(classes = "loritta-items-wrapper") {
-                        for (preset in profilePresets) {
+                        for (preset in profilePresets.sortedBy { it[UserCreatedProfilePresets.name] }) {
                             div(classes = "shop-item-entry rarity-rare") {
                                 val buttons = mutableListOf<BUTTON.() -> (Unit)>(
                                     {
