@@ -30,7 +30,7 @@ class PostCreateProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLo
 		val activeBackgroundId = parameters.getOrFail("activeBackgroundId")
 		val presetName = parameters.getOrFail("presetName").trim()
 
-		if (presetName.length !in 0..20)
+		if (presetName.length !in 0..50)
 			error("Preset name too long")
 
 		val result = loritta.transaction {

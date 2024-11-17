@@ -64,7 +64,7 @@ class CreateProfilePresetView(
                         }
 
                         input(InputType.text) {
-                            maxLength = "20"
+                            maxLength = "50"
                             name = "presetName"
                         }
                     }
