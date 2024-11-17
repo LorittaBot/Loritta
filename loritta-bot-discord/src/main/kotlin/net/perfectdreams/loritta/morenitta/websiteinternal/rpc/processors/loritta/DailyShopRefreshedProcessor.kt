@@ -42,6 +42,7 @@ import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
+import java.util.*
 
 class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcProcessor<LorittaInternalRPCRequest.DailyShopRefreshedRequest, LorittaInternalRPCResponse.DailyShopRefreshedResponse> {
     companion object {
@@ -146,6 +147,11 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                         channel.sendMessage(
                             MessageCreate {
                                 for (item in itemChunk) {
+                                    // This is a hack attempting to fix an issue where sometimes images do not show up correctly in embeds
+                                    // I do not think that this will work... but hey, let's try
+                                    // https://canary.discord.com/channels/613425648685547541/916395737141620797/1307739923951910953
+                                    val randomId = UUID.randomUUID()
+
                                     embed {
                                         val tag = item.tag
                                         title = buildString {
@@ -214,15 +220,15 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                                         }
 
                                         image = when (item) {
-                                            is BackgroundItemWrapper -> item.backgroundUrl
-                                            is ProfileDesignItemWrapper -> "attachment://profile-${item.internalName}.${item.profileResult.imageFormat.extension}"
+                                            is BackgroundItemWrapper -> "${item.backgroundUrl}?d=${randomId}"
+                                            is ProfileDesignItemWrapper -> "attachment://profile-${item.internalName}-$randomId.${item.profileResult.imageFormat.extension}"
                                         }
                                     }
 
                                     if (item is ProfileDesignItemWrapper) {
                                         files += FileUpload.fromData(
                                             item.profileResult.image,
-                                            "profile-${item.internalName}.${item.profileResult.imageFormat.extension}"
+                                            "profile-${item.internalName}-$randomId.${item.profileResult.imageFormat.extension}"
                                         )
                                     }
                                 }
