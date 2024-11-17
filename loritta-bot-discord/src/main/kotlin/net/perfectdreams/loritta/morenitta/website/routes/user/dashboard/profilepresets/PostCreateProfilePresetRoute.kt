@@ -38,7 +38,7 @@ class PostCreateProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLo
 			call.response.headerHXTrigger {
 				playSoundEffect = "config-error"
 				closeSpicyModal = true
-				showSpicyToast(EmbeddedSpicyToast.Type.WARN, "Você precisa dar um nome para a sua pré-definição!")
+				showSpicyToast(EmbeddedSpicyToast.Type.WARN, "Você precisa dar um nome para a sua predefinição!")
 			}
 			return
 		}
@@ -92,7 +92,7 @@ class PostCreateProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLo
 				call.response.headerHXTrigger {
 					playSoundEffect = "config-saved"
 					closeSpicyModal = true
-					showSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Pré-definição criada!")
+					showSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Predefinição criada!")
 				}
 
 				call.response.headerHXPushURL("/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/dashboard/profile-presets")
@@ -105,7 +105,7 @@ class PostCreateProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLo
 				call.response.headerHXTrigger {
 					playSoundEffect = "config-error"
 					closeSpicyModal = true
-					showSpicyToast(EmbeddedSpicyToast.Type.WARN, "Você já tem muitas pré-definições criadas!")
+					showSpicyToast(EmbeddedSpicyToast.Type.WARN, "Você já tem muitas predefinições criadas!")
 				}
 			}
 		}

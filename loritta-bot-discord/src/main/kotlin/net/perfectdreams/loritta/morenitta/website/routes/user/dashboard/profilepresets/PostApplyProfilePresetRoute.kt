@@ -49,7 +49,7 @@ class PostApplyProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLoc
 		) {
 			playSoundEffect = "config-saved"
 			closeSpicyModal = true
-			showSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Pré-definição aplicada!")
+			showSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Predefinição aplicada!")
 		}
 	}
 

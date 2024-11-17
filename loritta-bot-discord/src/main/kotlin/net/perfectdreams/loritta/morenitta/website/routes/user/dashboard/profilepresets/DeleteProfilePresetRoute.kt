@@ -51,7 +51,7 @@ class DeleteProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLocali
 		call.response.headerHXTrigger {
 			playSoundEffect = "config-saved"
 			closeSpicyModal = true
-			showSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Pré-definição deletada!")
+			showSpicyToast(EmbeddedSpicyToast.Type.SUCCESS, "Predefinição deletada!")
 		}
 
 		call.respondHtml(
