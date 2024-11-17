@@ -46,7 +46,6 @@ class PostCreateProfilePresetRoute(loritta: LorittaBot) : RequiresDiscordLoginLo
 			UserCreatedProfilePresets.insert {
 				it[UserCreatedProfilePresets.createdBy] = userIdentification.id.toLong()
 				it[UserCreatedProfilePresets.createdAt] = Instant.now()
-				it[UserCreatedProfilePresets.lastUsedAt] = Instant.now()
 				it[UserCreatedProfilePresets.name] = presetName
 				it[UserCreatedProfilePresets.profileDesign] = activeProfileDesignId
 				it[UserCreatedProfilePresets.background] = activeBackgroundId
