@@ -24,7 +24,7 @@ status:
   participants:
     label: "Ver participantes da rifa"
     raffleParticipants: "Participantes da Rifa"
-    participantEntry: "`{userTag}` (`{userId}`) - {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}} ({chance, number,#.##%})"
+    participantEntry: "{userFormat} - {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}} ({chance, number,#.##%})"
     participantUnknownEntry: "Desconhecido (`{userId}`) - {ticketQuantity,plural, =0 {# tickets} one {# ticket} other {# tickets}} ({chance, number,#.##%})"
     noOneIsParticipatingRightNow: "Atualmente ninguém está participando da rifa... Que tal você ser o primeiro? {raffleBuy}"
 

@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -113,15 +114,20 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             }
 
             val nameAndDiscriminator = if (lastWinner != null) {
-                (lastWinner.name + "#" + lastWinner.discriminator).let {
-                    if (MiscUtils.hasInvite(it))
-                        "¯\\_(ツ)_/¯"
-                    else
-                        it
-                }
+                if (lastWinner.globalName != null && MiscUtils.hasInvite(lastWinner.globalName))
+                    "¯\\_(ツ)_/¯ (`${lastWinner.id}`)"
+                else
+                    convertToUserNameCodeBlockPreviewTag(
+                        lastWinner.id,
+                        lastWinner.name,
+                        lastWinner.globalName,
+                        lastWinner.discriminator,
+                        stripCodeMarksFromInput = true,
+                        stripLinksFromInput = true
+                    )
             } else {
-                "\uD83E\uDD37"
-            }.stripCodeMarks()
+                "\uD83E\uDD37 (`$lastWinnerId`)"
+            }
 
             val viewParticipants = loritta.interactivityManager
                 .button(
@@ -156,7 +162,22 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 val userInfo = loritta.lorittaShards.retrieveUserInfoById(participantId)
                                 val hasInviteOnName = userInfo?.name?.let { DiscordInviteUtils.hasInvite(it) }
                                 if (userInfo != null && hasInviteOnName == false) {
-                                    styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantEntry(userInfo.name + "#" + userInfo.discriminator, participantId.toString(), ticketCount, ticketCount / totalTickets.toDouble())))
+                                    styled(
+                                        context.i18nContext.get(
+                                            I18N_PREFIX.Status.Participants.ParticipantEntry(
+                                                convertToUserNameCodeBlockPreviewTag(
+                                                    userInfo.id,
+                                                    userInfo.name,
+                                                    userInfo.globalName,
+                                                    userInfo.discriminator,
+                                                    stripCodeMarksFromInput = true,
+                                                    stripLinksFromInput = true
+                                                ),
+                                                ticketCount,
+                                                ticketCount / totalTickets.toDouble()
+                                            )
+                                        )
+                                    )
                                 } else {
                                     styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantUnknownEntry(participantId.toString(), ticketCount, ticketCount / totalTickets.toDouble())))
                                 }
@@ -243,12 +264,12 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 if (lastWinnerId != null && lastWinnerPrize != null) {
                     if (lastWinnerPrizeAfterTax != null && lastWinnerPrizeAfterTax != lastWinnerPrize) {
                         styled(
-                            context.i18nContext.get(I18N_PREFIX.Status.LastWinnerTaxed("$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize, lastWinnerPrizeAfterTax)),
+                            context.i18nContext.get(I18N_PREFIX.Status.LastWinnerTaxed(nameAndDiscriminator, lastWinnerPrize, lastWinnerPrizeAfterTax)),
                             "\uD83D\uDE0E",
                         )
                     } else {
                         styled(
-                            context.i18nContext.get(I18N_PREFIX.Status.LastWinner("$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize)),
+                            context.i18nContext.get(I18N_PREFIX.Status.LastWinner(nameAndDiscriminator, lastWinnerPrize)),
                             "\uD83D\uDE0E",
                         )
                     }
