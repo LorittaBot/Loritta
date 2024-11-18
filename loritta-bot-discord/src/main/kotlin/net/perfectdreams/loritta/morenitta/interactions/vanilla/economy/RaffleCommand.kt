@@ -145,6 +145,8 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         context.chunkedReply(true) {
                             content = "# ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCard} ${context.i18nContext.get(I18N_PREFIX.Status.Participants.RaffleParticipants)}\n"
 
+                            val totalTickets = participants.sumOf { it[raffleTicketsCount] }
+
                             // Sort by order
                             for (participant in participants.sortedByDescending {
                                 it[raffleTicketsCount]
@@ -154,9 +156,9 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 val userInfo = loritta.lorittaShards.retrieveUserInfoById(participantId)
                                 val hasInviteOnName = userInfo?.name?.let { DiscordInviteUtils.hasInvite(it) }
                                 if (userInfo != null && hasInviteOnName == false) {
-                                    styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantEntry(userInfo.name + "#" + userInfo.discriminator, participantId.toString(), ticketCount)))
+                                    styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantEntry(userInfo.name + "#" + userInfo.discriminator, participantId.toString(), ticketCount, ticketCount / totalTickets.toDouble())))
                                 } else {
-                                    styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantUnknownEntry(participantId.toString(), ticketCount)))
+                                    styled(context.i18nContext.get(I18N_PREFIX.Status.Participants.ParticipantUnknownEntry(participantId.toString(), ticketCount, ticketCount / totalTickets.toDouble())))
                                 }
                             }
                         }
