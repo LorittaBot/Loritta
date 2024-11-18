@@ -6,4 +6,4 @@ package net.perfectdreams.loritta.morenitta.api.commands
  *
  * Used when the code already explained to the user the issue and the flow should be halted.
  */
-class SilentCommandException : RuntimeException()
+class SilentCommandException : RuntimeException(null, null, false, false)

@@ -7,6 +7,6 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
  *
  * The [reply] construtor parameter is used to notify the user about the issue.
  */
-class CommandException(val reply: LorittaReply) : RuntimeException() {
+class CommandException(val reply: LorittaReply) : RuntimeException(null, null, false, false) {
     constructor(reason: String, prefix: String) : this(LorittaReply(reason, prefix))
 }
