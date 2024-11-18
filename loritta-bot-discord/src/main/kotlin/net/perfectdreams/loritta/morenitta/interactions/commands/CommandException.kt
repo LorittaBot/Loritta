@@ -9,4 +9,4 @@ import dev.minn.jda.ktx.messages.InlineMessage
  *
  * Implementations should catch this exception and send the [builder], logging the error is not required.
  */
-class CommandException(val ephemeral: Boolean, val builder: InlineMessage<*>.() -> (Unit)) : RuntimeException()
+class CommandException(val ephemeral: Boolean, val builder: InlineMessage<*>.() -> (Unit)) : RuntimeException(null, null, false, false)
