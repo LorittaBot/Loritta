@@ -40,6 +40,8 @@ stats:
 
 joinTheEmojiFight: "Participar"
 startTheEmojiFight: "Iniciar"
+viewSonhos: "Ver seus Sonhos"
+youDidntParticipate: "Você nem participou dessa rinha! Se você está afim de xeretar os sonhos de outras pessoas, então use {sonhosAtmMention}! Mas se você quer ver os seus sonhos imaginários, então vá dormir... ou você acha que eu tenho cara de cama?"
 
 joinState:
   fightDescriptionForFun:

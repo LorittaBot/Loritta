@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.AprilFools
@@ -514,7 +515,31 @@ class EmojiFight(
                     )
                 } else null
 
-                DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize, aprilFoolsWinnerBugMessage, claimedWebsiteCoupon)
+                val allUsers = buildList {
+                    add(winner.key)
+                    addAll(losers.map { it.key })
+                }
+
+                val userRanking = buildList {
+                    for (user in allUsers) {
+                        // Get the profiles again
+                        val updatedProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(user.idLong))
+
+                        val ranking = if (updatedProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                            updatedProfile.money
+                        ) else null
+
+                        add(
+                            DbResponse.UserSonhosWithRanking(
+                                user,
+                                updatedProfile.money,
+                                ranking
+                            )
+                        )
+                    }
+                }
+
+                DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize, aprilFoolsWinnerBugMessage, claimedWebsiteCoupon, userRanking)
             } else {
                 val resultId = EmojiFightMatchmakingResults.insertAndGetId {
                     it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key] ?: error("Participating user is null! This should never happen!!")
@@ -525,7 +550,7 @@ class EmojiFight(
                     it[EmojiFightMatchmakingResults.match] = emojiFightMatch
                 }
 
-                DbResponse(winner, losers, 0, 0, null, null)
+                DbResponse(winner, losers, 0, 0, null, null, null)
             }
         }
 
@@ -577,6 +602,96 @@ class EmojiFight(
 
                 val buttons = mutableListOf<Button>()
 
+                if (result.userSonhosWithRankings != null) {
+                    // If there's not enough emotes for all users, we'll add the rest as a button
+                    // We could reuse emotes, but it would feel very cluttered if there's a lot of people on the emoji fight
+                    val emotes = SonhosUtils.HANGLOOSE_EMOTES.shuffled().toMutableList()
+                    if (emotes.size >= result.userSonhosWithRankings.size) {
+                        for (userSonhosWithRanking in result.userSonhosWithRankings) {
+                            val emote = emotes.removeFirst()
+                            if (userSonhosWithRanking.ranking != null) {
+                                styled(
+                                    context.i18nContext.get(
+                                        SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(
+                                            userSonhosWithRanking.user.asMention,
+                                            SonhosUtils.getSonhosEmojiOfQuantity(userSonhosWithRanking.sonhos),
+                                            userSonhosWithRanking.sonhos,
+                                            userSonhosWithRanking.ranking
+                                        )
+                                    ),
+                                    emote
+                                )
+                            } else {
+                                styled(
+                                    context.i18nContext.get(
+                                        SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(
+                                            userSonhosWithRanking.user.asMention,
+                                            SonhosUtils.getSonhosEmojiOfQuantity(userSonhosWithRanking.sonhos),
+                                            userSonhosWithRanking.sonhos
+                                        )
+                                    ),
+                                    emote
+                                )
+                            }
+                        }
+                    } else {
+                        buttons.add(
+                            loritta.interactivityManager.button(
+                                ButtonStyle.PRIMARY,
+                                context.i18nContext.get(I18nKeysData.Commands.Command.Emojifight.ViewSonhos),
+                                {
+                                    loriEmoji = CinnamonEmotes.Sonhos2
+                                }
+                            ) { context ->
+                                val userSonhosWithRanking = result.userSonhosWithRankings.firstOrNull { it.user == context.user }
+
+                                if (userSonhosWithRanking == null) {
+                                    context.reply(true) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                I18nKeysData.Commands.Command.Emojifight.YouDidntParticipate(
+                                                    loritta.commandMentions.sonhosAtm
+                                                )
+                                            ),
+                                            Emotes.LORI_HMPF
+                                        )
+                                    }
+                                    return@button
+                                }
+
+                                val emote = emotes.random()
+
+                                context.reply(true) {
+                                    if (userSonhosWithRanking.ranking != null) {
+                                        styled(
+                                            context.i18nContext.get(
+                                                SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(
+                                                    userSonhosWithRanking.user.asMention,
+                                                    SonhosUtils.getSonhosEmojiOfQuantity(userSonhosWithRanking.sonhos),
+                                                    userSonhosWithRanking.sonhos,
+                                                    userSonhosWithRanking.ranking
+                                                )
+                                            ),
+                                            emote
+                                        )
+                                    } else {
+                                        styled(
+                                            context.i18nContext.get(
+                                                SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(
+                                                    userSonhosWithRanking.user.asMention,
+                                                    SonhosUtils.getSonhosEmojiOfQuantity(userSonhosWithRanking.sonhos),
+                                                    userSonhosWithRanking.sonhos
+                                                )
+                                            ),
+                                            emote
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+
                 appendCouponSonhosBundleUpsellInformationIfNotNull(
                     loritta,
                     context.i18nContext,
@@ -627,8 +742,15 @@ class EmojiFight(
         val realPrize: Long,
         val taxedPrize: Long,
         val aprilFoolsWinnerBugMessage: String?,
-        val activeCoupon: ClaimedWebsiteCoupon?
-    )
+        val activeCoupon: ClaimedWebsiteCoupon?,
+        val userSonhosWithRankings: List<UserSonhosWithRanking>?
+    ) {
+        data class UserSonhosWithRanking(
+            val user: User,
+            val sonhos: Long,
+            val ranking: Long?
+        )
+    }
 
     sealed class EmojiFightJoinState {
         object EventFinished : EmojiFightJoinState()

@@ -12,6 +12,7 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
 
     val daily = commandMention("daily")
 
+    val sonhosAtm = commandMention("sonhos atm")
     val sonhosRank = commandMention("sonhos rank")
 
     val ban = commandMention("ban")
