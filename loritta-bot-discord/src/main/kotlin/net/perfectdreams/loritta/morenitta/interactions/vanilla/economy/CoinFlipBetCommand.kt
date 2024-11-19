@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTra
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime
@@ -461,14 +462,11 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         message = context.locale["commands.command.flipcoin.heads"]
                                     }
 
-                                    val winner: User
-                                    val loser: User
                                     val now = Instant.now()
-                                    var activeCoupon: ClaimedWebsiteCoupon? = null
 
-                                    if (isTails) {
-                                        winner = context.user
-                                        loser = invitedUser
+                                    val result = if (isTails) {
+                                        val winner = context.user
+                                        val loser = invitedUser
                                         loritta.newSuspendedTransaction {
                                             selfUserProfile.addSonhosNested(money)
                                             invitedUserProfile.takeSonhosNested(number)
@@ -526,14 +524,14 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 .orderBy(WebsiteDiscountCoupons.total, SortOrder.ASC)
                                                 .firstOrNull()
 
-                                            if (couponData != null) {
+                                            val activeCoupon = if (couponData != null) {
                                                 val paymentsThatUsedTheCouponCount = Payments.selectAll()
                                                     .where {
                                                         Payments.coupon eq couponData[WebsiteDiscountCoupons.id]
                                                     }
                                                     .count()
 
-                                                activeCoupon = ClaimedWebsiteCoupon(
+                                                ClaimedWebsiteCoupon(
                                                     couponData[WebsiteDiscountCoupons.id].value,
                                                     couponData[WebsiteDiscountCoupons.code],
                                                     couponData[WebsiteDiscountCoupons.endsAt],
@@ -541,11 +539,32 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     couponData[WebsiteDiscountCoupons.maxUses],
                                                     paymentsThatUsedTheCouponCount,
                                                 )
-                                            }
+                                            } else null
+
+                                            // Get the profiles again
+                                            val updatedWinnerProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(winner.idLong))
+                                            val updatedLoserProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(loser.idLong))
+
+                                            val winnerRanking = if (updatedWinnerProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                                                updatedWinnerProfile.money
+                                            ) else null
+                                            val loserRanking = if (updatedLoserProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                                                updatedLoserProfile.money
+                                            ) else null
+
+                                            return@newSuspendedTransaction Result(
+                                                winner,
+                                                loser,
+                                                activeCoupon,
+                                                updatedWinnerProfile.money,
+                                                winnerRanking,
+                                                updatedLoserProfile.money,
+                                                loserRanking
+                                            )
                                         }
                                     } else {
-                                        winner = invitedUser
-                                        loser = context.user
+                                        val winner = invitedUser
+                                        val loser = context.user
                                         loritta.newSuspendedTransaction {
                                             invitedUserProfile.addSonhosNested(money)
                                             selfUserProfile.takeSonhosNested(number)
@@ -602,14 +621,14 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 .orderBy(WebsiteDiscountCoupons.total, SortOrder.ASC)
                                                 .firstOrNull()
 
-                                            if (couponData != null) {
+                                            val activeCoupon = if (couponData != null) {
                                                 val paymentsThatUsedTheCouponCount = Payments.selectAll()
                                                     .where {
                                                         Payments.coupon eq couponData[WebsiteDiscountCoupons.id]
                                                     }
                                                     .count()
 
-                                                activeCoupon = ClaimedWebsiteCoupon(
+                                                ClaimedWebsiteCoupon(
                                                     couponData[WebsiteDiscountCoupons.id].value,
                                                     couponData[WebsiteDiscountCoupons.code],
                                                     couponData[WebsiteDiscountCoupons.endsAt],
@@ -617,7 +636,28 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                     couponData[WebsiteDiscountCoupons.maxUses],
                                                     paymentsThatUsedTheCouponCount,
                                                 )
-                                            }
+                                            } else null
+
+                                            // Get the profiles again
+                                            val updatedWinnerProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(winner.idLong))
+                                            val updatedLoserProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(loser.idLong))
+
+                                            val winnerRanking = if (updatedWinnerProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                                                updatedWinnerProfile.money
+                                            ) else null
+                                            val loserRanking = if (updatedLoserProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                                                updatedLoserProfile.money
+                                            ) else null
+
+                                            return@newSuspendedTransaction Result(
+                                                winner,
+                                                loser,
+                                                activeCoupon,
+                                                updatedWinnerProfile.money,
+                                                winnerRanking,
+                                                updatedLoserProfile.money,
+                                                loserRanking
+                                            )
                                         }
                                     }
 
@@ -631,6 +671,10 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         )
                                     }
 
+                                    // Let's add a random emoji just to look cute
+                                    val user1Emote = SonhosUtils.HANGLOOSE_EMOTES.random()
+                                    val user2Emote = SonhosUtils.HANGLOOSE_EMOTES.filter { it != user1Emote }.random()
+
                                     context.reply(false) {
                                         styled(
                                             "**$message!**",
@@ -638,9 +682,32 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         )
 
                                         styled(
-                                            context.locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
+                                            context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Congratulations(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(money), money, result.loser.asMention)),
                                             Emotes.LORI_RICH
                                         )
+
+                                        if (result.winnerSonhosRanking != null) {
+                                            styled(
+                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.winnerSonhos), result.winnerSonhos, result.winnerSonhosRanking)),
+                                                user1Emote
+                                            )
+                                        } else {
+                                            styled(
+                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(result.winner.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.winnerSonhos), result.winnerSonhos)),
+                                                user1Emote
+                                            )
+                                        }
+                                        if (result.loserSonhosRanking != null) {
+                                            styled(
+                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(result.loser.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.loserSonhos), result.loserSonhos, result.loserSonhosRanking)),
+                                                user2Emote
+                                            )
+                                        } else {
+                                            styled(
+                                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(result.loser.asMention, SonhosUtils.getSonhosEmojiOfQuantity(result.loserSonhos), result.loserSonhos)),
+                                                user2Emote
+                                            )
+                                        }
 
                                         val buttons = mutableListOf<Button>()
 
@@ -652,7 +719,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         appendCouponSonhosBundleUpsellInformationIfNotNull(
                                             loritta,
                                             context.i18nContext,
-                                            activeCoupon,
+                                            result.activeCoupon,
                                             "bet-coinflip"
                                         )?.let { buttons += it }
 
@@ -673,8 +740,8 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                         }
                                     }
 
-                                    context.giveAchievementAndNotify(winner, AchievementType.COIN_FLIP_BET_WIN, false)
-                                    context.giveAchievementAndNotify(loser, AchievementType.COIN_FLIP_BET_LOSE, false)
+                                    context.giveAchievementAndNotify(result.winner, AchievementType.COIN_FLIP_BET_WIN, false)
+                                    context.giveAchievementAndNotify(result.loser, AchievementType.COIN_FLIP_BET_LOSE, false)
                                 } else {
                                     componentContext.deferAndEditOriginal {
                                         actionRow(
@@ -721,6 +788,16 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
             )
         }
     }
+
+    data class Result(
+        val winner: User,
+        val loser: User,
+        val activeCoupon: ClaimedWebsiteCoupon?,
+        val winnerSonhos: Long,
+        val winnerSonhosRanking: Long?,
+        val loserSonhos: Long,
+        val loserSonhosRanking: Long?,
+    )
 
     sealed class CoinFlipTaxResult(val totalRewardPercentage: Double) {
         class LorittaCommunity(val isWeekend: Boolean, totalRewardPercentage: Double) : CoinFlipTaxResult(totalRewardPercentage)

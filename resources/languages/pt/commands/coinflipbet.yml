@@ -14,6 +14,8 @@ startBetPremiumServerWeekend: "Durante o final de semana, as taxas ficam por nos
 
 youAreNotParticipatingOnThisBet: "Você não está participando desta aposta!"
 
+congratulations: "Parabéns {winnerMention}, você ganhou {sonhosEmoji} **{sonhosBetQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! Financiado por {loserMention} rsrs"
+
 options:
   user:
     text: "O usuário que você deseja apostar com"
