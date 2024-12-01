@@ -11,7 +11,7 @@ status:
   currentPrize: "Prêmio atual: **{currentPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**"
   usersParticipating: "Pessoas participando: **{usersParticipating,plural, =0 {# pessoas} one {# pessoa} other {# pessoas}}**"
   lastWinner: "Último ganhador: **{user} ({lastPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})**"
-  lastWinnerTaxed: "Último ganhador: **`{user}` ({lastPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {lastPrizeAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}))**"
+  lastWinnerTaxed: "Último ganhador: **{user} ({lastPrize,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {lastPrizeAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}))**"
   resultsIn: "Resultado irá sair em **{result}**!"
 
   youNeedToSelectWhatRaffleTypeYouWant: "Você precisa escolher qual rifa você deseja ver as informações sobre!"
