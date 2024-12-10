@@ -46,6 +46,7 @@ abstract class ProfileDashboardView(
 
             appendEntry("/dashboard", true, locale["website.dashboard.profile.sectionNames.yourServers"], "fa fa-cogs", false)
             appendEntry("/dashboard/user-app", true, i18nContext.get(I18nKeysData.Website.Dashboard.PocketLoritta.Title), "fa fa-box", false)
+            appendEntry("https://sparklypower.net/?utm_source=loritta&utm_medium=loritta-dashboard&utm_campaign=sparklylori&utm_content=user-profile-sidebar", false, i18nContext.get(I18nKeysData.Website.Dashboard.LorittaMinecraftServer), "fa-solid fa-gamepad", true)
 
             hr(classes = "divider") {}
             div(classes = "category") {
@@ -56,7 +57,7 @@ abstract class ProfileDashboardView(
             appendEntry("/dashboard/backgrounds", false, "Backgrounds", "far fa-images", false)
             appendEntry("/dashboard/profile-presets", true, i18nContext.get(I18nKeysData.Website.Dashboard.ProfilePresets.Title), "fa-solid fa-object-group", true)
             appendEntry("/dashboard/ship-effects", true, locale["website.dashboard.profile.sectionNames.shipEffects"], "fas fa-heart", false)
-            appendEntry("/dashboard/api-keys", true, i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title), "fa fa-code", true)
+            appendEntry("/dashboard/api-keys", true, i18nContext.get(I18nKeysData.Website.Dashboard.ApiKeys.Title), "fa fa-code", false)
 
             hr(classes = "divider") {}
             div(classes = "category") {
