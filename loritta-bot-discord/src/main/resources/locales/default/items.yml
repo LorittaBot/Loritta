@@ -25,6 +25,7 @@ sets:
   valorant: "VALORANT"
   brat: "brat"
   hollowKnight: "Hollow Knight"
+  stardewValley: "Stardew Valley"
 profileDesigns:
   name: "Design para Perfil"
   defaultDark:
@@ -1261,3 +1262,9 @@ backgrounds:
   charliXcxBratUwu:
     title: "uwu"
     description: "Eis que você gosta de escutar Charli xcx, mas você não consegue resistir a tentação de ser um furry. Colecione todos os backgrounds da coleção de brat para ganhar uma insígnia no seu perfil da Loritta!"
+  dailySonhos:
+    title: "Sonhos Diários"
+    description: "Testemunhe a criação de um sonho."
+  gabrielaStamp:
+    title: "Selo da Gabriela"
+    description: "Uau! Uma carta com o remetente da DreamLand com um selo especial. Legal... vou guardar!"

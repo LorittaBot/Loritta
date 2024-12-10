@@ -1297,6 +1297,13 @@ object TrinketsStuff {
             addDefaultVariant("charli-xcx-brat-uwu", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "charli-xcx-brat-uwu-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("dailySonhos", true, Rarity.EPIC, LocalDate.of(2024, 11, 29), createdBy = listOf("framberry")) {
+            addDefaultVariant("daily-sonhos", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("gabrielaStamp", true, Rarity.EPIC, LocalDate.of(2024, 12, 6), createdBy = listOf("framberry")) {
+            addDefaultVariant("gabriela-stamp", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "gabriela-stamp-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createProfileDesign(
