@@ -87,7 +87,8 @@ class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
         for (reactionSet in activeEvent.reactionSets) {
             val randomNumber = LorittaBot.RANDOM.nextFloat()
 
-            if (reactionSet.chance >= randomNumber) {
+            val chance = reactionSet.chanceProvider.invoke(event.guild)
+            if (chance >= randomNumber) {
                 val shouldAddReaction = m.newSuspendedTransaction {
                     val spawnTheCandy = ReactionEventPlayers.selectAll()
                         .where {
