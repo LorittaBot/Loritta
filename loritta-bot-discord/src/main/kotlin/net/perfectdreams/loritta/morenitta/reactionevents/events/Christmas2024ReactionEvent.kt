@@ -21,7 +21,7 @@ import kotlin.random.Random
 
 object Christmas2024ReactionEvent : ReactionEvent() {
     override val internalId: String = "christmas2024"
-    override val startsAt: Instant = ZonedDateTime.of(2024, 12, 3, 21, 0, 0, 0, Constants.LORITTA_TIMEZONE).toInstant()
+    override val startsAt: Instant = ZonedDateTime.of(2024, 12, 18, 21, 0, 0, 0, Constants.LORITTA_TIMEZONE).toInstant()
     override val endsAt: Instant = ZonedDateTime.of(2024, 12, 25, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE).toInstant()
 
     private val toy1 = ReactionSet(
