@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.profile.profiles.RawProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.profiles.StaticProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
+import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -61,9 +62,18 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 		val backgroundImage = if (backgroundTypeName == null) {
 			BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
 		} else {
+			var backgroundTypeNameToBeRetrieved = backgroundTypeName
+
+			// The "random" and "custom" backgrounds are special backgrounds that do not have any background variations associated with it, causing a crash when attempting to
+			// render a profile with them
+			//
+			// So, to workaround this, we fall back to the default background
+			// This does not happen when using the profile command because the code already has checks for when we are querying these two backgrounds
+			if (backgroundTypeNameToBeRetrieved == Background.RANDOM_BACKGROUND_ID || backgroundTypeNameToBeRetrieved == Background.CUSTOM_BACKGROUND_ID)
+				backgroundTypeNameToBeRetrieved = Background.DEFAULT_BACKGROUND_ID
 			val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 
-			val background = loritta.pudding.backgrounds.getBackground(backgroundTypeName)
+			val background = loritta.pudding.backgrounds.getBackground(backgroundTypeNameToBeRetrieved)
 			if (background == null) {
 				call.respondText("", status = HttpStatusCode.NotFound)
 				return
