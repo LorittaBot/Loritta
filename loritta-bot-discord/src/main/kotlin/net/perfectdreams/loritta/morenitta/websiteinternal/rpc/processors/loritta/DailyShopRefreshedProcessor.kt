@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyShopItems
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.LorittaDailyShopNotificationsConfigs
+import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.utils.Color
 import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.common.utils.placeholders.DailyShopTrinketsNotificationMessagePlaceholders
@@ -96,6 +97,56 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
             Result(backgrounds, profileDesigns, configs)
         }
 
+        // Instead of generating a profile design for each guild, we will generate it only once
+        // Yeah, it is a bit cool seeing Loritta showing her own profile, but it is VERY expensive if we are generating for each guild that has the feature enabled
+        val i18nContext = loritta.languageManager.defaultI18nContext
+        val legacyBaseLocale = loritta.localeManager.getLocaleById(LocaleManager.DEFAULT_LOCALE_ID)
+
+        val selfUserAsProfileUserInfoData = loritta.profileDesignManager.transformUserToProfileUserInfoData(loritta.lorittaShards.shardManager.shards.first().selfUser)
+
+        // This has "guild-specific" items (like the profile designs)
+        val shopItems = mutableListOf<ShopItemWrapper>()
+
+        for (item in result.profileDesigns) {
+            val profileResult = loritta.profileDesignManager.createProfile(
+                loritta,
+                i18nContext,
+                legacyBaseLocale,
+                selfUserAsProfileUserInfoData,
+                selfUserAsProfileUserInfoData,
+                null,
+                loritta.profileDesignManager.designs.first {
+                    it.internalName == item.internalName
+                }
+            )
+
+            shopItems.add(ProfileDesignItemWrapper(item, profileResult))
+        }
+
+        for (item in result.backgrounds) {
+            val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
+            val backgroundWithVariations = item.backgroundWithVariations
+
+            val variation = backgroundWithVariations.variations.filterIsInstance<DefaultBackgroundVariation>()
+                .first()
+
+            val backgroundUrl = when (variation.storageType) {
+                BackgroundStorageType.DREAM_STORAGE_SERVICE -> loritta.profileDesignManager.getDreamStorageServiceBackgroundUrlWithCropParameters(
+                    loritta.config.loritta.dreamStorageService.url,
+                    dssNamespace,
+                    variation
+                )
+
+                BackgroundStorageType.ETHEREAL_GAMBI -> loritta.profileDesignManager.getEtherealGambiBackgroundUrl(
+                    variation
+                )
+            }
+
+            shopItems.add(BackgroundItemWrapper(item, backgroundUrl))
+        }
+
+        val newTrinketsShopItems = shopItems.filter { it.tag == "website.dailyShop.new" }
+        
         for (config in result.configs) {
             val guild = loritta.lorittaShards.getGuildById(config[ServerConfigs.id].value) ?: continue
             try {
@@ -248,48 +299,6 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                     if (channel != null && channel.canTalk()) {
                         GlobalScope.launch {
                             try {
-                                // This has "guild-specific" items (like the profile designs)
-                                val shopItems = mutableListOf<ShopItemWrapper>()
-
-                                for (item in result.profileDesigns) {
-                                    val profileResult = loritta.profileDesignManager.createProfile(
-                                        loritta,
-                                        i18nContext,
-                                        legacyBaseLocale,
-                                        selfMemberAsProfileUserInfoData,
-                                        selfMemberAsProfileUserInfoData,
-                                        guild.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) },
-                                        loritta.profileDesignManager.designs.first {
-                                            it.internalName == item.internalName
-                                        }
-                                    )
-
-                                    shopItems.add(ProfileDesignItemWrapper(item, profileResult))
-                                }
-
-                                for (item in result.backgrounds) {
-                                    val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-                                    val backgroundWithVariations = item.backgroundWithVariations
-
-                                    val variation =
-                                        backgroundWithVariations.variations.filterIsInstance<DefaultBackgroundVariation>()
-                                            .first()
-
-                                    val backgroundUrl = when (variation.storageType) {
-                                        BackgroundStorageType.DREAM_STORAGE_SERVICE -> loritta.profileDesignManager.getDreamStorageServiceBackgroundUrlWithCropParameters(
-                                            loritta.config.loritta.dreamStorageService.url,
-                                            dssNamespace,
-                                            variation
-                                        )
-
-                                        BackgroundStorageType.ETHEREAL_GAMBI -> loritta.profileDesignManager.getEtherealGambiBackgroundUrl(
-                                            variation
-                                        )
-                                    }
-
-                                    shopItems.add(BackgroundItemWrapper(item, backgroundUrl))
-                                }
-
                                 if (shopItems.isNotEmpty()) {
                                     sendDailyShopTrinketsNotification(
                                         channel,
@@ -311,57 +320,11 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                     if (channel != null && channel.canTalk()) {
                         GlobalScope.launch {
                             try {
-                                // This has "guild-specific" items (like the profile designs)
-                                val shopItems = mutableListOf<ShopItemWrapper>()
-
-                                for (item in result.profileDesigns.filter { it.tag == "website.dailyShop.new" }) {
-                                    val profileResult = loritta.profileDesignManager.createProfile(
-                                        loritta,
-                                        i18nContext,
-                                        legacyBaseLocale,
-                                        selfMemberAsProfileUserInfoData,
-                                        selfMemberAsProfileUserInfoData,
-                                        guild.let {
-                                            loritta.profileDesignManager.transformGuildToProfileGuildInfoData(
-                                                it
-                                            )
-                                        },
-                                        loritta.profileDesignManager.designs.first {
-                                            it.internalName == item.internalName
-                                        }
-                                    )
-
-                                    shopItems.add(ProfileDesignItemWrapper(item, profileResult))
-                                }
-
-                                for (item in result.backgrounds.filter { it.tag == "website.dailyShop.new" }) {
-                                    val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-                                    val backgroundWithVariations = item.backgroundWithVariations
-
-                                    val variation =
-                                        backgroundWithVariations.variations.filterIsInstance<DefaultBackgroundVariation>()
-                                            .first()
-
-                                    val backgroundUrl = when (variation.storageType) {
-                                        BackgroundStorageType.DREAM_STORAGE_SERVICE -> loritta.profileDesignManager.getDreamStorageServiceBackgroundUrlWithCropParameters(
-                                            loritta.config.loritta.dreamStorageService.url,
-                                            dssNamespace,
-                                            variation
-                                        )
-
-                                        BackgroundStorageType.ETHEREAL_GAMBI -> loritta.profileDesignManager.getEtherealGambiBackgroundUrl(
-                                            variation
-                                        )
-                                    }
-
-                                    shopItems.add(BackgroundItemWrapper(item, backgroundUrl))
-                                }
-
-                                if (shopItems.isNotEmpty())
+                                if (newTrinketsShopItems.isNotEmpty())
                                     sendDailyShopTrinketsNotification(
                                         channel,
                                         config[LorittaDailyShopNotificationsConfigs.newTrinketsMessage],
-                                        shopItems,
+                                        newTrinketsShopItems,
                                         "new-trinkets"
                                     )
                             } catch (e: Exception) {
