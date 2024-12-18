@@ -99,3 +99,9 @@ profiles:
     brat:
       title: "brat"
       description: "Insígina para pessoas que compraram todos os backgrounds de brat na loja diária de bugigangas da Loritta"
+    christmas2024:
+      title: "Festivo"
+      description: "Insígnia para pessoas que participaram o Evento de Natal da Loritta 2024"
+    superChristmas2024:
+      title: "Super Festivo"
+      description: "Insígnia para pessoas que zeraram o Evento de Natal da Loritta 2024"
