@@ -26,6 +26,7 @@ sets:
   brat: "brat"
   hollowKnight: "Hollow Knight"
   stardewValley: "Stardew Valley"
+  minecraft: "Minecraft"
 profileDesigns:
   name: "Design para Perfil"
   defaultDark:
@@ -1268,3 +1269,21 @@ backgrounds:
   gabrielaStamp:
     title: "Selo da Gabriela"
     description: "Uau! Uma carta com o remetente da DreamLand com um selo especial. Legal... vou guardar!"
+  lorittaHalloweenThePowerOfTheFullMoon:
+    title: "O Poder da Lua Cheia"
+    description: "No Halloween, as criaturas mais assustadoras saem para pregar peças na garotada. Será que é apenas uma fantasia, ou será que a história da Loritta e suas amigas acabam por aqui?"
+  lorittaHalloweenEscapingFromTheMummy:
+    title: "Fuga da Múmia"
+    description: "Aaah! Uma enorme múmia apareceu *sem querer* enquanto a Loritta e suas amigas seguiam um atalho para chegarem na festa de Halloween do Gessy mais rápido!"
+  minecraftBehindYou:
+    title: "Behind You"
+    description: "Não olhe para trás, apenas fuja."
+  brawlStarsKenji:
+    title: "Kenji, o Samurai"
+    description: "Este samurai trocou a catana pelos utensílios de cozinha para cuidar do restaurante de sushi no Starr Park. Parece que ele está escondendo algo sobre o seu passado, mas seus sushis são tão deliciosos que ninguém se importa!"
+  lorittaHalloweenYoukaiMeeting:
+    title: "Reunião Youkai"
+    description: "Lori, Gabi e Pantufa estão pensando em fantasias de halloween para usarem esse ano, mas parece que elas já usaram todas as fantasias \"comuns\" pra comemorar, realmente uma pena... De repente a Pantufa se lembrou das histórias que seus pais contavam sobre Youkais, legal né?"
+  lorittaHalloweenMagicAndNostalgic:
+    title: "Magia & Nostalgia"
+    description: "A Loritta, após encontrar uma estrela mágica capaz de realizar um desejo por apenas uma noite, desejou realizar o sonho de sua amiga Gabi: formar uma banda com as amigas! Ela então deseja que elas possam ser uma banda de verdade. E em um piscar de olhos, cada uma delas ganha uma guitarra mágica, nascendo assim a lendária banda de As Pumpkets!"
