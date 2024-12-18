@@ -108,6 +108,15 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
         val shopItems = mutableListOf<ShopItemWrapper>()
 
         for (item in result.profileDesigns) {
+            var profileCreator = loritta.profileDesignManager.designs.firstOrNull {
+                it.internalName == item.internalName
+            }
+
+            if (profileCreator == null) {
+                logger.error { "Failed to find the profile creator for \"${item.internalName}\"! Bug? Did you remove a profile without removing it from the database? Falling back to the default profile creator..." }
+                profileCreator = loritta.profileDesignManager.defaultProfileDesign
+            }
+
             val profileResult = loritta.profileDesignManager.createProfile(
                 loritta,
                 i18nContext,
@@ -115,9 +124,7 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
                 selfUserAsProfileUserInfoData,
                 selfUserAsProfileUserInfoData,
                 null,
-                loritta.profileDesignManager.designs.first {
-                    it.internalName == item.internalName
-                }
+                profileCreator
             )
 
             shopItems.add(ProfileDesignItemWrapper(item, profileResult))
@@ -146,7 +153,7 @@ class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcP
         }
 
         val newTrinketsShopItems = shopItems.filter { it.tag == "website.dailyShop.new" }
-        
+
         for (config in result.configs) {
             val guild = loritta.lorittaShards.getGuildById(config[ServerConfigs.id].value) ?: continue
             try {
