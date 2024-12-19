@@ -28,7 +28,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.minecraft.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.music.LyricsCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.pokemon.PokedexCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBattleCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBoxCommand
@@ -143,9 +142,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// =======[ UNDERTALE ]========
 		commandMap.add(UndertaleBoxCommand(loritta))
 		commandMap.add(UndertaleBattleCommand(loritta))
-
-		// =======[ POKÉMON ]========
-		commandMap.add(PokedexCommand(loritta))
 
 		// =======[ ANIME ]========
 		// commandMap.add(MALAnimeCommand(loritta))
