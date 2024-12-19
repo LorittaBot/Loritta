@@ -227,7 +227,7 @@ object Christmas2024ReactionEvent : ReactionEvent() {
         i18nContext: I18nContext,
         sonhos: Long,
         craftedCount: Int
-    ) = i18nContext.get(I18nKeysData.Commands.Command.Transactions.Types.Events.Halloween2024(sonhos, craftedCount))
+    ) = i18nContext.get(I18nKeysData.Commands.Command.Transactions.Types.Events.Christmas2024(sonhos, craftedCount))
 
     override fun createCraftItemButtonMessage(i18nContext: I18nContext) = TextAndEmoji(
         i18nContext.get(I18nKeysData.ReactionEvents.Event.Christmas2024.CraftItem),
