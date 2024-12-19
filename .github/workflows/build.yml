@@ -61,46 +61,4 @@ jobs:
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} --scan
-
-      - name: Jib - LorittaBot Discord
-        env:
-          GRADLE_OPTS: -Xmx4096m -Xms4096m
-          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew -Djib.serialize=true :loritta-bot-discord:jib  -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
-
-      - name: Jib - Discord Chat Message Renderer Server
-        env:
-          GRADLE_OPTS: -Xmx4096m -Xms4096m
-          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew -Djib.serialize=true :discord-chat-message-renderer-server:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
-
-      - name: Jib - Lori API Proxy
-        env:
-          GRADLE_OPTS: -Xmx4096m -Xms4096m
-          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew -Djib.serialize=true :lori-api-proxy:jib  -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
-
-      - name: Jib - SpicyMorenitta
-        env:
-          GRADLE_OPTS: -Xmx4096m -Xms4096m
-          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew -Djib.serialize=true :web:dashboard:backend:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
-
-      - name: Jib - Showtime
-        env:
-          GRADLE_OPTS: -Xmx4096m -Xms4096m
-          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew -Djib.serialize=true :web:showtime:backend:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
-
-      - name: Jib - Broker Tickers Updater
-        env:
-          GRADLE_OPTS: -Xmx4096m -Xms4096m
-          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew -Djib.serialize=true :broker-tickers-updater:jib -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }}
+        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:jib :discord-chat-message-renderer-server:jib :lori-api-proxy:jib :web:dashboard:backend:jib :web:showtime:backend:jib :broker-tickers-updater:jib --scan
