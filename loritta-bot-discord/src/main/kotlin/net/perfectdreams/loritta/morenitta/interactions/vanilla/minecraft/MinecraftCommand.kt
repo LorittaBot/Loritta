@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
@@ -333,8 +334,11 @@ class MinecraftCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper
                 )
             }
 
+            // Bypasses that "omg amplification attack" embed that Craftar has when hotlinking from Discord...
+            // TODO: Maybe we should build our own skin service that isn't picky, heck, it could be a smol lib
+            val attachment = LorittaUtils.downloadFile(loritta, "https://crafatar.com/$type/$uuid?size=128&overlay", bypassSafety = true)!!
             context.reply(false) {
-                content = "https://crafatar.com/$type/$uuid?size=128&overlay"
+                files += FileUpload.fromData(attachment, "player.png")
             }
         }
     }
