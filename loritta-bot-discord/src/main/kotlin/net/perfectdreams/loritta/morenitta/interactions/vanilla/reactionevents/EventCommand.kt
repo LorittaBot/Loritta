@@ -183,7 +183,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         .filter {
                             it.createEventTitle(context.i18nContext).startsWith(context.event.focusedOption.value, true)
                         }
-                        .sortedBy { it.startsAt }
+                        .sortedByDescending { it.startsAt }
                         .take(25)
 
                     reactionEvents.associate {
@@ -662,7 +662,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         .filter {
                             it.createEventTitle(context.i18nContext).startsWith(context.event.focusedOption.value, true)
                         }
-                        .sortedBy { it.startsAt }
+                        .sortedByDescending { it.startsAt }
                         .take(25)
 
                     reactionEvents.associate {
