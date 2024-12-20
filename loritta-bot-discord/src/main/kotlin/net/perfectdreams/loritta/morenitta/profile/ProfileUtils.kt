@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
+import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Marriage
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -31,6 +32,7 @@ object ProfileUtils {
                 marriage.user1
             }.toString()
 
+            KotlinLogging.logger {}.info { "ProfileUtils#retrieveUserInfoById - UserId: ${marriedWithId}" }
             return loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())?.let {
                 MarriageInfo(marriage, it)
             }

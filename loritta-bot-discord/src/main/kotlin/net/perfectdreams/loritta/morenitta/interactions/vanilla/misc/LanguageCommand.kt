@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.misc
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
@@ -86,7 +87,11 @@ class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     }
 
                     for (language in validLanguages) {
-                        val translators = language.context.get(I18nKeysData.TranslatedBy).mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it.toLong()) }
+
+                        val translators = language.context.get(I18nKeysData.TranslatedBy).mapNotNull {
+                            KotlinLogging.logger {}.info { "LanguageCommand#retrieveUserInfoById - UserId: ${it.toLong()}" }
+                            loritta.lorittaShards.retrieveUserInfoById(it.toLong())
+                        }
 
                         field {
                             name = "${language.emojiName} ${if (language.legacyLocale != null) language.legacyLocaleName else language.context.language.info.name}"

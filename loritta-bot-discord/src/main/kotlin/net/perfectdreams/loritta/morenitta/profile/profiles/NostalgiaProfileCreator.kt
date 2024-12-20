@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
@@ -145,6 +146,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 
 			val marrySection = readImageFromResources("/profile/nostalgia/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
+			KotlinLogging.logger {}.info { "NostalgiaProfileCreator#retrieveUserInfoById - UserId: ${marriedWithId}" }
 			val marriedWith = loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
 
 			if (marriedWith != null) {

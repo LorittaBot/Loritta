@@ -227,6 +227,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
 
                                     if (sponsoredBy != null && multipliedBy != null) {
                                         val sponsoredByUser = if (sponsoredByUserId != null) {
+                                            KotlinLogging.logger {}.info { "GetDailyRewardProcessor#retrieveUserInfoById - UserId: ${sponsoredByUserId}" }
                                             val sponsoredByUser = loritta.lorittaShards.retrieveUserInfoById(sponsoredByUserId)
 
                                             if (sponsoredByUser != null)

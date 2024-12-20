@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
@@ -158,6 +159,7 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
                         reputation[Reputations.receivedById]
                     }
 
+                    KotlinLogging.logger {}.info { "RepListCommand#retrieveUserInfoById - UserId: $receivedByUserId" }
                     val receivedByUser = loritta.lorittaShards.retrieveUserInfoById(receivedByUserId)
 
                     val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")

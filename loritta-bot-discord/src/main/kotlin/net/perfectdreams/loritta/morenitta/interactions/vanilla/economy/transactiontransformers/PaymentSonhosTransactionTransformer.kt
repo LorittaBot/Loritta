@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
+import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
@@ -18,9 +19,17 @@ object PaymentSonhosTransactionTransformer : SonhosTransactionTransformer<Paymen
     ): suspend StringBuilder.() -> (Unit) = {
         val receivedTheSonhos = transaction.user == transaction.receivedBy
         val receiverUserInfo =
-            cachedUserInfos.getOrPut(transaction.receivedBy) { loritta.lorittaShards.retrieveUserInfoById(transaction.receivedBy) }
+            cachedUserInfos.getOrPut(transaction.receivedBy) {
+                KotlinLogging.logger {}.info { "PaymentSonhosTransactionTransformer#retrieveUserInfoById - UserId: ${transaction.receivedBy}" }
+
+                loritta.lorittaShards.retrieveUserInfoById(transaction.receivedBy)
+            }
         val giverUserInfo =
-            cachedUserInfos.getOrPut(transaction.givenBy) { loritta.lorittaShards.retrieveUserInfoById(transaction.givenBy) }
+            cachedUserInfos.getOrPut(transaction.givenBy) {
+                KotlinLogging.logger {}.info { "PaymentSonhosTransactionTransformer#retrieveUserInfoById - UserId: ${transaction.givenBy}" }
+
+                loritta.lorittaShards.retrieveUserInfoById(transaction.givenBy)
+            }
 
         if (receivedTheSonhos) {
             appendMoneyEarnedEmoji()

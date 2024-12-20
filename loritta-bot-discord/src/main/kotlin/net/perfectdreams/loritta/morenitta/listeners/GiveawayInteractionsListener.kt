@@ -508,7 +508,10 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         .map { it[GiveawayParticipants.userId] }
                 }
 
-                val members = participants.associateWith { m.lorittaShards.retrieveUserInfoById(it) }
+                val members = participants.associateWith {
+                    KotlinLogging.logger {}.info { "GiveawayInteractionsListener#retrieveUserInfoById - UserId: ${it}" }
+                    m.lorittaShards.retrieveUserInfoById(it)
+                }
                 val participantsText = StringBuilder()
                 members.forEach { (id, info) ->
                     if (info != null) {

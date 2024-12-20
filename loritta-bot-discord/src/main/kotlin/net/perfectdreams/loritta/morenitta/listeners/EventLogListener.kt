@@ -190,6 +190,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				}
 
 				if (storedMessage != null && textChannel.canTalk() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS) && event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
+					KotlinLogging.logger {}.info { "EventLogListener#retrieveUserInfoById (delete) - UserId: ${storedMessage.authorId}" }
 					val user = loritta.lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
 
 					val embed = EmbedBuilder()
@@ -249,6 +250,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					if (storedMessages.isNotEmpty()) {
 						val retrievedUsers = mutableMapOf<Long, CachedUserInfo?>()
 
+						KotlinLogging.logger {}.info { "EventLogListener#retrieveUserInfoById (bulk delete) - UserId: ${storedMessages.first().authorId}" }
 						val user = loritta.lorittaShards.retrieveUserInfoById(storedMessages.first().authorId)
 							?: return@launch
 

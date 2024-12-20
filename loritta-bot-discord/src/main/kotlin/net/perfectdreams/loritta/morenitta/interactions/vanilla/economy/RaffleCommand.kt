@@ -12,6 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -108,6 +109,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val raffleId = raffleStatus.raffleId
 
             val lastWinner = if (lastWinnerId != null) {
+                KotlinLogging.logger {}.info { "ServerInfoCommand#retrieveUserInfoById - UserId: $lastWinnerId" }
                 loritta.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
             } else {
                 null
@@ -159,6 +161,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             }) {
                                 val participantId = participant[RaffleTickets.userId]
                                 val ticketCount = participant[raffleTicketsCount]
+                                KotlinLogging.logger {}.info { "RaffleCommand#retrieveUserInfoById - UserId: $participantId" }
                                 val userInfo = loritta.lorittaShards.retrieveUserInfoById(participantId)
                                 val hasInviteOnName = userInfo?.name?.let { DiscordInviteUtils.hasInvite(it) }
                                 if (userInfo != null && hasInviteOnName == false) {

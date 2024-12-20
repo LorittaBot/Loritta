@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
+import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
@@ -18,6 +19,7 @@ object MarriageMarrySonhosTransactionTransformer : SonhosTransactionTransformer<
     ): suspend StringBuilder.() -> (Unit) = {
         appendMoneyLostEmoji()
 
+        KotlinLogging.logger {}.info { "MarriageMarrySonhosTransactionTransformer#retrieveUserInfoById - UserId: ${transaction.marriedWithUserId}" }
         val marriedWithUserInfo = cachedUserInfos.getOrPut(UserId(transaction.marriedWithUserId)) { loritta.lorittaShards.retrieveUserInfoById(transaction.marriedWithUserId) }
 
         val tag = convertToUserNameCodeBlockPreviewTag(

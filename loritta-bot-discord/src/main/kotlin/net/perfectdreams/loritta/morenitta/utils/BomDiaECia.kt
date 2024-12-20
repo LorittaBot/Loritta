@@ -279,7 +279,10 @@ class BomDiaECia(val loritta: LorittaBot) {
 							if (it.emoji.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 
-								val triedToCall = triedToCall.mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it) }
+								val triedToCall = triedToCall.mapNotNull {
+									KotlinLogging.logger {}.info { "BomDiaECia#retrieveUserInfoById - UserId: ${it}" }
+									loritta.lorittaShards.retrieveUserInfoById(it)
+								}
 								channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
 							}
 						}

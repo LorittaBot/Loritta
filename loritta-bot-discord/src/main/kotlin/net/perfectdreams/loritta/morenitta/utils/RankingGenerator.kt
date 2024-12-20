@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -54,6 +55,7 @@ object RankingGenerator {
 				break
 			}
 
+			KotlinLogging.logger {}.info { "RankingGenerator#retrieveUserInfoById - UserId: ${profile.userId}" }
 			val member = loritta.lorittaShards.retrieveUserInfoById(profile.userId) ?: onNullUser?.invoke(profile.userId)
 
 			if (member != null) {

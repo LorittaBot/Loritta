@@ -98,6 +98,12 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		if (id == null)
 			return null
 
+		try {
+			throw RuntimeException()
+		} catch (e: Exception) {
+			logger.info(e) { "LorittaShards#retrieveUserInfoById - UserId: $id" }
+		}
+
 		// Ao dar retrieve na info do user, primeiro iremos tentar verificar se a gente tem ele no user cache do JDA
 		val userInJdaCache = loritta.lorittaShards.getUserById(id)
 		if (userInJdaCache != null)

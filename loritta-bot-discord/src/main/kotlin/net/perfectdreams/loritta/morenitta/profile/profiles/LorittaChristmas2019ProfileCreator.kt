@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -56,7 +57,10 @@ class LorittaChristmas2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileC
 			marriage?.user1
 		}
 
-		val marriedWith = if (marriedWithId != null) { loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
+		val marriedWith = if (marriedWithId != null) {
+			KotlinLogging.logger {}.info { "LorittaChristmas2019ProfileCreator#retrieveUserInfoById - UserId: ${marriedWithId}" }
+			loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
+		} else { null }
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
 

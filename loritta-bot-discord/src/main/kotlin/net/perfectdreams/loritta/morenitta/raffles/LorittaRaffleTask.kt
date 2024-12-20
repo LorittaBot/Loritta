@@ -295,6 +295,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         is RaffleDM.LostTheRaffle -> {
                             val lastWinnerId = raffleDM.winnerId
                             val lastWinner = if (lastWinnerId != null) {
+                                KotlinLogging.logger {}.info { "LorittaRaffleTask#retrieveUserInfoById - UserId: ${lastWinnerId}" }
                                 m.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
                             } else {
                                 null
