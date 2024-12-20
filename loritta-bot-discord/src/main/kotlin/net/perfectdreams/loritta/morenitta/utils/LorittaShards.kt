@@ -189,6 +189,12 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		if (cachedUser != null)
 			return cachedUser.getOrNull()
 
+		try {
+			throw RuntimeException()
+		} catch (e: Exception) {
+			logger.info(e) { "LorittaShards#retrieveUserById - UserId: $id" }
+		}
+
 		val user = shardManager.retrieveUserById(id).await()
 		cachedRetrievedUsers.put(id, Optional.of(user))
 
