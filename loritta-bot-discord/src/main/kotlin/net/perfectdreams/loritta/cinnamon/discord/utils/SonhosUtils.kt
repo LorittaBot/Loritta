@@ -138,6 +138,10 @@ object SonhosUtils {
         loritta: LorittaBot,
         i18nContext: I18nContext
     ): Button? {
+        // This is disabled while the event is in hiatus
+        if (true)
+            return null
+
         val now = Instant.now()
         
         // TODO: Remove this later!
