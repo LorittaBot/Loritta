@@ -1,5 +1,6 @@
 ---
 label: "roleplay"
+description: "Beijos, tapas, abraços e carinhos! Faça ações em outra pessoa para demonstrar o que você realmente sente!"
 doRoleplayAction: "Fazer Ação de Roleplay" #Shown when right-clicking a user
 retribute: "Retribuir" #Retribute this Action Button
 pictureSource: "Fonte da Imagem" #Source of the Action's Picture

@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -85,7 +84,7 @@ class RoleplayCommand {
     }
 
     class RoleplaySlashCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
-        override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ROLEPLAY, UUID.fromString("7e3b4ccf-0757-48fc-9120-e2e7938cb6f8")) {
+        override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ROLEPLAY, UUID.fromString("7e3b4ccf-0757-48fc-9120-e2e7938cb6f8")) {
             enableLegacyMessageSupport = true
             this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 

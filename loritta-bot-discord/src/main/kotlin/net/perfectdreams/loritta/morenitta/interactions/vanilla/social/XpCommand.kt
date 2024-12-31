@@ -21,7 +21,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.R
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -48,7 +47,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Xp
     }
 
-    override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.SOCIAL, UUID.fromString("1d3edb96-4485-4249-a365-4a772bb02f0c")) {
+    override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("1d3edb96-4485-4249-a365-4a772bb02f0c")) {
         isGuildOnly = true
         enableLegacyMessageSupport = true
 
