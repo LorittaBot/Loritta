@@ -129,7 +129,7 @@ class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRo
         } else null
 
         val s = System.currentTimeMillis()
-        val requestUrl = URLBuilder("https://api.loritta.website/v1$pathToBeUsed")
+        val requestUrl = URLBuilder("${loritta.config.loritta.website.apiProxyUrl.removeSuffix("/")}/v1$pathToBeUsed")
             .apply {
                 for (queryParameter in endpointTesterOptions.queryParameters) {
                     val value = postParams.getAll("queryparameter:${queryParameter.name}")

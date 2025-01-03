@@ -134,6 +134,7 @@ data class LorittaConfig(
         val sessionName: String,
         val sessionDomain: String,
         val spicyMorenittaJsPath: String?,
+        val apiProxyUrl: String
     ) {
         @Serializable
         data class AuthenticationKey (
