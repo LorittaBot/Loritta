@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
+import net.perfectdreams.loritta.serializable.SonhosTransferRequestMetadata
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -212,6 +213,11 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                 it[SonhosTransferRequests.requestedAt] = now
                 it[SonhosTransferRequests.expiresAt] = nowPlusTimeToLive
                 it[SonhosTransferRequests.giverAcceptedAt] = now // The bot should automatically accept the transfer request
+                it[SonhosTransferRequests.metadata] = Json.encodeToString<SonhosTransferRequestMetadata>(
+                    SonhosTransferRequestMetadata.APIInitiatedSonhosTransferRequestMetadata(
+                        request.reason
+                    )
+                )
             }
         }
 
