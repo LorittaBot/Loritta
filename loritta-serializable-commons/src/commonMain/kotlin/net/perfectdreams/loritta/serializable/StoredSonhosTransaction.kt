@@ -49,6 +49,14 @@ data class StoredPaymentSonhosTransaction(
 ) : StoredSonhosTransaction()
 
 @Serializable
+data class StoredAPIInitiatedPaymentSonhosTransaction(
+    val givenBy: Long,
+    val receivedBy: Long,
+    val paymentResultId: Long,
+    val reason: String
+) : StoredSonhosTransaction()
+
+@Serializable
 data class StoredBrokerSonhosTransaction(
     val action: LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction,
     val ticker: String,

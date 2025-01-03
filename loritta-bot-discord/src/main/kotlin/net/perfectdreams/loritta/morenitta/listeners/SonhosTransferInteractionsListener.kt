@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -22,6 +23,8 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCo
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
+import net.perfectdreams.loritta.serializable.SonhosTransferRequestMetadata
+import net.perfectdreams.loritta.serializable.StoredAPIInitiatedPaymentSonhosTransaction
 import net.perfectdreams.loritta.serializable.StoredPaymentSonhosTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -138,16 +141,35 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                             it[PaymentSonhosTransactionResults.timestamp] = now
                         }
 
-                        SimpleSonhosTransactionsLogUtils.insert(
-                            receiverProfile.id.value.toLong(),
-                            now,
-                            TransactionType.PAYMENT,
-                            howMuch,
+                        val serializedMetadata = sonhosTransferRequestData[SonhosTransferRequests.metadata]
+
+                        val storedTransaction = if (serializedMetadata != null) {
+                            val metadata = Json.decodeFromString<SonhosTransferRequestMetadata>(serializedMetadata)
+
+                            when (metadata) {
+                                is SonhosTransferRequestMetadata.APIInitiatedSonhosTransferRequestMetadata -> {
+                                    StoredAPIInitiatedPaymentSonhosTransaction(
+                                        giverProfile.id.value.toLong(),
+                                        receiverProfile.id.value.toLong(),
+                                        paymentResult.value,
+                                        metadata.reason
+                                    )
+                                }
+                            }
+                        } else {
                             StoredPaymentSonhosTransaction(
                                 giverProfile.id.value.toLong(),
                                 receiverProfile.id.value.toLong(),
                                 paymentResult.value
                             )
+                        }
+
+                        SimpleSonhosTransactionsLogUtils.insert(
+                            receiverProfile.id.value.toLong(),
+                            now,
+                            TransactionType.PAYMENT,
+                            howMuch,
+                            storedTransaction
                         )
 
                         SimpleSonhosTransactionsLogUtils.insert(
@@ -155,11 +177,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                             now,
                             TransactionType.PAYMENT,
                             howMuch,
-                            StoredPaymentSonhosTransaction(
-                                giverProfile.id.value.toLong(),
-                                receiverProfile.id.value.toLong(),
-                                paymentResult.value
-                            )
+                            storedTransaction
                         )
 
                         SonhosTransferRequests.update({ SonhosTransferRequests.id eq dbId }) {

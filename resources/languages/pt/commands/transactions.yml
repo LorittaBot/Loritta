@@ -31,6 +31,8 @@ types:
     description: "Transações relacionadas a transferências de sonhos para outros usuários"
     sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receiverUserPreview}"
     received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview}"
+    apiInitiatedSent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receiverUserPreview} para `{reason}`"
+    apiInitiatedReceived: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview} para `{reason}`"
   dailyReward:
     title: "Prêmio Diário"
     description: "Transações relacionadas ao prêmio diário da Loritta"

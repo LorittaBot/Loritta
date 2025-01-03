@@ -13,6 +13,7 @@ object LoriPublicHttpApiEndpoints {
     )
     val GET_USER_TRANSACTIONS = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/users/{userId}/transactions")
     val GET_SONHOS_RANK = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/sonhos/rank")
+    val GET_SONHOS_TRANSFER_STATUS = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/sonhos/sonhos-transfer/{sonhosTransferId}")
 
     val VERIFY_LORITTA_MESSAGE = LoriPublicHttpApiEndpoint(HttpMethod.Post, "/lori-messages/verify-message")
     val SAVE_LORITTA_MESSAGE = LoriPublicHttpApiEndpoint(HttpMethod.Post, "/guilds/{guildId}/channels/{channelId}/messages/{messageId}/save-lori-message")
@@ -20,6 +21,8 @@ object LoriPublicHttpApiEndpoints {
     val CREATE_GUILD_GIVEAWAY = LoriPublicHttpApiEndpoint(HttpMethod.Put, "/guilds/{guildId}/giveaways")
     val END_GUILD_GIVEAWAY = LoriPublicHttpApiEndpoint(HttpMethod.Post, "/guilds/{guildId}/giveaways/{giveawayId}/end")
     val REROLL_GUILD_GIVEAWAY = LoriPublicHttpApiEndpoint(HttpMethod.Post, "/guilds/{guildId}/giveaways/{giveawayId}/reroll")
+    val TRANSFER_SONHOS = LoriPublicHttpApiEndpoint(HttpMethod.Post, "/guilds/{guildId}/channels/{channelId}/sonhos/sonhos-transfer")
+    val REQUEST_SONHOS = LoriPublicHttpApiEndpoint(HttpMethod.Post, "/guilds/{guildId}/channels/{channelId}/sonhos/sonhos-request")
 
     val EMOJIFIGHT_GUILD_TOP_WINNERS_RANK = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/guilds/{guildId}/emojifights/top-winners")
     val EMOJIFIGHT_GUILD_VICTORIES = LoriPublicHttpApiEndpoint(HttpMethod.Get, "/guilds/{guildId}/members/{userId}/emojifight/victories")

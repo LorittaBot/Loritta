@@ -24,6 +24,18 @@ data class PaymentSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class APIInitiatedPaymentSonhosTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val givenBy: UserId,
+    val receivedBy: UserId,
+    val sonhos: Long,
+    val reason: String
+) : SonhosTransaction()
+
+@Serializable
 data class DailyRewardSonhosTransaction(
     override val id: Long,
     override val transactionType: TransactionType,

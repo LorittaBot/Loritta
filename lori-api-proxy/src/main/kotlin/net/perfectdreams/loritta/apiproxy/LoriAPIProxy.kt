@@ -5,7 +5,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.request.*
@@ -51,6 +50,9 @@ class LoriAPIProxy(
         ProxiedRoute(LoriPublicHttpApiEndpoints.EMOJIFIGHT_GUILD_TOP_WINNERS_RANK, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
         ProxiedRoute(LoriPublicHttpApiEndpoints.EMOJIFIGHT_GUILD_VICTORIES, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
         ProxiedRoute(LoriPublicHttpApiEndpoints.CREATE_GUILD_MUSICALCHAIRS, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.TRANSFER_SONHOS, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.REQUEST_SONHOS, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.GET_SONHOS_TRANSFER_STATUS, ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
     )
 
     fun start() {

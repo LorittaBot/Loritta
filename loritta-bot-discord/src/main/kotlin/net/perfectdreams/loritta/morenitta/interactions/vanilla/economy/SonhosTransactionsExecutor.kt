@@ -240,6 +240,9 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         is PaymentSonhosTransaction -> PaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ PAYMENTS ]===
+                        is APIInitiatedPaymentSonhosTransaction -> APIInitiatedPaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
+                        // ===[ DAILY REWARD ]===
                         is DailyRewardSonhosTransaction -> DailyRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ BROKER ]===

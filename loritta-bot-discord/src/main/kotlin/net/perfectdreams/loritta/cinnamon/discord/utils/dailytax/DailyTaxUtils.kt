@@ -1,15 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.dailytax
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds.THRESHOLDS
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.time.Instant
 import java.time.LocalDateTime
@@ -21,23 +17,14 @@ object DailyTaxUtils {
     /**
      * Gets and processes inactive daily users
      *
-     * @param lorittaId lori so cute she doesn't deserve to be hit with the inactive daily tax
-     * @param dayOffset offsets (plusDays) the current day by [dayOffset]
-     * @param block     block that will be executed when a inactive daily user is found
+     * @param bypassDailyTaxUserIds the IDs of users that can bypass the daily tax
+     * @param dayOffset             offsets (plusDays) the current day by [dayOffset]
+     * @param block                 block that will be executed when a inactive daily user is found
      */
-    fun getAndProcessInactiveDailyUsers(lorittaId: Long, dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
-        val moneySum = Payments.money.sum()
-
-        val cheapestPlanWithoutDailyInactivityTaxCost = UserPremiumPlans.getPlansThatDoNotHaveDailyInactivityTax()
-            .minOf { it.cost }
-
-        val usersToBeIgnored = Payments.slice(Payments.userId, moneySum).select {
-            Payments.expiresAt greaterEq System.currentTimeMillis()
-        }.groupBy(Payments.userId)
-            .having { moneySum greaterEq (cheapestPlanWithoutDailyInactivityTaxCost - 10.00).toBigDecimal() } // It is actually 99.99 but shhhhh
-            .map { it[Payments.userId] }
-            .toMutableSet()
-        usersToBeIgnored.add(lorittaId)
+    fun getAndProcessInactiveDailyUsers(bypassDailyTaxUserIds: List<Long>, dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
+        // This looks weird, but that's because this list is mutated down below
+        val usersToBeIgnored = mutableListOf<Long>()
+        usersToBeIgnored.addAll(bypassDailyTaxUserIds)
 
         for (threshold in THRESHOLDS.sortedByDescending { it.minimumSonhosForTrigger }) {
             logger.info { "Checking daily inactivity tax threshold $threshold" }

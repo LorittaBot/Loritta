@@ -12,6 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserLorittaAPITokens
+import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoint
@@ -69,6 +70,7 @@ abstract class LoriPublicAPIRoute(
 
         val tokenInfoData = TokenInfo(
             tokenInfo[UserLorittaAPITokens.token],
+            tokenInfo[UserLorittaAPITokens.tokenType] ?: TokenType.USER,
             tokenInfo[UserLorittaAPITokens.tokenCreatorId],
             tokenInfo[UserLorittaAPITokens.tokenUserId]
         )

@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guil
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages.PostSaveMessageRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages.PostVerifyMessageRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.sonhos.GetRichestUsersRoute
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.sonhos.GetSonhosTransferStatusRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.users.GetUserInfoRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.users.GetUserTransactionsRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.RPCResponseException
@@ -71,7 +72,10 @@ class InternalWebServer(val m: LorittaBot) {
         PostRerollGiveawayRoute(m),
         GetGuildEmojiFightTopWinnersRoute(m),
         GetGuildUserEmojiFightVictoriesRoute(m),
-        PostMusicalChairsRoute(m)
+        PostMusicalChairsRoute(m),
+        PostTransferSonhosRoute(m),
+        PostRequestSonhosRoute(m),
+        GetSonhosTransferStatusRoute(m)
     )
     private val internalAPIRoutes = listOf(
         GuildJsonBenchmarkRoute(m)

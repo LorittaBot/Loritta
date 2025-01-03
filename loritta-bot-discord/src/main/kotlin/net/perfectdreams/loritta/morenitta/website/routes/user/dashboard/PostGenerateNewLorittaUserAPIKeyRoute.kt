@@ -8,6 +8,7 @@ import kotlinx.html.style
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserLorittaAPITokens
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Base58
@@ -43,6 +44,7 @@ class PostGenerateNewLorittaUserAPIKeyRoute(loritta: LorittaBot) : RequiresDisco
 			UserLorittaAPITokens.insert {
 				it[UserLorittaAPITokens.tokenCreatorId] = requesterId
 				it[UserLorittaAPITokens.tokenUserId] = requesterId
+				it[UserLorittaAPITokens.tokenType] = TokenType.USER
 				it[UserLorittaAPITokens.token] = token
 				it[UserLorittaAPITokens.generatedAt] = Instant.now()
 			}

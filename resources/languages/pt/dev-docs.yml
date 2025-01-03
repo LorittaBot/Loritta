@@ -22,6 +22,12 @@ devDocs:
       title: "Fazer Reroll em um Sorteio"
     createGuildMusicalchairs:
       title: "Iniciar um Evento de Dança das Cadeiras"
+    transferSonhos:
+      title: "Transferir Sonhos para um Usuário"
+    requestSonhos:
+      title: "Solicitar Sonhos para um Usuário"
+    getSonhosTransferStatus:
+      title: "Pegar o Status de uma Transação de Sonhos"
   parameterKinds:
     path: "Parâmetro no Path"
     query: "Parâmetro na Query"

@@ -6,6 +6,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
+import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector.Companion.queryDailyBypassList
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxNotifiedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
@@ -77,7 +78,9 @@ class DailyTaxWarner(val m: LorittaBot) : RunnableCoroutine {
             // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
             m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.loritta.discord.applicationId, 0) { threshold, inactiveDailyUser ->
+                val bypassDailyTaxUserIds = queryDailyBypassList(m)
+
+                DailyTaxUtils.getAndProcessInactiveDailyUsers(bypassDailyTaxUserIds, 0) { threshold, inactiveDailyUser ->
                     processDailyTaxWarning(
                         threshold,
                         inactiveDailyUser,

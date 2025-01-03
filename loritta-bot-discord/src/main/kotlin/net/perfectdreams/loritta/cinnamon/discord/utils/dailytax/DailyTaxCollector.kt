@@ -6,13 +6,15 @@ import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxNotifiedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserLorittaAPITokens
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.StoredDailyTaxSonhosTransaction
 import org.jetbrains.exposed.sql.*
@@ -24,12 +26,46 @@ import java.time.ZoneOffset
 class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
     companion object {
         private val logger = KotlinLogging.logger {}
+
+        /**
+         * Queries the daily check bypass user IDs list
+         *
+         * @return a list containing all the IDs that should not be checked by Loritta
+         */
+        // This is in here because DailyTaxWarner also does the same checks
+        fun queryDailyBypassList(lorittaBot: LorittaBot): List<Long> {
+            val bypassDailyTaxUserIds = mutableListOf<Long>()
+
+            // lori so cute she doesn't deserve to be hit with the inactive daily tax
+            bypassDailyTaxUserIds.add(lorittaBot.config.loritta.discord.applicationId)
+
+            // Now our precious premium users
+            val moneySum = Payments.money.sum()
+
+            val cheapestPlanWithoutDailyInactivityTaxCost = UserPremiumPlans.getPlansThatDoNotHaveDailyInactivityTax()
+                .minOf { it.cost }
+
+            val usersToBeIgnored = Payments.slice(Payments.userId, moneySum).select {
+                Payments.expiresAt greaterEq System.currentTimeMillis()
+            }.groupBy(Payments.userId)
+                .having { moneySum greaterEq (cheapestPlanWithoutDailyInactivityTaxCost - 10.00).toBigDecimal() } // It is actually 99.99 but shhhhh
+                .map { it[Payments.userId] }
+                .toMutableSet()
+
+            bypassDailyTaxUserIds.addAll(usersToBeIgnored)
+
+            // We expect that all BOT tokens are... well, bots! And they don't be taxed!!
+            val botTokensIds = UserLorittaAPITokens.selectAll().where {
+                UserLorittaAPITokens.tokenType eq TokenType.BOT
+            }.map { it[UserLorittaAPITokens.tokenUserId] }
+
+            bypassDailyTaxUserIds.addAll(botTokensIds)
+
+            return bypassDailyTaxUserIds
+        }
     }
 
     override suspend fun run() {
-        // TODO: proper i18n
-        val i18nContext = m.languageManager.getI18nContextById("pt")
-
         try {
             logger.info { "Collecting tax from inactive daily users..." }
 
@@ -51,7 +87,12 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
             m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
                 val notifiedUsers = DailyTaxNotifiedUsers.slice(DailyTaxNotifiedUsers.user).selectAll().map { it[DailyTaxNotifiedUsers.user].value }.toSet()
 
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.loritta.discord.applicationId, 0) { threshold, inactiveDailyUser ->
+                val bypassDailyTaxUserIds = queryDailyBypassList(m)
+
+                DailyTaxUtils.getAndProcessInactiveDailyUsers(
+                    bypassDailyTaxUserIds,
+                    0
+                ) { threshold, inactiveDailyUser ->
                     if (notifiedUsers.contains(inactiveDailyUser.id)) {
                         logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax taxed" }
 
@@ -120,7 +161,9 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
                     .toKotlinInstant()
 
                 m.pudding.transaction {
-                    DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.loritta.discord.applicationId, 1) { threshold, inactiveDailyUser ->
+                    val bypassDailyTaxUserIds = queryDailyBypassList(m)
+
+                    DailyTaxUtils.getAndProcessInactiveDailyUsers(bypassDailyTaxUserIds, 1) { threshold, inactiveDailyUser ->
                         // Don't warn them about the tax if they were already taxed before
                         if (inactiveDailyUser.id !in alreadyWarnedThatTheyWereTaxed && inactiveDailyUser.id !in alreadyWarnedThatTheyAreGoingToBeTaxed) {
                             DailyTaxWarner.processDailyTaxWarning(

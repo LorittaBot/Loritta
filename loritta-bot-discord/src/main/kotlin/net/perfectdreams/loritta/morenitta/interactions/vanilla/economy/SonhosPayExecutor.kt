@@ -1,12 +1,16 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
@@ -36,6 +40,194 @@ import kotlin.time.Duration.Companion.minutes
 class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         const val SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX = "sonhos_transfer_accept"
+        val TIME_TO_LIVE_RANGE = 1.minutes.inWholeMilliseconds..7.days.inWholeMilliseconds
+
+        // These are "generic" checks that are used for the transfer sonhos route, to avoid duplicate code that will cause headaches if not used in both calls
+        fun checkIfAccountIsOldEnoughToSendSonhos(targetUserId: UserSnowflake) = checkIfAccountIsOldEnough(targetUserId, 14.days)
+        fun checkIfAccountIsOldEnoughToReceiveSonhos(targetUserId: UserSnowflake) = checkIfAccountIsOldEnough(targetUserId, 7.days)
+
+        fun checkIfAccountIsOldEnough(targetUserId: UserSnowflake, duration: Duration): OtherAccountOldEnoughResult {
+            val now = Clock.System.now()
+            val timestamp = targetUserId.timeCreated.toInstant().toKotlinInstant()
+            val allowedAfterTimestamp = timestamp + duration
+
+            if (allowedAfterTimestamp > now)
+                return OtherAccountOldEnoughResult.NotOldEnough(allowedAfterTimestamp)
+
+            return OtherAccountOldEnoughResult.Success
+        }
+
+        suspend fun checkIfAccountGotDailyAtLeastOnce(loritta: LorittaBot, targetUserId: UserSnowflake): AccountGotDailyAtLeastOnceResult {
+            val gotDailyAtLeastOnce = loritta.transaction {
+                Dailies.selectAll()
+                    .where {
+                        Dailies.receivedById eq targetUserId.idLong
+                    }
+                    .count() != 0L
+            }
+
+            if (!gotDailyAtLeastOnce)
+                return AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce
+
+            return AccountGotDailyAtLeastOnceResult.Success
+        }
+
+        /**
+         * @param i18nContext             the i18nContext that will be used in this message
+         * @param receiverId              who will receive the sonhos
+         * @param howMuch                 how much sonhos are being transferred
+         * @param nowPlusTimeToLive       the TTL of the transaction
+         * @param sonhosTransferRequestId the Database Sonhos Transfer Request ID
+         * @param acceptedQuantity        how many users have already accepted the transfer
+         */
+        fun createSonhosTransferMessage(
+            i18nContext: I18nContext,
+            receiverId: UserSnowflake,
+            howMuch: Long,
+            nowPlusTimeToLive: Instant,
+            sonhosTransferRequestId: Long,
+            acceptedQuantity: Int
+        ): InlineMessage<MessageCreateData>.() -> (Unit) {
+            // TODO: Loritta is grateful easter egg
+            // Easter Eggs
+            val quirkyMessage = when {
+                howMuch >= 500_000 -> i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.RandomQuirkyRichMessages).random()
+                // tellUserLorittaIsGrateful -> context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()
+                else -> null
+            }
+
+            return {
+                // Allow mentioning the receiver
+                mentions {
+                    user(receiverId)
+                }
+
+                styled(
+                    buildString {
+                        append(
+                            i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.YouAreGoingToTransfer(
+                                    howMuch,
+                                    receiverId.asMention
+                                )
+                            )
+                        )
+                        if (quirkyMessage != null) {
+                            append(" ")
+                            append(quirkyMessage)
+                        }
+                    },
+                    Emotes.LoriRich
+                )
+
+                styled(
+                    i18nContext.get(
+                        SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(
+                            receiverId.asMention,
+                            TimeFormat.DATE_TIME_LONG.format(nowPlusTimeToLive),
+                            TimeFormat.RELATIVE.format(nowPlusTimeToLive)
+                        )
+                    ),
+                    Emotes.LoriZap
+                )
+
+                // Because we support expiration dates, we need to do this differently because we must persist the pay between restarts!!
+                actionRow(
+                    Button.of(
+                        ButtonStyle.PRIMARY,
+                        "$SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX:${sonhosTransferRequestId}",
+                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer(acceptedQuantity)),
+                        Emotes.Handshake.toJDA()
+                    )
+                )
+            }
+        }
+
+        /**
+         * @param i18nContext             the i18nContext that will be used in this message
+         * @param senderId                who wil send the sonhos
+         * @param receiverId              who will receive the sonhos
+         * @param howMuch                 how much sonhos are being transferred
+         * @param nowPlusTimeToLive       the TTL of the transaction
+         * @param sonhosTransferRequestId the Database Sonhos Transfer Request ID
+         * @param acceptedQuantity        how many users have already accepted the transfer
+         */
+        // The third person variants are used for API calls
+        fun createSonhosTransferMessageThirdPerson(
+            i18nContext: I18nContext,
+            senderId: UserSnowflake,
+            receiverId: UserSnowflake,
+            howMuch: Long,
+            nowPlusTimeToLive: Instant,
+            sonhosTransferRequestId: Long,
+            acceptedQuantity: Int
+        ): InlineMessage<MessageCreateData>.() -> (Unit) {
+            // TODO: Loritta is grateful easter egg
+            // Easter Eggs
+            val quirkyMessage = when {
+                howMuch >= 500_000 -> i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.RandomQuirkyRichMessages).random()
+                // tellUserLorittaIsGrateful -> context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()
+                else -> null
+            }
+
+            return {
+                // Allow mentioning the receiver
+                mentions {
+                    user(receiverId)
+                }
+
+                styled(
+                    buildString {
+                        append(
+                            i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.ThirdPersonIsGoingToTransfer(
+                                    sonhos = howMuch,
+                                    sender = senderId.asMention,
+                                    receiver = receiverId.asMention,
+                                )
+                            )
+                        )
+                        if (quirkyMessage != null) {
+                            append(" ")
+                            append(quirkyMessage)
+                        }
+                    },
+                    Emotes.LoriRich
+                )
+
+                styled(
+                    i18nContext.get(
+                        SonhosCommand.PAY_I18N_PREFIX.ThirdPersonConfirmTheTransaction(
+                            senderId.asMention,
+                            receiverId.asMention,
+                            TimeFormat.DATE_TIME_LONG.format(nowPlusTimeToLive),
+                            TimeFormat.RELATIVE.format(nowPlusTimeToLive)
+                        )
+                    ),
+                    Emotes.LoriZap
+                )
+
+                // Because we support expiration dates, we need to do this differently because we must persist the pay between restarts!!
+                actionRow(
+                    Button.of(
+                        ButtonStyle.PRIMARY,
+                        "$SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX:${sonhosTransferRequestId}",
+                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer(acceptedQuantity)),
+                        Emotes.Handshake.toJDA()
+                    )
+                )
+            }
+        }
+
+        sealed class OtherAccountOldEnoughResult {
+            data object Success : OtherAccountOldEnoughResult()
+            data class NotOldEnough(val allowedAfterTimestamp: kotlinx.datetime.Instant) : OtherAccountOldEnoughResult()
+        }
+
+        sealed class AccountGotDailyAtLeastOnceResult {
+            data object Success : AccountGotDailyAtLeastOnceResult()
+            data object HaventGotDailyOnce : AccountGotDailyAtLeastOnceResult()
+        }
     }
 
     inner class Options : ApplicationCommandOptions() {
@@ -177,145 +369,97 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                 }
             }
 
-            // TODO: Loritta is grateful easter egg
-            // Easter Eggs
-            val quirkyMessage = when {
-                howMuch >= 500_000 -> context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.RandomQuirkyRichMessages).random()
-                // tellUserLorittaIsGrateful -> context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()
-                else -> null
-            }
-
             context.reply(false) {
-                // Allow mentioning the receiver
-                mentions {
-                    user(receiver)
-                }
-
-                styled(
-                    buildString {
-                        append(
-                            context.i18nContext.get(
-                                SonhosCommand.PAY_I18N_PREFIX.YouAreGoingToTransfer(
-                                    howMuch,
-                                    receiver.asMention
-                                )
-                            )
-                        )
-                        if (quirkyMessage != null) {
-                            append(" ")
-                            append(quirkyMessage)
-                        }
-                    },
-                    Emotes.LoriRich
+                val message = createSonhosTransferMessage(
+                    context.i18nContext,
+                    receiver,
+                    howMuch,
+                    nowPlusTimeToLive,
+                    sonhosTransferRequestId.value,
+                    acceptedQuantity
                 )
 
-                styled(
-                    context.i18nContext.get(
-                        SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(
-                            receiver.asMention,
-                            TimeFormat.DATE_TIME_LONG.format(nowPlusTimeToLive),
-                            TimeFormat.RELATIVE.format(nowPlusTimeToLive)
-                        )
-                    ),
-                    Emotes.LoriZap
-                )
-
-                // Because we support expiration dates, we need to do this differently because we must persist the pay between restarts!!
-                actionRow(
-                    Button.of(
-                        ButtonStyle.PRIMARY,
-                        "$SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX:${sonhosTransferRequestId.value}",
-                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer(acceptedQuantity)),
-                        Emotes.Handshake.toJDA()
-                    )
-                )
+                message.invoke(this)
             }
         }
     }
 
     private fun checkIfSelfAccountIsOldEnough(context: UnleashedContext) {
-        val now = Clock.System.now()
-        val timestamp = context.user.timeCreated.toInstant().toKotlinInstant()
-        val allowedAfterTimestamp = timestamp + (14.days)
-
-        if (allowedAfterTimestamp > now) { // 14 dias
-            context.fail(false) {
-                styled(
-                    context.i18nContext.get(
-                        SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(
-                            TimeFormat.DATE_TIME_LONG.format(allowedAfterTimestamp.toJavaInstant()),
-                            TimeFormat.RELATIVE.format(allowedAfterTimestamp.toJavaInstant())
-                        )
-                    ),
-                    Emotes.LoriSob
-                )
+        when (val result = checkIfAccountIsOldEnoughToSendSonhos(context.user)) {
+            is OtherAccountOldEnoughResult.NotOldEnough -> {
+                context.fail(false) {
+                    styled(
+                        context.i18nContext.get(
+                            SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(
+                                TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                            )
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
             }
+            OtherAccountOldEnoughResult.Success -> {}
         }
     }
 
     private suspend fun checkIfSelfAccountGotDailyAtLeastOnce(context: UnleashedContext) {
-        val gotDailyAtLeastOnce = loritta.transaction {
-            Dailies.selectAll()
-                .where {
-                    Dailies.receivedById eq context.user.idLong
-                }
-                .count() != 0L
-        }
+        val result = checkIfAccountGotDailyAtLeastOnce(context.loritta, UserSnowflake.fromId(context.user.idLong))
 
-        if (!gotDailyAtLeastOnce) {
-            context.fail(false) {
-                styled(
-                    context.i18nContext.get(
-                        SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily(loritta.commandMentions.daily)
-                    ),
-                    Emotes.LoriSob
-                )
+        when (result) {
+            AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
+                context.fail(false) {
+                    styled(
+                        context.i18nContext.get(
+                            SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily(loritta.commandMentions.daily)
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
             }
+            AccountGotDailyAtLeastOnceResult.Success -> {}
         }
     }
 
     private suspend fun checkIfOtherAccountGotDailyAtLeastOnce(context: UnleashedContext, target: User) {
-        val gotDailyAtLeastOnce = loritta.transaction {
-            Dailies.selectAll()
-                .where {
-                    Dailies.receivedById eq target.idLong
-                }
-                .count() != 0L
-        }
+        val result = checkIfAccountGotDailyAtLeastOnce(context.loritta, target)
 
-        if (!gotDailyAtLeastOnce) {
-            context.fail(false) {
-                styled(
-                    context.i18nContext.get(
-                        SonhosCommand.PAY_I18N_PREFIX.OtherAccountNeedsToGetDaily(
-                            target.asMention,
-                            loritta.commandMentions.daily
-                        )
-                    ),
-                    Emotes.LoriSob
-                )
+        when (result) {
+            AccountGotDailyAtLeastOnceResult.HaventGotDailyOnce -> {
+                context.fail(false) {
+                    styled(
+                        context.i18nContext.get(
+                            SonhosCommand.PAY_I18N_PREFIX.OtherAccountNeedsToGetDaily(
+                                target.asMention,
+                                loritta.commandMentions.daily
+                            )
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
             }
+            AccountGotDailyAtLeastOnceResult.Success -> {}
         }
     }
 
     private fun checkIfOtherAccountIsOldEnough(context: UnleashedContext, target: User) {
-        val now = Clock.System.now()
-        val timestamp = target.timeCreated.toInstant().toKotlinInstant()
-        val allowedAfterTimestamp = timestamp + (7.days)
-
-        if (timestamp + (7.days) > now) // 7 dias
-            context.fail(false) {
-                styled(
-                    context.i18nContext.get(
-                        SonhosCommand.PAY_I18N_PREFIX.OtherAccountIsTooNew(
-                            target.asMention,
-                            TimeFormat.DATE_TIME_LONG.format(allowedAfterTimestamp.toJavaInstant()),
-                            TimeFormat.RELATIVE.format(allowedAfterTimestamp.toJavaInstant())
-                        )
-                    ),
-                    Emotes.LoriSob
-                )
+        when (val result = checkIfAccountIsOldEnoughToReceiveSonhos(target)) {
+            is OtherAccountOldEnoughResult.NotOldEnough -> {
+                context.fail(false) {
+                    styled(
+                        context.i18nContext.get(
+                            SonhosCommand.PAY_I18N_PREFIX.OtherAccountIsTooNew(
+                                target.asMention,
+                                TimeFormat.DATE_TIME_LONG.format(result.allowedAfterTimestamp.toJavaInstant()),
+                                TimeFormat.RELATIVE.format(result.allowedAfterTimestamp.toJavaInstant())
+                            )
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
             }
+            OtherAccountOldEnoughResult.Success -> {}
+        }
     }
 
     private suspend fun checkAndRetrieveAllValidUsersFromString(context: UnleashedContext, usersAsString: String): List<User> {

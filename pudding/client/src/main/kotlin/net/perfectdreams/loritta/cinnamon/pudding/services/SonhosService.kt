@@ -70,7 +70,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             query = query and (SimpleSonhosTransactionsLog.timestamp greaterEq afterDateFilter)
 
         return pudding.transaction {
-            val rawResults = SimpleSonhosTransactionsLog.select(query).orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
+            val rawResults = SimpleSonhosTransactionsLog.selectAll().where(query).orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
                 .limit(limit, offset)
                 .toList()
 
@@ -164,15 +164,30 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             stored.minimumSonhosForTrigger
                         )
 
-                        is StoredPaymentSonhosTransaction -> PaymentSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            UserId(stored.givenBy),
-                            UserId(stored.receivedBy),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                        )
+                        is StoredPaymentSonhosTransaction -> {
+                            PaymentSonhosTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                UserId(stored.givenBy),
+                                UserId(stored.receivedBy),
+                                it[SimpleSonhosTransactionsLog.sonhos],
+                            )
+                        }
+
+                        is StoredAPIInitiatedPaymentSonhosTransaction -> {
+                            APIInitiatedPaymentSonhosTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                UserId(stored.givenBy),
+                                UserId(stored.receivedBy),
+                                it[SimpleSonhosTransactionsLog.sonhos],
+                                stored.reason
+                            )
+                        }
 
                         is StoredBrokerSonhosTransaction -> BrokerSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,

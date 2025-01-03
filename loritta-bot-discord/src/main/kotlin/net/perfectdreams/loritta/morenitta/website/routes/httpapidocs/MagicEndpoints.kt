@@ -15,6 +15,8 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPIParameter
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PostMusicalChairsRoute
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PostRequestSonhosRoute
+import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PostTransferSonhosRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PutGiveawayRoute
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import java.awt.Color
@@ -71,18 +73,46 @@ object MagicEndpoints {
         }
     }
 
+    // Default values to make the code less redundant
+    private val USER_ID_PARAMETER = APIParameter(
+        Long::class.createType(),
+        "userId",
+        I18nKeysData.DevDocs.Generic.UserId,
+        false
+    ) {
+        listOf("123170274651668480")
+    }
+
+    private val GUILD_ID_PARAMETER = APIParameter(
+        Long::class.createType(),
+        "guildId",
+        I18nKeysData.DevDocs.Generic.GuildId,
+        false
+    ) {
+        listOf("297732013006389252")
+    }
+
+    private val CHANNEL_ID_PARAMETER =  APIParameter(
+        Long::class.createType(),
+        "channelId",
+        I18nKeysData.DevDocs.Generic.ChannelId,
+        false
+    ) {
+        listOf("297732013006389252")
+    }
+
+    private val MESSAGE_ID_PARAMETER = APIParameter(
+        Long::class.createType(),
+        "messageId",
+        I18nKeysData.DevDocs.Generic.MessageId,
+        false,
+    ) {
+        listOf("297732013006389252")
+    }
+
     val endpointTesterOptions = mapOf(
         LoriPublicHttpApiEndpoints.GET_USER_BY_ID to EndpointTesterOptions(
-            pathParameters = listOf(
-                APIParameter(
-                    Long::class.createType(),
-                    "userId",
-                    I18nKeysData.DevDocs.Generic.UserId,
-                    false
-                ) {
-                    listOf("123170274651668480")
-                }
-            ),
+            pathParameters = listOf(USER_ID_PARAMETER),
             examples = listOf(
                 EndpointRequestExample(
                     EndpointRequestExample.Request(
@@ -105,16 +135,7 @@ object MagicEndpoints {
         ),
 
         LoriPublicHttpApiEndpoints.GET_USER_TRANSACTIONS to EndpointTesterOptions(
-            pathParameters = listOf(
-                APIParameter(
-                    Long::class.createType(),
-                    "userId",
-                    I18nKeysData.DevDocs.Generic.UserId,
-                    false
-                ) {
-                    listOf("123170274651668480")
-                }
-            ),
+            pathParameters = listOf(USER_ID_PARAMETER),
             queryParameters = listOf(
                 APIParameter(
                     Int::class.createType(),
@@ -160,32 +181,7 @@ object MagicEndpoints {
         ),
 
         LoriPublicHttpApiEndpoints.SAVE_LORITTA_MESSAGE to EndpointTesterOptions(
-            pathParameters = listOf(
-                APIParameter(
-                    Long::class.createType(),
-                    "guildId",
-                    I18nKeysData.DevDocs.Generic.GuildId,
-                    false
-                ) {
-                    listOf("297732013006389252")
-                },
-                APIParameter(
-                    Long::class.createType(),
-                    "channelId",
-                    I18nKeysData.DevDocs.Generic.ChannelId,
-                    false
-                ) {
-                    listOf("297732013006389252")
-                },
-                APIParameter(
-                    Long::class.createType(),
-                    "messageId",
-                    I18nKeysData.DevDocs.Generic.MessageId,
-                    false,
-                ) {
-                    listOf("297732013006389252")
-                }
-            )
+            pathParameters = listOf(GUILD_ID_PARAMETER, CHANNEL_ID_PARAMETER, MESSAGE_ID_PARAMETER)
         ),
 
         LoriPublicHttpApiEndpoints.VERIFY_LORITTA_MESSAGE to EndpointTesterOptions(
@@ -193,21 +189,10 @@ object MagicEndpoints {
         ),
 
         LoriPublicHttpApiEndpoints.CREATE_GUILD_GIVEAWAY to EndpointTesterOptions(
-            pathParameters = listOf(
-                APIParameter(
-                    Long::class.createType(),
-                    "guildId",
-                    I18nKeysData.DevDocs.Generic.GuildId,
-                    false
-                ) {
-                    listOf("297732013006389252")
-                },
-            ),
+            pathParameters = listOf(GUILD_ID_PARAMETER),
             mainRequestBodyClazzName = PutGiveawayRoute.SpawnGiveawayRequest::class.simpleName!!,
             clazzesParameters = mapOf(
-                PutGiveawayRoute.SpawnGiveawayRequest::class.simpleName!! to createAPIParametersFromClazz(
-                    PutGiveawayRoute.SpawnGiveawayRequest::class
-                ) {
+                createAPIParametersFromClazzEntry(PutGiveawayRoute.SpawnGiveawayRequest::class) {
                     when (it) {
                         "channelId" -> {
                             { listOf("297732013006389252") }
@@ -238,7 +223,7 @@ object MagicEndpoints {
                         }
                     }
                 },
-                PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoles::class.simpleName!! to createAPIParametersFromClazz(
+                createAPIParametersFromClazzEntry(
                     PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoles::class
                 ) {
                     { listOf() }
@@ -288,14 +273,7 @@ object MagicEndpoints {
 
         LoriPublicHttpApiEndpoints.REROLL_GUILD_GIVEAWAY to EndpointTesterOptions(
             pathParameters = listOf(
-                APIParameter(
-                    Long::class.createType(),
-                    "guildId",
-                    I18nKeysData.DevDocs.Generic.GuildId,
-                    false
-                ) {
-                    listOf("297732013006389252")
-                },
+                GUILD_ID_PARAMETER,
                 APIParameter(
                     Long::class.createType(),
                     "giveawayId",
@@ -309,14 +287,7 @@ object MagicEndpoints {
 
         LoriPublicHttpApiEndpoints.END_GUILD_GIVEAWAY to EndpointTesterOptions(
             pathParameters = listOf(
-                APIParameter(
-                    Long::class.createType(),
-                    "guildId",
-                    I18nKeysData.DevDocs.Generic.GuildId,
-                    false
-                ) {
-                    listOf("297732013006389252")
-                },
+                GUILD_ID_PARAMETER,
                 APIParameter(
                     Long::class.createType(),
                     "giveawayId",
@@ -329,21 +300,10 @@ object MagicEndpoints {
         ),
 
         LoriPublicHttpApiEndpoints.CREATE_GUILD_MUSICALCHAIRS to EndpointTesterOptions(
-            pathParameters = listOf(
-                APIParameter(
-                    Long::class.createType(),
-                    "guildId",
-                    I18nKeysData.DevDocs.Generic.GuildId,
-                    false
-                ) {
-                    listOf("297732013006389252")
-                },
-            ),
+            pathParameters = listOf(GUILD_ID_PARAMETER),
             mainRequestBodyClazzName = PostMusicalChairsRoute.SpawnMusicalChairsRequest::class.simpleName!!,
             clazzesParameters = mapOf(
-                PostMusicalChairsRoute.SpawnMusicalChairsRequest::class.simpleName!! to createAPIParametersFromClazz(
-                    PostMusicalChairsRoute.SpawnMusicalChairsRequest::class
-                ) {
+                createAPIParametersFromClazzEntry(PostMusicalChairsRoute.SpawnMusicalChairsRequest::class) {
                     when (it) {
                         "channelId" -> {
                             { listOf("297732013006389252") }
@@ -364,7 +324,83 @@ object MagicEndpoints {
                 )
             },
         ),
+
+        LoriPublicHttpApiEndpoints.TRANSFER_SONHOS to EndpointTesterOptions(
+            pathParameters = listOf(GUILD_ID_PARAMETER, CHANNEL_ID_PARAMETER),
+            mainRequestBodyClazzName = PostTransferSonhosRoute.TransferSonhosRequest::class.simpleName!!,
+            clazzesParameters = mapOf(
+                createAPIParametersFromClazzEntry(PostTransferSonhosRoute.TransferSonhosRequest::class) {
+                    when (it) {
+                        "receiverId" -> {
+                            { listOf("123170274651668480") }
+                        }
+                        "quantity" -> {
+                            { listOf("100") }
+                        }
+                        else -> { { listOf() } }
+                    }
+                }
+            ),
+            jsonBodyBuilder = { call, params ->
+                Json.encodeToString(
+                    PostTransferSonhosRoute.TransferSonhosRequest(
+                        receiverId = params.getOrFail("jsonparameter:receiverId").toLong(),
+                        quantity = params.getOrFail("jsonparameter:quantity").toLong(),
+                        reason = params.getOrFail("jsonparameter:reason"),
+                        expiresAfterMillis = params.getOrFail("jsonparameter:expiresAfterMillis").ifBlank { null }?.toLong() ?: 15.minutes.inWholeMilliseconds // This doesn't feel that great...
+                    )
+                )
+            },
+        ),
+
+        LoriPublicHttpApiEndpoints.REQUEST_SONHOS to EndpointTesterOptions(
+            pathParameters = listOf(GUILD_ID_PARAMETER, CHANNEL_ID_PARAMETER),
+            mainRequestBodyClazzName = PostRequestSonhosRoute.RequestSonhosRequest::class.simpleName!!,
+            clazzesParameters = mapOf(
+                createAPIParametersFromClazzEntry(PostRequestSonhosRoute.RequestSonhosRequest::class) {
+                    when (it) {
+                        "senderId" -> {
+                            { listOf("123170274651668480") }
+                        }
+                        "quantity" -> {
+                            { listOf("100") }
+                        }
+                        else -> { { listOf() } }
+                    }
+                }
+            ),
+            jsonBodyBuilder = { call, params ->
+                Json.encodeToString(
+                    PostRequestSonhosRoute.RequestSonhosRequest(
+                        senderId = params.getOrFail("jsonparameter:senderId").toLong(),
+                        quantity = params.getOrFail("jsonparameter:quantity").toLong(),
+                        reason = params.getOrFail("jsonparameter:reason"),
+                        expiresAfterMillis = params.getOrFail("jsonparameter:expiresAfterMillis").ifBlank { null }?.toLong() ?: 15.minutes.inWholeMilliseconds // This doesn't feel that great...
+                    )
+                )
+            },
+        ),
+
+        LoriPublicHttpApiEndpoints.GET_SONHOS_TRANSFER_STATUS to EndpointTesterOptions(
+            pathParameters = listOf(
+                APIParameter(
+                    Long::class.createType(),
+                    "sonhosTransferId",
+                    I18nKeysData.DevDocs.Generic.GuildId,
+                    false
+                ) {
+                    listOf("1")
+                }
+            )
+        ),
     )
+
+    private fun createAPIParametersFromClazzEntry(
+        clazz: KClass<*>,
+        examples: (String) -> ((I18nContext) -> (List<String>))
+    ): Pair<String, List<APIParameter>> {
+        return clazz.simpleName!! to createAPIParametersFromClazz(clazz, examples)
+    }
 
     private fun createAPIParametersFromClazz(
         clazz: KClass<*>,
