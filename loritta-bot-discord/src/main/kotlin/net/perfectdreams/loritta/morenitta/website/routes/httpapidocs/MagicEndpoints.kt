@@ -386,7 +386,7 @@ object MagicEndpoints {
                 APIParameter(
                     Long::class.createType(),
                     "sonhosTransferId",
-                    I18nKeysData.DevDocs.Generic.GuildId,
+                    null,
                     false
                 ) {
                     listOf("1")
