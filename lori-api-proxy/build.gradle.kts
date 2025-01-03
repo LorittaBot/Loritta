@@ -16,6 +16,9 @@ dependencies {
     implementation("io.ktor:ktor-server-cio:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-metrics-micrometer:${Versions.KTOR}")
+
+    implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
 
     // Used for logs - MojangStyleFileAppenderAndRollover
     implementation("com.github.luben:zstd-jni:1.5.5-6")
