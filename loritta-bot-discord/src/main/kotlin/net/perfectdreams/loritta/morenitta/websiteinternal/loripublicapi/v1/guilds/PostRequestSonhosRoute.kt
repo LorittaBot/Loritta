@@ -135,7 +135,7 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             call.respondJson(
                 Json.encodeToString(
                     GenericErrorResponse(
-                        "Receiver does not have enough sonhos!"
+                        "Sender does not have enough sonhos!"
                     )
                 ),
                 status = HttpStatusCode.BadRequest
