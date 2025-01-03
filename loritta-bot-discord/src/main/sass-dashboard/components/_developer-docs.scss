@@ -182,4 +182,5 @@
   justify-content: end;
   align-items: center;
   gap: 0.25em;
+  flex-shrink: 0; // Don't shrink if the text is too big
 }
