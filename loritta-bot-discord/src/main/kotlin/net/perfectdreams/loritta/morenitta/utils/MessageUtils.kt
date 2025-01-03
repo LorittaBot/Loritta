@@ -332,7 +332,14 @@ object MessageUtils {
 					val guildSize = source.memberCount.toString()
 					val mentionOwner = source.owner?.asMention ?: "???"
 					val owner = source.owner?.effectiveName ?: "???"
-					tokens["guild"] = source.name
+
+
+					tokens[Placeholders.GUILD_NAME_SHORT.name] = source.name
+					tokens[Placeholders.GUILD_NAME.name] = source.name
+					tokens[Placeholders.GUILD_SIZE.name] = guildSize
+					tokens[Placeholders.GUILD_ICON_URL.name] = source.iconUrl?.replace("jpg", "png")
+
+					// Deprecated stuff
 					tokens["guildsize"] = guildSize
 					tokens["guild-size"] = guildSize
 					tokens["@owner"] = mentionOwner
