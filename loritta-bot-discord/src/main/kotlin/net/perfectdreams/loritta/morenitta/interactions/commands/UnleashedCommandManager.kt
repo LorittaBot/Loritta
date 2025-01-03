@@ -313,6 +313,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(NotificationsCommand())
         register(ChooseCommand())
         register(TranslateCommand(loritta))
+        register(PremiumCommand(loritta))
 
         // ===[ ROLEPLAY ]===
         register(RoleplayCommand.RoleplaySlashCommand(loritta))

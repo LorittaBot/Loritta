@@ -1,0 +1,5 @@
+label: "premium"
+description: "Mostra informações sobre o seu plano ativo da Loritta"
+youDontHaveLorittaPremium: "Você não tem planos premium ativos na Loritta!"
+paymentPermanent: "Pagamento R$ {money,number,#.##} (permanente)"
+paymentTemporary: "Pagamento R$ {money,number,#.##} expira em {date}"
