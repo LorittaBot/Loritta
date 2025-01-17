@@ -93,8 +93,8 @@ dependencies {
     implementation("org.gagravarr:vorbis-java-core:0.8")
 
     // GalleryOfDreams client
-    implementation("net.perfectdreams.galleryofdreams:common:1.0.12")
-    implementation("net.perfectdreams.galleryofdreams:client:1.0.12")
+    implementation("net.perfectdreams.galleryofdreams:common:1.0.13")
+    implementation("net.perfectdreams.galleryofdreams:client:1.0.13")
 
     // Used for logs - MojangStyleFileAppenderAndRollover
     implementation("com.github.luben:zstd-jni:1.5.5-6")
