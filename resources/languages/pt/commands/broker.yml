@@ -37,7 +37,7 @@ portfolio:
   youHaveSharesInYourPortfolio: "Você tem **{sharesCount, plural, one {# ação} other {# ações}}** na sua carteira. Você gastou **{sharesValue} sonhos** em toda a sua carteira, se você vendesse todas as ações da sua carteira agora, você receberia **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
   youHaveSharesInThisTicker: "Você tem **{sharesCount, plural, one {# ação} other {# ações}}** neste ativo. Você gastou **{sharesValue} sonhos** neste ativo, se você vendesse todas as ações deste ativo agora, você receberia **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
   youDontHaveAnyShares: "Você não tem nenhuma ação! Você pode ver todos os símbolos usando {brokerInfoCommandMention} e comprá-los com {brokerBuyCommandMention}."
-  youDontHaveAnyShardsInThatPage: "Você não tem nenhuma ação nesta página!"
+  youDontHaveAnySharesInThatPage: "Você não tem nenhuma ação nesta página!"
   description: "Mostra seus ativos"
 stock:
   label: "ação"

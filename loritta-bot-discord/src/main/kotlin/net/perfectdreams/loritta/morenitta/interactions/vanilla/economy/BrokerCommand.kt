@@ -250,7 +250,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context: UnleashedContext,
             loritta: LorittaBot,
             i18nContext: I18nContext,
-            page: Int,
+            pageZeroIndexed: Int,
             targetEdit: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)
         ) {
             val stockInformations = context.loritta.pudding.bovespaBroker.getAllTickers()
@@ -266,13 +266,13 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val totalPagesZeroIndexed = ceil(userStockAssets.size / TICKERS_PER_PAGE.toDouble()).toInt() - 1
             val userStockAssetsForThisPage = userStockAssets
-                .drop(page * TICKERS_PER_PAGE)
+                .drop(pageZeroIndexed * TICKERS_PER_PAGE)
                 .take(TICKERS_PER_PAGE)
 
             if (userStockAssetsForThisPage.isEmpty())
                 context.fail(false) {
                     styled(
-                        context.i18nContext.get(I18N_PREFIX.Portfolio.YouDontHaveAnyShardsInThatPage),
+                        context.i18nContext.get(I18N_PREFIX.Portfolio.YouDontHaveAnySharesInThatPage),
                         Emotes.LoriSob
                     )
                 }
@@ -391,7 +391,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 // ==[ PAGES BUTTONS ]===
                 actionRow(
-                    if (page != 0) {
+                    if (pageZeroIndexed != 0) {
                         loritta.interactivityManager.buttonForUser(
                             context.user.idLong,
                             leftButton
@@ -411,7 +411,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                             val hook = it.event.hook
 
-                            createMessage(it, loritta, i18nContext, page - 1) {
+                            createMessage(it, loritta, i18nContext, pageZeroIndexed - 1) {
                                 editJob.await()
 
                                 hook.editOriginal(
@@ -423,7 +423,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
                     } else leftButton.asDisabled(),
 
-                    if (page != totalPagesZeroIndexed) {
+                    if (pageZeroIndexed != totalPagesZeroIndexed) {
                         loritta.interactivityManager.buttonForUser(
                             context.user.idLong,
                             rightButton
@@ -433,17 +433,17 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             val editJob = it.event.editMessage(
                                 MessageEdit {
                                     actionRow(
-                                        leftButton
+                                        leftButton.asDisabled(),
+                                        rightButton
                                             .withEmoji(LoadingEmojis.random().toJDA())
-                                            .asDisabled(),
-                                        rightButton.asDisabled()
+                                            .asDisabled()
                                     )
                                 }
                             ).submit()
 
                             val hook = it.event.hook
 
-                            createMessage(it, loritta, i18nContext, page - 1) {
+                            createMessage(it, loritta, i18nContext, pageZeroIndexed + 1) {
                                 editJob.await()
 
                                 hook.editOriginal(
