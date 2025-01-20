@@ -266,7 +266,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val totalPagesZeroIndexed = ceil(userStockAssets.size / TICKERS_PER_PAGE.toDouble()).toInt() - 1
             val userStockAssetsForThisPage = userStockAssets
-                .drop(page)
+                .drop(page * TICKERS_PER_PAGE)
                 .take(TICKERS_PER_PAGE)
 
             if (userStockAssetsForThisPage.isEmpty())
