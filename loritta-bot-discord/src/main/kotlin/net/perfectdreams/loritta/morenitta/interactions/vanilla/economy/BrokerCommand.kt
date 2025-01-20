@@ -1,13 +1,17 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineEmbed
 import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
+import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
@@ -16,19 +20,23 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.BrokerTickerInformation
 import net.perfectdreams.loritta.serializable.UserId
 import java.awt.Color
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.ceil
 
 class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
@@ -212,9 +220,37 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     inner class BrokerPortfolioExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val page = optionalLong("page", TodoFixThisData)
+        }
+
+        override val options = Options()
+
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false) // Defer because this sometimes takes too long
 
+            val page = args[options.page] ?: 1
+            val pageZeroIndexed = (page - 1).coerceIn(0L..99L)
+
+            createMessage(
+                context,
+                loritta,
+                context.i18nContext,
+                pageZeroIndexed.toInt()
+            ) {
+                context.reply(false) {
+                    it.invoke(this)
+                }
+            }
+        }
+
+        suspend fun createMessage(
+            context: UnleashedContext,
+            loritta: LorittaBot,
+            i18nContext: I18nContext,
+            page: Int,
+            targetEdit: suspend (InlineMessage<*>.() -> (Unit)) -> (Unit)
+        ) {
             val stockInformations = context.loritta.pudding.bovespaBroker.getAllTickers()
             val userStockAssets = context.loritta.pudding.bovespaBroker.getUserBoughtStocks(context.user.idLong)
 
@@ -226,7 +262,20 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
                 }
 
-            context.reply(false) {
+            val totalPagesZeroIndexed = ceil(userStockAssets.size / 10.0).toInt() - 1
+            val userStockAssetsForThisPage = userStockAssets
+                .drop(page)
+                .take(10)
+
+            if (userStockAssetsForThisPage.isEmpty())
+                context.fail(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Portfolio.YouDontHaveAnyShardsInThatPage),
+                        Emotes.LoriSob
+                    )
+                }
+
+            targetEdit.invoke {
                 brokerEmbed(context) {
                     title = "${Emotes.LoriStonks} ${context.i18nContext.get(I18N_PREFIX.Portfolio.Title)}"
 
@@ -242,7 +291,8 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         ) * stockAsset.count
                     }
                     val diff = totalGainsIfSoldEverythingNow - totalStockSum
-                    val totalProfitPercentage = ((totalGainsIfSoldEverythingNow - totalStockSum.toDouble()) / totalStockSum)
+                    val totalProfitPercentage =
+                        ((totalGainsIfSoldEverythingNow - totalStockSum.toDouble()) / totalStockSum)
 
                     description = context.i18nContext.get(
                         I18N_PREFIX.Portfolio.YouHaveSharesInYourPortfolio(
@@ -254,7 +304,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         )
                     )
 
-                    for (stockAsset in userStockAssets.sortedByDescending {
+                    for (stockAsset in userStockAssetsForThisPage.sortedByDescending {
                         // Sort the portfolio by the stock's profit percentage
                         val stockTicker = it.ticker
                         val stockCount = it.count
@@ -270,11 +320,13 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         ((totalGainsIfSoldNow - stockSum.toDouble()) / stockSum)
                     }) {
                         val (tickerId, stockCount, stockSum, stockAverage) = stockAsset
-                        val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == tickerId }.name
+                        val tickerName =
+                            LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == tickerId }.name
                         val tickerInformation = stockInformations.first { it.ticker == stockAsset.ticker }
                         val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(tickerInformation.value)
                         val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
-                        val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
+                        val sellingPrice =
+                            LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
                         val emojiStatus = getEmojiStatusForTicker(tickerInformation)
 
                         val totalGainsIfSoldNow = LorittaBovespaBrokerUtils.convertToSellingPrice(
@@ -324,6 +376,83 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
                     }
                 }
+
+                val leftButton = UnleashedButton.of(
+                    ButtonStyle.PRIMARY,
+                    emoji = Emotes.ChevronLeft
+                )
+
+                val rightButton = UnleashedButton.of(
+                    ButtonStyle.PRIMARY,
+                    emoji = Emotes.ChevronRight
+                )
+
+                // ==[ PAGES BUTTONS ]===
+                actionRow(
+                    if (page != 0) {
+                        loritta.interactivityManager.buttonForUser(
+                            context.user.idLong,
+                            leftButton
+                        ) {
+                            it.invalidateComponentCallback()
+
+                            val editJob = it.event.editMessage(
+                                MessageEdit {
+                                    actionRow(
+                                        leftButton
+                                            .withEmoji(LoadingEmojis.random().toJDA())
+                                            .asDisabled(),
+                                        rightButton.asDisabled()
+                                    )
+                                }
+                            ).submit()
+
+                            val hook = it.event.hook
+
+                            createMessage(it, loritta, i18nContext, page - 1) {
+                                editJob.await()
+
+                                hook.editOriginal(
+                                    MessageEdit {
+                                        it.invoke(this)
+                                    }
+                                ).await()
+                            }
+                        }
+                    } else leftButton.asDisabled(),
+
+                    if (page != totalPagesZeroIndexed) {
+                        loritta.interactivityManager.buttonForUser(
+                            context.user.idLong,
+                            rightButton
+                        ) {
+                            it.invalidateComponentCallback()
+
+                            val editJob = it.event.editMessage(
+                                MessageEdit {
+                                    actionRow(
+                                        leftButton
+                                            .withEmoji(LoadingEmojis.random().toJDA())
+                                            .asDisabled(),
+                                        rightButton.asDisabled()
+                                    )
+                                }
+                            ).submit()
+
+                            val hook = it.event.hook
+
+                            createMessage(it, loritta, i18nContext, page - 1) {
+                                editJob.await()
+
+                                hook.editOriginal(
+                                    MessageEdit {
+                                        it.invoke(this)
+                                    }
+                                ).await()
+                            }
+                        }
+                    } else rightButton.asDisabled()
+                )
             }
         }
 
