@@ -42,6 +42,18 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     )
 ) {
     override suspend fun onGuildAPIRequest(call: ApplicationCall, tokenInfo: TokenInfo, guild: Guild, member: Member) {
+        if (true) {
+            call.respondJson(
+                Json.encodeToString(
+                    GenericErrorResponse(
+                        "This endpoint is currently disabled"
+                    )
+                ),
+                status = HttpStatusCode.Unauthorized
+            )
+            return
+        }
+
         if (!member.hasPermission(Permission.ADMINISTRATOR)) {
             call.respondJson("", status = HttpStatusCode.Unauthorized)
             return
