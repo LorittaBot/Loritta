@@ -58,6 +58,8 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(brokerTickerInformation.lastUpdatedAt))
             Emotes.Idle
         else Emotes.Online
+
+        private const val TICKERS_PER_PAGE = 10
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("65b54675-e0bb-43ec-948a-d6c73e57aaed")) {
@@ -262,10 +264,10 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     )
                 }
 
-            val totalPagesZeroIndexed = ceil(userStockAssets.size / 10.0).toInt() - 1
+            val totalPagesZeroIndexed = ceil(userStockAssets.size / TICKERS_PER_PAGE.toDouble()).toInt() - 1
             val userStockAssetsForThisPage = userStockAssets
                 .drop(page)
-                .take(10)
+                .take(TICKERS_PER_PAGE)
 
             if (userStockAssetsForThisPage.isEmpty())
                 context.fail(false) {
