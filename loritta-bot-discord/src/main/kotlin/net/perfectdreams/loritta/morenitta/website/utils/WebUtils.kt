@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.sweetmorenitta.utils
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.IMG
 import kotlinx.html.ScriptType
@@ -8,7 +7,6 @@ import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.fieldSet
 import kotlinx.html.i
-import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.ins
 import kotlinx.html.legend
@@ -16,9 +14,9 @@ import kotlinx.html.script
 import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.html.unsafe
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
-import net.perfectdreams.loritta.morenitta.website.utils.*
 
 fun DIV.adWrapper(callback: DIV.() -> Unit) {
     // Wraps the div in a nice wrapper
@@ -69,104 +67,6 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
         attributes["srcset"] = srcset
 
         this.apply(block)
-    }
-}
-
-fun DIV.generateNitroPayAdOrSponsor(
-    loritta: LorittaBot,
-    sponsorId: Int,
-    adSlot: String,
-    displayTypes: List<NitroPayAdDisplay>
-) {
-    val sponsors = loritta.sponsors
-    val sponsor = sponsors.getOrNull(sponsorId)
-
-    if (sponsor != null) {
-        generateSponsor(sponsor)
-    } else {
-        generateNitroPayAd(adSlot, displayTypes)
-    }
-}
-
-fun DIV.generateNitroPayAd(adSlot: String, displayTypes: List<NitroPayAdDisplay>) {
-    if (NitroPayAdDisplay.DESKTOP in displayTypes) {
-        generateNitroPayAd(
-            "$adSlot-desktop",
-            listOf(
-                NitroPayAdSize(
-                    728,
-                    90
-                ),
-                NitroPayAdSize(
-                    970,
-                    90
-                ),
-                NitroPayAdSize(
-                    970,
-                    250
-                )
-            ),
-            NitroPayAdGenerator.FULL_WIDTH_CONTENT_DESKTOP_MEDIA_QUERY
-        )
-    }
-
-    if (NitroPayAdDisplay.PHONE in displayTypes) {
-        generateNitroPayAd(
-            "$adSlot-phone",
-            listOf(
-                NitroPayAdSize(
-                    300,
-                    250
-                ),
-                NitroPayAdSize(
-                    320,
-                    50
-                )
-            ),
-            NitroPayAdGenerator.FULL_WIDTH_CONTENT_PHONE_MEDIA_QUERY
-        )
-    }
-
-    if (NitroPayAdDisplay.TABLET in displayTypes) {
-        generateNitroPayAd(
-            "$adSlot-tablet",
-            listOf(
-                NitroPayAdSize(
-                    728,
-                    90
-                ),
-                NitroPayAdSize(
-                    970,
-                    90
-                ),
-                NitroPayAdSize(
-                    970,
-                    250
-                ),
-                NitroPayAdSize(
-                    300,
-                    250
-                ),
-                NitroPayAdSize(
-                    320,
-                    50
-                )
-            ),
-            NitroPayAdGenerator.FULL_WIDTH_CONTENT_TABLET_MEDIA_QUERY
-        )
-    }
-}
-
-fun DIV.generateNitroPayVideoAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateNitroPayVideoAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
-
-fun DIV.generateNitroPayVideoAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
-    val sponsor = sponsors.getOrNull(sponsorId)
-
-    if (sponsor != null) {
-        generateSponsor(sponsor)
-    } else if (showIfSponsorIsMissing) {
-        generateNitroPayVideoAd(adSlot)
     }
 }
 
@@ -243,15 +143,6 @@ fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean
             unsafe {
                 raw("(adsbygoogle = window.adsbygoogle || []).push({});")
             }
-        }
-    }
-}
-
-fun DIV.generateNitroPayVideoAd(adId: String) {
-    div(classes = "centralized-ad") {
-        div(classes = "nitropay-ad") {
-            id = adId
-            attributes["data-nitropay-ad-type"] = NitroPayAdType.VIDEO_PLAYER.name.toLowerCase()
         }
     }
 }

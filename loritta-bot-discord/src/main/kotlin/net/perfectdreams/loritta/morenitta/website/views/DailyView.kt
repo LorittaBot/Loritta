@@ -8,9 +8,7 @@ import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.adWrapper
-import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
-import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayVideoAd
-import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdGenerator
+import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateAdOrSponsor
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 
 class DailyView(
@@ -161,11 +159,10 @@ class DailyView(
             }
 
             adWrapper {
-                generateNitroPayAdOrSponsor(
+                generateAdOrSponsor(
                     loritta,
                     0,
-                    "daily-top1",
-                    NitroPayAdGenerator.ALL_SIZES
+                    "2235080437"
                 )
             }
             
@@ -178,15 +175,14 @@ class DailyView(
             }
 
             adWrapper {
-                generateNitroPayAdOrSponsor(
+                generateAdOrSponsor(
                     loritta,
-                    2,
-                    "daily-bottom1",
-                    NitroPayAdGenerator.ALL_SIZES
+                    0,
+                    "3808844539"
                 )
             }
 
-            generateNitroPayVideoAd("daily-bottom3-video")
+            // generateNitroPayVideoAd("daily-bottom3-video")
 
             div(classes = "media") {
                 div(classes = "media-body") {

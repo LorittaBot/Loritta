@@ -16,13 +16,10 @@ import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComp
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents.fillContentLoadingSection
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.closeModalOnClick
 import net.perfectdreams.loritta.morenitta.website.utils.EmbeddedSpicyModalUtils.openEmbeddedModalOnClick
-import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdSize
-import net.perfectdreams.loritta.morenitta.website.utils.generateNitroPayAd
 import net.perfectdreams.loritta.morenitta.website.utils.tsukiScript
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
 import net.perfectdreams.loritta.serializable.ColorTheme
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
-import kotlin.random.Random
 
 abstract class DashboardView(
     internal val lorittaWebsite: LorittaWebsite,
@@ -277,29 +274,16 @@ abstract class DashboardView(
 
                                         if (userPremiumPlan.displayAds) {
                                             val adType = Ads.RIGHT_SIDEBAR_AD
-                                            val abTest = Random.nextBoolean()
-                                            if (abTest) {
-                                                generateNitroPayAd(
-                                                    "${adType.nitroPayId}-desktop",
-                                                    listOf(
-                                                        NitroPayAdSize(
-                                                            adType.size.width,
-                                                            adType.size.height
-                                                        )
-                                                    )
-                                                )
-                                            } else {
-                                                ins(classes = "adsbygoogle") {
-                                                    classes += "adsbygoogle"
-                                                    style =
-                                                        "display: inline-block; width: ${adType.size.width}px; height: ${adType.size.height}px;"
-                                                    attributes["data-ad-client"] = "ca-pub-9989170954243288"
-                                                    attributes["data-ad-slot"] = adType.googleAdSenseId
-                                                }
-                                                script {
-                                                    unsafe {
-                                                        raw("(adsbygoogle = window.adsbygoogle || []).push({});")
-                                                    }
+
+                                            ins(classes = "adsbygoogle") {
+                                                classes += "adsbygoogle"
+                                                style = "display: inline-block; width: ${adType.size.width}px; height: ${adType.size.height}px;"
+                                                attributes["data-ad-client"] = "ca-pub-9989170954243288"
+                                                attributes["data-ad-slot"] = adType.googleAdSenseId
+                                            }
+                                            script {
+                                                unsafe {
+                                                    raw("(adsbygoogle = window.adsbygoogle || []).push({});")
                                                 }
                                             }
                                         } else {
