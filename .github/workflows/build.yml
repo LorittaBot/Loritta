@@ -65,6 +65,5 @@ jobs:
         run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:dockerBuild :discord-chat-message-renderer-server:dockerBuild :lori-api-proxy:dockerBuild :web:dashboard:backend:dockerBuild :web:showtime:backend:dockerBuild :broker-tickers-updater:dockerBuild --scan
 
       - name: Publish Docker images
-        if: steps.cache-docker-image.outputs.cache-hit != 'true'
         run: |
           docker push ghcr.io/lorittabot/loritta-morenitta
