@@ -106,8 +106,8 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
 
                     if (giverHasAccepted && receiverHasAccepted) {
                         val howMuch = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.quantity]
-                        val howMuchShouldBeRemoved = howMuch + sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tax]
-                        val howMuchShouldBeAdded = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.quantity]
+                        val howMuchShouldBeRemoved = howMuch
+                        val howMuchShouldBeAdded = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.quantity] - sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tax]
 
                         val receiverProfile = loritta.pudding.users.getOrCreateUserProfile(
                             net.perfectdreams.loritta.serializable.UserId(sonhosTransferRequestData[ThirdPartySonhosTransferRequests.receiver])
@@ -182,6 +182,7 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
                             sonhosTransferRequestData[ThirdPartySonhosTransferRequests.receiver],
                             sonhosTransferRequestData[ThirdPartySonhosTransferRequests.giver],
                             howMuch,
+                            sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tax],
                             updatedReceiverProfile.money,
                             receiverRanking,
                             updatedGiverProfile.money,
@@ -221,10 +222,28 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
                                     user(result.receiverId)
                                 }
 
-                                styled(
-                                    i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SuccessfullyTransferred("<@${result.receiverId}>", result.howMuch)),
-                                    Emotes.Handshake
-                                )
+                                if (result.tax != 0L) {
+                                    styled(
+                                        i18nContext.get(
+                                            SonhosCommand.PAY_I18N_PREFIX.ThirdPartySuccessfullyTransferred(
+                                                "<@${result.receiverId}>",
+                                                result.howMuch - result.tax,
+                                                result.tax
+                                            )
+                                        ),
+                                        Emotes.Handshake
+                                    )
+                                } else {
+                                    styled(
+                                        i18nContext.get(
+                                            SonhosCommand.PAY_I18N_PREFIX.ThirdPartySuccessfullyTransferredNoTax(
+                                                "<@${result.receiverId}>",
+                                                result.howMuch
+                                            )
+                                        ),
+                                        Emotes.Handshake
+                                    )
+                                }
 
                                 // Let's add a random emoji just to look cute
                                 val user1Emote = SonhosUtils.HANGLOOSE_EMOTES.random()
@@ -341,6 +360,7 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
             val receiverId: Long,
             val giverId: Long,
             val howMuch: Long,
+            val tax: Long,
             val receiverQuantity: Long,
             val receiverRanking: Long?,
             val giverQuantity: Long,

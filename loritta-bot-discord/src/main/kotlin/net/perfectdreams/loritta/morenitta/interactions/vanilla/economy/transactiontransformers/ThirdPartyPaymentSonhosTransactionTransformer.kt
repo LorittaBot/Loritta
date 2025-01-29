@@ -41,8 +41,8 @@ object ThirdPartyPaymentSonhosTransactionTransformer : SonhosTransactionTransfor
                 append(
                     i18nContext.get(
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Payment.ThirdPartyReceived(
-                            transaction.sonhos + transaction.tax,
                             transaction.sonhos,
+                            transaction.sonhos - transaction.tax,
                             convertToUserNameCodeBlockPreviewTag(
                                 transaction.givenBy.value.toLong(),
                                 giverUserInfo?.name,
@@ -76,8 +76,8 @@ object ThirdPartyPaymentSonhosTransactionTransformer : SonhosTransactionTransfor
                 append(
                     i18nContext.get(
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Payment.ThirdPartySent(
-                            transaction.sonhos + transaction.tax,
                             transaction.sonhos,
+                            transaction.sonhos - transaction.tax,
                             convertToUserNameCodeBlockPreviewTag(
                                 transaction.receivedBy.value.toLong(),
                                 receiverUserInfo?.name,
@@ -92,7 +92,7 @@ object ThirdPartyPaymentSonhosTransactionTransformer : SonhosTransactionTransfor
                 append(
                     i18nContext.get(
                         SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Payment.ThirdPartySentNoTax(
-                            transaction.sonhos + transaction.tax,
+                            transaction.sonhos,
                             convertToUserNameCodeBlockPreviewTag(
                                 transaction.receivedBy.value.toLong(),
                                 receiverUserInfo?.name,

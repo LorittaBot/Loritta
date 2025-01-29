@@ -138,8 +138,6 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                             it[PaymentSonhosTransactionResults.timestamp] = now
                         }
 
-                        val serializedMetadata = sonhosTransferRequestData[SonhosTransferRequests.metadata]
-
                         val storedTransaction = StoredPaymentSonhosTransaction(
                             giverProfile.id.value.toLong(),
                             receiverProfile.id.value.toLong(),
