@@ -105,7 +105,9 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
                     }
 
                     if (giverHasAccepted && receiverHasAccepted) {
-                        val howMuch = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.quantity] + sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tax]
+                        val howMuch = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.quantity]
+                        val howMuchShouldBeRemoved = howMuch + sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tax]
+                        val howMuchShouldBeAdded = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.quantity]
 
                         val receiverProfile = loritta.pudding.users.getOrCreateUserProfile(
                             net.perfectdreams.loritta.serializable.UserId(sonhosTransferRequestData[ThirdPartySonhosTransferRequests.receiver])
@@ -114,19 +116,19 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
                             net.perfectdreams.loritta.serializable.UserId(sonhosTransferRequestData[ThirdPartySonhosTransferRequests.giver])
                         )
 
-                        if (howMuch > giverProfile.money)
+                        if (howMuchShouldBeRemoved > giverProfile.money)
                             return@transaction TransferResult.NotEnoughSonhos // get tf outta here
 
                         // Update the sonhos of both users
                         Profiles.update({ Profiles.id eq receiverProfile.id.value.toLong() }) {
                             with(SqlExpressionBuilder) {
-                                it[Profiles.money] = Profiles.money + howMuch
+                                it[Profiles.money] = Profiles.money + howMuchShouldBeAdded
                             }
                         }
 
                         Profiles.update({ Profiles.id eq giverProfile.id.value.toLong() }) {
                             with(SqlExpressionBuilder) {
-                                it[Profiles.money] = Profiles.money - howMuch
+                                it[Profiles.money] = Profiles.money - howMuchShouldBeRemoved
                             }
                         }
 
@@ -149,7 +151,7 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
                             receiverProfile.id.value.toLong(),
                             now,
                             TransactionType.PAYMENT,
-                            howMuch,
+                            howMuchShouldBeAdded,
                             storedTransaction
                         )
 
@@ -157,7 +159,7 @@ class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : Li
                             giverProfile.id.value.toLong(),
                             now,
                             TransactionType.PAYMENT,
-                            howMuch,
+                            howMuchShouldBeRemoved,
                             storedTransaction
                         )
 
