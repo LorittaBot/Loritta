@@ -53,7 +53,7 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             )
             return
         }
-
+        
         if (!member.hasPermission(Permission.ADMINISTRATOR)) {
             call.respondJson("", status = HttpStatusCode.Unauthorized)
             return
@@ -237,7 +237,7 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                 }
 
                 styled(
-                    "**${i18nContext.get(I18nKeysData.Commands.Command.Pay.ApiInitiatedTransfers(member.asMention, senderSnowflake.asMention))}**",
+                    "**${i18nContext.get(I18nKeysData.Commands.Command.Pay.ApiInitiatedRequest(member.asMention, senderSnowflake.asMention))}**",
                     Emotes.LoriMegaphone
                 )
 
