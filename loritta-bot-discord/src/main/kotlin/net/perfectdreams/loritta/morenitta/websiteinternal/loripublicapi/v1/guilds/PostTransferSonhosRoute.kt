@@ -207,6 +207,7 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         // Attempt to initiate a transfer
         val sonhosTransferRequestId = m.transaction {
             ThirdPartySonhosTransferRequests.insertAndGetId {
+                it[ThirdPartySonhosTransferRequests.tokenUser] = tokenInfo.userId
                 it[ThirdPartySonhosTransferRequests.giver] = member.idLong
                 it[ThirdPartySonhosTransferRequests.receiver] = request.receiverId
                 it[ThirdPartySonhosTransferRequests.quantity] = request.quantity
