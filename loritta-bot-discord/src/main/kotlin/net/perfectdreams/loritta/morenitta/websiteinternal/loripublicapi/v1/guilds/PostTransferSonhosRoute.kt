@@ -229,7 +229,7 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                 }
 
                 styled(
-                    "**${i18nContext.get(I18nKeysData.Commands.Command.Pay.ApiInitiatedTransfers(member.asMention, receiverSnowflake.asMention))}**",
+                    "**${i18nContext.get(I18nKeysData.Commands.Command.Pay.ApiInitiatedTransfer(member.asMention, receiverSnowflake.asMention))}**",
                     Emotes.LoriMegaphone
                 )
 
