@@ -67,3 +67,8 @@ jobs:
       - name: Publish Docker images
         run: |
           docker push ghcr.io/lorittabot/loritta-morenitta
+          docker push ghcr.io/lorittabot/discord-chat-message-renderer-server
+          docker push ghcr.io/lorittabot/lori-api-proxy
+          docker push ghcr.io/lorittabot/spicy-morenitta
+          docker push ghcr.io/lorittabot/showtime-backend
+          docker push ghcr.io/lorittabot/broker-tickers-updater
