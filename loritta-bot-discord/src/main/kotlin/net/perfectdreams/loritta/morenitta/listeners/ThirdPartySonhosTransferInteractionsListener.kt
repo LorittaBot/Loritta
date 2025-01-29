@@ -12,17 +12,17 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.I18nContextUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransferRequests
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartyPaymentSonhosTransactionResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.ThirdPartySonhosTransferUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
-import net.perfectdreams.loritta.serializable.StoredPaymentSonhosTransaction
+import net.perfectdreams.loritta.serializable.StoredThirdPartyPaymentSonhosTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
@@ -30,11 +30,12 @@ import org.jetbrains.exposed.sql.update
 import org.jetbrains.exposed.sql.vendors.ForUpdateOption
 import java.time.Instant
 
-class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdapter() {
+class ThirdPartySonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdapter() {
+    // This code is based off SonhosTransferInteractionsListener
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         val guild = event.guild
 
-        if (event.componentId.startsWith(SonhosPayExecutor.SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX + ":")) {
+        if (event.componentId.startsWith(ThirdPartySonhosTransferUtils.THIRD_PARTY_SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX + ":")) {
             val dbId = event.componentId.substringAfter(":").toLong()
 
             GlobalScope.launch {
@@ -51,9 +52,9 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                 val result = loritta.transaction {
                     val now = Instant.now()
 
-                    val sonhosTransferRequestData = SonhosTransferRequests.selectAll()
+                    val sonhosTransferRequestData = ThirdPartySonhosTransferRequests.selectAll()
                         .where {
-                            SonhosTransferRequests.id eq dbId
+                            ThirdPartySonhosTransferRequests.id eq dbId
                         }
                         // Lock the rows for update to avoid any parallel executions causing issues
                         .forUpdate(ForUpdateOption.PostgreSQL.ForUpdate())
@@ -62,55 +63,55 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                     if (sonhosTransferRequestData == null)
                         return@transaction TransferResult.UnknownRequest
 
-                    val isGiver = sonhosTransferRequestData[SonhosTransferRequests.giver] == event.user.idLong
-                    val isReceiver = sonhosTransferRequestData[SonhosTransferRequests.receiver] == event.user.idLong
-                    var giverHasAccepted = sonhosTransferRequestData[SonhosTransferRequests.giverAcceptedAt] != null
-                    var receiverHasAccepted = sonhosTransferRequestData[SonhosTransferRequests.receiverAcceptedAt] != null
+                    val isGiver = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.giver] == event.user.idLong
+                    val isReceiver = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.receiver] == event.user.idLong
+                    var giverHasAccepted = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.giverAcceptedAt] != null
+                    var receiverHasAccepted = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.receiverAcceptedAt] != null
 
                     val isInvolvedInRequest = isGiver || isReceiver
                     if (!isInvolvedInRequest)
                         return@transaction TransferResult.NotTheUser
 
-                    if (sonhosTransferRequestData[SonhosTransferRequests.transferredAt] != null)
+                    if (sonhosTransferRequestData[ThirdPartySonhosTransferRequests.transferredAt] != null)
                         return@transaction TransferResult.AlreadyTransferred
 
-                    if (now > sonhosTransferRequestData[SonhosTransferRequests.expiresAt])
+                    if (now > sonhosTransferRequestData[ThirdPartySonhosTransferRequests.expiresAt])
                         return@transaction TransferResult.RequestExpired
 
                     if (isGiver) {
                         if (giverHasAccepted) {
-                            SonhosTransferRequests.update({ SonhosTransferRequests.id eq dbId }) {
-                                it[SonhosTransferRequests.giverAcceptedAt] = null
+                            ThirdPartySonhosTransferRequests.update({ ThirdPartySonhosTransferRequests.id eq dbId }) {
+                                it[ThirdPartySonhosTransferRequests.giverAcceptedAt] = null
                             }
                             giverHasAccepted = false
                         } else {
-                            SonhosTransferRequests.update({ SonhosTransferRequests.id eq dbId }) {
-                                it[SonhosTransferRequests.giverAcceptedAt] = now
+                            ThirdPartySonhosTransferRequests.update({ ThirdPartySonhosTransferRequests.id eq dbId }) {
+                                it[ThirdPartySonhosTransferRequests.giverAcceptedAt] = now
                             }
                             giverHasAccepted = true
                         }
                     } else {
                         if (receiverHasAccepted) {
-                            SonhosTransferRequests.update({ SonhosTransferRequests.id eq dbId }) {
-                                it[SonhosTransferRequests.receiverAcceptedAt] = null
+                            ThirdPartySonhosTransferRequests.update({ ThirdPartySonhosTransferRequests.id eq dbId }) {
+                                it[ThirdPartySonhosTransferRequests.receiverAcceptedAt] = null
                             }
                             receiverHasAccepted = false
                         } else {
-                            SonhosTransferRequests.update({ SonhosTransferRequests.id eq dbId }) {
-                                it[SonhosTransferRequests.receiverAcceptedAt] = now
+                            ThirdPartySonhosTransferRequests.update({ ThirdPartySonhosTransferRequests.id eq dbId }) {
+                                it[ThirdPartySonhosTransferRequests.receiverAcceptedAt] = now
                             }
                             receiverHasAccepted = true
                         }
                     }
 
                     if (giverHasAccepted && receiverHasAccepted) {
-                        val howMuch = sonhosTransferRequestData[SonhosTransferRequests.quantity]
+                        val howMuch = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.quantity] + sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tax]
 
                         val receiverProfile = loritta.pudding.users.getOrCreateUserProfile(
-                            net.perfectdreams.loritta.serializable.UserId(sonhosTransferRequestData[SonhosTransferRequests.receiver])
+                            net.perfectdreams.loritta.serializable.UserId(sonhosTransferRequestData[ThirdPartySonhosTransferRequests.receiver])
                         )
                         val giverProfile = loritta.pudding.users.getOrCreateUserProfile(
-                            net.perfectdreams.loritta.serializable.UserId(sonhosTransferRequestData[SonhosTransferRequests.giver])
+                            net.perfectdreams.loritta.serializable.UserId(sonhosTransferRequestData[ThirdPartySonhosTransferRequests.giver])
                         )
 
                         if (howMuch > giverProfile.money)
@@ -131,20 +132,18 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
 
                         // Insert transactions about it
                         // Cinnamon transaction log
-                        val paymentResult = PaymentSonhosTransactionResults.insertAndGetId {
-                            it[PaymentSonhosTransactionResults.givenBy] = giverProfile.id.value.toLong()
-                            it[PaymentSonhosTransactionResults.receivedBy] = receiverProfile.id.value.toLong()
-                            it[PaymentSonhosTransactionResults.sonhos] = howMuch
-                            it[PaymentSonhosTransactionResults.timestamp] = now
+                        val paymentResult = ThirdPartyPaymentSonhosTransactionResults.insertAndGetId {
+                            it[ThirdPartyPaymentSonhosTransactionResults.tokenUser] = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tokenUser]
+                            it[ThirdPartyPaymentSonhosTransactionResults.givenBy] = giverProfile.id.value.toLong()
+                            it[ThirdPartyPaymentSonhosTransactionResults.receivedBy] = receiverProfile.id.value.toLong()
+                            it[ThirdPartyPaymentSonhosTransactionResults.reason] = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.reason]
+                            it[ThirdPartyPaymentSonhosTransactionResults.tax] = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.tax]
+                            it[ThirdPartyPaymentSonhosTransactionResults.taxPercentage] = sonhosTransferRequestData[ThirdPartySonhosTransferRequests.taxPercentage]
+                            it[ThirdPartyPaymentSonhosTransactionResults.sonhos] = howMuch
+                            it[ThirdPartyPaymentSonhosTransactionResults.timestamp] = now
                         }
 
-                        val serializedMetadata = sonhosTransferRequestData[SonhosTransferRequests.metadata]
-
-                        val storedTransaction = StoredPaymentSonhosTransaction(
-                            giverProfile.id.value.toLong(),
-                            receiverProfile.id.value.toLong(),
-                            paymentResult.value
-                        )
+                        val storedTransaction = StoredThirdPartyPaymentSonhosTransaction(paymentResult.value)
 
                         SimpleSonhosTransactionsLogUtils.insert(
                             receiverProfile.id.value.toLong(),
@@ -162,8 +161,8 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                             storedTransaction
                         )
 
-                        SonhosTransferRequests.update({ SonhosTransferRequests.id eq dbId }) {
-                            it[SonhosTransferRequests.transferredAt] = now
+                        ThirdPartySonhosTransferRequests.update({ ThirdPartySonhosTransferRequests.id eq dbId }) {
+                            it[ThirdPartySonhosTransferRequests.transferredAt] = now
                         }
 
                         // Get the profiles again
@@ -178,8 +177,8 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ) else null
 
                         return@transaction TransferResult.Success(
-                            sonhosTransferRequestData[SonhosTransferRequests.receiver],
-                            sonhosTransferRequestData[SonhosTransferRequests.giver],
+                            sonhosTransferRequestData[ThirdPartySonhosTransferRequests.receiver],
+                            sonhosTransferRequestData[ThirdPartySonhosTransferRequests.giver],
                             howMuch,
                             updatedReceiverProfile.money,
                             receiverRanking,
@@ -260,7 +259,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                                 actionRow(
                                     Button.of(
                                         ButtonStyle.PRIMARY,
-                                        "${SonhosPayExecutor.SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX}:${dbId}",
+                                        "${ThirdPartySonhosTransferUtils.THIRD_PARTY_SONHOS_TRANSFER_ACCEPT_COMPONENT_PREFIX}:${dbId}",
                                         i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer(result.quantityApproved)),
                                         Emotes.Handshake.toJDA()
                                     )

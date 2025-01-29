@@ -227,6 +227,7 @@ class LorittaBot(
 	val giveawayInteractionsListener = GiveawayInteractionsListener(this)
 	val coinFlipBetGlobalListener = CoinFlipBetGlobalListener(this)
 	val sonhosTransferInteractionsListener = SonhosTransferInteractionsListener(this)
+	val thirdPartySonhosTransferInteractionsListener = ThirdPartySonhosTransferInteractionsListener(this)
 
 	var builder: DefaultShardManagerBuilder
 
@@ -439,7 +440,8 @@ class LorittaBot(
 				coinFlipBetGlobalListener,
 				easter2023Listener,
 				reactionListener,
-				sonhosTransferInteractionsListener
+				sonhosTransferInteractionsListener,
+				thirdPartySonhosTransferInteractionsListener
 			)
 			.addEventListenerProvider {
 				PreStartGatewayEventReplayListener(

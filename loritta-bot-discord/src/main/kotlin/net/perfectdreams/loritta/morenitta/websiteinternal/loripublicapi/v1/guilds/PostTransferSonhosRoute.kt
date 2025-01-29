@@ -15,18 +15,18 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransferRequests
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
 import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.ThirdPartySonhosTransferUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
-import net.perfectdreams.loritta.serializable.SonhosTransferRequestMetadata
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -200,24 +200,24 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         val now = Instant.now()
         val nowPlusTimeToLive = now.plusMillis(request.expiresAfterMillis)
 
-        // Load the server config beecause we need the i18nContext
+        // Load the server config because we need the i18nContext
         val serverConfig = m.getOrCreateServerConfig(guild.idLong)
         val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
         // Attempt to initiate a transfer
         val sonhosTransferRequestId = m.transaction {
-            SonhosTransferRequests.insertAndGetId {
-                it[SonhosTransferRequests.giver] = member.idLong
-                it[SonhosTransferRequests.receiver] = request.receiverId
-                it[SonhosTransferRequests.quantity] = request.quantity
-                it[SonhosTransferRequests.requestedAt] = now
-                it[SonhosTransferRequests.expiresAt] = nowPlusTimeToLive
-                it[SonhosTransferRequests.giverAcceptedAt] = now // The bot should automatically accept the transfer request
-                it[SonhosTransferRequests.metadata] = Json.encodeToString<SonhosTransferRequestMetadata>(
-                    SonhosTransferRequestMetadata.APIInitiatedSonhosTransferRequestMetadata(
-                        request.reason
-                    )
-                )
+            ThirdPartySonhosTransferRequests.insertAndGetId {
+                it[ThirdPartySonhosTransferRequests.giver] = member.idLong
+                it[ThirdPartySonhosTransferRequests.receiver] = request.receiverId
+                it[ThirdPartySonhosTransferRequests.quantity] = request.quantity
+                it[ThirdPartySonhosTransferRequests.requestedAt] = now
+                it[ThirdPartySonhosTransferRequests.expiresAt] = nowPlusTimeToLive
+                it[ThirdPartySonhosTransferRequests.giverAcceptedAt] = now // The bot should automatically accept the transfer request
+                it[ThirdPartySonhosTransferRequests.reason] = request.reason
+
+                // Transferring sonhos to a user is always 0% tax
+                it[ThirdPartySonhosTransferRequests.tax] = 0L
+                it[ThirdPartySonhosTransferRequests.taxPercentage] = 0.0
             }
         }
 
@@ -238,11 +238,12 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                     Emotes.PageFacingUp
                 )
 
-                val message = SonhosPayExecutor.createSonhosTransferMessageThirdPerson(
+                val message = ThirdPartySonhosTransferUtils.createSonhosTransferMessageThirdPerson(
                     i18nContext,
                     member,
                     receiverSnowflake,
                     howMuch,
+                    0L, // Just like before, bot transfers do not have any tax
                     nowPlusTimeToLive,
                     sonhosTransferRequestId.value,
                     1 // The sender (ourselves) should ALWAYS have the transfer pre-accepted!

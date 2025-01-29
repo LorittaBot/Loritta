@@ -9,17 +9,18 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransferRequests
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.time.Duration.Companion.seconds
 
-class GetSonhosTransferStatusRoute(m: LorittaBot) : LoriPublicAPIRoute(
+class GetThirdPartySonhosTransferStatusRoute(m: LorittaBot) : LoriPublicAPIRoute(
     m,
-    LoriPublicHttpApiEndpoints.GET_SONHOS_TRANSFER_STATUS,
+    LoriPublicHttpApiEndpoints.GET_THIRD_PARTY_SONHOS_TRANSFER_STATUS,
     RateLimitOptions(
         5,
         1.seconds
@@ -29,9 +30,9 @@ class GetSonhosTransferStatusRoute(m: LorittaBot) : LoriPublicAPIRoute(
         val sonhosTransferId = call.parameters["sonhosTransferId"]!!.toLong()
 
         val sonhosTransferResult = m.transaction {
-            SonhosTransferRequests.selectAll()
+            ThirdPartySonhosTransferRequests.selectAll()
                 .where {
-                    SonhosTransferRequests.id eq sonhosTransferId
+                    ThirdPartySonhosTransferRequests.id eq sonhosTransferId and (ThirdPartySonhosTransferRequests.tokenUser eq tokenInfo.userId)
                 }
                 .firstOrNull()
         }
@@ -51,14 +52,14 @@ class GetSonhosTransferStatusRoute(m: LorittaBot) : LoriPublicAPIRoute(
          call.respondText(
             LoriPublicAPI.json.encodeToString(
                 Result(
-                    sonhosTransferResult[SonhosTransferRequests.giver],
-                    sonhosTransferResult[SonhosTransferRequests.giverAcceptedAt]?.toKotlinInstant(),
-                    sonhosTransferResult[SonhosTransferRequests.receiver],
-                    sonhosTransferResult[SonhosTransferRequests.receiverAcceptedAt]?.toKotlinInstant(),
-                    sonhosTransferResult[SonhosTransferRequests.quantity],
-                    sonhosTransferResult[SonhosTransferRequests.requestedAt].toKotlinInstant(),
-                    sonhosTransferResult[SonhosTransferRequests.expiresAt].toKotlinInstant(),
-                    sonhosTransferResult[SonhosTransferRequests.transferredAt]?.toKotlinInstant(),
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.giver],
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.giverAcceptedAt]?.toKotlinInstant(),
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.receiver],
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.receiverAcceptedAt]?.toKotlinInstant(),
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.quantity],
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.requestedAt].toKotlinInstant(),
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.expiresAt].toKotlinInstant(),
+                    sonhosTransferResult[ThirdPartySonhosTransferRequests.transferredAt]?.toKotlinInstant(),
                 )
             ),
             ContentType.Application.Json

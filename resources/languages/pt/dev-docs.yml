@@ -26,7 +26,7 @@ devDocs:
       title: "Transferir Sonhos para um Usuário"
     requestSonhos:
       title: "Solicitar Sonhos para um Usuário"
-    getSonhosTransferStatus:
+    getThirdPartySonhosTransferStatus:
       title: "Pegar o Status de uma Transação de Sonhos"
   parameterKinds:
     path: "Parâmetro no Path"

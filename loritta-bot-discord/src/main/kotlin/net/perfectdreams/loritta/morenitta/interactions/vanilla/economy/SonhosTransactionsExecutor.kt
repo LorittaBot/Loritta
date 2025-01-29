@@ -239,8 +239,11 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         // ===[ PAYMENTS ]===
                         is PaymentSonhosTransaction -> PaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
-                        // ===[ PAYMENTS ]===
+                        // ===[ PAYMENTS (THIRD PARTY / DEPRECATED) ]===
                         is APIInitiatedPaymentSonhosTransaction -> APIInitiatedPaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
+                        // ===[ PAYMENTS (THIRD PARTY) ]===
+                        is ThirdPartyPaymentSonhosTransaction -> ThirdPartyPaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ DAILY REWARD ]===
                         is DailyRewardSonhosTransaction -> DailyRewardSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)

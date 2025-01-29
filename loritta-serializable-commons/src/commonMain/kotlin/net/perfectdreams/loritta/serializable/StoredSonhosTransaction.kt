@@ -56,6 +56,12 @@ data class StoredAPIInitiatedPaymentSonhosTransaction(
     val reason: String
 ) : StoredSonhosTransaction()
 
+// This is deprecated
+@Serializable
+data class StoredThirdPartyPaymentSonhosTransaction(
+    val thirdPartyPaymentId: Long
+) : StoredSonhosTransaction()
+
 @Serializable
 data class StoredBrokerSonhosTransaction(
     val action: LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction,

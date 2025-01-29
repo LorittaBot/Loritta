@@ -87,6 +87,20 @@ data class CoinFlipBetGlobalSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class ThirdPartyPaymentSonhosTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val givenBy: UserId,
+    val receivedBy: UserId,
+    val sonhos: Long,
+    val tax: Long,
+    val taxPercentage: Double,
+    val reason: String
+) : SonhosTransaction()
+
+@Serializable
 data class EmojiFightBetSonhosTransaction(
     override val id: Long,
     override val transactionType: TransactionType,

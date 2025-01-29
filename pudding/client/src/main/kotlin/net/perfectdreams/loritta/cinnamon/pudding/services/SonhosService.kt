@@ -115,6 +115,12 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                 .groupBy(EmojiFightParticipants.match)
                 .toList()
 
+            val thirdPartyPaymentResults = ThirdPartyPaymentSonhosTransactionResults.selectAll()
+                .where {
+                    ThirdPartyPaymentSonhosTransactionResults.id inList storedTransactions.filterIsInstance<StoredThirdPartyPaymentSonhosTransaction>().map { it.thirdPartyPaymentId }
+                }
+                .toList()
+
             rowToStoredTransactions
                 .map { (it, stored) ->
                     when (stored) {
@@ -267,6 +273,23 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                                 matchmakingResult[CoinFlipBetGlobalMatchmakingResults.tax],
                                 matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage],
                                 matchmakingResult[CoinFlipBetGlobalMatchmakingResults.timeOnQueue].toMillis()
+                            )
+                        }
+
+                        is StoredThirdPartyPaymentSonhosTransaction -> {
+                            val paymentResult = thirdPartyPaymentResults.first { it[ThirdPartyPaymentSonhosTransactionResults.id].value == stored.thirdPartyPaymentId }
+
+                            ThirdPartyPaymentSonhosTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                UserId(paymentResult[ThirdPartyPaymentSonhosTransactionResults.givenBy].value),
+                                UserId(paymentResult[ThirdPartyPaymentSonhosTransactionResults.receivedBy].value),
+                                paymentResult[ThirdPartyPaymentSonhosTransactionResults.sonhos],
+                                paymentResult[ThirdPartyPaymentSonhosTransactionResults.tax],
+                                paymentResult[ThirdPartyPaymentSonhosTransactionResults.taxPercentage],
+                                paymentResult[ThirdPartyPaymentSonhosTransactionResults.reason]
                             )
                         }
 

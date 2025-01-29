@@ -8,6 +8,7 @@ interface UserPremiumPlans {
 	val dailyMultiplier: Double
 	val totalLoraffleReward: Double
 	val totalCoinFlipReward: Double
+	val thirdPartySonhosTransferTax: Double
 	val customBackground: Boolean
 	val coinFlipRewardTax: Double
 	val hasDailyInactivityTax: Boolean
@@ -51,6 +52,7 @@ interface UserPremiumPlans {
 		override val dailyMultiplier = 0.0
 		override val totalLoraffleReward = 0.95
 		override val totalCoinFlipReward = 0.95
+		override val thirdPartySonhosTransferTax = 0.10
 		override val customBackground = false
 		override val coinFlipRewardTax = 0.05
 		override val hasDailyInactivityTax = true
@@ -67,6 +69,7 @@ interface UserPremiumPlans {
 		override val dailyMultiplier = 1.0
 		override val totalLoraffleReward = 0.95
 		override val totalCoinFlipReward = 0.95
+		override val thirdPartySonhosTransferTax = 0.10
 		override val customBackground = false
 		override val coinFlipRewardTax = 0.05
 		override val hasDailyInactivityTax = true
@@ -83,6 +86,7 @@ interface UserPremiumPlans {
 		override val dailyMultiplier = 2.0
 		override val totalLoraffleReward = 1.0
 		override val totalCoinFlipReward = 1.0
+		override val thirdPartySonhosTransferTax = 0.0
 		override val customBackground = true
 		override val coinFlipRewardTax = 0.0
 		override val hasDailyInactivityTax = true
@@ -99,6 +103,7 @@ interface UserPremiumPlans {
 		override val dailyMultiplier = 6.0 // 6.0 em vez de 5.0 para ter aquele "wow"
 		override val totalLoraffleReward = 1.0
 		override val totalCoinFlipReward = 1.0
+		override val thirdPartySonhosTransferTax = 0.0
 		override val customBackground = true
 		override val coinFlipRewardTax = 0.0
 		override val hasDailyInactivityTax = false

@@ -381,7 +381,7 @@ object MagicEndpoints {
             },
         ),
 
-        LoriPublicHttpApiEndpoints.GET_SONHOS_TRANSFER_STATUS to EndpointTesterOptions(
+        LoriPublicHttpApiEndpoints.GET_THIRD_PARTY_SONHOS_TRANSFER_STATUS to EndpointTesterOptions(
             pathParameters = listOf(
                 APIParameter(
                     Long::class.createType(),

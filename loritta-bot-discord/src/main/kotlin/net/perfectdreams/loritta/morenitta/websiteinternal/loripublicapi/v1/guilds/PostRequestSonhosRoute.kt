@@ -15,18 +15,19 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransferRequests
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
 import net.perfectdreams.loritta.common.utils.TokenType
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.ThirdPartySonhosTransferUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
-import net.perfectdreams.loritta.serializable.SonhosTransferRequestMetadata
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -42,18 +43,6 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
     )
 ) {
     override suspend fun onGuildAPIRequest(call: ApplicationCall, tokenInfo: TokenInfo, guild: Guild, member: Member) {
-        if (true) {
-            call.respondJson(
-                Json.encodeToString(
-                    GenericErrorResponse(
-                        "This endpoint is currently disabled"
-                    )
-                ),
-                status = HttpStatusCode.Unauthorized
-            )
-            return
-        }
-        
         if (!member.hasPermission(Permission.ADMINISTRATOR)) {
             call.respondJson("", status = HttpStatusCode.Unauthorized)
             return
@@ -208,24 +197,40 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         val now = Instant.now()
         val nowPlusTimeToLive = now.plusMillis(request.expiresAfterMillis)
 
-        // Load the server config beecause we need the i18nContext
+        // Load the server config because we need the i18nContext
         val serverConfig = m.getOrCreateServerConfig(guild.idLong)
         val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+        val userPremiumPlan = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(senderSnowflake.idLong))
+
+        val hasTax = userPremiumPlan.thirdPartySonhosTransferTax != 0.0
+        val tax = (request.quantity * userPremiumPlan.thirdPartySonhosTransferTax).toLong()
+
+        if (tax == 0L && hasTax) {
+            // Uh oh!
+            call.respondJson(
+                Json.encodeToString(
+                    GenericErrorResponse(
+                        "You need to transfer more sonhos, because the tax would be zero!"
+                    )
+                ),
+                status = HttpStatusCode.BadRequest
+            )
+            return
+        }
 
         // Attempt to initiate a transfer
         val sonhosTransferRequestId = m.transaction {
-            SonhosTransferRequests.insertAndGetId {
-                it[SonhosTransferRequests.giver] = request.senderId
-                it[SonhosTransferRequests.receiver] = member.idLong
-                it[SonhosTransferRequests.quantity] = request.quantity
-                it[SonhosTransferRequests.requestedAt] = now
-                it[SonhosTransferRequests.expiresAt] = nowPlusTimeToLive
-                it[SonhosTransferRequests.receiverAcceptedAt] = now // The bot should automatically accept the transfer request
-                it[SonhosTransferRequests.metadata] = Json.encodeToString<SonhosTransferRequestMetadata>(
-                    SonhosTransferRequestMetadata.APIInitiatedSonhosTransferRequestMetadata(
-                        request.reason
-                    )
-                )
+            ThirdPartySonhosTransferRequests.insertAndGetId {
+                it[ThirdPartySonhosTransferRequests.tokenUser] = tokenInfo.userId
+                it[ThirdPartySonhosTransferRequests.giver] = request.senderId
+                it[ThirdPartySonhosTransferRequests.receiver] = member.idLong
+                it[ThirdPartySonhosTransferRequests.quantity] = request.quantity
+                it[ThirdPartySonhosTransferRequests.requestedAt] = now
+                it[ThirdPartySonhosTransferRequests.expiresAt] = nowPlusTimeToLive
+                it[ThirdPartySonhosTransferRequests.receiverAcceptedAt] = now // The bot should automatically accept the transfer request
+                it[ThirdPartySonhosTransferRequests.reason] = request.reason
+                it[ThirdPartySonhosTransferRequests.tax] = tax
+                it[ThirdPartySonhosTransferRequests.taxPercentage] = userPremiumPlan.thirdPartySonhosTransferTax
             }
         }
 
@@ -246,11 +251,12 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                     Emotes.PageFacingUp
                 )
 
-                val message = SonhosPayExecutor.createSonhosTransferMessageThirdPerson(
+                val message = ThirdPartySonhosTransferUtils.createSonhosTransferMessageThirdPerson(
                     i18nContext,
                     senderSnowflake,
                     member,
                     howMuch,
+                    tax,
                     nowPlusTimeToLive,
                     sonhosTransferRequestId.value,
                     1 // The receiver (ourselves) should ALWAYS have the transfer pre-accepted!

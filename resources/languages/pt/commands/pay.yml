@@ -3,7 +3,10 @@ description: "Transfira sonhos para outros usuários"
 acceptTransfer: "Aceitar Transferência ({acceptedQuantity,number}/2)"
 cancel: "Cancelar"
 youAreGoingToTransfer: "Você está prestes a transferir **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para {receiver}!"
-thirdPersonIsGoingToTransfer: "{sender} está prestes a transferir **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para {receiver}!"
+
+thirdPartyIsGoingToTransfer: "{sender} está prestes a transferir **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} ({sonhosTaxQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de taxa)** para {receiver}!"
+thirdPartyIsGoingToTransferNoTax: "{sender} está prestes a transferir **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem precisar pagar taxa!)** para {receiver}!"
+
 confirmTheTransaction: "Para confirmar a transação, você e {receiver} devem aceitar a transação até {time} ({timeRelative})!"
 thirdPersonConfirmTheTransaction: "Para confirmar a transação, {sender} e {receiver} devem aceitar a transação até {time} ({timeRelative})!"
 transferAccepted: "Transferência Aceita"

@@ -33,6 +33,10 @@ types:
     received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview}"
     apiInitiatedSent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para {receiverUserPreview} para `{reason}`"
     apiInitiatedReceived: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de {giverUserPreview} para `{reason}`"
+    thirdPartySent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para {receiverUserPreview} pelo motivo `{reason}`"
+    thirdPartySentNoTax: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para {receiverUserPreview} pelo motivo `{reason}`"
+    thirdPartyReceived: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) de {giverUserPreview} pelo motivo `{reason}`"
+    thirdPartyReceivedNoTax: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de {giverUserPreview} pelo motivo `{reason}`"
   dailyReward:
     title: "Prêmio Diário"
     description: "Transações relacionadas ao prêmio diário da Loritta"

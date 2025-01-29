@@ -61,7 +61,7 @@ class LoriAPIProxy(
         ProxiedRoute(LoriPublicHttpApiEndpoints.CREATE_GUILD_MUSICALCHAIRS, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
         ProxiedRoute(LoriPublicHttpApiEndpoints.TRANSFER_SONHOS, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
         ProxiedRoute(LoriPublicHttpApiEndpoints.REQUEST_SONHOS, ProxiedRoute.ROUTE_BASED_ON_GUILD_ID),
-        ProxiedRoute(LoriPublicHttpApiEndpoints.GET_SONHOS_TRANSFER_STATUS, ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
+        ProxiedRoute(LoriPublicHttpApiEndpoints.GET_THIRD_PARTY_SONHOS_TRANSFER_STATUS, ProxiedRoute.ROUTE_TO_DEFAULT_CLUSTER),
     )
 
     fun start() {
