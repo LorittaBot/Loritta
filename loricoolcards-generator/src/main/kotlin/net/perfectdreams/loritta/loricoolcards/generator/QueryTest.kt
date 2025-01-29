@@ -310,6 +310,7 @@ suspend fun main() {
                     is StoredLorittaItemShopComissionProfileDesignTransaction -> TODO()
                     is StoredMarriageMarryTransaction -> TODO()
                     is StoredAPIInitiatedPaymentSonhosTransaction -> TODO()
+                    is StoredThirdPartyPaymentSonhosTransaction -> TODO()
                 }
             }
     }
