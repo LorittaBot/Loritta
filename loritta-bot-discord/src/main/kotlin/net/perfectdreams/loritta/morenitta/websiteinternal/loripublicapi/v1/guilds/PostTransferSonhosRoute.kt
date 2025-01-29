@@ -28,7 +28,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.UserId
-import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.insert
 import java.time.Instant
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -205,8 +205,8 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
         // Attempt to initiate a transfer
-        val sonhosTransferRequestId = m.transaction {
-            ThirdPartySonhosTransferRequests.insertAndGetId {
+        val sonhosTransferRequest = m.transaction {
+            ThirdPartySonhosTransferRequests.insert {
                 it[ThirdPartySonhosTransferRequests.tokenUser] = tokenInfo.userId
                 it[ThirdPartySonhosTransferRequests.giver] = member.idLong
                 it[ThirdPartySonhosTransferRequests.receiver] = request.receiverId
@@ -221,6 +221,7 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                 it[ThirdPartySonhosTransferRequests.taxPercentage] = 0.0
             }
         }
+        val sonhosTransferRequestId = sonhosTransferRequest[ThirdPartySonhosTransferRequests.id]
 
         // Attempt to send the message
         val messageId = channel.sendMessage(
@@ -258,7 +259,11 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             Json.encodeToString(
                 TransferSonhosResponse(
                     sonhosTransferRequestId.value,
-                    messageId.idLong
+                    messageId.idLong,
+                    sonhosTransferRequest[ThirdPartySonhosTransferRequests.quantity],
+                    sonhosTransferRequest[ThirdPartySonhosTransferRequests.quantity] - sonhosTransferRequest[ThirdPartySonhosTransferRequests.tax],
+                    sonhosTransferRequest[ThirdPartySonhosTransferRequests.tax],
+                    sonhosTransferRequest[ThirdPartySonhosTransferRequests.taxPercentage],
                 )
             ),
             status = HttpStatusCode.OK
@@ -286,6 +291,14 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         val sonhosTransferRequestId: Long,
         @LoriPublicAPIParameter
         @Serializable(LongAsStringSerializer::class)
-        val messageId: Long
+        val messageId: Long,
+        @LoriPublicAPIParameter
+        val quantity: Long,
+        @LoriPublicAPIParameter
+        val quantityAfterTax: Long,
+        @LoriPublicAPIParameter
+        val tax: Long,
+        @LoriPublicAPIParameter
+        val taxPercentage: Double
     )
 }
