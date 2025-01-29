@@ -55,10 +55,16 @@ jobs:
 
       # We will do everything on the same Gradle task to avoid Gradle executing tasks that it was already executed in a previous step
       # (Example: Compiling everything again when publishing the Docker container)
+      # We don't use the "jib" task due to https://github.com/GoogleContainerTools/jib/issues/4301
       - name: Build and Publish with Gradle
         env:
           # GitHub Actions has 7GBs of available RAM for workers, so let's bump it a bit up!
           GRADLE_OPTS: -Xmx4096m -Xms4096m
           ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
           ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:jib :discord-chat-message-renderer-server:jib :lori-api-proxy:jib :web:dashboard:backend:jib :web:showtime:backend:jib :broker-tickers-updater:jib --scan
+        run: ./gradlew build publish -Dcommit.hash=${{ github.sha }} -Dbuild.id=${{ github.run_number }} :loritta-bot-discord:dockerBuild :discord-chat-message-renderer-server:dockerBuild :lori-api-proxy:dockerBuild :web:dashboard:backend:dockerBuild :web:showtime:backend:dockerBuild :broker-tickers-updater:dockerBuild --scan
+
+      - name: Publish Docker images
+        if: steps.cache-docker-image.outputs.cache-hit != 'true'
+        run: |
+          docker push ghcr.io/lorittabot/loritta-morenitta
