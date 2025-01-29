@@ -11,6 +11,7 @@ import kotlinx.serialization.encodeToString
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.LoriPublicAPI
@@ -49,7 +50,9 @@ class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
 
             val bannedState = m.pudding.users.getUserBannedState(UserId(userId))
 
-            return@transaction Result.Success(profile, bannedState)
+            val plan = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(userId))
+
+            return@transaction Result.Success(profile, bannedState, plan)
         }
 
         when (result) {
@@ -74,6 +77,11 @@ class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
                                     it.expiresAt,
                                     it.reason
                                 )
+                            },
+                            result.plan.let {
+                                UserProfile.Features(
+                                    it.thirdPartySonhosTransferTax
+                                )
                             }
                         )
                     ),
@@ -92,7 +100,8 @@ class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
         val aboutMe: String?,
         val gender: Gender,
         val emojiFightEmoji: String?,
-        val lorittaBanState: LorittaBanState?
+        val lorittaBanState: LorittaBanState?,
+        val features: Features,
     ) {
         @Serializable
         data class LorittaBanState(
@@ -100,10 +109,15 @@ class GetUserInfoRoute(m: LorittaBot) : LoriPublicAPIRoute(
             val expiresAt: Instant?,
             val reason: String,
         )
+
+        @Serializable
+        data class Features(
+            val thirdPartySonhosTransferTax: Double
+        )
     }
 
     private sealed class Result {
-        data class Success(val profile: ResultRow, val state: UserBannedState?) : Result()
+        data class Success(val profile: ResultRow, val state: UserBannedState?, val plan: UserPremiumPlans) : Result()
         data object NotFound : Result()
     }
 }
