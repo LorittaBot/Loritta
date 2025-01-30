@@ -177,7 +177,7 @@ class DailyView(
             adWrapper {
                 generateAdOrSponsor(
                     loritta,
-                    0,
+                    1,
                     "3808844539"
                 )
             }
