@@ -9,7 +9,6 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import java.net.Inet6Address
 import java.time.ZonedDateTime
 
 object DailyAccountSafetyUtils {
@@ -206,45 +205,6 @@ object DailyAccountSafetyUtils {
 
         // Join the hextets with colons to form the expanded IPv6 address
         return expandedHextets.joinToString(":")
-    }
-
-    private fun extractIPv6HouseholdPrefix(ipv6Address: String): List<String> {
-        // Extracting the IPv6 blocks is HARD due to compression
-        val address = ipv6Address.replace("::", ":0000:0000:")
-        return address.split(":")
-    }
-
-    /**
-     * Gets the prefix of [ipv6Address], using [prefixLength] as the length
-     *
-     * The result is a IPv6 in compressed format
-     *
-     * @param ipv6Address the IPv6 address
-     * @param prefixLength the prefix length
-     * @return the compressed IPv6 address
-     */
-    // Thanks Deepseek
-    private fun getCompressedIPv6Prefix(ipv6Address: String, prefixLength: Int): String {
-        // Parse the IPv6 address
-        val inet6Address = Inet6Address.getByName(ipv6Address) as Inet6Address
-
-        // Get the bytes of the IPv6 address
-        val addressBytes = inet6Address.address
-
-        // Calculate the number of bytes in the prefix
-        val prefixBytes = prefixLength / 8
-
-        // Create a new byte array for the prefix
-        val prefix = ByteArray(16) { 0 }
-
-        // Copy the prefix bytes
-        System.arraycopy(addressBytes, 0, prefix, 0, prefixBytes)
-
-        // Create a new Inet6Address with the prefix
-        val prefixAddress = Inet6Address.getByAddress(null, prefix) as Inet6Address
-
-        // Get the compressed IPv6 address
-        return prefixAddress.hostAddress.replace(Regex("(:0)+"), ":").replace(Regex("^0+"), "")
     }
 
     sealed class AccountDailyPayoutCheckResult {
