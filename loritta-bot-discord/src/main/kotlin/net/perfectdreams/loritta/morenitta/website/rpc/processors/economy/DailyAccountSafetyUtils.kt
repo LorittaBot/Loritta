@@ -85,7 +85,6 @@ object DailyAccountSafetyUtils {
             // TODO: Should we also implement the "sameIpDailyOneHourAgoAt" IPv4 checks too?
 
             var trippedSamePrefixChecks = 0
-            val checkedDailies = mutableListOf<String>()
 
             for (dailyIp in allDailiesThatWereReceivedToday) {
                 val expandedDailyIp = expandIPv6Address(dailyIp)
@@ -116,8 +115,6 @@ object DailyAccountSafetyUtils {
                         }
                     }
                 }
-
-                checkedDailies.add(expandedDailyIp)
             }
 
             return AccountDailyPayoutCheckResult.Success(trippedSamePrefixChecks)
