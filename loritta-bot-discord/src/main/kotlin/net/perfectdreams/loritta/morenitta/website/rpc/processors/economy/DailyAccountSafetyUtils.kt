@@ -105,6 +105,8 @@ object DailyAccountSafetyUtils {
 
                     trippedSamePrefixChecks++
 
+                    logger.info { "Tripped ${userIdentification.id.toLong()} same household prefix checks (IPv6 - Trip count: $trippedSamePrefixChecks - Household prefix is $dailyIpHouseholdPrefixBlocks)" }
+
                     if (trippedSamePrefixChecks == 3) {
                         logger.info { "Blocking ${userIdentification.id.toLong()} because they already received the daily reward today (IPv6 - Too many rewards on the same IPv6 prefix - Household prefix is $dailyIpHouseholdPrefixBlocks)" }
                         if (!loritta.isOwner(userIdentification.id.toLong())) {
