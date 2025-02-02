@@ -70,16 +70,15 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
     }
 }
 
-fun DIV.generateAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
+fun DIV.generateAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, showIfSponsorIsMissing: Boolean = true) = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, showIfSponsorIsMissing)
 
-fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
+fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, showIfSponsorIsMissing: Boolean = true) {
     val sponsor = sponsors.getOrNull(sponsorId)
 
     if (sponsor != null) {
         generateSponsor(sponsor)
     } else if (showIfSponsorIsMissing) {
-        generateAd(adSlot, adName, showOnMobile)
+        generateAd(adSlot)
     }
 }
 
@@ -113,17 +112,10 @@ fun DIV.generateHowToSponsorButton(locale: BaseLocale) {
     }
 }
 
-fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean = true) {
-    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
-    // TODO: Random ID
-    val adGen = "ad-$adSlot-"
-
+fun DIV.generateAd(adSlot: String) {
     div(classes = "centralized-ad") {
         ins(classes = "adsbygoogle") {
             style = "display: block;"
-
-            if (!showOnMobile)
-                attributes["id"] = adGen
 
             attributes["data-ad-client"] = "ca-pub-9989170954243288"
             attributes["data-ad-slot"] = adSlot
@@ -132,17 +124,9 @@ fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean
         }
     }
 
-    if (!showOnMobile) {
-        script(type = ScriptType.textJavaScript) {
-            unsafe {
-                raw("if (document.body.clientWidth >= 1366) { (adsbygoogle = window.adsbygoogle || []).push({}); } else { console.log(\"Not displaying ad: Browser width is too smol!\"); document.querySelector(\"#$adGen\").remove(); }")
-            }
-        }
-    } else {
-        script(type = ScriptType.textJavaScript) {
-            unsafe {
-                raw("(adsbygoogle = window.adsbygoogle || []).push({});")
-            }
+    script(type = ScriptType.textJavaScript) {
+        unsafe {
+            raw("(adsbygoogle = window.adsbygoogle || []).push({});")
         }
     }
 }
