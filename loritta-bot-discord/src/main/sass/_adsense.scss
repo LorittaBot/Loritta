@@ -1,0 +1,10 @@
+.responsive-adsense-ad {
+  width: 728px;
+  height: 90px;
+}
+
+@media(max-width: 500px) {
+  .responsive-adsense-ad {
+    width: 300px; height: 250px;
+  }
+}

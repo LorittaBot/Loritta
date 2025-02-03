@@ -1,19 +1,6 @@
 package net.perfectdreams.loritta.morenitta.sweetmorenitta.utils
 
-import kotlinx.html.DIV
-import kotlinx.html.IMG
-import kotlinx.html.ScriptType
-import kotlinx.html.a
-import kotlinx.html.div
-import kotlinx.html.fieldSet
-import kotlinx.html.i
-import kotlinx.html.img
-import kotlinx.html.ins
-import kotlinx.html.legend
-import kotlinx.html.script
-import kotlinx.html.span
-import kotlinx.html.style
-import kotlinx.html.unsafe
+import kotlinx.html.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
@@ -70,15 +57,15 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
     }
 }
 
-fun DIV.generateAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, showIfSponsorIsMissing: Boolean = true) = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, showIfSponsorIsMissing)
+fun DIV.generateAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, showIfSponsorIsMissing: Boolean = true, adsenseAdClass: String? = null) = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, showIfSponsorIsMissing, adsenseAdClass)
 
-fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, showIfSponsorIsMissing: Boolean = true) {
+fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, showIfSponsorIsMissing: Boolean = true, adsenseAdClass: String? = null) {
     val sponsor = sponsors.getOrNull(sponsorId)
 
     if (sponsor != null) {
         generateSponsor(sponsor)
     } else if (showIfSponsorIsMissing) {
-        generateAd(adSlot)
+        generateAd(adSlot, adsenseAdClass)
     }
 }
 
@@ -112,9 +99,12 @@ fun DIV.generateHowToSponsorButton(locale: BaseLocale) {
     }
 }
 
-fun DIV.generateAd(adSlot: String) {
+fun DIV.generateAd(adSlot: String, adsenseAdClass: String? = null) {
     div(classes = "centralized-ad") {
         ins(classes = "adsbygoogle") {
+            if (adsenseAdClass != null)
+                classes += adsenseAdClass
+
             style = "display: block;"
 
             attributes["data-ad-client"] = "ca-pub-9989170954243288"

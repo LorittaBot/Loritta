@@ -162,7 +162,8 @@ class DailyView(
                 generateAdOrSponsor(
                     loritta,
                     0,
-                    "2235080437"
+                    "2235080437",
+                    adsenseAdClass = "responsive-adsense-ad"
                 )
             }
             
@@ -178,7 +179,8 @@ class DailyView(
                 generateAdOrSponsor(
                     loritta,
                     1,
-                    "3808844539"
+                    "3808844539",
+                    adsenseAdClass = "responsive-adsense-ad"
                 )
             }
 
