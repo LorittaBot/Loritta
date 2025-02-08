@@ -79,8 +79,12 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     val messageCommands = mutableListOf<MessageCommandDeclaration>()
     val applicationCommands: List<ExecutableApplicationCommandDeclaration>
         get() = slashCommands + userCommands + messageCommands
-    // Application Commands have their label/descriptions in English
-    val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
+    // In the past we did use English as the default i18nContext
+    // However, this is bad because all of the strings are first created in portuguese, then translated to english
+    // So a command that was not translated yet to english WILL cause issues after it is translated
+    // (ESPECIALLY if it is being used as a command mention!)
+    // So now we use the default i18nContext :3
+    val slashCommandDefaultI18nContext = languageManager.defaultI18nContext
 
     private var commandPathToDeclarations = mutableMapOf<String, SlashCommandDeclaration>()
 

@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.DiscordCommand
  * Mentions are automatically validated based on the commands registered. If a command doesn't exist, the class will fail to initialize!
  */
 class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
-    val achievements = commandMention("achievements")
+    val achievements = commandMention("conquistas")
 
     val daily = commandMention("daily")
 
@@ -17,25 +17,25 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
 
     val ban = commandMention("ban")
 
-    val brokerInfo = commandMention("broker info")
-    val brokerBuy = commandMention("broker buy")
-    val brokerSell = commandMention("broker sell")
-    val brokerPortfolio = commandMention("broker portfolio")
+    val brokerInfo = commandMention("corretora info")
+    val brokerBuy = commandMention("corretora buy")
+    val brokerSell = commandMention("corretora sell")
+    val brokerPortfolio = commandMention("corretora portfolio")
 
     val coinflipBetGlobal = commandMention("coinflipbetglobal")
 
-    val webhookSendSimple = commandMention("webhook send simple")
-    val webhookSendRepost = commandMention("webhook send repost")
+    val webhookSendSimple = commandMention("webhook enviar simples")
+    val webhookSendRepost = commandMention("webhook enviar repostar")
 
     val eventJoin = commandMention("evento entrar")
     val eventStats = commandMention("evento stats")
     val eventInventory = commandMention("evento inventário")
     val eventLeave = commandMention("evento sair")
 
-    val profileView = commandMention("profile view")
+    val profileView = commandMention("perfil ver")
 
-    val raffleStatus = commandMention("raffle status")
-    val raffleBuy = commandMention("raffle buy")
+    val raffleStatus = commandMention("rifa status")
+    val raffleBuy = commandMention("rifa comprar")
 
     val verifyMessageUrl = commandMention("verificarmensagem url")
     val verifyMessageFile = commandMention("verificarmensagem arquivo")
