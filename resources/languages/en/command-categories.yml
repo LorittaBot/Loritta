@@ -1,25 +1,22 @@
-# This file stores all the locales related to command categories (names and descriptions) and locale keys used by multiple commands in the category 
+---
+#This file stores all the locales related to command categories (names and descriptions) and locale keys used by multiple commands in the category
 commands:
   category:
     fun:
       name: "Fun"
       description:
         - "Wanna have fun? Want to liven up your server chat with various random, wacky and funny things? Then use these commands to make yourself happier!"
-
     images:
       name: "Images"
       description:
         - "Create fun and wacky images from the comfort of your Discord server! Perfect if you don't wanna open Photoshop just to create a funky meme for your friends and family!"
       options:
         image: "The image that you want to use, it can be a user mention (user avatar), image URL or a Discord emoji"
-
     videos:
       name: "Videos"
       description:
         - "Bored of creating fun and wacky images? Step it up and let's create fun and wacky videos from the comfort of your Discord server then!"
-
     minecraft:
-      name: "Minecraft"
       description:
         - "Minecraft is one of the most iconic games ever, and did you know that without it... maybe I wouldn't even exist?"
         - "Commands related to Minecraft."
@@ -27,44 +24,30 @@ commands:
       invalidPlayerName: "Sorry, but `{playerName}` doesn't look like a valid Minecraft: Java Edition player name!"
       options:
         playerNameJavaEdition: "The player's account name in Minecraft: Java Edition"
-
     pokemon:
-      name: "Pokémon"
       description:
         - "Commands related to Pokémon."
-
     undertale:
-      name: "Undertale/DELTARUNE"
       description:
-        - "You're gonna have a bad time."
+        - ""
         - "Commands related to Toby Fox's two gaming masterpieces: Undertale and DELTARUNE!"
-
     roblox:
-      name: "ROBLOX"
       description:
         - "Commands related to ROBLOX."
-
     anime:
-      name: "Anime"
       description:
         - "Commands related to Anime."
-
     discord:
-      name: "Discord"
       description:
         - "Commands related to Discord, the best chatting social network ever created!"
-
     fortnite:
-      name: "Fortnite"
       description:
-        - "Where are we dropping boys and girls?"
+        - ""
         - "Fortnite-related commands, so you can stay informed about the store, stats, and trivia while waiting for the battle bus to take off!"
-
     misc:
       name: "Miscellaneous"
       description:
         - "Commands that do not fit into a specific category."
-
     moderation:
       name: "Moderation"
       description:
@@ -100,34 +83,23 @@ commands:
           text: "The predefined punishment reason, if any predefined punishment reasons are configured in the dashboard"
         skipConfirmation:
           text: "Skips the punishment confirmation"
-        sendViaDirectMessage:
-          text: "Sets if the punishment will be sent to the user via direct message"
-        sendToPunishmentLog:
-          text: "Sets if the punishment will be sent to the punishment log"
-
     utils:
       name: "Utilities"
       description:
         - "Useful commands to make your life easier and faster!"
-
     social:
-      name: "Social"
       description:
         - "Humans are sociable creatures and need social interaction. And for this you can interact with your family, friends, neighbors, and even the members of your server in Discord. And believe me, my commands are a great tool for interacting with other people!"
-
     economy:
       name: "Economy"
       description:
         - "Getting rich in real life is super hard... so why not get rich here?"
         - "Commands related to sonhos, my virtual currency!"
       rootCommandDescription: "Commands related to sonhos, my virtual currency!"
-
     roleplay:
-      name: "Roleplay"
       description:
         - "Kisses, slaps, hugs and cuddles!"
         - "Having trouble expressing what you're really feeling and need a GIF to help? No problem, I have a folder with a bunch of cool reactions for you to use!"
-
     magic:
       name: "Magic"
       description:
