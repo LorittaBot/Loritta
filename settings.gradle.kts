@@ -91,6 +91,7 @@ include(":web:dashboard:spicy-frontend")
 include(":lorituber:server")
 
 // ===[ MISC ]===
+include(":loritta-helper")
 include(":temmie-discord-auth")
 include(":temmie-discord-auth-loritta-commons")
 include(":switch-twitch")
