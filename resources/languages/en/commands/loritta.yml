@@ -1,6 +1,4 @@
-label: "loritta"
 info:
-  label: "info"
   description: "View information about the cutest girl in the whole universe!"
   embed:
     title: "Howdy, my name is Loritta!"
@@ -13,8 +11,6 @@ info:
       - ""
       - "Let's make the world a better place, together {userMention}. {loriHeart}"
     footer: "Loritta was created by {authorTag} - {authorWebsite}"
-  website: "Website"
   dashboard: "Dashboard"
   commands: "Commands"
   support: "Support"
-  premium: "Premium"

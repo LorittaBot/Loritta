@@ -1,16 +1,13 @@
 label: "notifications"
 description: "View notifications"
-
 dailyTaxTaxedUserNotification: "Daily Reward Inactivity Tax (Taxed)"
 dailyTaxWarnUserNotification: "Daily Reward Inactivity Tax (Warn)"
 correiosPackageUpdate: "Correios Package Update"
 unknownNotification: "Unknown Notification"
-
 list:
   label: "list"
   description: "View all notifications"
   title: "Notifications"
-
 view:
   label: "view"
   description: "View a notification"

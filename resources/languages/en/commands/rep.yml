@@ -1,23 +1,4 @@
-label: "rep"
-description: "Commands related to the reputation system"
-
-give:
-  label: "give"
-  description: "Give reputation to a user!"
-  repSelf: "You can't give rep to yourself!"
-  wait: "You can give a new reputation {time}!"
-  reputationLink: "Almost there! To give the reputation, confirm it at {repLink}"
-
-  options:
-    user:
-      description: "The user you want to give reputation to"
-
-delete:
-  label: "delete"
-  description: "Delete a reputation received by you"
-  successfullyDeleted: "Success! The reputation has been deleted from your history!"
-  reputationNotFound: "This reputation does not exist in your history, remember, you can only delete reputations received by you!"
-
-  options:
-    rep:
-      description: "The reputation you want to delete, type to filter"
+'on':
+  label: "on"
+'off':
+  label: "off"

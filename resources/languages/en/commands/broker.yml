@@ -1,3 +1,4 @@
+---
 label: "broker"
 footerDataInfo: "Data from TradingView • When using Loritta's stock market simulator, we may use your stock orders for statistics and for uses in the real life stock exchange!"
 thatIsNotAnValidStockTicker: "That is not a valid stock ticker! View all valid tickers with {brokerInfoCommandMention}."
@@ -5,7 +6,6 @@ staleTickerData: "The ticker data is stale! To avoid duping and other issues, yo
 stockMarketClosed: "The stock market is closed, come back later! Because Loritta's stock market simulator uses data from Bovespa, it is only open from {openTime} to {closingTime} during weekdays!"
 description: "Buy and sell stock market shares with sonhos! Of course, you won't gain or lose real money with this, but the sad feeling after losing money is the same"
 sharesCountWithPrice: "{sharesCount, plural, =0 {# shares} one {# share} other {# shares}} ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
-
 categories:
   industrialGoods: "Industrial Goods"
   basicMaterials: "Basic Materials"
@@ -15,9 +15,7 @@ categories:
   technology: "Technology"
   communications: "Communications"
   consumerGoods: "Consumer Goods"
-
 info:
-  label: "info"
   description: "Shows all available stock shares that you can buy and sell with sonhos"
   embed:
     title: "Stock Prices"
@@ -25,14 +23,13 @@ info:
     sellPrice: "**Sell:** {sellPrice,number}"
     priceBeforeMarketClose: "**Closing Price:** {closingPrice,number}"
     explanation:
-      - "Buy stock shares when they are low, sell shares when they are high! While you won't gain or lose real life money by buying shares here, the sad feeling of losing sonhos in a stock is exactly the same. {loriSob}"
+      - ""
       - ""
       - "**You can buy stock shares with** {brokerBuyCommandMention}"
       - "**You can sell stock shares with** {brokerSellCommandMention}"
       - "**You can see your stock portfolio with** {brokerPortfolioCommandMention}"
       - ""
       - "Tickers marked with {tickerOutOfMarket} are inactive because the stock market is closed, you can only buy/sell shares when the stock market is open! The stock market is open from {openTime} to {closingTime} during weekdays."
-
 portfolio:
   label: "portfolio"
   title: "Your Stock Portfolio"
@@ -40,7 +37,6 @@ portfolio:
   youHaveSharesInThisTicker: "You have **{sharesCount, plural, one {# stock} other {# stocks}}** in this ticker. You spent **{sharesValue} sonhos** in this ticker, if you sold all shares of this ticker now, you would receive **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
   youDontHaveAnyShares: "You don't have any shares! You can view all tickers with {brokerInfoCommandMention} and then buy them with {brokerBuyCommandMention}."
   description: "Shows your stock shares"
-
 stock:
   label: "stock"
   description: "Shows information of an stock market share"
@@ -49,7 +45,6 @@ stock:
   options:
     ticker:
       text: "The ticker ID of the stock that you want to see its information"
-
 buy:
   label: "buy"
   description: "Buy stock market shares in a company"
@@ -62,7 +57,6 @@ buy:
       text: "The ticker ID of the stock that you want to buy"
     quantity:
       text: "How many shares do you want to buy"
-
 sell:
   label: "sell"
   description: "Sell stock market shares in a company"

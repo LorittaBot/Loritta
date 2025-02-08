@@ -1,3 +1,4 @@
+---
 commands:
   errorWhileExecutingCommand: "Something went very wrong while executing this command... {loriRage} Sorry for the inconvenience... {loriSob} I hope this issue is fixed soon! {stacktrace}"
   commandOnlyAvailableInGuilds: "This command is only available within a server! If you really want to use it, please create a nice and cosy server, add me in there, and use the command there!"
@@ -5,13 +6,11 @@ commands:
   noValidUserFound: "Sorry, but I wasn't able to find any valid user!"
   sentImageIsTooLarge: "Sorry, I wanted to use that amazing image on the command... but it is just too big! I don't wanna risk it by opening the image and crashing... Please send a smaller picture so I can use it!"
   imageUrlIsUntrusted: "Sorry, but that link seems a bit sus so I don't wanna risk my security by opening it... If you really want to use that picture, please download it and send it to me!"
-  youArentTheUserGeneric: "Wait a minute... This isn't for you! Shoo, shoo! Go away!" # Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
-  youArentTheUserSingleUser: "Wait a minute... you aren't {user}! This isn't for you, go away!" # Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
+  youArentTheUserGeneric: "Wait a minute... This isn't for you! Shoo, shoo! Go away!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
+  youArentTheUserSingleUser: "Wait a minute... you aren't {user}! This isn't for you, go away!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
   invalidNumber: "Sorry, but I don't think `{number}` is a valid number... Or maybe it's just me being dumb, after all, I'm wasting my time on Discord instead of paying attention to my math class."
-  sonhosWithQuantity: "{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
   wantingMoreSonhosBundlesUpsell: "Hey, do wanna have more sonhos? Then buy more at my store! We accept payments via boleto, credit card and Pix and buying there you help me stay online while you have fun with more sonhos! But don't worry, the choice is yours and you can stay using Loritta without worrying about paying anything. Interested? Then [click here]({sonhosShopWebsiteLink})!"
   wantingMoreSonhosDaily: "Hey, you haven't redeemed your Daily Sonhos Reward today! Redeem it now and have fun! {dailyCommandMention}"
-  youNeedToGetDailyRewardBeforeDoingThisAction: "So... I know it sucks, but you need to claim today's daily prize before you can continue! {dailyCommandMention}"
   checkOutNews: "I have updates for you! Find out everything that's new by [clicking here]({link})!"
   interactionDataIsMissingFromDatabaseGeneric: "Whoops, looks like the interaction data has vanished because you took too long to use it! Please use the command again... Sorry!"
   insufficientFunds: "You don't have **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to do this! You need to get more **{howMuchIsNeeded,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to continue."
@@ -20,7 +19,7 @@ commands:
     - "You are **permanently banned**! {loriHmpf}"
     - ""
     - "**Ban Reason:**"
-    - "> {reason}"
+    - ""
     - "**Since:** {banDate}"
     - "**Expires:** Never (Permanent)"
     - ""
@@ -31,7 +30,7 @@ commands:
     - "You are **temporarily banned**! {loriHmpf}"
     - ""
     - "**Ban Reason:**"
-    - "> {reason}"
+    - ""
     - "**Date:** {banDate}"
     - "**Expires:** {expiresDate}"
     - ""
@@ -40,24 +39,10 @@ commands:
     - "If you wish to appeal your temporary ban, please read our [ban appeal page]({banAppealPageUrl})! However we recommend waiting for the ban to expire instead of appealing your temporary ban. {loriAmeno}"
     - ""
     - "*Is it too late now to say sorry?* {loriSob}"
-  userIsLorittaBannedPermanent:
-    - "{mention} is **permanently banned**! {loriHmpf}"
-    - ""
-    - "**Ban Reason:**"
-    - "> {reason}"
-    - "**Since:** {banDate}"
-    - "**Expires:** Never (Permanent)"
-    - ""
-    - "*Is it too late now for them to say sorry?* {loriSob}"
-  userIsLorittaBannedTemporary:
-    - "{mention} is **temporarily banned**! {loriHmpf}"
-    - ""
-    - "**Ban Reason:**"
-    - "> {reason}"
-    - "**Date:** {banDate}"
-    - "**Expires:** {expiresDate}"
-    - ""
-    - "*Is it too late now for them to say sorry?* {loriSob}"
+  userIsLorittaBanned:
+    reason: "**Ban Reason:**"
+    bannedAt: "**Since:** {banDate}"
+    expiresAtPermanent: "**Expires:** Never (Permanent)"
+    expiresAtTemporary: "**Expires:** {expiresDate}"
   usersFill:
     notEnoughUsersPermissionsTip: "I could pull users from the server's recent messages, but for that you need to give me permission to read the channel's message history!"
-    notEnoughUsersGuildTip: "I could pull users from a server's recent messages, but... well, we are in a direct message channel, the only two users here are me and you!"

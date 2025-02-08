@@ -1,43 +1,26 @@
-label: "brmemes"
 ata:
-  label: "ata"
-  description: "ata."
   monica:
-    label: "mônica"
     description: "Mônica seen one of your images and reacted in the best way possible."
   chico:
-    label: "chico"
     description: "Chico Bento seen one of your images and reacted in the best way possible"
   lori:
-    label: "lori"
     description: "I've seen one of your images and reacted in the best way possible"
   gessy:
-    label: "gessy"
     description: "Gessy seen one of your images and reacted in the best way possible"
-
 bolsonaro:
-  label: "bolsonaro"
   description: "70% sees the corruption in Bolsonaro's government, and 30% needs to go to the ophthalmologist" #References this tweet: https://twitter.com/sensacionalista/status/1414567158437253124
   tv:
-    label: "tv"
     description: "I wonder what Bolsonaro is showing in his television? Probably Fake News, as always!"
-  tv2:
-    label: "tv2"
   frame:
     label: "frame"
     description: "Just look at this picture, kay??"
-
 ednaldo:
-  label: "ednaldo"
   tv:
-    label: "tv"
     description: "I wonder what amazing and extraordinary thing Ednaldo Pereira is watching on his television"
   bandeira:
     label: "flag"
     description: "Look! Our beloved god Ednaldo Pereira is trying to show us something amazing on his flag! Let's check it out!"
-
 cortesflow:
-  label: "cortesflow"
   description: "Salve salve família, make your own Cortes do Flow thumbnails with your own text!"
   thumbnails:
     arthurBenozzatiSmile: "Arthur Benozzati Smiling"
@@ -52,7 +35,6 @@ cortesflow:
     lucasInutilismoExalted: "Lucas Inutilismo Exalted"
     metaforandoBadge: "Vitor Metaforando showing his Badge"
     metaforandoSurprised: "Vitor Metaforando Surprised"
-    miticoSucc: "Mitico Succ 🥵"
     monarkDiscussion: "Monark arguing"
     monarkSmoking: "Monark Smoking"
     monarkStop: "Monark telling you to stop"
@@ -63,9 +45,7 @@ cortesflow:
   options:
     thumbnail: "The thumbnail that will be used"
     text: "The text that will be in the thumbnail... Salve salve família"
-
 sam:
-  label: "sam"
   description: "kk eae men South America Memes is brabo, add South America Memes' logo in a image!"
   options:
     type: "The variant of the logo that you want to use"
@@ -74,19 +54,12 @@ sam:
       sam1: "Classic Logo"
       sam2: "Shoddy Copy Logo"
       sam3: "Logo sarrada in the air"
-
 canelladvd:
-  label: "canelladvd"
   description: "Make Matheus Canella hold one of the best DVDs of the world, for only R$ 1.95! (arr dollar sign one dot ninety and five brazilian reais!!!)" #References this video: https://youtu.be/c3f7uSpnrhk
-
 cepo:
-  label: "cepo"
   description: "Destroy someone, Gugu Gaiteiro style!"
-
 briggscover:
   label: "briggscover"
   description: "Look! @GuilhermeBriggs bought a new game and is showing off to everyone!"
-
 romerobritto:
-  label: "romerobritto"
   description: "Make Romero Britto paint your amazing art!"
