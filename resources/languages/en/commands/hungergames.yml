@@ -1,3 +1,4 @@
+---
 label: "hungergames"
 description: "Creates a custom simulation of BrantSteele's Hunger Games with the chosen users"
 simulationCreated: "Hunger Games Simulation created! Good luck to all players in the simulation. {hungerGamesLink}"
