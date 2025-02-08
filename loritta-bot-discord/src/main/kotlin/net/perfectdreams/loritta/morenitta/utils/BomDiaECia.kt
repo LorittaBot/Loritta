@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -12,18 +13,25 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.threads.BomDiaECiaThread
-import net.perfectdreams.loritta.morenitta.utils.extensions.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.asUserNameCodeBlockPreviewTag
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.queueAfterWithMessagePerSecondTarget
+import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
 import net.perfectdreams.loritta.morenitta.utils.locale.getPronoun
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.set
 
 class BomDiaECia(val loritta: LorittaBot) {
 	val thread: BomDiaECiaThread = BomDiaECiaThread(loritta)
@@ -268,27 +276,42 @@ class BomDiaECia(val loritta: LorittaBot) {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			delay(30000)
 			if (triedToCall.isNotEmpty()) {
-
 				val pronoun = loritta.newSuspendedTransaction {
 					loritta.getOrCreateLorittaProfile(user.idLong).settings.gender.getPronoun(loritta.localeManager.getLocaleById("default"))
 				}
 
-				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
-					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
-						message.onReactionAddByAuthor(loritta, user.idLong) {
-							if (it.emoji.isEmote("⁉")) {
-								loritta.messageInteractionCache.remove(it.messageIdLong)
+				channel.sendMessage(
+					MessageCreate {
+						styled(
+							"Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}",
+							"<:yudi:446394608256024597>"
+						)
 
-								val triedToCall = triedToCall.mapNotNull {
-									KotlinLogging.logger {}.info { "BomDiaECia#retrieveUserInfoById - UserId: ${it}" }
-									loritta.lorittaShards.retrieveUserInfoById(it)
+						actionRow(
+							loritta.interactivityManager
+								.button(
+									ButtonStyle.SECONDARY,
+									builder = {
+										emoji = Emoji.fromUnicode("⁉")
+									}
+								) {
+									it.deferChannelMessage(true)
+
+									val triedToCall = triedToCall.mapNotNull {
+										KotlinLogging.logger {}.info { "BomDiaECia#retrieveUserInfoById - UserId: ${it}" }
+										loritta.lorittaShards.retrieveUserInfoById(it)
+									}
+
+									it.reply(true) {
+										styled(
+											"Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!",
+											"<:yudi:446394608256024597>",
+										)
+									}
 								}
-								channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
-							}
-						}
-						message.addReaction("⁉").queue()
+						)
 					}
-				}
+				).await()
 			}
 		}
 
