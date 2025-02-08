@@ -1,3 +1,0 @@
-name: "Русский"
-inheritsFrom: "en"
-formattingLanguageId: "ru" # Used for message formatting

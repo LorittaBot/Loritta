@@ -1,3 +1,0 @@
-name: "Немецкий"
-inheritsFrom: "en"
-formattingLanguageId: "de" # Used for message formatting
