@@ -8,13 +8,11 @@ xpNeededForTheNextLevel: "XP Needed for the Next Level ({nextLevel,number} / {xp
 nextReward: "Next Reward"
 getXPToEarnRoles: "Get +{xpCount,number} XP to earn {roleMentions}!"
 bonusXPForRoles: "XP Role Bonus"
-becauseYouHaveRole: "Because you have {roleMention}, you have a {xpBoostPercentage, number,#.##%} XP boost!"
+becauseYouHaveRole: "Because you have {roleMention}, you earn {xpBoostRate, number}x more XP than other people!"
 loriTipsAndTricks: "Loritta Morenitta's Tips and Tricks"
 keepTalkingToEarnXp: "Keep talking to earn XP and level up. I believe in you!"
-xp: "{xp,number} XP"
 level: "Level {level,number}"
 learnAboutXpButton: "Learn about XP"
-
 options:
   user:
     text: "The user that you want to see their server profile card"
