@@ -1,7 +1,5 @@
-label: "roleplay"
 retribute: "Retribute" #Retribute this Action Button
 pictureSource: "Picture Source" #Source of the Action's Picture
-
 hug:
   label: "hug"
   description: "Hug a user"
@@ -11,7 +9,6 @@ hug:
   options:
     user:
       text: "The user you want to hug"
-
 headpat:
   label: "headpat"
   description: "Pet a user"
@@ -21,7 +18,6 @@ headpat:
   options:
     user:
       text: "The user you want to head pat"
-
 highfive:
   label: "highfive"
   description: "High five a user"
@@ -31,7 +27,6 @@ highfive:
   options:
     user:
       text: "The user you want to high five"
-
 slap:
   label: "slap"
   description: "Slap a user"
@@ -41,7 +36,6 @@ slap:
   options:
     user:
       text: "The user you want to slap"
-
 attack:
   label: "attack"
   description: "Attack a user"
@@ -51,7 +45,6 @@ attack:
   options:
     user:
       text: "The user you want to attack"
-
 dance:
   label: "dance"
   description: "Dance with a user"
@@ -60,7 +53,6 @@ dance:
   options:
     user:
       text: "The user you want to dance with"
-
 kiss:
   label: "kiss"
   description: "Kiss a user"
