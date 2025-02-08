@@ -1,0 +1,25 @@
+label: "lembrete"
+description: "Precisa lembrar de dar comida para o dog? Então crie um lembrete!"
+examples:
+  - "dar comida para o dog |-| Cria um lembrete para você dar a comida para o seu dog, eu irei perguntar quando eu precisarei te lembrar depois de usar o comando"
+  - "pegar daily |-| Cria um lembrete para você não esquecer de pegar o seu prêmio diário de sonhos"
+  - "dar reputação |-| Cria um lembrete para você não esquecer de dar reputação para o seu amigx"
+  - "lista |-| Mostra a lista de lembretes"
+
+create:
+  label: "criar"
+  description: "Cria um lembrete"
+
+  options:
+    reason:
+      text: "O motivo do lembrete"
+    duration:
+      text: "Quando você será lembrado do lembrete, por exemplo, \"15 minutos\" ou uma data"
+
+list:
+  label: "lista"
+  description: "Mostra todos os seus lembretes"
+
+  options:
+    page:
+      text: "A página você deseja ver"
