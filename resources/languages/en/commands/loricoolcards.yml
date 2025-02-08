@@ -1,0 +1,13 @@
+buy:
+  label: "buy"
+view:
+  label: "view"
+give:
+  acceptTransfer: "Accept Transfer"
+trade:
+  nothingTradedYetFunnyMessages:
+    - "Empty, just like my bank account"
+    - "Empty, that is, not full"
+    - "Empty, just like the emptiness of my heart"
+    - "Empty, a space devoid of entities"
+    - "Empty, an existential void"
