@@ -1,3 +1,4 @@
+---
 label: "transactions"
 description: "View all the sonhos transactions you sent and received!"
 yourTransactions: "Your Transactions"
@@ -12,7 +13,7 @@ noTransactionsFunnyMessages:
   - "Empty, a space devoid of entities"
   - "Empty, an existential void"
 unknownPage:
-  title: "How you ended up here?" # Easter Egg: If someone wants to go to a page that doesn't exist, show a small fun story
+  title: "How you ended up here?" #Easter Egg: If someone wants to go to a page that doesn't exist, show a small fun story
   description:
     - "You are in a cold, dark and empty space..."
     - ""
@@ -28,8 +29,6 @@ types:
   payment:
     title: "Payments"
     description: "Transactions related to sonhos transfers to other users"
-    sent: "Sent {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} to `{receiverTag}` (`{receiverId}`)"
-    received: "Received {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from `{giverTag}` (`{giverId}`)"
   homeBroker:
     title: "Loritta's Stock Market Simulator"
     description: "Transactions related to Loritta's Stock Market Simulator"
@@ -38,24 +37,14 @@ types:
   coinFlipBet:
     title: "Coin Flip Bets"
     description: "Transactions related to sonhos coin flip bets"
-    wonTaxed: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax-free value: {quantity}) from `{loserTag}` (`{loserId}`) in sonhos coin flip bets"
-    lostTaxed: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (value after taxes: {quantityAfterTax}) to `{winnerTag}` (`{winnerId}`) in sonhos coin flip bets"
-    won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from `{loserTag}` (`{loserId}`) in sonhos coin flip bets"
-    lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}` (`{winnerId}`) in sonhos coin flip bets"
   coinFlipBetGlobal:
     title: "Global Coin Flip Bets"
     description: "Transactions related to sonhos coin flip bets... globally!"
-    wonTaxed: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax-free value: {quantity}) from `{loserTag}` (`{loserId}`) in global sonhos coin flip bets"
-    lostTaxed: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (value after taxes: {quantityAfterTax}) to `{winnerTag}` (`{winnerId}`) in global sonhos coin flip bets"
-    won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from `{loserTag}` (`{loserId}`) in global sonhos coin flip bets"
-    lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}` (`{winnerId}`) in global sonhos coin flip bets"
   emojiFightBet:
     title: "Emoji Fight Bets"
     description: "Transactions related to emoji fight bets"
     wonTaxed: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax-free value: {quantity}) from {userInEmojiFight,plural, =0 {# users} one {# user} other {# users}} in sonhos emoji fight bets because they all feared the mighty {emojiFightEmoji}"
-    lostTaxed: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (value after taxes: {quantityAfterTax}) to `{winnerTag}`'s {emojiFightEmoji} (`{winnerId}`) in sonhos emoji fight bets"
     won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from {userInEmojiFight,plural, =0 {# users} one {# user} other {# users}} in sonhos emoji fight bets because they all feared the mighty {emojiFightEmoji}"
-    lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}`'s {emojiFightEmoji} (`{winnerId}`) in sonhos emoji fight bets"
   shipEffect:
     title: "Ship Bribery"
     description: "Transactions related to bribing the oracle of love"
@@ -63,8 +52,6 @@ types:
   sparklyPowerLsx:
     title: "SparklyPower Sonhos Exchange"
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"
-    exchangedToSparklyPower: "Exchanged {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from Loritta to `{playerName}`'s account on SparklyPower, receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} there [{sparklyPowerIp}]"
-    exchangedFromSparklyPower: "Exchanged {sparklyPowerSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from `{playerName}`'s account on SparklyPower to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here [{sparklyPowerIp}]"
   sonhosBundlePurchase:
     title: "Sonhos Bundle Purchase"
     description: "Transactions related to sonhos purchases"
