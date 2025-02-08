@@ -1,11 +1,10 @@
-label: "emoji"
 info:
-  label: "info"
   description: "Shows the information of an emoji"
   aboutEmoji: "About the emoji"
   emojiName: "Emoji Name"
   mention: "Mention"
   openEmojiInBrowser: "Open emoji in browser" #Used in a button, when clicking the button, Discord opens the emoji in the user's browser
+  seeInformations: "View info"
   emojiId: "Emoji ID"
   createdBy: "Created by"
   createdAt: "Created at"
