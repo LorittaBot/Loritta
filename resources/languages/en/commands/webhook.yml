@@ -1,3 +1,5 @@
+---
+label: "webhook"
 description: "Make your server more fancy by sending your custom messages via webhooks!"
 watchOutDontSendTheWebhookUrlToOtherUsers: "Watch out! Don't send the Webhook URL to other users! If someone else has your Webhook URL, they can send messages with it! So, if you end up sending the webhook URL to someone you don't trust, delete the webhook from your channel's \"Integrations\" tab, stay safe!!"
 messageId: "**Message ID:** `{messageId}`"
