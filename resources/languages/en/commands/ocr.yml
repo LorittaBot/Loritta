@@ -1,4 +1,3 @@
-label: "ocr"
 description: "Read text from an image with OCR (Optical Character Recognition)"
 readTextFromImage: "Read text from image (OCR)"
 noTextWasFound: "No text was found in the image..."
