@@ -1,4 +1,3 @@
-label: "morse"
 fromMorseLabel: "from"
 toMorseLabel: "to"
 description: "Decodes and encodes text from/to Morse code. Very useful if you are in a super secret mission and needs to encode/decode Morse!"
