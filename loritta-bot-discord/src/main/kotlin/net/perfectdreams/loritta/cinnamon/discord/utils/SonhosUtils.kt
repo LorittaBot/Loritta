@@ -18,7 +18,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolC
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
@@ -326,7 +325,6 @@ object SonhosUtils {
         }
     }
 
-    suspend fun checkIfEconomyIsDisabled(context: CommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.LegacyMessageCommandContextCompat(context))
     suspend fun checkIfEconomyIsDisabled(context: DiscordCommandContext) = checkIfEconomyIsDisabled(CommandContextCompat.LegacyDiscordCommandContextCompat(context))
 
     suspend fun checkIfEconomyIsDisabled(context: UnleashedContext): Boolean {
