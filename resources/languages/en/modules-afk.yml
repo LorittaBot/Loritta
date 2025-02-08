@@ -3,4 +3,3 @@ modules:
     userIsAfk: "{userMention} is AFK!"
     usersAreAfk: "{userMentions} are AFK!"
     afkReason: "**Reason** » `{afkReason}`"
-    afkUserReason: "{userMention} » `{afkReason}`"
