@@ -67,10 +67,12 @@ jobs:
       - name: Login and publish Docker images
         run: |
           docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD ghcr.io
-          docker push ghcr.io/lorittabot/loritta-morenitta:latest
-          docker push ghcr.io/lorittabot/discord-chat-message-renderer-server:latest
-          docker push ghcr.io/lorittabot/lori-api-proxy:latest
-          docker push ghcr.io/lorittabot/spicy-morenitta:latest
-          docker push ghcr.io/lorittabot/showtime-backend:latest
-          docker push ghcr.io/lorittabot/broker-tickers-updater:latest
-          docker push ghcr.io/lorittabot/loritta-helper:latest
+          docker push ghcr.io/lorittabot/loritta-morenitta:latest &
+          docker push ghcr.io/lorittabot/discord-chat-message-renderer-server:latest &
+          docker push ghcr.io/lorittabot/lori-api-proxy:latest &
+          docker push ghcr.io/lorittabot/spicy-morenitta:latest &
+          docker push ghcr.io/lorittabot/showtime-backend:latest &
+          docker push ghcr.io/lorittabot/broker-tickers-updater:latest &
+          docker push ghcr.io/lorittabot/loritta-helper:latest &
+          
+          wait  # Wait for all background processes to finish
