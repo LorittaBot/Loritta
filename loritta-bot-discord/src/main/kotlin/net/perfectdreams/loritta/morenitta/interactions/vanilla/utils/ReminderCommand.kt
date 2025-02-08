@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
 import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageEditBuilder
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -22,7 +23,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import java.awt.Color
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -260,6 +264,32 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                             it.deferAndEditOriginal {
                                                 createReminderListMessage(context, page).invoke(this)
                                             }
+                                        },
+                                    loritta.interactivityManager
+                                        .buttonForUser(
+                                            context.user,
+                                            ButtonStyle.SECONDARY,
+                                            builder = {
+                                                emoji = Emoji.fromUnicode("\uD83D\uDDD1")
+                                            }
+                                        ) {
+                                            val hook = it.updateMessageSetLoadingState()
+
+                                            loritta.newSuspendedTransaction {
+                                                Reminders.deleteWhere { Reminders.id eq reminder.id }
+                                            }
+
+                                            context.reply(true) {
+                                                styled(
+                                                    context.locale["${LOCALE_PREFIX}.reminderRemoved"]
+                                                )
+                                            }
+                                            
+                                            hook.editOriginal(
+                                                MessageEditBuilder {
+                                                    createReminderListMessage(context, page).invoke(this)
+                                                }.build()
+                                            ).await()
                                         }
                                 )
                             }
