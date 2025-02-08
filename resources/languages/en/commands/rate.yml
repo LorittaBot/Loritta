@@ -1,17 +1,14 @@
+---
 label: "rate"
 description: "Because you need validation from someone else to be happy, so let me rate it for you!"
 result: "I rate `{input}`... **{score}**! **{reason}**"
-
 loli:
   label: "younggirlinjapanese"
   description: "Uh... I think you meant \"lori\", right? After all, why would you want me to rate a child?"
   isThatATypo: "Hah, I get it! You meant to rate me, right? After all, why would you know the score of an child... Unless if you are an weirdo, which I guess you aren't, riiiight?"
   options:
     loli: "Are you really sure that you didn't mean \"lori\"?"
-
 waifuHusbando:
-  waifuLabel: "waifu"
-  husbandoLabel: "husbando"
   description: "Because you need validation to love your {type}, so let me rate it for you!"
   score0:
     - "Please, change your {type}. How can you live with something like that?"
@@ -50,7 +47,7 @@ waifuHusbando:
   scoreRythm:
     - "The biggest music bot out there!"
   scoreGroovy:
-    - "We will miss you, Groovy!" # Groovy was shut down in 31/08/2021 after a Cease and Desist by Google/YouTube, sad
+    - "We will miss you, Groovy!"
   scoreDankMemer:
     - "So... do you like memes, huh? So it'll be a perfect {type} for you my dawg."
   scoreCarlbot:

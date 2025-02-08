@@ -1,17 +1,13 @@
+---
 website:
   dashboard:
     title: "Loritta's Dashboard"
     localePathId: "en" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
     loading: "Loading..."
     frequentlyAskedQuestions: "Frequently Asked Questions"
-
-    serverEntry:
-      owner: "Dono"
-      administrator: "Administrador"
-      manager: "Gerenciador"
-      member: "Membro"
-      manageServer: "Configurar Servidor"
-
+    chooseAServer:
+      entry:
+        administrator: "Administrator"
     modal:
       close: "Close"
     purchaseVariants:
@@ -24,7 +20,6 @@ website:
         - "Currently you have {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}!"
     paymentMethods:
       title: "We Accept"
-      pix: "Pix" #Only used in Brazil
       creditCard: "Credit Card"
       debitCard: "Debit Card"
       brazilBankTicket: "Brazilian Bank Ticket" #Only used in Brazil
@@ -35,7 +30,7 @@ website:
       tip: "Fill with the user's tag (example: MrPowerGamerBR#4185) or with the user's ID (example: 123170274651668480)"
       unknownUser: "Unknown User! Check if you copied the user's tag correctly or, if it is still not working, try using their user ID instead!"
       invalidDiscriminator: "Is this a *magical* user? Because they have an invalid discriminator!"
-      missingDiscriminator: "Missing Discriminator! The discriminator is the section after the user's name (example: #4185)"
+      missingDiscriminator: "Missing Discriminator! The discriminator is the section after the user's name (example: #4185)" #4185)"
     thankYouMoneyModal:
       title: "Financial Acknowledgments"
       description:

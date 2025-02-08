@@ -1,11 +1,10 @@
-label: "vieirinha"
 description: "Vieirinha is the oracle of everything that you want to know in your life, why not ask him something?"
 responses:
   - "Go annoy someone else. Thank u, next."
   - "I don't know, but what I do know is that I live in Cambuci!"
   - "As far as I know, yes{punctuation, select, exclamation {!} other {.}}"
   - "As far as I know, no{punctuation, select, exclamation {!} other {.}}"
-  - "Hmmmm... \U0001f914"
+  - ""
   - "I can't talk about that{punctuation, select, exclamation {!} other {.}}"
   - "Yes{punctuation, select, exclamation {!} other {.}}"
   - "No{punctuation, select, exclamation {!} other {.}}"
@@ -42,6 +41,6 @@ responses:
   - "I don't know..."
   - "I don't know... Ask again later{punctuation, select, exclamation {!} other {.}}"
   - "I don't know... Concentrate and ask again{punctuation, select, exclamation {!} other {.}}"
-  - "¯\\_(ツ)_/¯"
+  - ""
 options:
   question: "The question that you really want an answer from the oracle"

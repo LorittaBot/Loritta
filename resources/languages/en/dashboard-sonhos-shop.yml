@@ -1,8 +1,8 @@
+---
 website:
   dashboard:
     sonhosShop:
       title: "Sonhos Shop"
-      bundleTitle: "{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}"
       faq:
         whyCanIBuySonhos:
           title: "Why do you sell sonhos? Isn't that unfair to those who don't have money?"

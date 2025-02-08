@@ -1,3 +1,4 @@
+---
 website:
   localePathId: "us" #The locale ID that is prefixed on every localized page path, example: "/br/commands/"
   commands:

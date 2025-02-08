@@ -1,4 +1,3 @@
-label: "calc"
 description: "Too lazy to get an calculator? Then let me calculate your math expressions!"
 invalid: "Sorry, but I don't think `{expression}` is a math expression... Or maybe it's just me being dumb, after all, I'm wasting my time on Discord instead of paying attention to my math class."
 result: "**Result:** `{result,number}`"

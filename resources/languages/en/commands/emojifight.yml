@@ -1,0 +1,6 @@
+start:
+  options:
+    sonhos:
+      text: "The sonhos quantity you want to bet"
+joinState:
+  notEnoughMoney: "You don't have enough sonhos!"
