@@ -4,6 +4,8 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
+import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageEdit
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -19,27 +21,81 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
+import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.UserAskedRaffleNotifications
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.RaffleType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.convertToUserNameCodeBlockPreviewTag
 import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.util.*
+import kotlin.math.ceil
 
 class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Raffle
+
+        /**
+         * Gets the raffle type from a [LegacyMessageCommandContext], to be used in a `convertToInteractionsArguments` call
+         *
+         * If null, then it means that this function did not find any types and that this function has already sent a message
+         * to the user saying that a type was not found.
+         *
+         * @param context the legacy message command context
+         * @param args    the args
+         * @return the raffle type, null if not found
+         */
+        suspend fun getRaffleTypeForLegacyMessageCommandContext(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): RaffleType? {
+            // I think that this should NEVER be null... well, I hope so
+            val declarationPath = context.loritta.interactionsListener.manager.findDeclarationPath(context.commandDeclaration)
+
+            val fullLabel = buildString {
+                declarationPath.forEach {
+                    when (it) {
+                        is SlashCommandDeclaration -> append(context.i18nContext.get(it.name))
+                        is SlashCommandGroupDeclaration -> append(context.i18nContext.get(it.name))
+                    }
+                    this.append(" ")
+                }
+            }.trim()
+
+            val raffleTypeAsString = args.getOrNull(0)
+            val raffleType = raffleTypeAsString?.let {
+                RaffleType.entries.firstOrNull { context.i18nContext.get(it.shortName).normalize() == raffleTypeAsString.normalize() }
+            }
+
+            if (raffleType == null) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Status.YouNeedToSelectWhatRaffleTypeYouWant),
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                    )
+
+                    for (availableRaffleType in RaffleType.entries) {
+                        styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName)}`")
+                    }
+                }
+                return null
+            }
+
+            return raffleType
+        }
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("59a50ba4-e0aa-4cd6-bf72-8ee048e78001")) {
@@ -70,6 +126,10 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             executor = RaffleBuyExecutor()
         }
+
+        subcommand(I18N_PREFIX.History.Label, I18N_PREFIX.History.Description, UUID.fromString("7f5401a3-39af-4974-87ba-c9bc7ac3e8fc")) {
+            executor = RaffleHistoryExecutor(loritta)
+        }
     }
 
     inner class RaffleStatusExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -78,7 +138,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 "raffle_type",
                 I18N_PREFIX.Status.Options.RaffleType.Text
             ) {
-                for (raffleType in RaffleType.values()) {
+                for (raffleType in RaffleType.entries) {
                     choice(raffleType.title, raffleType.name)
                 }
             }
@@ -301,37 +361,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
-            // I think that this should NEVER be null... well, I hope so
-            val declarationPath = loritta.interactionsListener.manager.findDeclarationPath(context.commandDeclaration)
-
-            val fullLabel = buildString {
-                declarationPath.forEach {
-                    when (it) {
-                        is SlashCommandDeclaration -> append(context.i18nContext.get(it.name))
-                        is SlashCommandGroupDeclaration -> append(context.i18nContext.get(it.name))
-                    }
-                    this.append(" ")
-                }
-            }.trim()
-
-            val raffleTypeAsString = args.getOrNull(0)
-            val raffleType = raffleTypeAsString?.let {
-                RaffleType.values().firstOrNull { context.i18nContext.get(it.shortName).normalize() == raffleTypeAsString.normalize() }
-            }
-
-            if (raffleType == null) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Status.YouNeedToSelectWhatRaffleTypeYouWant),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
-                    )
-
-                    for (availableRaffleType in RaffleType.values()) {
-                        styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName)}`")
-                    }
-                }
-                return null
-            }
+            val raffleType = getRaffleTypeForLegacyMessageCommandContext(context, args) ?: return null
 
             return mapOf(
                 options.raffleType to raffleType.name, // We need to use the raffle type name, not the raffle type reference... Yes, it is kinda "ewww"
@@ -345,7 +375,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 "raffle_type",
                 I18N_PREFIX.Buy.Options.RaffleType.Text
             ) {
-                for (raffleType in RaffleType.values()) {
+                for (raffleType in RaffleType.entries) {
                     choice(raffleType.title, raffleType.name)
                 }
             }
@@ -487,37 +517,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
-            // I think that this should NEVER be null... well, I hope so
-            val declarationPath = loritta.interactionsListener.manager.findDeclarationPath(context.commandDeclaration)
-
-            val fullLabel = buildString {
-                declarationPath.forEach {
-                    when (it) {
-                        is SlashCommandDeclaration -> append(context.i18nContext.get(it.name))
-                        is SlashCommandGroupDeclaration -> append(context.i18nContext.get(it.name))
-                    }
-                    this.append(" ")
-                }
-            }.trim()
-
-            val raffleTypeAsString = args.getOrNull(0)
-            val raffleType = raffleTypeAsString?.let {
-                RaffleType.values().firstOrNull { context.i18nContext.get(it.shortName).normalize().lowercase() == raffleTypeAsString.normalize().lowercase() }
-            }
-
-            if (raffleType == null) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.Buy.YouNeedToSelectWhatRaffleTypeYouWant),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
-                    )
-
-                    for (availableRaffleType in RaffleType.values()) {
-                        styled("**${context.i18nContext.get(availableRaffleType.title)}:** `${context.config.commandPrefix}$fullLabel ${context.i18nContext.get(availableRaffleType.shortName).lowercase()}`")
-                    }
-                }
-                return null
-            }
+            val raffleType = getRaffleTypeForLegacyMessageCommandContext(context, args) ?: return null
 
             val quantityAsString = args.getOrNull(1)
             if (quantityAsString == null) {
@@ -533,6 +533,197 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             return mapOf(
                 options.raffleType to raffleType.name, // We need to use the raffle type name, not the raffle type reference... Yes, it is kinda "ewww"
                 options.quantity to quantity
+            )
+        }
+    }
+
+    class RaffleHistoryExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        companion object {
+            private const val RAFFLES_PER_PAGE = 10
+        }
+
+        inner class Options : ApplicationCommandOptions() {
+            val raffleType = string(
+                "raffle_type",
+                I18N_PREFIX.History.Options.RaffleType.Text
+            ) {
+                for (raffleType in RaffleType.entries) {
+                    choice(raffleType.title, raffleType.name)
+                }
+            }
+
+            val page = optionalLong(
+                "page",
+                I18N_PREFIX.History.Options.Page.Text
+            )
+        }
+
+        override val options = Options()
+
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val raffleType = RaffleType.valueOf(args[options.raffleType])
+            val page = ((args[options.page] ?: 1L) - 1).coerceAtLeast(0)
+
+            context.deferChannelMessage(false)
+
+            val message = createRaffleListMessage(context, raffleType, page)
+
+            context.reply(false) {
+                message.invoke(this)
+            }
+        }
+
+        /**
+         * Creates the message used for the raffle history list
+         *
+         * @param context    the context
+         * @param raffleType the type of the raffle that is being queried
+         * @param page       the current page, zero indexed
+         */
+        private suspend fun createRaffleListMessage(
+            context: UnleashedContext,
+            raffleType: RaffleType,
+            page: Long
+        ): suspend InlineMessage<*>.() -> (Unit) {
+            val (raffles, totalRaffles) = loritta.transaction {
+                val raffles = Raffles.leftJoin(RaffleTickets, { Raffles.winnerTicket }, { RaffleTickets.id }).selectAll()
+                    .where { Raffles.endedAt.isNotNull() and (Raffles.raffleType eq raffleType) }
+                    .orderBy(Raffles.startedAt to SortOrder.DESC)
+                    .limit(RAFFLES_PER_PAGE, page * RAFFLES_PER_PAGE)
+                    .toList()
+
+                val totalResults = Raffles
+                    .selectAll()
+                    .where { Raffles.endedAt.isNotNull() and (Raffles.raffleType eq raffleType) }
+                    .count()
+
+                return@transaction Pair(raffles, totalResults)
+            }
+
+            val totalPages = ceil((totalRaffles / RAFFLES_PER_PAGE.toDouble())).toLong()
+
+            val cachedUserInfos = mutableMapOf<Long, CachedUserInfo?>()
+
+            return {
+                embed {
+                    title = context.i18nContext.get(I18N_PREFIX.History.Title(context.i18nContext.get(raffleType.title)))
+                    color = LorittaColors.LorittaAqua.rgb
+
+                    description = buildString {
+                        for (raffle in raffles) {
+                            val endedAt = raffle[Raffles.endedAt]!! // Should NEVER be null because the query filters it out
+                            append("[<t:${endedAt.epochSecond}:d> <t:${endedAt.epochSecond}:t> | <t:${endedAt.epochSecond}:R>] ")
+
+                            if (raffle[Raffles.winnerTicket] != null) {
+                                val winnerId = raffle[RaffleTickets.userId]
+                                val tax = raffle[Raffles.tax]
+                                val paidOutPrize = raffle[Raffles.paidOutPrize]!!
+                                val paidOutPrizeAfterTax = raffle[Raffles.paidOutPrizeAfterTax]!!
+
+                                val winnerUserInfo = cachedUserInfos.getOrPut(winnerId) {
+                                    loritta.lorittaShards.retrieveUserInfoById(winnerId)
+                                }
+
+                                if (tax != null) {
+                                    appendLine(
+                                        context.i18nContext.get(
+                                            I18N_PREFIX.History.RaffleResultTaxed(
+                                                convertToUserNameCodeBlockPreviewTag(
+                                                    winnerId,
+                                                    winnerUserInfo?.name,
+                                                    winnerUserInfo?.globalName,
+                                                    winnerUserInfo?.discriminator,
+                                                ),
+                                                paidOutPrizeAfterTax,
+                                                paidOutPrize
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    appendLine(
+                                        context.i18nContext.get(
+                                            I18N_PREFIX.History.RaffleResult(
+                                                convertToUserNameCodeBlockPreviewTag(
+                                                    winnerId,
+                                                    winnerUserInfo?.name,
+                                                    winnerUserInfo?.globalName,
+                                                    winnerUserInfo?.discriminator,
+                                                ),
+                                                paidOutPrize
+                                            )
+                                        )
+                                    )
+                                }
+                            } else {
+                                appendLine(context.i18nContext.get(I18N_PREFIX.History.NoOneParticipatedThisRaffle))
+                            }
+                        }
+                    }
+                }
+
+                val addLeftButton = page != 0L && totalRaffles != 0L
+                val addRightButton = totalPages > (page + 1) && totalRaffles != 0L
+
+                val leftButton = UnleashedButton.of(
+                    ButtonStyle.PRIMARY,
+                    "",
+                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronLeft
+                )
+
+                val rightButton = UnleashedButton.of(
+                    ButtonStyle.PRIMARY,
+                    "",
+                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronRight
+                )
+
+                actionRow(
+                    // This action row is for the pagination buttons.
+                    if (addLeftButton) {
+                        loritta.interactivityManager.buttonForUser(
+                            context.user,
+                            leftButton
+                        ) {
+                            val hook = it.updateMessageSetLoadingState(updateMessageContent = false)
+
+                            hook.editOriginal(
+                                MessageEdit {
+                                    createRaffleListMessage(context, raffleType, page - 1).invoke(this)
+                                }
+                            ).await()
+                        }
+                    } else {
+                        leftButton.asDisabled()
+                    },
+
+                    if (addRightButton) {
+                        loritta.interactivityManager.buttonForUser(
+                            context.user,
+                            rightButton
+                        ) {
+                            val hook = it.updateMessageSetLoadingState(updateMessageContent = false)
+
+                            hook.editOriginal(
+                                MessageEdit {
+                                    createRaffleListMessage(context, raffleType, page + 1).invoke(this)
+                                }
+                            ).await()
+                        }
+                    } else {
+                        rightButton.asDisabled()
+                    }
+                )
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? {
+            val raffleType = getRaffleTypeForLegacyMessageCommandContext(context, args) ?: return null
+
+            return mapOf(
+                options.raffleType to raffleType.name, // We need to use the raffle type name, not the raffle type reference... Yes, it is kinda "ewww"
+                options.page to args.getOrNull(1)?.toLongOrNull()
             )
         }
     }

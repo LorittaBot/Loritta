@@ -45,6 +45,20 @@ buy:
       text: "A rifa que você deseja comprar tickets"
     quantity:
       text: "A quantidade de tickets que você irá comprar"
+
+history:
+  label: "histórico"
+  description: "Mostra o resultado de rifas passadas"
+  title: "Histórico da {raffleType}"
+  raffleResult: "{userMention} venceu esta rifa e ganhou {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!)"
+  raffleResultTaxed: "{userMention} venceu esta rifa e ganhou {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+  noOneParticipatedThisRaffle: "Ninguém participou desta rifa..."
+  options:
+    raffleType:
+      text: "A rifa que você deseja ver o histórico"
+    page:
+      text: "A página que você deseja ver"
+
 raffleTypes:
   original: "Rifa Original"
   originalShortName: "original"
