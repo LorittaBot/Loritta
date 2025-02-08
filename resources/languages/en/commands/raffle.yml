@@ -1,3 +1,5 @@
 label: "raffle"
+status:
+  label: "status"
 buy:
   label: "buy"
