@@ -284,7 +284,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                                     context.locale["${LOCALE_PREFIX}.reminderRemoved"]
                                                 )
                                             }
-                                            
+
                                             hook.editOriginal(
                                                 MessageEditBuilder {
                                                     createReminderListMessage(context, page).invoke(this)
