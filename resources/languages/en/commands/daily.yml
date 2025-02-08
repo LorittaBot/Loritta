@@ -1,3 +1,5 @@
+---
+label: "daily"
 description: "Collect your Daily Sonhos Reward to earn sonhos!"
 dailyLink: "Get your Daily Sonhos Reward [here]({dailyLink})! Keep in mind that you can get the daily reward every single day and, if you get it now, you will be able to get the daily reward again at {nextTimeYouCanGetTheDailyReward}!"
 pleaseWait: "You already got your Daily Sonhos Reward today! You can get it again {timeUntilReset}!"
