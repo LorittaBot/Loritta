@@ -9,5 +9,6 @@ data class UserBannedState(
     val bannedAt: Instant,
     val expiresAt: Instant?,
     val reason: String,
-    val bannedBy: UserId?
+    val bannedBy: UserId?,
+    val staffNotes: String?,
 )

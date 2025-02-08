@@ -120,6 +120,7 @@ object AccountUtils {
                         userId,
                         userBannedState.bannedBy?.value?.toLong(),
                         userBannedState.reason,
+                        userBannedState.staffNotes,
                         banDateInEpochMillis,
                         expiresDateInEpochMillis
                     )
@@ -148,6 +149,7 @@ object AccountUtils {
                             userProfile.userId,
                             bannedState[BannedUsers.bannedBy],
                             bannedState[BannedUsers.reason],
+                            bannedState[BannedUsers.staffNotes],
                             bannedState[BannedUsers.bannedAt],
                             bannedState[BannedUsers.expiresAt]
                         )
@@ -165,6 +167,7 @@ object AccountUtils {
         userId: Long,
         bannedById: Long?,
         reason: String,
+        staffNotes: String?,
         banDateInEpochMillis: Long,
         expiresDateInEpochMillis: Long?,
     ): InlineMessage<*>.() -> (Unit) = {
@@ -209,6 +212,13 @@ object AccountUtils {
                 i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.BannedBy("<@$bannedById>")),
                 Emotes.LoriBanHammer
             )
+
+            if (staffNotes != null) {
+                styled(
+                    i18nContext.get(I18nKeysData.Commands.UserIsLorittaBanned.StaffNote(staffNotes)),
+                    Emotes.LoriReading
+                )
+            }
         }
 
         styled(

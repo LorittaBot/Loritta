@@ -8,5 +8,6 @@ object BannedUsers : LongIdTable() {
     val bannedAt = long("banned_at")
     val expiresAt = long("expires_at").nullable()
     val reason = text("reason")
+    val staffNotes = text("staff_notes").nullable()
     val bannedBy = long("banned_by").nullable()
 }

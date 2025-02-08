@@ -180,7 +180,8 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
                 Instant.fromEpochMilliseconds(it[BannedUsers.bannedAt]),
                 it[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },
                 it[BannedUsers.reason],
-                it[BannedUsers.bannedBy]?.let { UserId(it.toULong()) }
+                it[BannedUsers.bannedBy]?.let { UserId(it.toULong()) },
+                it[BannedUsers.staffNotes]
             )
         }
     }

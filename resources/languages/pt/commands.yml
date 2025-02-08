@@ -69,6 +69,7 @@ commands:
     expiresAtPermanent: "**Expira:** Nunca (Permanente)"
     expiresAtTemporary: "**Expira:** {expiresDate}"
     bannedBy: "**Banido por:** {staffMention}"
+    staffNote: "**Nota da Staff:** {staffNote}"
     tooLateToSaySorry: "*Será que é tarde demais para ele pedir desculpas?*"
   usersFill:
     notEnoughUsersPermissionsTip: "Eu poderia pegar membros das mensagens mais recentes do servidor, mas para isso eu preciso ter permissão para ler o histórico de mensagens do canal!"
