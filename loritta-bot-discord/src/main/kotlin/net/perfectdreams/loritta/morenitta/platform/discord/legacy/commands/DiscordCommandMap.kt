@@ -17,12 +17,14 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.api.commands.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.ClearCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.RenameChannelCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.RenameEmojiCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.UnwarnCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
+import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayEndCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayRerollCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawaySetupCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.AsciiCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.CocieloChavesCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.EmojiMashupCommand
@@ -73,7 +75,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			RenameEmojiCommand(loritta),
 
 			// ===[ ADMIN ]===
-			ClearCommand(loritta),
 			UnwarnCommand(loritta),
 
 			// ===[ MISC ]===

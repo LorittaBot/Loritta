@@ -47,10 +47,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.BanInfoCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.DashboardCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.PredefinedReasonsCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.reactionevents.EventCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.*
@@ -223,6 +220,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(BanInfoCommand(loritta))
         register(DashboardCommand(loritta))
         register(PredefinedReasonsCommand())
+        register(ClearCommand(loritta))
 
         // ===[ FUN ]===
         register(EventCommand(loritta))
