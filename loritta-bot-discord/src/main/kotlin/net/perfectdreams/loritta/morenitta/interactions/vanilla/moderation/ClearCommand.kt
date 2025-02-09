@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.AdminUtils
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -47,8 +48,8 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         inner class Options : ApplicationCommandOptions() {
             val count = long("count", I18N_PREFIX.Options.Count.Text)
 
-            // This could be refactored to be easier to use and understand, because atm this is a direct "legacy -> slash command" port
-            val options = optionalString("options", I18N_PREFIX.Options.Options.Text)
+            val text = optionalString("text", I18N_PREFIX.Options.Text.Text)
+            val users = optionalString("users", I18N_PREFIX.Options.Users.Text)
         }
 
         private val unavailableGuilds = Collections.newSetFromMap(
@@ -63,7 +64,7 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context.deferChannelMessage(true)
 
             val count = args[options.count].toInt()
-            val rawOptions = args[options.options]
+            val usersAsString = args[options.users]
             val channel = context.channel as? GuildMessageChannel ?: return
 
             // The message count can't be null or be higher than 500 and lower than 2
@@ -88,28 +89,21 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            // The filter text and target user, null if not available
-            val (targets, text, textInserted) = getOptions(context, rawOptions ?: "")
+            val usersThatWillBeFiltered = if (usersAsString != null) {
+                val usersThatWillBeFiltered = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.users] ?: "")?.users ?: return
 
-            if (targets.filterNotNull().isEmpty() && targets.isNotEmpty()) {
-                context.reply(true) {
-                    styled(
-                        context.locale["commands.command.clear.invalidUserFilter"],
-                        Constants.ERROR
-                    )
+                if (usersThatWillBeFiltered.isEmpty() && args[options.users]?.isEmpty() == true) {
+                    context.reply(true) {
+                        styled(
+                            context.locale["commands.command.clear.invalidUserFilter"],
+                            Constants.ERROR
+                        )
+                    }
+                    return
                 }
-                return
-            }
 
-            if (text == null && textInserted) {
-                context.reply(true) {
-                    styled(
-                        context.locale["commands.command.clear.invalidTextFilter"],
-                        Constants.ERROR
-                    )
-                }
-                return
-            }
+                usersThatWillBeFiltered
+            } else emptyList()
 
             val messagesToBeIgnored = mutableListOf<Message>()
 
@@ -130,7 +124,7 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val messages = channel.iterableHistory.takeAsync(count).await()
 
-            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet()).minus(messagesToBeIgnored)
+            val allowedMessages = messages.applyAvailabilityFilterToCollection(args[options.text], usersThatWillBeFiltered.map { it.idLong }.toSet()).minus(messagesToBeIgnored)
             val disallowedMessages = messages.minus(allowedMessages)
 
             if (allowedMessages.isEmpty()) { // If there are no allowed messages, we'll cancel the execution
@@ -177,30 +171,6 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     && (it.isPinned.not()) // The message can't be pinned
                     && (if (targets.isNotEmpty()) targets.contains(it.author.idLong) else true) // If the target isn't null, the message must be from one of the targets
                     && (if (text != null) it.contentStripped.contains(text.trim(), ignoreCase = true) else true) // If the text isn't null, the message must contains the text
-        }
-
-        /**
-         * This method will retrieve all the
-         * command options to the user, including the contains and from one
-         *
-         * @return Command options
-         */
-        private suspend fun getOptions(context: UnleashedContext, rawOptions: String): CommandOptions {
-            val optionName = context.locale["commands.command.clear.targetOption"]
-            val options = rawOptions.split(" ").joinToString(" ").trim().split("$optionName:")
-
-            var text: String? = options.firstOrNull()
-            var textInserted = true
-
-            if (text?.trim()?.startsWith("$optionName:") == true) {
-                text = null
-                textInserted = false
-            }
-
-            val targetArguments = options.let { if (text != null) it.drop(text.split(" ").size) else it }
-            val targets = getUserIdsFromArguments(context.guild, targetArguments)
-
-            return CommandOptions(targets, text, textInserted)
         }
 
         /**

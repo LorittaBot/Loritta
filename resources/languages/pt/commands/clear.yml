@@ -1,0 +1,10 @@
+label: "limpar"
+description: "Escolha um número de um a 1.000 mensagens para serem limpas de pessoas específicas ou não."
+
+options:
+  count:
+    text: "A quantidade de mensagens que serão limpadas"
+  text:
+    text: "Caso presente, apenas mensagens que possuem o texto que você colocar aqui serão deletadas"
+  users:
+    text: "Caso presente, apenas mensagens de usuários que você colocar aqui serão deletados"
