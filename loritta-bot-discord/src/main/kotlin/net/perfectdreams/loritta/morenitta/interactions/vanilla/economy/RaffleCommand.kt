@@ -616,7 +616,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                             if (raffle[Raffles.winnerTicket] != null) {
                                 val winnerId = raffle[RaffleTickets.userId]
-                                val tax = raffle[Raffles.tax]
+                                val tax = raffle[Raffles.tax] ?: 0
                                 val paidOutPrize = raffle[Raffles.paidOutPrize]!!
                                 val paidOutPrizeAfterTax = raffle[Raffles.paidOutPrizeAfterTax]!!
 
@@ -624,7 +624,8 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     loritta.lorittaShards.retrieveUserInfoById(winnerId)
                                 }
 
-                                if (tax != null) {
+                                // While tax is nullable and the raffle code looks like it *should* set tax to null if it wasn't taxed, that's not what happens
+                                if (tax != 0L) {
                                     appendLine(
                                         context.i18nContext.get(
                                             I18N_PREFIX.History.RaffleResultTaxed(
