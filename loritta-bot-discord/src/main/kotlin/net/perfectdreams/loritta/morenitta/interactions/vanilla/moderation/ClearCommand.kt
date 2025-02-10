@@ -33,6 +33,7 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("a5cb1636-81da-435f-bec8-a5be3f393edc")) {
         this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY)
+        this.botPermissions = setOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY)
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL)
         this.enableLegacyMessageSupport = true
 

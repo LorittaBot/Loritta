@@ -520,6 +520,23 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                     }
                 }
 
+                // If we are in a guild... (because private messages do not have any permissions)
+                // Check if Loritta has all the necessary permissions
+                val missingPermissions = slashDeclaration.botPermissions.filterNot { guild.selfMember.hasPermission(event.channel as GuildChannel, it) }
+
+                if (missingPermissions.isNotEmpty()) {
+                    // oh no
+                    val required = missingPermissions.joinToString(", ", transform = { "`" + it.getLocalizedName(i18nContext) + "`" })
+
+                    context.reply(true) {
+                        styled(
+                            locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
+                            Constants.ERROR
+                        )
+                    }
+                    return true
+                }
+
                 if (!loritta.discordSlashCommandScopeWorkaround.checkIfSlashCommandScopeIsEnabled(guild, context.member)) {
                     context.reply(false, loritta.discordSlashCommandScopeWorkaround.unauthMessage(context.guild, context.member))
                 }

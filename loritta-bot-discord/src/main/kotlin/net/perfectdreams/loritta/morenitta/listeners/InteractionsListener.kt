@@ -49,6 +49,7 @@ import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.utils.extensions.toLoritta
 import org.jetbrains.exposed.sql.and
@@ -262,6 +263,25 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     }
 
                     loritta.lorittaShards.updateCachedUserData(context.user)
+                }
+
+                // If we are in a guild... (because private messages do not have any permissions)
+                if (guild != null) {
+                    // Check if Loritta has all the necessary permissions
+                    val missingPermissions = slashDeclaration.botPermissions.filterNot { guild.selfMember.hasPermission(event.guildChannel, it) }
+
+                    if (missingPermissions.isNotEmpty()) {
+                        // oh no
+                        val required = missingPermissions.joinToString(", ", transform = { "`" + it.getLocalizedName(i18nContext) + "`" })
+
+                        context.reply(true) {
+                            styled(
+                                locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
+                                Constants.ERROR
+                            )
+                        }
+                        return@launchMessageJob
+                    }
                 }
 
                 executor.execute(

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
@@ -22,6 +23,7 @@ data class SlashCommandDeclaration(
     override val category: CommandCategory,
     override val uniqueId: UUID,
     val examples: ListI18nData?,
+    val botPermissions: Set<Permission>,
     val defaultMemberPermissions: DefaultMemberPermissions?,
     var isGuildOnly: Boolean,
     var enableLegacyMessageSupport: Boolean,
