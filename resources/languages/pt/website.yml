@@ -79,9 +79,11 @@ website:
         - "Tentar se passar pela Loritta ou alguém da Equipe, bem como espalhar mentiras sobre quaisquer acontecimentos que podem ter relação, vulgo “fake news”. Isso inclui usar fanarts e o nome dela no Discord, bem como criar bots com o mesmo nome e avatar. Não excluíndo aquele que alegar ter relação oficial com a Loritta ou a Equipe."
         - "Ofender, xingar ou sexualizar a Loritta. A regra inclui o ódio gratuito, mesmo que disfarçado de crítica, xingamentos pesados como “puta”, “vagabunda” e relacionados. O usuário que fizer isso e for denunciado, será punido caso tenha sido em local público. Mesmo que ela seja um bot, muitas pessoas trabalham para que ela seja o que é hoje, tais ações desrespeitam isso e por isso você irá perder o privilégio de usá-la."
         - "Tentar enganar, ameaçar ou prejudicar qualquer usuário da Loritta dentro da comunidade, durante a sua experiência de uso."
+        - "Importunar a equipe da Loritta nos servidores oficiais da Loritta ou até mesmo em outros servidores sobre banimentos de amigos/conhecidos fará você ser banido junto com ele. A Loritta tem o sistema de apelo de ban, e o correto é você ir e preencher o formulário de apelo para ser desbanido. O formulário de apelo de ban também serve para banimentos errados ou injustos. Isso inclui ficar mencionando Staffs da Loritta em meios não oficiais buscando ajuda sobre banimentos da Loritta, podendo aumentar seu tempo de ban da Loritta ou até tornando ele permanente."
+        - "Nós não se responsabilizamos por contas comercializadas/emprestadas/doadas/hackeadas e etc. A responsabilidade do que acontece com a sua conta é sua, se outra pessoa utilizou a sua conta para quebrar as regras quem será banido é você pois a conta é sua. Isto também inclui usar contas de outras pessoas para pegar a recompensa diária da Loritta, pois seus dados estarão diretamente relacionados."
     ifYouAreBanned:
-      title: "Informações para usuários que foram banidos de usarem a Loritta"
-      description: "Se você está lendo as diretrizes da Loritta pois você foi banido, veja como fazer um apelo de ban para você ter a chance de ser desbanido {clickHere}!"
+      title: "Como fazer um apelo de ban na Loritta"
+      description: "Veja como fazer um apelo de ban para você ter a chance de ser desbanido {clickHere}! Você não precisa fazer o formulário se você não está banido da Loritta."
       clickHere: "clicando aqui"
   donate:
     rewards:
