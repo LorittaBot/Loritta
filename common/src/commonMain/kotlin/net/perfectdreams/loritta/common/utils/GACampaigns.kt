@@ -90,6 +90,16 @@ object GACampaigns {
         return "${lorittaWebsiteUrl}$websiteLocaleId$path?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
     }
 
+    fun guidelinesUrl(
+        lorittaWebsiteUrl: String,
+        source: String,
+        medium: String,
+        campaignName: String,
+        campaignContent: String
+    ): String {
+        return "${lorittaWebsiteUrl}guidelines?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
+    }
+
     fun createUrlWithCampaign(
         url: String,
         source: String,
