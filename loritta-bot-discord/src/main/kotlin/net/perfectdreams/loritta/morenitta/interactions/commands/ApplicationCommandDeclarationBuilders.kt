@@ -70,7 +70,7 @@ class SlashCommandDeclarationBuilder(
             category,
             uniqueId,
             examples,
-            botPermissions,
+            botPermissions ?: emptySet(),
             defaultMemberPermissions,
             isGuildOnly,
             enableLegacyMessageSupport,
