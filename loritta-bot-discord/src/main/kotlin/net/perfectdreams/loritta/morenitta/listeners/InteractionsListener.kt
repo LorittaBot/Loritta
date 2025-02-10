@@ -21,15 +21,19 @@ import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedUpdatedGuidelinesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildCommandConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -45,8 +49,10 @@ import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.utils.extensions.toLoritta
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import org.postgresql.util.PGobject
@@ -270,6 +276,47 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                         styled(
                             i18nContext.get(I18nKeysData.Commands.LorittaPendingUpdate),
                             Emotes.LoriSleeping
+                        )
+                    }
+                }
+
+                // Also check if we have the most recent rules version
+                val sendGuidelinesMessage = loritta.transaction {
+                    val notReceivedUpdatedGuidelineRulesYet = ReceivedUpdatedGuidelinesNotifications.selectAll().where {
+                        ReceivedUpdatedGuidelinesNotifications.user eq context.user.idLong and (ReceivedUpdatedGuidelinesNotifications.rulesId eq GuidelinesUtils.GUIDELINES_VERSION)
+                    }.count() == 0L
+
+                    if (notReceivedUpdatedGuidelineRulesYet) {
+                        ReceivedUpdatedGuidelinesNotifications.insert {
+                            it[ReceivedUpdatedGuidelinesNotifications.user] = context.user.idLong
+                            it[ReceivedUpdatedGuidelinesNotifications.receivedAt] = Instant.now()
+                            it[ReceivedUpdatedGuidelinesNotifications.rulesId] = GuidelinesUtils.GUIDELINES_VERSION
+                        }
+                        return@transaction true
+                    } else {
+                        return@transaction false
+                    }
+                }
+
+                if (sendGuidelinesMessage) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18nKeysData.Commands.GuidelineRulesUpdated),
+                            Emotes.LoriHi
+                        )
+
+                        actionRow(
+                            Button.of(
+                                ButtonStyle.LINK,
+                                GACampaigns.guidelinesUrl(
+                                    loritta.config.loritta.website.url,
+                                    "discord",
+                                    "slash-command",
+                                    "guidelines-updated",
+                                    "updated"
+                                ),
+                                i18nContext.get(I18nKeysData.Commands.LorittaRules),
+                            ).withEmoji(Emotes.LoriReading.toJDA())
                         )
                     }
                 }
