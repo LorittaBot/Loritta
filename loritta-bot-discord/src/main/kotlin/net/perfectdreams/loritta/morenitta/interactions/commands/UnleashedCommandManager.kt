@@ -76,12 +76,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     val messageCommands = mutableListOf<MessageCommandDeclaration>()
     val applicationCommands: List<ExecutableApplicationCommandDeclaration>
         get() = slashCommands + userCommands + messageCommands
-    // In the past we did use English as the default i18nContext
-    // However, this is bad because all of the strings are first created in portuguese, then translated to english
-    // So a command that was not translated yet to english WILL cause issues after it is translated
-    // (ESPECIALLY if it is being used as a command mention!)
-    // So now we use the default i18nContext :3
-    val slashCommandDefaultI18nContext = languageManager.defaultI18nContext
+    // Use English as the default name and description localizations
+    // This is useful because Discord autocompletes the default string + the current Discord locale localization string
+    val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
 
     private var commandPathToDeclarations = mutableMapOf<String, SlashCommandDeclaration>()
 

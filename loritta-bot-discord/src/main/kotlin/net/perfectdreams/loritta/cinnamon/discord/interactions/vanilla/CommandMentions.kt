@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla
 
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.perfectdreams.loritta.morenitta.interactions.commands.DiscordCommand
 
 /**
@@ -49,7 +50,13 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     private fun commandMention(path: String): String {
         val rootCommandLabel = path.substringBefore(" ")
 
-        val registeredCommand = registeredCommands.firstOrNull { it.name == rootCommandLabel } ?: error("Couldn't find a command with label $rootCommandLabel!")
+        // This seems weird, but hear me out:
+        // In the past we did use the command label here, which is english
+        // However, this is bad because all of the strings are first created in portuguese, then translated to english
+        // So a command that was not translated yet to english WILL cause issues after it is translated
+        // (ESPECIALLY if it is being used as a command mention!)
+        // So now we use the localized portuguese label :3
+        val registeredCommand = registeredCommands.firstOrNull { it.nameLocalizations[DiscordLocale.PORTUGUESE_BRAZILIAN] == rootCommandLabel } ?: error("Couldn't find a command with label $rootCommandLabel!")
 
         return "</${path}:${registeredCommand.id}>"
     }
