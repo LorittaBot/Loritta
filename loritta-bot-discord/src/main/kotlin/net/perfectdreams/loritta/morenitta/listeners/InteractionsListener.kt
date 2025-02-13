@@ -217,7 +217,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 }
 
                 val locale = loritta.localeManager.getLocaleById(currentLocale)
-                i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+                i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(currentLocale)
 
                 val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
                     // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
