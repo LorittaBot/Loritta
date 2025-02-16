@@ -477,6 +477,8 @@ class LoriToolsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapp
             val userIds = string("user_ids", "ID do usuário que você deseja renomear (pode ser vários)")
 
             val reason = string("reason", "Motivo que irá aparecer no ban")
+
+            val staffNotes = optionalString("staff_notes", "Nota da Staff que irá aparecer no ban apenas para a staff")
         }
 
         override val options = Options()
@@ -496,6 +498,7 @@ class LoriToolsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapp
             }
 
             val reason = args[options.reason]
+            val staffNotes = args[options.staffNotes]
 
             val results = transaction(helper.databases.lorittaDatabase) {
                 val results = mutableListOf<BanRenameResult>()
@@ -526,6 +529,7 @@ class LoriToolsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapp
                 if (banStatusIdsToBeUpdated.isNotEmpty()) {
                     BannedUsers.update({ BannedUsers.id inList banStatusIdsToBeUpdated }) {
                         it[BannedUsers.reason] = reason
+                        it[BannedUsers.staffNotes] = staffNotes
                     }
                 }
 
@@ -546,7 +550,7 @@ class LoriToolsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapp
                             "Motivo do Ban Alterado",
                             null,
                             reason,
-                            null,
+                            staffNotes,
                             Color(214, 0, 255)
                         )
                     }
