@@ -213,12 +213,11 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     .toMutableList()
             }
 
-            val visReminders = reminders.subList(page * REMINDERS_PER_PAGE, Math.min((page * REMINDERS_PER_PAGE) + REMINDERS_PER_PAGE, reminders.size))
             val embed = EmbedBuilder()
             embed.setTitle("<a:lori_notification:394165039227207710> ${context.locale["$LOCALE_PREFIX.yourReminders"]} (${reminders.size})")
             embed.setColor(Color(255, 179, 43))
 
-            for ((idx, reminder) in visReminders.withIndex()) {
+            for ((idx, reminder) in reminders.withIndex()) {
                 embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.content.substringIfNeeded(0..100)}\n")
             }
 
@@ -322,7 +321,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                             leftButton
                         ) {
                             it.deferAndEditOriginal {
-                                createReminderListMessage(context, page).invoke(this)
+                                createReminderListMessage(context, page - 1).invoke(this)
                             }
                         }
                     } else {
@@ -335,7 +334,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                             rightButton
                         ) {
                             it.deferAndEditOriginal {
-                                createReminderListMessage(context, page).invoke(this)
+                                createReminderListMessage(context, page + 1).invoke(this)
                             }
                         }
                     } else {
