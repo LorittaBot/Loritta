@@ -347,17 +347,8 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?>? {
-            if (context.args.isEmpty()) {
-                context.explain()
-                return null
-            }
-
-            val page = args[0].toIntOrNull()
-            if (page == null) {
-                context.explain()
-                return null
-            }
+        ): Map<OptionReference<*>, Any?> {
+            val page = args.getOrNull(0)?.toLongOrNull() ?: 0
 
             return mapOf(options.page to page)
         }
