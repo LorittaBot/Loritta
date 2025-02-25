@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.morenitta
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.set
+import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
@@ -19,7 +21,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.datetime.Clock
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
@@ -45,7 +50,8 @@ import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
-import net.perfectdreams.loritta.cinnamon.discord.utils.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
+import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
 import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
@@ -55,17 +61,17 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsM
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTranslateClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.EmojiImageCache
+import net.perfectdreams.loritta.cinnamon.discord.utils.scheduleCoroutineAtFixedRate
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.FanArtsExtravaganza
+import net.perfectdreams.loritta.cinnamon.pudding.tables.GatewayActivities
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
-import net.perfectdreams.loritta.common.utils.*
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.analytics.MagicStats
@@ -73,7 +79,9 @@ import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
-import net.perfectdreams.loritta.morenitta.dao.*
+import net.perfectdreams.loritta.morenitta.dao.Payment
+import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023ReactionListener
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
@@ -90,17 +98,19 @@ import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
 import net.perfectdreams.loritta.morenitta.twitch.TwitchSubscriptionsHandler
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
-import net.perfectdreams.loritta.morenitta.utils.config.*
+import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.*
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.musicalchairs.MusicalChairsManager
-import net.perfectdreams.loritta.morenitta.website.*
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
+import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaBundle
+import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaDevelopmentBundle
+import net.perfectdreams.loritta.morenitta.website.SpicyMorenittaProductionBundle
 import net.perfectdreams.loritta.morenitta.websiteinternal.InternalWebServer
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
-import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
@@ -112,7 +122,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
 import java.io.File
 import java.lang.reflect.Modifier
-import java.nio.file.*
 import java.security.SecureRandom
 import java.sql.Connection
 import java.time.*
@@ -122,15 +131,18 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
-import kotlin.io.path.*
+import kotlin.io.path.extension
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.readText
 import kotlin.math.ceil
 import kotlin.reflect.KClass
-import kotlin.time.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.measureTime
 
 /**
  * Loritta's main class, where everything (and anything) can happen!
@@ -766,6 +778,9 @@ class LorittaBot(
 		)
 
 		logger.info { "Yay! Loritta is up and running :3" }
+		logger.info { "Slash Commands: ${interactionsListener.manager.slashCommands.size}" }
+		logger.info { "User Commands: ${interactionsListener.manager.userCommands.size}"}
+		logger.info { "Message Commands: ${interactionsListener.manager.messageCommands.size}"}
 	}
 
 	fun initPostgreSql() {
