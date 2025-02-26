@@ -6,6 +6,7 @@ retribute: "Retribuir" #Retribute this Action Button
 pictureSource: "Fonte da Imagem" #Source of the Action's Picture
 whatActionDoYouWantForTheUser: "Qual ação você deseja fazer em {userMention}?"
 youCantUseThisHere: "Você não consegue fazer ações de roleplay aqui!"
+genderTip: "Dica: Sabia que as GIFs mudam dependendo do seu \"/gênero\" configurado na Loritta?"
 hug:
   label: "abraçar"
   buttonLabel: "Abraçar"

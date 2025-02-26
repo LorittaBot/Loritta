@@ -255,7 +255,7 @@ object RoleplayUtils {
 
                 color = roleplayActionAttributes.embedColor.rgb
 
-                footer(picturePath)
+                footer("${i18nContext.get(RoleplayCommand.I18N_PREFIX.GenderTip)} - $picturePath")
             }
 
             actionRow(
