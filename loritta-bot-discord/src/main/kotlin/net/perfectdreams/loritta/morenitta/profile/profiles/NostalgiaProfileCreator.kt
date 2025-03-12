@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.*
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
@@ -66,7 +66,7 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 				.deriveFont(29F)
 
 		val reputations = loritta.newSuspendedTransaction {
-			Reputations.select { Reputations.receivedById eq user.id.toLong() }.count()
+			Reputations.selectAll().where { Reputations.receivedById eq user.id.toLong() }.count()
 		}
 
 		graphics.color = Color.WHITE

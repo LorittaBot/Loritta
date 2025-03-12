@@ -6,18 +6,18 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import io.ktor.http.*
+import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
-import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
-import io.ktor.http.HttpStatusCode
-import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 
 class ActiveDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer {
@@ -27,7 +27,7 @@ class ActiveDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer
     override suspend fun fromJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
         val keyIds = payload["keyIds"].array.map { it.long }
         val currentlyActiveKeys = loritta.newSuspendedTransaction {
-            DonationKeys.select { DonationKeys.activeIn eq serverConfig.id }
+            DonationKeys.selectAll().where { DonationKeys.activeIn eq serverConfig.id }
                 .map { it[DonationKeys.id].value }
         }
 

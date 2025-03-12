@@ -72,7 +72,7 @@ class GetGuildEmojiFightTopWinnersRoute(loritta: LorittaBot) : RequiresAPIAuthen
 					.where(query)
 					.groupBy(EmojiFightParticipants.user)
 					.orderBy(winCount, SortOrder.DESC)
-					.limit(limit, offset)
+					.offset(offset).limit(limit)
 					.toList()
 			)
 		}

@@ -24,7 +24,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      */
     // TODO: This is not a *good* way to get an user's ranking if there are duplicates, maybe use DENSE_RANK? https://www.postgresqltutorial.com/postgresql-dense_rank-function/
     suspend fun getSonhosRankPositionBySonhos(sonhos: Long) = pudding.transaction {
-        Profiles.select { Profiles.money greaterEq sonhos and (Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis())) }
+        Profiles.selectAll().where { Profiles.money greaterEq sonhos and (Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis())) }
             .count()
     }
 
@@ -71,7 +71,8 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
         return pudding.transaction {
             val rawResults = SimpleSonhosTransactionsLog.selectAll().where(query).orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
-                .limit(limit, offset)
+                .offset(offset)
+                .limit(limit)
                 .toList()
 
             val rowToStoredTransactions = rawResults.associate {
@@ -208,7 +209,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                         )
 
                         is StoredRaffleRewardTransaction -> {
-                            val raffle = Raffles.select {
+                            val raffle = Raffles.selectAll().where {
                                 Raffles.id eq stored.raffleId
                             }.first()
 
@@ -503,7 +504,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         return pudding.transaction {
             val timeInMillis = afterTime.toEpochMilliseconds()
 
-            val dailyResult = Dailies.select {
+            val dailyResult = Dailies.selectAll().where {
                 Dailies.receivedById eq userId.value.toLong() and (Dailies.receivedAt greaterEq timeInMillis)
             }
                 .orderBy(Dailies.receivedAt, SortOrder.DESC)

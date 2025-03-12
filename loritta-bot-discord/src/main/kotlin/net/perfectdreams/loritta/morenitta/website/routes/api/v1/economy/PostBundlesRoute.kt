@@ -16,12 +16,12 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class PostBundlesRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/bundles/{bundleType}/{bundleId}") {
 	companion object {
@@ -40,7 +40,7 @@ class PostBundlesRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lorit
 		val bundleId = payload["id"].long
 
 		val bundle = loritta.newSuspendedTransaction {
-			SonhosBundles.select {
+			SonhosBundles.selectAll().where {
 				SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
 			}.firstOrNull()
 		}

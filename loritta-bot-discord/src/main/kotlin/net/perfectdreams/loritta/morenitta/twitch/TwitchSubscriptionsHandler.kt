@@ -17,8 +17,6 @@ import net.perfectdreams.switchtwitch.data.SubscriptionCreateRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import kotlin.math.ceil
 
 /**
@@ -65,8 +63,7 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
 
             // Get all tracked account data
             val trackedAccounts = m.pudding.transaction {
-                TrackedTwitchAccounts.slice(TrackedTwitchAccounts.twitchUserId)
-                    .selectAll()
+                TrackedTwitchAccounts.select(TrackedTwitchAccounts.twitchUserId)
                     .groupBy(TrackedTwitchAccounts.twitchUserId)
                     .toList()
             }
@@ -96,18 +93,17 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
 
             // We retrieve all user IDs beforehand to avoid unnecessary roundtrips to the database
             val (allAuthorizedUserIds, allAlwaysTrackUserIds, allPremiumTrackUserIdsAndGuildIds) = m.transaction {
-                val allAuthorizedUserIds = AuthorizedTwitchAccounts.slice(AuthorizedTwitchAccounts.userId).selectAll()
+                val allAuthorizedUserIds = AuthorizedTwitchAccounts.select(AuthorizedTwitchAccounts.userId)
                     .map { it[AuthorizedTwitchAccounts.userId] }
 
                 val allAlwaysTrackUserIds =
-                    AlwaysTrackTwitchAccounts.slice(AlwaysTrackTwitchAccounts.userId).selectAll()
+                    AlwaysTrackTwitchAccounts.select(AlwaysTrackTwitchAccounts.userId)
                         .map { it[AlwaysTrackTwitchAccounts.userId] }
 
-                val allPremiumTrackUserIdsAndGuildIds = PremiumTrackTwitchAccounts.slice(
+                val allPremiumTrackUserIdsAndGuildIds = PremiumTrackTwitchAccounts.select(
                     PremiumTrackTwitchAccounts.twitchUserId,
                     PremiumTrackTwitchAccounts.guildId
                 )
-                    .selectAll()
                     .map {
                         Pair(it[PremiumTrackTwitchAccounts.twitchUserId], it[PremiumTrackTwitchAccounts.guildId])
                     }
@@ -139,7 +135,7 @@ class TwitchSubscriptionsHandler(val m: LorittaBot) {
                     in allPremiumTrackUserIds -> m.newSuspendedTransaction {
                         // Validate if the premium track is actually valid
                         // Get if the premium track is enabled for this account, we need to check if any of the servers has a premium key enabled too
-                        val guildIds = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.guildId).select {
+                        val guildIds = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.guildId).where { 
                             PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId
                         }.toList().map { it[PremiumTrackTwitchAccounts.guildId] }
 

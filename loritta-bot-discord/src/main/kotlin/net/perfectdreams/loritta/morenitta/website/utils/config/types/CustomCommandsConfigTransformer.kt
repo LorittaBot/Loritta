@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.serializable.CustomCommand
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class CustomCommandsConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "custom_commands"
@@ -22,7 +22,7 @@ class CustomCommandsConfigTransformer(val loritta: LorittaBot) : ConfigTransform
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         val customCommands = loritta.newSuspendedTransaction {
-            CustomGuildCommands.select {
+            CustomGuildCommands.selectAll().where {
                 CustomGuildCommands.guild eq serverConfig.id.value
             }.limit(100).map {
                 CustomCommand(

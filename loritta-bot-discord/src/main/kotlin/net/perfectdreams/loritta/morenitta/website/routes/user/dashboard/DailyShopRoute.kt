@@ -92,8 +92,8 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedDashboa
 				}
 			)
 
-			val boughtProfileDesignsResults = ProfileDesigns.select {
-				ProfileDesigns.internalName inList ProfileDesignsPayments.select {
+			val boughtProfileDesignsResults = ProfileDesigns.selectAll().where {
+				ProfileDesigns.internalName inList ProfileDesignsPayments.selectAll().where {
 					ProfileDesignsPayments.userId eq userIdentification.id.toLong()
 				}.map { it[ProfileDesignsPayments.profile].value }
 			}

@@ -3,15 +3,15 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.PatchNotesNotification
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedPatchNotesNotifications
+import net.perfectdreams.loritta.serializable.PatchNotesNotification
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pudding) {
     /**
@@ -30,8 +30,8 @@ class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pud
         return pudding.transaction {
             val jInstant = currentTime.toJavaInstant()
 
-            val receivedPatchNotesResultRows = PatchNotesNotifications.select {
-                PatchNotesNotifications.broadcastAfter lessEq jInstant and (PatchNotesNotifications.expiresAt greater jInstant) and (PatchNotesNotifications.id notInSubQuery ReceivedPatchNotesNotifications.slice(ReceivedPatchNotesNotifications.patchNotesNotification).select { ReceivedPatchNotesNotifications.user eq user.value.toLong() })
+            val receivedPatchNotesResultRows = PatchNotesNotifications.selectAll().where {
+                PatchNotesNotifications.broadcastAfter lessEq jInstant and (PatchNotesNotifications.expiresAt greater jInstant) and (PatchNotesNotifications.id notInSubQuery ReceivedPatchNotesNotifications.select(ReceivedPatchNotesNotifications.patchNotesNotification).where { ReceivedPatchNotesNotifications.user eq user.value.toLong() })
             }.orderBy(PatchNotesNotifications.broadcastAfter, SortOrder.DESC)
                 .toList() // We call to list here because every time you call "receivedPatchNotes" it would execute a new query
 

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs
 
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.array
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.TextColumnType
 

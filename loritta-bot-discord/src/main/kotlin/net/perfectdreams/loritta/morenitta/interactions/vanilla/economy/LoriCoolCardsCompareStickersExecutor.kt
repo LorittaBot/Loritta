@@ -49,7 +49,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
         // Load the current active event
         val result = loritta.transaction {
             // First we will get the active cards event to get the album template
-            val event = LoriCoolCardsEvents.select {
+            val event = LoriCoolCardsEvents.selectAll().where {
                 LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
             }.firstOrNull() ?: return@transaction CompareStickersResult.EventUnavailable
 

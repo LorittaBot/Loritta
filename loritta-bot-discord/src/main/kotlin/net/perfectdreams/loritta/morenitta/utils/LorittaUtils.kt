@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -267,7 +267,7 @@ object LorittaUtils {
 	 */
 	suspend fun isGuildBanned(loritta: LorittaBot, guild: Guild): Boolean {
 		val blacklisted = loritta.newSuspendedTransaction {
-			BlacklistedGuilds.select {
+			BlacklistedGuilds.selectAll().where {
 				BlacklistedGuilds.id eq guild.idLong
 			}.firstOrNull()
 		}

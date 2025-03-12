@@ -507,7 +507,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             )
 
                                             if (AprilFools.isAprilFools()) {
-                                                aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.select {
+                                                aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.selectAll().where {
                                                     AprilFoolsCoinFlipBugs.userId eq selfUserProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
                                                         Constants.LORITTA_TIMEZONE
                                                     ).year)
@@ -604,7 +604,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             )
 
                                             if (AprilFools.isAprilFools()) {
-                                                aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.select {
+                                                aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.selectAll().where {
                                                     AprilFoolsCoinFlipBugs.userId eq invitedUserProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
                                                         Constants.LORITTA_TIMEZONE
                                                     ).year)

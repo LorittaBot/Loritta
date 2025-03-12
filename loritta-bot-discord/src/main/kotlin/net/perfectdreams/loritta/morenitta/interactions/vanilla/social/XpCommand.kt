@@ -33,7 +33,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.util.*
 import kotlin.math.ceil
@@ -130,20 +130,20 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     val nextLevelRequiredXp = ExperienceUtils.getHowMuchExperienceIsLeftToLevelUp(xp, nextLevel)
 
                     val ranking = loritta.pudding.transaction {
-                        GuildProfiles.select {
+                        GuildProfiles.selectAll().where {
                             GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.xp greaterEq xp) and (GuildProfiles.isInGuild eq true)
                         }.count()
                     }
 
                     val nextRoleReward = loritta.pudding.transaction {
-                        RolesByExperience.select {
+                        RolesByExperience.selectAll().where {
                             RolesByExperience.guildId eq guildId.toLong() and (RolesByExperience.requiredExperience greater xp)
                         }.orderBy(RolesByExperience.requiredExperience).firstOrNull()
                     }
 
                     val activeRoleRate = memberToBeViewed?.let {
                         loritta.pudding.transaction {
-                            ExperienceRoleRates.select {
+                            ExperienceRoleRates.selectAll().where {
                                 ExperienceRoleRates.guildId eq guildId.toLong() and (ExperienceRoleRates.role inList it.roles.map { it.idLong })
                             }.orderBy(ExperienceRoleRates.rate, SortOrder.DESC).firstOrNull()
                         }
@@ -506,17 +506,18 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             )
 
             val (totalCount, profiles) = loritta.pudding.transaction {
-                val totalCount = GuildProfiles.select {
+                val totalCount = GuildProfiles.selectAll().where {
                     (GuildProfiles.guildId eq guild.id.toLong()) and
                             (GuildProfiles.isInGuild eq true)
                 }.count()
 
-                val profilesInTheQuery = GuildProfiles.select {
+                val profilesInTheQuery = GuildProfiles.selectAll().where {
                     (GuildProfiles.guildId eq guild.id.toLong()) and
                             (GuildProfiles.isInGuild eq true)
                 }
                     .orderBy(GuildProfiles.xp to SortOrder.DESC)
-                    .limit(5, page * 5)
+                    .limit(5)
+                    .offset(page * 5)
                     .toList()
 
                 Pair(totalCount, profilesInTheQuery)

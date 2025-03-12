@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WarnAction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "moderation"
@@ -52,7 +52,7 @@ class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
         val punishmentMessages = jsonArray()
 
         loritta.newSuspendedTransaction {
-            ModerationPunishmentMessagesConfig.select {
+            ModerationPunishmentMessagesConfig.selectAll().where {
                 ModerationPunishmentMessagesConfig.guild eq serverConfig.id
             }.toList()
         }.forEach {

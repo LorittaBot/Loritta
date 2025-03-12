@@ -481,7 +481,7 @@ class EmojiFight(
                 }
 
                 val aprilFoolsWinnerBugMessage = if (AprilFools.isAprilFools()) {
-                    AprilFoolsCoinFlipBugs.select {
+                    AprilFoolsCoinFlipBugs.selectAll().where {
                         AprilFoolsCoinFlipBugs.userId eq winnerProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
                             Constants.LORITTA_TIMEZONE
                         ).year)

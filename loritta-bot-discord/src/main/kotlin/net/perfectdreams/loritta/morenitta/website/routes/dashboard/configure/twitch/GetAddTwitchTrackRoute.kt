@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import kotlin.math.ceil
 
 class GetAddTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/twitch/add") {
@@ -44,7 +45,7 @@ class GetAddTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDa
 				.sumOf { it.value }
 				.let { ceil(it) }
 
-			val premiumTracksCount = PremiumTrackTwitchAccounts.select {
+			val premiumTracksCount = PremiumTrackTwitchAccounts.selectAll().where {
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong
 			}.count()
 

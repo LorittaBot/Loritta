@@ -2,14 +2,13 @@ package net.perfectdreams.loritta.lorituber.server.processors
 
 import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberPendingVideos
 import net.perfectdreams.loritta.serializable.lorituber.requests.CreatePendingVideoRequest
-import net.perfectdreams.loritta.serializable.lorituber.requests.StartTaskRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.CreatePendingVideoResponse
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class CreatePendingVideoRequestProcessor : LoriTuberRpcProcessor {
     suspend fun process(request: CreatePendingVideoRequest, currentTick: Long, lastUpdate: Long): CreatePendingVideoResponse {
-        if (LoriTuberPendingVideos.select { LoriTuberPendingVideos.owner eq request.characterId }.count() != 0L) {
+        if (LoriTuberPendingVideos.selectAll().where { LoriTuberPendingVideos.owner eq request.characterId }.count() != 0L) {
             return CreatePendingVideoResponse.CharacterIsAlreadyDoingAnotherVideo(
                 currentTick,
                 lastUpdate

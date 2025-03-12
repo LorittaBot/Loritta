@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotif
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class NotificationsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getUserTotalNotifications(
@@ -41,7 +42,7 @@ class NotificationsService(private val pudding: Pudding) : Service(pudding) {
         return pudding.transaction {
             userNotificationsQuery(userId)
                 .orderBy(UserNotifications.id, SortOrder.DESC)
-                .limit(limit, offset)
+                .offset(offset).limit(limit)
                 .map {
                     UserNotification.fromRow(it)
                 }
@@ -56,7 +57,8 @@ class NotificationsService(private val pudding: Pudding) : Service(pudding) {
         .leftJoin(DailyTaxWarnUserNotifications)
         .leftJoin(DailyTaxTaxedUserNotifications)
         .leftJoin(CorreiosPackageUpdateUserNotifications.leftJoin(TrackedCorreiosPackagesEvents))
-        .select {
+        .selectAll()
+        .where {
             (UserNotifications.user eq userId.value.toLong())
         }
 
@@ -69,7 +71,7 @@ class NotificationsService(private val pudding: Pudding) : Service(pudding) {
         .leftJoin(DailyTaxWarnUserNotifications)
         .leftJoin(DailyTaxTaxedUserNotifications)
         .leftJoin(CorreiosPackageUpdateUserNotifications.leftJoin(TrackedCorreiosPackagesEvents))
-        .select {
+        .selectAll().where {
             (UserNotifications.user eq userId.value.toLong()) and (UserNotifications.id eq notificationId)
         }
 }

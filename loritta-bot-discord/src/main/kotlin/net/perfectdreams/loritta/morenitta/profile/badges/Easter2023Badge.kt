@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class Easter2023Badge(val pudding: Pudding) : Badge.LorittaBadge(
@@ -21,7 +22,7 @@ class Easter2023Badge(val pudding: Pudding) : Badge.LorittaBadge(
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return pudding.transaction {
-			CreatedEaster2023Baskets.select {
+			CreatedEaster2023Baskets.selectAll().where {
 				CreatedEaster2023Baskets.user eq profile.id
 			}.count() >= 10
 		}

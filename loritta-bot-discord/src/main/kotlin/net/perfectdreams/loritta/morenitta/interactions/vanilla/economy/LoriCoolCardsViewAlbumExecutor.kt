@@ -28,8 +28,11 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -99,13 +102,13 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
 
             // First we need to check all cards that we have already sticked
             // We will inner join because we need that info when generating the album
-            val totalStickers = LoriCoolCardsEventCards.select {
+            val totalStickers = LoriCoolCardsEventCards.selectAll().where {
                 (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
             }.count()
 
             // First we need to check all cards that we have already sticked
             // We will inner join because we need that info when generating the album
-            val alreadyStickedCards = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+            val alreadyStickedCards = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                 LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq userToBeViewed.idLong)
             }.toList()
 

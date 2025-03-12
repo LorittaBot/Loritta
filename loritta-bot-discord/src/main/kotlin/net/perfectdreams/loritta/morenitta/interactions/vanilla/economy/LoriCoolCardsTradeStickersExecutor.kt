@@ -187,7 +187,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                             }
 
                             val result = loritta.transaction {
-                                val event = LoriCoolCardsEvents.select {
+                                val event = LoriCoolCardsEvents.selectAll().where {
                                     LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                                 }.firstOrNull() ?: return@transaction SetStickersResult.EventUnavailable
 
@@ -200,7 +200,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                 if (template.minimumBoosterPacksToTrade > boughtPacks)
                                     return@transaction SetStickersResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, boughtPacks)
 
-                                val stickersToBeGiven = LoriCoolCardsEventCards.select {
+                                val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
                                     LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
                                 }.toList()
 
@@ -211,7 +211,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                     it[LoriCoolCardsEventCards.id].value
                                 }
 
-                                val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                                val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                                     LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
                                 }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
                                     .toList()
@@ -340,7 +340,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                             if (parsedValue != null) {
                                 val result = loritta.transaction {
-                                    val event = LoriCoolCardsEvents.select {
+                                    val event = LoriCoolCardsEvents.selectAll().where {
                                         LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                                     }.firstOrNull() ?: return@transaction SetSonhosResult.EventUnavailable
 
@@ -481,7 +481,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                                     // Now we need to check if everything is actually ok
                                     val response = loritta.transaction {
-                                        val event = LoriCoolCardsEvents.select {
+                                        val event = LoriCoolCardsEvents.selectAll().where {
                                             LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                                         }.firstOrNull()
                                             ?: return@transaction TradeStickerResult.EventUnavailable
@@ -869,7 +869,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
         val stickersIdsToBeGiven = stickersToBeGiven.map { it[LoriCoolCardsEventCards.id].value }
         val matchedStickersToBeGiven =
-            LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+            LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                 LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq eventId) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq user.idLong)
             }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
                 .toList()
@@ -915,9 +915,9 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         // Now that we selected the cards, we will mark them as seen + owned
         // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
         val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers =
-            LoriCoolCardsSeenCards.slice(
+            LoriCoolCardsSeenCards.select(
                 LoriCoolCardsSeenCards.card
-            ).select {
+            ).where { 
                 LoriCoolCardsSeenCards.card inList stickerIdsToBeGivenMappedToEventStickerId and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
             }.map { it[LoriCoolCardsSeenCards.card].value }
 

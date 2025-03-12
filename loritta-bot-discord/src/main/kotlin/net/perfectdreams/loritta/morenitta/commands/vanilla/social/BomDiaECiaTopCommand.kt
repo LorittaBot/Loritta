@@ -1,17 +1,16 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
-import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.selectAll
 
 class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top", "bd&c top", "bdc top"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun command() = create {
@@ -46,11 +45,10 @@ class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 			val userIdCount = BomDiaECiaWinners.userId.count()
 
 			val userData = loritta.newSuspendedTransaction {
-				BomDiaECiaWinners.slice(userId, userIdCount)
-					.selectAll()
+				BomDiaECiaWinners.select(userId, userIdCount)
 					.groupBy(userId)
 					.orderBy(userIdCount, SortOrder.DESC)
-					.limit(5, page * 5)
+					.limit(5).offset(page * 5)
 					.toMutableList()
 			}
 

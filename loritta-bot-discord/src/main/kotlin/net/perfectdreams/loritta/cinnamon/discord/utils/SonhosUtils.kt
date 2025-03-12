@@ -319,7 +319,7 @@ object SonhosUtils {
 
     suspend fun isEconomyDisabled(loritta: LorittaBot): Boolean {
         return loritta.transaction {
-            EconomyState.select {
+            EconomyState.selectAll().where {
                 EconomyState.id eq DISABLED_ECONOMY_ID
             }.count() == 1L
         }

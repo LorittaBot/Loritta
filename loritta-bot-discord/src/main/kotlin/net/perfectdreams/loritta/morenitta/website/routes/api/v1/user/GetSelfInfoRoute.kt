@@ -23,8 +23,7 @@ import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import kotlin.collections.set
+import org.jetbrains.exposed.sql.selectAll
 
 class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{sections?}") {
 	companion object {
@@ -54,7 +53,7 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 				val yesterdayAtTheSameHour = now - Constants.ONE_DAY_IN_MILLISECONDS
 
 				loritta.newSuspendedTransaction {
-					val isIpBanned = BannedIps.select { BannedIps.ip eq call.request.trueIp and (BannedIps.bannedAt greaterEq yesterdayAtTheSameHour) }
+					val isIpBanned = BannedIps.selectAll().where { BannedIps.ip eq call.request.trueIp and (BannedIps.bannedAt greaterEq yesterdayAtTheSameHour) }
 						.firstOrNull()
 
 					if (isIpBanned != null) {
@@ -130,8 +129,8 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 
 			if ("backgrounds" in sections) {
 				val backgrounds = loritta.newSuspendedTransaction {
-					Backgrounds.select {
-						Backgrounds.internalName inList BackgroundPayments.select {
+					Backgrounds.selectAll().where {
+						Backgrounds.internalName inList BackgroundPayments.selectAll().where {
 							BackgroundPayments.userId eq userIdentification.id.toLong()
 						}.map { it[BackgroundPayments.background].value }
 					}.map {
@@ -154,8 +153,8 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 
 			if ("profileDesigns" in sections) {
 				profileDesigns = loritta.pudding.transaction {
-					val backgrounds = ProfileDesigns.select {
-						ProfileDesigns.internalName inList ProfileDesignsPayments.select {
+					val backgrounds = ProfileDesigns.selectAll().where {
+						ProfileDesigns.internalName inList ProfileDesignsPayments.selectAll().where {
 							ProfileDesignsPayments.userId eq userIdentification.id.toLong()
 						}.map { it[ProfileDesignsPayments.profile].value }
 					}

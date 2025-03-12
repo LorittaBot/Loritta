@@ -25,7 +25,7 @@ import net.perfectdreams.loritta.morenitta.website.views.UserBannedView
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.temmiewebsession.LorittaTemmieDiscordAuth
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: String) : LocalizedRoute(loritta, path) {
@@ -94,7 +94,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 				// Verificar se o usuário é (possivelmente) alguém que foi banido de usar a Loritta
 				/* val trueIp = call.request.trueIp
 				val dailiesWithSameIp = loritta.newSuspendedTransaction {
-					Dailies.select {
+					Dailies.selectAll().where {
 						(Dailies.ip eq trueIp)
 					}.toMutableList()
 				}
@@ -102,7 +102,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 				val userIds = dailiesWithSameIp.map { it[Dailies.id] }.distinct()
 
 				val bannedProfiles = loritta.newSuspendedTransaction {
-					Profiles.select { Profiles.id inList userIds and Profiles.isBanned }
+					Profiles.selectAll().where { Profiles.id inList userIds and Profiles.isBanned }
 							.toMutableList()
 				}
 
@@ -171,7 +171,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 									if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
 										// Verificar coisas antes de adicionar a Lori
 										val blacklisted = loritta.newSuspendedTransaction {
-											BlacklistedGuilds.select {
+											BlacklistedGuilds.selectAll().where {
 												BlacklistedGuilds.id eq guild.idLong
 											}.firstOrNull()
 										}

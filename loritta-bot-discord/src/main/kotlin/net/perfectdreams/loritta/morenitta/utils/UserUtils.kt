@@ -1,12 +1,9 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import dev.minn.jda.ktx.coroutines.await
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import java.util.*
 
 object UserUtils {
@@ -64,8 +61,8 @@ object UserUtils {
             if (users.filterNotNull().size != targetSize) {
                 // What we can do is pull from the GuildProfiles!
                 val usersInTheGuild = context.loritta.pudding.transaction {
-                    GuildProfiles.slice(GuildProfiles.userId)
-                        .select { GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.isInGuild eq true) }
+                    GuildProfiles.select(GuildProfiles.userId)
+                        .where { GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.isInGuild eq true) }
                         .map { it[GuildProfiles.userId] }
                         .filter { it !in usersToBeFilled.mapNotNull { it?.id?.toLong() } } // Ignore users that are already in the list
                         .shuffled()

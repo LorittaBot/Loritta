@@ -33,16 +33,16 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             val avgTimeOnQueueField = CoinFlipBetGlobalMatchmakingResults.timeOnQueue.avg()
             val quantityCount = CoinFlipBetGlobalMatchmakingResults.quantity.count()
 
-            val averageTimeOnQueueData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, avgTimeOnQueueField)
-                .select {
+            val averageTimeOnQueueData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.quantity, avgTimeOnQueueField)
+                .where {
                     CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
                 }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
 
-            val recentMatchesData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, quantityCount).select {
+            val recentMatchesData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.quantity, quantityCount).where { 
                 CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
 
-            val playerPresentInMatchmakingQueueData = CoinFlipBetGlobalMatchmakingQueue.slice(CoinFlipBetGlobalMatchmakingQueue.quantity).select {
+            val playerPresentInMatchmakingQueueData = CoinFlipBetGlobalMatchmakingQueue.select(CoinFlipBetGlobalMatchmakingQueue.quantity).where { 
                 CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities
             }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
 
@@ -74,20 +74,20 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             val avgTimeOnQueueField = CoinFlipBetGlobalMatchmakingResults.timeOnQueue.avg()
             val quantityCount = CoinFlipBetGlobalMatchmakingResults.quantity.count()
 
-            val averageTimeOnQueueData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, avgTimeOnQueueField)
-                .select {
+            val averageTimeOnQueueData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.quantity, avgTimeOnQueueField)
+                .where {
                     CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
                 }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
 
-            val recentMatchesData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, quantityCount).select {
+            val recentMatchesData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.quantity, quantityCount).where { 
                 CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
 
-            val playerPresentInMatchmakingQueue = CoinFlipBetGlobalMatchmakingQueue.slice(CoinFlipBetGlobalMatchmakingQueue.quantity).select {
+            val playerPresentInMatchmakingQueue = CoinFlipBetGlobalMatchmakingQueue.select(CoinFlipBetGlobalMatchmakingQueue.quantity).where { 
                 CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities
             }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
 
-            val currentPlayerPresentInMatchmakingQueue = CoinFlipBetGlobalMatchmakingQueue.slice(CoinFlipBetGlobalMatchmakingQueue.quantity).select {
+            val currentPlayerPresentInMatchmakingQueue = CoinFlipBetGlobalMatchmakingQueue.select(CoinFlipBetGlobalMatchmakingQueue.quantity).where { 
                 CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities and (CoinFlipBetGlobalMatchmakingQueue.user eq userId.value.toLong())
             }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
 
@@ -119,19 +119,19 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             val sumField = CoinFlipBetGlobalMatchmakingResults.quantity.sum()
             val javaCutoff = cutoff.toJavaInstant()
 
-            val winCount = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+            val winCount = CoinFlipBetGlobalMatchmakingResults.select(sumField).where { 
                 (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.count()
 
-            val lostCount = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+            val lostCount = CoinFlipBetGlobalMatchmakingResults.select(sumField).where { 
                 (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.count()
 
-            val winSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).selectFirstOrNull {
+            val winSum = CoinFlipBetGlobalMatchmakingResults.select(sumField).selectFirstOrNull {
                 (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }?.getOrNull(sumField) ?: 0L
 
-            val lostSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).selectFirstOrNull {
+            val lostSum = CoinFlipBetGlobalMatchmakingResults.select(sumField).selectFirstOrNull {
                 (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }?.getOrNull(sumField) ?: 0L
 
@@ -150,7 +150,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val userAsLong = userId.value.toLong()
 
         return pudding.transaction {
-            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).where { 
                 (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
             }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
 
@@ -173,7 +173,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val userAsLong = userId.value.toLong()
 
         return pudding.transaction {
-            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).where { 
                 (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
             }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
 
@@ -218,7 +218,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             val results = mutableListOf<CoinFlipGlobalMatchmakingResult>()
 
             // Get if the user is already on the matchmaking queue for the current quantity
-            val selfUserMatchmakingQueueCount = CoinFlipBetGlobalMatchmakingQueue.select {
+            val selfUserMatchmakingQueueCount = CoinFlipBetGlobalMatchmakingQueue.selectAll().where {
                 CoinFlipBetGlobalMatchmakingQueue.user eq userId.value.toLong() and (CoinFlipBetGlobalMatchmakingQueue.quantity eq quantity)
             }.count()
 
@@ -366,7 +366,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     }
 
                     // Get the win/lose streak of both users
-                    val winnerUserMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                    val winnerUserMatchmakingData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).where { 
                         (CoinFlipBetGlobalMatchmakingResults.winner eq winnerAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq winnerAsLong)
                     }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
 
@@ -379,7 +379,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         winnerStreakCount++
                     }
 
-                    val loserUserMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                    val loserUserMatchmakingData = CoinFlipBetGlobalMatchmakingResults.select(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).where { 
                         (CoinFlipBetGlobalMatchmakingResults.winner eq loserAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq loserAsLong)
                     }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
 
@@ -411,7 +411,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     )
 
                     // Check achievements
-                    val giveOutSevenSequentiallyWinsAchievementToWinner = CoinFlipBetGlobalMatchmakingResults.select {
+                    val giveOutSevenSequentiallyWinsAchievementToWinner = CoinFlipBetGlobalMatchmakingResults.selectAll().where {
                         CoinFlipBetGlobalMatchmakingResults.winner eq winner.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq winner.value.toLong())
                     }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
                         .limit(7)
@@ -423,7 +423,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                                 it.all { it[CoinFlipBetGlobalMatchmakingResults.winner].value == winner.value.toLong() }
                         }
 
-                    val giveOutSevenSequentiallyLossesAchievementToLoser = CoinFlipBetGlobalMatchmakingResults.select {
+                    val giveOutSevenSequentiallyLossesAchievementToLoser = CoinFlipBetGlobalMatchmakingResults.selectAll().where {
                         CoinFlipBetGlobalMatchmakingResults.winner eq loser.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq loser.value.toLong())
                     }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
                         .limit(7)
@@ -437,12 +437,12 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
 
                     val now24HoursAgo = Instant.now().minusMillis(24.hours.inWholeMilliseconds)
 
-                    val giveOutFiveHundredMatchesAchievementToWinner = CoinFlipBetGlobalMatchmakingResults.select {
+                    val giveOutFiveHundredMatchesAchievementToWinner = CoinFlipBetGlobalMatchmakingResults.selectAll().where {
                         CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq now24HoursAgo and (CoinFlipBetGlobalMatchmakingResults.winner eq winner.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq winner.value.toLong()))
                     }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
                         .count() >= 500
 
-                    val giveOutFiveHundredMatchesAchievementToLoser = CoinFlipBetGlobalMatchmakingResults.select {
+                    val giveOutFiveHundredMatchesAchievementToLoser = CoinFlipBetGlobalMatchmakingResults.selectAll().where {
                         CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq now24HoursAgo and (CoinFlipBetGlobalMatchmakingResults.winner eq loser.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq loser.value.toLong()))
                     }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
                         .count() >= 500

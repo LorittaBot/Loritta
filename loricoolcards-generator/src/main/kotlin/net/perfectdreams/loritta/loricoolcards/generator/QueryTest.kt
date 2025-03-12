@@ -16,7 +16,6 @@ import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import net.perfectdreams.loritta.serializable.*
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.io.File
 import javax.imageio.ImageIO
@@ -49,7 +48,8 @@ suspend fun main() {
                 SimpleSonhosTransactionsLog.type inList listOf(TransactionType.PAYMENT) and (SimpleSonhosTransactionsLog.sonhos eq 100_000_000)
             }
             .orderBy(SimpleSonhosTransactionsLog.timestamp, SortOrder.DESC)
-            .limit(100_000, 0)
+            .limit(100_000)
+            .offset(0)
             .map {
                 when (val stored = Json.decodeFromString<StoredSonhosTransaction>(it[SimpleSonhosTransactionsLog.metadata])) {
                     is StoredShipEffectSonhosTransaction -> ShipEffectSonhosTransaction(
@@ -121,7 +121,7 @@ suspend fun main() {
                     )
 
                     is StoredRaffleRewardTransaction -> {
-                        val raffle = Raffles.select {
+                        val raffle = Raffles.selectAll().where {
                             Raffles.id eq stored.raffleId
                         }.first()
 
@@ -155,7 +155,7 @@ suspend fun main() {
                     )
 
                     is StoredCoinFlipBetTransaction -> {
-                        val matchmakingResult = CoinFlipBetMatchmakingResults.select {
+                        val matchmakingResult = CoinFlipBetMatchmakingResults.selectAll().where {
                             CoinFlipBetMatchmakingResults.id eq stored.matchmakingResultId
                         }.first()
 
@@ -174,7 +174,7 @@ suspend fun main() {
                     }
 
                     is StoredCoinFlipBetGlobalTransaction -> {
-                        val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.select {
+                        val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.selectAll().where {
                             CoinFlipBetGlobalMatchmakingResults.id eq stored.matchmakingResultId
                         }.first()
 
@@ -273,14 +273,14 @@ suspend fun main() {
                     )
 
                     is StoredEmojiFightBetSonhosTransaction -> {
-                        val emojiFightMatchmakingResults = EmojiFightMatchmakingResults.select {
+                        val emojiFightMatchmakingResults = EmojiFightMatchmakingResults.selectAll().where {
                             EmojiFightMatchmakingResults.id eq stored.emojiFightMatchmakingResultsId
                         }.first()
 
-                        val winnerInMatch = EmojiFightParticipants.select { EmojiFightParticipants.id eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.winner] }
+                        val winnerInMatch = EmojiFightParticipants.selectAll().where { EmojiFightParticipants.id eq emojiFightMatchmakingResults[EmojiFightMatchmakingResults.winner] }
                             .first()
 
-                        val usersInMatch = EmojiFightParticipants.select { EmojiFightParticipants.match eq winnerInMatch[EmojiFightParticipants.match] }
+                        val usersInMatch = EmojiFightParticipants.selectAll().where { EmojiFightParticipants.match eq winnerInMatch[EmojiFightParticipants.match] }
                             .count()
 
                         TODO()

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables.servers
 
 import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import net.perfectdreams.exposedpowerutils.sql.jsonb
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.array
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.TextColumnType
 

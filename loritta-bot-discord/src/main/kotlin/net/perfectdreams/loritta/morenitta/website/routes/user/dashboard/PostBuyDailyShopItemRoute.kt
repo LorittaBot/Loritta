@@ -78,7 +78,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 					if (cost > profile.money)
 						return@newSuspendedTransaction Result.NotEnoughSonhos
 
-					val alreadyBoughtTheBackground = BackgroundPayments.select {
+					val alreadyBoughtTheBackground = BackgroundPayments.selectAll().where {
 						BackgroundPayments.userId eq profile.userId and (BackgroundPayments.background eq background[Backgrounds.id])
 					}.count() != 0L
 
@@ -153,7 +153,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresDiscordLoginLocal
 					if (cost > profile.money)
 						return@newSuspendedTransaction Result.NotEnoughSonhos
 
-					val alreadyBoughtTheBackground = ProfileDesignsPayments.select {
+					val alreadyBoughtTheBackground = ProfileDesignsPayments.selectAll().where {
 						ProfileDesignsPayments.userId eq profile.userId and (ProfileDesignsPayments.profile eq background[ProfileDesigns.id])
 					}.count() != 0L
 

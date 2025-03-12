@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredBotVoteSonhosTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -95,7 +95,7 @@ object WebsiteVoteUtils {
 			}
 
 			val voteCount = loritta.newSuspendedTransaction {
-				BotVotes.select { BotVotes.userId eq userId }.count()
+				BotVotes.selectAll().where { BotVotes.userId eq userId }.count()
 			}
 
 			val user = loritta.lorittaShards.retrieveUserById(userId)

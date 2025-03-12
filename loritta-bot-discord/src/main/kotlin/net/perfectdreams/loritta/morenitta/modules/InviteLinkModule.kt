@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -136,7 +136,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 								val success = loritta.pudding.transaction {
 									// Check if it already exists
-									if (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.select {
+									if (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.selectAll().where {
 											net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.guild eq guild.idLong and
 													(net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.roleId eq topRole.idLong) and
 													(net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions.permission eq net.perfectdreams.loritta.common.utils.LorittaPermission.ALLOW_INVITES)

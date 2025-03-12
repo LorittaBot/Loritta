@@ -317,7 +317,7 @@ class InternalWebServer(val m: LorittaBot) {
                 is LorittaInternalRPCRequest.TwitchStreamOnlineEventRequest -> {
                     // Get all tracked guild accounts of this user
                     val trackedTwitchAccounts = m.transaction {
-                        TrackedTwitchAccounts.select {
+                        TrackedTwitchAccounts.selectAll().where {
                             TrackedTwitchAccounts.twitchUserId eq request.twitchUserId
                         }.toList()
                     }

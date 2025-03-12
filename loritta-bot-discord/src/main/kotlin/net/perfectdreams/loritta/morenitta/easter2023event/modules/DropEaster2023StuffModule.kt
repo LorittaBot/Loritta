@@ -7,7 +7,6 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.easter2023.Easter2023Players
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -17,7 +16,7 @@ import net.perfectdreams.loritta.morenitta.modules.MessageReceivedModule
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -72,7 +71,7 @@ class DropEaster2023StuffModule(val m: LorittaBot) : MessageReceivedModule {
                 return false
 
             m.newSuspendedTransaction {
-                val getTheCandy = Easter2023Players.select {
+                val getTheCandy = Easter2023Players.selectAll().where {
                     Easter2023Players.id eq lorittaProfile.id
                 }.count() != 0L
 

@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.utils.placeholders.Placeholders
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 object ExperienceUtils {
     fun getLevelExperience(lvl: Int): Long {
@@ -34,7 +34,7 @@ object ExperienceUtils {
         val nextLevelRequiredXp = getHowMuchExperienceIsLeftToLevelUp(profile.xp, nextLevel)
 
         val ranking = loritta.newSuspendedTransaction {
-            GuildProfiles.select {
+            GuildProfiles.selectAll().where {
                 GuildProfiles.guildId eq member.guild.idLong and
                         (GuildProfiles.xp greaterEq profile.xp)
             }.count()

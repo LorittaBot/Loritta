@@ -44,7 +44,8 @@ suspend fun main() {
                     CraftedReactionEventItems.user eq row[CraftedReactionEventItems.user]
                 }
                 .orderBy(CraftedReactionEventItems.createdAt to SortOrder.ASC)
-                .limit(1, 999)
+                .limit(1)
+                .offset(999)
                 .first()
 
             ReactionEventFinishedEventUsers.insert {

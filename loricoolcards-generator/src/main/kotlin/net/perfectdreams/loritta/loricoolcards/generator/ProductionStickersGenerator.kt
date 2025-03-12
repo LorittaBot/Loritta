@@ -45,7 +45,7 @@ import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.serializable.BackgroundVariation
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
@@ -210,9 +210,11 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
 
     // TODO: Sort staff profiles by specific order
     val staffProfilesTemporary = pudding.transaction {
-        Profiles.innerJoin(UserSettings).select {
-            Profiles.id inList staffIds
-        }
+        Profiles.innerJoin(UserSettings)
+            .selectAll()
+            .where {
+                Profiles.id inList staffIds
+            }
             .toList()
     }
 
@@ -234,7 +236,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
     )
 
     val moneyProfiles = pudding.transaction {
-        Profiles.innerJoin(UserSettings).select {
+        Profiles.innerJoin(UserSettings).selectAll().where {
             Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (Profiles.id notInList staffIds)
         }
             .orderBy(Profiles.money, SortOrder.DESC)
@@ -441,7 +443,7 @@ suspend fun getUserProfileBackgroundUrl(
 
         allBackgrounds.addAll(
             pudding.transaction {
-                (BackgroundPayments innerJoin Backgrounds).select {
+                (BackgroundPayments innerJoin Backgrounds).selectAll().where {
                     BackgroundPayments.userId eq userId
                 }.map {
                     val data = Background.fromRow(it)
@@ -464,7 +466,7 @@ suspend fun getUserProfileBackgroundUrl(
         if (plan.customBackground) {
             val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
             val resultRow = pudding.transaction {
-                CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq settingsId }
+                CustomBackgroundSettings.selectAll().where { CustomBackgroundSettings.settings eq settingsId }
                     .firstOrNull()
             }
 

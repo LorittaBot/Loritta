@@ -43,7 +43,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.ceil
 
 class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWebServer, val m: LorittaBot) : LorittaInternalRpcProcessor<LorittaInternalRPCRequest.ExecuteDashGuildScopedRPCRequest, LorittaInternalRPCResponse.ExecuteDashGuildScopedRPCResponse> {
@@ -165,7 +164,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             is DashGuildScopedRequest.GetGuildWelcomerConfigRequest -> {
                 val result = m.transaction {
-                    ServerConfigs.innerJoin(WelcomerConfigs).select {
+                    ServerConfigs.innerJoin(WelcomerConfigs).selectAll().where {
                         ServerConfigs.id eq guild.idLong
                     }.firstOrNull()
                 }
@@ -197,9 +196,11 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             is DashGuildScopedRequest.GetGuildStarboardConfigRequest -> {
                 val result = m.transaction {
-                    ServerConfigs.innerJoin(StarboardConfigs).select {
-                        ServerConfigs.id eq guild.idLong
-                    }.firstOrNull()
+                    ServerConfigs.innerJoin(StarboardConfigs)
+                        .selectAll()
+                        .where {
+                            ServerConfigs.id eq guild.idLong
+                        }.firstOrNull()
                 }
 
                 DashGuildScopedResponse.GetGuildStarboardConfigResponse(
@@ -217,7 +218,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             is DashGuildScopedRequest.GetGuildCustomCommandsConfigRequest -> {
                 val customCommands = m.newSuspendedTransaction {
-                    CustomGuildCommands.select {
+                    CustomGuildCommands.selectAll().where {
                         CustomGuildCommands.guild eq guild.idLong
                     }.map {
                         GuildCustomCommand(
@@ -388,7 +389,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             is DashGuildScopedRequest.GetGuildCustomCommandConfigRequest -> {
                 val customCommand = m.newSuspendedTransaction {
-                    CustomGuildCommands.select {
+                    CustomGuildCommands.selectAll().where {
                         CustomGuildCommands.guild eq guild.idLong and (CustomGuildCommands.id eq dashRequest.commandId)
                     }.limit(1).first().let {
                         GuildCustomCommand(
@@ -445,7 +446,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             is DashGuildScopedRequest.GetGuildTwitchConfigRequest -> {
                 val (twitchAccounts, premiumTrackTwitchAccounts, valueOfTheDonationKeysEnabledOnThisGuild) = m.newSuspendedTransaction {
-                    val twitchAccounts = TrackedTwitchAccounts.select { TrackedTwitchAccounts.guildId eq guild.idLong }
+                    val twitchAccounts = TrackedTwitchAccounts.selectAll().where { TrackedTwitchAccounts.guildId eq guild.idLong }
                         .map {
                             val state = getTwitchAccountTrackState(it[TrackedTwitchAccounts.twitchUserId])
 
@@ -460,7 +461,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                             )
                         }
 
-                    val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.select {
+                    val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.selectAll().where {
                         PremiumTrackTwitchAccounts.guildId eq guild.idLong
                     }.map {
                         PremiumTrackTwitchAccount(
@@ -539,7 +540,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                         .sumOf { it.value }
                         .let { ceil(it) }
 
-                    val premiumTracksCount = PremiumTrackTwitchAccounts.select {
+                    val premiumTracksCount = PremiumTrackTwitchAccounts.selectAll().where {
                         PremiumTrackTwitchAccounts.guildId eq guild.idLong
                     }.count()
 
@@ -577,7 +578,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                 )
 
                 val transactionResult = m.newSuspendedTransaction {
-                    val trackedAccount = TrackedTwitchAccounts.select {
+                    val trackedAccount = TrackedTwitchAccounts.selectAll().where {
                         (TrackedTwitchAccounts.guildId eq guild.idLong) and (TrackedTwitchAccounts.id eq dashRequest.trackedId)
                     }.first()
 
@@ -586,7 +587,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                         .sumOf { it.value }
                         .let { ceil(it) }
 
-                    val premiumTracksCount = PremiumTrackTwitchAccounts.select {
+                    val premiumTracksCount = PremiumTrackTwitchAccounts.selectAll().where {
                         PremiumTrackTwitchAccounts.guildId eq guild.idLong
                     }.count()
 
@@ -639,7 +640,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                     if (updateCount == 0) {
                         // First we need to try creating the premium track, if needed
                         if (dashRequest.createPremiumTrack) {
-                            val isAlreadyAdded = PremiumTrackTwitchAccounts.select {
+                            val isAlreadyAdded = PremiumTrackTwitchAccounts.selectAll().where {
                                 PremiumTrackTwitchAccounts.guildId eq guild.idLong and (PremiumTrackTwitchAccounts.twitchUserId eq dashRequest.userId)
                             }.count() == 1L
 
@@ -653,7 +654,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                                 val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
                                 val premiumTracksOfTheGuildCount =
-                                    PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
+                                    PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
                                         PremiumTrackTwitchAccounts.guildId eq guild.idLong
                                     }.orderBy(
                                         PremiumTrackTwitchAccounts.addedAt,
@@ -710,7 +711,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             is DashGuildScopedRequest.EnablePremiumTrackForTwitchChannelRequest -> {
                 m.newSuspendedTransaction {
-                    val isAlreadyAdded = PremiumTrackTwitchAccounts.select {
+                    val isAlreadyAdded = PremiumTrackTwitchAccounts.selectAll().where {
                         PremiumTrackTwitchAccounts.guildId eq guild.idLong and (PremiumTrackTwitchAccounts.twitchUserId eq dashRequest.userId)
                     }.count() == 1L
 
@@ -724,7 +725,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
                     val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
-                    val premiumTracksOfTheGuildCount = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
+                    val premiumTracksOfTheGuildCount = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
                         PremiumTrackTwitchAccounts.guildId eq guild.idLong
                     }.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
                         .count()
@@ -757,14 +758,14 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
     }
 
     private fun getTwitchAccountTrackState(twitchUserId: Long): TwitchAccountTrackState {
-        val isAuthorized = AuthorizedTwitchAccounts.select {
+        val isAuthorized = AuthorizedTwitchAccounts.selectAll().where {
             AuthorizedTwitchAccounts.userId eq twitchUserId
         }.count() == 1L
 
         if (isAuthorized)
             return TwitchAccountTrackState.AUTHORIZED
 
-        val isAlwaysTrack = AlwaysTrackTwitchAccounts.select {
+        val isAlwaysTrack = AlwaysTrackTwitchAccounts.selectAll().where {
             AlwaysTrackTwitchAccounts.userId eq twitchUserId
         }.count() == 1L
 
@@ -772,7 +773,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
             return TwitchAccountTrackState.ALWAYS_TRACK_USER
 
         // Get if the premium track is enabled for this account, we need to check if any of the servers has a premium key enabled too
-        val guildIds = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.guildId).select {
+        val guildIds = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.guildId).where { 
             PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId
         }.toList().map { it[PremiumTrackTwitchAccounts.guildId] }
 
@@ -787,7 +788,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
             if (plan.maxUnauthorizedTwitchChannels != 0) {
                 // If the plan has a maxUnauthorizedTwitchChannels != 0, now we need to get ALL premium tracks of the guild...
-                val allPremiumTracksOfTheGuild = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
+                val allPremiumTracksOfTheGuild = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
                     PremiumTrackTwitchAccounts.guildId eq guildId
                 }.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
                     .limit(plan.maxUnauthorizedTwitchChannels) // Limited by the max unauthorized count...
@@ -817,7 +818,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
         // Get from our cache first
         val results = m.transaction {
-            CachedTwitchChannels.select {
+            CachedTwitchChannels.selectAll().where {
                 CachedTwitchChannels.id inList idsToBeQueried and (CachedTwitchChannels.queriedAt greaterEq now24HoursAgo)
             }.toList()
         }
@@ -871,7 +872,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
         // Get from our cache first
         val results = m.transaction {
-            CachedTwitchChannels.select {
+            CachedTwitchChannels.selectAll().where {
                 CachedTwitchChannels.userLogin inList idsToBeQueried and (CachedTwitchChannels.queriedAt greaterEq now24HoursAgo)
             }.toList()
         }

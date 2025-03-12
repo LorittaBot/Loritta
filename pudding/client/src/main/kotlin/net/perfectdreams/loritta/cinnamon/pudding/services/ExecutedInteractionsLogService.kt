@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.common.components.ComponentType
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pudding) {
     suspend fun insertApplicationCommandLog(
@@ -81,7 +81,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
 
     suspend fun getExecutedApplicationCommands(since: Instant): Long {
         return pudding.transaction {
-            return@transaction ExecutedApplicationCommandsLog.select {
+            return@transaction ExecutedApplicationCommandsLog.selectAll().where {
                 ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
             }.count()
         }
@@ -89,7 +89,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
 
     suspend fun getUniqueUsersExecutedApplicationCommands(since: Instant): Long {
         return pudding.transaction {
-            return@transaction ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
+            return@transaction ExecutedApplicationCommandsLog.select(ExecutedApplicationCommandsLog.userId).where { 
                 ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
             }.groupBy(ExecutedApplicationCommandsLog.userId).count()
         }

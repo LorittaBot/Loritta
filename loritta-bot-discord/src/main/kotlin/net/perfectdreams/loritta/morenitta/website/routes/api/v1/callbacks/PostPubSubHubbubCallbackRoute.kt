@@ -29,7 +29,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryStri
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.util.concurrent.TimeUnit
@@ -126,7 +126,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 				}
 
 				val wasAlreadySent = loritta.newSuspendedTransaction {
-					SentYouTubeVideoIds.select {
+					SentYouTubeVideoIds.selectAll().where {
 						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
 					}.count() != 0L
 				}
@@ -155,7 +155,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			}
 
 			val trackedAccounts = loritta.newSuspendedTransaction {
-				TrackedYouTubeAccounts.select {
+				TrackedYouTubeAccounts.selectAll().where {
 					TrackedYouTubeAccounts.youTubeChannelId eq channelId
 				}.toList()
 			}

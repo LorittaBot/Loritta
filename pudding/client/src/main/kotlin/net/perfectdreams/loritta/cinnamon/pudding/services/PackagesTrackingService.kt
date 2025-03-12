@@ -1,18 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
 class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
@@ -32,10 +28,10 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
 
             val profile = pudding.users.getOrCreateUserProfile(user)
 
-            if (UsersFollowingCorreiosPackages.select { UsersFollowingCorreiosPackages.user eq profile.id.value.toLong() and (UsersFollowingCorreiosPackages.trackedPackage eq trackingPackageEntryId) }.count() > 0)
+            if (UsersFollowingCorreiosPackages.selectAll().where { UsersFollowingCorreiosPackages.user eq profile.id.value.toLong() and (UsersFollowingCorreiosPackages.trackedPackage eq trackingPackageEntryId) }.count() > 0)
                 throw UserIsAlreadyTrackingPackageException()
 
-            if (UsersFollowingCorreiosPackages.innerJoin(TrackedCorreiosPackages).select { UsersFollowingCorreiosPackages.user eq profile.id.value.toLong() and (TrackedCorreiosPackages.delivered eq false) and (TrackedCorreiosPackages.unknownPackage eq false) }.count() == 25L)
+            if (UsersFollowingCorreiosPackages.innerJoin(TrackedCorreiosPackages).selectAll().where { UsersFollowingCorreiosPackages.user eq profile.id.value.toLong() and (TrackedCorreiosPackages.delivered eq false) and (TrackedCorreiosPackages.unknownPackage eq false) }.count() == 25L)
                 throw UserIsAlreadyTrackingTooManyPackagesException()
 
             UsersFollowingCorreiosPackages.insert {
@@ -56,7 +52,7 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
 
             // If no one is tracking the package
             if (
-                UsersFollowingCorreiosPackages.select {
+                UsersFollowingCorreiosPackages.selectAll().where {
                     UsersFollowingCorreiosPackages.trackedPackage eq trackingPackageEntryId
                 }.count() == 0L
             ) {
@@ -66,13 +62,13 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun getTrackedCorreiosPackagesByUser(user: UserId) = pudding.transaction {
-        UsersFollowingCorreiosPackages.innerJoin(TrackedCorreiosPackages).select {
+        UsersFollowingCorreiosPackages.innerJoin(TrackedCorreiosPackages).selectAll().where {
             UsersFollowingCorreiosPackages.user eq user.value.toLong() and (TrackedCorreiosPackages.delivered eq false and (TrackedCorreiosPackages.unknownPackage eq false))
         }.map { it[TrackedCorreiosPackages.trackingId] }
     }
 
     suspend fun getCorreiosPackageEvents(trackingId: String) = pudding.transaction {
-        TrackedCorreiosPackagesEvents.select { TrackedCorreiosPackagesEvents.trackingId eq trackingId }
+        TrackedCorreiosPackagesEvents.selectAll().where { TrackedCorreiosPackagesEvents.trackingId eq trackingId }
             .map { it[TrackedCorreiosPackagesEvents.event] }
     }
 

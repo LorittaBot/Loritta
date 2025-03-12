@@ -5,11 +5,11 @@ import net.perfectdreams.loritta.serializable.lorituber.requests.CreateCharacter
 import net.perfectdreams.loritta.serializable.lorituber.responses.CreateCharacterResponse
 import net.perfectdreams.loritta.serializable.lorituber.responses.LoriTuberRPCResponse
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class CreateCharacterRequestProcessor : LoriTuberRpcProcessor {
     suspend fun process(request: CreateCharacterRequest, currentTick: Long, lastUpdate: Long): LoriTuberRPCResponse {
-        val canCreateANewCharacter = LoriTuberCharacters.select {
+        val canCreateANewCharacter = LoriTuberCharacters.selectAll().where {
             LoriTuberCharacters.owner eq request.ownerId
         }.count() == 0L
 

@@ -1,17 +1,16 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.selectAll
 
 class RepTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("rep top", "reputation top", "reputacao top", "reputação top"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun command() = create {
@@ -77,18 +76,18 @@ class RepTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, l
 
 			val userData = loritta.newSuspendedTransaction {
 				if (type == TopOrder.MOST_GIVEN) {
-					Reputations.slice(givenBy, givenByCount)
-						.selectAll()
+					Reputations.select(givenBy, givenByCount)
 						.groupBy(givenBy)
 						.orderBy(givenByCount, SortOrder.DESC)
-						.limit(5, page * 5)
+						.limit(5)
+						.offset(page * 5)
 						.toMutableList()
 				} else {
-					Reputations.slice(receivedBy, receivedByCount)
-						.selectAll()
+					Reputations.select(receivedBy, receivedByCount)
 						.groupBy(receivedBy)
 						.orderBy(receivedByCount, SortOrder.DESC)
-						.limit(5, page * 5)
+						.limit(5)
+						.offset(page * 5)
 						.toMutableList()
 				}
 			}

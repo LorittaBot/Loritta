@@ -17,11 +17,12 @@ import net.perfectdreams.loritta.serializable.config.GuildWelcomerConfig
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class ConfigureWelcomerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/welcomer") {
 	override suspend fun onDashboardGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, colorTheme: ColorTheme) {
 		val result = loritta.transaction {
-			ServerConfigs.innerJoin(WelcomerConfigs).select {
+			ServerConfigs.innerJoin(WelcomerConfigs).selectAll().where {
 				ServerConfigs.id eq guild.idLong
 			}.firstOrNull()
 		}

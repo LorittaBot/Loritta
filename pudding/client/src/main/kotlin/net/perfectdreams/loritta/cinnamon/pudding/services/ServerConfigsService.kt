@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
-import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.serializable.*
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
+import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.serializable.*
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
@@ -38,7 +38,7 @@ class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun getPredefinedPunishmentMessagesByGuildId(guildId: ULong) = pudding.transaction {
-        ModerationPredefinedPunishmentMessages.select {
+        ModerationPredefinedPunishmentMessages.selectAll().where {
             ModerationPredefinedPunishmentMessages.guild eq guildId.toLong()
         }.map {
             PredefinedPunishmentMessage(it[ModerationPredefinedPunishmentMessages.short], it[ModerationPredefinedPunishmentMessages.message])
@@ -76,7 +76,7 @@ class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
 
         return pudding.transaction {
             // Pull the permissions from the database
-            val permissions = ServerRolePermissions.select {
+            val permissions = ServerRolePermissions.selectAll().where {
                 ServerRolePermissions.guild eq guildId.toLong() and (ServerRolePermissions.roleId inList roleIds.map { it.toLong() })
             }
 

@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("transactionsold", "transaçõesold", "transacoesold", "transaçoesold"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
@@ -66,7 +66,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 			if (customPage == null) customPage = 0
 
 			val allTransactions = loritta.newSuspendedTransaction {
-				SonhosTransaction.select {
+				SonhosTransaction.selectAll().where {
 					SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 				}.count()
 			}
@@ -97,15 +97,16 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 		if (page == null) page = 0
 
 		val transactions = loritta.newSuspendedTransaction {
-			SonhosTransaction.select {
+			SonhosTransaction.selectAll().where {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 			}.orderBy(SonhosTransaction.id, SortOrder.DESC)
-					.limit(ENTRIES_PER_PAGE, page * ENTRIES_PER_PAGE)
-					.toList()
+				.limit(ENTRIES_PER_PAGE)
+				.offset(page * ENTRIES_PER_PAGE)
+				.toList()
 		}
 
 		val allTransactions = loritta.newSuspendedTransaction {
-			SonhosTransaction.select {
+			SonhosTransaction.selectAll().where {
 				SonhosTransaction.givenBy eq user.idLong or (SonhosTransaction.receivedBy eq user.idLong)
 			}.count()
 		}

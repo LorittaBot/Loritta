@@ -45,7 +45,7 @@ class PutTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashb
 		val result = loritta.transaction {
 			// First we need to try creating the premium track, if needed
 			if (createPremiumTrack) {
-				val isAlreadyAdded = PremiumTrackTwitchAccounts.select {
+				val isAlreadyAdded = PremiumTrackTwitchAccounts.selectAll().where {
 					PremiumTrackTwitchAccounts.guildId eq guild.idLong and (PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId)
 				}.count() == 1L
 
@@ -59,7 +59,7 @@ class PutTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashb
 					val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
 					val premiumTracksOfTheGuildCount =
-						PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
+						PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
 							PremiumTrackTwitchAccounts.guildId eq guild.idLong
 						}.orderBy(
 							PremiumTrackTwitchAccounts.addedAt,
@@ -97,7 +97,7 @@ class PutTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashb
 				.sumOf { it.value }
 				.let { ceil(it) }
 
-			val premiumTracksCount = PremiumTrackTwitchAccounts.select {
+			val premiumTracksCount = PremiumTrackTwitchAccounts.selectAll().where {
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong
 			}.count()
 

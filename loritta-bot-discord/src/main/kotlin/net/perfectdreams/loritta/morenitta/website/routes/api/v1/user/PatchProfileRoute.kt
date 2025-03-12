@@ -34,7 +34,7 @@ import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.upsert
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -116,7 +116,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 		if (config["setActiveBackground"].nullString != null) {
 			val internalName = config["setActiveBackground"].string
 
-			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && loritta.newSuspendedTransaction { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
+			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && loritta.newSuspendedTransaction { BackgroundPayments.selectAll().where { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
 						loritta,
@@ -196,7 +196,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 
 			loritta.newSuspendedTransaction {
 				profileSettings.activeBackgroundInternalName = EntityID(internalName, Backgrounds)
-				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.file)
+				oldPath = CustomBackgroundSettings.selectAll().where { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.file)
 
 				if (newPath != null && preferredMediaType != null) {
 					CustomBackgroundSettings.upsert(CustomBackgroundSettings.settings) {
@@ -229,7 +229,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 		if (config["setActiveProfileDesign"].nullString != null) {
 			val internalName = config["setActiveProfileDesign"].string
 
-			if (internalName != ProfileDesign.DEFAULT_PROFILE_DESIGN_ID && internalName != ProfileDesign.RANDOM_PROFILE_DESIGN_ID && loritta.newSuspendedTransaction { ProfileDesignsPayments.select { ProfileDesignsPayments.profile eq internalName and (ProfileDesignsPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
+			if (internalName != ProfileDesign.DEFAULT_PROFILE_DESIGN_ID && internalName != ProfileDesign.RANDOM_PROFILE_DESIGN_ID && loritta.newSuspendedTransaction { ProfileDesignsPayments.selectAll().where { ProfileDesignsPayments.profile eq internalName and (ProfileDesignsPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
 						loritta,
@@ -239,7 +239,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 			}
 
 			loritta.newSuspendedTransaction {
-				profileSettings.activeProfileDesignInternalName = ProfileDesigns.select { ProfileDesigns.id eq internalName }.first()[ProfileDesigns.id] // Background.findById(internalName)
+				profileSettings.activeProfileDesignInternalName = ProfileDesigns.selectAll().where { ProfileDesigns.id eq internalName }.first()[ProfileDesigns.id] // Background.findById(internalName)
 			}
 
 			call.respondJson(jsonObject())

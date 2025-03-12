@@ -110,7 +110,7 @@ object TrinketsStuff {
                 // Validate if the profile designs exist
                 if (
                     centerRightFocusDesigns.size != ProfileDesigns
-                        .select {
+                        .selectAll().where {
                             ProfileDesigns.id inList centerRightFocusDesigns
                         }.count().toInt()
                 ) {
@@ -120,7 +120,7 @@ object TrinketsStuff {
 
                 if (
                     topFocusDesigns.size != ProfileDesigns
-                        .select {
+                        .selectAll().where {
                             ProfileDesigns.id inList topFocusDesigns
                         }.count().toInt()
                 ) {

@@ -12,8 +12,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.utils.LorittaUser.Companion.convertRolePermissionsMapToMemberPermissionList
+import net.perfectdreams.loritta.morenitta.utils.LorittaUser.Companion.loadMemberLorittaPermissions
+import net.perfectdreams.loritta.morenitta.utils.LorittaUser.Companion.loadMemberRolesLorittaPermissions
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 /**
@@ -30,7 +33,7 @@ open class LorittaUser(val loritta: LorittaBot, val user: User, val permissions:
 		 * @see loadMemberLorittaPermissions
 		 */
 		suspend fun loadGuildRolesLorittaPermissions(loritta: LorittaBot, serverConfig: ServerConfig, guild: Guild) = loritta.newSuspendedTransaction {
-			val permissions = ServerRolePermissions.select {
+			val permissions = ServerRolePermissions.selectAll().where {
 				ServerRolePermissions.guild eq serverConfig.id
 			}
 
@@ -56,7 +59,7 @@ open class LorittaUser(val loritta: LorittaBot, val user: User, val permissions:
 		}
 
 		private fun _loadMemberRolesLorittaPermissions(serverConfig: ServerConfig, member: Member): Map<Long, EnumSet<LorittaPermission>> {
-			val permissions = ServerRolePermissions.select {
+			val permissions = ServerRolePermissions.selectAll().where {
 				ServerRolePermissions.guild eq serverConfig.id and (ServerRolePermissions.roleId inList member.roles.map { it.idLong })
 			}
 

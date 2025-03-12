@@ -102,7 +102,8 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
                     LoriCoolCardsFinishedAlbumUsers.event eq event[LoriCoolCardsEvents.id]
                 }
                 .orderBy(LoriCoolCardsFinishedAlbumUsers.finishedAt to SortOrder.ASC)
-                .limit(5, page * 5)
+                .limit(5)
+                .offset(page * 5)
                 .toList()
 
             return@transaction ViewAlbumRankResult.Success(

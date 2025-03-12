@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
 
@@ -25,7 +25,7 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
         // and we don't want concurrent serializations to cause the entire transaction to be retried
         val usersToBeNotifiedData = m.transaction {
             // Get all users that needs to be notified
-            BotVotesUserAvailableNotifications.select {
+            BotVotesUserAvailableNotifications.selectAll().where {
                 BotVotesUserAvailableNotifications.notified eq false and (BotVotesUserAvailableNotifications.notifyAt lessEq now)
             }.toList()
         }

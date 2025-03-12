@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class BomDiaECiaStatusCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia status", "bd&c status", "bdc status"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
     companion object {
@@ -18,7 +19,7 @@ class BomDiaECiaStatusCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
             val user = user(0) ?: this.message.author
 
             val votes = loritta.newSuspendedTransaction {
-                BomDiaECiaWinners.select { BomDiaECiaWinners.userId eq user.id }.count()
+                BomDiaECiaWinners.selectAll().where { BomDiaECiaWinners.userId eq user.id }.count()
             }
 
             if (user == this.message.author) {

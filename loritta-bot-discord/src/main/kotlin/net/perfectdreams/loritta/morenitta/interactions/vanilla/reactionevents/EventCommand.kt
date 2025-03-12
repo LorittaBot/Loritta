@@ -741,7 +741,8 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             }
                             .groupBy(ReactionEventPlayers.userId, ReactionEventPlayers.id)
                             .orderBy(minFinishedAtColumn to SortOrder.ASC, ReactionEventPlayers.id to SortOrder.ASC)
-                            .limit(5, page * 5)
+                            .limit(5)
+                            .offset(page * 5)
                             .toList()
 
                         Pair(totalCount, profilesInTheQuery)
@@ -766,7 +767,8 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 }
                                 .groupBy(ReactionEventPlayers.userId, ReactionEventPlayers.id)
                                 .orderBy(countColumn to SortOrder.DESC, minFinishedAtColumn to SortOrder.ASC, ReactionEventPlayers.id to SortOrder.ASC)
-                                .limit(5, page * 5)
+                                .limit(5)
+                                .offset(page * 5)
                                 .toList()
 
                         Pair(totalCount, profilesInTheQuery)

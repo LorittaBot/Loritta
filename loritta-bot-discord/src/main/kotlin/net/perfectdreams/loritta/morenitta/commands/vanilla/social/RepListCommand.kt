@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
@@ -68,13 +68,13 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
             if (customPage == null) customPage = 0
 
             val totalReputationReceived = loritta.newSuspendedTransaction {
-                Reputations.select {
+                Reputations.selectAll().where {
                     Reputations.receivedById eq user.idLong
                 }.count()
             }
 
             val totalReputationGiven = loritta.newSuspendedTransaction {
-                Reputations.select {
+                Reputations.selectAll().where {
                     Reputations.givenById eq user.idLong
                 }.count()
             }
@@ -105,21 +105,22 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
         if (page == null) page = 0
 
         val reputations = loritta.newSuspendedTransaction {
-            Reputations.select {
+            Reputations.selectAll().where {
                 Reputations.givenById eq user.idLong or (Reputations.receivedById eq user.idLong)
             }.orderBy(Reputations.receivedAt, SortOrder.DESC)
-                .limit(ENTRIES_PER_PAGE, page * ENTRIES_PER_PAGE)
+                .limit(ENTRIES_PER_PAGE)
+                .offset(page * ENTRIES_PER_PAGE)
                 .toList()
         }
 
         val totalReputationReceived = loritta.newSuspendedTransaction {
-            Reputations.select {
+            Reputations.selectAll().where {
                 Reputations.receivedById eq user.idLong
             }.count()
         }
 
         val totalReputationGiven = loritta.newSuspendedTransaction {
-            Reputations.select {
+            Reputations.selectAll().where {
                 Reputations.givenById eq user.idLong
             }.count()
         }

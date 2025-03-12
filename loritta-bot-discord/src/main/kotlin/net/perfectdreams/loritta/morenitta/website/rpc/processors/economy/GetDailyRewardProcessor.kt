@@ -41,6 +41,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -146,7 +147,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
 
                                     loritta.newSuspendedTransaction {
                                         // Pegar todos os servidores com sonhos patrocinados
-                                        val results = (ServerConfigs innerJoin DonationConfigs).select {
+                                        val results = (ServerConfigs innerJoin DonationConfigs).selectAll().where {
                                             (ServerConfigs.id inList mutualGuilds.map { it.id.toLong() }) and
                                                     (DonationConfigs.dailyMultiplier eq true)
                                         }

@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.morenitta.modules.MessageReceivedModule
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -81,7 +81,7 @@ class DropChristmasStuffModule(val m: LorittaBot) : MessageReceivedModule {
                 return false
 
             m.newSuspendedTransaction {
-                val getTheCandy = Christmas2022Players.select {
+                val getTheCandy = Christmas2022Players.selectAll().where {
                     Christmas2022Players.id eq lorittaProfile.id
                 }.count() != 0L
 

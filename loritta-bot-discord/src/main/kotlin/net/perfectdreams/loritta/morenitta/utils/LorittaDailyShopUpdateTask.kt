@@ -62,7 +62,7 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 		}
 
 		private fun getAndAddRandomBackgroundsToShop(shopId: EntityID<Long>) {
-			val allBackgrounds = Backgrounds.select {
+			val allBackgrounds = Backgrounds.selectAll().where {
 				Backgrounds.enabled eq true and (Backgrounds.availableToBuyViaDreams eq true)
 			}.toMutableList()
 
@@ -70,7 +70,7 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 
 			// We will try to at least have two new items every single day, to avoid showing already sold backgrounds every day
 			val neverSoldBeforeBackgrounds = allBackgrounds.filter {
-				DailyShopItems.select {
+				DailyShopItems.selectAll().where {
 					DailyShopItems.item eq it[Backgrounds.id]
 				}.count() == 0L
 			}.toMutableList()
@@ -95,13 +95,13 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 				DailyShopItems.insert {
 					it[shop] = shopId
 					it[item] = background[Backgrounds.id]
-					it[tag] = if (DailyShopItems.select { item eq background[Backgrounds.id] }.count() == 0L) { "website.dailyShop.new" } else null
+					it[tag] = if (DailyShopItems.selectAll().where { item eq background[Backgrounds.id] }.count() == 0L) { "website.dailyShop.new" } else null
 				}
 			}
 		}
 
 		private fun getAndAddRandomProfileDesignsToShop(shopId: EntityID<Long>) {
-			val allProfileDesigns = ProfileDesigns.select {
+			val allProfileDesigns = ProfileDesigns.selectAll().where {
 				ProfileDesigns.enabled eq true and (ProfileDesigns.availableToBuyViaDreams eq true)
 			}.toMutableList()
 
@@ -109,7 +109,7 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 
 			// We will try to at least have two new items every single day, to avoid showing already sold backgrounds every day
 			val neverSoldBeforeProfileDesigns = allProfileDesigns.filter {
-				DailyProfileShopItems.select {
+				DailyProfileShopItems.selectAll().where {
 					DailyProfileShopItems.item eq it[ProfileDesigns.id]
 				}.count() == 0L
 			}.toMutableList()
@@ -134,7 +134,7 @@ class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 				DailyProfileShopItems.insert {
 					it[shop] = shopId
 					it[item] = background[ProfileDesigns.id]
-					it[tag] = if (DailyProfileShopItems.select { item eq background[ProfileDesigns.id] }.count() == 0L) { "website.dailyShop.new" } else null
+					it[tag] = if (DailyProfileShopItems.selectAll().where { item eq background[ProfileDesigns.id] }.count() == 0L) { "website.dailyShop.new" } else null
 				}
 			}
 		}

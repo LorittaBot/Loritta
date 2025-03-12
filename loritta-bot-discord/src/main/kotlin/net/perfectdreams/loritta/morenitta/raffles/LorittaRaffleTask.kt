@@ -60,7 +60,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         logger.info { "Getting the results of the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})" }
 
                         // Get all tickets on the current raffle
-                        val totalTickets = RaffleTickets.select {
+                        val totalTickets = RaffleTickets.selectAll().where {
                             RaffleTickets.raffle eq currentRaffle[Raffles.id]
                         }.count()
 
@@ -108,7 +108,8 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                                 .where {
                                     RaffleTickets.raffle eq currentRaffle[Raffles.id]
                                 }.orderBy(RaffleTickets.boughtAt, SortOrder.DESC)
-                                .limit(1, skipTickets)
+                                .limit(1)
+                                .offset(skipTickets)
                                 .first()
 
                             logger.info { "Raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]}) winner ticket is ticket ${winnerTicket[RaffleTickets.id]} by ${winnerTicket[RaffleTickets.userId]}!" }
@@ -130,9 +131,9 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             val lorittaProfile = m.getOrCreateLorittaProfile(winnerId)
                             logger.info { "${winnerId} won $money sonhos ($moneyWithoutTaxes without taxes; before they had ${lorittaProfile.money} sonhos) in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})!" }
 
-                            val totalTicketsBoughtByTheUser = RaffleTickets.select { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }.count()
+                            val totalTicketsBoughtByTheUser = RaffleTickets.selectAll().where { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }.count()
                             val countUserDistinct = RaffleTickets.userId.countDistinct()
-                            val totalUsersInTheRaffle = RaffleTickets.slice(countUserDistinct).select { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
+                            val totalUsersInTheRaffle = RaffleTickets.select(countUserDistinct).where { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
                                 .first()[countUserDistinct]
 
                             paidOutPrizeAfterTax = money.toLong()
@@ -166,7 +167,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             )
 
                             // Get everyone that asked to be notified about this raffle (EXCEPT THE WINNER)
-                            UserAskedRaffleNotifications.select {
+                            UserAskedRaffleNotifications.selectAll().where {
                                 UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id] and (UserAskedRaffleNotifications.userId neq winnerId)
                             }.toList()
                                 .forEach {
@@ -186,7 +187,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             logger.info { "No one participated in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})..." }
 
                             // Get everyone that asked to be notified about this raffle
-                            UserAskedRaffleNotifications.select {
+                            UserAskedRaffleNotifications.selectAll().where {
                                 UserAskedRaffleNotifications.raffle eq currentRaffle[Raffles.id]
                             }.toList()
                                 .forEach {

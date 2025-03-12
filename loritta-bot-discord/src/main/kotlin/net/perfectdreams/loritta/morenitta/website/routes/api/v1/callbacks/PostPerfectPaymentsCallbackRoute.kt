@@ -32,6 +32,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -76,7 +77,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 				val bundleId = metadataAsObj["bundleId"].long
 
 				val bundle = loritta.newSuspendedTransaction {
-					SonhosBundles.select {
+					SonhosBundles.selectAll().where {
 						// Before we checked if the bundle was active, but what if we want to add new bundles while taking out old bundles?
 						// If someone bought and the bundle was deactivated, when the payment was approved, the user wouldn't receive the bundle!
 						// So we don't care if the bundle is not active anymore.

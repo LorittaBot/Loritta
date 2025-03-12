@@ -136,7 +136,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                                 searchQuery = "#${searchQuery.toInt().toString().padStart(4, '0')}"
                             }
 
-                            val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.select {
+                            val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.selectAll().where {
                                 LoriCoolCardsEventCards.fancyCardId.like(
                                     "${searchQuery.replace("%", "")}%"
                                 ) and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
@@ -144,7 +144,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
                             val cardIds = cardEventCardsMatchingQuery.map { it[LoriCoolCardsEventCards.id] }
 
-                            val seenCards = LoriCoolCardsSeenCards.select {
+                            val seenCards = LoriCoolCardsSeenCards.selectAll().where {
                                 (LoriCoolCardsSeenCards.user eq it.event.user.idLong) and (LoriCoolCardsSeenCards.card inList cardIds)
                             }.map { it[LoriCoolCardsSeenCards.card].value }
 
@@ -160,7 +160,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
                             }
                             results
                         } else {
-                            val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.select {
+                            val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.selectAll().where {
                                 LoriCoolCardsEventCards.title.like(
                                     "${
                                         focusedOptionValue.replace(
@@ -173,7 +173,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
                             val cardIds = cardEventCardsMatchingQuery.map { it[LoriCoolCardsEventCards.id] }
 
-                            val seenCards = LoriCoolCardsSeenCards.select {
+                            val seenCards = LoriCoolCardsSeenCards.selectAll().where {
                                 (LoriCoolCardsSeenCards.user eq it.event.user.idLong) and (LoriCoolCardsSeenCards.card inList cardIds)
                             }.map { it[LoriCoolCardsSeenCards.card].value }
 
@@ -201,33 +201,33 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
             val fancyCardId = args[options.cardId]
 
             val result = loritta.transaction {
-                val event = LoriCoolCardsEvents.select {
+                val event = LoriCoolCardsEvents.selectAll().where {
                     LoriCoolCardsEvents.id eq albumId
                 }.firstOrNull() ?: return@transaction GetCardInfoResult.EventUnavailable
 
-                val cardEventCard = LoriCoolCardsEventCards.select {
+                val cardEventCard = LoriCoolCardsEventCards.selectAll().where {
                     LoriCoolCardsEventCards.fancyCardId eq fancyCardId and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
                 }.limit(1).firstOrNull() ?: return@transaction GetCardInfoResult.UnknownCard
 
                 val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
-                val isSticked = LoriCoolCardsUserOwnedCards.select {
+                val isSticked = LoriCoolCardsUserOwnedCards.selectAll().where {
                     LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
                 }.count() != 0L
 
-                val isSeen = LoriCoolCardsSeenCards.select {
+                val isSeen = LoriCoolCardsSeenCards.selectAll().where {
                     LoriCoolCardsSeenCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsSeenCards.user eq context.user.idLong)
                 }.count() != 0L
 
-                val cardsOfThisTypeInCirculation = LoriCoolCardsUserOwnedCards.select {
+                val cardsOfThisTypeInCirculation = LoriCoolCardsUserOwnedCards.selectAll().where {
                     LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.sticked eq false)
                 }.count()
 
-                val cardsOfThisTypeSticked = LoriCoolCardsUserOwnedCards.select {
+                val cardsOfThisTypeSticked = LoriCoolCardsUserOwnedCards.selectAll().where {
                     LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.sticked eq true)
                 }.count()
 
-                val cardsOfThisTypeOwnedByTheCurrentUser = LoriCoolCardsUserOwnedCards.select {
+                val cardsOfThisTypeOwnedByTheCurrentUser = LoriCoolCardsUserOwnedCards.selectAll().where {
                     LoriCoolCardsUserOwnedCards.card eq cardEventCard[LoriCoolCardsEventCards.id] and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false)
                 }.count()
 

@@ -12,7 +12,6 @@ import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
@@ -44,7 +43,7 @@ import net.perfectdreams.loritta.serializable.BackgroundStorageType
 import net.perfectdreams.loritta.serializable.BackgroundVariation
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -197,8 +196,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			setOf()
 		else
 			loritta.pudding.transaction {
-				GuildProfiles.slice(GuildProfiles.guildId)
-					.select { GuildProfiles.userId eq userToBeViewed.id and (GuildProfiles.isInGuild eq true) }
+				GuildProfiles.select(GuildProfiles.guildId)
+					.where { GuildProfiles.userId eq userToBeViewed.id and (GuildProfiles.isInGuild eq true) }
 					.map { it[GuildProfiles.guildId] }
 					.toSet()
 			}
@@ -385,7 +384,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val userId = user.id.toLong()
 
 		val hasUpvoted = loritta.newSuspendedTransaction {
-			net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes.select {
+			net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes.selectAll().where {
 				net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes.userId eq userId.toLong() and (net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes.votedAt greaterEq System.currentTimeMillis() - (Constants.ONE_HOUR_IN_MILLISECONDS * 12))
 			}.count() != 0L
 		}
@@ -452,7 +451,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 		loritta.newSuspendedTransaction {
 			val results = (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs innerJoin net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs)
-				.select {
+				.selectAll().where {
 					net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs.customBadge eq true and (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs.id inList mutualGuilds)
 				}
 
@@ -669,7 +668,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 
 			allBackgrounds.addAll(
 				loritta.newSuspendedTransaction {
-					(BackgroundPayments innerJoin Backgrounds).select {
+					(BackgroundPayments innerJoin Backgrounds).selectAll().where {
 						BackgroundPayments.userId eq userId
 					}.map {
 						val data = Background.fromRow(it)
@@ -692,7 +691,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			if (plan.customBackground) {
 				val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 				val resultRow = loritta.newSuspendedTransaction {
-					CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq settingsId }
+					CustomBackgroundSettings.selectAll().where { CustomBackgroundSettings.settings eq settingsId }
 						.firstOrNull()
 				}
 

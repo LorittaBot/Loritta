@@ -32,7 +32,7 @@ class GetDailyShopRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/economy/da
 
 		val backgroundsInShopResults = loritta.newSuspendedTransaction {
 			(DailyShopItems innerJoin Backgrounds)
-				.select {
+				.selectAll().where {
 					DailyShopItems.shop eq shop[DailyShops.id]
 				}
 				.toList()
@@ -50,7 +50,7 @@ class GetDailyShopRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/economy/da
 
 		val profileDesignsInShop = loritta.pudding.transaction {
 			(DailyProfileShopItems innerJoin ProfileDesigns)
-				.select {
+				.selectAll().where {
 					DailyProfileShopItems.shop eq shop[DailyShops.id]
 				}
 				.map {

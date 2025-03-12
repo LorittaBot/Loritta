@@ -62,17 +62,17 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
 
         val (result, time) = measureTimedValue {
             loritta.transaction {
-                val event = LoriCoolCardsEvents.select {
+                val event = LoriCoolCardsEvents.selectAll().where {
                     LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                 }.firstOrNull() ?: return@transaction StickStickersResult.EventUnavailable
 
-                val totalEventCards = LoriCoolCardsEventCards.select {
+                val totalEventCards = LoriCoolCardsEventCards.selectAll().where {
                     LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
                 }.count()
 
                 // First we need to check all cards that we have already sticked
                 // We will inner join because we need that info when generating the album
-                val alreadyStickedCards = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                val alreadyStickedCards = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                     LoriCoolCardsUserOwnedCards.sticked eq true and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
                 }.toList()
 
@@ -82,7 +82,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
 
                 // Now we get the cards that aren't already sticked but can be sticked
                 // We will also inner join because we need that info when generating the album
-                val cardsThatCanBeSticked = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                val cardsThatCanBeSticked = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                     LoriCoolCardsUserOwnedCards.sticked eq false and (LoriCoolCardsUserOwnedCards.card notInList alreadyStickedCardIds) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong) and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id])
                 }.orderBy(LoriCoolCardsEventCards.fancyCardId, SortOrder.ASC) // Not really needed but this keeps a consistent order
                     .toList()
@@ -209,7 +209,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                             // Check if we have already sticked all stickers of this album
                             // We could get the total cards amount from the result, but what if we add new cards after the fact?
                             // (Probably won't ever happen, but still...)
-                            val totalEventCards = LoriCoolCardsEventCards.select {
+                            val totalEventCards = LoriCoolCardsEventCards.selectAll().where {
                                 LoriCoolCardsEventCards.event eq eventId
                             }.count()
 
@@ -225,7 +225,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                     it[LoriCoolCardsFinishedAlbumUsers.finishedAt] = Instant.now()
                                 }
 
-                                val howManyCompletionsWeAreInRightNow = LoriCoolCardsFinishedAlbumUsers.select {
+                                val howManyCompletionsWeAreInRightNow = LoriCoolCardsFinishedAlbumUsers.selectAll().where {
                                     LoriCoolCardsFinishedAlbumUsers.user eq context.user.idLong
                                 }.count()
 

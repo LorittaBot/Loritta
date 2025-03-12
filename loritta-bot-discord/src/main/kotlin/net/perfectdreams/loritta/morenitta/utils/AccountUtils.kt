@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 object AccountUtils {
@@ -41,7 +41,7 @@ object AccountUtils {
      */
     suspend fun getUserLastDailyRewardReceived(loritta: LorittaBot, userId: Long, afterTime: Long = Long.MIN_VALUE): Daily? {
         return loritta.newSuspendedTransaction {
-            val dailyResult = Dailies.select {
+            val dailyResult = Dailies.selectAll().where {
                 Dailies.receivedById eq userId and (Dailies.receivedAt greaterEq afterTime)
             }
                 .orderBy(Dailies.receivedAt, SortOrder.DESC)

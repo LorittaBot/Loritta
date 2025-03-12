@@ -30,7 +30,7 @@ import net.perfectdreams.loritta.serializable.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.serializable.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.TimeUnit
 
 class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
@@ -158,7 +158,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 		val (previousLevel, previousXp) = guildProfile.getCurrentLevel()
 
 		val customRoleRates = loritta.newSuspendedTransaction {
-			ExperienceRoleRates.select {
+			ExperienceRoleRates.selectAll().where {
 				ExperienceRoleRates.guildId eq event.guild.idLong and
 						(ExperienceRoleRates.role inList memberRolesIds)
 			}.orderBy(ExperienceRoleRates.rate, SortOrder.DESC)
@@ -181,7 +181,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 		if (guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) {
 			val configs = loritta.newSuspendedTransaction {
-				RolesByExperience.select {
+				RolesByExperience.selectAll().where {
 					RolesByExperience.guildId eq guild.idLong
 				}.toMutableList()
 			}
@@ -244,7 +244,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 			logger.info { "Notifying about level up from $previousLevel -> $newLevel; level config is $levelConfig"}
 
 			val announcements = loritta.newSuspendedTransaction {
-				LevelAnnouncementConfigs.select {
+				LevelAnnouncementConfigs.selectAll().where {
 					LevelAnnouncementConfigs.levelConfig eq levelConfig.id
 				}.toMutableList()
 			}

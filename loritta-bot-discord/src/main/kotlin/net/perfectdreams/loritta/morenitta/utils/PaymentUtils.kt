@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.serializable.StoredChargebackedSonhosBundleTran
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 object PaymentUtils {
@@ -241,7 +241,9 @@ object PaymentUtils {
 
             // frick, we still have more money to be taken care of, so we need to pull the money from external sonhos transactions
             val transactions = loritta.newSuspendedTransaction {
-                SonhosTransaction.select {
+                SonhosTransaction
+                    .selectAll()
+                    .where {
                     // We can't add the user that triggered the checks in our list, because if we did... We would get stuck in a infinite loop of "I want to get the debt, so let's check from this user" and then the reverse, and stuff would go on and on and on...
                     // It wouldn't work!
                     SonhosTransaction.givenBy eq userId and (SonhosTransaction.receivedBy notInList usersThatTriggeredTheCheck) and (SonhosTransaction.receivedBy.isNotNull())

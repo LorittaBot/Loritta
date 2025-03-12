@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
 
 class StatsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun insertGuildCountStats(
@@ -23,7 +22,7 @@ class StatsService(private val pudding: Pudding) : Service(pudding) {
 
     suspend fun getGuildCount(): Long {
         return pudding.transaction {
-            GuildCountStats.slice(GuildCountStats.guildCount).selectAll()
+            GuildCountStats.select(GuildCountStats.guildCount)
                 .orderBy(GuildCountStats.timestamp, SortOrder.DESC)
                 .limit(1)
                 .firstOrNull()?.get(GuildCountStats.guildCount) ?: 0

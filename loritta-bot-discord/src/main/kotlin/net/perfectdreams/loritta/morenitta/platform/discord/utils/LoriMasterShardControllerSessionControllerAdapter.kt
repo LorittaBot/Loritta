@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.listeners.PreStartGatewayEventReplayL
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.upsert
 import java.time.Instant
 import java.util.*
@@ -123,7 +123,7 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot,
 						val randomKey = runBlocking {
 							// We want to repeat indefinitely if a concurrent modification error happens
 							loritta.pudding.transaction(repetitions = Int.MAX_VALUE) {
-								val currentStatus = ConcurrentLoginBuckets.select {
+								val currentStatus = ConcurrentLoginBuckets.selectAll().where {
 									ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.lockedAt greaterEq Instant.now()
 										.minusSeconds(60))
 								}.firstOrNull()

@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.FanArtsExtravaganza
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -54,7 +54,7 @@ class ActivityUpdater(val loritta: LorittaBot) : RunnableCoroutine {
 
                         // Get enabled fan arts from the database
                         val fanArts = loritta.transaction {
-                            FanArtsExtravaganza.select {
+                            FanArtsExtravaganza.selectAll().where {
                                 FanArtsExtravaganza.enabled eq true and (FanArtsExtravaganza.defaultAvatar eq false)
                             }
                                 .orderBy(FanArtsExtravaganza.id, SortOrder.ASC)
@@ -109,7 +109,7 @@ class ActivityUpdater(val loritta: LorittaBot) : RunnableCoroutine {
                 } else {
                     // Set the default avatar as active, but only if the current avatar is not active
                     val defaultAvatarRR = loritta.transaction {
-                        FanArtsExtravaganza.select {
+                        FanArtsExtravaganza.selectAll().where {
                             FanArtsExtravaganza.defaultAvatar eq true and (FanArtsExtravaganza.enabled eq true)
                         }.firstOrNull()
                     }

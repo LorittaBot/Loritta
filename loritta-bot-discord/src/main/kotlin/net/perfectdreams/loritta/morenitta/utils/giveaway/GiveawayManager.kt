@@ -33,7 +33,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import net.perfectdreams.sequins.text.StringUtils
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.sql.Connection
 import java.time.Instant
@@ -408,7 +408,7 @@ class GiveawayManager(val loritta: LorittaBot) {
             val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
             val participantsIds = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
-                GiveawayParticipants.select {
+                GiveawayParticipants.selectAll().where {
                     GiveawayParticipants.giveawayId eq giveaway.id.value
                 }.map { it[GiveawayParticipants.userId] }
             }.toMutableList()

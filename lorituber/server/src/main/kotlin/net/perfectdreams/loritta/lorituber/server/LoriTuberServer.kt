@@ -58,7 +58,7 @@ class LoriTuberServer(val pudding: Pudding) {
             }
 
             pudding.transaction {
-                LoriTuberServerInfos.select { LoriTuberServerInfos.type eq GENERAL_INFO_KEY }
+                LoriTuberServerInfos.selectAll().where { LoriTuberServerInfos.type eq GENERAL_INFO_KEY }
                     .firstOrNull()
                     ?.get(LoriTuberServerInfos.data)
                     ?.let { Json.decodeFromString<ServerInfo>(it) }
@@ -147,7 +147,7 @@ class LoriTuberServer(val pudding: Pudding) {
                                         GetCharactersByOwnerResponse(
                                             currentTick,
                                             lastUpdate,
-                                            LoriTuberCharacters.select { LoriTuberCharacters.owner eq request.ownerId }
+                                            LoriTuberCharacters.selectAll().where { LoriTuberCharacters.owner eq request.ownerId }
                                                 .map {
                                                     GetCharactersByOwnerResponse.LoriTuberCharacter(
                                                         it[LoriTuberCharacters.id].value,
@@ -179,7 +179,7 @@ class LoriTuberServer(val pudding: Pudding) {
                                         GetChannelsByCharacterResponse(
                                             currentTick,
                                             lastUpdate,
-                                            LoriTuberChannels.select { LoriTuberChannels.owner eq request.characterId }
+                                            LoriTuberChannels.selectAll().where { LoriTuberChannels.owner eq request.characterId }
                                                 .map {
                                                     LoriTuberChannel(
                                                         it[LoriTuberChannels.id].value,
@@ -214,7 +214,7 @@ class LoriTuberServer(val pudding: Pudding) {
                                 when (val task = Json.decodeFromString<LoriTuberTask>(currentTaskAsJson)) {
                                     is LoriTuberTask.Sleeping -> isSleeping = true
                                     is LoriTuberTask.WorkingOnVideo -> {
-                                        val pendingVideoData = LoriTuberPendingVideos.select {
+                                        val pendingVideoData = LoriTuberPendingVideos.selectAll().where {
                                             LoriTuberPendingVideos.id eq task.pendingVideoId
                                         }.firstOrNull()
 

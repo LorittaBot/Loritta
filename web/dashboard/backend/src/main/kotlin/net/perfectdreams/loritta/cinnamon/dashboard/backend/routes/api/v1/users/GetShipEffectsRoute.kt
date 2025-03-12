@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.serializable.ShipEffect
 import net.perfectdreams.loritta.serializable.UserId
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class GetShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRoute(m, "/api/v1/users/ship-effects") {
     override suspend fun onAuthenticatedRequest(
@@ -21,7 +21,7 @@ class GetShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginR
         userIdentification: LorittaJsonWebSession.UserIdentification
     ) {
         val shipEffects = m.pudding.transaction {
-            ShipEffects.select {
+            ShipEffects.selectAll().where {
                 ShipEffects.buyerId eq userIdentification.id.toLong()
             }.map { row ->
                 ShipEffect(

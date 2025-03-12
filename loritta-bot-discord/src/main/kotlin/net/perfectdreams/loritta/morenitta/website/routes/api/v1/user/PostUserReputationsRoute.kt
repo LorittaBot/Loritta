@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	companion object {
@@ -205,7 +206,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 					)
 
 					val reputationCount = loritta.newSuspendedTransaction {
-						Reputations.select { Reputations.receivedById eq userIdentification.id.toLong() }.count()
+						Reputations.selectAll().where { Reputations.receivedById eq userIdentification.id.toLong() }.count()
 					}
 
 					if (guildId != null && channelId != null) {

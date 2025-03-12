@@ -4,13 +4,11 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import dev.minn.jda.ktx.messages.InlineMessage
-import dev.minn.jda.ktx.messages.MessageCreate
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
@@ -32,8 +30,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.devious.GatewayShardStartupResumeStatus
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.lang.management.ManagementFactory
 import java.time.Instant
 import java.util.*
@@ -96,10 +93,10 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
             val guildCount = context.loritta.lorittaShards.queryGuildCount()
             val executedCommands = context.loritta.transaction {
-                val appCommands = ExecutedApplicationCommandsLog.select {
+                val appCommands = ExecutedApplicationCommandsLog.selectAll().where {
                     ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
                 }.count()
-                val legacyCommands = ExecutedCommandsLog.select {
+                val legacyCommands = ExecutedCommandsLog.selectAll().where {
                     ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
                 }.count()
 
@@ -107,11 +104,11 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             }
 
             val uniqueUsersExecutedCommands = context.loritta.transaction {
-                val appCommands = ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
+                val appCommands = ExecutedApplicationCommandsLog.select(ExecutedApplicationCommandsLog.userId).where { 
                     ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
                 }.groupBy(ExecutedApplicationCommandsLog.userId).toList()
                     .map { it[ExecutedApplicationCommandsLog.userId] }
-                val legacyCommands = ExecutedCommandsLog.slice(ExecutedCommandsLog.userId).select {
+                val legacyCommands = ExecutedCommandsLog.select(ExecutedCommandsLog.userId).where { 
                     ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
                 }.groupBy(ExecutedCommandsLog.userId).toList()
                     .map { it[ExecutedCommandsLog.userId] }

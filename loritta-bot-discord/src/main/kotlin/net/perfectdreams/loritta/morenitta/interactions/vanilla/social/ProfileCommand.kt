@@ -20,8 +20,6 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
-import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -34,44 +32,22 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.profiles.ProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.UserId
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.update
 import java.sql.Connection
 import java.sql.ResultSet
-import java.time.Instant
 import java.util.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.filter
-import kotlin.collections.first
-import kotlin.collections.firstOrNull
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mapOf
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.plusAssign
-import kotlin.collections.set
-import kotlin.collections.setOf
-import kotlin.collections.take
-import kotlin.collections.toMutableList
-import kotlin.collections.toSet
 import kotlin.math.ceil
 
 class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
@@ -230,7 +206,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     // Get bought profile designs
                     val boughtDesignsInternalNames = loritta.pudding.transaction {
-                        ProfileDesignsPayments.slice(ProfileDesignsPayments.profile).select {
+                        ProfileDesignsPayments.select(ProfileDesignsPayments.profile).where { 
                             ProfileDesignsPayments.userId eq matchedUserId
                         }.toSet().map { it[ProfileDesignsPayments.profile].value }
                     }.toMutableList()
@@ -277,7 +253,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 // If not null, we need to validate if the user has the selected profile design!
                 // Get bought profile designs
                 val boughtDesignsInternalNames = loritta.pudding.transaction {
-                    ProfileDesignsPayments.slice(ProfileDesignsPayments.profile).select {
+                    ProfileDesignsPayments.select(ProfileDesignsPayments.profile).where { 
                         ProfileDesignsPayments.userId eq userToBeViewed.idLong
                     }.toSet().map { it[ProfileDesignsPayments.profile].value }
                 }.toMutableList()
@@ -390,8 +366,8 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     setOf()
                 else
                     loritta.pudding.transaction {
-                        GuildProfiles.slice(GuildProfiles.guildId)
-                            .select { GuildProfiles.userId eq context.user.id.toLong() and (GuildProfiles.isInGuild eq true) }
+                        GuildProfiles.select(GuildProfiles.guildId)
+                            .where { GuildProfiles.userId eq context.user.id.toLong() and (GuildProfiles.isInGuild eq true) }
                             .map { it[GuildProfiles.guildId] }
                             .toSet()
                     }

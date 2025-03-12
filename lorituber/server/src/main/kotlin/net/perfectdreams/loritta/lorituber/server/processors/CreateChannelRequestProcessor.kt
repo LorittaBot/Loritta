@@ -8,12 +8,12 @@ import net.perfectdreams.loritta.serializable.lorituber.LoriTuberMail
 import net.perfectdreams.loritta.serializable.lorituber.requests.CreateChannelRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.CreateChannelResponse
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class CreateChannelRequestProcessor : LoriTuberRpcProcessor {
     suspend fun process(request: CreateChannelRequest, currentTick: Long, lastUpdate: Long): CreateChannelResponse {
-        val canCreateANewChannel = LoriTuberChannels.select {
+        val canCreateANewChannel = LoriTuberChannels.selectAll().where {
             LoriTuberChannels.owner eq request.characterId
         }.count() == 0L
 

@@ -22,13 +22,13 @@ import net.perfectdreams.loritta.serializable.config.TrackedTwitchAccount
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import kotlin.math.ceil
 
 class ConfigureTwitchRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/twitch") {
 	override suspend fun onDashboardGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, colorTheme: ColorTheme) {
 		val (twitchAccounts, premiumTrackTwitchAccounts, valueOfTheDonationKeysEnabledOnThisGuild) = loritta.newSuspendedTransaction {
-			val twitchAccounts = TrackedTwitchAccounts.select { TrackedTwitchAccounts.guildId eq guild.idLong }
+			val twitchAccounts = TrackedTwitchAccounts.selectAll().where { TrackedTwitchAccounts.guildId eq guild.idLong }
 				.map {
 					val state = TwitchWebUtils.getTwitchAccountTrackState(it[TrackedTwitchAccounts.twitchUserId])
 
@@ -43,7 +43,7 @@ class ConfigureTwitchRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 					)
 				}
 
-			val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.select {
+			val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.selectAll().where {
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong
 			}.map {
 				PremiumTrackTwitchAccount(

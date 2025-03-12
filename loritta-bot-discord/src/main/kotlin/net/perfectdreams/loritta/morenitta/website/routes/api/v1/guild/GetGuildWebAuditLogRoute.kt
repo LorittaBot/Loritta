@@ -3,18 +3,18 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.AuditLog
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class GetGuildWebAuditLogRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/audit-log") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
@@ -25,7 +25,7 @@ class GetGuildWebAuditLogRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(
 		val entries = jsonArray()
 
 		val auditEntries = loritta.newSuspendedTransaction {
-			AuditLog.select {
+			AuditLog.selectAll().where {
 				AuditLog.guildId eq guildId
 			}.orderBy(AuditLog.executedAt, SortOrder.DESC)
 					.toMutableList()

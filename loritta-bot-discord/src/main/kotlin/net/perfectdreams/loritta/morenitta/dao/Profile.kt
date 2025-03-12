@@ -1,24 +1,18 @@
 package net.perfectdreams.loritta.morenitta.dao
 
+import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.TakingMoreSonhosThanAllowedException
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.ZonedDateTime
 
@@ -47,7 +41,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	 */
 	suspend fun canGetDaily(loritta: LorittaBot): Pair<Boolean, Long> {
 		val receivedDailyAt = loritta.newSuspendedTransaction {
-			Dailies.select { Dailies.receivedById eq userId }
+			Dailies.selectAll().where { Dailies.receivedById eq userId }
 					.orderBy(Dailies.receivedAt, SortOrder.DESC)
 					.limit(1)
 					.firstOrNull()
@@ -70,7 +64,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	 */
 	suspend fun getBannedState(loritta: LorittaBot): ResultRow? {
 		val bannedState = loritta.newSuspendedTransaction {
-			BannedUsers.select {
+			BannedUsers.selectAll().where {
 				BannedUsers.userId eq this@Profile.id.value and
 						(BannedUsers.valid eq true) and
 						(

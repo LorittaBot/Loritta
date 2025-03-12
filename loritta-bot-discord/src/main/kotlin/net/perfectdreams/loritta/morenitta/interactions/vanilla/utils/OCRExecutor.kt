@@ -5,8 +5,8 @@ import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleAPIUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionLanguage
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedGoogleVisionOCRResults
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 object OCRExecutor {
@@ -30,7 +30,7 @@ object OCRExecutor {
 
         // Is this cached?
         val cachedOcrResult = loritta.transaction {
-            CachedGoogleVisionOCRResults.select {
+            CachedGoogleVisionOCRResults.selectAll().where {
                 CachedGoogleVisionOCRResults.url eq url
             }
                 .limit(1)

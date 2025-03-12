@@ -48,13 +48,13 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 val searchingByCardId = focusedOptionValue.startsWith("#") || focusedOptionValue.isEmpty() || focusedOptionValue.toIntOrNull() != null
 
                 return@autocomplete loritta.transaction {
-                    val event = LoriCoolCardsEvents.select {
+                    val event = LoriCoolCardsEvents.selectAll().where {
                         LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                     }.firstOrNull() ?: return@transaction mapOf()
 
                     val countField = LoriCoolCardsUserOwnedCards.card.count()
 
-                    val cardsThatTheUserHas = LoriCoolCardsUserOwnedCards.slice(LoriCoolCardsUserOwnedCards.card, countField).select {
+                    val cardsThatTheUserHas = LoriCoolCardsUserOwnedCards.select(LoriCoolCardsUserOwnedCards.card, countField).where { 
                         LoriCoolCardsUserOwnedCards.user eq it.event.user.idLong and (LoriCoolCardsUserOwnedCards.sticked eq false)
                     }.groupBy(LoriCoolCardsUserOwnedCards.card)
                         .having {
@@ -70,7 +70,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                             searchQuery = "#${searchQuery.toInt().toString().padStart(4, '0')}"
                         }
 
-                        val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.select {
+                        val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.selectAll().where {
                             LoriCoolCardsEventCards.fancyCardId.like(
                                 "${searchQuery.replace("%", "")}%"
                             ) and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsEventCards.id inList cardsThatTheUserHas.keys)
@@ -78,7 +78,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                         val cardIds = cardEventCardsMatchingQuery.map { it[LoriCoolCardsEventCards.id] }
 
-                        val seenCards = LoriCoolCardsSeenCards.select {
+                        val seenCards = LoriCoolCardsSeenCards.selectAll().where {
                             (LoriCoolCardsSeenCards.user eq it.event.user.idLong) and (LoriCoolCardsSeenCards.card inList cardIds)
                         }.map { it[LoriCoolCardsSeenCards.card].value }
 
@@ -94,7 +94,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                         }
                         results
                     } else {
-                        val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.select {
+                        val cardEventCardsMatchingQuery = LoriCoolCardsEventCards.selectAll().where {
                             LoriCoolCardsEventCards.title.like(
                                 "${
                                     focusedOptionValue.replace(
@@ -107,7 +107,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                         val cardIds = cardEventCardsMatchingQuery.map { it[LoriCoolCardsEventCards.id] }
 
-                        val seenCards = LoriCoolCardsSeenCards.select {
+                        val seenCards = LoriCoolCardsSeenCards.selectAll().where {
                             (LoriCoolCardsSeenCards.user eq it.event.user.idLong) and (LoriCoolCardsSeenCards.card inList cardIds)
                         }.map { it[LoriCoolCardsSeenCards.card].value }
 
@@ -171,7 +171,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
         val now = Instant.now()
 
         val result = loritta.transaction {
-            val event = LoriCoolCardsEvents.select {
+            val event = LoriCoolCardsEvents.selectAll().where {
                 LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
             }.firstOrNull() ?: return@transaction GiveStickerResult.EventUnavailable
 
@@ -184,7 +184,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
             if (template.minimumBoosterPacksToTrade > boughtPacks)
                 return@transaction GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, boughtPacks)
 
-            val stickersToBeGiven = LoriCoolCardsEventCards.select {
+            val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
                 LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
             }.toList()
 
@@ -195,7 +195,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 it[LoriCoolCardsEventCards.id].value
             }
 
-            val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+            val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                 LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
             }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
                 .toList()
@@ -283,11 +283,11 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                             // Repeat the checks
                             val finalResult = loritta.transaction {
-                                val event = LoriCoolCardsEvents.select {
+                                val event = LoriCoolCardsEvents.selectAll().where {
                                     LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                                 }.firstOrNull() ?: return@transaction GiveStickerAcceptedTransactionResult.EventUnavailable
 
-                                val stickersToBeGiven = LoriCoolCardsEventCards.select {
+                                val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
                                     LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
                                 }.toList()
 
@@ -298,7 +298,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                     it[LoriCoolCardsEventCards.id].value
                                 }
 
-                                val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).select {
+                                val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                                     LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
                                 }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
                                     .toList()
@@ -338,7 +338,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                                 // Now that we selected the cards, we will mark them as seen + owned
                                 // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
-                                val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers = LoriCoolCardsSeenCards.slice(LoriCoolCardsSeenCards.card).select {
+                                val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers = LoriCoolCardsSeenCards.select(LoriCoolCardsSeenCards.card).where { 
                                     LoriCoolCardsSeenCards.card inList stickerIdsToBeGivenMappedToEventStickerId and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
                                 }.map { it[LoriCoolCardsSeenCards.card].value }
 

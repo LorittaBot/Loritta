@@ -4,14 +4,14 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class YouTubeConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "youtube"
@@ -40,7 +40,7 @@ class YouTubeConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
         return loritta.newSuspendedTransaction {
             val array = JsonArray()
 
-            TrackedYouTubeAccounts.select {
+            TrackedYouTubeAccounts.selectAll().where {
                 TrackedYouTubeAccounts.guildId eq guild.idLong
             }.forEach {
                 array.add(

@@ -3,15 +3,14 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 
 class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
@@ -56,14 +55,14 @@ class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 			val moneySum = Raspadinhas.value.sum()
 
 			val userData = loritta.pudding.transaction {
-				Raspadinhas.slice(userId, ticketCount, moneySum)
-					.selectAll()
+				Raspadinhas.select(userId, ticketCount, moneySum)
 					.groupBy(userId)
 					.having {
 						moneySum.isNotNull()
 					}
 					.orderBy(moneySum, SortOrder.DESC)
-					.limit(5, page * 5)
+					.limit(5)
+					.offset(page * 5)
 					.toMutableList()
 			}
 

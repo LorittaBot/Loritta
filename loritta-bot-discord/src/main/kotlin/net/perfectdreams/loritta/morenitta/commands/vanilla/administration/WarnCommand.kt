@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso", "avisar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
@@ -108,7 +108,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 
 					val warnCount = (
 							loritta.newSuspendedTransaction {
-								Warns.select { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
+								Warns.selectAll().where { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
 							} + 1
 							).toInt()
 

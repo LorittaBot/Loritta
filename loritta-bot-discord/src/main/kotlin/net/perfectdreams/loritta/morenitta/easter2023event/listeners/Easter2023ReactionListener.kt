@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.easter2023event.LorittaEaster2023Event
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class Easter2023ReactionListener(val m: LorittaBot) : ListenerAdapter() {
@@ -39,7 +39,7 @@ class Easter2023ReactionListener(val m: LorittaBot) : ListenerAdapter() {
             val lorittaProfile = m.getLorittaProfile(userId) ?: return@launch
 
             m.newSuspendedTransaction {
-                val isParticipating = Easter2023Players.select {
+                val isParticipating = Easter2023Players.selectAll().where {
                     Easter2023Players.id eq lorittaProfile.id
                 }.count() != 0L
 
@@ -48,7 +48,7 @@ class Easter2023ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                     return@newSuspendedTransaction
 
                 // Does this message have any drop in it?
-                val dropData = Easter2023Drops.select {
+                val dropData = Easter2023Drops.selectAll().where {
                     Easter2023Drops.messageId eq event.messageIdLong
                 }.firstOrNull()
 
@@ -56,7 +56,7 @@ class Easter2023ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                 if (dropData == null || dropData[Easter2023Drops.createdAt].isBefore(Instant.now().minusMillis(900_000)))
                     return@newSuspendedTransaction
 
-                val hasGotTheDrop = (CollectedEaster2023Eggs innerJoin Easter2023Drops).select {
+                val hasGotTheDrop = (CollectedEaster2023Eggs innerJoin Easter2023Drops).selectAll().where {
                     CollectedEaster2023Eggs.user eq event.userIdLong and
                             (Easter2023Drops.messageId eq event.messageIdLong)
                 }.firstOrNull()

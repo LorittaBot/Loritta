@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class UsersService(private val pudding: Pudding) : Service(pudding) {
     companion object {
-        fun validBannedUsersList(currentMillis: Long) = BannedUsers.slice(BannedUsers.userId).select {
+        fun validBannedUsersList(currentMillis: Long) = BannedUsers.select(BannedUsers.userId).where { 
             (BannedUsers.valid eq true) and
                     (
                             BannedUsers.expiresAt.isNull()
@@ -57,7 +57,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             it[Profiles.settings] = profileSettings[UserSettings.id]
         }
 
-        return@transaction Profiles.select { Profiles.id eq insertId }
+        return@transaction Profiles.selectAll().where { Profiles.id eq insertId }
             .limit(1)
             .first() // Should NEVER be null!
             .let {
@@ -84,7 +84,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return a list with all user profiles, or null if it doesn't exist
      */
     suspend fun getUserProfiles(id: List<UserId>) = pudding.transaction {
-        Profiles.select { Profiles.id inList id.map { it.value.toLong() } }
+        Profiles.selectAll().where { Profiles.id inList id.map { it.value.toLong() } }
             .associate { it[Profiles.id].value to PuddingUserProfile.fromRow(it) }
     }
 
@@ -96,7 +96,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      */
     suspend fun getProfileSettingsOfUsers(id: List<UserId>) = pudding.transaction {
         Profiles.innerJoin(UserSettings)
-            .select { Profiles.id inList id.map { it.value.toLong() } }
+            .selectAll().where { Profiles.id inList id.map { it.value.toLong() } }
             .associate { it[Profiles.id].value to PuddingProfileSettings.fromRow(it) }
     }
 
@@ -146,7 +146,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      */
     suspend fun getUserAchievements(id: UserId): List<PuddingAchievement> {
         return pudding.transaction {
-            UserAchievements.select {
+            UserAchievements.selectAll().where {
                 UserAchievements.user eq id.value.toLong()
             }.map { PuddingAchievement.fromRow(it) }
         }
@@ -159,7 +159,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return the user banned state or null if it doesn't exist
      */
     suspend fun getUserBannedState(id: UserId) = pudding.transaction {
-        val bannedState = BannedUsers.select {
+        val bannedState = BannedUsers.selectAll().where {
             BannedUsers.userId eq id.value.toLong() and
                     (BannedUsers.valid eq true) and
                     (

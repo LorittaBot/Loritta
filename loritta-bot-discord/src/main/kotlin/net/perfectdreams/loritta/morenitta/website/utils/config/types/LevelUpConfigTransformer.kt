@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.serializable.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "level"
@@ -100,7 +100,7 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return loritta.newSuspendedTransaction {
             val levelConfig = serverConfig.levelConfig
-            val announcements = LevelAnnouncementConfigs.select {
+            val announcements = LevelAnnouncementConfigs.selectAll().where {
                 LevelAnnouncementConfigs.levelConfig eq (levelConfig?.id?.value ?: -1L)
             }
 
@@ -116,7 +116,7 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 )
             }
 
-            val rolesByExperience = RolesByExperience.select {
+            val rolesByExperience = RolesByExperience.selectAll().where {
                 RolesByExperience.guildId eq guild.idLong
             }
             val rolesByExperienceArray = jsonArray()
@@ -129,7 +129,7 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 )
             }
 
-            val experienceRoleRates = ExperienceRoleRates.select {
+            val experienceRoleRates = ExperienceRoleRates.selectAll().where {
                 ExperienceRoleRates.guildId eq guild.idLong
             }
             val experienceRoleRatesArray = jsonArray()

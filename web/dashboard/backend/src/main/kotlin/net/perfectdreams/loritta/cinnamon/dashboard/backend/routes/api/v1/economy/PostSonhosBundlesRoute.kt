@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class PostSonhosBundlesRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRoute(m, "/api/v1/economy/bundles/sonhos") {
     override suspend fun onAuthenticatedRequest(
@@ -32,7 +32,7 @@ class PostSonhosBundlesRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLog
             val (bundleId) = call.receiveAndDecodeRequest<PostSonhosBundlesRequest>()
 
             val bundle = m.pudding.transaction {
-                SonhosBundles.select {
+                SonhosBundles.selectAll().where {
                     SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
                 }.firstOrNull()
             }
@@ -82,7 +82,7 @@ class PostSonhosBundlesRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLog
                 val (bundleId) = call.receiveAndDecodeRequest<PostSonhosBundlesRequest>()
 
                 val bundle = m.pudding.transaction {
-                    SonhosBundles.select {
+                    SonhosBundles.selectAll().where {
                         SonhosBundles.id eq bundleId and (SonhosBundles.active eq true)
                     }.firstOrNull()
                 }

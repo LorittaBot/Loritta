@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class GrassCutterBadge(val pudding: Pudding) : Badge.LorittaBadge(
@@ -20,7 +20,7 @@ class GrassCutterBadge(val pudding: Pudding) : Badge.LorittaBadge(
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return pudding.transaction {
-			UserAchievements.select { UserAchievements.user eq user.id.toLong() and (UserAchievements.type eq AchievementType.GRASS_CUTTER) }
+			UserAchievements.selectAll().where { UserAchievements.user eq user.id.toLong() and (UserAchievements.type eq AchievementType.GRASS_CUTTER) }
 				.count() == 1L
 		}
 	}

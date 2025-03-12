@@ -1,16 +1,19 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.misc
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.count
+import org.jetbrains.exposed.sql.innerJoin
 
 class DiscordBotListTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl top local"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     companion object {
@@ -44,13 +47,13 @@ class DiscordBotListTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommand
 
             val userData = loritta.newSuspendedTransaction {
                 BotVotes.innerJoin(GuildProfiles, { GuildProfiles.userId }, { userId })
-                    .slice(userId, userIdCount)
-                    .select {
+                    .select(userId, userIdCount)
+                    .where {
                         GuildProfiles.guildId eq guild.idLong and (GuildProfiles.isInGuild eq true)
                     }
                     .groupBy(userId)
                     .orderBy(userIdCount, SortOrder.DESC)
-                    .limit(5, page * 5)
+                    .limit(5).offset(page * 5)
                     .toList()
             }
 

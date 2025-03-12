@@ -42,6 +42,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.sql.Connection
 import java.util.*
 import java.util.concurrent.CancellationException
@@ -188,7 +189,7 @@ class CommandManager(val loritta: LorittaBot) {
 		// Checking custom commands
 		// To avoid unnecessary databases retrievals, we are going to check if the message starts with the server prefix or with Loritta's mention
 		val nashornCommands = loritta.newSuspendedTransaction {
-			CustomGuildCommands.select {
+			CustomGuildCommands.selectAll().where {
 				CustomGuildCommands.guild eq serverConfig.id and (CustomGuildCommands.enabled eq true)
 			}.toList()
 		}.map {

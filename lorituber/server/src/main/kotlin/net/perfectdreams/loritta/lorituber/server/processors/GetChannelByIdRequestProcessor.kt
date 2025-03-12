@@ -4,11 +4,11 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.lorituber.LoriTuberChan
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberChannel
 import net.perfectdreams.loritta.serializable.lorituber.requests.GetChannelByIdRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetChannelByIdResponse
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class GetChannelByIdRequestProcessor : LoriTuberRpcProcessor {
     suspend fun process(request: GetChannelByIdRequest, currentTick: Long, lastUpdate: Long): GetChannelByIdResponse {
-        val channel = LoriTuberChannels.select {
+        val channel = LoriTuberChannels.selectAll().where {
             LoriTuberChannels.id eq request.channelId
         }.firstOrNull() ?: return GetChannelByIdResponse(
             currentTick,

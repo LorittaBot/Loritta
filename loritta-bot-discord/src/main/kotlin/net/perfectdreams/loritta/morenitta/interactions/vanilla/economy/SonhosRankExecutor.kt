@@ -51,14 +51,15 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                     val totalCount = Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
                         .selectAll().where { GuildProfiles.guildId eq guild.id.toLong() and (GuildProfiles.isInGuild eq true) }.count()
 
-                    val profilesInTheQuery = Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
+                    val profilesInTheQuery = Profiles.innerJoin(GuildProfiles, { id }, { userId })
                         .selectAll().where {
                             GuildProfiles.guildId eq guild.id.toLong() and (GuildProfiles.isInGuild eq true) and (GuildProfiles.userId notInSubQuery UsersService.validBannedUsersList(
                                 System.currentTimeMillis()
                             ))
                         }
                         .orderBy(Profiles.money, SortOrder.DESC)
-                        .limit(5, page * 5)
+                        .limit(5)
+                        .offset(page * 5)
                         .toList()
 
                     Pair(totalCount, profilesInTheQuery)
@@ -66,7 +67,8 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                     val profiles = Profiles
                         .selectAll().where { Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) }
                         .orderBy(Profiles.money, SortOrder.DESC)
-                        .limit(5, page * 5)
+                        .limit(5)
+                        .offset(page * 5)
                         .toList()
 
                     Pair(

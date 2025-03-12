@@ -55,14 +55,14 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                 // Serializable is used because REPEATABLE READ will cause issues if someone spam clicks the button, or if the giveaway ends at the same time someone clicks on the button
                 val state = m.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
-                    val giveaway = Giveaways.select { Giveaways.id eq dbId }
+                    val giveaway = Giveaways.selectAll().where { Giveaways.id eq dbId }
                         .firstOrNull() ?: return@transaction GiveawayState.UnknownGiveaway
 
                     // The giveaway has already finished!
                     if (giveaway[Giveaways.finished])
                         return@transaction GiveawayState.AlreadyFinished
 
-                    if (GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value and (GiveawayParticipants.userId eq event.user.idLong) }.count() != 0L)
+                    if (GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value and (GiveawayParticipants.userId eq event.user.idLong) }.count() != 0L)
                         return@transaction GiveawayState.AlreadyParticipating
 
                     // Check if the user has all allowed roles
@@ -124,7 +124,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         val giveawayCreatedAt = giveaway[Giveaways.createdAt]
                         val selfServerEmojiFightBetVictories = giveaway[Giveaways.selfServerEmojiFightBetVictories]
                         if (selfServerEmojiFightBetVictories != null && selfServerEmojiFightBetVictories > 0 && giveawayCreatedAt != null) {
-                            val matchesWon = innerJoin.select {
+                            val matchesWon = innerJoin.selectAll().where {
                                 // Yes, it looks wonky, but it is correct
                                 EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
                             }.count()
@@ -139,7 +139,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                         val selfServerEmojiFightBetLosses = giveaway[Giveaways.selfServerEmojiFightBetLosses]
                         if (selfServerEmojiFightBetLosses != null && selfServerEmojiFightBetLosses > 0 && giveawayCreatedAt != null) {
-                            val matchesLost = innerJoin.select {
+                            val matchesLost = innerJoin.selectAll().where {
                                 // Yes, it looks wonky, but it is correct
                                 EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
                             }.count()
@@ -159,7 +159,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         }
 
                         val participants =
-                            GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
+                            GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
                                 .count()
 
                         return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles)
@@ -198,7 +198,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     val giveawayCreatedAt = giveaway[Giveaways.createdAt]
                     val selfServerEmojiFightBetVictories = giveaway[Giveaways.selfServerEmojiFightBetVictories]
                     if (selfServerEmojiFightBetVictories != null && selfServerEmojiFightBetVictories > 0 && giveawayCreatedAt != null) {
-                        val matchesWon = innerJoin.select {
+                        val matchesWon = innerJoin.selectAll().where {
                             // Yes, it looks wonky, but it is correct
                             EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
                         }.count()
@@ -210,7 +210,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                     val selfServerEmojiFightBetLosses = giveaway[Giveaways.selfServerEmojiFightBetLosses]
                     if (selfServerEmojiFightBetLosses != null && selfServerEmojiFightBetLosses > 0 && giveawayCreatedAt != null) {
-                        val matchesLost = innerJoin.select {
+                        val matchesLost = innerJoin.selectAll().where {
                             // Yes, it looks wonky, but it is correct
                             EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
                         }.count()
@@ -227,7 +227,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     }
 
                     val participants =
-                        GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
+                        GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
                             .count()
 
                     return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles)
@@ -272,7 +272,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                         // First we will try to make the user leave the giveaway
                                         val leftGiveaway = m.transaction {
                                             // Shouldn't ever be null here (unless if it is was deleted somewhere else)
-                                            val giveaway = Giveaways.select { Giveaways.id eq dbId }
+                                            val giveaway = Giveaways.selectAll().where { Giveaways.id eq dbId }
                                                 .first()
 
                                             // Delete the user's entry...
@@ -281,7 +281,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                             }
 
                                             // Get all participants...
-                                            val participants = GiveawayParticipants.select { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
+                                            val participants = GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
                                                 .count()
 
                                             // Parse the allowed roles into JSON objects
@@ -503,7 +503,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                 // Get all participants of the giveaway and create a nice list with all of them
                 val participants = m.transaction {
-                    GiveawayParticipants.select { GiveawayParticipants.giveawayId eq dbId }
+                    GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq dbId }
                         .orderBy(GiveawayParticipants.joinedAt, SortOrder.ASC)
                         .map { it[GiveawayParticipants.userId] }
                 }

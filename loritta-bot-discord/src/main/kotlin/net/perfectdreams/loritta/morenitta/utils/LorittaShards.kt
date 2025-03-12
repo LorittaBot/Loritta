@@ -29,7 +29,7 @@ import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -116,7 +116,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 		// Se não tiver, iremos verificar na database externa
 		val cachedUser = loritta.newSuspendedTransaction {
-			CachedDiscordUsers.select { CachedDiscordUsers.id eq id }
+			CachedDiscordUsers.selectAll().where { CachedDiscordUsers.id eq id }
 				.firstOrNull()
 		}
 
@@ -156,7 +156,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 		// If it doesn't exist, check on the external database
 		val cachedUser = loritta.newSuspendedTransaction {
-			CachedDiscordUsers.select { CachedDiscordUsers.name eq username and (CachedDiscordUsers.discriminator eq discriminator) }
+			CachedDiscordUsers.selectAll().where { CachedDiscordUsers.name eq username and (CachedDiscordUsers.discriminator eq discriminator) }
 				.firstOrNull()
 		}
 
@@ -216,7 +216,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 	suspend fun updateCachedUserData(id: Long, name: String, discriminator: String, globalName: String?, avatarId: String?) {
 		val now = System.currentTimeMillis()
 		loritta.newSuspendedTransaction {
-			val cachedData = CachedDiscordUsers.select { CachedDiscordUsers.id eq id }.firstOrNull()
+			val cachedData = CachedDiscordUsers.selectAll().where { CachedDiscordUsers.id eq id }.firstOrNull()
 
 			if (cachedData != null) {
 				CachedDiscordUsers.update({ CachedDiscordUsers.id eq id }) {

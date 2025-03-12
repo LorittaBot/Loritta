@@ -29,7 +29,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import kotlin.math.ceil
 
 class DeleteTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDashboardRoute(loritta, "/configure/twitch/tracks/{trackId}") {
@@ -41,7 +41,7 @@ class DeleteTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDa
 				TrackedTwitchAccounts.id eq trackId and (TrackedTwitchAccounts.guildId eq guild.idLong)
 			}
 
-			val twitchAccounts = TrackedTwitchAccounts.select { TrackedTwitchAccounts.guildId eq guild.idLong }
+			val twitchAccounts = TrackedTwitchAccounts.selectAll().where { TrackedTwitchAccounts.guildId eq guild.idLong }
 				.map {
 					val state = TwitchWebUtils.getTwitchAccountTrackState(it[TrackedTwitchAccounts.twitchUserId])
 
@@ -56,7 +56,7 @@ class DeleteTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDa
 					)
 				}
 
-			val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.select {
+			val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.selectAll().where {
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong
 			}.map {
 				PremiumTrackTwitchAccount(

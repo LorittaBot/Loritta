@@ -45,7 +45,7 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
             val cheapestPlanWithoutDailyInactivityTaxCost = UserPremiumPlans.getPlansThatDoNotHaveDailyInactivityTax()
                 .minOf { it.cost }
 
-            val usersToBeIgnored = Payments.slice(Payments.userId, moneySum).select {
+            val usersToBeIgnored = Payments.select(Payments.userId, moneySum).where { 
                 Payments.expiresAt greaterEq System.currentTimeMillis()
             }.groupBy(Payments.userId)
                 .having { moneySum greaterEq (cheapestPlanWithoutDailyInactivityTaxCost - 10.00).toBigDecimal() } // It is actually 99.99 but shhhhh
@@ -85,7 +85,7 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
             // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
             m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
-                val notifiedUsers = DailyTaxNotifiedUsers.slice(DailyTaxNotifiedUsers.user).selectAll().map { it[DailyTaxNotifiedUsers.user].value }.toSet()
+                val notifiedUsers = DailyTaxNotifiedUsers.select(DailyTaxNotifiedUsers.user).map { it[DailyTaxNotifiedUsers.user].value }.toSet()
 
                 val bypassDailyTaxUserIds = queryDailyBypassList(m)
 

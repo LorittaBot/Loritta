@@ -43,8 +43,8 @@ object NitroBoostUtils {
 
 				// get premium keys
 				val guildsWithBoostFeature = loritta.newSuspendedTransaction {
-					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, donationKeySum)
-						.select { (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+					(ServerConfigs innerJoin DonationKeys).select(ServerConfigs.id, donationKeySum)
+						.where { (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 						.groupBy(ServerConfigs.id)
 						.having { donationKeySum greaterEq 99.99 }
 						.toMutableList()
@@ -70,7 +70,7 @@ object NitroBoostUtils {
 
 					loritta.newSuspendedTransaction {
 						// Only give the boosting reward if they got daily today
-						val boostersThatGotDailyRecently = Dailies.slice(Dailies.receivedById).select {
+						val boostersThatGotDailyRecently = Dailies.select(Dailies.receivedById).where { 
 							Dailies.receivedById inList boosters.map { it.user.idLong } and (Dailies.receivedAt greaterEq todayAtMidnight)
 						}.groupBy(Dailies.receivedById)
 							.map { it[Dailies.receivedById] }
@@ -88,8 +88,8 @@ object NitroBoostUtils {
 				if (loritta.isMainInstance) {
 					val moneySumId = Payments.money.sum()
 					val mostPayingUsers = loritta.newSuspendedTransaction {
-						Payments.slice(Payments.userId, moneySumId)
-							.select {
+						Payments.select(Payments.userId, moneySumId)
+							.where {
 								Payments.paidAt.isNotNull() and (Payments.expiresAt greaterEq System.currentTimeMillis()) and
 										((Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED))
 							}
@@ -103,7 +103,7 @@ object NitroBoostUtils {
 					val deserveTheRewardUsers = mostPayingUsers.map { it[Payments.userId] }
 
 					loritta.newSuspendedTransaction {
-						for (profile in Profiles.select { Profiles.id inList deserveTheRewardUsers }) {
+						for (profile in Profiles.selectAll().where { Profiles.id inList deserveTheRewardUsers }) {
 							val userPayment = mostPayingUsers.firstOrNull { it[Payments.userId] == profile[Profiles.id].value }
 
 							if (userPayment != null) {

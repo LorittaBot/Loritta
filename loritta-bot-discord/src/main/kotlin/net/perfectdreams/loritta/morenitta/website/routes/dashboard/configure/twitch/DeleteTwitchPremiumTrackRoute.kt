@@ -51,7 +51,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 				PremiumTrackTwitchAccounts.id eq trackId and (PremiumTrackTwitchAccounts.guildId eq guild.idLong)
 			}
 
-			val twitchAccounts = TrackedTwitchAccounts.select { TrackedTwitchAccounts.guildId eq guild.idLong }
+			val twitchAccounts = TrackedTwitchAccounts.selectAll().where { TrackedTwitchAccounts.guildId eq guild.idLong }
 				.map {
 					val state = getTwitchAccountTrackState(it[TrackedTwitchAccounts.twitchUserId])
 
@@ -66,7 +66,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 					)
 				}
 
-			val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.select {
+			val premiumTrackTwitchAccounts = PremiumTrackTwitchAccounts.selectAll().where {
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong
 			}.map {
 				PremiumTrackTwitchAccount(
@@ -140,7 +140,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 
 		// Get from our cache first
 		val results = loritta.transaction {
-			CachedTwitchChannels.select {
+			CachedTwitchChannels.selectAll().where {
 				CachedTwitchChannels.id inList idsToBeQueried and (CachedTwitchChannels.queriedAt greaterEq now24HoursAgo)
 			}.toList()
 		}
@@ -194,7 +194,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 
 		// Get from our cache first
 		val results = loritta.transaction {
-			CachedTwitchChannels.select {
+			CachedTwitchChannels.selectAll().where {
 				CachedTwitchChannels.userLogin inList idsToBeQueried and (CachedTwitchChannels.queriedAt greaterEq now24HoursAgo)
 			}.toList()
 		}
@@ -237,14 +237,14 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 	}
 
 	private fun getTwitchAccountTrackState(twitchUserId: Long): TwitchAccountTrackState {
-		val isAuthorized = AuthorizedTwitchAccounts.select {
+		val isAuthorized = AuthorizedTwitchAccounts.selectAll().where {
 			AuthorizedTwitchAccounts.userId eq twitchUserId
 		}.count() == 1L
 
 		if (isAuthorized)
 			return TwitchAccountTrackState.AUTHORIZED
 
-		val isAlwaysTrack = AlwaysTrackTwitchAccounts.select {
+		val isAlwaysTrack = AlwaysTrackTwitchAccounts.selectAll().where {
 			AlwaysTrackTwitchAccounts.userId eq twitchUserId
 		}.count() == 1L
 
@@ -252,7 +252,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 			return TwitchAccountTrackState.ALWAYS_TRACK_USER
 
 		// Get if the premium track is enabled for this account, we need to check if any of the servers has a premium key enabled too
-		val guildIds = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.guildId).select {
+		val guildIds = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.guildId).where { 
 			PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId
 		}.toList().map { it[PremiumTrackTwitchAccounts.guildId] }
 
@@ -267,7 +267,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 
 			if (plan.maxUnauthorizedTwitchChannels != 0) {
 				// If the plan has a maxUnauthorizedTwitchChannels != 0, now we need to get ALL premium tracks of the guild...
-				val allPremiumTracksOfTheGuild = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
+				val allPremiumTracksOfTheGuild = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
 					PremiumTrackTwitchAccounts.guildId eq guildId
 				}.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
 					.limit(plan.maxUnauthorizedTwitchChannels) // Limited by the max unauthorized count...

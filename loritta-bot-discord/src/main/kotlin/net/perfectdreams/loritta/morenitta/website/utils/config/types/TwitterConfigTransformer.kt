@@ -4,17 +4,17 @@ import com.github.salomonbrys.kotson.array
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedTwitterAccounts
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class TwitterConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "twitter"
@@ -41,7 +41,7 @@ class TwitterConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return loritta.newSuspendedTransaction {
-            val trackedTwitterAccounts = TrackedTwitterAccounts.select {
+            val trackedTwitterAccounts = TrackedTwitterAccounts.selectAll().where {
                 TrackedTwitterAccounts.guildId eq guild.idLong
             }.map {
                 TrackedTwitterAccount(

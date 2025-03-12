@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.CurrentSong
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.SongPlaylist
 import net.perfectdreams.loritta.morenitta.website.routes.httpapidocs.findCurrentSong
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.io.File
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -49,18 +49,18 @@ class Lorifetch(private val loritta: LorittaBot) {
                     .toKotlinInstant()
 
                 val (executedCommands, uniqueUsersExecutedCommands) = loritta.transaction {
-                    val appCommands = ExecutedApplicationCommandsLog.select {
+                    val appCommands = ExecutedApplicationCommandsLog.selectAll().where {
                         ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
                     }.count()
-                    val legacyCommands = ExecutedCommandsLog.select {
+                    val legacyCommands = ExecutedCommandsLog.selectAll().where {
                         ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
                     }.count()
 
-                    val uniqueAppCommands = ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
+                    val uniqueAppCommands = ExecutedApplicationCommandsLog.select(ExecutedApplicationCommandsLog.userId).where { 
                         ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
                     }.groupBy(ExecutedApplicationCommandsLog.userId).toList()
                         .map { it[ExecutedApplicationCommandsLog.userId] }
-                    val uniqueLegacyCommands = ExecutedCommandsLog.slice(ExecutedCommandsLog.userId).select {
+                    val uniqueLegacyCommands = ExecutedCommandsLog.select(ExecutedCommandsLog.userId).where { 
                         ExecutedCommandsLog.sentAt greaterEq since.toEpochMilliseconds()
                     }.groupBy(ExecutedCommandsLog.userId).toList()
                         .map { it[ExecutedCommandsLog.userId] }

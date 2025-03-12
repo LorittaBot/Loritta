@@ -1,15 +1,14 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.misc
 
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.selectAll
 
 class DiscordBotListTopCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl top"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     companion object {
@@ -42,11 +41,11 @@ class DiscordBotListTopCommand(loritta: LorittaBot): DiscordAbstractCommandBase(
             val userIdCount = BotVotes.userId.count()
 
             val userData = loritta.newSuspendedTransaction {
-                BotVotes.slice(userId, userIdCount)
-                    .selectAll()
+                BotVotes.select(userId, userIdCount)
                     .groupBy(userId)
                     .orderBy(userIdCount, SortOrder.DESC)
-                    .limit(5, page * 5)
+                    .limit(5)
+                    .offset(page * 5)
                     .toList()
             }
 

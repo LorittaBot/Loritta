@@ -203,7 +203,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     val raffleTicketsCount = RaffleTickets.userId.count()
                     val participants = loritta.transaction {
-                        RaffleTickets.slice(RaffleTickets.userId, raffleTicketsCount).select {
+                        RaffleTickets.select(RaffleTickets.userId, raffleTicketsCount).where { 
                             RaffleTickets.raffle eq raffleId
                         }.groupBy(RaffleTickets.userId)
                             .toList()
@@ -268,7 +268,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     val hook = context.deferChannelMessage(true)
 
                     val addedNotification = loritta.transaction {
-                        val alreadyHasNotification = UserAskedRaffleNotifications.select {
+                        val alreadyHasNotification = UserAskedRaffleNotifications.selectAll().where {
                             UserAskedRaffleNotifications.userId eq context.user.idLong and (UserAskedRaffleNotifications.raffle eq raffleId)
                         }.count() != 0L
 
@@ -586,10 +586,11 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             page: Long
         ): suspend InlineMessage<*>.() -> (Unit) {
             val (raffles, totalRaffles) = loritta.transaction {
-                val raffles = Raffles.leftJoin(RaffleTickets, { Raffles.winnerTicket }, { RaffleTickets.id }).selectAll()
+                val raffles = Raffles.leftJoin(RaffleTickets, { winnerTicket }, { id }).selectAll()
                     .where { Raffles.endedAt.isNotNull() and (Raffles.raffleType eq raffleType) }
                     .orderBy(Raffles.startedAt to SortOrder.DESC)
-                    .limit(RAFFLES_PER_PAGE, page * RAFFLES_PER_PAGE)
+                    .limit(RAFFLES_PER_PAGE)
+                    .offset(page * RAFFLES_PER_PAGE)
                     .toList()
 
                 val totalResults = Raffles

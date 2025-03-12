@@ -209,7 +209,8 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                 Reminder
                     .find { Reminders.userId eq context.user.idLong }
                     .orderBy(Reminders.remindAt to SortOrder.ASC) // Sort older reminders -> new reminders
-                    .limit(REMINDERS_PER_PAGE, (page * REMINDERS_PER_PAGE).toLong())
+                    .limit(REMINDERS_PER_PAGE)
+                    .offset((page * REMINDERS_PER_PAGE).toLong())
                     .toMutableList()
             }
 

@@ -1,32 +1,31 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import com.google.common.cache.CacheBuilder
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.edit
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
-
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.common.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.GACampaigns
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.util.concurrent.TimeUnit
@@ -68,13 +67,13 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 				buyRaspadinha(context, context.lorittaUser.profile)
 			} else {
 				val raspadinhaCount = loritta.pudding.transaction {
-					Raspadinhas.select {
+					Raspadinhas.selectAll().where {
 						Raspadinhas.receivedById eq context.user.idLong
 					}.count()
 				}
 				val earnings = Raspadinhas.value.sum()
 				val raspadinhaEarnings = loritta.pudding.transaction {
-					Raspadinhas.slice(Raspadinhas.receivedById, earnings).select {
+					Raspadinhas.select(Raspadinhas.receivedById, earnings).where { 
 						Raspadinhas.receivedById eq context.user.idLong
 					}.groupBy(Raspadinhas.receivedById)
 						.firstOrNull()
@@ -268,7 +267,7 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 		val mutex = mutexes.getOrPut(context.user.idLong, { Mutex() })
 		mutex.withLock {
 			val raspadinha = loritta.pudding.transaction {
-				Raspadinhas.select {
+				Raspadinhas.selectAll().where {
 					Raspadinhas.id eq id
 				}.firstOrNull()
 			}

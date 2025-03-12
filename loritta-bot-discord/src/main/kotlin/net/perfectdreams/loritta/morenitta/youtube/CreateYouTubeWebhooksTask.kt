@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.gson
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.upsert
 import java.util.concurrent.atomic.AtomicInteger
@@ -31,8 +30,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : RunnableCoroutine {
 		try {
 			// Servidores que usam o módulo do YouTube
 			val allChannelIds = loritta.pudding.transaction {
-				TrackedYouTubeAccounts.slice(TrackedYouTubeAccounts.youTubeChannelId)
-					.selectAll()
+				TrackedYouTubeAccounts.select(TrackedYouTubeAccounts.youTubeChannelId)
 					.groupBy(TrackedYouTubeAccounts.youTubeChannelId)
 					.toMutableList()
 			}
@@ -43,7 +41,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : RunnableCoroutine {
 
 			if (!fileLoaded) {
 				val youTubeWebhooksData = loritta.newSuspendedTransaction {
-					MiscellaneousData.select { MiscellaneousData.id eq DATA_KEY }
+					MiscellaneousData.selectAll().where { MiscellaneousData.id eq DATA_KEY }
 						.limit(1)
 						.firstOrNull()
 						?.get(MiscellaneousData.data)

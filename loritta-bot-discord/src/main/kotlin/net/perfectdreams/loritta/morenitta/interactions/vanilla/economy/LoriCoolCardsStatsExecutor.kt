@@ -65,27 +65,27 @@ class LoriCoolCardsStatsExecutor(val loritta: LorittaBot, private val loriCoolCa
             }.firstOrNull() ?: return@transaction EventStatsResult.AlbumDoesNotExist
 
             val userCountDistinctField = LoriCoolCardsUserOwnedCards.user.countDistinct()
-            val totalUsersParticipating = LoriCoolCardsUserOwnedCards.slice(userCountDistinctField).select {
+            val totalUsersParticipating = LoriCoolCardsUserOwnedCards.select(userCountDistinctField).where { 
                 LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]
             }.first()[userCountDistinctField]
 
-            val stickersInCirculation = LoriCoolCardsUserOwnedCards.select {
+            val stickersInCirculation = LoriCoolCardsUserOwnedCards.selectAll().where {
                 LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.sticked eq false)
             }.count()
 
-            val stickedStickers = LoriCoolCardsUserOwnedCards.select {
+            val stickedStickers = LoriCoolCardsUserOwnedCards.selectAll().where {
                 LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.sticked eq true)
             }.count()
 
-            val albumsFinished = LoriCoolCardsFinishedAlbumUsers.select {
+            val albumsFinished = LoriCoolCardsFinishedAlbumUsers.selectAll().where {
                 LoriCoolCardsFinishedAlbumUsers.event eq event[LoriCoolCardsEvents.id]
             }.count()
 
-            val totalBoosterPacksBought = LoriCoolCardsUserBoughtBoosterPacks.select {
+            val totalBoosterPacksBought = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                 LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id]
             }.count()
 
-            val userBoosterPacksBought = LoriCoolCardsUserBoughtBoosterPacks.select {
+            val userBoosterPacksBought = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                 LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong)
             }.count()
 

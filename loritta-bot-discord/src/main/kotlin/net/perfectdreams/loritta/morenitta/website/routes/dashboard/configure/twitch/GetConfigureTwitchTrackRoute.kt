@@ -51,7 +51,7 @@ class GetConfigureTwitchTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocal
 				.sumOf { it.value }
 				.let { ceil(it) }
 
-			val premiumTracksCount = PremiumTrackTwitchAccounts.select {
+			val premiumTracksCount = PremiumTrackTwitchAccounts.selectAll().where {
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong
 			}.count()
 

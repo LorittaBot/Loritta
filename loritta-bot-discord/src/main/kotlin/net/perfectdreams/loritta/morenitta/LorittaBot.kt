@@ -1295,7 +1295,7 @@ class LorittaBot(
 
 	suspend fun loadActivity(): ActivityUpdater.ActivityWrapper? {
 		val currentActiveLorittaAvatarRR = transaction {
-			FanArtsExtravaganza.select {
+			FanArtsExtravaganza.selectAll().where {
 				FanArtsExtravaganza.active eq true and (FanArtsExtravaganza.enabled eq true)
 			}.firstOrNull()
 		}
@@ -1308,7 +1308,7 @@ class LorittaBot(
 			// Default avatar, use the default activity
 			val now = Instant.now()
 			val gatewayActivity = newSuspendedTransaction {
-				GatewayActivities.select {
+				GatewayActivities.selectAll().where {
 					GatewayActivities.startsAt lessEq Instant.now() and (GatewayActivities.endsAt greaterEq now)
 				}.orderBy(Pair(GatewayActivities.startsAt, SortOrder.DESC), Pair(GatewayActivities.priority, SortOrder.DESC))
 					.limit(1)

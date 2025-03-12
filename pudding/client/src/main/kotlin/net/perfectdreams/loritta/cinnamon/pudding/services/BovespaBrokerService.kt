@@ -30,7 +30,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
      * @return a list of all tickers
      */
     suspend fun getAllTickers() = pudding.transaction {
-        TickerPrices.select { TickerPrices.enabled eq true }
+        TickerPrices.selectAll().where { TickerPrices.enabled eq true }
             .map {
                 BrokerTickerInformation(
                     it[TickerPrices.ticker].value,
@@ -78,8 +78,8 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
         val averagePrice = BoughtStocks.price.avg()
 
         BoughtStocks
-            .slice(BoughtStocks.ticker, stockCount, sumPrice, averagePrice)
-            .select {
+            .select(BoughtStocks.ticker, stockCount, sumPrice, averagePrice)
+            .where {
                 BoughtStocks.user eq userId
             }.groupBy(BoughtStocks.ticker)
             .map {
@@ -116,7 +116,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
             checkIfTickerDataIsStale(tickerInformation)
 
             val userProfile = pudding.users.getUserProfile(UserId(userId)) ?: error("User does not have a profile!")
-            val currentStockCount = BoughtStocks.select {
+            val currentStockCount = BoughtStocks.selectAll().where {
                 BoughtStocks.user eq userProfile.id.value.toLong()
             }.count()
 
@@ -192,7 +192,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
             checkIfTickerIsInactive(tickerInformation)
             checkIfTickerDataIsStale(tickerInformation)
 
-            val selfStocks = BoughtStocks.select {
+            val selfStocks = BoughtStocks.selectAll().where {
                 BoughtStocks.user eq userId and (BoughtStocks.ticker eq tickerId)
             }.toList()
 

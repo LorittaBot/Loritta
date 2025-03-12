@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.serializable.RaffleStatus
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.countDistinct
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
@@ -23,32 +23,32 @@ class GetRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 		val raffleStatus = loritta.raffleResultsMutex.withLock {
 			loritta.transaction {
 				// Get current active raffle based on the selected raffle type
-				val currentRaffle = Raffles.select {
+				val currentRaffle = Raffles.selectAll().where {
 					Raffles.endedAt.isNull() and (Raffles.raffleType eq raffleType)
 				}.orderBy(Raffles.endsAt, SortOrder.DESC)
 					.limit(1)
 					.first()
 
-				val previousRaffle = Raffles.select {
+				val previousRaffle = Raffles.selectAll().where {
 					Raffles.endedAt.isNotNull() and (Raffles.raffleType eq raffleType)
 				}.orderBy(Raffles.endedAt, SortOrder.DESC)
 					.limit(1)
 					.firstOrNull()
 
-				val currentTickets = RaffleTickets.select {
+				val currentTickets = RaffleTickets.selectAll().where {
 					RaffleTickets.raffle eq currentRaffle[Raffles.id]
 				}.count()
 
 				val countUserDistinct = RaffleTickets.userId.countDistinct()
 				val totalUsersInTheRaffle =
-					RaffleTickets.slice(countUserDistinct).select { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
+					RaffleTickets.select(countUserDistinct).where { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
 						.first()[countUserDistinct]
 
 				if (previousRaffle != null) {
 					val winnerTicketId = previousRaffle[Raffles.winnerTicket]
 
 					if (winnerTicketId != null) {
-						val previousRaffleWinnerTicket = RaffleTickets.select {
+						val previousRaffleWinnerTicket = RaffleTickets.selectAll().where {
 							RaffleTickets.id eq winnerTicketId
 						}.limit(1)
 							.first()

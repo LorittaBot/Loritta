@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredRaffleTicketsTransaction
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import java.sql.Timestamp
 import java.time.Instant
@@ -48,7 +48,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 			loritta.transaction {
 				// The "invokedAt" is used to only get raffles triggered WHEN the user used the command
 				// This way it avoids issues when Loritta took too long to receive this request, which would cause Loritta to get the new raffle instead of the "current-now-old" raffle.
-				val currentRaffle = Raffles.select {
+				val currentRaffle = Raffles.selectAll().where {
 					Raffles.raffleType eq type and (Raffles.endedAt.isNull()) and (Raffles.endsAt greaterEq invokedAt) and (Raffles.startedAt lessEq invokedAt)
 				}.firstOrNull()
 
@@ -60,7 +60,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 				}
 
 				// Get how many tickets the user has in the current raffle
-				val currentUserTicketQuantity = RaffleTickets.select {
+				val currentUserTicketQuantity = RaffleTickets.selectAll().where {
 					RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq userId)
 				}.count()
 

@@ -37,7 +37,7 @@ class PutTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocaliz
 		val trackId = postParams["trackId"]?.toLong()
 
 		val result = loritta.newSuspendedTransaction {
-			val isAlreadyAdded = PremiumTrackTwitchAccounts.select {
+			val isAlreadyAdded = PremiumTrackTwitchAccounts.selectAll().where {
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong and (PremiumTrackTwitchAccounts.twitchUserId eq twitchUserId)
 			}.count() == 1L
 
@@ -51,7 +51,7 @@ class PutTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocaliz
 
 			val plan = ServerPremiumPlans.getPlanFromValue(valueOfTheDonationKeysEnabledOnThisGuild)
 
-			val premiumTracksOfTheGuildCount = PremiumTrackTwitchAccounts.slice(PremiumTrackTwitchAccounts.twitchUserId).select {
+			val premiumTracksOfTheGuildCount = PremiumTrackTwitchAccounts.select(PremiumTrackTwitchAccounts.twitchUserId).where { 
 				PremiumTrackTwitchAccounts.guildId eq guild.idLong
 			}.orderBy(PremiumTrackTwitchAccounts.addedAt, SortOrder.ASC) // Ordered by the added at date...
 				.count()
@@ -103,7 +103,7 @@ class PutTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLocaliz
 						.sumOf { it.value }
 						.let { ceil(it) }
 
-					val premiumTracksCount = PremiumTrackTwitchAccounts.select {
+					val premiumTracksCount = PremiumTrackTwitchAccounts.selectAll().where {
 						PremiumTrackTwitchAccounts.guildId eq guild.idLong
 					}.count()
 

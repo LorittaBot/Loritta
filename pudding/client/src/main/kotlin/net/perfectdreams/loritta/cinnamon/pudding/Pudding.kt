@@ -145,7 +145,7 @@ class Pudding(
             Database.connect(
                 dataSource,
                 databaseConfig = DatabaseConfig {
-                    defaultRepetitionAttempts = 5
+                    this.defaultMaxAttempts = 5
                     defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
                     // "A table that is created with a keyword identifier now logs a warning that the identifier's case may be lost when it is automatically quoted in generated SQL."
                     // "DatabaseConfig now includes the property preserveKeywordCasing, which can be set to true to remove these warnings and to ensure that the identifier matches the exact case used."
@@ -403,7 +403,7 @@ class Pudding(
 
                 if (checkIfTableExists(SchemaVersion)) {
                     val schemaVersion =
-                        SchemaVersion.slice(SchemaVersion.version).select { SchemaVersion.id eq SCHEMA_ID }
+                        SchemaVersion.select(SchemaVersion.version).where { SchemaVersion.id eq SCHEMA_ID }
                             .firstOrNull()
                             ?.get(SchemaVersion.version)
 

@@ -9,11 +9,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.CollectedChristmas2022Points
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.Christmas2022SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
@@ -51,7 +49,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
             val lorittaProfile = m.getLorittaProfile(userId) ?: return@launch
 
             m.newSuspendedTransaction {
-                val isParticipating = Christmas2022Players.select {
+                val isParticipating = Christmas2022Players.selectAll().where {
                     Christmas2022Players.id eq lorittaProfile.id
                 }.count() != 0L
 
@@ -60,7 +58,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                     return@newSuspendedTransaction
 
                 // Does this message have any drop in it?
-                val dropData = Christmas2022Drops.select {
+                val dropData = Christmas2022Drops.selectAll().where {
                     Christmas2022Drops.messageId eq event.messageIdLong
                 }.firstOrNull()
 
@@ -68,7 +66,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                 if (dropData == null || dropData[Christmas2022Drops.createdAt].isBefore(Instant.now().minusMillis(900_000)))
                     return@newSuspendedTransaction
 
-                val hasGotTheDrop = (CollectedChristmas2022Points innerJoin Christmas2022Drops).select {
+                val hasGotTheDrop = (CollectedChristmas2022Points innerJoin Christmas2022Drops).selectAll().where {
                     CollectedChristmas2022Points.user eq event.userIdLong and
                             (Christmas2022Drops.messageId eq event.messageIdLong)
                 }.firstOrNull()
@@ -88,7 +86,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
 
                 // How many points do they now have?
                 val pointsSumColumn = CollectedChristmas2022Points.points.sum()
-                val pointsSum = CollectedChristmas2022Points.slice(pointsSumColumn).select {
+                val pointsSum = CollectedChristmas2022Points.select(pointsSumColumn).where { 
                     CollectedChristmas2022Points.user eq userId
                 }.first()[pointsSumColumn]
 
@@ -134,7 +132,7 @@ class ReactionListener(val m: LorittaBot) : ListenerAdapter() {
                         }
                         is LorittaChristmas2022Event.EventReward.ProfileDesignReward -> {
                             val internalName = reward.profileName
-                            val alreadyHasTheBackground = ProfileDesignsPayments.select { ProfileDesignsPayments.userId eq userId and (ProfileDesignsPayments.profile eq internalName) }
+                            val alreadyHasTheBackground = ProfileDesignsPayments.selectAll().where { ProfileDesignsPayments.userId eq userId and (ProfileDesignsPayments.profile eq internalName) }
                                 .count() != 0L
 
                             if (!alreadyHasTheBackground) {

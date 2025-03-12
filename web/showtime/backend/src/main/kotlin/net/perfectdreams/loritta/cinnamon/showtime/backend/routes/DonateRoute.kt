@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.showtime.backend.views.DonateView
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.temmiewebsession.lorittaSession
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class DonateRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.PREMIUM) {
     override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
@@ -24,7 +24,7 @@ class DonateRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
             if (userIdentification != null) {
                 val donationKeys = loritta.pudding.transaction {
                     // Pegar keys ativas
-                    DonationKeys.select {
+                    DonationKeys.selectAll().where {
                         (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) and (DonationKeys.userId eq userIdentification.id.toLong())
                     }.toMutableList()
                 }

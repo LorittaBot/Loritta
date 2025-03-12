@@ -23,6 +23,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jsoup.Jsoup
 import java.net.URL
 
@@ -108,7 +109,7 @@ class GetChannelInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/youtube/
 					CachedYouTubeChannelIds.channelId eq channelId and (CachedYouTubeChannelIds.retrievedAt lessEq System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS)
 				}
 				// E agora pegar o canal!
-				CachedYouTubeChannelIds.select {
+				CachedYouTubeChannelIds.selectAll().where {
 					CachedYouTubeChannelIds.channelId eq channelId
 				}.firstOrNull()
 			}

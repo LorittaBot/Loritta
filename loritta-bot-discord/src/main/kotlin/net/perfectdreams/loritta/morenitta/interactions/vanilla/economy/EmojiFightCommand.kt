@@ -344,11 +344,11 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 // The EmojiFightParticipants only includes matches that DID end up happening, matches that failed to be executed (like one player matches) are not included
                 // We use the innerJoin variable BECAUSE we want to get ONLY matches that had sonhos involved
                 // 0 entry price = just for fun, and we don't want to include these!
-                val matchesPlayed = innerJoin.select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }.count()
+                val matchesPlayed = innerJoin.selectAll().where { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }.count()
                 if (matchesPlayed == 0L)
                     return@transaction QueryResult.NotFound
 
-                val matchesWon = innerJoin.select {
+                val matchesWon = innerJoin.selectAll().where {
                     // Yes, it looks wonky, but it is correct
                     EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0)
                 }.count()
@@ -360,13 +360,13 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 var sonhosLost = 0L
                 var sonhosLostToTaxes = 0L
 
-                val matchesThatWeParticipated = innerJoin.select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }.toList()
+                val matchesThatWeParticipated = innerJoin.selectAll().where { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.entryPrice neq 0) }.toList()
                 val matchCountColumn = EmojiFightParticipants.match.count()
                 // We need to do this like this to :sparkles: optimize the query :sparkles:, if not then it is TOO SLOW
                 val allParticipantsOfTheMatchesThatWeParticipated = matchesThatWeParticipated.chunked(65_535) { matchesThatWeParticipatedChunked ->
                    EmojiFightParticipants
-                        .slice(EmojiFightParticipants.match, matchCountColumn)
-                        .select { EmojiFightParticipants.match inList matchesThatWeParticipatedChunked.map { it[EmojiFightMatches.id] } }
+                        .select(EmojiFightParticipants.match, matchCountColumn)
+                        .where { EmojiFightParticipants.match inList matchesThatWeParticipatedChunked.map { it[EmojiFightMatches.id] } }
                         .groupBy(EmojiFightParticipants.match)
                         .toList()
                 }.flatten()
@@ -392,8 +392,8 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 }
                 val totalSonhos = sonhosEarned - sonhosLost
                 val emojiCount = EmojiFightParticipants.emoji.count()
-                val bestBichano = innerJoin.slice(EmojiFightParticipants.emoji, emojiCount)
-                    .select { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) }
+                val bestBichano = innerJoin.select(EmojiFightParticipants.emoji, emojiCount)
+                    .where { EmojiFightParticipants.user eq user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) }
                     .groupBy(EmojiFightParticipants.emoji)
                     .orderBy(emojiCount, SortOrder.DESC)
                     .limit(1)

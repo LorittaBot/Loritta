@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.misc
 
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
-import org.jetbrains.exposed.sql.select
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import org.jetbrains.exposed.sql.selectAll
 
 class DiscordBotListStatusCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl status", "upvote status"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     companion object {
@@ -18,7 +18,7 @@ class DiscordBotListStatusCommand(loritta: LorittaBot): DiscordAbstractCommandBa
             val user = user(0) ?: this.message.author
 
             val votes = loritta.newSuspendedTransaction {
-                BotVotes.select { BotVotes.userId eq user.id }.count()
+                BotVotes.selectAll().where { BotVotes.userId eq user.id }.count()
             }
 
             if (user == this.message.author) {

@@ -1,17 +1,16 @@
 package net.perfectdreams.loritta.morenitta.profile
 
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Marriage
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
-import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 object ProfileUtils {
     /**
@@ -48,7 +47,7 @@ object ProfileUtils {
      * @return the reputation count
      */
     suspend fun getReputationCount(loritta: LorittaBot, userInfo: ProfileUserInfoData) = loritta.newSuspendedTransaction {
-        Reputations.select { Reputations.receivedById eq userInfo.id.toLong() }.count()
+        Reputations.selectAll().where { Reputations.receivedById eq userInfo.id.toLong() }.count()
     }
 
     /**
@@ -61,7 +60,7 @@ object ProfileUtils {
         // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any sonhos, we just return null! :3
         if (userProfile.money >= 100_000L)
             loritta.newSuspendedTransaction {
-                Profiles.select { Profiles.money greaterEq userProfile.money }.count()
+                Profiles.selectAll().where { Profiles.money greaterEq userProfile.money }.count()
             } else null
 
     /**
@@ -84,7 +83,7 @@ object ProfileUtils {
     suspend fun getLocalExperiencePosition(loritta: LorittaBot, localProfile: GuildProfile?) = if (localProfile != null && localProfile.xp != 0L) {
         // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any local XP, we just return null! :3
         loritta.newSuspendedTransaction {
-            GuildProfiles.select { (GuildProfiles.guildId eq localProfile.guildId) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+            GuildProfiles.selectAll().where { (GuildProfiles.guildId eq localProfile.guildId) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
         }
     } else {
         null

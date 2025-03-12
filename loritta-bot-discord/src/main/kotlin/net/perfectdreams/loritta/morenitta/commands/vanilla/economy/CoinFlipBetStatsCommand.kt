@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.serializable.SonhosPaymentReason
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
+import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import java.math.BigDecimal
 
@@ -44,14 +44,14 @@ class CoinFlipBetStatsCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			}
 
 			val winCount = loritta.newSuspendedTransaction {
-				SonhosTransaction.select {
+				SonhosTransaction.selectAll().where {
 					(SonhosTransaction.receivedBy eq checkStatsOfUser.idLong) and
 							(SonhosTransaction.reason eq SonhosPaymentReason.COIN_FLIP_BET)
 				}.count()
 			}
 
 			val loseCount = loritta.newSuspendedTransaction {
-				SonhosTransaction.select {
+				SonhosTransaction.selectAll().where {
 					(SonhosTransaction.givenBy eq checkStatsOfUser.idLong) and
 							(SonhosTransaction.reason eq SonhosPaymentReason.COIN_FLIP_BET)
 				}.count()
@@ -65,14 +65,14 @@ class CoinFlipBetStatsCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
 			val sumField = SonhosTransaction.quantity.sum()
 			val winSum = loritta.newSuspendedTransaction {
-				SonhosTransaction.slice(sumField).select {
+				SonhosTransaction.select(sumField).where { 
 					(SonhosTransaction.receivedBy eq checkStatsOfUser.idLong) and
 							(SonhosTransaction.reason eq SonhosPaymentReason.COIN_FLIP_BET)
 				}.firstOrNull()?.get(sumField)
 			} ?: BigDecimal.ZERO
 
 			val loseSum = loritta.newSuspendedTransaction {
-				SonhosTransaction.slice(sumField).select {
+				SonhosTransaction.select(sumField).where { 
 					(SonhosTransaction.givenBy eq checkStatsOfUser.idLong) and
 							(SonhosTransaction.reason eq SonhosPaymentReason.COIN_FLIP_BET)
 				}.firstOrNull()?.get(sumField)

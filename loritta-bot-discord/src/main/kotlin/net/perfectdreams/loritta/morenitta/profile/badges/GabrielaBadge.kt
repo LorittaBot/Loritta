@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
 class GabrielaBadge(val pudding: Pudding) : Badge.LorittaBadge(
@@ -20,7 +20,7 @@ class GabrielaBadge(val pudding: Pudding) : Badge.LorittaBadge(
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		val playerResult = pudding.transaction {
-			Birthday2020Players.select { Birthday2020Players.user eq profile.id }
+			Birthday2020Players.selectAll().where { Birthday2020Players.user eq profile.id }
 					.firstOrNull()
 		} ?: return false
 
@@ -28,7 +28,7 @@ class GabrielaBadge(val pudding: Pudding) : Badge.LorittaBadge(
 			return false
 
 		val count = pudding.transaction {
-			CollectedBirthday2020Points.select {
+			CollectedBirthday2020Points.selectAll().where {
 				CollectedBirthday2020Points.user eq user.id.toLong()
 			}.count()
 		}

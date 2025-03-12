@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -47,18 +48,18 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
         // Load the current active event
         val result = loritta.transaction {
             // First we will get the active cards event to get the album template
-            val event = LoriCoolCardsEvents.select {
+            val event = LoriCoolCardsEvents.selectAll().where {
                 LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
             }.firstOrNull() ?: return@transaction DuplicateStickersResult.EventUnavailable
 
-            val eventStickers = LoriCoolCardsEventCards.select {
+            val eventStickers = LoriCoolCardsEventCards.selectAll().where {
                 LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
             }.toList()
 
             // First we get the stickers that we have sticked
             val stickersThatYouHaveStickedIds = LoriCoolCardsUserOwnedCards
-                .slice(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
-                .select {
+                .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
+                .where {
                     LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userThatWillBeLookedUp.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq true)
                 }
                 .groupBy(LoriCoolCardsUserOwnedCards.card)
@@ -67,8 +68,8 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
 
             // Then we get the stickers that aren't sticked, with their counts
             val stickersThatYouHaveInYourInventoryWithTheirCountsIds = LoriCoolCardsUserOwnedCards
-                .slice(LoriCoolCardsUserOwnedCards.card, stickerCountColumn)
-                .select {
+                .select(LoriCoolCardsUserOwnedCards.card, stickerCountColumn)
+                .where {
                     LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userThatWillBeLookedUp.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false)
                 }
                 .groupBy(LoriCoolCardsUserOwnedCards.card)

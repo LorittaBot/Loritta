@@ -91,7 +91,7 @@ class GetGuildUserEmojiFightVictoriesRoute(m: LorittaBot) : LoriPublicAPIGuildRo
                 .where(query)
                 .groupBy(EmojiFightParticipants.user)
                 .orderBy(winCount, SortOrder.DESC)
-                .limit(limit, offset)
+                .offset(offset).limit(limit)
                 .toList()
                 .firstOrNull()
         }

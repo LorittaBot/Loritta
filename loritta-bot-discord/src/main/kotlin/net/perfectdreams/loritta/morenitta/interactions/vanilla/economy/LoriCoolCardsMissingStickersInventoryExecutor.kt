@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class LoriCoolCardsMissingStickersInventoryExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -47,17 +47,17 @@ class LoriCoolCardsMissingStickersInventoryExecutor(val loritta: LorittaBot, pri
         // Load the current active event
         val result = loritta.transaction {
             // First we will get the active cards event to get the album template
-            val event = LoriCoolCardsEvents.select {
+            val event = LoriCoolCardsEvents.selectAll().where {
                 LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
             }.firstOrNull() ?: return@transaction MissingStickersResult.EventUnavailable
 
-            val eventStickers = LoriCoolCardsEventCards.select {
+            val eventStickers = LoriCoolCardsEventCards.selectAll().where {
                 LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
             }.toList()
 
             val stickersThatYouHaveInYourInventory = LoriCoolCardsUserOwnedCards
-                .slice(LoriCoolCardsUserOwnedCards.card, stickerCountColumn)
-                .select {
+                .select(LoriCoolCardsUserOwnedCards.card, stickerCountColumn)
+                .where {
                     LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsUserOwnedCards.user eq userThatWillBeLookedUp.idLong)
                 }
                 .groupBy(LoriCoolCardsUserOwnedCards.card)

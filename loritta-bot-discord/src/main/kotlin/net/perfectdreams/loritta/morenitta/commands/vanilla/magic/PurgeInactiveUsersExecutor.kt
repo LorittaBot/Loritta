@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 object PurgeInactiveUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "purge inactive users <now>"
@@ -21,7 +21,7 @@ object PurgeInactiveUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 			return@task false
 
 		val inactiveUsersQuery = loritta.pudding.transaction {
-			Profiles.select {
+			Profiles.selectAll().where {
 				Profiles.money eq 0 and (Profiles.xp eq 0) and (Profiles.lastMessageSentAt eq 0) and (Profiles.marriage.isNull())
 			}
 		}

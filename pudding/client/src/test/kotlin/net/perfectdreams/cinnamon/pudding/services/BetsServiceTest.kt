@@ -73,7 +73,7 @@ class BetsServiceTest {
             // At this point, a match should have happened, let's check!
             pudding.transaction {
                 val matchesCount = CoinFlipBetGlobalMatchmakingResults.selectAll().count()
-                val sonhosTransactionsCount = SimpleSonhosTransactionsLog.select { SimpleSonhosTransactionsLog.type eq TransactionType.COINFLIP_BET_GLOBAL }.count()
+                val sonhosTransactionsCount = SimpleSonhosTransactionsLog.selectAll().where { SimpleSonhosTransactionsLog.type eq TransactionType.COINFLIP_BET_GLOBAL }.count()
 
                 require(matchesCount == 1L) { "There isn't a matchmaking result in the CoinFlipBetGlobalMatchmakingResults table!" }
                 require(sonhosTransactionsCount == 2L) { "There isn't two sonhos transactions (for $user1Id and $user2Id) in the SonhosTransactionsLog table!" }

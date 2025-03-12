@@ -31,7 +31,7 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.time.Instant
 
@@ -499,7 +499,7 @@ object AdminUtils {
 
 	suspend fun getPunishmentForMessage(loritta: LorittaBot, settings: ModerationConfigSettings, guild: Guild, punishmentAction: PunishmentAction): String? {
 		val messageConfig = loritta.pudding.transaction {
-			ModerationPunishmentMessagesConfig.select {
+			ModerationPunishmentMessagesConfig.selectAll().where {
 				ModerationPunishmentMessagesConfig.guild eq guild.idLong and
 						(ModerationPunishmentMessagesConfig.punishmentAction eq punishmentAction)
 			}.firstOrNull()
