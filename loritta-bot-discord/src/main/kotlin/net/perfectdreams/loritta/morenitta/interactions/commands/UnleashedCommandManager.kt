@@ -565,6 +565,18 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                     context,
                     args
                 )
+
+                // If Loritta has a pending update, let's notify the user that she'll restart soon™
+                val pendingUpdate = loritta.pendingUpdate
+                if (pendingUpdate != null) {
+                    // Technically we don't support ephemeral messages here because it is a legacy message, oh well
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.LorittaPendingUpdate("<https://discord.gg/loritta>")),
+                            Emotes.LoriSleeping
+                        )
+                    }
+                }
             }
         } catch (e: CommandException) {
             context?.reply(e.ephemeral, e.builder)

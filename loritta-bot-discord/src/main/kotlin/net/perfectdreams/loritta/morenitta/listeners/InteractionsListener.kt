@@ -294,7 +294,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 if (pendingUpdate != null) {
                     context.reply(true) {
                         styled(
-                            i18nContext.get(I18nKeysData.Commands.LorittaPendingUpdate),
+                            i18nContext.get(I18nKeysData.Commands.LorittaPendingUpdate("<https://discord.gg/loritta>")),
                             Emotes.LoriSleeping
                         )
                     }
