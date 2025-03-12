@@ -83,9 +83,7 @@ class DivorceCommand(loritta: LorittaBot) : AbstractCommand(loritta, "divorce", 
 
 				try {
 					// We don't care if we can't find the user, just exit
-					val partner = loritta.lorittaShards.retrieveUserById(marriagePartner.id) ?: return@onReactionAddByAuthor
-
-					val userPrivateChannel = partner.openPrivateChannel().await()
+					val userPrivateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(marriagePartner.id) ?: return@onReactionAddByAuthor
 
 					userPrivateChannel.sendMessageEmbeds(
 							EmbedBuilder()

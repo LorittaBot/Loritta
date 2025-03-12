@@ -313,7 +313,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 						if (!profileSettings.doNotSendXpNotificationsInDm) {
 							logger.info { "Direct msg, sending msg" }
 							try {
-								val privateChannel = member.user.openPrivateChannel().await()
+								val privateChannel = loritta.getOrRetrievePrivateChannelForUser(member.user)
 
 								privateChannel.sendMessage(message).await()
 

@@ -124,11 +124,9 @@ object LorittaUtilsKotlin {
 		).joinToString("\n")
 
 		// Se um usuário está banido...
-		user.openPrivateChannel()
-				.queue (
-						{ it.sendMessage(message).queue() },
-						{ commandChannel.sendMessage(message).queue() }
-				)
+		val privateChannel = loritta.getOrRetrievePrivateChannelForUser(user)
+		// Send a message to the current channel if the user's DMs are closed
+		privateChannel.sendMessage(message).queue({}, { commandChannel.sendMessage(message).queue() })
 		return true
 	}
 }

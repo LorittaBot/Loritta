@@ -30,6 +30,8 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -37,6 +39,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.managers.AudioManager
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.requests.RestConfig
@@ -65,6 +68,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.scheduleCoroutineAtFixed
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedPrivateChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.FanArtsExtravaganza
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GatewayActivities
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
@@ -102,6 +106,7 @@ import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.devious.*
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
+import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.musicalchairs.MusicalChairsManager
@@ -1334,4 +1339,125 @@ class LorittaBot(
 	}
 
 	fun createActivityText(activityText: String, shardId: Int) = "$activityText | Cluster ${lorittaCluster.id} [$shardId]"
+
+	/**
+	 * Gets or retrieves a private channel for the [user]
+	 *
+	 * When a private channel is retrieved from Discord, it is stored on the database to avoid re-retrieving the channel
+	 * again, avoiding unnecessary requests
+	 *
+	 * @param user the user that the private channel will be retrieved for
+	 * @return the private channel
+	 */
+	suspend fun getOrRetrievePrivateChannelForUser(user: User): PrivateChannel {
+		// TODO: We need to wrap this in a mutex
+		val cachedChannel = pudding.transaction {
+			val cachedChannel = CachedPrivateChannels.selectAll()
+				.where { CachedPrivateChannels.userId eq user.idLong }
+				.limit(1)
+				.firstOrNull()
+
+			if (cachedChannel != null) {
+				CachedPrivateChannels.update({ CachedPrivateChannels.id eq cachedChannel[CachedPrivateChannels.id] }) {
+					it[CachedPrivateChannels.lastUsedAt] = Instant.now()
+				}
+			}
+
+			cachedChannel
+		}
+
+		if (cachedChannel == null) {
+			val privateChannel = user.openPrivateChannel().await()
+
+			val now = Instant.now()
+
+			pudding.transaction {
+				CachedPrivateChannels.insert {
+					it[CachedPrivateChannels.userId] = user.idLong
+					it[CachedPrivateChannels.channelId] = privateChannel.idLong
+					it[CachedPrivateChannels.retrievedAt] = Instant.now()
+					it[CachedPrivateChannels.lastUsedAt] = now
+				}
+			}
+
+			return privateChannel
+		}
+
+		return CachedPrivateChannel(user.jda, cachedChannel[CachedPrivateChannels.channelId])
+	}
+
+	/**
+	 * Gets or retrieves a private channel for the [userId]
+	 *
+	 * When a private channel is retrieved from Discord, it is stored on the database to avoid re-retrieving the channel
+	 * again, avoiding unnecessary requests
+	 *
+	 * The advantage of this function compared to the function that requires a [User] is that this bypasses the need
+	 * for a [retrieveUserById] call if the channel is already cached
+	 *
+	 * @param userId the user that the private channel will be retrieved for
+	 * @return the private channel
+	 */
+	suspend fun getOrRetrievePrivateChannelForUser(userId: Long): PrivateChannel {
+		// TODO: We need to wrap this in a mutex
+		val cachedChannel = pudding.transaction {
+			val cachedChannel = CachedPrivateChannels.selectAll()
+				.where { CachedPrivateChannels.userId eq userId }
+				.limit(1)
+				.firstOrNull()
+
+			if (cachedChannel != null) {
+				CachedPrivateChannels.update({ CachedPrivateChannels.id eq cachedChannel[CachedPrivateChannels.id] }) {
+					it[CachedPrivateChannels.lastUsedAt] = Instant.now()
+				}
+			}
+
+			cachedChannel
+		}
+
+		if (cachedChannel == null) {
+			val user = lorittaShards.shardManager.retrieveUserById(userId).await()
+			val privateChannel = user.openPrivateChannel().await()
+
+			val now = Instant.now()
+
+			pudding.transaction {
+				CachedPrivateChannels.insert {
+					it[CachedPrivateChannels.userId] = user.idLong
+					it[CachedPrivateChannels.channelId] = privateChannel.idLong
+					it[CachedPrivateChannels.retrievedAt] = Instant.now()
+					it[CachedPrivateChannels.lastUsedAt] = now
+				}
+			}
+
+			return privateChannel
+		}
+
+		val jda = lorittaShards.shardManager.shards[0] // Get the first JDA instance just so we can pass it through to the cached private channel
+
+		return CachedPrivateChannel(jda, cachedChannel[CachedPrivateChannels.channelId])
+	}
+
+	/**
+	 * Gets or retrieves a private channel for the [userId], or null if the user does not exist
+	 *
+	 * When a private channel is retrieved from Discord, it is stored on the database to avoid re-retrieving the channel
+	 * again, avoiding unnecessary requests
+	 *
+	 * The advantage of this function compared to the function that requires a [User] is that this bypasses the need
+	 * for a [retrieveUserById] call if the channel is already cached
+	 *
+	 * @param userId the user that the private channel will be retrieved for
+	 * @return the private channel
+	 */
+	suspend fun getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId: Long): PrivateChannel? {
+		return try {
+			getOrRetrievePrivateChannelForUser(userId)
+		} catch (e: ErrorResponseException) {
+			if (e.errorResponse == net.dv8tion.jda.api.requests.ErrorResponse.UNKNOWN_USER)
+				return null
+
+			throw e
+		}
+	}
 }

@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.DailyTaxTaxedUserNotification
 import net.perfectdreams.loritta.serializable.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.serializable.UserId
-import java.util.*
 
 object UserUtils {
     private val logger = KotlinLogging.logger {}
@@ -58,7 +57,7 @@ object UserUtils {
             if (user == null)
                 return false
 
-            val privateChannel = user.openPrivateChannel().await()
+            val privateChannel = loritta.getOrRetrievePrivateChannelForUser(user)
             val message = privateChannel.sendMessage(request).await()
             true
         } catch (e: Exception) {

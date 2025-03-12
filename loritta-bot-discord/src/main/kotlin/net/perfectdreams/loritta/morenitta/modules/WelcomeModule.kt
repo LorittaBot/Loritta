@@ -228,23 +228,22 @@ class WelcomeModule(val loritta: LorittaBot) {
 			if (!msg.isNullOrEmpty()) {
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-				event.user.openPrivateChannel().queue {
-					it.sendMessage(
-						MessageUtils.generateMessageOrFallbackIfInvalid(
-							i18nContext,
-							MessageUtils.watermarkModuleMessage(
-								msg,
-								locale,
-								event.guild,
-								locale["modules.welcomer.moduleDirectMessageJoinType"]
-							),
+				val privateChannel = loritta.getOrRetrievePrivateChannelForUser(event.user)
+				privateChannel.sendMessage(
+					MessageUtils.generateMessageOrFallbackIfInvalid(
+						i18nContext,
+						MessageUtils.watermarkModuleMessage(
+							msg,
+							locale,
 							event.guild,
-							JoinMessagePlaceholders,
-							buildJoinMessagePlaceholders(event.guild, event.user),
-							generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberJoinDM
-						)
-					).queue() // Pronto!
-				}
+							locale["modules.welcomer.moduleDirectMessageJoinType"]
+						),
+						event.guild,
+						JoinMessagePlaceholders,
+						buildJoinMessagePlaceholders(event.guild, event.user),
+						generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.MemberJoinDM
+					)
+				).queue() // Pronto!
 			}
 		}
 	}

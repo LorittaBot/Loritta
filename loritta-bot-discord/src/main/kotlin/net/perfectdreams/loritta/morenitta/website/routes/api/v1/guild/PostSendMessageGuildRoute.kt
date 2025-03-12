@@ -28,7 +28,6 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import kotlin.collections.set
 
 class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/send-message") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
@@ -186,7 +185,7 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 					)
 				}
 
-				val message = privateUser.openPrivateChannel().await().sendMessage(patchedMessage.build()).await()
+				val message = loritta.getOrRetrievePrivateChannelForUser(privateUser).sendMessage(patchedMessage.build()).await()
 
 				call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
 				return

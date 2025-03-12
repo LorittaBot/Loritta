@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -100,8 +102,8 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 					try {
 						val embed =  AdminUtils.createPunishmentMessageSentViaDirectMessage(guild, locale, punisher, locale["$LOCALE_PREFIX.ban.punishAction"], reason)
 
-						user.openPrivateChannel().queue {
-							it.sendMessageEmbeds(embed).queue()
+						GlobalScope.launch {
+							loritta.getOrRetrievePrivateChannelForUser(user).sendMessageEmbeds(embed).queue()
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()

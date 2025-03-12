@@ -70,9 +70,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 							try {
 								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.warn.punishAction"], reason)
 
-								user.openPrivateChannel().queue {
-									it.sendMessageEmbeds(embed).queue()
-								}
+								loritta.getOrRetrievePrivateChannelForUser(user).sendMessageEmbeds(embed).queue()
 							} catch (e: Exception) {
 								e.printStackTrace()
 							}

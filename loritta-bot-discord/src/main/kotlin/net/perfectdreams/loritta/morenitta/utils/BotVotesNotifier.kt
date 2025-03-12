@@ -39,7 +39,7 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
 
                 if (user != null) {
                     logger.info { "Notifying user ${user.idLong} about top.gg vote..." }
-                    user.openPrivateChannel().await()
+                    m.getOrRetrievePrivateChannelForUser(user)
                         .sendMessageEmbeds(
                             EmbedBuilder()
                                 .setColor(Constants.LORITTA_AQUA)

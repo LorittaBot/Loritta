@@ -12,8 +12,6 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -30,41 +28,37 @@ import net.perfectdreams.loritta.serializable.StoredSonhosBundlePurchaseTransact
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.collections.set
 
 class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/perfect-payments") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 
 		suspend fun sendPaymentApprovedDirectMessage(loritta: LorittaBot, userId: Long, locale: BaseLocale, supportUrl: String) {
-			val user = loritta.lorittaShards.retrieveUserById(userId)
-			user?.openPrivateChannel()?.queue {
-				val embed = EmbedBuilder()
-						.setTitle("${Emotes.LORI_RICH} ${locale["economy.paymentApprovedNotification.title"]}")
-						.setDescription(
-								locale.getList(
-										"economy.paymentApprovedNotification.description",
-										supportUrl,
-										"${Emotes.LORI_HEART1}${Emotes.LORI_HEART2}",
-										Emotes.LORI_NICE,
-										Emotes.LORI_SMILE
-								).joinToString("\n")
-						)
-						.setImage("https://cdn.discordapp.com/attachments/513405772911345664/811320940335071263/economy_original.png")
-						.setColor(Color(47, 182, 92))
-						.setTimestamp(Instant.now())
-						.build()
+			val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: return
 
-				it.sendMessageEmbeds(embed).queue()
-			}
+			val embed = EmbedBuilder()
+				.setTitle("${Emotes.LORI_RICH} ${locale["economy.paymentApprovedNotification.title"]}")
+				.setDescription(
+					locale.getList(
+						"economy.paymentApprovedNotification.description",
+						supportUrl,
+						"${Emotes.LORI_HEART1}${Emotes.LORI_HEART2}",
+						Emotes.LORI_NICE,
+						Emotes.LORI_SMILE
+					).joinToString("\n")
+				)
+				.setImage("https://cdn.discordapp.com/attachments/513405772911345664/811320940335071263/economy_original.png")
+				.setColor(Color(47, 182, 92))
+				.setTimestamp(Instant.now())
+				.build()
+
+			privateChannel.sendMessageEmbeds(embed).queue()
 		}
 
 		private suspend fun retrieveSonhosBundleFromMetadata(loritta: LorittaBot, metadata: JsonObject): ResultRow? {
@@ -122,7 +116,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 
 		val internalPayment = loritta.newSuspendedTransaction {
 			Payment.find { Payments.referenceId eq referenceId }
-					.firstOrNull()
+				.firstOrNull()
 		}
 
 		val internalTransactionId = internalPayment?.id?.value
@@ -157,7 +151,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 
 							// We use a AtomicLong to avoid concurrency issues
 							chargebackedQuantity[internalPayment.userId] = chargebackedQuantity.getOrPut(internalPayment.userId) { AtomicLong() }
-									.also { it.addAndGet(bundle[SonhosBundles.sonhos]) }
+								.also { it.addAndGet(bundle[SonhosBundles.sonhos]) }
 
 							jobs[internalPayment.userId] = GlobalScope.launch(loritta.coroutineDispatcher) {
 								delay(300_000L) // Five minutes
@@ -165,7 +159,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 								// And then dispatch to a separate job, just to avoid any other cancellations causing issues after we already started removing the sonhos
 								GlobalScope.launch(loritta.coroutineDispatcher) {
 									val quantity = chargebackedQuantity[internalPayment.userId]
-											?.get()
+										?.get()
 
 									chargebackedQuantity.remove(internalPayment.userId)
 
@@ -173,12 +167,12 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 										logger.info { "Starting a chargeback sonhos job for ${internalPayment.userId}, chargeback quantity: $quantity" }
 
 										PaymentUtils.removeSonhosDueToChargeback(
-												loritta,
-												internalPayment.userId,
-												quantity,
-												removeSonhos = true,
-												notifyChargebackUser = false,
-												notifyUsers = true
+											loritta,
+											internalPayment.userId,
+											quantity,
+											removeSonhos = true,
+											notifyChargebackUser = false,
+											notifyUsers = true
 										)
 									} else {
 										logger.warn { "Tried starting a chargeback sonhos job for ${internalPayment.userId}, but the chargeback quantity is null!" }

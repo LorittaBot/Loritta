@@ -46,7 +46,7 @@ class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter
                 event.guild.addRoleToMember(message.member!!, furriesRole).queue()
 
                 try {
-                    val channel = message.author.openPrivateChannel().await()
+                    val channel = loritta.getOrRetrievePrivateChannelForUser(message.author)
 
                     val embed = EmbedBuilder()
                         .setColor(Constants.LORITTA_AQUA)

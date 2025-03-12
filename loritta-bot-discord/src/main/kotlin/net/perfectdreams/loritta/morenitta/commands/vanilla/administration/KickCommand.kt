@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
@@ -108,8 +110,8 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 					try {
 						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.kick.punishAction"], reason)
 
-						user.openPrivateChannel().queue {
-							it.sendMessageEmbeds(embed).queue()
+						GlobalScope.launch {
+							context.loritta.getOrRetrievePrivateChannelForUser(user).sendMessageEmbeds(embed).queue()
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()

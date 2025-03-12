@@ -44,7 +44,7 @@ class AddReactionForHeathecliffModule(val loritta: LorittaBot) : MessageReceived
 		if (event.channel.idLong == 646871435465326592L) {
 			if (25 >= event.message.contentRaw.length) {
 				event.message.delete().queue()
-				val channel = event.author.openPrivateChannel().await()
+				val channel = loritta.getOrRetrievePrivateChannelForUser(event.author)
 
 				channel.sendMessage("Olha... eu duvido que você conseguiu responder todas as <#647909086326816799> com tão poucas palavras. Que tal responder elas de uma forma decente? ${Emotes.LORI_SHRUG}").await()
 				return false

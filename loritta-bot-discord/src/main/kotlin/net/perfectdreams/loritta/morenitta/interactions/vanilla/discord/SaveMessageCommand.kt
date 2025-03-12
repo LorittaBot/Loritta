@@ -80,9 +80,7 @@ class SaveMessageCommand(val m: LorittaBot) {
                 }
             } else {
                 try {
-                    val messageSent = context.user
-                        .openPrivateChannel()
-                        .await()
+                    val messageSent = m.getOrRetrievePrivateChannelForUser(context.user)
                         .sendMessage(
                             MessageCreate {
                                 explanationMessages()

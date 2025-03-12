@@ -182,13 +182,12 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 											// Envie via DM uma mensagem falando sobre o motivo do ban
 											val message = locale.getList("website.router.blacklistedServer", blacklistedReason)
 
-											user.openPrivateChannel().queue {
-												it.sendMessage(message.joinToString("\n")).queue({
+											loritta.getOrRetrievePrivateChannelForUser(user)
+												.sendMessage(message.joinToString("\n")).queue({
 													guild.leave().queue()
 												}, {
 													guild.leave().queue()
 												})
-											}
 											return
 										}
 
@@ -203,13 +202,13 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 												val message = locale.getList("website.router.ownerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
 													?: "???").joinToString("\n")
 
-												user.openPrivateChannel().queue {
-													it.sendMessage(message).queue({
+												loritta.getOrRetrievePrivateChannelForUser(user)
+													.sendMessage(message)
+													.queue({
 														guild.leave().queue()
 													}, {
 														guild.leave().queue()
 													})
-												}
 												return
 											}
 
@@ -234,9 +233,9 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 												Emotes.LORI_HEART1.toString() + Emotes.LORI_HEART2.toString()
 											).joinToString("\n")
 
-											user.openPrivateChannel().queue {
-												it.sendMessage(message).queue()
-											}
+											loritta.getOrRetrievePrivateChannelForUser(user)
+												.sendMessage(message)
+												.queue()
 										}
 									}
 								}

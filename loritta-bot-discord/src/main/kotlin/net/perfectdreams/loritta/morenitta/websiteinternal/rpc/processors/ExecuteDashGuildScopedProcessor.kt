@@ -249,7 +249,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
 
                 val channelId = dashRequest.channelId
                 val channel = if (channelId == null) {
-                    user.openPrivateChannel().await()
+                    m.getOrRetrievePrivateChannelForUser(user)
                 } else {
                     guild.getGuildMessageChannelById(channelId) ?: return@run DashGuildScopedResponse.SendMessageResponse.UnknownChannel
                 }

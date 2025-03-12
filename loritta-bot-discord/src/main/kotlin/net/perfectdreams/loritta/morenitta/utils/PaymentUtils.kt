@@ -137,7 +137,7 @@ object PaymentUtils {
                     try {
                         logger.info { "Notifying ${user.idLong} about $userId chargebacks" }
 
-                        user.openPrivateChannel().await()
+                        loritta.getOrRetrievePrivateChannelForUser(user)
                                 .sendMessage(
                                         loritta.localeManager.getLocaleById("default")
                                                 .getList(

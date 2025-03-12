@@ -119,9 +119,8 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 							}
 						}
 
-						user.openPrivateChannel().queue {
-							it.sendMessageEmbeds(embed.build()).queue()
-						}
+						val privateChannel = loritta.getOrRetrievePrivateChannelForUser(user)
+						privateChannel.sendMessageEmbeds(embed.build()).queue()
 
 						alreadyPaymentNotifiedUsers.add(user.idLong)
 					}
@@ -183,9 +182,8 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 							}
 						}
 
-						user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-							it.sendMessageEmbeds(embed.build()).queue()
-						}
+						val privateChannel = loritta.getOrRetrievePrivateChannelForUser(user)
+						privateChannel.sendMessageEmbeds(embed.build()).queueAfter(index.toLong(), TimeUnit.SECONDS)
 					}
 
 					// MARRY - Aviar sobre sonhos
@@ -200,10 +198,8 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 								?: continue
 
 						try {
-							user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-								it.sendMessage("Atenção! Você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos todos os dias para conseguir manter ele!")
-									.queue()
-							}
+							val privateChannel = loritta.getOrRetrievePrivateChannelForUser(user)
+							privateChannel.sendMessage("Atenção! Você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos todos os dias para conseguir manter ele!").queueAfter(index.toLong(), TimeUnit.SECONDS)
 						} catch (e: Exception) {
 						}
 					}
@@ -272,20 +268,18 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 							// The "queueAfter" is to avoid too many requests at the same time
 							if (user != null) {
 								try {
-									user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-										it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
-											.queue()
-									}
+									loritta.getOrRetrievePrivateChannelForUser(user)
+										.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
+										.queueAfter(index.toLong(), TimeUnit.SECONDS)
 								} catch (e: Exception) {
 								}
 							}
 
 							if (marriedWith != null) {
 								try {
-									marriedWith.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-										it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
-											.queue()
-									}
+									loritta.getOrRetrievePrivateChannelForUser(marriedWith)
+										.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
+										.queueAfter(index.toLong(), TimeUnit.SECONDS)
 								} catch (e: Exception) {
 								}
 							}

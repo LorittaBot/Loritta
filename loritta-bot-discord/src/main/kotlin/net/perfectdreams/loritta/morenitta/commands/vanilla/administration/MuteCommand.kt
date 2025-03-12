@@ -190,7 +190,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 							false
 						)
 
-						user.openPrivateChannel().await().sendMessageEmbeds(embed.build()).queue()
+						context.loritta.getOrRetrievePrivateChannelForUser(user).sendMessageEmbeds(embed.build()).queue()
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}

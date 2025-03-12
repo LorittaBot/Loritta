@@ -98,7 +98,7 @@ object WebsiteVoteUtils {
 				BotVotes.selectAll().where { BotVotes.userId eq userId }.count()
 			}
 
-			val user = loritta.lorittaShards.retrieveUserById(userId)
+			val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId)
 
 			if (voteCount % 60 == 0L) {
 				// Can give reward!
@@ -110,28 +110,32 @@ object WebsiteVoteUtils {
 					}
 				}
 
-				try {
-					user?.openPrivateChannel()?.await()?.sendMessageEmbeds(
-						EmbedBuilder()
-							.setColor(Constants.LORITTA_AQUA)
-							.setThumbnail("https://stuff.loritta.website/loritta-gifts-itsgabi.png")
-							.setTitle("Obrigada por votar, e aqui está um presentinho para você... \uD83D\uDC9D")
-							.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos e uma key premium que você pode ativar nas configurações do seu servidor no meu painel**! ${Emotes.LORI_OWO}\n\nOstente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
-							.build()
-					)?.await()
-				} catch (e: Exception) {
+				if (privateChannel != null) {
+					try {
+						privateChannel.sendMessageEmbeds(
+							EmbedBuilder()
+								.setColor(Constants.LORITTA_AQUA)
+								.setThumbnail("https://stuff.loritta.website/loritta-gifts-itsgabi.png")
+								.setTitle("Obrigada por votar, e aqui está um presentinho para você... \uD83D\uDC9D")
+								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos e uma key premium que você pode ativar nas configurações do seu servidor no meu painel**! ${Emotes.LORI_OWO}\n\nOstente as novidades, você merece por ter me ajudado tanto! ${Emotes.LORI_TEMMIE}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
+								.build()
+						).await()
+					} catch (e: Exception) {
+					}
 				}
 			} else {
-				try {
-					user?.openPrivateChannel()?.await()?.sendMessageEmbeds(
-						EmbedBuilder()
-							.setColor(Constants.LORITTA_AQUA)
-							.setThumbnail("https://stuff.loritta.website/loritta-heart-eyes-heathecliff.png")
-							.setTitle("Obrigada por votar! ⭐")
-							.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos**! ${Emotes.LORI_OWO}\n\nAh, e sabia que a cada 60 votos você ganha um prêmio especial? ${Emotes.LORI_WOW}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
-							.build()
-					)?.await()
-				} catch (e: Exception) {
+				if (privateChannel != null) {
+					try {
+						privateChannel.sendMessageEmbeds(
+							EmbedBuilder()
+								.setColor(Constants.LORITTA_AQUA)
+								.setThumbnail("https://stuff.loritta.website/loritta-heart-eyes-heathecliff.png")
+								.setTitle("Obrigada por votar! ⭐")
+								.setDescription("Obrigada por votar em mim, cada voto me ajuda a crescer! ${Emotes.LORI_SMILE}\n\nVocê agora tem $voteCount votos e, como recompensa, você ganhou **$SONHOS_AMOUNT sonhos**! ${Emotes.LORI_OWO}\n\nAh, e sabia que a cada 60 votos você ganha um prêmio especial? ${Emotes.LORI_WOW}\n\nContinue votando e sendo uma pessoa incrível! ${Emotes.LORI_HAPPY}")
+								.build()
+						).await()
+					} catch (e: Exception) {
+					}
 				}
 			}
 		}

@@ -354,10 +354,8 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         }
                     }
 
-                    user.openPrivateChannel().queue {
-                        it.sendMessage(message)
-                            .queue()
-                    }
+                    val privateChannel = m.getOrRetrievePrivateChannelForUser(user)
+                    privateChannel.sendMessage(message).queue()
                 } catch (e: Exception) {
                 }
             }

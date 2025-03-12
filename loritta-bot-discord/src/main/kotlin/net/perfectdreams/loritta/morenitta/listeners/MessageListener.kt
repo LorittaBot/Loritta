@@ -242,9 +242,8 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						if (event.channel.canTalk()) {
 							event.channel.sendMessage(responseBuilder.build()).queue()
 						} else {
-							event.author.openPrivateChannel().queue {
-								it.sendMessage(responseBuilder.build()).queue()
-							}
+							val privateChannel = loritta.getOrRetrievePrivateChannelForUser(event.author)
+							privateChannel.sendMessage(responseBuilder.build()).queue()
 						}
 					}
 					logIfEnabled(enableProfiling) { "Checking self mention for help took ${System.nanoTime() - start}ns for ${event.author.idLong}" }

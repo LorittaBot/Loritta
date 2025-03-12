@@ -85,7 +85,7 @@ class PostTestMessageRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 		messageSendCooldown[userId] = System.currentTimeMillis()
 
 		val channel = if (channelId == null) {
-			user.openPrivateChannel().await()
+			loritta.getOrRetrievePrivateChannelForUser(user)
 		} else {
 			guild.getGuildMessageChannelById(channelId)
 		}
