@@ -1375,7 +1375,7 @@ class LorittaBot(
 				CachedPrivateChannels.insert {
 					it[CachedPrivateChannels.userId] = user.idLong
 					it[CachedPrivateChannels.channelId] = privateChannel.idLong
-					it[CachedPrivateChannels.retrievedAt] = Instant.now()
+					it[CachedPrivateChannels.retrievedAt] = now
 					it[CachedPrivateChannels.lastUsedAt] = now
 				}
 			}
@@ -1425,7 +1425,7 @@ class LorittaBot(
 				CachedPrivateChannels.insert {
 					it[CachedPrivateChannels.userId] = user.idLong
 					it[CachedPrivateChannels.channelId] = privateChannel.idLong
-					it[CachedPrivateChannels.retrievedAt] = Instant.now()
+					it[CachedPrivateChannels.retrievedAt] = now
 					it[CachedPrivateChannels.lastUsedAt] = now
 				}
 			}
