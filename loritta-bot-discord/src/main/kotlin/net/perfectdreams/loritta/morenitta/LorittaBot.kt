@@ -1350,6 +1350,8 @@ class LorittaBot(
 	 * @return the private channel
 	 */
 	suspend fun getOrRetrievePrivateChannelForUser(user: User): PrivateChannel {
+		logger.info { "Attempting to retrieve a private channel for ${user.idLong} (user)..." }
+
 		// TODO: We need to wrap this in a mutex
 		val cachedChannel = pudding.transaction {
 			val cachedChannel = CachedPrivateChannels.selectAll()
@@ -1367,6 +1369,7 @@ class LorittaBot(
 		}
 
 		if (cachedChannel == null) {
+			logger.info { "Retrieving a private channel for ${user.idLong} (user) because we don't have it cached..." }
 			val privateChannel = user.openPrivateChannel().await()
 
 			val now = Instant.now()
@@ -1381,6 +1384,8 @@ class LorittaBot(
 			}
 
 			return privateChannel
+		} else {
+			logger.info { "Got private channel for ${user.idLong} (user) from the database because we have it cached!" }
 		}
 
 		return CachedPrivateChannel(user.jda, cachedChannel[CachedPrivateChannels.channelId])
@@ -1399,6 +1404,8 @@ class LorittaBot(
 	 * @return the private channel
 	 */
 	suspend fun getOrRetrievePrivateChannelForUser(userId: Long): PrivateChannel {
+		logger.info { "Attempting to retrieve a private channel for $userId (user ID)..." }
+
 		// TODO: We need to wrap this in a mutex
 		val cachedChannel = pudding.transaction {
 			val cachedChannel = CachedPrivateChannels.selectAll()
@@ -1416,6 +1423,7 @@ class LorittaBot(
 		}
 
 		if (cachedChannel == null) {
+			logger.info { "Retrieving a private channel for ${userId} (user ID) because we don't have it cached... Because we don't have a user reference, we will also need to retrieve the user data from Discord..." }
 			val user = lorittaShards.shardManager.retrieveUserById(userId).await()
 			val privateChannel = user.openPrivateChannel().await()
 
@@ -1431,6 +1439,8 @@ class LorittaBot(
 			}
 
 			return privateChannel
+		} else {
+			logger.info { "Got private channel for ${userId} (user ID) from the database because we have it cached!" }
 		}
 
 		val jda = lorittaShards.shardManager.shards[0] // Get the first JDA instance just so we can pass it through to the cached private channel
