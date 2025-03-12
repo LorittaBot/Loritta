@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions
 
 import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
-import net.perfectdreams.exposedpowerutils.sql.jsonb
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.common.utils.TransactionType

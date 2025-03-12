@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.exposedpowerutils.sql.jsonb
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.jsonb
 
 /**
  * Stores a Guild ID -> Hash for Loritta's application commands
