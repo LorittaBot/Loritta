@@ -51,14 +51,13 @@ object UserUtils {
         request: MessageCreateData
     ): Boolean {
         return try {
-            val user = loritta.lorittaShards.retrieveUserById(userId.value.toLong())
+            val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId.value.toLong())
 
             // Unknown user
-            if (user == null)
+            if (privateChannel == null)
                 return false
 
-            val privateChannel = loritta.getOrRetrievePrivateChannelForUser(user)
-            val message = privateChannel.sendMessage(request).await()
+            privateChannel.sendMessage(request).await()
             true
         } catch (e: Exception) {
             logger.warn(e) { "Something went wrong while trying to send a message to $userId!" }

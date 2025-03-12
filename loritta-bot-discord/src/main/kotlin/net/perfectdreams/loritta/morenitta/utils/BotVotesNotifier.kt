@@ -35,22 +35,20 @@ class BotVotesNotifier(val m: LorittaBot) : RunnableCoroutine {
             val userId = userToBeNotifiedData[BotVotesUserAvailableNotifications.userId]
 
             try {
-                val user = m.lorittaShards.retrieveUserById(userId)
-
-                if (user != null) {
-                    logger.info { "Notifying user ${user.idLong} about top.gg vote..." }
-                    m.getOrRetrievePrivateChannelForUser(user)
-                        .sendMessageEmbeds(
-                            EmbedBuilder()
-                                .setColor(Constants.LORITTA_AQUA)
-                                .setThumbnail("https://stuff.loritta.website/loritta-happy.gif")
-                                .setTitle("${m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Title)} ${Emotes.LoriSmile}")
-                                .setDescription(
-                                    (m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Description(Emotes.LoriLurk.toString(), Emotes.LoriHeart.toString())) + "https://top.gg/bot/${m.config.loritta.discord.applicationId}/vote")
-                                        .joinToString("\n\n")
-                                )
-                                .build()
-                        )
+                val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId)
+                if (privateChannel != null) {
+                    logger.info { "Notifying user ${userId} about top.gg vote..." }
+                    privateChannel.sendMessageEmbeds(
+                        EmbedBuilder()
+                            .setColor(Constants.LORITTA_AQUA)
+                            .setThumbnail("https://stuff.loritta.website/loritta-happy.gif")
+                            .setTitle("${m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Title)} ${Emotes.LoriSmile}")
+                            .setDescription(
+                                (m.languageManager.defaultI18nContext.get(I18nKeysData.Commands.Command.Vote.Notification.Topgg.Description(Emotes.LoriLurk.toString(), Emotes.LoriHeart.toString())) + "https://top.gg/bot/${m.config.loritta.discord.applicationId}/vote")
+                                    .joinToString("\n\n")
+                            )
+                            .build()
+                    )
                         .await()
                 }
             } catch (e: Exception) {

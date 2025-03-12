@@ -131,15 +131,19 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             val lorittaProfile = m.getOrCreateLorittaProfile(winnerId)
                             logger.info { "${winnerId} won $money sonhos ($moneyWithoutTaxes without taxes; before they had ${lorittaProfile.money} sonhos) in the raffle ${currentRaffle[Raffles.id]} (${currentRaffle[Raffles.raffleType]})!" }
 
-                            val totalTicketsBoughtByTheUser = RaffleTickets.selectAll().where { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }.count()
+                            val totalTicketsBoughtByTheUser = RaffleTickets.selectAll()
+                                .where { RaffleTickets.raffle eq currentRaffle[Raffles.id] and (RaffleTickets.userId eq winnerId) }
+                                .count()
                             val countUserDistinct = RaffleTickets.userId.countDistinct()
-                            val totalUsersInTheRaffle = RaffleTickets.select(countUserDistinct).where { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
+                            val totalUsersInTheRaffle = RaffleTickets.select(countUserDistinct)
+                                .where { RaffleTickets.raffle eq currentRaffle[Raffles.id] }
                                 .first()[countUserDistinct]
 
                             paidOutPrizeAfterTax = money.toLong()
 
                             tax = paidOutPrize - paidOutPrizeAfterTax
-                            taxPercentage = (1.0.toBigDecimal() - plan.totalLoraffleReward.toBigDecimal()).toDouble() // Avoid rounding errors
+                            taxPercentage =
+                                (1.0.toBigDecimal() - plan.totalLoraffleReward.toBigDecimal()).toDouble() // Avoid rounding errors
 
                             lorittaProfile.addSonhosAndAddToTransactionLogNested(
                                 paidOutPrizeAfterTax,
@@ -192,7 +196,10 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             }.toList()
                                 .forEach {
                                     dmsToBeSent.add(
-                                        RaffleDM.LostTheRaffleNoOneBoughtTickets(it[UserAskedRaffleNotifications.userId], currentRaffle[Raffles.raffleType])
+                                        RaffleDM.LostTheRaffleNoOneBoughtTickets(
+                                            it[UserAskedRaffleNotifications.userId],
+                                            currentRaffle[Raffles.raffleType]
+                                        )
                                     )
                                 }
                         }
@@ -223,15 +230,17 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                                 // First we get when the current raffle ended...
                                 val storedDateOfWhenTheCurrentRaffleEnded = currentRaffle[Raffles.endsAt]
                                 // Then we +1 and set it to midnight
-                                val storedDateTomorrowAtMidnight = storedDateOfWhenTheCurrentRaffleEnded.atZone(Constants.LORITTA_TIMEZONE)
-                                    .plusDays(1)
-                                    .withHour(0)
-                                    .withMinute(0)
-                                    .withSecond(0)
-                                    .toInstant()
+                                val storedDateTomorrowAtMidnight =
+                                    storedDateOfWhenTheCurrentRaffleEnded.atZone(Constants.LORITTA_TIMEZONE)
+                                        .plusDays(1)
+                                        .withHour(0)
+                                        .withMinute(0)
+                                        .withSecond(0)
+                                        .toInstant()
                                 it[Raffles.endsAt] = storedDateTomorrowAtMidnight
                             } else {
-                                it[Raffles.endsAt] = (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
+                                it[Raffles.endsAt] =
+                                    (now + currentRaffle[Raffles.raffleType].raffleDuration.toJavaDuration())
                             }
                             it[Raffles.endedAt] = null
                             it[Raffles.winnerTicket] = null
@@ -263,16 +272,22 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
         }
 
         for (raffleDM in dmsToBeSent) {
-            val user = m.lorittaShards.retrieveUserById(raffleDM.userId)
+            try {
+                val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(raffleDM.userId)
 
-            if (user != null && !user.isBot) {
-                try {
+                if (privateChannel != null) {
                     val message = when (raffleDM) {
                         is RaffleDM.WonTheRaffle -> {
                             val embed = EmbedBuilder()
                             embed.setThumbnail("attachment://loritta_money.png")
                             embed.setColor(Color(47, 182, 92))
-                            embed.setTitle("\uD83C\uDF89 ${locale["commands.command.raffle.victory.title"]}! - ${i18nContext.get(raffleDM.raffleType.title)}")
+                            embed.setTitle(
+                                "\uD83C\uDF89 ${locale["commands.command.raffle.victory.title"]}! - ${
+                                    i18nContext.get(
+                                        raffleDM.raffleType.title
+                                    )
+                                }"
+                            )
                             embed.setDescription(
                                 locale.getList(
                                     "commands.command.raffle.victory.description",
@@ -290,13 +305,20 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             MessageCreateBuilder()
                                 .setContent(" ")
                                 .setEmbeds(embed.build())
-                                .addFiles(FileUpload.fromData(File(LorittaBot.ASSETS, "loritta_money_discord.png"), "loritta_money.png"))
+                                .addFiles(
+                                    FileUpload.fromData(
+                                        File(LorittaBot.ASSETS, "loritta_money_discord.png"),
+                                        "loritta_money.png"
+                                    )
+                                )
                                 .build()
                         }
+
                         is RaffleDM.LostTheRaffle -> {
                             val lastWinnerId = raffleDM.winnerId
                             val lastWinner = if (lastWinnerId != null) {
-                                KotlinLogging.logger {}.info { "LorittaRaffleTask#retrieveUserInfoById - UserId: ${lastWinnerId}" }
+                                KotlinLogging.logger {}
+                                    .info { "LorittaRaffleTask#retrieveUserInfoById - UserId: ${lastWinnerId}" }
                                 m.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
                             } else {
                                 null
@@ -318,7 +340,13 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                             val embed = EmbedBuilder()
                             embed.setThumbnail("https://stuff.loritta.website/emotes/lori-sob.png")
                             embed.setColor(Color(47, 182, 92))
-                            embed.setTitle("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title)))}")
+                            embed.setTitle(
+                                "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${
+                                    i18nContext.get(
+                                        i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title))
+                                    )
+                                }"
+                            )
                             embed.setDescription(
                                 i18nContext.get(
                                     i18nPrefix.Description(
@@ -336,12 +364,19 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         }
 
                         is RaffleDM.LostTheRaffleNoOneBoughtTickets -> {
-                            val i18nPrefix = I18nKeysData.Commands.Command.Raffle.DirectMessages.YouLostNoOneBoughtTickets
+                            val i18nPrefix =
+                                I18nKeysData.Commands.Command.Raffle.DirectMessages.YouLostNoOneBoughtTickets
 
                             val embed = EmbedBuilder()
                             embed.setThumbnail("https://stuff.loritta.website/emotes/lori-zz.png")
                             embed.setColor(Color(47, 182, 92))
-                            embed.setTitle("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${i18nContext.get(i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title)))}")
+                            embed.setTitle(
+                                "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob} ${
+                                    i18nContext.get(
+                                        i18nPrefix.Title(i18nContext.get(raffleDM.raffleType.title))
+                                    )
+                                }"
+                            )
                             embed.setDescription(
                                 i18nContext.get(i18nPrefix.Description).joinToString("\n\n")
                             )
@@ -354,10 +389,9 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         }
                     }
 
-                    val privateChannel = m.getOrRetrievePrivateChannelForUser(user)
                     privateChannel.sendMessage(message).queue()
-                } catch (e: Exception) {
                 }
+            } catch (e: Exception) {
             }
         }
     }
