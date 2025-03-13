@@ -10,7 +10,7 @@ import java.time.Instant
 import kotlin.time.Duration.Companion.days
 
 object VacationModeUtils {
-    const val VACATION_DISABLE_COST = 5_000_000L
+    const val VACATION_DISABLE_COST = 2_500_000L
     val minimumLength = 2.days
     val maximumLength = 180.days
     val lengthBetweenVacations = 7.days
