@@ -47,16 +47,16 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
 
     class VacationEnableExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
-            val timestamp = string("timestamp", I18N_PREFIX.Enable.Options.Duration.Text)
+            val duration = string("duration", I18N_PREFIX.Enable.Options.Duration.Text)
         }
 
         override val options = Options()
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val user = context.user
-            val timestampAsString = args[options.timestamp]
+            val durationAsString = args[options.duration]
             val now = Instant.now()
-            val whenItWillExpireDuration = TimeUtils.convertToMillisDurationRelative(timestampAsString)
+            val whenItWillExpireDuration = TimeUtils.convertToMillisDurationRelative(durationAsString)
 
             val vacationUntil = context.lorittaUser.profile.vacationUntil
             if (vacationUntil != null && vacationUntil > now) {
