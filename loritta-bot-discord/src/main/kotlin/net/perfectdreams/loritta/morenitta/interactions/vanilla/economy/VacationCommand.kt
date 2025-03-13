@@ -169,6 +169,8 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                 loriEmoji = Emotes.BeachWithUmbrella
                             }
                         ) {
+                            it.invalidateComponentCallback()
+
                             val context = it.deferChannelMessage(false)
 
                             loritta.pudding.transaction {
@@ -194,7 +196,7 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                 context.explain()
                 return null
             }
-            
+
             return mapOf(options.duration to args.joinToString(" "))
         }
     }
@@ -225,6 +227,8 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                 loriEmoji = Emotes.LoriHmpf
                             }
                         ) {
+                            it.invalidateComponentCallback()
+                            
                             val hook = it.deferChannelMessage(false)
 
                             val result = loritta.pudding.transaction {
