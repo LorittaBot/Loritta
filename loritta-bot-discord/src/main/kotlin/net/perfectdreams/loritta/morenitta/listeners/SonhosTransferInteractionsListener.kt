@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -20,6 +21,7 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.VacationModeUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredPaymentSonhosTransaction
@@ -115,6 +117,12 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
 
                         if (howMuch > giverProfile.money)
                             return@transaction TransferResult.NotEnoughSonhos // get tf outta here
+
+                        if (VacationModeUtils.isOnVacation(receiverProfile.vacationUntil?.toJavaInstant()))
+                            return@transaction TransferResult.ReceiverInVacationMode
+
+                        if (VacationModeUtils.isOnVacation(giverProfile.vacationUntil?.toJavaInstant()))
+                            return@transaction TransferResult.SenderInVacationMode
 
                         // Update the sonhos of both users
                         Profiles.update({ Profiles.id eq receiverProfile.id.value.toLong() }) {
@@ -328,6 +336,35 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                             }
                         ).setReplace(false).await()
                     }
+
+                    TransferResult.ReceiverInVacationMode -> {
+                        event.editMessage(
+                            MessageEdit {
+                                actionRow(
+                                    Button.of(
+                                        ButtonStyle.DANGER,
+                                        "dummy",
+                                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.ReceiverOnVacation),
+                                        Emotes.LoriSob.toJDA()
+                                    ).asDisabled()
+                                )
+                            }
+                        ).setReplace(false).await()
+                    }
+                    TransferResult.SenderInVacationMode -> {
+                        event.editMessage(
+                            MessageEdit {
+                                actionRow(
+                                    Button.of(
+                                        ButtonStyle.DANGER,
+                                        "dummy",
+                                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.SenderOnVacation),
+                                        Emotes.LoriSob.toJDA()
+                                    ).asDisabled()
+                                )
+                            }
+                        ).setReplace(false).await()
+                    }
                 }
             }
         }
@@ -349,5 +386,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
         data object NotEnoughSonhos : TransferResult()
         data object AlreadyTransferred : TransferResult()
         data object UnknownRequest : TransferResult()
+        data object SenderInVacationMode : TransferResult()
+        data object ReceiverInVacationMode : TransferResult()
     }
 }

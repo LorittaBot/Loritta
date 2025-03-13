@@ -68,4 +68,9 @@ object VacationModeUtils {
 
         return false
     }
+
+    fun isOnVacation(vacationUntil: Instant?): Boolean {
+        val now = Instant.now()
+        return vacationUntil != null && vacationUntil > now
+    }
 }

@@ -33,6 +33,8 @@ failReasons:
   expired: "Transferência Expirada"
   insufficientSonhos: "Sonhos Insuficientes"
   unknownRequest: "Transferência Desconhecida"
+  senderOnVacation: "Remetente de Férias"
+  receiverOnVacation: "Destinatário de Férias"
 randomQuirkyRichMessages:
   - "Tá querendo ostentar transferindo tanto dinheiro assim?"
   - "iala olha o rico kkk"
