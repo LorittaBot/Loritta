@@ -37,7 +37,10 @@ import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.Claimed
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredCoinFlipBetTransaction
 import net.perfectdreams.loritta.serializable.UserId
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
@@ -86,6 +89,11 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                 }
                 return
             }
+
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, false))
+                return
+            if (VacationModeUtils.checkIfUserIsOnVacation(context, invitedUser, false))
+                return
 
             val selfActiveDonations = loritta.getActiveMoneyFromDonations(context.user.idLong)
             val otherActiveDonations = loritta.getActiveMoneyFromDonations(invitedUser.idLong)

@@ -386,3 +386,12 @@ data class UnknownSonhosTransaction(
     override val timestamp: Instant,
     override val user: UserId
 ) : SonhosTransaction()
+
+@Serializable
+data class VacationModeLeaveTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long
+) : SonhosTransaction()

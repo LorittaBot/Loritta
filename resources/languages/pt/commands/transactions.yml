@@ -141,6 +141,10 @@ types:
     description: "Transações relacionadas a casamentos na Loritta"
     married: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para casar com {marriedWithUserPreview}"
     marryDailyTax: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em impostos para continuar casado com {user}"
+  vacationMode:
+    title: "Modo Férias"
+    description: "Transações relacionadas ao sistema de férias da Loritta"
+    paidToRemove: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para encerrar o Modo Férias antecipadamente"
 options:
   user:
     text: "O usuário que você deseja ver as transações"

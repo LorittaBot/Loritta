@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
+import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import org.jetbrains.exposed.sql.ReferenceOption
 
 
@@ -16,4 +17,5 @@ object Profiles : SnowflakeTable() {
     // If this is set to on delete cascade, if someone married deletes their user data, the user data of the user
     // AND the data of the user that is married with will be deleted!
     var marriage = reference("marriage", Marriages).nullable().index()
+    val vacationUntil = timestampWithTimeZone("vacation_until").nullable()
 }

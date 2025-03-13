@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDec
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.utils.VacationModeUtils
 import net.perfectdreams.loritta.serializable.UserId
 import java.util.*
 import kotlin.time.Duration.Companion.hours
@@ -524,6 +525,8 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
 
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                return
 
             val quantityAsString = args[options.quantity]
             val isRemoveFromQueueRequest = quantityAsString.startsWith("q")

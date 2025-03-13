@@ -393,6 +393,8 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             if (SonhosUtils.checkIfEconomyIsDisabled(context))
                 return
+            if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                return
 
             val loritta = context.loritta
 

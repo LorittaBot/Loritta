@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
@@ -141,6 +142,24 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                 status = HttpStatusCode.BadRequest
             )
             return
+        }
+
+        val receiverProfile = m.getLorittaProfile(request.receiverId)
+
+        if (receiverProfile != null) {
+            val vacationUntil = receiverProfile.vacationUntil
+            if (vacationUntil != null && vacationUntil > Instant.now()) {
+                // Yeah, they are!
+                call.respondJson(
+                    Json.encodeToString(
+                        GenericErrorResponse(
+                            "Receiver is on vacation mode!"
+                        )
+                    ),
+                    status = HttpStatusCode.BadRequest
+                )
+                return
+            }
         }
 
         // Because it is a bot, we don't need to care about checking if our self account is too old

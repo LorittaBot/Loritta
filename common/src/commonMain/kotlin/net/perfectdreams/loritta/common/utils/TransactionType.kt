@@ -111,5 +111,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.Marriage.Title,
         I18nKeysData.Commands.Command.Transactions.Types.Marriage.Description,
         Emotes.MarriageRing.toLorittaEmojiReference(),
+    ),
+    VACATION_MODE(
+        I18nKeysData.Commands.Command.Transactions.Types.VacationMode.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.VacationMode.Description,
+        Emotes.BeachWithUmbrella.toLorittaEmojiReference(),
     )
 }

@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.morenitta.utils.UserIdAsStringSerializer
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
-import net.perfectdreams.loritta.serializable.*
+import net.perfectdreams.loritta.serializable.UserId
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
@@ -422,6 +422,13 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.user,
                     transaction.sonhos,
                     transaction.triggeredByUserId
+                )
+                is net.perfectdreams.loritta.serializable.VacationModeLeaveTransaction -> VacationModeLeaveTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos
                 )
                 is net.perfectdreams.loritta.serializable.UnknownSonhosTransaction -> UnknownSonhosTransaction(
                     transaction.id,
@@ -850,6 +857,16 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         override val user: UserId,
         val sonhos: Long,
         val triggeredByUserId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class VacationModeLeaveTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long
     ) : SonhosTransaction()
 
     @Serializable

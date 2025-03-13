@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.serializable.StoredDailyTaxSonhosTransaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.sql.Connection
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -34,6 +35,8 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
          */
         // This is in here because DailyTaxWarner also does the same checks
         fun queryDailyBypassList(lorittaBot: LorittaBot): List<Long> {
+            val now = Instant.now()
+
             val bypassDailyTaxUserIds = mutableListOf<Long>()
 
             // lori so cute she doesn't deserve to be hit with the inactive daily tax
@@ -53,6 +56,12 @@ class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
                 .toMutableSet()
 
             bypassDailyTaxUserIds.addAll(usersToBeIgnored)
+
+            val vacationUsers = Profiles.select(Profiles.id)
+                .where {
+                    Profiles.vacationUntil greaterEq now
+                }
+            bypassDailyTaxUserIds.addAll(vacationUsers.map { it[Profiles.id].value })
 
             // We expect that all BOT tokens are... well, bots! And they don't be taxed!!
             val botTokensIds = UserLorittaAPITokens.selectAll().where {

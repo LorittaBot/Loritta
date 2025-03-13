@@ -173,3 +173,6 @@ data class StoredMarriageMarryTransaction(val marriedWithUserId: Long) : StoredS
 
 @Serializable
 data class StoredChargebackedSonhosBundleTransaction(val triggeredByUserId: Long) : StoredSonhosTransaction()
+
+@Serializable
+data object StoredVacationModeLeaveTransaction : StoredSonhosTransaction()

@@ -317,6 +317,8 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         // ===[ MARRIAGE ]===
                         is MarriageMarryTransaction -> MarriageMarrySonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
+                        is VacationModeLeaveTransaction -> VacationModeLeaveSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
                     }

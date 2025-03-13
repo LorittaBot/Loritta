@@ -19,10 +19,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import net.perfectdreams.loritta.morenitta.utils.AccountUtils
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.NumberUtils
-import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
+import net.perfectdreams.loritta.morenitta.utils.*
 import org.jetbrains.exposed.sql.*
 import java.util.*
 
@@ -164,6 +161,9 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                         )
                     }
                 }
+
+                if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                    return
 
                 // Only allow users to participate in a emoji fight bet if the user got their daily reward today
                 AccountUtils.getUserTodayDailyReward(loritta, selfUserProfile)

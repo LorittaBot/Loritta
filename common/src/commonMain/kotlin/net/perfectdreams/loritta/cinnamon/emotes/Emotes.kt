@@ -162,6 +162,7 @@ object Emotes {
     val MagnifyingGlassLeft = UnicodeEmote("\uD83D\uDD0D")
     val BlueBook = UnicodeEmote("\uD83D\uDCD8")
     val Telephone = UnicodeEmote("\uD83D\uDCDE")
+    val BeachWithUmbrella = UnicodeEmote("\uD83C\uDFD6\uFE0F")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)

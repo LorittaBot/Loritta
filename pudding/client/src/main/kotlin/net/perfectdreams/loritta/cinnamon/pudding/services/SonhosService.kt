@@ -488,6 +488,16 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                                 emojiFightMatchmakingResult[EmojiFightMatchmakingResults.taxPercentage]
                             )
                         }
+
+                        is StoredVacationModeLeaveTransaction -> {
+                            VacationModeLeaveTransaction(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                it[SimpleSonhosTransactionsLog.sonhos]
+                            )
+                        }
                     }
                 }
         }

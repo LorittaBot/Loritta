@@ -194,6 +194,22 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             return
         }
 
+        if (senderProfile != null) {
+            val vacationUntil = senderProfile.vacationUntil
+            if (vacationUntil != null && vacationUntil > Instant.now()) {
+                // Yeah, they are!
+                call.respondJson(
+                    Json.encodeToString(
+                        GenericErrorResponse(
+                            "Sender is on vacation mode!"
+                        )
+                    ),
+                    status = HttpStatusCode.BadRequest
+                )
+                return
+            }
+        }
+
         val now = Instant.now()
         val nowPlusTimeToLive = now.plusMillis(request.expiresAfterMillis)
 

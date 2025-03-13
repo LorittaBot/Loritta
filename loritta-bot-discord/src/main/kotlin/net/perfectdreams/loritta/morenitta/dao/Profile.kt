@@ -29,6 +29,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var lastCommandSentAt by Profiles.lastCommandSentAt
 	var isAfk by Profiles.isAfk
 	var afkReason by Profiles.afkReason
+	var vacationUntil by Profiles.vacationUntil
 
 	var settings by ProfileSettings referencedOn Profiles.settings
 	val marriageId by Profiles.marriage

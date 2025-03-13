@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
+import net.perfectdreams.loritta.morenitta.utils.VacationModeUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
@@ -239,6 +240,8 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
         }
 
         checkIfSelfAccountIsOldEnough(context)
+        if (VacationModeUtils.checkIfWeAreOnVacation(context, false))
+            return
 
         val now = Instant.now()
         for (receiver in users) {
@@ -260,6 +263,8 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
             }
 
             if (AccountUtils.checkAndSendMessageIfUserIsBanned(loritta, context, receiver))
+                continue
+            if (VacationModeUtils.checkIfUserIsOnVacation(context, receiver, false))
                 continue
 
             // All preliminary checks have passed! Let's create a sonhos transfer request

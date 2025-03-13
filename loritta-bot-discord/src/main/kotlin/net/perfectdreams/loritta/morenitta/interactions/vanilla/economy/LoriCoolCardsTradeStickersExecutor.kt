@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionR
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
+import net.perfectdreams.loritta.morenitta.utils.VacationModeUtils
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsPaymentSonhosTradeTransaction
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
@@ -73,6 +74,11 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
         // Is the other user banned? If yes, don't let them trade!
         if (AccountUtils.checkAndSendMessageIfUserIsBanned(loritta, context, userThatYouWantToTradeWith.idLong))
+            return
+
+        if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+            return
+        if (VacationModeUtils.checkIfUserIsOnVacation(context, userThatYouWantToTradeWith, true))
             return
 
         val usersThatHaveConfirmedTheTrade = mutableSetOf<User>()

@@ -19,11 +19,13 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val ban = commandMention("ban")
 
     val brokerInfo = commandMention("corretora info")
-    val brokerBuy = commandMention("corretora buy")
-    val brokerSell = commandMention("corretora sell")
+    val brokerBuy = commandMention("corretora comprar")
+    val brokerSell = commandMention("corretora vender")
     val brokerPortfolio = commandMention("corretora portfolio")
 
+    val coinflipBet = commandMention("coinflipbet")
     val coinflipBetGlobal = commandMention("coinflipbetglobal")
+    val emojiFightStart = commandMention("emojifight iniciar")
 
     val webhookSendSimple = commandMention("webhook enviar simples")
     val webhookSendRepost = commandMention("webhook enviar repostar")

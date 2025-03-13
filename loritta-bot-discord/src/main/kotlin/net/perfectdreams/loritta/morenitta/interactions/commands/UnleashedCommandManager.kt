@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.morenitta.interactions.commands
 
-import dev.minn.jda.ktx.interactions.commands.*
+import dev.minn.jda.ktx.interactions.commands.Option
+import dev.minn.jda.ktx.interactions.commands.choice
+import dev.minn.jda.ktx.interactions.commands.group
+import dev.minn.jda.ktx.interactions.commands.subcommand
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -288,6 +291,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // register(CoinFlipBetBugCommand(loritta))
         register(LoriCoolCardsCommand(loritta))
         register(SonhosCommand(loritta))
+        register(VacationCommand(loritta))
 
         // ===[ DREAMLAND ]===
         if (loritta.config.loritta.environment == EnvironmentType.CANARY)
