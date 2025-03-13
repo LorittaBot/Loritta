@@ -27,7 +27,8 @@ open class Service(private val pudding: Pudding) {
             row[Profiles.settings].value,
             row[Profiles.money],
             row[Profiles.isAfk],
-            row[Profiles.afkReason]
+            row[Profiles.afkReason],
+            row[Profiles.vacationUntil]?.toKotlinInstant()
         )
     )
 

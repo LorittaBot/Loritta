@@ -18,6 +18,7 @@ class PuddingUserProfile(
     val money by data::money
     val isAfk by data::isAfk
     val afkReason by data::afkReason
+    val vacationUntil by data::vacationUntil
 
     /**
      * Gives an achievement to this user

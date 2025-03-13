@@ -311,6 +311,7 @@ suspend fun main() {
                     is StoredMarriageMarryTransaction -> TODO()
                     is StoredAPIInitiatedPaymentSonhosTransaction -> TODO()
                     is StoredThirdPartyPaymentSonhosTransaction -> TODO()
+                    StoredVacationModeLeaveTransaction -> TODO()
                 }
             }
     }
