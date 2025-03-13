@@ -190,6 +190,11 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
         }
 
         override suspend fun convertToInteractionsArguments(context: LegacyMessageCommandContext, args: List<String>): Map<OptionReference<*>, Any?>? {
+            if (args.isEmpty()) {
+                context.explain()
+                return null
+            }
+            
             return mapOf(options.duration to args.joinToString(" "))
         }
     }
