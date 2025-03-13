@@ -189,7 +189,9 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
             }
         }
 
-        override suspend fun convertToInteractionsArguments(context: LegacyMessageCommandContext, args: List<String>): Map<OptionReference<*>, Any?>? = LorittaLegacyMessageCommandExecutor.NO_ARGS
+        override suspend fun convertToInteractionsArguments(context: LegacyMessageCommandContext, args: List<String>): Map<OptionReference<*>, Any?>? {
+            return mapOf(options.timestamp to args.joinToString(" "))
+        }
     }
 
     class VacationDisableExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
