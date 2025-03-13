@@ -46,7 +46,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             query = query and (SimpleSonhosTransactionsLog.timestamp greaterEq afterDateFilter)
 
         return pudding.transaction {
-            SimpleSonhosTransactionsLog.select(query).count()
+            SimpleSonhosTransactionsLog.selectAll().where(query).count()
         }
     }
 
