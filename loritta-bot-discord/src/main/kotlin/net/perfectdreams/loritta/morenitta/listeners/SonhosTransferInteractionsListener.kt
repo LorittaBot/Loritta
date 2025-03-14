@@ -202,6 +202,26 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                     }
                 }
 
+                /**
+                 * Edits the [event] message to disable the transaction button, using the [buttonLabel] as the label
+                 *
+                 * @param buttonLabel the new button label
+                 */
+                suspend fun editAndDisableTransactionButton(buttonLabel: String) {
+                    event.editMessage(
+                        MessageEdit {
+                            actionRow(
+                                Button.of(
+                                    ButtonStyle.DANGER,
+                                    "dummy",
+                                    buttonLabel,
+                                    Emotes.LoriSob.toJDA()
+                                ).asDisabled()
+                            )
+                        }
+                    ).setReplace(false).await()
+                }
+
                 when (result) {
                     is TransferResult.Success -> {
                         // Let's go!!
@@ -285,18 +305,7 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).setEphemeral(true).await()
                     }
                     TransferResult.NotEnoughSonhos -> {
-                        event.editMessage(
-                            MessageEdit {
-                                actionRow(
-                                    Button.of(
-                                        ButtonStyle.DANGER,
-                                        "dummy",
-                                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.InsufficientSonhos),
-                                        Emotes.LoriSob.toJDA()
-                                    ).asDisabled()
-                                )
-                            }
-                        ).setReplace(false).await()
+                        editAndDisableTransactionButton(i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.InsufficientSonhos))
                     }
                     TransferResult.NotTheUser -> {
                         event.reply(
@@ -309,61 +318,16 @@ class SonhosTransferInteractionsListener(val loritta: LorittaBot) : ListenerAdap
                         ).setEphemeral(true).await()
                     }
                     TransferResult.RequestExpired -> {
-                        event.editMessage(
-                            MessageEdit {
-                                actionRow(
-                                    Button.of(
-                                        ButtonStyle.DANGER,
-                                        "dummy",
-                                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.Expired),
-                                        Emotes.LoriSob.toJDA()
-                                    ).asDisabled()
-                                )
-                            }
-                        ).setReplace(false).await()
+                        editAndDisableTransactionButton(i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.Expired))
                     }
                     TransferResult.UnknownRequest -> {
-                        event.editMessage(
-                            MessageEdit {
-                                actionRow(
-                                    Button.of(
-                                        ButtonStyle.DANGER,
-                                        "dummy",
-                                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.UnknownRequest),
-                                        Emotes.LoriSob.toJDA()
-                                    ).asDisabled()
-                                )
-                            }
-                        ).setReplace(false).await()
+                        editAndDisableTransactionButton(i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.UnknownRequest))
                     }
-
                     TransferResult.ReceiverInVacationMode -> {
-                        event.editMessage(
-                            MessageEdit {
-                                actionRow(
-                                    Button.of(
-                                        ButtonStyle.DANGER,
-                                        "dummy",
-                                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.ReceiverOnVacation),
-                                        Emotes.LoriSob.toJDA()
-                                    ).asDisabled()
-                                )
-                            }
-                        ).setReplace(false).await()
+                        editAndDisableTransactionButton(i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.ReceiverOnVacation))
                     }
                     TransferResult.SenderInVacationMode -> {
-                        event.editMessage(
-                            MessageEdit {
-                                actionRow(
-                                    Button.of(
-                                        ButtonStyle.DANGER,
-                                        "dummy",
-                                        i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.SenderOnVacation),
-                                        Emotes.LoriSob.toJDA()
-                                    ).asDisabled()
-                                )
-                            }
-                        ).setReplace(false).await()
+                        editAndDisableTransactionButton(i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.FailReasons.SenderOnVacation))
                     }
                 }
             }
