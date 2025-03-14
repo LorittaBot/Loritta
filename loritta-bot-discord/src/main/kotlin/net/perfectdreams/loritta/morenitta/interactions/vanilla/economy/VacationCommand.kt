@@ -228,7 +228,7 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                             }
                         ) {
                             it.invalidateComponentCallback()
-                            
+
                             val hook = it.deferChannelMessage(false)
 
                             val result = loritta.pudding.transaction {
