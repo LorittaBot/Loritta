@@ -14,6 +14,8 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import java.time.Instant
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {
@@ -124,22 +126,36 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
             rowToStoredTransactions
                 .map { (it, stored) ->
-                    when (stored) {
-                        is StoredShipEffectSonhosTransaction -> ShipEffectSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos]
+                    /**
+                     * Creates the [T] instance using reflection. Useful to avoid a bunch of code repetition.
+                     *
+                     * @param clazz the class that will be initialized
+                     * @param args the args of the class
+                     * @return the new [T] instance
+                     */
+                    fun <T : Any> createUsingReflection(
+                        clazz: KClass<T>,
+                        vararg args: Any
+                    ): T {
+                        val kargs = args.toMutableList()
+                        kargs.addAll(
+                            0,
+                            listOf(
+                                it[SimpleSonhosTransactionsLog.id].value,
+                                it[SimpleSonhosTransactionsLog.type],
+                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
+                                UserId(it[SimpleSonhosTransactionsLog.user].value),
+                                it[SimpleSonhosTransactionsLog.sonhos]
+                            )
                         )
 
-                        is StoredDailyRewardSonhosTransaction -> DailyRewardSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos]
-                        )
+                        return clazz.primaryConstructor!!.call(*kargs.toTypedArray())
+                    }
+
+                    when (stored) {
+                        is StoredShipEffectSonhosTransaction -> createUsingReflection(ShipEffectSonhosTransaction::class)
+
+                        is StoredDailyRewardSonhosTransaction -> createUsingReflection(DailyRewardSonhosTransaction::class)
 
                         is StoredBotVoteSonhosTransaction -> BotVoteSonhosTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
@@ -161,15 +177,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             stored.reason
                         )
 
-                        is StoredDailyTaxSonhosTransaction -> DailyTaxSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.maxDayThreshold,
-                            stored.minimumSonhosForTrigger
-                        )
+                        is StoredDailyTaxSonhosTransaction -> createUsingReflection(DailyTaxSonhosTransaction::class, stored.maxDayThreshold, stored.minimumSonhosForTrigger)
 
                         is StoredPaymentSonhosTransaction -> {
                             PaymentSonhosTransaction(
@@ -225,22 +233,9 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             )
                         }
 
-                        is StoredRaffleTicketsTransaction -> RaffleTicketsSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.ticketQuantity
-                        )
+                        is StoredRaffleTicketsTransaction -> createUsingReflection(RaffleTicketsSonhosTransaction::class, stored.ticketQuantity)
 
-                        is StoredSonhosBundlePurchaseTransaction -> SonhosBundlePurchaseSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos]
-                        )
+                        is StoredSonhosBundlePurchaseTransaction -> createUsingReflection(SonhosBundlePurchaseSonhosTransaction::class)
 
                         is StoredCoinFlipBetTransaction -> {
                             val matchmakingResult = localMatchmakingResults.first { it[CoinFlipBetMatchmakingResults.id].value == stored.matchmakingResultId }
@@ -307,71 +302,19 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             stored.exchangeRate
                         )
 
-                        is StoredChristmas2022SonhosTransaction -> Christmas2022SonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.gifts
-                        )
+                        is StoredChristmas2022SonhosTransaction -> createUsingReflection(Christmas2022SonhosTransaction::class, stored.gifts)
 
-                        is StoredEaster2023SonhosTransaction -> Easter2023SonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.baskets
-                        )
+                        is StoredEaster2023SonhosTransaction -> createUsingReflection(Easter2023SonhosTransaction::class, stored.baskets)
 
-                        is StoredReactionEventSonhosTransaction -> ReactionEventSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.eventInternalId,
-                            stored.craftedCount
-                        )
+                        is StoredReactionEventSonhosTransaction -> createUsingReflection(ReactionEventSonhosTransaction::class, stored.eventInternalId, stored.craftedCount)
 
-                        is StoredPowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.liveId,
-                            stored.streamId
-                        )
+                        is StoredPowerStreamClaimedLimitedTimeSonhosRewardSonhosTransaction -> createUsingReflection(PowerStreamClaimedFirstSonhosRewardSonhosTransaction::class, stored.liveId, stored.streamId)
 
-                        is StoredPowerStreamClaimedFirstSonhosRewardSonhosTransaction -> PowerStreamClaimedFirstSonhosRewardSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.liveId,
-                            stored.streamId
-                        )
+                        is StoredPowerStreamClaimedFirstSonhosRewardSonhosTransaction -> createUsingReflection(PowerStreamClaimedFirstSonhosRewardSonhosTransaction::class, stored.liveId, stored.streamId)
 
-                        is StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction -> LoriCoolCardsBoughtBoosterPackSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.eventId
-                        )
+                        is StoredLoriCoolCardsBoughtBoosterPackSonhosTransaction -> createUsingReflection(LoriCoolCardsBoughtBoosterPackSonhosTransaction::class, stored.eventId)
 
-                        is StoredLoriCoolCardsFinishedAlbumSonhosTransaction -> LoriCoolCardsFinishedAlbumSonhosTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.eventId
-                        )
+                        is StoredLoriCoolCardsFinishedAlbumSonhosTransaction -> createUsingReflection(LoriCoolCardsFinishedAlbumSonhosTransaction::class, stored.eventId)
 
                         is StoredLoriCoolCardsPaymentSonhosTradeTransaction -> LoriCoolCardsPaymentSonhosTradeTransaction(
                             it[SimpleSonhosTransactionsLog.id].value,
@@ -383,87 +326,23 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             it[SimpleSonhosTransactionsLog.sonhos],
                         )
 
-                        is StoredLorittaItemShopBoughtBackgroundTransaction -> LorittaItemShopBoughtBackgroundTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.internalBackgroundId
-                        )
+                        is StoredLorittaItemShopBoughtBackgroundTransaction -> createUsingReflection(LorittaItemShopBoughtBackgroundTransaction::class, stored.internalBackgroundId)
 
-                        is StoredLorittaItemShopBoughtProfileDesignTransaction -> LorittaItemShopBoughtProfileDesignTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.internalProfileDesignId
-                        )
+                        is StoredLorittaItemShopBoughtProfileDesignTransaction -> createUsingReflection(LorittaItemShopBoughtProfileDesignTransaction::class, stored.internalProfileDesignId)
 
-                        is StoredLorittaItemShopComissionBackgroundTransaction -> LorittaItemShopComissionBackgroundTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.boughtUserId,
-                            stored.internalBackgroundId
-                        )
+                        is StoredLorittaItemShopComissionBackgroundTransaction -> createUsingReflection(LorittaItemShopComissionBackgroundTransaction::class, stored.boughtUserId, stored.internalBackgroundId)
 
-                        is StoredLorittaItemShopComissionProfileDesignTransaction -> LorittaItemShopComissionProfileDesignTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.boughtUserId,
-                            stored.internalProfileDesignId
-                        )
+                        is StoredLorittaItemShopComissionProfileDesignTransaction -> createUsingReflection(LorittaItemShopComissionProfileDesignTransaction::class, stored.boughtUserId, stored.internalProfileDesignId)
 
-                        is StoredBomDiaECiaCallCalledTransaction -> BomDiaECiaCallCalledTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos]
-                        )
+                        is StoredBomDiaECiaCallCalledTransaction -> createUsingReflection(BomDiaECiaCallCalledTransaction::class)
 
-                        is StoredBomDiaECiaCallWonTransaction -> BomDiaECiaCallWonTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos]
-                        )
+                        is StoredBomDiaECiaCallWonTransaction -> createUsingReflection(BomDiaECiaCallWonTransaction::class)
 
-                        is StoredGarticosTransferTransaction -> GarticosTransferTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.garticos,
-                            stored.transferRate
-                        )
+                        is StoredGarticosTransferTransaction -> createUsingReflection(GarticosTransferTransaction::class, stored.garticos, stored.transferRate)
 
-                        is StoredMarriageMarryTransaction -> MarriageMarryTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.marriedWithUserId
-                        )
+                        is StoredMarriageMarryTransaction -> createUsingReflection(MarriageMarryTransaction::class, stored.marriedWithUserId)
 
-                        is StoredChargebackedSonhosBundleTransaction -> ChargebackedSonhosBundleTransaction(
-                            it[SimpleSonhosTransactionsLog.id].value,
-                            it[SimpleSonhosTransactionsLog.type],
-                            it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                            UserId(it[SimpleSonhosTransactionsLog.user].value),
-                            it[SimpleSonhosTransactionsLog.sonhos],
-                            stored.triggeredByUserId
-                        )
+                        is StoredChargebackedSonhosBundleTransaction -> createUsingReflection(ChargebackedSonhosBundleTransaction::class, stored.triggeredByUserId)
 
                         is StoredEmojiFightBetSonhosTransaction -> {
                             val emojiFightMatchmakingResult = emojiFightMatchmakingResults.first { it[EmojiFightMatchmakingResults.id].value == stored.emojiFightMatchmakingResultsId }
@@ -489,15 +368,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                             )
                         }
 
-                        is StoredVacationModeLeaveTransaction -> {
-                            VacationModeLeaveTransaction(
-                                it[SimpleSonhosTransactionsLog.id].value,
-                                it[SimpleSonhosTransactionsLog.type],
-                                it[SimpleSonhosTransactionsLog.timestamp].toKotlinInstant(),
-                                UserId(it[SimpleSonhosTransactionsLog.user].value),
-                                it[SimpleSonhosTransactionsLog.sonhos]
-                            )
-                        }
+                        is StoredVacationModeLeaveTransaction -> createUsingReflection(VacationModeLeaveTransaction::class)
                     }
                 }
         }
