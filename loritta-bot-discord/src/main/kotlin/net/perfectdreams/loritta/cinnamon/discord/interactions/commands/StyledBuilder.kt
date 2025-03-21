@@ -3,8 +3,10 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands
 import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.serialization.json.JsonNull.content
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.emojis.LorittaEmojiReference
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.entities.LorittaEmote
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 /**
  * Appends a Loritta-styled formatted message to the builder's message content.
@@ -29,6 +31,18 @@ fun InlineMessage<*>.styled(content: String, prefix: Emote) = styled(content, pr
  * @param prefix  the emote prefix of the styled message
  */
 fun InlineMessage<*>.styled(content: String, prefix: LorittaEmote) = styled(content, prefix.asMention)
+
+/**
+ * Appends a Loritta-styled formatted message to the builder's message content.
+ *
+ * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`.
+ *
+ * If there's already content present in the builder, a new line will be inserted before the styled replied!
+ *
+ * @param content the content of the styled message
+ * @param prefix  the emote prefix of the styled message
+ */
+fun InlineMessage<*>.styled(loritta: LorittaBot, content: String, prefix: LorittaEmojiReference) = styled(content, loritta.emojiManager.get(prefix).asMention)
 
 /**
  * Appends a Loritta-styled formatted message to the builder's message content.

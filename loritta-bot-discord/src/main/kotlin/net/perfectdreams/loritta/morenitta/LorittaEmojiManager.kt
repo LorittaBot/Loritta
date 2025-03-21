@@ -151,7 +151,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
                         val newEmoji = jda.createApplicationEmoji(localApplicationEmoji.name, Icon.from(imageData)).await()
                         logger.info { "Successfully uploaded emoji ${localApplicationEmoji.name}!" }
 
-                        DiscordLorittaApplicationEmojis.upsert(DiscordLorittaApplicationEmojis.id) {
+                        DiscordLorittaApplicationEmojis.upsert(DiscordLorittaApplicationEmojis.emojiName) {
                             it[DiscordLorittaApplicationEmojis.emojiName] = localApplicationEmoji.name
                             it[DiscordLorittaApplicationEmojis.emojiId] = newEmoji.idLong
                             it[DiscordLorittaApplicationEmojis.animated] = newEmoji.isAnimated

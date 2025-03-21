@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
+import net.perfectdreams.loritta.morenitta.reactionevents.events.Anniversary2025ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Christmas2024ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.events.Halloween2024ReactionEvent
 import org.jetbrains.exposed.sql.and
@@ -73,6 +74,28 @@ sealed class ReactionEventBadge(
 		100,
 		Christmas2024ReactionEvent,
 		700
+	)
+
+	class Anniversary2025ReactionEventBadge(pudding: Pudding) : ReactionEventBadge(
+		pudding,
+		UUID.fromString("567e99bd-92d1-467c-8736-7a6afd417017"),
+		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Title,
+		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Description,
+		"christmas2024.png",
+		100,
+		Anniversary2025ReactionEvent,
+		10
+	)
+
+	class Anniversary2025ReactionEventSuperBadge(pudding: Pudding) : ReactionEventBadge(
+		pudding,
+		UUID.fromString("dc093396-e36d-4c34-bd5e-94ca04571f3c"),
+		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Title,
+		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Description,
+		"christmas2024_super.png",
+		100,
+		Anniversary2025ReactionEvent,
+		500
 	)
 
 	private val eventInternalId = reactionEvent.internalId

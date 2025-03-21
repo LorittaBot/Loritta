@@ -19,6 +19,23 @@ class DiscordEmote(
         builder.toString()
     }
 
+    private val discordEmoteWithGenericNameAsMention: String by lazy {
+        val builder = StringBuilder()
+        builder.append("<")
+        if (animated)
+            builder.append("a")
+        builder.append(":l:")
+        builder.append(id)
+        builder.append(">")
+        builder.toString()
+    }
+
     override val asMention: String
             = discordEmoteAsMention
+
+    /**
+     * Gets the emoji as a chat mention, with a generic one character name to reduce character counts in a message
+     */
+    val asMentionWithGenericName: String
+        get() = discordEmoteWithGenericNameAsMention
 }
