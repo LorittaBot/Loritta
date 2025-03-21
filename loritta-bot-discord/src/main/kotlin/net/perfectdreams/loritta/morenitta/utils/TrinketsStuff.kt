@@ -1106,35 +1106,35 @@ object TrinketsStuff {
         createBackground("easter2023Loritta", true, Rarity.LEGENDARY, LocalDate.of(2023, 4, 15), availableToBuyViaSonhos = false) {
             addDefaultVariant("easter2023-loritta", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaAndTheDreamers", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("lorittaAndTheDreamers", true, Rarity.EPIC, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("loritta-and-the-dreamers", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-and-the-dreamers-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaAndTheDreamersTiled", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("lorittaAndTheDreamersTiled", true, Rarity.EPIC, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("loritta-and-the-dreamers-tiled", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaBliss", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("lorittaBliss", true, Rarity.EPIC, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("loritta-bliss", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaMoonBeach", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("lorittaMoonBeach", true, Rarity.EPIC, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("loritta-moon-beach", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-moon-beach-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaYouBringLightIn", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("lorittaYouBringLightIn", true, Rarity.EPIC, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("loritta-you-bring-light-in", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-you-bring-light-in-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaCoolPose", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("lorittaCoolPose", true, Rarity.EPIC, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("loritta-cool-pose", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("powerRandomSketches", true, Rarity.UNCOMMON, LocalDate.of(2024, 3, 13)) {
+        createBackground("powerRandomSketches", true, Rarity.UNCOMMON, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("power-random-sketches", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("captainBoykisser", true, Rarity.EPIC, LocalDate.of(2024, 3, 13)) {
+        createBackground("captainBoykisser", true, Rarity.EPIC, LocalDate.of(2024, 3, 13), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("captain-boykisser", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "captain-boykisser-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
-        createBackground("lorittaHeyHeyMyMyYoYo", true, Rarity.EPIC, LocalDate.of(2024, 3, 20)) {
+        createBackground("lorittaHeyHeyMyMyYoYo", true, Rarity.EPIC, LocalDate.of(2024, 3, 20), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("loritta-hey-hey-my-my-yo-yo", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-hey-hey-my-my-yo-yo-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
