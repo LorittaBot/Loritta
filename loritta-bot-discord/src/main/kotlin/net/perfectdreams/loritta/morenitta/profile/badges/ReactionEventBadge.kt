@@ -81,7 +81,7 @@ sealed class ReactionEventBadge(
 		UUID.fromString("567e99bd-92d1-467c-8736-7a6afd417017"),
 		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Description,
-		"christmas2024.png",
+		"anniversary2025.png",
 		100,
 		Anniversary2025ReactionEvent,
 		10
@@ -92,7 +92,7 @@ sealed class ReactionEventBadge(
 		UUID.fromString("dc093396-e36d-4c34-bd5e-94ca04571f3c"),
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Description,
-		"christmas2024_super.png",
+		"anniversary2025_super.png",
 		100,
 		Anniversary2025ReactionEvent,
 		500
