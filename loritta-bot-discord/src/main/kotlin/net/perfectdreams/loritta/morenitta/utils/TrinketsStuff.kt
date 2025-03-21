@@ -1324,6 +1324,9 @@ object TrinketsStuff {
         createBackground("lorittaHalloweenMagicAndNostalgic", true, Rarity.EPIC, LocalDate.of(2024, 12, 18), set = "lorittaHalloween2024", createdBy = listOf("dayanee")) {
             addDefaultVariant("loritta-halloween-magic-and-nostalgic", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("gessyLowPoly", true, Rarity.RARE, LocalDate.of(2025, 3, 21), createdBy = listOf("mrpowergamerbr")) {
+            addDefaultVariant("gessy-lowpoly", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createProfileDesign(
