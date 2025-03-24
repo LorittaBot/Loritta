@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.TimeFormat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendActiveReactionEventUpsellInformationIfNotNull
@@ -27,16 +28,16 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
-import net.perfectdreams.loritta.morenitta.utils.AccountUtils
-import net.perfectdreams.loritta.morenitta.utils.AprilFools
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.SonhosPaymentReason
 import net.perfectdreams.loritta.serializable.StoredEmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
@@ -201,6 +202,16 @@ class EmojiFight(
                         }
                     }
                 }
+
+                is EmojiFightJoinState.YouAreOnVacation -> {
+                    // Yeah, we are!
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18nKeysData.Commands.Command.Vacation.YouAreOnVacation(TimeFormat.DATE_TIME_LONG.format(state.vacationUntil))),
+                            CinnamonEmotes.LoriSleeping
+                        )
+                    }
+                }
             }
         }
 
@@ -349,6 +360,11 @@ class EmojiFight(
                 // Don't allow users to bet if they are recent accounts
                 if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) // 14 dias
                     return EmojiFightJoinState.AccountTooNew
+
+                // Are we on vacation?
+                val vacationUntil = profile.vacationUntil
+                if (vacationUntil != null && VacationModeUtils.isOnVacation(vacationUntil))
+                    return EmojiFightJoinState.YouAreOnVacation(vacationUntil)
             }
 
             val randomEmoji = loritta.newSuspendedTransaction {
@@ -760,6 +776,7 @@ class EmojiFight(
         object DidntGetDailyReward : EmojiFightJoinState()
         object AccountTooNew : EmojiFightJoinState()
         object YouAreAlreadyParticipating : EmojiFightJoinState()
+        data class YouAreOnVacation(val vacationUntil: Instant) : EmojiFightJoinState()
         class Success(val emoji: String) : EmojiFightJoinState()
     }
 
