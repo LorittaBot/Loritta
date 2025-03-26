@@ -77,7 +77,7 @@ object Anniversary2025ReactionEvent : ReactionEvent() {
         null,
         LorittaEmojis.GabrielaHead,
         {
-            if (it?.idLong != Constants.PORTUGUESE_SUPPORT_GUILD_ID && it?.idLong != Constants.SPARKLYPOWER_GUILD_ID) {
+            if (it?.idLong == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
                 0.012
             } else {
                 0.006
