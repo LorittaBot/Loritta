@@ -35,6 +35,12 @@ object UnleashedButton {
     ): Button {
         if (style == ButtonStyle.LINK)
             return Button.of(style, DO_NOT_USE_THIS_LINK_URL, label, emoji)
-        return Button.of(style, DO_NOT_USE_THIS_COMPONENT_ID + ":" + UUID.randomUUID().toString(), label, emoji)
+        // In recent JDA updates, JDA trips a check if the label && emoji are empty
+        // This is bad for us, because we use this as a builder and, in some things, we set the emoji after the button is created, which
+        // completely borks out any buttons that have an empty label + button
+        //
+        // To work around this, we set a " " label to bypass the check
+        // This MUST be refactored later, because if JDA changes the check again, this WILL break!
+        return Button.of(style, DO_NOT_USE_THIS_COMPONENT_ID + ":" + UUID.randomUUID().toString(), label.let { if (it.isNullOrEmpty()) " " else it }, emoji)
     }
 }
