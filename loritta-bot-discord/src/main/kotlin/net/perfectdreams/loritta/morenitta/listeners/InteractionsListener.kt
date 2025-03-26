@@ -394,8 +394,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
                 stacktrace,
                 event.interaction.context.toLoritta(),
-                event.interaction.integrationOwners.guildIntegration,
-                event.interaction.integrationOwners.userIntegration?.idLong,
+                if (event.interaction.integrationOwners.isGuildIntegration) event.interaction.integrationOwners.authorizingGuildIdLong else null,
+                if (event.interaction.integrationOwners.isUserIntegration)  event.interaction.integrationOwners.authorizingUserIdLong else null,
             )
         }
     }
@@ -508,8 +508,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
                 stacktrace,
                 event.interaction.context.toLoritta(),
-                event.interaction.integrationOwners.guildIntegration,
-                event.interaction.integrationOwners.userIntegration?.idLong,
+                if (event.interaction.integrationOwners.isGuildIntegration) event.interaction.integrationOwners.authorizingGuildIdLong else null,
+                if (event.interaction.integrationOwners.isUserIntegration)  event.interaction.integrationOwners.authorizingUserIdLong else null,
             )
         }
     }
@@ -623,8 +623,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 Duration.between(startedAt, Instant.now()).toMillis() / 1000.0,
                 stacktrace,
                 event.interaction.context.toLoritta(),
-                event.interaction.integrationOwners.guildIntegration,
-                event.interaction.integrationOwners.userIntegration?.idLong,
+                if (event.interaction.integrationOwners.isGuildIntegration) event.interaction.integrationOwners.authorizingGuildIdLong else null,
+                if (event.interaction.integrationOwners.isUserIntegration)  event.interaction.integrationOwners.authorizingUserIdLong else null,
             )
         }
     }
@@ -1165,7 +1165,9 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
             // 1. Does the "USER_INSTALL" integration type is set?
             // 2. Is the user an integration owner?
             // If both are true, the message will be ephemeral if the user does NOT have the "external apps" permission set
-            val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && event.interaction.integrationOwners.userIntegration?.idLong == context.user.idLong
+            val authorizingUserId = if (event.interaction.integrationOwners.isUserIntegration) event.interaction.integrationOwners.authorizingUserIdLong else null
+
+            val canBeUsedAnyway = slashDeclaration.integrationTypes.contains(IntegrationType.USER_INSTALL) && authorizingUserId == context.user.idLong
             if (!canBeUsedAnyway) {
                 // NO, then bail out NOW
                 context.reply(true) {

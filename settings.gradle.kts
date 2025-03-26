@@ -20,7 +20,7 @@ dependencyResolutionManagement {
             val logback = version("logback", "1.4.14")
             val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
 
-            library("deviousjda", "com.github.LorittaBot", "DeviousJDA").version("665dd9215b")
+            library("deviousjda", "com.github.LorittaBot", "DeviousJDA").version("4153f3a5df")
 
             library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version(kotlinxCoroutines)
             library("kotlinx-coroutines-debug", "org.jetbrains.kotlinx", "kotlinx-coroutines-debug").version(kotlinxCoroutines)
