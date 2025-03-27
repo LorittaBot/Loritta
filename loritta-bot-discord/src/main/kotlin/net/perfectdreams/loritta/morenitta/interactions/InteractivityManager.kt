@@ -149,7 +149,7 @@ class InteractivityManager {
         callback: suspend (ComponentContext) -> (Unit)
     ): Button {
         val buttonId = UUID.randomUUID()
-        buttonInteractionCallbacks[buttonId] = ButtonInteractionCallback(false, callback)
+        buttonInteractionCallbacks[buttonId] = ButtonInteractionCallback(callbackAlwaysEphemeral, callback)
         return button
             .withId(UnleashedComponentId(buttonId).toString())
     }

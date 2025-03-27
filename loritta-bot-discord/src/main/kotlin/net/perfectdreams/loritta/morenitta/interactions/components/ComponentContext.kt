@@ -148,7 +148,7 @@ class ComponentContext(
         callback: suspend (ModalContext, ModalArguments) -> (Unit)
     ) {
         val unleashedComponentId = UnleashedComponentId(UUID.randomUUID())
-        loritta.interactivityManager.modalCallbacks[unleashedComponentId.uniqueId] = InteractivityManager.ModalInteractionCallback(false, callback)
+        loritta.interactivityManager.modalCallbacks[unleashedComponentId.uniqueId] = InteractivityManager.ModalInteractionCallback(this.alwaysEphemeral, callback)
 
         event.replyModal(
             unleashedComponentId.toString(),
