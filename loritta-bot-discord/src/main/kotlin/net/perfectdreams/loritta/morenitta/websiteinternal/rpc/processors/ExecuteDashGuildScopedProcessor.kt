@@ -292,6 +292,7 @@ class ExecuteDashGuildScopedProcessor(private val internalWebServer: InternalWeb
                 if (5 > patchedMessage.components.size) { // Below the component limit
                     patchedMessage.addActionRow(
                         m.interactivityManager.button(
+                            false,
                             ButtonStyle.SECONDARY,
                             i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
                             {

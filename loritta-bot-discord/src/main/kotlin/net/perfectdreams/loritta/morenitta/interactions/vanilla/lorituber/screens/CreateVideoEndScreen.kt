@@ -4,10 +4,10 @@ import dev.minn.jda.ktx.messages.MessageEdit
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.LoriTuberTask
 import net.perfectdreams.loritta.serializable.lorituber.requests.CreatePendingVideoRequest
@@ -46,6 +46,7 @@ class CreateVideoEndScreen(
 
         val createVideoButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Criar"
         ) {

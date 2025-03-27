@@ -111,7 +111,7 @@ class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     validLanguages.forEach {
                         add(
                             loritta.interactivityManager
-                                .buttonForUser(context.user, ButtonStyle.PRIMARY, if (it.legacyLocale != null && it.legacyLocaleName != null) it.legacyLocaleName else it.context.language.info.name, {
+                                .buttonForUser(context.user, context.alwaysEphemeral, ButtonStyle.PRIMARY, if (it.legacyLocale != null && it.legacyLocaleName != null) it.legacyLocaleName else it.context.language.info.name, {
                                     emoji = Emoji.fromUnicode(it.emojiName)
                                 }) { buttonContext ->
                                     activateLanguage(buttonContext, profile, it, context.guildOrNull == null)
@@ -121,13 +121,13 @@ class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
 
                     add(
                         loritta.interactivityManager
-                            .buttonForUser(context.user, ButtonStyle.DANGER, "Redefinir idioma pessoal", {
+                            .buttonForUser(context.user, context.alwaysEphemeral, ButtonStyle.DANGER, "Redefinir idioma pessoal", {
                                 emoji = Emoji.fromUnicode("\uD83D\uDE45")
                             }) {
                                 it.deferAndEditOriginal {
                                     actionRow(
                                         loritta.interactivityManager
-                                            .disabledButton(ButtonStyle.SUCCESS, context.i18nContext.get(I18N_PREFIX.ButtonPersonalLanguageReset)) {
+                                            .disabledButton(context.alwaysEphemeral, ButtonStyle.SUCCESS, context.i18nContext.get(I18N_PREFIX.ButtonPersonalLanguageReset)) {
                                                 emoji = Emoji.fromCustom(Emotes.LoriCoffee.name, Emotes.LoriCoffee.id, false)
                                             }
                                     )
@@ -184,6 +184,7 @@ class LanguageCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
 
                 actionRow(
                     loritta.interactivityManager.disabledButton(
+                        context.alwaysEphemeral,
                         ButtonStyle.SUCCESS,
                         newLocale.get(I18N_PREFIX.ButtonLanguageChanged)
                     ) {

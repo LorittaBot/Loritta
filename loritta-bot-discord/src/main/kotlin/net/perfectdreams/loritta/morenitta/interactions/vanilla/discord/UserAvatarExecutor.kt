@@ -84,6 +84,7 @@ object UserAvatarExecutor {
                     context.loritta.interactivityManager
                         .buttonForUser(
                             context.user.idLong,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             context.i18nContext.get(UserCommand.I18N_PREFIX.Avatar.ViewUserGlobalAvatar)
                         ) {
@@ -100,6 +101,7 @@ object UserAvatarExecutor {
                         context.loritta.interactivityManager
                             .buttonForUser(
                                 context.user.idLong,
+                                context.alwaysEphemeral,
                                 ButtonStyle.PRIMARY,
                                 context.i18nContext.get(UserCommand.I18N_PREFIX.Avatar.ViewUserGuildProfileAvatar)
                             ) {

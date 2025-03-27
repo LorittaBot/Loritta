@@ -19,9 +19,11 @@ import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.textbox.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.textbox.characters.CharacterType
@@ -40,6 +42,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
             loritta: LorittaBot,
             gabrielaImageServerClient: GabrielaImageServerClient,
             user: User,
+            context: UnleashedContext,
             i18nContext: I18nContext,
             textBoxOptionsData: TextBoxOptionsData
         ): InlineMessage<*>.() -> (Unit) {
@@ -58,6 +61,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                     actionRow(
                         loritta.interactivityManager.stringSelectMenuForUser(
                             user,
+                            context.alwaysEphemeral,
                             {
                                 for (universe in UniverseType.entries) {
                                     addOptions(SelectOption(i18nContext.get(universe.universeName), universe.name, null, universe.emote?.toJDA(), textBoxOptionsData.universeType == universe))
@@ -97,6 +101,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                                 context.loritta,
                                 gabrielaImageServerClient,
                                 context.user,
+                                context,
                                 context.i18nContext,
                                 newData
                             )
@@ -119,6 +124,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                     actionRow(
                         loritta.interactivityManager.stringSelectMenuForUser(
                             user,
+                            context.alwaysEphemeral,
                             {
                                 CharacterType.entries
                                     .filter { it.universe == textBoxOptionsData.universeType }
@@ -142,6 +148,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                                 context.loritta,
                                 gabrielaImageServerClient,
                                 context.user,
+                                context,
                                 context.i18nContext,
                                 newData
                             )
@@ -161,6 +168,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                     actionRow(
                         loritta.interactivityManager.stringSelectMenuForUser(
                             user,
+                            context.alwaysEphemeral,
                             {
                                 textBoxOptionsData.character.data.menuOptions(i18nContext, textBoxOptionsData.portrait, this)
                             }
@@ -175,6 +183,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                                 context.loritta,
                                 gabrielaImageServerClient,
                                 context.user,
+                                context,
                                 context.i18nContext,
                                 newData
                             )
@@ -207,6 +216,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                         context.loritta,
                         gabrielaImageServerClient,
                         context.user,
+                        context,
                         context.i18nContext,
                         newData
                     )
@@ -227,6 +237,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                     if (textBoxOptionsData.dialogBoxType == DialogBoxType.ORIGINAL) {
                         loritta.interactivityManager.buttonForUser(
                             user,
+                            context.alwaysEphemeral,
                             ButtonStyle.SECONDARY,
                             i18nContext.get(I18N_TEXTBOX_PREFIX.DarkWorldDialogBox.Name),
                             {
@@ -238,6 +249,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                     } else {
                         loritta.interactivityManager.buttonForUser(
                             user,
+                            context.alwaysEphemeral,
                             ButtonStyle.SECONDARY,
                             i18nContext.get(I18N_TEXTBOX_PREFIX.OriginalDialogBox.Name),
                             {
@@ -288,6 +300,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
 
                     loritta.interactivityManager.buttonForUser(
                         user,
+                        context.alwaysEphemeral,
                         ButtonStyle.SUCCESS,
                         i18nContext.get(I18N_TEXTBOX_PREFIX.Confirm),
                         {
@@ -384,6 +397,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                 context.loritta,
                 gabrielaImageServerClient,
                 context.user,
+                context,
                 context.i18nContext,
                 data
             )
@@ -421,6 +435,7 @@ class UndertaleCommand(val loritta: LorittaBot, val gabrielaImageServerClient: G
                 context.loritta,
                 gabrielaImageServerClient,
                 context.user,
+                context,
                 context.i18nContext,
                 data
             )

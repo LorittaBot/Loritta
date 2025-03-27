@@ -435,6 +435,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                     actionRow(
                                         loritta.interactivityManager.buttonForUser(
                                             context.user,
+                                            context.alwaysEphemeral,
                                             ButtonStyle.PRIMARY,
                                             "Fim!",
                                             {
@@ -537,6 +538,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         if (cards.size > 0) {
                                             loritta.interactivityManager.buttonForUser(
                                                 context.user,
+                                                context.alwaysEphemeral,
                                                 next5StickersButton,
                                                 createNextStickersCallback(next5StickersButton, 5)
                                             )
@@ -544,6 +546,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         if (cards.size >= 10) {
                                             loritta.interactivityManager.buttonForUser(
                                                 context.user,
+                                                context.alwaysEphemeral,
                                                 next10StickersButton,
                                                 createNextStickersCallback(next10StickersButton, 10)
                                             )
@@ -551,6 +554,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         if (cards.size >= 15) {
                                             loritta.interactivityManager.buttonForUser(
                                                 context.user,
+                                                context.alwaysEphemeral,
                                                 next15StickersButton,
                                                 createNextStickersCallback(next15StickersButton, 15)
                                             )
@@ -558,6 +562,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         if (cards.size >= 20) {
                                             loritta.interactivityManager.buttonForUser(
                                                 context.user,
+                                                context.alwaysEphemeral,
                                                 next20StickersButton,
                                                 createNextStickersCallback(next20StickersButton, 20)
                                             )
@@ -565,6 +570,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         if (cards.size >= 25) {
                                             loritta.interactivityManager.buttonForUser(
                                                 context.user,
+                                                context.alwaysEphemeral,
                                                 next25StickersButton,
                                                 createNextStickersCallback(next25StickersButton, 25)
                                             )
@@ -574,6 +580,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                     actionRow(
                                         loritta.interactivityManager.buttonForUser(
                                             context.user,
+                                            context.alwaysEphemeral,
                                             buyStickerPackButton,
                                             buyStickerPackButtonCallback
                                         )

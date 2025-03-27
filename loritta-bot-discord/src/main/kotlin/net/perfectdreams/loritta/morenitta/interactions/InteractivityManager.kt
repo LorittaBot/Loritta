@@ -33,17 +33,17 @@ class InteractivityManager {
     val buttonInteractionCallbacks = Caffeine
         .newBuilder()
         .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
-        .build<UUID, suspend (ComponentContext) -> (Unit)>()
+        .build<UUID, ButtonInteractionCallback>()
         .asMap()
     val selectMenuInteractionCallbacks = Caffeine
         .newBuilder()
         .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
-        .build<UUID, suspend (ComponentContext, List<String>) -> (Unit)>()
+        .build<UUID, SelectMenuInteractionCallback>()
         .asMap()
     val modalCallbacks = Caffeine
         .newBuilder()
         .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
-        .build<UUID, suspend (ModalContext, ModalArguments) -> (Unit)>()
+        .build<UUID, ModalInteractionCallback>()
         .asMap()
 
     /**
@@ -51,31 +51,35 @@ class InteractivityManager {
      */
     fun buttonForUser(
         targetUser: User,
+        callbackAlwaysEphemeral: Boolean,
         style: ButtonStyle,
         label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {},
         callback: suspend (ComponentContext) -> (Unit)
-    ) = buttonForUser(targetUser.idLong, style, label, builder, callback)
+    ) = buttonForUser(targetUser.idLong, callbackAlwaysEphemeral, style, label, builder, callback)
 
     /**
      * Creates an interactive button, the ID in the [button] will be replaced with a [UnleashedComponentId]
      */
     fun buttonForUser(
         targetUser: User,
+        callbackAlwaysEphemeral: Boolean,
         button: Button,
         callback: suspend (ComponentContext) -> (Unit)
-    ) = buttonForUser(targetUser.idLong, button, callback)
+    ) = buttonForUser(targetUser.idLong, callbackAlwaysEphemeral, button, callback)
 
     /**
      * Creates an interactive button
      */
     fun buttonForUser(
         targetUserId: Long,
+        callbackAlwaysEphemeral: Boolean,
         style: ButtonStyle,
         label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {},
         callback: suspend (ComponentContext) -> (Unit)
     ) = button(
+        callbackAlwaysEphemeral,
         style,
         label,
         builder
@@ -98,9 +102,11 @@ class InteractivityManager {
      */
     fun buttonForUser(
         targetUserId: Long,
+        callbackAlwaysEphemeral: Boolean,
         button: Button,
         callback: suspend (ComponentContext) -> (Unit)
     ) = button(
+        callbackAlwaysEphemeral,
         button
     ) {
         if (targetUserId != it.user.idLong) {
@@ -120,11 +126,13 @@ class InteractivityManager {
      * Creates an interactive button
      */
     fun button(
+        callbackAlwaysEphemeral: Boolean,
         style: ButtonStyle,
         label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {},
         callback: suspend (ComponentContext) -> (Unit)
     ) = button(
+        callbackAlwaysEphemeral,
         UnleashedButton.of(style, label, null)
             .let {
                 JDAButtonBuilder(it).apply(builder).button
@@ -136,11 +144,12 @@ class InteractivityManager {
      * Creates an interactive button, the ID in the [button] will be replaced with a [UnleashedComponentId]
      */
     fun button(
+        callbackAlwaysEphemeral: Boolean,
         button: Button,
         callback: suspend (ComponentContext) -> (Unit)
     ): Button {
         val buttonId = UUID.randomUUID()
-        buttonInteractionCallbacks[buttonId] = callback
+        buttonInteractionCallbacks[buttonId] = ButtonInteractionCallback(false, callback)
         return button
             .withId(UnleashedComponentId(buttonId).toString())
     }
@@ -149,6 +158,7 @@ class InteractivityManager {
      * Creates an disabled button
      */
     fun disabledButton(
+        callbackAlwaysEphemeral: Boolean,
         style: ButtonStyle,
         label: String = "",
         builder: (JDAButtonBuilder).() -> (Unit) = {}
@@ -175,18 +185,21 @@ class InteractivityManager {
      */
     fun stringSelectMenuForUser(
         targetUser: User,
+        callbackAlwaysEphemeral: Boolean,
         builder: (StringSelectMenu.Builder).() -> (Unit) = {},
         callback: suspend (ComponentContext, List<String>) -> (Unit)
-    ) = stringSelectMenuForUser(targetUser.idLong, builder, callback)
+    ) = stringSelectMenuForUser(targetUser.idLong, callbackAlwaysEphemeral, builder, callback)
 
     /**
      * Creates an interactive select menu
      */
     fun stringSelectMenuForUser(
         targetUserId: Long,
+        callbackAlwaysEphemeral: Boolean,
         builder: (StringSelectMenu.Builder).() -> (Unit) = {},
         callback: suspend (ComponentContext, List<String>) -> (Unit)
     ) = stringSelectMenu(
+        callbackAlwaysEphemeral,
         builder
     ) { context, strings ->
         if (targetUserId != context.user.idLong) {
@@ -206,11 +219,12 @@ class InteractivityManager {
      * Creates an interactive select menu
      */
     fun stringSelectMenu(
+        callbackAlwaysEphemeral: Boolean,
         builder: (StringSelectMenu.Builder).() -> (Unit) = {},
         callback: suspend (ComponentContext, List<String>) -> (Unit)
     ): StringSelectMenu {
         val buttonId = UUID.randomUUID()
-        selectMenuInteractionCallbacks[buttonId] = callback
+        selectMenuInteractionCallbacks[buttonId] = SelectMenuInteractionCallback(callbackAlwaysEphemeral, callback)
         return StringSelectMenu.create(UnleashedComponentId(buttonId).toString())
             .apply(builder)
             .build()
@@ -240,4 +254,28 @@ class InteractivityManager {
                 this.button = button.withDisabled(value)
             }
     }
+
+    data class ButtonInteractionCallback(
+        /**
+         * If true, the created context will always be ephemeral
+         */
+        val alwaysEphemeral: Boolean,
+        val callback: suspend (ComponentContext) -> (Unit)
+    )
+
+    data class SelectMenuInteractionCallback(
+        /**
+         * If true, the created context will always be ephemeral
+         */
+        val alwaysEphemeral: Boolean,
+        val callback: suspend (ComponentContext, List<String>) -> (Unit)
+    )
+
+    data class ModalInteractionCallback(
+        /**
+         * If true, the created context will always be ephemeral
+         */
+        val alwaysEphemeral: Boolean,
+        val callback: suspend (ModalContext, ModalArguments) -> (Unit)
+    )
 }

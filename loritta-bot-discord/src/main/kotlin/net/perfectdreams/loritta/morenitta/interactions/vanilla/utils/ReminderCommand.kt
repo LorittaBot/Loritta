@@ -229,6 +229,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     loritta.interactivityManager
                         .buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             builder = {
                                 emoji = Emoji.fromUnicode(Constants.INDEXES[index])
@@ -256,6 +257,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                     loritta.interactivityManager
                                         .buttonForUser(
                                             context.user,
+                                            context.alwaysEphemeral,
                                             ButtonStyle.SECONDARY,
                                             builder = {
                                                 loriEmoji = Emotes.ChevronLeft
@@ -268,6 +270,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                                     loritta.interactivityManager
                                         .buttonForUser(
                                             context.user,
+                                            context.alwaysEphemeral,
                                             ButtonStyle.SECONDARY,
                                             builder = {
                                                 emoji = Emoji.fromUnicode("\uD83D\uDDD1")
@@ -319,6 +322,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     if (page != 0) {
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             leftButton
                         ) {
                             it.deferAndEditOriginal {
@@ -332,6 +336,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     if (((page + 1) * REMINDERS_PER_PAGE) in 0..reminders.size) {
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             rightButton
                         ) {
                             it.deferAndEditOriginal {

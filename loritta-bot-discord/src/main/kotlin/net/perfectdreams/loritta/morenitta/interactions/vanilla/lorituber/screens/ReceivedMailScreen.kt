@@ -18,6 +18,7 @@ class ReceivedMailScreen(command: LoriTuberCommand, user: User, hook: Interactio
     override suspend fun render() {
         val readMessageButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Ler Mensagem",
             {
@@ -26,6 +27,7 @@ class ReceivedMailScreen(command: LoriTuberCommand, user: User, hook: Interactio
         ) {
             val ackMailButton = loritta.interactivityManager.buttonForUser(
                 user,
+                false,
                 ButtonStyle.PRIMARY,
                 "Fechar Mensagem",
                 {

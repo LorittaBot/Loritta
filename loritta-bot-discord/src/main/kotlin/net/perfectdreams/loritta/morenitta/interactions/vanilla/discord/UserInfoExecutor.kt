@@ -296,6 +296,7 @@ object UserInfoExecutor {
                     context.loritta.interactivityManager
                         .buttonForUser(
                             context.user.idLong,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             context.i18nContext.get(UserCommand.I18N_PREFIX.Avatar.ViewUserGlobalAvatar)
                         ) {
@@ -316,6 +317,7 @@ object UserInfoExecutor {
                         context.loritta.interactivityManager
                             .buttonForUser(
                                 context.user.idLong,
+                                context.alwaysEphemeral,
                                 ButtonStyle.PRIMARY,
                                 context.i18nContext.get(UserCommand.I18N_PREFIX.Avatar.ViewUserGuildProfileAvatar)
                             ) {
@@ -339,6 +341,7 @@ object UserInfoExecutor {
                 actionRow(
                     context.loritta.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.MemberPermissions)
                     ) {

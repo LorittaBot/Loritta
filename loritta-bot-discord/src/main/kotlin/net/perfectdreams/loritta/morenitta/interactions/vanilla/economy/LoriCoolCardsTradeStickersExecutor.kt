@@ -128,6 +128,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
             actionRow(
                 loritta.interactivityManager.button(
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     context.i18nContext.get(I18N_PREFIX.SetStickers),
                     {
@@ -283,6 +284,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                     }
                 },
                 loritta.interactivityManager.button(
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     context.i18nContext.get(I18N_PREFIX.SetSonhos),
                     {
@@ -429,6 +431,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             actionRow(
                 if (trade.isTradeValid())
                     loritta.interactivityManager.button(
+                        context.alwaysEphemeral,
                         acceptTradeButton
                     ) { context ->
                         mutex.withLock {

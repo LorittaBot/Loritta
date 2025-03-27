@@ -31,7 +31,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
 import net.perfectdreams.loritta.morenitta.utils.locale.getPronoun
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
 
 class BomDiaECia(val loritta: LorittaBot) {
 	val thread: BomDiaECiaThread = BomDiaECiaThread(loritta)
@@ -290,6 +289,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 						actionRow(
 							loritta.interactivityManager
 								.button(
+									false,
 									ButtonStyle.SECONDARY,
 									builder = {
 										emoji = Emoji.fromUnicode("⁉")

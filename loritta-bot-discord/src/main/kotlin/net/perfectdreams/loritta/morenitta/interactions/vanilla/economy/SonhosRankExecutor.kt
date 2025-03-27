@@ -136,6 +136,7 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                 // left button
                 loritta.interactivityManager.buttonForUser(
                     context.user,
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     "",
                     {
@@ -157,6 +158,7 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                 // right button
                 loritta.interactivityManager.buttonForUser(
                     context.user,
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     "",
                     {

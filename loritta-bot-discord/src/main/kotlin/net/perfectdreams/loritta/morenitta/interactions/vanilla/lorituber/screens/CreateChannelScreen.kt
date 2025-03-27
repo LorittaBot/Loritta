@@ -16,6 +16,7 @@ class CreateChannelScreen(command: LoriTuberCommand, user: User, hook: Interacti
     override suspend fun render() {
         val createChannelButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Criar Canal"
         ) {

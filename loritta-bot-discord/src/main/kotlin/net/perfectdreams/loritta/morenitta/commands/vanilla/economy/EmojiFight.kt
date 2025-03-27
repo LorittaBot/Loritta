@@ -86,6 +86,7 @@ class EmojiFight(
         // We update the event message after the event is finished because we hold a lock for 3s, and sometimes we want to update the message after the event has finished
         // but sometimes the event may finish during that 3s cooldown! That's why there is a boolean to bypass the lock
         val participateInTheEventButtonInteraction = context.loritta.interactivityManager.button(
+            context.alwaysEphemeral,
             ButtonStyle.PRIMARY,
             context.i18nContext.get(I18N_PREFIX.JoinTheEmojiFight),
             { emoji = Emoji.fromUnicode("\uD83D\uDC14") }
@@ -217,6 +218,7 @@ class EmojiFight(
 
         val endTheEventButtonInteraction = context.loritta.interactivityManager.buttonForUser(
             context.user,
+            context.alwaysEphemeral,
             ButtonStyle.PRIMARY,
             context.i18nContext.get(I18N_PREFIX.StartTheEmojiFight),
             { emoji = Emoji.fromUnicode("✅") }
@@ -584,6 +586,7 @@ class EmojiFight(
         if (entryPrice != null) {
             val loriCoolCardsUpsellButton = SonhosUtils.createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
                 loritta,
+                context,
                 context.i18nContext
             )
 
@@ -653,6 +656,7 @@ class EmojiFight(
                     } else {
                         buttons.add(
                             loritta.interactivityManager.button(
+                                context.alwaysEphemeral,
                                 ButtonStyle.PRIMARY,
                                 context.i18nContext.get(I18nKeysData.Commands.Command.Emojifight.ViewSonhos),
                                 {
@@ -717,6 +721,7 @@ class EmojiFight(
 
                 appendActiveReactionEventUpsellInformationIfNotNull(
                     loritta,
+                    context,
                     context.i18nContext,
                     ReactionEventsAttributes.getActiveEvent(Instant.now())
                 )?.let { buttons += it }

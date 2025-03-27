@@ -5,10 +5,10 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
 import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.lorituber.requests.GetChannelByIdRequest
 import net.perfectdreams.loritta.serializable.lorituber.responses.GetChannelByIdResponse
@@ -42,6 +42,7 @@ class CreateVideoGenreTypeScreen(
 
         val continueButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Continuar",
             {
@@ -65,6 +66,7 @@ class CreateVideoGenreTypeScreen(
 
         val viewChannelButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Voltar",
             {
@@ -96,7 +98,7 @@ class CreateVideoGenreTypeScreen(
                 }
 
                 actionRow(
-                    loritta.interactivityManager.stringSelectMenu({
+                    loritta.interactivityManager.stringSelectMenu(false, {
                         placeholder = "Gênero do Vídeo"
 
                         for (genre in LoriTuberContentGenre.values()) {
@@ -123,7 +125,7 @@ class CreateVideoGenreTypeScreen(
                 )
 
                 actionRow(
-                    loritta.interactivityManager.stringSelectMenu({
+                    loritta.interactivityManager.stringSelectMenu(false, {
                         placeholder = "Tipo do Vídeo"
 
                         for (type in LoriTuberContentType.values()) {
@@ -150,7 +152,7 @@ class CreateVideoGenreTypeScreen(
                 )
 
                 actionRow(
-                    loritta.interactivityManager.stringSelectMenu({
+                    loritta.interactivityManager.stringSelectMenu(false, {
                         placeholder = "Duração do Vídeo"
 
                         for (type in LoriTuberContentLength.values()) {

@@ -72,7 +72,7 @@ class BanInfoCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 context.reply(false) {
                     embeds += embed.build()
 
-                    actionRow(loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.DANGER, i18nContext.get(I18N_PREFIX.UnbanUser), { emoji = Emoji.fromUnicode("⚒️") }) {
+                    actionRow(loritta.interactivityManager.buttonForUser(context.user, context.alwaysEphemeral, ButtonStyle.DANGER, i18nContext.get(I18N_PREFIX.UnbanUser), { emoji = Emoji.fromUnicode("⚒️") }) {
                         val deferredChannelMessage = it.deferChannelMessage(true)
 
                         val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)

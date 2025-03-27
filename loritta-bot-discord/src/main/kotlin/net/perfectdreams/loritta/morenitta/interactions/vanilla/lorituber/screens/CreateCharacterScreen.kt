@@ -16,6 +16,7 @@ class CreateCharacterScreen(command: LoriTuberCommand, user: User, hook: Interac
     override suspend fun render() {
         val createCharacterButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Criar Personagem"
         ) {

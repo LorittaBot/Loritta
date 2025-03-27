@@ -451,6 +451,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     } else {
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             button.text,
                             {
@@ -813,6 +814,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             actionRow(
                 loritta.interactivityManager.buttonForUser(
                     context.user,
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     builder = {
                         loriEmoji = Emotes.ChevronLeft
@@ -831,6 +833,7 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 },
                 loritta.interactivityManager.buttonForUser(
                     context.user,
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     builder = {
                         loriEmoji = Emotes.ChevronRight

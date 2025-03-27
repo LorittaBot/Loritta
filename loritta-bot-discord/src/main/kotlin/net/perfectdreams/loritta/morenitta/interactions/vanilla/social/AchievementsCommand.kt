@@ -42,6 +42,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                     createMessage(
                         context.loritta,
                         context.user,
+                        context,
                         context.i18nContext,
                         achievements,
                         null
@@ -53,6 +54,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
         fun createMessage(
             loritta: LorittaBot,
             user: User,
+            context: UnleashedContext,
             i18nContext: I18nContext,
             achievements: List<PuddingAchievement>,
             category: AchievementCategory?
@@ -117,6 +119,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                 actionRow(
                     loritta.interactivityManager.stringSelectMenuForUser(
                         user,
+                        context.alwaysEphemeral,
                         {
                             fun insertOption(optionCategory: AchievementCategory) {
                                 val userAchievementsInCategoryCount =
@@ -157,6 +160,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                                     createMessage(
                                         loritta,
                                         user,
+                                        context,
                                         context.i18nContext,
                                         achievements,
                                         try {

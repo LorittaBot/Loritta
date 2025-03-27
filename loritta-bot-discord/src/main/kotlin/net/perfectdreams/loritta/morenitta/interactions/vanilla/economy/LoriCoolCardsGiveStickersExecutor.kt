@@ -267,6 +267,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                     actionRow(
                         loritta.interactivityManager.buttonForUser(
                             userThatWillReceiveTheSticker,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             context.i18nContext.get(I18N_PREFIX.AcceptTransfer),
                             {

@@ -13,6 +13,7 @@ class ComputerShopScreen(command: LoriTuberCommand, user: User, hook: Interactio
     override suspend fun render() {
         val viewMotivesButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Voltar ao cafofo",
             {

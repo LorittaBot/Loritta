@@ -1,36 +1,29 @@
 package net.perfectdreams.loritta.morenitta.interactions.components
 
 import dev.minn.jda.ktx.interactions.components.asDisabled
-import dev.minn.jda.ktx.interactions.components.option
 import dev.minn.jda.ktx.interactions.components.replyModal
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import dev.minn.jda.ktx.messages.MessageEditBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.Component
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
-import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
+import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
-import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
-import net.perfectdreams.loritta.morenitta.interactions.UnleashedHook
-import net.perfectdreams.loritta.morenitta.interactions.UnleashedMentions
+import net.perfectdreams.loritta.morenitta.interactions.*
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import java.util.*
@@ -155,7 +148,7 @@ class ComponentContext(
         callback: suspend (ModalContext, ModalArguments) -> (Unit)
     ) {
         val unleashedComponentId = UnleashedComponentId(UUID.randomUUID())
-        loritta.interactivityManager.modalCallbacks[unleashedComponentId.uniqueId] = callback
+        loritta.interactivityManager.modalCallbacks[unleashedComponentId.uniqueId] = InteractivityManager.ModalInteractionCallback(false, callback)
 
         event.replyModal(
             unleashedComponentId.toString(),

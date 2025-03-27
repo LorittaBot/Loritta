@@ -421,6 +421,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                 actionRow(
                     loritta.interactivityManager.button(
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         context.i18nContext.get(I18nKeysData.Commands.Command.Coinflipbet.Participate(usersThatAcceptedTheBet.size)),
                         {
@@ -721,6 +722,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                                         val loriCoolCardsUpsellButton = SonhosUtils.createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
                                             loritta,
+                                            context,
                                             context.i18nContext
                                         )
 
@@ -733,6 +735,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                                         appendActiveReactionEventUpsellInformationIfNotNull(
                                             loritta,
+                                            context,
                                             context.i18nContext,
                                             ReactionEventsAttributes.getActiveEvent(now)
                                         )?.let { buttons += it }

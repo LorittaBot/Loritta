@@ -89,7 +89,7 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
                             context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
                         ),
                         context.loritta.interactivityManager
-                            .buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.Info.SeeInformations)) { info ->
+                            .buttonForUser(context.user, context.alwaysEphemeral, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.Info.SeeInformations)) { info ->
                                 info.deferAndEditOriginal {
                                     embed {
                                         color = Constants.DISCORD_BLURPLE.rgb
@@ -157,7 +157,7 @@ class EmojiCommand : SlashCommandDeclarationWrapper {
                         context.i18nContext.get(I18N_PREFIX.Info.OpenEmojiInBrowser)
                     ),
                     context.loritta.interactivityManager
-                        .buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.Info.SeeInformations)) {
+                        .buttonForUser(context.user, context.alwaysEphemeral, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.Info.SeeInformations)) {
                             try {
                                 it.deferAndEditOriginal {
                                     embed {

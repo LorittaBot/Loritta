@@ -163,6 +163,7 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     actionRow(
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             ButtonStyle.DANGER,
                             context.i18nContext.get(I18N_PREFIX.Enable.EnableVacation),
                             {
@@ -221,6 +222,7 @@ class VacationCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     actionRow(
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             ButtonStyle.DANGER,
                             context.i18nContext.get(I18N_PREFIX.Disable.LeaveVacation),
                             {

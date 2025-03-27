@@ -407,6 +407,7 @@ object AdminUtils {
 			actionRow(
 				context.loritta.interactivityManager.buttonForUser(
 					context.user,
+					context.alwaysEphemeral,
 					ButtonStyle.PRIMARY,
 					context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ConfirmPunishment),
 					{

@@ -127,6 +127,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 						if (topRole != null) {
 							val button = loritta.interactivityManager.buttonForUser(
 								message.author,
+								false,
 								ButtonStyle.PRIMARY,
 								i18nContext.get(I18nKeysData.Modules.InviteBlocker.AllowSendingInvites),
 								{

@@ -119,6 +119,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         private fun selectCompanyCategoryMenu(context: UnleashedContext, selectedCategory: LorittaBovespaBrokerUtils.CompanyCategory?): StringSelectMenu {
             return loritta.interactivityManager.stringSelectMenuForUser(
                 context.user,
+                context.alwaysEphemeral,
                 {
                     for (category in LorittaBovespaBrokerUtils.CompanyCategory.values()) {
                         addOption(
@@ -394,6 +395,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     if (pageZeroIndexed != 0) {
                         loritta.interactivityManager.buttonForUser(
                             context.user.idLong,
+                            context.alwaysEphemeral,
                             leftButton
                         ) {
                             it.invalidateComponentCallback()
@@ -426,6 +428,7 @@ class BrokerCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     if (pageZeroIndexed != totalPagesZeroIndexed) {
                         loritta.interactivityManager.buttonForUser(
                             context.user.idLong,
+                            context.alwaysEphemeral,
                             rightButton
                         ) {
                             it.invalidateComponentCallback()

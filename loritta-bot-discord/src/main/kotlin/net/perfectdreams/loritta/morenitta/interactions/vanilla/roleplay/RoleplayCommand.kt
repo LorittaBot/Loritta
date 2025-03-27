@@ -33,6 +33,7 @@ class RoleplayCommand {
 
             val (achievementTargets, message) = RoleplayUtils.handleRoleplayMessage(
                 context.loritta,
+                context,
                 context.i18nContext,
                 RetributeRoleplayData(
                     context.user.idLong,
@@ -65,6 +66,7 @@ class RoleplayCommand {
                 // We don't care about achievements, because none of the actions that Loritta do *should* trigger a achievement
                 val (_, lorittaMessage) = RoleplayUtils.handleRoleplayMessage(
                     context.loritta,
+                    context,
                     context.i18nContext,
                     RetributeRoleplayData(
                         context.user.idLong, // This doesn't really matter because it will be changed in the handleRoleplayMessage
@@ -218,6 +220,7 @@ class RoleplayCommand {
                         val buttons = attributes.map {
                             loritta.interactivityManager.buttonForUser(
                                 context.user,
+                                context.alwaysEphemeral,
                                 ButtonStyle.PRIMARY,
                                 context.i18nContext.get(it.buttonLabel),
                                 {

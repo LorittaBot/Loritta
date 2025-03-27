@@ -193,6 +193,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val viewParticipants = loritta.interactivityManager
                 .button(
+                    context.alwaysEphemeral,
                     ButtonStyle.SECONDARY,
                     context.i18nContext.get(I18N_PREFIX.Status.Participants.Label),
                     {
@@ -259,6 +260,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val notifyMeButton = loritta.interactivityManager
                 .button(
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     context.i18nContext.get(I18N_PREFIX.Status.NotifyMe.Label),
                     {
@@ -685,6 +687,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     if (addLeftButton) {
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             leftButton
                         ) {
                             val hook = it.updateMessageSetLoadingState(updateMessageContent = false)
@@ -702,6 +705,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     if (addRightButton) {
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             rightButton
                         ) {
                             val hook = it.updateMessageSetLoadingState(updateMessageContent = false)

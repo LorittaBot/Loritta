@@ -28,6 +28,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
             is LoriTuberTask.Sleeping -> {
                 val button = loritta.interactivityManager.buttonForUser(
                     user,
+                    false,
                     ButtonStyle.PRIMARY,
                     "Acordar"
                 ) {
@@ -62,6 +63,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
             null -> {
                 val button = loritta.interactivityManager.buttonForUser(
                     user,
+                    false,
                     ButtonStyle.PRIMARY,
                     "Ver Canal no LoriTube",
                     {
@@ -96,6 +98,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
 
                 val sleep = loritta.interactivityManager.buttonForUser(
                     user,
+                    false,
                     ButtonStyle.PRIMARY,
                     "Dormir",
                     {
@@ -118,6 +121,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
 
                 val goToComputerPartsShop = loritta.interactivityManager.buttonForUser(
                     user,
+                    false,
                     ButtonStyle.PRIMARY,
                     "Ir para a SparkBytes",
                     {
@@ -136,6 +140,7 @@ class ViewMotivesScreen(command: LoriTuberCommand, user: User, hook: Interaction
 
                 val debugMenu = loritta.interactivityManager.buttonForUser(
                     user,
+                    false,
                     ButtonStyle.SECONDARY,
                     "Menu de Depuração",
                 ) {

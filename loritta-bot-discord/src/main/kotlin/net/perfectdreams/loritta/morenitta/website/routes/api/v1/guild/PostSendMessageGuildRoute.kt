@@ -120,6 +120,7 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 				val i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
 				patchedMessage.addActionRow(
 					loritta.interactivityManager.button(
+						false,
 						ButtonStyle.SECONDARY,
 						i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
 						{
@@ -164,6 +165,7 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 					val i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
 					patchedMessage.addActionRow(
 						loritta.interactivityManager.button(
+							false,
 							ButtonStyle.SECONDARY,
 							i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
 							{

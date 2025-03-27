@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import net.perfectdreams.randomroleplaypictures.common.data.api.AnimeSource
 import java.awt.Color
@@ -97,6 +98,7 @@ object RoleplayUtils {
 
     suspend fun handleRoleplayMessage(
         loritta: LorittaBot,
+        context: UnleashedContext,
         i18nContext: I18nContext,
         data: RetributeRoleplayData,
         client: RandomRoleplayPicturesClient,
@@ -262,6 +264,7 @@ object RoleplayUtils {
                 if (giver != receiver) {
                     loritta.interactivityManager.buttonForUser(
                         receiver,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         i18nContext.get(RoleplayCommand.I18N_PREFIX.Retribute),
                         {
@@ -273,6 +276,7 @@ object RoleplayUtils {
                         // Retribute
                         val (achievementTargets, message) = handleRoleplayMessage(
                             context.loritta,
+                            context,
                             context.i18nContext,
                             RetributeRoleplayData(
                                 receiver,
@@ -297,6 +301,7 @@ object RoleplayUtils {
                     }
                 } else {
                     loritta.interactivityManager.disabledButton(
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         i18nContext.get(RoleplayCommand.I18N_PREFIX.Retribute),
                     ) {
@@ -305,6 +310,7 @@ object RoleplayUtils {
                 },
                 if (pictureSource != null) {
                     loritta.interactivityManager.button(
+                        context.alwaysEphemeral,
                         ButtonStyle.SECONDARY,
                         i18nContext.get(RoleplayCommand.I18N_PREFIX.PictureSource),
                         {
@@ -319,6 +325,7 @@ object RoleplayUtils {
                     }
                 } else {
                     loritta.interactivityManager.disabledButton(
+                        context.alwaysEphemeral,
                         ButtonStyle.SECONDARY,
                         i18nContext.get(RoleplayCommand.I18N_PREFIX.PictureSource)
                     ) {

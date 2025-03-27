@@ -266,7 +266,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                 )
 
                                 actionRow(
-                                    m.interactivityManager.buttonForUser(event.user, ButtonStyle.DANGER, i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.LeaveGiveaway), { loriEmoji = Emotes.LoriBear }) {
+                                    m.interactivityManager.buttonForUser(event.user, false, ButtonStyle.DANGER, i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.LeaveGiveaway), { loriEmoji = Emotes.LoriBear }) {
                                         val deferredReply = it.event.deferReply(true).await()
 
                                         // First we will try to make the user leave the giveaway

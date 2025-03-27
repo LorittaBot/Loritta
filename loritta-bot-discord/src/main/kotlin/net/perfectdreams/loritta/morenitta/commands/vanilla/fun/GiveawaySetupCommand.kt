@@ -110,7 +110,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 )
 
                 actionRow(
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.LetsSetupYourGiveawayStep.StartSetup)) {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.LetsSetupYourGiveawayStep.StartSetup)) {
                         val giveawayNameOption = modalString(
                             context.i18nContext.get(I18N_PREFIX.LetsSetupYourGiveawayStep.GiveawayName),
                             TextInputStyle.SHORT,
@@ -347,7 +347,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 allowedMentionTypes = EnumSet.of(Message.MentionType.EMOJI)
 
                 actionRow(
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ChooseWhatRolesCanParticipate)) {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, label = context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ChooseWhatRolesCanParticipate)) {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -411,7 +411,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                                         allowedMentionTypes = EnumSet.of(Message.MentionType.EMOJI)
 
                                         actionRow(
-                                            loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ShouldHaveAllRoles)) {
+                                            loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ShouldHaveAllRoles)) {
                                                 it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                                                 it.event.message.delete().await()
 
@@ -419,7 +419,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
                                                 getGiveawayAllowedToParticipateFilteringRoles(context, locale, builder)
                                             },
-                                            loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ShouldHaveAnyRole)) {
+                                            loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ShouldHaveAnyRole)) {
                                                 it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                                                 it.event.message.delete().await()
 
@@ -437,7 +437,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                             }
                         }
                     },
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ChooseWhatRolesCannotParticipate)) {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, label = context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.ChooseWhatRolesCannotParticipate)) {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -501,14 +501,14 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                                         allowedMentionTypes = EnumSet.of(Message.MentionType.EMOJI)
 
                                         actionRow(
-                                            loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.CantHaveAllRoles)) {
+                                            loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.CantHaveAllRoles)) {
                                                 it.event.message.delete().await()
 
                                                 builder.deniedRoles = GiveawayRoles(roles.map { it.idLong }, true)
 
                                                 getGiveawayAllowedToParticipateFilteringRoles(context, locale, builder)
                                             },
-                                            loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.CantHaveAnyRole)) {
+                                            loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.DoYouWantToAllowSpecificRolesToParticipateStep.CantHaveAnyRole)) {
                                                 it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                                                 it.event.message.delete().await()
 
@@ -526,7 +526,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                             }
                         }
                     },
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.SECONDARY, label = "Continuar") {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.SECONDARY, label = "Continuar") {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -580,7 +580,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 styled("A opção de requisito de mensagens está desativada por enquanto, sorry!!")
 
                 actionRow(
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Verificação de Daily") {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, label = "Verificação de Daily") {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -591,7 +591,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 )
 
                 actionRow(
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Ter ganhado X vezes no Emoji Fight Bet no servidor") {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, label = "Ter ganhado X vezes no Emoji Fight Bet no servidor") {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -614,7 +614,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                             getSpecialLorittaCommunityExclusiveFeatures(context, locale, builder)
                         }
                     },
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Ter perdido X vezes no Emoji Fight Bet no servidor") {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, label = "Ter perdido X vezes no Emoji Fight Bet no servidor") {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -640,7 +640,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 )
 
                 actionRow(
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, label = "Ter enviado X mensagens") {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, label = "Ter enviado X mensagens") {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -683,7 +683,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 )
 
                 actionRow(
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.SECONDARY, label = "Continuar") {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.SECONDARY, label = "Continuar") {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -703,7 +703,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 )
 
                 actionRow(
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.GiveawayWinningRoles.GiveRolesToWinner), { emoji = Emoji.fromUnicode("✅") }) {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY, context.i18nContext.get(I18N_PREFIX.GiveawayWinningRoles.GiveRolesToWinner), { emoji = Emoji.fromUnicode("✅") }) {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -780,7 +780,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                             getGiveawayWinnerCount(context, locale, builder)
                         }
                     },
-                    loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.PRIMARY,  context.i18nContext.get(I18N_PREFIX.GiveawayWinningRoles.DontGiveRolesToWinner), { emoji = Emoji.fromUnicode("\uD83D\uDE45") }) {
+                    loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.PRIMARY,  context.i18nContext.get(I18N_PREFIX.GiveawayWinningRoles.DontGiveRolesToWinner), { emoji = Emoji.fromUnicode("\uD83D\uDE45") }) {
                         it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                         it.event.message.delete().await()
 
@@ -865,7 +865,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
     private fun InlineMessage<*>.addCancelOption(context: DiscordCommandContext) {
         actionRow(
-            loritta.interactivityManager.buttonForUser(context.user, ButtonStyle.DANGER, context.i18nContext.get(I18N_PREFIX.CancelConfiguration), { emoji = Emoji.fromCustom("error", 412585701054611458, false) }) {
+            loritta.interactivityManager.buttonForUser(context.user, false, ButtonStyle.DANGER, context.i18nContext.get(I18N_PREFIX.CancelConfiguration), { emoji = Emoji.fromCustom("error", 412585701054611458, false) }) {
                 it.deferEdit() // We need to defer before deleting the message, because if we don't, a "Unknown Webhook" error will happen!
                 it.event.message.delete().await()
 

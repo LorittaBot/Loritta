@@ -118,6 +118,7 @@ class PostTestMessageRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedDash
 		if (5 > patchedMessage.components.size) { // Below the component limit
 			patchedMessage.addActionRow(
 				loritta.interactivityManager.button(
+					false,
 					ButtonStyle.SECONDARY,
 					i18nContext.get(I18nKeysData.Common.TestMessageWarning.ButtonLabel),
 					{

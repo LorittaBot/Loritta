@@ -17,6 +17,7 @@ class DebugMenuScreen(command: LoriTuberCommand, user: User, hook: InteractionHo
 
         val viewMotivesButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Voltar ao cafofo",
             {

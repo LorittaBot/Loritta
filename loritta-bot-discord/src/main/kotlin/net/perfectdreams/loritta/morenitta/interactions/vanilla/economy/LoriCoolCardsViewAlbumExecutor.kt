@@ -224,6 +224,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                         if (pageCombo.pageLeft != 1) {
                             loritta.interactivityManager.buttonForUser(
                                 context.user.idLong,
+                                context.alwaysEphemeral,
                                 jumpToFirstButton
                             ) {
                                 it.invalidateComponentCallback()
@@ -257,6 +258,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                         if (template.getAlbumComboPageByPage(pageLookup - 2) != null) {
                             loritta.interactivityManager.buttonForUser(
                                 context.user.idLong,
+                                context.alwaysEphemeral,
                                 leftButton
                             ) {
                                 it.invalidateComponentCallback()
@@ -290,6 +292,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                         if (template.getAlbumComboPageByPage(pageLookup + 2) != null) {
                             loritta.interactivityManager.buttonForUser(
                                 context.user.idLong,
+                                context.alwaysEphemeral,
                                 rightButton
                             ) {
                                 it.invalidateComponentCallback()
@@ -323,6 +326,7 @@ class LoriCoolCardsViewAlbumExecutor(val loritta: LorittaBot, private val loriCo
                         if (pageCombo.pageRight != template.pages.last().pageRight) {
                             loritta.interactivityManager.buttonForUser(
                                 context.user.idLong,
+                                context.alwaysEphemeral,
                                 jumpToLastButton
                             ) {
                                 it.invalidateComponentCallback()

@@ -148,6 +148,7 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
                 actionRow(
                     loritta.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         builder = {
                             loriEmoji = Emotes.ChevronLeft
@@ -166,6 +167,7 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
                     },
                     loritta.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         builder = {
                             loriEmoji = Emotes.ChevronRight

@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
@@ -154,6 +153,7 @@ class LoriCoolCardsDuplicateStickersInventoryExecutor(val loritta: LorittaBot, p
                             stickersThatYouNeedButton.asDisabled()
                         else
                             loritta.interactivityManager.button(
+                                context.alwaysEphemeral,
                                 stickersThatYouNeedButton
                             ) { context ->
                                 context.reply(true) {

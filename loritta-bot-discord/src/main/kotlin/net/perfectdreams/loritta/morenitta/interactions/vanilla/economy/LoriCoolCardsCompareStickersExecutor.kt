@@ -18,7 +18,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.count
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
@@ -125,6 +128,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                             stickersThatYouNeedButton.asDisabled()
                         else
                             loritta.interactivityManager.button(
+                                context.alwaysEphemeral,
                                 stickersThatYouNeedButton
                             ) { context ->
                                 context.reply(true) {
@@ -138,6 +142,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                             stickersThatOtherFriendButton.asDisabled()
                         else
                             loritta.interactivityManager.button(
+                                context.alwaysEphemeral,
                                 stickersThatOtherFriendButton
                             ) { context ->
                                 context.reply(true) {

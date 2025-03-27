@@ -91,6 +91,7 @@ object OCRExecutor {
                 actionRow(
                     loritta.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         context.i18nContext.get(I18N_PREFIX.TranslateToLanguage(context.i18nContext.get(userGoogleLocale.languageNameI18nKey))),
                         {

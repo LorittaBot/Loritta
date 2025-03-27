@@ -82,6 +82,7 @@ class MessageStickerCommand : MessageCommandDeclarationWrapper {
                             ),
                             context.loritta.interactivityManager.buttonForUser(
                                 context.user,
+                                context.alwaysEphemeral,
                                 ButtonStyle.PRIMARY,
                                 context.i18nContext.get(I18N_PREFIX.AddStickerToTheServer)
                             ) {

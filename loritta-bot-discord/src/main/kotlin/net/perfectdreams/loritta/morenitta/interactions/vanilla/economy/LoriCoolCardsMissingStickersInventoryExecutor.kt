@@ -115,6 +115,7 @@ class LoriCoolCardsMissingStickersInventoryExecutor(val loritta: LorittaBot, pri
                             stickersThatYouNeedButton.asDisabled()
                         else
                             loritta.interactivityManager.button(
+                                context.alwaysEphemeral,
                                 stickersThatYouNeedButton
                             ) { context ->
                                 context.reply(true) {

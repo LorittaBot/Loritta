@@ -176,6 +176,7 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
                     actionRow(
                         m.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             ButtonStyle.SECONDARY,
                             context.i18nContext.get(I18N_PREFIX.SendMessageCopy)
                         ) { context ->
@@ -211,6 +212,7 @@ class VerifyMessageCommand(val m: LorittaBot) : SlashCommandDeclarationWrapper {
 
                         m.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             ButtonStyle.SECONDARY,
                             context.i18nContext.get(I18N_PREFIX.SendMessageCopyJson)
                         ) { context ->

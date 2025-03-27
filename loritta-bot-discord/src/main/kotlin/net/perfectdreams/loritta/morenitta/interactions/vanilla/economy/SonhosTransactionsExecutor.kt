@@ -34,6 +34,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
         fun createMessage(
             loritta: LorittaBot,
+            context: UnleashedContext,
             i18nContext: I18nContext,
             userId: Long,
             viewingTransactionsOfUserId: Long,
@@ -72,6 +73,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                 apply(
                     createTooManyPagesMessage(
                         loritta,
+                        context,
                         i18nContext,
                         userId,
                         viewingTransactionsOfUserId,
@@ -111,6 +113,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                     if (addLeftButton) {
                         loritta.interactivityManager.buttonForUser(
                             userId,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             "",
                             {
@@ -128,6 +131,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         }
                     } else {
                         loritta.interactivityManager.disabledButton(
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             ""
                         ) {
@@ -138,6 +142,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                     if (addRightButton) {
                         loritta.interactivityManager.buttonForUser(
                             userId,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             "",
                             {
@@ -155,6 +160,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                         }
                     } else {
                         loritta.interactivityManager.disabledButton(
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             ""
                         ) {
@@ -167,6 +173,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
                     // This action row is for select menu to filter transactions.
                     loritta.interactivityManager.stringSelectMenuForUser(
                         userId,
+                        context.alwaysEphemeral,
                         {
                             val transactionTypes = TransactionType.entries
                             maxValues = 25
@@ -191,6 +198,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
                         val builtMessage = createMessage(
                             loritta,
+                            context,
                             context.i18nContext,
                             userId,
                             viewingTransactionsOfUserId,
@@ -354,6 +362,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
         suspend fun createTooManyPagesMessage(
             loritta: LorittaBot,
+            context: UnleashedContext,
             i18nContext: I18nContext,
             userId: Long,
             viewingTransactionsOfUserId: Long,
@@ -374,6 +383,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
             actionRow(
                 loritta.interactivityManager.buttonForUser(
                     userId,
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UnknownPage.GoToTheLastPage),
                     {
@@ -404,6 +414,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
             val builtMessage = createMessage(
                 loritta,
+                context,
                 context.i18nContext,
                 userId,
                 viewingTransactionsOfUserId,
@@ -435,6 +446,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
         val message = createMessage(
             loritta,
+            context,
             context.i18nContext,
             context.user.idLong,
             userId,

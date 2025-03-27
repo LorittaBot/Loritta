@@ -38,7 +38,6 @@ import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
-import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteExecutor
@@ -675,7 +674,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 } else {
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
-                val callbackId = loritta.interactivityManager.buttonInteractionCallbacks[componentId.uniqueId]
+                val callbackData = loritta.interactivityManager.buttonInteractionCallbacks[componentId.uniqueId]
                 context = ComponentContext(
                     loritta,
                     serverConfig,
@@ -684,10 +683,9 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
-                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
 
                 // We don't know about this callback! It probably has expired, so let's tell the user about it
-                if (callbackId == null) {
+                if (callbackData == null) {
                     context.reply(true) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
@@ -697,7 +695,9 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     return@launch
                 }
 
-                callbackId.invoke(context)
+                context.alwaysEphemeral = callbackData.alwaysEphemeral // Inherit alwaysEphemeral from the callback data
+
+                callbackData.callback.invoke(context)
             } catch (e: Exception) {
                 val errorId = LorittaUtils.generateErrorId(loritta)
                 logger.warn(e) { "Something went wrong while executing button interaction! Error ID: $errorId" }
@@ -783,7 +783,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
 
-                val callback = loritta.interactivityManager.selectMenuInteractionCallbacks[componentId.uniqueId]
+                val callbackData = loritta.interactivityManager.selectMenuInteractionCallbacks[componentId.uniqueId]
                 context = ComponentContext(
                     loritta,
                     serverConfig,
@@ -792,10 +792,9 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
-                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
 
                 // We don't know about this callback! It probably has expired, so let's tell the user about it
-                if (callback == null) {
+                if (callbackData == null) {
                     context.reply(true) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
@@ -805,7 +804,9 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     return@launch
                 }
 
-                callback.invoke(context, event.interaction.values)
+                context.alwaysEphemeral = callbackData.alwaysEphemeral // Inherit alwaysEphemeral from the callback data
+
+                callbackData.callback.invoke(context, event.interaction.values)
             } catch (e: Exception) {
                 val errorId = LorittaUtils.generateErrorId(loritta)
                 logger.warn(e) { "Something went wrong while executing select menu interaction! Error ID: $errorId" }
@@ -890,7 +891,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 } else {
                     LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
                 }
-                val modalCallback = loritta.interactivityManager.modalCallbacks[modalId.uniqueId]
+                val callbackData = loritta.interactivityManager.modalCallbacks[modalId.uniqueId]
                 context = ModalContext(
                     loritta,
                     serverConfig,
@@ -899,10 +900,9 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
-                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
 
                 // We don't know about this callback! It probably has expired, so let's tell the user about it
-                if (modalCallback == null) {
+                if (callbackData == null) {
                     context.reply(true) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
@@ -912,7 +912,9 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     return@launch
                 }
 
-                modalCallback.invoke(context, ModalArguments(event))
+                context.alwaysEphemeral = callbackData.alwaysEphemeral // Inherit alwaysEphemeral from the callback data
+
+                callbackData.callback.invoke(context, ModalArguments(event))
             } catch (e: Exception) {
                 val errorId = LorittaUtils.generateErrorId(loritta)
                 logger.warn(e) { "Something went wrong while executing modal interaction! Error ID: $errorId" }
@@ -1187,23 +1189,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 // So, it is actually enabled on a user install context!
                 // What we'll do instead is force the interaction to ALWAYS be ephemeral
                 // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
-                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
+                context.alwaysEphemeral = !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
             }
         }
 
         return false
-    }
-
-    /**
-     * Checks if the current [context] should always be ephemeral or not
-     *
-     * @param context the context
-     * @return if true, then the context should be set to always be ephemeral
-     */
-    private fun checkIfTheCommandShouldBeAlwaysEphemeral(context: UnleashedContext): Boolean {
-        if (context.guildId == null)
-            return false
-
-        return !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
     }
 }

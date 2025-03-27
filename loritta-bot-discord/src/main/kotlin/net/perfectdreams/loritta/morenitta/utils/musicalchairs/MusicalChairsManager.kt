@@ -502,6 +502,7 @@ class MusicalChairsManager(val loritta: LorittaBot) {
 
                 actionRow(
                     loritta.interactivityManager.button(
+                        context.callbackAlwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         i18nContext.get(I18N_PREFIX.SitInTheChairWithYourButt),
                         {
@@ -611,6 +612,7 @@ class MusicalChairsManager(val loritta: LorittaBot) {
      */
     sealed class MusicalChairsContext {
         abstract val i18nContext: I18nContext
+        abstract val callbackAlwaysEphemeral: Boolean
 
         suspend fun reply(ephemeral: Boolean, content: String) = reply(ephemeral) {
             this.content = content
@@ -659,6 +661,9 @@ class MusicalChairsManager(val loritta: LorittaBot) {
             override val i18nContext: I18nContext
                 get() = context.i18nContext
 
+            override val callbackAlwaysEphemeral: Boolean
+                get() = context.alwaysEphemeral
+
             override suspend fun reply(
                 ephemeral: Boolean,
                 builder: suspend InlineMessage<MessageCreateData>.() -> Unit
@@ -669,6 +674,9 @@ class MusicalChairsManager(val loritta: LorittaBot) {
             override val i18nContext: I18nContext,
             val channel: MessageChannel
         ) : MusicalChairsContext() {
+            override val callbackAlwaysEphemeral: Boolean
+                get() = false
+
             override suspend fun reply(
                 ephemeral: Boolean,
                 builder: suspend InlineMessage<MessageCreateData>.() -> Unit

@@ -36,6 +36,7 @@ class CreateVideoBeginningScreen(
 
         val viewChannelButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Voltar",
             {
@@ -55,6 +56,7 @@ class CreateVideoBeginningScreen(
 
         val createVideoButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Continuar"
         ) {

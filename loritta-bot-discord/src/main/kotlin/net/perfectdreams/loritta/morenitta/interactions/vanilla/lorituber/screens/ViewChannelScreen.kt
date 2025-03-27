@@ -48,6 +48,7 @@ class ViewChannelScreen(
 
             loritta.interactivityManager.buttonForUser(
                 user,
+                false,
                 ButtonStyle.PRIMARY,
                 "Continuar vídeo",
                 {
@@ -67,6 +68,7 @@ class ViewChannelScreen(
         } else {
             loritta.interactivityManager.buttonForUser(
                 user,
+                false,
                 ButtonStyle.PRIMARY,
                 "Criar vídeo",
                 {
@@ -87,6 +89,7 @@ class ViewChannelScreen(
 
         val viewMotivesButton = loritta.interactivityManager.buttonForUser(
             user,
+            false,
             ButtonStyle.PRIMARY,
             "Voltar ao cafofo",
             {

@@ -153,6 +153,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val loriCoolCardsUpsellButton = SonhosUtils.createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
                 loritta,
+                context,
                 context.i18nContext
             )
 
@@ -276,6 +277,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 appendActiveReactionEventUpsellInformationIfNotNull(
                     loritta,
+                    context,
                     context.i18nContext,
                     ReactionEventsAttributes.getActiveEvent(java.time.Instant.now())
                 )?.let { buttons += it }

@@ -343,7 +343,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
 
                                     actionRow(
                                         if (cards.isNotEmpty()) {
-                                            loritta.interactivityManager.buttonForUser(context.user, nextStickerButton) {
+                                            loritta.interactivityManager.buttonForUser(context.user, context.alwaysEphemeral, nextStickerButton) {
                                                 // We don't need to defer here because the getCurrentProfileIdAndCreateMessage does not do any database related things here!
                                                 // (if it does, then we need to update the code)
                                                 it.event.editMessage(MessageEdit { apply(getCurrentStickerAndCreateMessage()) })
@@ -355,6 +355,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                         } else nextStickerButton.asDisabled(),
                                         loritta.interactivityManager.buttonForUser(
                                             context.user,
+                                            context.alwaysEphemeral,
                                             viewSummaryButton
                                         ) {
                                             // We need to do this because the user may have clicked the "View Summary" button before looking at all the stickers
@@ -409,6 +410,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                                         loritta.interactivityManager
                                                             .buttonForUser(
                                                                 context.user,
+                                                                context.alwaysEphemeral,
                                                                 stickStickersButton
                                                             ) {
                                                                 loriCoolCardsCommand.stickStickers.stickStickers(it)
@@ -416,6 +418,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                                         loritta.interactivityManager
                                                             .buttonForUser(
                                                                 context.user,
+                                                                context.alwaysEphemeral,
                                                                 buyMoreStickerPacksButton
                                                             ) {
                                                                 it.deferChannelMessage(false)
@@ -430,6 +433,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                                                         loritta.interactivityManager
                                                             .buttonForUser(
                                                                 context.user,
+                                                                context.alwaysEphemeral,
                                                                 buyMoreStickerPacksButton
                                                             ) {
                                                                 it.deferChannelMessage(false)
@@ -465,30 +469,35 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                     actionRow(
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             buyBoosterPack1xButton
                         ) {
                             clickCallback.invoke(it, 1)
                         },
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             buyBoosterPack2xButton
                         ) {
                             clickCallback.invoke(it, 2)
                         },
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             buyBoosterPack3xButton
                         ) {
                             clickCallback.invoke(it, 3)
                         },
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             buyBoosterPack4xButton
                         ) {
                             clickCallback.invoke(it, 4)
                         },
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             buyBoosterPack5xButton
                         ) {
                             clickCallback.invoke(it, 5)

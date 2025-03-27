@@ -29,7 +29,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.*
 import java.time.temporal.TemporalAdjusters
@@ -96,6 +95,7 @@ object SonhosUtils {
 
     fun InlineMessage<*>.appendActiveReactionEventUpsellInformationIfNotNull(
         loritta: LorittaBot,
+        context: UnleashedContext,
         i18nContext: I18nContext,
         activeReactionEvent: ReactionEvent?
     ): Button? {
@@ -103,6 +103,7 @@ object SonhosUtils {
             val emoji = loritta.emojiManager.get(activeReactionEvent.createCraftItemButtonMessage(i18nContext).emoji)
 
             return loritta.interactivityManager.button(
+                context.alwaysEphemeral,
                 ButtonStyle.SECONDARY,
                 i18nContext.get(I18nKeysData.Commands.ActiveReactionEvent.ButtonLabel(activeReactionEvent.createEventTitle(i18nContext))),
                 {
@@ -135,6 +136,7 @@ object SonhosUtils {
 
     suspend fun createActiveLoriCoolCardsEventUpsellInformationIfNotNull(
         loritta: LorittaBot,
+        context: UnleashedContext,
         i18nContext: I18nContext
     ): Button? {
         // This is disabled while the event is in hiatus
@@ -165,6 +167,7 @@ object SonhosUtils {
                 val template = Json.decodeFromString<StickerAlbumTemplate>(activeLoriCoolCardsEvent[LoriCoolCardsEvents.template])
 
                 return loritta.interactivityManager.button(
+                    context.alwaysEphemeral,
                     ButtonStyle.SECONDARY,
                     i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.EventStarted.ButtonLabel),
                     {
@@ -207,6 +210,7 @@ object SonhosUtils {
             }
         } else if (nowZDT.dayOfMonth == 1 || nowZDT.dayOfMonth == lastDayOfTheMonth) {
             return loritta.interactivityManager.button(
+                context.alwaysEphemeral,
                 ButtonStyle.SECONDARY,
                 i18nContext.get(I18nKeysData.Commands.LoriCoolCardsEvent.PreEvent.ButtonLabel),
                 {

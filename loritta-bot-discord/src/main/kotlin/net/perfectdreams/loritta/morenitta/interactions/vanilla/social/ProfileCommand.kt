@@ -54,6 +54,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         suspend fun createMessage(
             loritta: LorittaBot,
+            context: UnleashedContext,
             i18nContext: I18nContext,
             sender: User,
             userToBeViewed: User,
@@ -67,6 +68,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 actionRow(
                     loritta.interactivityManager.buttonForUser(
                         sender,
+                        context.alwaysEphemeral,
                         ButtonStyle.SECONDARY,
                         i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeAboutMe),
                         {
@@ -108,7 +110,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 profileCreator
                             )
 
-                            val message = createMessage(loritta, it.i18nContext, it.user, it.user, profileCreator, result)
+                            val message = createMessage(loritta, context, it.i18nContext, it.user, it.user, profileCreator, result)
 
                             hook.jdaHook.editOriginal(
                                 MessageEdit {
@@ -284,6 +286,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val message = createMessage(
                 loritta,
+                context,
                 context.i18nContext,
                 context.user,
                 userToBeViewed,
@@ -394,6 +397,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     actionRow(
                         loritta.interactivityManager.stringSelectMenuForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             {
                                 placeholder = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.ChooseABadge)
 
@@ -423,6 +427,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     actionRow(
                         loritta.interactivityManager.buttonForUser(
                             context.user,
+                            context.alwaysEphemeral,
                             ButtonStyle.PRIMARY,
                             context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.UnequipBadge)
                         ) {
@@ -463,6 +468,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 val components = mutableListOf(
                     loritta.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.SECONDARY,
                         builder = {
                             this.loriEmoji = Emotes.ChevronLeft
@@ -479,6 +485,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 if (badge !is Badge.GuildBadge) {
                     components += loritta.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.EquipBadge)
                     ) {
@@ -632,6 +639,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             actionRow(
                 loritta.interactivityManager.buttonForUser(
                     context.user,
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     builder = {
                         loriEmoji = Emotes.ChevronLeft
@@ -650,6 +658,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 },
                 loritta.interactivityManager.buttonForUser(
                     context.user,
+                    context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
                     builder = {
                         loriEmoji = Emotes.ChevronRight
