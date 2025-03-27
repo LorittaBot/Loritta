@@ -154,7 +154,13 @@ class InteractivityManager {
         builder: (JDAButtonBuilder).() -> (Unit) = {}
     ): Button {
         val buttonId = UUID.randomUUID()
-        return Button.of(style, "disabled:$buttonId", label)
+        // In recent JDA updates, JDA trips a check if the label && emoji are empty
+        // This is bad for us, because we use this as a builder and, in some things, we set the emoji after the button is created, which
+        // completely borks out any buttons that have an empty label + button
+        //
+        // To work around this, we set a " " label to bypass the check
+        // This MUST be refactored later, because if JDA changes the check again, this WILL break!
+        return Button.of(style, "disabled:$buttonId", label.let { if (it.isEmpty()) " " else it })
             .let {
                 JDAButtonBuilder(it).apply(builder)
                     .apply {
