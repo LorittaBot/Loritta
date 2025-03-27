@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteExecutor
@@ -683,6 +684,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
+                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
 
                 // We don't know about this callback! It probably has expired, so let's tell the user about it
                 if (callbackId == null) {
@@ -790,6 +792,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
+                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
+
                 // We don't know about this callback! It probably has expired, so let's tell the user about it
                 if (callback == null) {
                     context.reply(true) {
@@ -895,6 +899,8 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                     i18nContext,
                     event
                 )
+                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
+
                 // We don't know about this callback! It probably has expired, so let's tell the user about it
                 if (modalCallback == null) {
                     context.reply(true) {
@@ -1181,10 +1187,23 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 // So, it is actually enabled on a user install context!
                 // What we'll do instead is force the interaction to ALWAYS be ephemeral
                 // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
-                context.alwaysEphemeral = !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
+                context.alwaysEphemeral = checkIfTheCommandShouldBeAlwaysEphemeral(context)
             }
         }
 
         return false
+    }
+
+    /**
+     * Checks if the current [context] should always be ephemeral or not
+     *
+     * @param context the context
+     * @return if true, then the context should be set to always be ephemeral
+     */
+    private fun checkIfTheCommandShouldBeAlwaysEphemeral(context: UnleashedContext): Boolean {
+        if (context.guildId == null)
+            return false
+
+        return !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
     }
 }
