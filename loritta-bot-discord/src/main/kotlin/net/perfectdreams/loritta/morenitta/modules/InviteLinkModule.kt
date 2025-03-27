@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import java.net.URLDecoder
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
@@ -253,6 +254,10 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 			.replace(Regex("/+"), "/")
 			// Fixes links like https://discord.com/../invite/sparklypower
 			.replace("../", "")
+			// Fixes invite bypass by using percent encoding with <https://%64%69%73%63%6F%72%64%2E%67%67/%6C%6F%72%69%74%74%61>
+			.let {
+				URLDecoder.decode(it, Charsets.UTF_8)
+			}
 	}
 
 	private fun checkMessage(message: MessageWrapper): List<Matcher> {
