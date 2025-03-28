@@ -10,6 +10,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.*
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
@@ -1189,8 +1190,21 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 // So, it is actually enabled on a user install context!
                 // What we'll do instead is force the interaction to ALWAYS be ephemeral
                 // If the user has permission, then the message should be PUBLIC, if not, it should be EPHEMERAL
-                context.alwaysEphemeral = !context.member.hasPermission(Permission.USE_EXTERNAL_APPLICATIONS)
+                context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_EXTERNAL_APPLICATIONS)
             }
+        } else {
+            // Power Thoughts on DDevs:
+            // I think this was already discussed before but I'm stupid and I don't remember the reasoning:
+            //
+            // If a user does not have permission to use slash commands in a specific channel, and they have the bot installed on their account, the user can use commands on the channel. They show up as ephemeral, which is fine.
+            //
+            // However, any further message responses invoked by components on that slash command are not ephemeral, which is a bit... weird, in my opinion
+            // It is weird because bot devs need to take care of this special case and check if the user does not have permission to use apps on the current channel and, if they don't, force it to always be ephemeral
+            // but at the same time I don't know how Discord could fix this, because blindingly checking if the user has permission to use apps on the current channel would break other things, so I think I figured out why Discord does not do that by themselves lol
+            // ---
+            // So, for this case, we set the alwaysEphemeral flag if the user does NOT have permission to use application commands on the current channel
+            // The command IS ENABLED on the current server, so we don't mind if they don't have permission to use external applications
+            context.alwaysEphemeral = !context.member.hasPermission(context.channel as GuildChannel, Permission.USE_APPLICATION_COMMANDS)
         }
 
         return false
