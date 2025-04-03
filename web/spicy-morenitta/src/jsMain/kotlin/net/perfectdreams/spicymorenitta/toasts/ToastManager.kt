@@ -53,8 +53,13 @@ class ToastManager(private val m: SpicyMorenitta) {
         }
     }
 
-    fun subscribe(callback: (List<ToastWithAnimationState>) -> (Unit)) {
+    fun subscribe(callback: (List<ToastWithAnimationState>) -> (Unit)): (List<ToastWithAnimationState>) -> Unit {
         callbacks.add(callback)
+        return callback
+    }
+
+    fun unsubscribe(callback: (List<ToastWithAnimationState>) -> (Unit)) {
+        callbacks.remove(callback)
     }
 
     private fun notifySubscribers() {
@@ -82,7 +87,7 @@ class ToastManager(private val m: SpicyMorenitta) {
             var activeToasts by useState<List<ToastWithAnimationState>>(listOf())
 
             useEffectOnce {
-                subscribe {
+                val callback = subscribe {
                     val currentlyActiveToastsIds = activeToasts.map { it.toastId }
                     val newActiveToastsIds = it.map { it.toastId }
 
@@ -101,7 +106,7 @@ class ToastManager(private val m: SpicyMorenitta) {
                     activeToasts = it
                 }
 
-                return@useEffectOnce println("Unmounting toast")
+                return@useEffectOnce unsubscribe(callback)
             }
 
             div {
