@@ -53,18 +53,33 @@ class ToastManager(private val m: SpicyMorenitta) {
         }
     }
 
+    // The reason why we have a subscription system is that the toast list component has a copy of the active toast list due to the way React works
+    // Because we can't set state inside the component, so somehow we need to update the list inside of the component
+    /**
+     * Subscribes to changes to the active toasts list
+     *
+     * @param callback the code that will be executed on update
+     * @return the created callback
+     */
     fun subscribe(callback: (List<ToastWithAnimationState>) -> (Unit)): (List<ToastWithAnimationState>) -> Unit {
         callbacks.add(callback)
         return callback
     }
 
+    /**
+     * Unsubscribes from changes of the active toasts list
+     *
+     * @param callback the code that will be executed on update
+     */
     fun unsubscribe(callback: (List<ToastWithAnimationState>) -> (Unit)) {
         callbacks.remove(callback)
     }
 
+    /**
+     * Notifies subscribers about changes to the active toasts list
+     */
     private fun notifySubscribers() {
         for (callback in this.callbacks) {
-            println("Invoking callback... Current callbacks: ${this.callbacks.size}; Current toasts: ${this.activeToasts.size}")
             // This looks stupid, but yes we need to create a NEW LIST because if we don't, React won't know how to rerender
             callback.invoke(this.activeToasts.toList())
         }
