@@ -82,9 +82,11 @@ include(":web:showtime:backend")
 include(":web:showtime:showtime-frontend")
 
 // ===[ DASHBOARD ]===
-include(":web:dashboard:dashboard-common")
-include(":web:dashboard:backend")
-include(":web:dashboard:spicy-frontend")
+// Disabled for now because something (Compose?) is causing errors on the spicy-frontend module
+//  IrSimpleFunctionSymbolImpl is already bound. Signature: null. Owner: FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL <> ($composer:androidx.compose.runtime.Composer?, $changed:kotlin.Int) returnType:kotlin.Unit
+// include(":web:dashboard:dashboard-common")
+// include(":web:dashboard:backend")
+// include(":web:dashboard:spicy-frontend")
 
 // ===[ LORITUBER ]===
 include(":lorituber:server")
