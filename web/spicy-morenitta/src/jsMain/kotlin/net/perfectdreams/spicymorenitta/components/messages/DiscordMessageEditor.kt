@@ -452,7 +452,7 @@ fun DiscordMessageEditor(
                                                     if (author.url != null || author.iconUrl != null) {
                                                         // If the author text is null BUT there's an icon or URL set, tell the user that they must delete both before deleting the text
                                                         m.toastManager.showToast(Toast.Type.WARN, "Embed Inválida") {
-                                                            Text("Você não pode ter um ícone ou URL de autor sem ter um texto! Apague o ícone e a URL antes de deletar o texto do autor.")
+                                                            + "Você não pode ter um ícone ou URL de autor sem ter um texto! Apague o ícone e a URL antes de deletar o texto do autor."
                                                         }
                                                         m.soundEffects.error.play(1.0)
                                                         return@onInput
@@ -664,7 +664,7 @@ fun DiscordMessageEditor(
                                                     if (footer.iconUrl != null) {
                                                         // If the footer text is null BUT there's an icon set, tell the user that they must delete the icon before deleting the text
                                                         m.toastManager.showToast(Toast.Type.WARN, "Embed Inválida") {
-                                                            Text("Você não pode ter um ícone de rodapé sem ter um texto! Apague o ícone antes de deletar o texto do rodapé.")
+                                                            + "Você não pode ter um ícone de rodapé sem ter um texto! Apague o ícone antes de deletar o texto do rodapé."
                                                         }
                                                         m.soundEffects.error.play(1.0)
                                                         return@onInput

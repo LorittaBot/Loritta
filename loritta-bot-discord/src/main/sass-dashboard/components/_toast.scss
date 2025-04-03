@@ -45,11 +45,13 @@
 
     &.added {
         animation: append-animate .25s ease-out;
+        animation-fill-mode: forwards; // Not sure why we need to readd this here but this avoids a "flashing" bug
     }
 
     &.removed {
         animation: append-animate .25s ease-out;
         animation-direction: reverse;
+        animation-fill-mode: forwards; // Not sure why we need to readd this here but this avoids a "flashing" bug
     }
 }
 
