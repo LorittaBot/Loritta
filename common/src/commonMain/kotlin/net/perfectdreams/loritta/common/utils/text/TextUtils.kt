@@ -10,16 +10,16 @@ object TextUtils {
     // String extensions
     fun camelToSnakeCase(string: String) = camelRegex.replace(string) {
         "_${it.value}"
-    }.toLowerCase()
+    }.lowercase()
 
     fun snakeToLowerCamelCase(string: String) = snakeRegex.replace(string) {
         it.value.replace("_","")
-            .toUpperCase()
+            .uppercase()
     }
 
     fun kebabToLowerCamelCase(string: String) = kebabRegex.replace(string) {
         it.value.replace("-","")
-            .toUpperCase()
+            .uppercase()
     }
 
     fun snakeToUpperCamelCase(string: String) = snakeToLowerCamelCase(string).capitalize()

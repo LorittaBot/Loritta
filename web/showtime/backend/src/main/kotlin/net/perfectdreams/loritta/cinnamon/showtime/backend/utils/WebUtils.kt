@@ -279,8 +279,8 @@ fun DIV.generateNitroPayAd(adId: String, displayType: NitroPayAdDisplay, adName:
     div(classes = "centralized-ad") {
         div(classes = "nitropay-ad") {
             id = adId
-            attributes["data-nitropay-ad-type"] = NitroPayAdType.STANDARD_BANNER.name.toLowerCase()
-            attributes["data-nitropay-ad-display"] = displayType.name.toLowerCase()
+            attributes["data-nitropay-ad-type"] = NitroPayAdType.STANDARD_BANNER.name.lowercase()
+            attributes["data-nitropay-ad-display"] = displayType.name.lowercase()
         }
     }
 }
@@ -290,8 +290,8 @@ fun DIV.generateNitroPayVideoAd(adId: String, adName: String? = null) {
     div(classes = "centralized-ad") {
         div(classes = "nitropay-ad") {
             id = adId
-            attributes["data-nitropay-ad-type"] = NitroPayAdType.VIDEO_PLAYER.name.toLowerCase()
-            attributes["data-nitropay-ad-display"] = NitroPayAdDisplay.RESPONSIVE.name.toLowerCase()
+            attributes["data-nitropay-ad-type"] = NitroPayAdType.VIDEO_PLAYER.name.lowercase()
+            attributes["data-nitropay-ad-display"] = NitroPayAdDisplay.RESPONSIVE.name.lowercase()
         }
     }
 } */

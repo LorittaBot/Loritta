@@ -183,6 +183,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
 
                     helper.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         "Enviar Client IDs"
                     ) {
@@ -318,6 +319,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 actionRow(
                     helper.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         "Enviar User IDs"
                     ) {
@@ -327,6 +329,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                     },
                     helper.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         "Enviar Client IDs"
                     ) {
@@ -464,6 +467,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 actionRow(
                     helper.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         "Enviar User IDs"
                     ) {
@@ -473,6 +477,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                     },
                     helper.interactivityManager.buttonForUser(
                         context.user,
+                        context.alwaysEphemeral,
                         ButtonStyle.PRIMARY,
                         "Enviar Client IDs"
                     ) {

@@ -449,7 +449,7 @@ class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap"
 					var output = ""
 
 					for (word in split) {
-						val lowerCaseWord = word.toLowerCase()
+						val lowerCaseWord = word.lowercase()
 						output += word + " "
 						var addedEmoji = false
 

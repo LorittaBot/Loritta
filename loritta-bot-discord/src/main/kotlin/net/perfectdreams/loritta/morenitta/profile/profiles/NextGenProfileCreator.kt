@@ -88,7 +88,7 @@ class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 
 		graphics.color = Color.BLACK
 		graphics.font = oswaldRegular42
-		ImageUtils.drawCenteredString(graphics, locale["profile.aboutMe"].toUpperCase(), Rectangle(0, 427, 221, 51), oswaldRegular42)
+		ImageUtils.drawCenteredString(graphics, locale["profile.aboutMe"].uppercase(), Rectangle(0, 427, 221, 51), oswaldRegular42)
 		graphics.font = oswaldRegular36
 
 		drawReputations(user, graphics)

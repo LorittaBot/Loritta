@@ -487,7 +487,7 @@ object AdminUtils {
 
 		embed.setThumbnail(guild.iconUrl)
 		embed.setAuthor(punisher.name + "#" + punisher.discriminator, null, punisher.avatarUrl)
-		embed.setTitle("\uD83D\uDEAB ${locale["$LOCALE_PREFIX.youGotPunished", punishmentAction.toLowerCase(), guild.name]}!")
+		embed.setTitle("\uD83D\uDEAB ${locale["$LOCALE_PREFIX.youGotPunished", punishmentAction.lowercase(), guild.name]}!")
 		embed.addField("\uD83D\uDC6E ${locale["$LOCALE_PREFIX.punishedBy"]}", punisher.name + "#" + punisher.discriminator, false)
 		embed.addField("\uD83D\uDCDD ${locale["$LOCALE_PREFIX.punishmentReason"]}", reason, false)
 

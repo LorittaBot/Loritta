@@ -53,7 +53,7 @@ class TextCraftCommand(loritta: LorittaBot) : AbstractCommand(loritta, "textcraf
 			var fontIndex = 0
 			var textIndex = 0
 			for (arg in args) {
-				val fontName = arg.toLowerCase()
+				val fontName = arg.lowercase()
 				if (isValidFont(fontName)) {
 					when (fontIndex) {
 						0 -> fontStyle1 = fontName

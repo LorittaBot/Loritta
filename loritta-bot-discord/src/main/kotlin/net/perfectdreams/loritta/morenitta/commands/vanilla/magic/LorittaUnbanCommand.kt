@@ -17,7 +17,7 @@ class LorittaUnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lorit
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 1) {
-			val monster = context.args[0].toLowerCase() // ID
+			val monster = context.args[0].lowercase() // ID
 			val profile = loritta.getLorittaProfile(monster)
 
 			if (profile == null) {

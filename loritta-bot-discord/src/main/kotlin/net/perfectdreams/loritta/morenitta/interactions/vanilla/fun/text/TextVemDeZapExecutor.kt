@@ -40,14 +40,14 @@ class TextVemDeZapExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageC
         context: UnleashedContext,
         args: SlashCommandArguments
     ) {
-        val mood = ZapZapMood.valueOf(args[options.mood].toUpperCase())
+        val mood = ZapZapMood.valueOf(args[options.mood].uppercase())
         val level = args[options.level].toLong()
         val split = cleanUpForOutput(context, args[options.text]).split(" ")
 
         var output = ""
 
         for (word in split) {
-            val lowerCaseWord = word.toLowerCase()
+            val lowerCaseWord = word.lowercase()
             output += "$word "
             var addedEmoji = false
 

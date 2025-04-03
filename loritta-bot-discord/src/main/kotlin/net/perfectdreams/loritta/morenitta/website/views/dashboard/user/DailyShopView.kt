@@ -373,8 +373,8 @@ class DailyShopView(
                                         }
                                     }
 
-                                    div(classes = "item-entry-information rarity-${shopItem.rarity.name.toLowerCase()}") {
-                                        div(classes = "item-entry-title rarity-${shopItem.rarity.name.toLowerCase()}") {
+                                    div(classes = "item-entry-information rarity-${shopItem.rarity.name.lowercase()}") {
+                                        div(classes = "item-entry-title rarity-${shopItem.rarity.name.lowercase()}") {
                                             +(locale["${shopItem.localePrefix}.${shopItem.internalName}.title"])
                                         }
                                         div(classes = "item-entry-type") {

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.common.utils
 
-import kotlin.jvm.Volatile
+import kotlin.concurrent.Volatile
 import kotlin.reflect.KProperty
 
 // https://stackoverflow.com/questions/35752575/kotlin-lazy-properties-and-values-reset-a-resettable-lazy-delegate

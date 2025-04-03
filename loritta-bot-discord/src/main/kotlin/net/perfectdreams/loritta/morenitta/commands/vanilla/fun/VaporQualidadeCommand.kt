@@ -21,7 +21,7 @@ class VaporQualidadeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vap
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "text vaporquality")
 
 		if (context.args.isNotEmpty()) {
-			val qualidade = VaporwaveUtils.vaporwave(context.args.joinToString(" ").toCharArray().joinToString(" ")).toUpperCase()
+			val qualidade = VaporwaveUtils.vaporwave(context.args.joinToString(" ").toCharArray().joinToString(" ")).uppercase()
 					.escapeMentions()
 
 			context.reply(

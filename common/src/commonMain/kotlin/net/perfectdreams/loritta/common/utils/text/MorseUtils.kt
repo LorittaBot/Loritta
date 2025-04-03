@@ -104,7 +104,7 @@ object MorseUtils {
     }
 
     fun toMorse(input: String): ToMorseConversionResult {
-        val upper = input.toUpperCase()
+        val upper = input.uppercase()
         val unknownCharacters = mutableSetOf<Char>()
 
         // Criar uma string vazia para guardar a nossa mensagem em morse

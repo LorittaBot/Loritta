@@ -104,7 +104,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
-				var content = wrapper.contentRaw.toLowerCase()
+				var content = wrapper.contentRaw.lowercase()
 				for (emote in AutomodModule.COMMON_EMOTES)
 					content = content.replace(emote, "")
 
@@ -125,7 +125,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 				messageLoop@for ((index, message) in messages.reversed().withIndex()) {
 					val distanceMultiplier = ((AutomodModule.QUEUE_SIZE - index) * AutomodModule.DISTANCE_MULTIPLIER)
 					if (message.contentRaw.isNotBlank()) {
-						var compareContent = message.contentRaw.toLowerCase()
+						var compareContent = message.contentRaw.lowercase()
 						for (emote in AutomodModule.COMMON_EMOTES)
 							compareContent = compareContent.replace(emote, "")
 						val contentIsBlank = compareContent.isBlank()
@@ -136,7 +136,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 						val isStreamFlood = 3 > streamFloodCounter
 
-						val threshold = LevenshteinDistance.getDefaultInstance().apply(compareContent.toLowerCase(), content.toLowerCase())
+						val threshold = LevenshteinDistance.getDefaultInstance().apply(compareContent.lowercase(), content.lowercase())
 
 						if (3 >= threshold && wrapper.author.id == message.author.id) { // Vamos melhorar caso exista alguns "one person raider"
 							verySimilarMessages.add(message)

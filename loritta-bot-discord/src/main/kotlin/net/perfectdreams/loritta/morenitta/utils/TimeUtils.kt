@@ -26,7 +26,7 @@ object TimeUtils {
     fun convertToLocalDateTimeRelativeToNow(input: String) = convertToLocalDateTimeRelativeToTime(input, ZonedDateTime.now(TIME_ZONE))
 
     fun convertToLocalDateTimeRelativeToTime(input: String, relativeTo: ZonedDateTime): ZonedDateTime {
-        val content = input.toLowerCase()
+        val content = input.lowercase()
         var localDateTime = relativeTo
             .withNano(0)
         var foundViaTime = false

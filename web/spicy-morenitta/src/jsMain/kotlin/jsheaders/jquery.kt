@@ -3,7 +3,7 @@
 import org.w3c.dom.*
 import org.w3c.dom.events.Event
 import org.w3c.xhr.XMLHttpRequest
-import kotlin.js.*
+import kotlin.js.Json
 
 external interface JQueryAjaxSettings {
 	var accepts: Any? get() = definedExternally; set(value) = definedExternally
@@ -234,7 +234,6 @@ external interface cssPropertySetter {
 }
 
 external interface JQueryCssProperties {
-	@nativeGetter
 	operator fun get(propertyName: String): dynamic /* String | Number | cssPropertySetter */
 
 	@nativeSetter

@@ -83,7 +83,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 		if (event.message.contentStripped.length >= 5 && currentLastMessageSentHash != event.message.contentStripped.hashCode()) {
 			// Primeiro iremos verificar se a mensagem é "válida"
 			// 7 chars por millisegundo
-			val calculatedMessageSpeed = event.message.contentStripped.toLowerCase().length.toDouble() / 7
+			val calculatedMessageSpeed = event.message.contentStripped.lowercase().length.toDouble() / 7
 
 			val diff = System.currentTimeMillis() - lastMessageSentAt
 

@@ -24,7 +24,7 @@ class ApplicationCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(s
                     "/commands/slash",
                     // Only show slash commands
                     showtime.commands.applicationCommandsInfo.filterIsInstance<SlashCommandInfo>(),
-                    call.parameters["category"]?.toUpperCase()?.let {
+                    call.parameters["category"]?.uppercase()?.let {
                         try {
                             CommandCategory.valueOf(it)
                         } catch (e: Throwable) {

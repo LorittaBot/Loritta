@@ -73,7 +73,7 @@ class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmen
 						PunishmentAction.KICK -> context.locale["$LOCALE_PREFIX.kick.punishAction"]
 						PunishmentAction.MUTE -> context.locale["$LOCALE_PREFIX.mute.punishAction"]
 						else -> throw RuntimeException("Punishment $nextPunishment is not supported")
-					}.toLowerCase()
+					}.lowercase()
 					setFooter(context.locale["$LOCALE_PREFIX.warnlist.nextPunishment", type], null)
 				}
 

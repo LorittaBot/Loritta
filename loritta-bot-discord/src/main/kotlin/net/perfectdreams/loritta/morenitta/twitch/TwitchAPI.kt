@@ -155,7 +155,7 @@ class TwitchAPI(val clientId: String,
 	}
 
 	suspend fun getUserLogin(login: String): StreamerInfo? {
-		val loginAsLowerCase = login.toLowerCase()
+		val loginAsLowerCase = login.lowercase()
 		return getUserLogins(listOf(loginAsLowerCase))[loginAsLowerCase]
 	}
 

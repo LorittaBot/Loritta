@@ -326,7 +326,7 @@ class LorittaWebsite(
 							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 							var localeId = "en-us"
 							for (range in ranges) {
-								localeId = range.range.toLowerCase()
+								localeId = range.range.lowercase()
 								if (localeId == "pt-br" || localeId == "pt") {
 									localeId = "default"
 								}
@@ -346,7 +346,7 @@ class LorittaWebsite(
 						val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 						var localeId = "en-us"
 						for (range in ranges) {
-							localeId = range.range.toLowerCase()
+							localeId = range.range.lowercase()
 							if (localeId == "pt-br" || localeId == "pt") {
 								localeId = "default"
 							}
@@ -374,7 +374,7 @@ class LorittaWebsite(
 								val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 								var localeId = "en-us"
 								for (range in ranges) {
-									localeId = range.range.toLowerCase()
+									localeId = range.range.lowercase()
 									if (localeId == "pt-br" || localeId == "pt") {
 										localeId = "default"
 									}
@@ -394,7 +394,7 @@ class LorittaWebsite(
 							val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
 							var localeId = "en-us"
 							for (range in ranges) {
-								localeId = range.range.toLowerCase()
+								localeId = range.range.lowercase()
 								if (localeId == "pt-br" || localeId == "pt") {
 									localeId = "default"
 								}

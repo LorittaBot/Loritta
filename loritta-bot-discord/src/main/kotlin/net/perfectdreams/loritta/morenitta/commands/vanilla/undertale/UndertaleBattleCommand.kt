@@ -28,7 +28,7 @@ class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ut
         if (context.args.size >= 2) {
             // Argumento 1: Monstro
             // Argumento 2...: Mensagem
-            var monster = context.args.get(0).toLowerCase() // Monstro
+            var monster = context.args.get(0).lowercase() // Monstro
 
             var list = context.args.asList()
             list = list.takeLast(list.size - 1)
@@ -43,7 +43,7 @@ class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ut
             if (directoryListing != null) {
                 for (child in directoryListing) {
                     // Do something with child
-                    if (child.nameWithoutExtension.toLowerCase().equals(monster)) {
+                    if (child.nameWithoutExtension.lowercase().equals(monster)) {
                         valid = true
                         file = child
                         break

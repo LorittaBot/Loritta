@@ -40,7 +40,7 @@ class WikipediaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "wikipedi
 
 			if (inputLanguageId.startsWith("[") && inputLanguageId.endsWith("]")) {
 				languageId = inputLanguageId.substring(1, inputLanguageId.length - 1)
-						.toLowerCase()
+						.lowercase()
 
 				if (languageId !in VALID_WIKIPEDIAS) {
 					context.reply(

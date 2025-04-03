@@ -18,7 +18,7 @@ object MCUtils {
 	val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures>().asMap()
 
 	fun getUniqueId(player: String): String? {
-		val lowercase = player.toLowerCase()
+		val lowercase = player.lowercase()
 		if (username2uuid.contains(lowercase)) {
 			return username2uuid[lowercase]
 		}
@@ -40,7 +40,7 @@ object MCUtils {
 		val array = JsonParser.parseString(profile).array
 
 		array.forEach {
-			username2uuid[it["name"].string.toLowerCase()] = it["id"].string
+			username2uuid[it["name"].string.lowercase()] = it["id"].string
 		}
 
 		return username2uuid[lowercase]

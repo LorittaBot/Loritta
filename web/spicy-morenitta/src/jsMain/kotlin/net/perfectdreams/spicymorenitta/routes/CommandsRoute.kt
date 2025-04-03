@@ -63,7 +63,7 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                             classes += " wobbly-bg"
 
                         div(classes = classes) {
-                            id = "category-${category.name.toLowerCase().replace("_", "-")}"
+                            id = "category-${category.name.lowercase().replace("_", "-")}"
 
                             if (index % 2 == 0) {
                                 div {

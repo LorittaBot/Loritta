@@ -111,7 +111,7 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 div("loritta-items-list") {
                     div(classes = "loritta-items-wrapper legacy-items-wrapper") {
                         for (background in backgrounds) {
-                            div(classes = "shop-item-entry rarity-${background.rarity.name.toLowerCase()}") {
+                            div(classes = "shop-item-entry rarity-${background.rarity.name.lowercase()}") {
                                 div {
                                     style = "position: relative;"
 

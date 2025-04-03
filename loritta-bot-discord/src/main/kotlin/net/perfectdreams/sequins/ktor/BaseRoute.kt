@@ -35,7 +35,7 @@ abstract class BaseRoute(val path: String) {
     }
 
     open fun getMethod(): HttpMethod {
-        val className = this::class.simpleName?.toLowerCase() ?: "Unknown"
+        val className = this::class.simpleName?.lowercase() ?: "Unknown"
         return when {
             className.startsWith("get") -> HttpMethod.Get
             className.startsWith("post") -> HttpMethod.Post

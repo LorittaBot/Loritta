@@ -34,7 +34,7 @@ class EncodeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "encode", li
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val args = context.rawArgs.toMutableList()
-		val encodeMode = context.rawArgs.getOrNull(0)?.toLowerCase()
+		val encodeMode = context.rawArgs.getOrNull(0)?.lowercase()
 
 		if (encodeMode == null) {
 			context.explain()

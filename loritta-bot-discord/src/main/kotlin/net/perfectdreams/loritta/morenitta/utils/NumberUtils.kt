@@ -11,7 +11,7 @@ object NumberUtils {
      * @see convertShortenedNumberOrUserSonhosSpecificToLong
      */
     fun convertShortenedNumberToLong(input: String): Long? {
-        val inputAsLowerCase = input.toLowerCase()
+        val inputAsLowerCase = input.lowercase()
 
         return when {
             inputAsLowerCase.endsWith("m") -> inputAsLowerCase.removeSuffix("m").toDoubleOrNull()?.times(1_000_000)?.toLong()

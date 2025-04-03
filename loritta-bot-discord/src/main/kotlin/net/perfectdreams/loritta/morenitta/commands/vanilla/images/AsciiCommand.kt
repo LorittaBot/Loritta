@@ -36,7 +36,7 @@ class AsciiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, li
             val options = mutableSetOf<ImageToAsciiConverter.AsciiOptions>()
             for (arg in args) {
                 try {
-                    options.add(ImageToAsciiConverter.AsciiOptions.valueOf(arg.toUpperCase()))
+                    options.add(ImageToAsciiConverter.AsciiOptions.valueOf(arg.uppercase()))
                 } catch (e: IllegalArgumentException) {
                 }
             }

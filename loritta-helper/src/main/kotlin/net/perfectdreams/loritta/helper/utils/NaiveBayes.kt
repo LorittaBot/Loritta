@@ -15,7 +15,7 @@ class NaiveBayes<CATEGORYTYPE> {
             classCounts[label] = classCounts.getOrDefault(label, 0) + 1
             totalDocuments++
 
-            val words = text.split("\\s+".toRegex()).map { it.toLowerCase() }
+            val words = text.split("\\s+".toRegex()).map { it.lowercase() }
             if (!wordCounts.containsKey(label)) {
                 wordCounts[label] = HashMap()
             }

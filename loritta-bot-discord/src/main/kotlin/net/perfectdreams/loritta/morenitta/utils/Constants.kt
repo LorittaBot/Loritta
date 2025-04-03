@@ -93,7 +93,7 @@ object Constants {
 					if (ch.isUpperCase()) {
 						newField.append('-')
 					}
-					newField.append(ch.toLowerCase())
+					newField.append(ch.lowercase())
 				}
 
 				return newField.toString()

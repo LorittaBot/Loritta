@@ -19,7 +19,7 @@ class QualidadeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "qualidad
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "text quality")
 
 		if (context.args.isNotEmpty()) {
-			val qualidade = context.args.joinToString(" ").toCharArray().joinToString(" ").toUpperCase()
+			val qualidade = context.args.joinToString(" ").toCharArray().joinToString(" ").uppercase()
 					.escapeMentions()
 			context.reply(
                     LorittaReply(message = qualidade, prefix = "✍")

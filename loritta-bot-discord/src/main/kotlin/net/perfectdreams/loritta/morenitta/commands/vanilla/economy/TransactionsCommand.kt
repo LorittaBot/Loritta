@@ -195,7 +195,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 					this.append(locale["$LOCALE_PREFIX.receivedMoneySonhosOnDiscordBotList", transaction[SonhosTransaction.quantity]])
 				} else {
 					val type = transaction[SonhosTransaction.reason].name
-							.toLowerCase()
+							.lowercase()
 							.replace("_", " ")
 							.split(" ")
 							.map {
@@ -203,7 +203,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 							}
 							.joinToString("")
 							.toCharArray().apply {
-								this[0] = this[0].toLowerCase()
+								this[0] = this[0].lowercase()
 							}
 							.joinToString("")
 

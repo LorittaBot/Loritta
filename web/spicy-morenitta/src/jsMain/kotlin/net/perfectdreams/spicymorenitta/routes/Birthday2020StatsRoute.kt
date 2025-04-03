@@ -74,7 +74,7 @@ class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender
 						}
 
 						h2(classes = "has-rainbow-text") {
-							+"Team ${currentTeam.toLowerCase().capitalize()}"
+							+"Team ${currentTeam.lowercase().capitalize()}"
 						}
 
 						p {

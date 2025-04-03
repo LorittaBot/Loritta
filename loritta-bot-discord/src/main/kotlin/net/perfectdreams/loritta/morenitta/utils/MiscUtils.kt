@@ -108,7 +108,7 @@ object MiscUtils {
 		val host = withContext(Dispatchers.IO) {
 			val addr = InetAddress.getByName(ip)
 			// Don't be fooled: getHostName() is also blocking! That's why it needs to be within the Dispatchers.IO context ;)
-			addr.hostName.toLowerCase()
+			addr.hostName.lowercase()
 		}
 
 		val hostnames = listOf(
@@ -191,7 +191,7 @@ object MiscUtils {
 	}
 
 	fun hasInappropriateWords(string: String): Boolean {
-		val lowerCaseNickname = string.toLowerCase()
+		val lowerCaseNickname = string.lowercase()
 				.replace("4", "a")
 				.replace("@", "a")
 				.replace("1", "i")

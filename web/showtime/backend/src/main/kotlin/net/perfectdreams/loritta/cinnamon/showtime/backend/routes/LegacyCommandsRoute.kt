@@ -24,7 +24,7 @@ class LegacyCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showti
                     i18nContext,
                     "/commands/legacy",
                     showtime.commands.legacyCommandsInfo,
-                    call.parameters["category"]?.toUpperCase()?.let {
+                    call.parameters["category"]?.uppercase()?.let {
                         try {
                             CommandCategory.valueOf(it)
                         } catch (e: Throwable) {

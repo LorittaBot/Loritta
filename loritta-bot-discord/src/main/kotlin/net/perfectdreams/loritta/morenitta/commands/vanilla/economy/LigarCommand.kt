@@ -85,7 +85,7 @@ class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", cate
 						val args = context.args.toMutableList()
 						args.removeAt(0)
 						val text = args.joinToString(" ")
-							.toLowerCase()
+							.lowercase()
 
 						if (text.contains("\u200B") || text.contains("\u200C") || text.contains("\u200D")) {
 							context.reply(
