@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.SVGIconManager
 
 object SVGIcon {
     fun FlowContent.svgIcon(icon: SVGIconManager.SVGIcon, classes: String) {
-        val svgElement = icon.html.select("svg").first()
+        val svgElement = icon.html.select("svg").first()!!
 
         svg {
             for (svgAttributes in svgElement.attributes()) {

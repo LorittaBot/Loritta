@@ -203,7 +203,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 							}
 							.joinToString("")
 							.toCharArray().apply {
-								this[0] = this[0].lowercase()
+								this[0] = this[0].lowercaseChar()
 							}
 							.joinToString("")
 
