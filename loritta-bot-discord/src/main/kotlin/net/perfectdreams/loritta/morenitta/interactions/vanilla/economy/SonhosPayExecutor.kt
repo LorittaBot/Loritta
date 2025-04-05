@@ -82,6 +82,7 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
          * @param acceptedQuantity        how many users have already accepted the transfer
          */
         fun createSonhosTransferMessage(
+            loritta: LorittaBot,
             i18nContext: I18nContext,
             receiverId: UserSnowflake,
             howMuch: Long,
@@ -127,6 +128,15 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                             receiverId.asMention,
                             TimeFormat.DATE_TIME_LONG.format(nowPlusTimeToLive),
                             TimeFormat.RELATIVE.format(nowPlusTimeToLive)
+                        )
+                    ),
+                    Emotes.LoriZap
+                )
+
+                styled(
+                    i18nContext.get(
+                        SonhosCommand.PAY_I18N_PREFIX.SellDisallowedWarning(
+                            loritta.config.loritta.website.url + "guidelines"
                         )
                     ),
                     Emotes.LoriZap
@@ -300,6 +310,7 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
 
             context.reply(false) {
                 val message = createSonhosTransferMessage(
+                    context.loritta,
                     context.i18nContext,
                     receiver,
                     howMuch,

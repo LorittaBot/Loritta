@@ -47,6 +47,7 @@ randomQuirkyRichMessages:
   - "Depois dessa você vai ter que dormir para conseguir mais sonhos rsrs... entendeu a piada? hein? heeeein?"
   - "Eu também amo sonhos, mas mesmo assim não sou Robin Hood para ficar distribuindo meu dinheiro"
   - "Não tenho inveja desses sonhos, se eu quisesse eu poderia dar a mesma quantidade para mim!"
+sellDisallowedWarning: "**Não se esqueça:** É proibido o comércio de produtos que possuem valores reais (Nitro, dinheiro real, invites, conteúdo ilegal/NSFW, etc) por sonhos e venda de sonhos por dinheiro real, você será banido de usar a Loritta caso faça! Veja todas as regras em <{guidelinesUrl}>. Não se esqueça que, ao aceitar a transação, você não conseguirá pedir os sonhos de volta e a equipe não irá te ajudar a pegar eles de volta, então apenas envie sonhos para pessoas confiáveis! Lembre-se: Emprestar sonhos para outras pessoas é igual emprestar uma caneta para alguém na escola: Você jamais irá ver a sua caneta novamente! Ser agiota é feio!!"
 options:
   user:
     text: "O usuário que irá receber os sonhos"
