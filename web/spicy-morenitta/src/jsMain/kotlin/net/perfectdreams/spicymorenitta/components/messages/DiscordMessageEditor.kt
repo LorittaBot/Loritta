@@ -33,6 +33,9 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
 import org.jetbrains.compose.web.dom.TextInput
+import react.dom.events.FormEvent
+import react.dom.html.ReactHTML.textarea
+import web.html.HTMLTextAreaElement
 import kotlin.random.Random
 
 val JsonForDiscordMessages = Json {
@@ -91,45 +94,41 @@ fun DiscordMessageEditor(
                             m.modalManager.openCloseOnlyModal(
                                 "Templates de Mensagens",
                             ) {
-                                Text("Sem criatividade? Então pegue um template!")
+                                + "Sem criatividade? Então pegue um template!"
 
-                                VerticalList {
+                                VerticalListReact {
                                     for (template in templates) {
-                                        DiscordButton(
-                                            DiscordButtonType.PRIMARY,
-                                            attrs = {
-                                                onClick {
-                                                    m.modalManager.openModalWithCloseButton(
-                                                        "Você realmente quer substituir?",
-                                                        {
-                                                            Text(
-                                                                "Ao aplicar o template, a sua mensagem atual será perdida! A não ser se você tenha copiado ela para outro lugar, aí vida que segue né."
-                                                            )
-                                                        },
-                                                        { modal ->
-                                                            DiscordButton(
-                                                                DiscordButtonType.PRIMARY,
-                                                                attrs = {
-                                                                    onClick {
-                                                                        onMessageContentChange.invoke(
-                                                                            template.content
-                                                                        )
-                                                                        modal.close()
-                                                                        m.toastManager.showToast(
-                                                                            Toast.Type.SUCCESS,
-                                                                            "Template importado!"
-                                                                        )
-                                                                    }
-                                                                }
-                                                            ) {
-                                                                Text("Aplicar")
+                                        DiscordButtonReact {
+                                            buttonType = DiscordButtonType.PRIMARY
+
+                                            onClick = {
+                                                m.modalManager.openModalWithCloseButton(
+                                                    "Você realmente quer substituir?",
+                                                    {
+                                                        + "Ao aplicar o template, a sua mensagem atual será perdida! A não ser se você tenha copiado ela para outro lugar, aí vida que segue né."
+                                                    },
+                                                    { modal ->
+                                                        DiscordButtonReact {
+                                                            buttonType = DiscordButtonType.PRIMARY
+
+                                                            onClick = {
+                                                                onMessageContentChange.invoke(
+                                                                    template.content
+                                                                )
+                                                                modal.close()
+                                                                m.toastManager.showToast(
+                                                                    Toast.Type.SUCCESS,
+                                                                    "Template importado!"
+                                                                )
                                                             }
+
+                                                            + "Aplicar"
                                                         }
-                                                    )
-                                                }
+                                                    }
+                                                )
                                             }
-                                        ) {
-                                            Text(template.name)
+
+                                            + "${template.name} test"
                                         }
                                     }
                                 }
@@ -151,65 +150,60 @@ fun DiscordMessageEditor(
                             m.modalManager.openCloseOnlyModal(
                                 "Importar",
                             ) {
-                                Text("Qual mensagem você deseja importar?")
+                                + "Qual mensagem você deseja importar?"
 
-                                VerticalList {
-                                    DiscordButton(
-                                        DiscordButtonType.PRIMARY,
-                                        attrs = {
-                                            onClick {
-                                                var embed by mutableStateOf<DiscordEmbed?>(null)
+                                VerticalListReact {
+                                    DiscordButtonReact {
+                                        buttonType = DiscordButtonType.PRIMARY
 
-                                                m.modalManager.openModalWithCloseButton(
-                                                    "Embed do Carl-bot (Embed em JSON)",
-                                                    {
-                                                        TextArea {
-                                                            onInput {
-                                                                embed = try {
-                                                                    JsonForDiscordMessages.decodeFromString<DiscordEmbed>(
-                                                                        it.value
-                                                                    )
-                                                                } catch (e: SerializationException) {
-                                                                    // If the embed couldn't be deserialized, set it to null!
-                                                                    null
-                                                                }
+                                        onClick = {
+                                            var embed by mutableStateOf<DiscordEmbed?>(null)
+
+                                            m.modalManager.openModalWithCloseButton(
+                                                "Embed do Carl-bot (Embed em JSON)",
+                                                {
+                                                    textarea {
+                                                        onInput = { event: FormEvent<HTMLTextAreaElement> ->
+                                                            val currentText = (event.target as HTMLTextAreaElement).value
+
+                                                            embed = try {
+                                                                JsonForDiscordMessages.decodeFromString<DiscordEmbed>(currentText)
+                                                            } catch (e: SerializationException) {
+                                                                // If the embed couldn't be deserialized, set it to null!
+                                                                null
                                                             }
-                                                        }
-                                                    },
-                                                    { modal ->
-                                                        DiscordButton(
-                                                            DiscordButtonType.PRIMARY,
-                                                            attrs = {
-                                                                if (embed == null)
-                                                                    disabledWithSoundEffect()
-                                                                else
-                                                                    onClick {
-                                                                        onMessageContentChange.invoke(
-                                                                            JsonForDiscordMessages.encodeToString(
-                                                                                DiscordMessage(
-                                                                                    "",
-                                                                                    embed
-                                                                                )
-                                                                            ).also {
-                                                                                println(it)
-                                                                            }
-                                                                        )
-                                                                        modal.close()
-                                                                        m.toastManager.showToast(
-                                                                            Toast.Type.SUCCESS,
-                                                                            "Mensagem importada!"
-                                                                        )
-                                                                    }
-                                                            }
-                                                        ) {
-                                                            Text("Importar")
                                                         }
                                                     }
-                                                )
-                                            }
+                                                },
+                                                { modal ->
+                                                    DiscordButtonReact {
+                                                        buttonType = DiscordButtonType.PRIMARY
+
+                                                        onClick = {
+                                                            onMessageContentChange.invoke(
+                                                                JsonForDiscordMessages.encodeToString(
+                                                                    DiscordMessage(
+                                                                        "",
+                                                                        embed
+                                                                    )
+                                                                ).also {
+                                                                    println(it)
+                                                                }
+                                                            )
+                                                            modal.close()
+                                                            m.toastManager.showToast(
+                                                                Toast.Type.SUCCESS,
+                                                                "Mensagem importada!"
+                                                            )
+                                                        }
+
+                                                        + "Importar"
+                                                    }
+                                                }
+                                            )
                                         }
-                                    ) {
-                                        Text("Embed do Carl-bot (Embed em JSON)")
+
+                                        + "Embed do Carl-bot (Embed em JSON)"
                                     }
                                 }
                             }

@@ -2,6 +2,7 @@ package net.perfectdreams.spicymorenitta.components.messages
 
 import androidx.compose.runtime.Composable
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
+import net.perfectdreams.spicymorenitta.components.DiscordButtonType
 import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.attributes.ButtonType
 import org.jetbrains.compose.web.attributes.type
@@ -61,15 +62,4 @@ fun AttrsScope<HTMLButtonElement>.disabledWithSoundEffect() {
     onClick {
         SpicyMorenitta.INSTANCE.soundEffects.error.play(1.0)
     }
-}
-
-enum class DiscordButtonType {
-    PRIMARY,
-    SUCCESS,
-    SECONDARY,
-    DANGER,
-    NO_BACKGROUND_LIGHT_TEXT,
-    NO_BACKGROUND_DARK_TEXT,
-    NO_BACKGROUND_THEME_DEPENDENT_LIGHT_TEXT,
-    NO_BACKGROUND_THEME_DEPENDENT_DARK_TEXT,
 }

@@ -7,14 +7,14 @@ import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.common.utils.Color
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
-import net.perfectdreams.spicymorenitta.components.DiscordButton
-import net.perfectdreams.spicymorenitta.components.DiscordButtonType
 import org.jetbrains.compose.web.attributes.ButtonType
 import org.jetbrains.compose.web.attributes.type
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.*
+import org.jetbrains.compose.web.dom.Button
+import org.jetbrains.compose.web.dom.Canvas
+import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
-import kotlin.random.Random
 
 @Composable
 fun ColorPicker(
@@ -68,7 +68,7 @@ fun ColorPicker(
             onClick {
                 var colorAsHSB by mutableStateOf(createHSBColorFromArray(ColorUtils.RGBtoHSB(colorToBeUsedAsABase.red, colorToBeUsedAsABase.green, colorToBeUsedAsABase.blue, null)))
 
-                m.modalManager.openModalWithCloseButton(
+                /* m.modalManager.openModalWithCloseButton(
                     "Selecionar Cor",
                     {
                         // This needs to be here to avoid the color being "remembered" after closing the color
@@ -377,7 +377,7 @@ fun ColorPicker(
                             Text("Aplicar")
                         }
                     }
-                )
+                ) */
             }
         }) {
             // TODO: Fix this!

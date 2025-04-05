@@ -1,13 +1,14 @@
 package net.perfectdreams.spicymorenitta.modals
 
-import androidx.compose.runtime.Composable
+import react.dom.html.HTMLAttributes
+import web.html.HTMLDivElement
 
 class Modal(
     val modalManager: ModalManager,
     val title: String,
     val canBeClosedByClickingOutsideTheWindow: Boolean,
-    val body: @Composable (Modal) -> (Unit),
-    val buttons: List<@Composable (Modal) -> (Unit)>
+    val body: HTMLAttributes<HTMLDivElement>.() -> (Unit),
+    val buttons: List<HTMLAttributes<HTMLDivElement>.(Modal) -> (Unit)>
 ) {
     fun close() {
         modalManager.closeModal()

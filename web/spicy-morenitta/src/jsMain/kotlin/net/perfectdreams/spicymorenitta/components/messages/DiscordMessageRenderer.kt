@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.serializable.DiscordChannel
 import net.perfectdreams.loritta.serializable.DiscordRole
 import net.perfectdreams.loritta.serializable.DiscordUser
 import net.perfectdreams.loritta.serializable.messageeditor.MessageEditorMessagePlaceholder
+import net.perfectdreams.spicymorenitta.components.DiscordButtonType
 import org.jetbrains.compose.web.attributes.href
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement

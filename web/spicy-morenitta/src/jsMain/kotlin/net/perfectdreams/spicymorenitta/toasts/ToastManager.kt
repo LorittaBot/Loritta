@@ -101,7 +101,7 @@ class ToastManager(private val m: SpicyMorenitta) {
         val ToastContainer = FC<Props> {
             var activeToasts by useState<List<ToastWithAnimationState>>(listOf())
 
-            useEffectOnce {
+            useEffectOnceWithCleanup {
                 val callback = subscribe {
                     val currentlyActiveToastsIds = activeToasts.map { it.toastId }
                     val newActiveToastsIds = it.map { it.toastId }
@@ -121,7 +121,9 @@ class ToastManager(private val m: SpicyMorenitta) {
                     activeToasts = it
                 }
 
-                return@useEffectOnce unsubscribe(callback)
+                onCleanup {
+                    unsubscribe(callback)
+                }
             }
 
             div {
