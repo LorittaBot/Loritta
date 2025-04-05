@@ -6,16 +6,18 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import kotlinx.serialization.json.*
-import java.util.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.*
+import mu.KotlinLogging
+import java.util.*
 
 class GoogleVisionOCRClient(private val apiKey: String) {
     companion object {
         private val json = Json {
             ignoreUnknownKeys = true
         }
+
+        private val logger = KotlinLogging.logger {}
     }
 
     private val http = HttpClient(CIO) {}
@@ -69,6 +71,10 @@ class GoogleVisionOCRClient(private val apiKey: String) {
             userAgent("Google-API-Java-Client Google-HTTP-Java-Client/1.21.0 (gzip)")
             setBody(TextContent(payload.toString(), ContentType.Application.Json))
         }
+
+        val responseBody = response.bodyAsText()
+
+        logger.info { "Google Vision Response (${response.status}): $responseBody (request was $payload)" }
 
         return json.decodeFromString(response.bodyAsText())
     }
