@@ -139,7 +139,7 @@ class SonhosPayExecutor(private val loritta: LorittaBot) : LorittaSlashCommandEx
                             loritta.config.loritta.website.url + "guidelines"
                         )
                     ),
-                    Emotes.LoriZap
+                    Emotes.LoriBanHammer
                 )
 
                 // Because we support expiration dates, we need to do this differently because we must persist the pay between restarts!!
