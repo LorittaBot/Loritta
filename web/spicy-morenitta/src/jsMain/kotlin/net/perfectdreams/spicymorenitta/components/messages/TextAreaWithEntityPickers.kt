@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.serializable.DiscordChannel
 import net.perfectdreams.loritta.serializable.DiscordEmoji
 import net.perfectdreams.loritta.serializable.DiscordGuild
 import net.perfectdreams.loritta.serializable.DiscordRole
-import net.perfectdreams.spicymorenitta.components.DiscordButtonType
 import net.perfectdreams.spicymorenitta.components.FieldLabel
 import net.perfectdreams.spicymorenitta.components.FieldWrappers
 import org.jetbrains.compose.web.attributes.autoFocus

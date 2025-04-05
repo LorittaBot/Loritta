@@ -48,8 +48,6 @@ kotlin {
 				implementation(project(":web:embed-editor:embed-editor-crosswindow"))
 				implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.3")
 				implementation(project(":discord-chat-markdown-parser"))
-				implementation("org.jetbrains.kotlin-wrappers:kotlin-react:2025.2.6-19.0.0")
-				implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom:2025.2.6-19.0.0")
 				api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
 				api("io.ktor:ktor-client-js:${Versions.KTOR}")
 				implementation("app.softwork:kotlinx-uuid-core:0.0.17")

@@ -9,7 +9,6 @@ import org.w3c.dom.Element
 @JsExport
 @JsName("closeModal")
 fun closeModal() {
-    println("Closing modal...")
     SpicyMorenitta.INSTANCE.modalManager.closeModal()
 }
 
