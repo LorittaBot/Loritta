@@ -2,8 +2,8 @@ package net.perfectdreams.spicymorenitta.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import kotlinx.browser.document
 import org.jetbrains.compose.web.dom.Span
+import web.dom.document
 
 @Composable
 fun HtmlText(rawHtml: String) {

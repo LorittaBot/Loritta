@@ -6,9 +6,9 @@ import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
-import org.w3c.dom.HTMLButtonElement
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.svg.SVGElement
+import web.html.HTMLButtonElement
+import web.html.HTMLDivElement
+import web.svg.SVGElement
 
 @Composable
 fun DiscordButton(

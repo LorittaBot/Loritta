@@ -1339,7 +1339,7 @@ class SpicyMorenitta : Logging {
 
 				originalSelectMenuElement.parentElement!!.insertBefore(selectMenuWrapperElement, originalSelectMenuElement)
 
-				renderComposable(selectMenuWrapperElement) {
+				renderComposable(selectMenuWrapperElement.unsafeCast<web.html.HTMLElement>()) {
 					var modifiedEntries by remember { mutableStateOf(originalEntries) }
 
 					// For some reason we need to key it by the modifiedEntries list
@@ -1427,7 +1427,7 @@ class SpicyMorenitta : Logging {
 					TestMessageTargetChannelQuery.SendDirectMessage -> targetChannelId = "dm" // wow this is a hack
 				}
 
-				renderComposable(selectMenuWrapperElement) {
+				renderComposable(selectMenuWrapperElement.unsafeCast<web.html.HTMLElement>()) {
 					val _targetChannelId = targetChannelId
 
 					DiscordMessageEditor(

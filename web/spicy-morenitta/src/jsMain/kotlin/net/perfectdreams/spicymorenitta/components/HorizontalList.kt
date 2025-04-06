@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
-import org.w3c.dom.HTMLDivElement
+import web.html.HTMLDivElement
 
 @Composable
 fun HorizontalList(

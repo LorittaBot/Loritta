@@ -1,21 +1,12 @@
 package net.perfectdreams.spicymorenitta.components.colorpicker
 
+import js.function.JsFunction
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.w3c.dom.Image
+import web.events.EventHandler
+import web.html.Image
+import web.http.CrossOrigin
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-
-suspend fun Image.awaitLoad(url: String) {
-    return kotlin.coroutines.suspendCoroutine { cont ->
-        this.onload = {
-            cont.resume(Unit)
-        }
-        this.onerror = { b: dynamic, s: String, i: Int, i1: Int, any: Any? ->
-            cont.resumeWithException(Exception())
-        }
-        this.src = url
-    }
-}
 
 /**
  * A [Image] can be loaded asynchornously with Coroutines
@@ -29,17 +20,17 @@ class CoroutineImageWrapper(val src: String) {
             return image
 
         // Required for CORS
-        image.crossOrigin = "anonymous"
+        image.crossOrigin = CrossOrigin.anonymous
 
         return suspendCancellableCoroutine { cont ->
             // Set up an event listener to handle both successful and failed image loading.
-            image.onload = {
+            image.onload = EventHandler {
                 // Image has loaded successfully.
                 loaded = true
                 cont.resume(image)
             }
 
-            image.onerror = { b: dynamic, s: String, i: Int, i1: Int, any: Any? ->
+            image.onerror = JsFunction<Unit, Unit> {
                 // Image loading failed.
                 cont.resumeWithException(Exception("Failed to load image: $src"))
             }

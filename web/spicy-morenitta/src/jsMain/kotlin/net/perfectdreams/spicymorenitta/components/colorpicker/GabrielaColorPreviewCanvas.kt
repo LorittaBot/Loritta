@@ -5,8 +5,8 @@ import kotlinx.browser.window
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import net.perfectdreams.loritta.common.utils.Color
-import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.HTMLCanvasElement
+import web.canvas.CanvasRenderingContext2D
+import web.html.HTMLCanvasElement
 
 /**
  * A color previewer that uses Gabriela's hair/sweater details/brush tip as a preview. Sweet, huh?
@@ -60,13 +60,13 @@ class GabrielaColorPreviewCanvas(private var currentColor: HSBColor) {
         val sweaterOverlay = sweaterOverlayJob.await()
 
         // Get a reference to the canvas element and its 2D drawing context
-        val sweaterCtx = sweaterCanvas.getContext("2d") as CanvasRenderingContext2D
+        val sweaterCtx = sweaterCanvas.getContext(CanvasRenderingContext2D.ID) as CanvasRenderingContext2D
 
         sweaterCtx.clearRect(0.0, 0.0, sweaterCanvas.width.toDouble(), sweaterCanvas.height.toDouble())
         sweaterCtx.drawImage(sweaterOverlay, 0.0, 0.0, sweaterCanvas.width.toDouble(), sweaterCanvas.height.toDouble())
 
         // Get the pixel data of the entire canvas
-        val imageData = sweaterCtx.getImageData(0.0, 0.0, sweaterCanvas.width.toDouble(), sweaterCanvas.height.toDouble())
+        val imageData = sweaterCtx.getImageData(0, 0, sweaterCanvas.width, sweaterCanvas.height)
         val pixelData = imageData.data // This is a one-dimensional array
         var i = 0
         while (pixelData.length > i) {
@@ -102,10 +102,10 @@ class GabrielaColorPreviewCanvas(private var currentColor: HSBColor) {
         }
 
         // Put the modified pixel data back on the canvas
-        sweaterCtx.putImageData(imageData, 0.0, 0.0)
+        sweaterCtx.putImageData(imageData, 0, 0)
 
         // Get a reference to the canvas element and its 2D drawing context
-        val baseCtx = canvas.getContext("2d") as CanvasRenderingContext2D
+        val baseCtx = canvas.getContext(CanvasRenderingContext2D.ID) as CanvasRenderingContext2D
 
         // Clear the original canvas
         baseCtx.clearRect(0.0, 0.0, canvas.width.toDouble(), canvas.height.toDouble())

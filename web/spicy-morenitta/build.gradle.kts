@@ -39,7 +39,7 @@ kotlin {
 	sourceSets {
 		val jsMain by getting {
 			dependencies {
-				implementation(compose.html.core)
+				implementation("net.perfectdreams.compose.htmldreams:html-core:1.7.3")
 				implementation(compose.runtime)
 				implementation(kotlin("stdlib-common"))
 				implementation(project(":common"))

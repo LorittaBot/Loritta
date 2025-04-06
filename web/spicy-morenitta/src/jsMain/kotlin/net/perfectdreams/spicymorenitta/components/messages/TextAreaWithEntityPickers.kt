@@ -1,7 +1,6 @@
 package net.perfectdreams.spicymorenitta.components.messages
 
 import androidx.compose.runtime.*
-import kotlinx.browser.window
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -11,14 +10,20 @@ import net.perfectdreams.loritta.serializable.DiscordGuild
 import net.perfectdreams.loritta.serializable.DiscordRole
 import net.perfectdreams.spicymorenitta.components.FieldLabel
 import net.perfectdreams.spicymorenitta.components.FieldWrappers
+import net.perfectdreams.spicymorenitta.components.messages.TextAreaWithEntityPickers.EventListener
 import org.jetbrains.compose.web.attributes.autoFocus
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.*
-import org.w3c.dom.HTMLTextAreaElement
-import org.w3c.dom.Node
-import org.w3c.dom.events.Event
-import org.w3c.dom.events.EventListener
-import org.w3c.dom.events.KeyboardEvent
+import web.dom.Node
+import web.events.Event
+import web.events.addEventListener
+import web.events.removeEventListener
+import web.html.HTMLTextAreaElement
+import web.uievents.FocusEvent
+import web.uievents.InputEvent
+import web.uievents.KeyboardEvent
+import web.uievents.MouseEvent
+import web.window.window
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -183,7 +188,7 @@ private fun DiscordChannelEntityPickerButton(textAreaWrapper: TextAreaWithEntity
                 classes("message-config-popover", "reset-theme-variables")
 
                 ref {
-                    onClickCallback = object: EventListener {
+                    onClickCallback = object: EventListener() {
                         override fun handleEvent(event: Event) {
                             if (it.contains(event.target as Node))
                                 return
@@ -191,10 +196,10 @@ private fun DiscordChannelEntityPickerButton(textAreaWrapper: TextAreaWithEntity
                             isMenuOpen = false
                         }
                     }
-                    window.addEventListener("click", onClickCallback)
+                    window.addEventListener(MouseEvent.CLICK, onClickCallback!!.handler)
 
                     onDispose {
-                        window.removeEventListener("click", onClickCallback)
+                        window.removeEventListener(MouseEvent.CLICK, onClickCallback!!.handler)
                         onClickCallback = null
                     }
                 }
@@ -285,7 +290,7 @@ private fun DiscordRoleEntityPickerButton(textAreaWrapper: TextAreaWithEntityPic
                 classes("message-config-popover", "reset-theme-variables")
 
                 ref {
-                    onClickCallback = object: EventListener {
+                    onClickCallback = object: EventListener() {
                         override fun handleEvent(event: Event) {
                             if (it.contains(event.target as Node))
                                 return
@@ -293,10 +298,10 @@ private fun DiscordRoleEntityPickerButton(textAreaWrapper: TextAreaWithEntityPic
                             isMenuOpen = false
                         }
                     }
-                    window.addEventListener("click", onClickCallback)
+                    window.addEventListener(MouseEvent.CLICK, onClickCallback!!.handler)
 
                     onDispose {
-                        window.removeEventListener("click", onClickCallback)
+                        window.removeEventListener(MouseEvent.CLICK, onClickCallback!!.handler)
                         onClickCallback = null
                     }
                 }
@@ -394,7 +399,7 @@ private fun DiscordEmojiEntityPickerButton(textAreaWrapper: TextAreaWithEntityPi
                 classes("message-config-popover", "reset-theme-variables")
 
                 ref {
-                    onClickCallback = object: EventListener {
+                    onClickCallback = object: EventListener() {
                         override fun handleEvent(event: Event) {
                             if (it.contains(event.target as Node))
                                 return
@@ -402,10 +407,10 @@ private fun DiscordEmojiEntityPickerButton(textAreaWrapper: TextAreaWithEntityPi
                             isMenuOpen = false
                         }
                     }
-                    window.addEventListener("click", onClickCallback)
+                    window.addEventListener(MouseEvent.CLICK, onClickCallback!!.handler)
 
                     onDispose {
-                        window.removeEventListener("click", onClickCallback)
+                        window.removeEventListener(MouseEvent.CLICK, onClickCallback!!.handler)
                         onClickCallback = null
                     }
                 }
@@ -484,22 +489,23 @@ private fun DiscordEmojiEntityPickerButton(textAreaWrapper: TextAreaWithEntityPi
 private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private var onChange: (String) -> (Unit)) {
     lateinit var textArea: HTMLTextAreaElement
     var cursorXY by mutableStateOf<CursorXY?>(null)
-    private val updateCursorListener = object: EventListener {
+    private val updateCursorListener = object: EventListener() {
         override fun handleEvent(event: Event) {
             updateCursor()
         }
     }
     var matches by mutableStateOf<TypeaheadMatches?>(null)
-    private val selectEntryListener = object: EventListener {
+    private val selectEntryListener = object: EventListener() {
         override fun handleEvent(event: Event) {
             event as KeyboardEvent
+            val keyCode = event.asDynamic().keyCode
 
             val match = matches
 
             if (match != null) {
                 // ENTER or TAB
                 // TODO: Handling space at the end would be pretty pog
-                if (event.keyCode == 13 || event.keyCode == 9) {
+                if (keyCode == 13 || keyCode == 9) {
                     when (match) {
                         is TypeaheadMatches.DiscordChannelMatches -> {
                             val channel = match.channels[match.index.value]
@@ -524,7 +530,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
                 }
 
                 // Arrow Up
-                if (event.keyCode == 38) {
+                if (keyCode == 38) {
                     when (match) {
                         is TypeaheadMatches.DiscordChannelMatches -> match.index.value = (match.index.value - 1).coerceAtLeast(0)
                         is TypeaheadMatches.DiscordEmojiMatches -> match.index.value = (match.index.value - 1).coerceAtLeast(0)
@@ -536,7 +542,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
                 }
 
                 // Arrow Down
-                if (event.keyCode == 40) {
+                if (keyCode == 40) {
                     when (match) {
                         is TypeaheadMatches.DiscordChannelMatches ->  match.index.value = (match.index.value + 1).coerceAtMost(match.channels.size - 1)
                         is TypeaheadMatches.DiscordEmojiMatches ->  match.index.value = (match.index.value + 1).coerceAtMost(match.emojis.size - 1)
@@ -549,7 +555,7 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
             }
         }
     }
-    private val getSelectionsListener = object: EventListener {
+    private val getSelectionsListener = object: EventListener() {
         override fun handleEvent(event: Event) {
             // Reset current match
             matches = null
@@ -659,12 +665,12 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
             }
         }
     }
-    private val inputListener = object: EventListener {
+    private val inputListener = object: EventListener() {
         override fun handleEvent(event: Event) {
             onChange.invoke(textArea.value)
         }
     }
-    private val blurListener = object: EventListener {
+    private val blurListener = object: EventListener() {
         override fun handleEvent(event: Event) {
             GlobalScope.launch {
                 // This is a HACK! We only remove the matches after 100ms because clicking the tooltip would remove the matches
@@ -682,36 +688,36 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
     fun mountIn(textArea: HTMLTextAreaElement) {
         println("Mounted TextAreaWithEntityPickers")
         this.textArea = textArea
-        textArea.addEventListener("click", updateCursorListener)
-        textArea.addEventListener("selectionchange", updateCursorListener)
-        textArea.addEventListener("input", updateCursorListener)
+        textArea.addEventListener(MouseEvent.CLICK, updateCursorListener.handler)
+        textArea.addEventListener(Event.SELECTION_CHANGE, updateCursorListener.handler)
+        textArea.addEventListener(InputEvent.INPUT, updateCursorListener.handler)
 
-        textArea.addEventListener("input", getSelectionsListener)
-        textArea.addEventListener("selectionchange", getSelectionsListener)
-        textArea.addEventListener("focus", getSelectionsListener)
+        textArea.addEventListener(InputEvent.INPUT, getSelectionsListener.handler)
+        textArea.addEventListener(Event.SELECTION_CHANGE, getSelectionsListener.handler)
+        textArea.addEventListener(FocusEvent.FOCUS, getSelectionsListener.handler)
 
-        textArea.addEventListener("input", inputListener)
+        textArea.addEventListener(InputEvent.INPUT, inputListener.handler)
 
-        textArea.addEventListener("keydown", selectEntryListener)
+        textArea.addEventListener(KeyboardEvent.KEY_DOWN, selectEntryListener.handler)
 
-        textArea.addEventListener("blur", blurListener)
+        textArea.addEventListener(FocusEvent.BLUR, blurListener.handler)
     }
 
     fun unmount() {
         println("Unmounted TextAreaWithEntityPickers")
-        textArea.removeEventListener("click", updateCursorListener)
-        textArea.removeEventListener("selectionchange", updateCursorListener)
-        textArea.removeEventListener("input", updateCursorListener)
+        textArea.removeEventListener(MouseEvent.CLICK, updateCursorListener.handler)
+        textArea.removeEventListener(Event.SELECTION_CHANGE, updateCursorListener.handler)
+        textArea.removeEventListener(InputEvent.INPUT, updateCursorListener.handler)
 
-        textArea.removeEventListener("input", getSelectionsListener)
-        textArea.removeEventListener("selectionchange", getSelectionsListener)
-        textArea.removeEventListener("focus", getSelectionsListener)
+        textArea.removeEventListener(InputEvent.INPUT, getSelectionsListener.handler)
+        textArea.removeEventListener(Event.SELECTION_CHANGE, getSelectionsListener.handler)
+        textArea.removeEventListener(FocusEvent.FOCUS, getSelectionsListener.handler)
 
-        textArea.removeEventListener("input", inputListener)
+        textArea.removeEventListener(InputEvent.INPUT, inputListener.handler)
 
-        textArea.removeEventListener("keydown", selectEntryListener)
+        textArea.removeEventListener(KeyboardEvent.KEY_DOWN, selectEntryListener.handler)
 
-        textArea.removeEventListener("blur", blurListener)
+        textArea.removeEventListener(FocusEvent.BLUR, blurListener.handler)
     }
 
     private fun updateCursor() {
@@ -826,5 +832,11 @@ private class TextAreaWithEntityPickers(private var guild: DiscordGuild, private
         CHANNEL,
         EMOJI,
         ROLE
+    }
+
+    abstract class EventListener {
+        val handler: (Event) -> (Unit) = { handleEvent(it) }
+
+        abstract fun handleEvent(event: Event)
     }
 }

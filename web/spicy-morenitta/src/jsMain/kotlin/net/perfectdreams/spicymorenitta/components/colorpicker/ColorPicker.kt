@@ -13,7 +13,7 @@ import org.jetbrains.compose.web.attributes.ButtonType
 import org.jetbrains.compose.web.attributes.type
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
-import org.w3c.dom.HTMLDivElement
+import web.html.HTMLDivElement
 import kotlin.random.Random
 
 @Composable

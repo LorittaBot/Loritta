@@ -11,6 +11,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.Element
+import web.html.HTMLElement
 
 class ModalManager(val m: SpicyMorenitta) {
     private var activeModal by mutableStateOf<Modal?>(null)
@@ -79,7 +80,7 @@ class ModalManager(val m: SpicyMorenitta) {
     }
 
     fun setupModalRendering(element: Element) {
-        renderComposable(element) {
+        renderComposable(element.unsafeCast<HTMLElement>()) {
             // Wrapped in a div to only trigger a recomposition within this div when a modal is updated
             Div {
                 val activeModal = this@ModalManager.activeModal
@@ -106,7 +107,7 @@ class ModalManager(val m: SpicyMorenitta) {
                                     // Hook up any _hyperscript behavior on the modal
                                     processNode(htmlDivElement)
                                     // And finally hook up and custom component
-                                    m.processCustomComponents(htmlDivElement)
+                                    m.processCustomComponents(htmlDivElement.unsafeCast<org.w3c.dom.HTMLElement>())
                                     onDispose {}
                                 }
                             }) {

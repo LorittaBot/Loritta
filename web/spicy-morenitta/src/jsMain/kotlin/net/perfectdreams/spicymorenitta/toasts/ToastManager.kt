@@ -11,6 +11,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.Element
+import web.html.HTMLElement
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -58,7 +59,7 @@ class ToastManager(private val m: SpicyMorenitta) {
     }
 
     fun setupToastRendering(element: Element) {
-        renderComposable(element) {
+        renderComposable(element.unsafeCast<HTMLElement>()) {
             Div(attrs = { classes("toast-list") }) {
                 // TODO: How can we enable the "save-bar-active" class?
                 for (toastWithAnimationState in activeToasts) {

@@ -13,8 +13,8 @@ import net.perfectdreams.loritta.serializable.DiscordUser
 import net.perfectdreams.loritta.serializable.messageeditor.MessageEditorMessagePlaceholder
 import org.jetbrains.compose.web.attributes.href
 import org.jetbrains.compose.web.dom.*
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLElement
+import web.html.HTMLDivElement
+import web.html.HTMLElement
 
 /**
  * Renders a Discord message

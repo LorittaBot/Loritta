@@ -15,6 +15,7 @@ import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
+import org.w3c.dom.HTMLElement
 
 @Composable
 fun GetDailyRewardOverview(
@@ -41,7 +42,7 @@ fun GetDailyRewardOverview(
                                     ref {
                                         CloudflareTurnstileUtils
                                             .render(
-                                                it,
+                                                it.unsafeCast<HTMLElement>(),
                                                 jsObject<TurnstileOptions> {
                                                     this.sitekey = response.captchaSiteKey
                                                     this.callback = {
