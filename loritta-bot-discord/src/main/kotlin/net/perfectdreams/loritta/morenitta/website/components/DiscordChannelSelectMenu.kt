@@ -25,7 +25,7 @@ object DiscordChannelSelectMenu {
     ) {
         select {
             this.name = name
-            attributes["loritta-select-menu"] = "true"
+            attributes["data-component-mounter"] = "loritta-select-menu"
             style = "width: 100%;"
 
             if (nullOption != null) {

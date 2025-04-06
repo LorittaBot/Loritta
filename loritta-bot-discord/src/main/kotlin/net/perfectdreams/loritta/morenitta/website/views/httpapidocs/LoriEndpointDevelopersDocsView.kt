@@ -449,7 +449,7 @@ class LoriEndpointDevelopersDocsView(
                     select {
                         name = "${parameterKind.postParameterPrefix}:$optionNamePrefix${option.name}"
                         multiple = true
-                        attributes["loritta-select-menu"] = "true"
+                        attributes["data-component-mounter"] = "loritta-select-menu"
 
                         for (transactionType in TransactionType.entries) {
                             option {

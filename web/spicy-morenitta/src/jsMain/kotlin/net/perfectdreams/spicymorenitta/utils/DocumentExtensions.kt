@@ -1,5 +1,6 @@
 package net.perfectdreams.spicymorenitta.utils
 
+import js.array.asList
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.*
@@ -10,6 +11,14 @@ inline fun <T> ParentNode.select(query: String): T {
 }
 
 inline fun <T> ParentNode.selectAll(query: String): List<T> {
+    return this.querySelectorAll(query).asList() as List<T>
+}
+
+inline fun <T> web.dom.ParentNode.querySelector(query: String): T {
+    return this.querySelector(query) as T
+}
+
+inline fun <T> web.dom.ParentNode.querySelectorAll(query: String): List<T> {
     return this.querySelectorAll(query).asList() as List<T>
 }
 

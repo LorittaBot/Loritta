@@ -87,7 +87,7 @@ class DailyShopView(
                     div(classes = "shop-timer") {
                         div(classes = "shop-timer-date") {
                             id = "when-will-be-the-next-update"
-                            attributes["loritta-item-shop-timer"] = "true"
+                            attributes["data-component-mounter"] = "loritta-item-shop-timer"
                             attributes["loritta-item-shop-resets-at"] = getShopResetsEpochMilli().toString()
                             attributes["loritta-item-shop-i18n-hours"] = i18nContext.language.textBundle.strings[I18nKeys.Time.Hours.key]!!
                             attributes["loritta-item-shop-i18n-minutes"] = i18nContext.language.textBundle.strings[I18nKeys.Time.Minutes.key]!!

@@ -27,7 +27,7 @@ object DashboardSaveBar {
             }
 
             id = "save-bar"
-            attributes["loritta-save-bar"] = "true"
+            attributes["data-component-mounter"] = "loritta-save-bar"
             attributes["spicy-oob-attribute-swap"] = "spicy-initial-save-bar-has-changes"
             attributes["spicy-initial-save-bar-has-changes"] = hasChanges.toString()
 

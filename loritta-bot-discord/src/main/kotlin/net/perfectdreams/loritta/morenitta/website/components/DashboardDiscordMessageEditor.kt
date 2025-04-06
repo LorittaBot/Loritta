@@ -88,7 +88,7 @@ object DashboardDiscordMessageEditor {
             style = "width: 100%;"
 
             textArea {
-                attributes["loritta-discord-message-editor"] = "true"
+                attributes["data-component-mounter"] = "loritta-discord-message-editor"
                 attributes["loritta-discord-message-editor-config"] = Json.encodeToString(trackSettings)
                 name = textAreaName
                 // TODO: This may cause issues if the saved message does not match what we have on the db due to formatting issues

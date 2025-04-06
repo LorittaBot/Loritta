@@ -4,7 +4,6 @@ import io.ktor.server.application.*
 import kotlinx.html.body
 import kotlinx.html.canvas
 import kotlinx.html.div
-import kotlinx.html.id
 import kotlinx.html.stream.createHTML
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -18,7 +17,6 @@ import net.perfectdreams.loritta.serializable.PocketLorittaSettings
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.selectAll
-import kotlin.collections.set
 
 class PocketLorittaRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard/pocket-loritta") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
@@ -43,7 +41,7 @@ class PocketLorittaRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRou
 				.body {
 					div {
 						canvas(classes = "loritta-game-canvas") {
-							id = "loritta-game-canvas"
+							attributes["data-component-mounter"] = "loritta-game-canvas"
 							attributes["pocket-loritta-settings"] = Json.encodeToString(pocketLorittaSettings)
 						}
 					}

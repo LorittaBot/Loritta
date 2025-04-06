@@ -1,9 +1,5 @@
 package net.perfectdreams.spicymorenitta
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import decodeURIComponent
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
@@ -29,25 +25,18 @@ import kotlinx.serialization.json.jsonPrimitive
 import loadEmbeddedLocale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.Language
-import net.perfectdreams.i18nhelper.formatters.IntlMessageFormat
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyModal
 import net.perfectdreams.loritta.serializable.EmbeddedSpicyToast
 import net.perfectdreams.loritta.serializable.PocketLorittaSettings
 import net.perfectdreams.loritta.serializable.UserIdentification
-import net.perfectdreams.loritta.serializable.messageeditor.LorittaDiscordMessageEditorSetupConfig
-import net.perfectdreams.loritta.serializable.messageeditor.TestMessageTargetChannelQuery
 import net.perfectdreams.loritta.serializable.requests.LorittaRPCRequest
 import net.perfectdreams.loritta.serializable.responses.LorittaRPCResponse
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
-import net.perfectdreams.spicymorenitta.components.HtmlText
-import net.perfectdreams.spicymorenitta.components.SimpleSelectMenu
-import net.perfectdreams.spicymorenitta.components.SimpleSelectMenuEntry
-import net.perfectdreams.spicymorenitta.components.messages.DiscordMessageEditor
-import net.perfectdreams.spicymorenitta.components.messages.TargetChannelResult
 import net.perfectdreams.spicymorenitta.game.GameState
 import net.perfectdreams.spicymorenitta.modals.ModalManager
+import net.perfectdreams.spicymorenitta.mounters.*
 import net.perfectdreams.spicymorenitta.routes.*
 import net.perfectdreams.spicymorenitta.routes.guilds.dashboard.*
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.AllBackgroundsListDashboardRoute
@@ -55,13 +44,9 @@ import net.perfectdreams.spicymorenitta.routes.user.dashboard.BackgroundsListDas
 import net.perfectdreams.spicymorenitta.routes.user.dashboard.ProfileDesignsListDashboardRoute
 import net.perfectdreams.spicymorenitta.toasts.ToastManager
 import net.perfectdreams.spicymorenitta.utils.*
-import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.*
-import org.w3c.dom.events.Event
 import org.w3c.dom.parsing.DOMParser
 import org.w3c.xhr.XMLHttpRequest
-import kotlin.collections.set
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.js.Date
 import kotlin.js.Json
@@ -182,6 +167,14 @@ class SpicyMorenitta : Logging {
 	var userIdentification: UserIdentification? = null
 	val pageSpecificTasks = mutableListOf<Job>()
 	var currentPath: String? = null
+
+	val componentMounters = mutableListOf<ComponentMounter>(
+		LorittaItemShopTimerComponentMounter(),
+		LorittaGameCanvasComponentMounter(this),
+		SynchronizeFormWithSaveBarComponentMounter(),
+		LorittaSelectMenuComponentMounter(this),
+		LorittaDiscordMessageEditorComponentMounter(this),
+	)
 
 	@OptIn(ExperimentalEncodingApi::class)
 	fun start() {
@@ -1093,7 +1086,9 @@ class SpicyMorenitta : Logging {
 	}
 
 	fun processCustomComponents(targetElement: HTMLElement) {
-		processCustomComponent(targetElement)
+		for (componentMounter in componentMounters) {
+			componentMounter.mount(targetElement as web.html.HTMLElement)
+		}
 
 		// Also process all childs
 		targetElement.children.asList()
@@ -1101,367 +1096,5 @@ class SpicyMorenitta : Logging {
 				if (it is HTMLElement)
 					processCustomComponents(it)
 			}
-	}
-
-	fun processCustomComponent(it: HTMLElement) {
-		// TODO: Refactor this!
-		run {
-			if (it.getAttribute("loritta-item-shop-timer") != null) {
-				if (it.getAttribute("loritta-powered-up") != null)
-					return@run
-
-				it.setAttribute("loritta-powered-up", "")
-				val i18nHours = it.getAttribute("loritta-item-shop-i18n-hours")!!
-				val i18nMinutes = it.getAttribute("loritta-item-shop-i18n-minutes")!!
-				val i18nSeconds = it.getAttribute("loritta-item-shop-i18n-seconds")!!
-				val messageFormatHours = IntlMessageFormat(i18nHours, "pt")
-				val messageFormatMinutes = IntlMessageFormat(i18nMinutes, "pt")
-				val messageFormatSeconds = IntlMessageFormat(i18nSeconds, "pt")
-
-				val scope = CoroutineScope(Job())
-				val observer = MutationObserver { _, observer ->
-					if (!document.contains(it)) {
-						debug("Cancelling element's coroutine scope because it was removed from the DOM...")
-						console.log(it)
-						scope.cancel() // Cancel coroutine scope when element is removed
-						observer.disconnect() // Disconnect the observer to avoid leaks
-					}
-				}
-				observer.observe(
-					document.body ?: throw IllegalStateException("Document has no body"),
-					MutationObserverInit(childList = true, subtree = true)
-				)
-
-				val resetsAt = it.getAttribute("loritta-item-shop-resets-at")!!.toLong()
-
-				// TODO - htmx-adventures: Don't use GlobalScope!
-				//  (technically we are scoping this to the element nowadays...)
-				var previousText = ""
-				scope.launch {
-					while (isActive) {
-						val diff = resetsAt - (Date().getTime().toLong())
-						if (0 >= diff) {
-							// Trigger Item Shop refresh if the time is 0
-							htmx.trigger("body", "refreshItemShop", null)
-							return@launch
-						}
-
-						val timeInSeconds = diff / 1_000
-
-						val s = timeInSeconds % 60
-						val m = (timeInSeconds / 60) % 60
-						val h = (timeInSeconds / (60 * 60)) % 24
-
-						val newText = buildString {
-							if (h != 0L) {
-								append(
-									messageFormatHours.format(
-										jsObject {
-											this.unit = h + 1
-										}
-									)
-								)
-							} else if (m != 0L) {
-								append(
-									messageFormatMinutes.format(
-										jsObject {
-											this.unit = m
-										}
-									)
-								)
-							} else if (s != 0L) {
-								append(
-									messageFormatSeconds.format(
-										jsObject {
-											this.unit = s
-										}
-									)
-								)
-							}
-						}
-						if (newText != previousText) {
-							debug("Updating timer text to $newText")
-							it.innerText = newText
-							previousText = newText
-						}
-
-						delay(1_000)
-					}
-				}
-			}
-		}
-
-		run {
-			// Technically only one loritta-game-canvas instance should exist
-			if (it.id == "loritta-game-canvas" && it is HTMLCanvasElement) {
-				if (it.getAttribute("loritta-powered-up") != null)
-					return@run
-
-				it.setAttribute("loritta-powered-up", "")
-
-				val pocketLorittaSettings =
-					kotlinx.serialization.json.Json.decodeFromString<PocketLorittaSettings>(it.getAttribute("pocket-loritta-settings")!!)
-				gameState.setCanvas(it)
-				gameState.updateCanvasSize()
-				gameState.syncStateWithSettings(pocketLorittaSettings)
-
-				gameState.addedToTheDOM = true
-
-				window.addEventListener(
-					"resize",
-					{
-						gameState.updateCanvasSize()
-					}
-				)
-
-				gameState.start()
-			}
-		}
-
-		run {
-			if (it is HTMLFormElement && it.getAttribute("loritta-synchronize-with-save-bar") != null) {
-				if (it.getAttribute("loritta-powered-up") != null)
-					return@run
-
-				it.setAttribute("loritta-powered-up", "")
-				val lorittaSaveBarAttribute = it.getAttribute("loritta-synchronize-with-save-bar")!!
-
-				val saveBarElement = htmx.find(lorittaSaveBarAttribute) as HTMLDivElement
-				val initialState = JSON.stringify(htmx.values(it))
-
-				println("Form save bar setup, initial state is: $initialState")
-
-				it.addEventListener(
-					"input",
-					{ event ->
-						// If the input does not have a name attribute, let's ignore the input...
-						if ((event.target as Element?)?.getAttribute("name") == null)
-							return@addEventListener
-
-						// Save the current state
-						val newState = JSON.stringify(htmx.values(it))
-
-						println("INITIAL STATE: $initialState")
-						println("NEW STATE: $newState")
-
-						if (newState != initialState) {
-							// This is a HACK to avoid the save bar showing up when it is inserted into the DOM
-							// We can't keep this in a hyperscript when the animation ends because that breaks if we are deferring the script
-							saveBarElement.removeClass("initial-state")
-
-							saveBarElement.addClass("has-changes")
-							saveBarElement.removeClass("no-changes")
-						} else {
-							// This is a HACK to avoid the save bar showing up when it is inserted into the DOM
-							// We can't keep this in a hyperscript when the animation ends because that breaks if we are deferring the script
-							saveBarElement.removeClass("initial-state")
-
-							saveBarElement.addClass("no-changes")
-							saveBarElement.removeClass("has-changes")
-						}
-					}
-				)
-			}
-		}
-
-		run {
-			if (it.getAttribute("loritta-save-bar") != null) {
-				if (it.getAttribute("loritta-powered-up") != null)
-					return@run
-
-				it.setAttribute("loritta-powered-up", "")
-
-				debug("Loritta Save Bar")
-				val observer = MutationObserver { _, observer ->
-					debug("DOM mutation")
-					if (!document.contains(it)) {
-						debug("Cancelling element's save bar scope because it was removed from the DOM...")
-						document.select<HTMLDivElement?>(".toast-list")?.removeClass("save-bar-active")
-						observer.disconnect() // Disconnect the observer to avoid leaks
-					} else {
-						if (it.classList.contains("has-changes")) {
-							debug("I have changes!")
-							document.select<HTMLDivElement?>(".toast-list")?.addClass("save-bar-active")
-						} else if (it.classList.contains("no-changes")) {
-							debug("I don't have changes...")
-							document.select<HTMLDivElement?>(".toast-list")?.removeClass("save-bar-active")
-						}
-					}
-				}
-				observer.observe(
-					document.body ?: throw IllegalStateException("Document has no body"),
-					MutationObserverInit(childList = true, subtree = true, attributes = true)
-				)
-			}
-		}
-
-		run {
-			if (it is HTMLSelectElement && it.getAttribute("loritta-select-menu") != null) {
-				val originalSelectMenuElement = it
-				if (originalSelectMenuElement.getAttribute("loritta-powered-up") != null)
-					return@run
-
-				originalSelectMenuElement.setAttribute("loritta-powered-up", "")
-				val originalStyle = originalSelectMenuElement.getAttribute("style")
-
-				// Hide the original select menu
-				originalSelectMenuElement.style.display = "none"
-
-				// val selectMenuName = originalSelectMenuElement.getAttribute("name")
-				// originalSelectMenuElement.removeAttribute("name")
-
-				val htmlOptions = originalSelectMenuElement.selectAll<HTMLOptionElement>("option")
-
-				val originalEntries = htmlOptions.map {
-					val openEmbeddedModalOnSelect = it.getAttribute("loritta-select-menu-open-embedded-modal-on-select")
-					val embeddedSpicyModal = openEmbeddedModalOnSelect?.let { kotlinx.serialization.json.Json.decodeFromString<EmbeddedSpicyModal>(decodeURIComponent(it)) }
-
-					SimpleSelectMenuEntry(
-						{
-							val textHTML = it.getAttribute("loritta-select-menu-text")
-							if (textHTML != null) {
-								HtmlText(textHTML)
-							} else {
-								Text(it.innerHTML)
-							}
-						},
-						it.value,
-						it.selected,
-						// We don't use HTML "disabled" attribute because that doesn't let the entry be serialized to a form
-						it.getAttribute("loritta-select-menu-disabled")?.toBoolean() == true,
-						embeddedSpicyModal
-					)
-				}
-
-				val selectMenuWrapperElement = document.createElement("div")
-				if (originalStyle != null)
-					selectMenuWrapperElement.setAttribute("style", originalStyle)
-
-				originalSelectMenuElement.parentElement!!.insertBefore(selectMenuWrapperElement, originalSelectMenuElement)
-
-				renderComposable(selectMenuWrapperElement.unsafeCast<web.html.HTMLElement>()) {
-					var modifiedEntries by remember { mutableStateOf(originalEntries) }
-
-					// For some reason we need to key it by the modifiedEntries list
-					// Because if a entry uses custom HTML it borks and the list is never updated
-					SimpleSelectMenu(
-						"Click Here!",
-						if (originalSelectMenuElement.multiple) null else 1,
-						modifiedEntries
-					) {
-						debug("owo!!!")
-						debug("Selected $it")
-						debug("Original: ${modifiedEntries.toList()}")
-						val selectedEntries = originalEntries.filter { entry ->
-							entry.value in it
-						}
-
-						for (selectedEntry in selectedEntries) {
-							if (selectedEntry.disabled) {
-								// Selecting a disabled entry!
-								if (selectedEntry.embeddedSpicyModalToBeOpenedIfDisabled != null) {
-									// The entry has a embedded modal!
-									modalManager.openModal(selectedEntry.embeddedSpicyModalToBeOpenedIfDisabled)
-								}
-								return@SimpleSelectMenu
-							}
-						}
-
-						modifiedEntries = originalEntries.map { copiedEntry ->
-							copiedEntry.copy(selected = copiedEntry in selectedEntries)
-						}
-						debug("Modified: ${modifiedEntries.toList()}")
-
-						// We are actually going to edit the original elements
-						// originalSelectMenuElement.value = it.first()
-						htmlOptions.forEach { htmlOption ->
-							htmlOption.selected = htmlOption.value in it
-						}
-
-						originalSelectMenuElement.dispatchEvent(Event("input", EventInit(bubbles = true)))
-
-						originalSelectMenuElement.dispatchEvent(Event("change", EventInit(bubbles = true)))
-					}
-				}
-			}
-		}
-
-		run {
-			if (it is HTMLTextAreaElement && it.getAttribute("loritta-discord-message-editor") != null) {
-				val originalSelectMenuElement = it
-				if (originalSelectMenuElement.getAttribute("loritta-powered-up") != null)
-					return@run
-
-				originalSelectMenuElement.setAttribute("loritta-powered-up", "")
-				val setupJson = kotlinx.serialization.json.Json.decodeFromString<LorittaDiscordMessageEditorSetupConfig>(originalSelectMenuElement.getAttribute("loritta-discord-message-editor-config")!!)
-
-				// Hide the original text area
-				originalSelectMenuElement.style.display = "none"
-
-				val selectMenuWrapperElement = document.createElement("div")
-
-				originalSelectMenuElement.parentElement!!.insertBefore(selectMenuWrapperElement, originalSelectMenuElement)
-
-				var rawMessage by mutableStateOf(originalSelectMenuElement.value)
-				var targetChannelId by mutableStateOf<String?>(null)
-
-				when (val query = setupJson.testMessageTargetChannelQuery) {
-					is TestMessageTargetChannelQuery.QuerySelector -> {
-						val targetQuery = document.select<HTMLElement>(query.querySelector)
-
-						fun updateSelect() {
-							val value = targetQuery.asDynamic().value
-							targetChannelId = value as String?
-						}
-
-						targetQuery.addEventListener(
-							"input",
-							{
-								updateSelect()
-							}
-						)
-
-						updateSelect()
-					}
-
-					TestMessageTargetChannelQuery.SendDirectMessage -> targetChannelId = "dm" // wow this is a hack
-				}
-
-				renderComposable(selectMenuWrapperElement.unsafeCast<web.html.HTMLElement>()) {
-					val _targetChannelId = targetChannelId
-
-					DiscordMessageEditor(
-						this@SpicyMorenitta,
-						setupJson.templates,
-						setupJson.placeholderSectionType,
-						setupJson.placeholders,
-						setupJson.guild,
-						setupJson.testMessageEndpointUrl,
-						if (_targetChannelId != null) {
-							if (_targetChannelId == "dm") {
-								TargetChannelResult.DirectMessageTarget
-							} else {
-								TargetChannelResult.GuildMessageChannelTarget(_targetChannelId.toLong())
-							}
-						} else {
-							TargetChannelResult.ChannelNotSelected
-						},
-						setupJson.selfLorittaUser,
-						listOf(),
-						listOf(),
-						rawMessage
-					) {
-						// Update our variable
-						rawMessage = it
-
-						// And update the backing textarea
-						originalSelectMenuElement.value = rawMessage
-
-						// And dispatch an input event for anyone that's listening to it
-						originalSelectMenuElement.dispatchEvent(Event("input", EventInit(bubbles = true, cancelable = true)))
-					}
-				}
-			}
-		}
 	}
 }
