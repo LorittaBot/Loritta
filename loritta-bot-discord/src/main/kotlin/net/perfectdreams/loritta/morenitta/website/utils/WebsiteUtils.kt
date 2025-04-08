@@ -35,9 +35,6 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.sql.ResultRow
 import java.text.MessageFormat
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import kotlin.io.path.inputStream
 
 object WebsiteUtils {
@@ -460,6 +457,16 @@ object WebsiteUtils {
 			user.globalName,
 			user.discriminator,
 			user.avatarId
+		)
+	}
+
+	fun convertUserIdentificationToSerializable(user: LorittaJsonWebSession.UserIdentification): DiscordUser {
+		return DiscordUser(
+			user.id.toLong(),
+			user.username,
+			user.globalName,
+			user.discriminator,
+			user.avatar
 		)
 	}
 }

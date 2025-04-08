@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.co
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.commands.PutConfigureCommandsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.dailyshoptrinkets.ConfigureDailyShopTrinketsNotificationsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.dailyshoptrinkets.PutConfigureDailyShopTrinketsNotificationsRoute
+import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.general.PutGeneralConfigRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.reactionevents.ConfigureReactionEventsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.reactionevents.PutConfigureReactionEventsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch.*
@@ -56,6 +57,7 @@ object DefaultRoutes {
 		DashboardRoute(loritta),
 		PostFavoriteGuildRoute(loritta),
 		ConfigureGeneralRoute(loritta),
+		PutGeneralConfigRoute(loritta),
 		AuditLogRoute(loritta),
 		ConfigureAutoroleRoute(loritta),
 		ConfigureCommandsRoute(loritta),
