@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.time.Duration.Companion.seconds
 
@@ -63,7 +64,7 @@ class GetRichestUsersRoute(m: LorittaBot) : LoriPublicAPIRoute(
             val profiles = Profiles
                 .selectAll()
                 .where {
-                    Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis())
+                    Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (Profiles.id notInSubQuery UsersService.botTokenUsersList())
                 }
                 .orderBy(Profiles.money, SortOrder.DESC)
                 .offset(offset).limit(limit)

@@ -29,6 +29,8 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
                             )
 
         }
+
+        fun botTokenUsersList() = UserLorittaAPITokens.select(UserLorittaAPITokens.tokenUserId)
     }
 
     /**
