@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.serializable.CachedUserInfo
 import net.perfectdreams.loritta.serializable.UserBannedState
 import net.perfectdreams.loritta.serializable.UserId
@@ -30,7 +31,9 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
 
         }
 
-        fun botTokenUsersList() = UserLorittaAPITokens.select(UserLorittaAPITokens.tokenUserId)
+        fun botTokenUsersList() = UserLorittaAPITokens.select(UserLorittaAPITokens.tokenUserId).where {
+            UserLorittaAPITokens.tokenType eq TokenType.BOT
+        }
     }
 
     /**
