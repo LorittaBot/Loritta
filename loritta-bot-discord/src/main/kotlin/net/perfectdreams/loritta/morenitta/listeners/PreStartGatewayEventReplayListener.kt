@@ -5,11 +5,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.PreProcessedRawGatewayEvent
-import net.dv8tion.jda.api.events.StatusChangeEvent
+import net.dv8tion.jda.api.events.WebSocketPreConnectGatewayEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.utils.data.DataObject
 import net.dv8tion.jda.internal.JDAImpl
@@ -63,7 +62,7 @@ class PreStartGatewayEventReplayListener(
                 // Only cancel dispatch events, we don't want the gateway connection to timeout due to not sending heartbeats
                 WebSocketCode.DISPATCH -> {
                     if (event.type == "RESUMED") {
-                        logger.info("Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let {  Clock.System.now() - it }} since shard shutdown began to now")
+                        logger.info("Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now")
 
                         // No need to send the resumed event to JDA because we have sent our own faked READY event
                         event.isCancelled = true
@@ -71,7 +70,15 @@ class PreStartGatewayEventReplayListener(
                         val jdaImpl = event.jda as JDAImpl
 
                         // Indicate on our presence that we are loading the cached data
-                        jdaImpl.presence.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.playing(loritta.createActivityText("\uD83C\uDF6E Loritta is loading... Hang tight!", jdaImpl.shardInfo.shardId)))
+                        jdaImpl.presence.setPresence(
+                            OnlineStatus.DO_NOT_DISTURB,
+                            Activity.playing(
+                                loritta.createActivityText(
+                                    "\uD83C\uDF6E Loritta is loading... Hang tight!",
+                                    jdaImpl.shardInfo.shardId
+                                )
+                            )
+                        )
 
                         // Yoru's Fakeout: Discord Edition
                         // (I may or may have not been playing too much VALORANT)
@@ -114,12 +121,18 @@ class PreStartGatewayEventReplayListener(
                         loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.SUCCESSFULLY_RESUMED
                         jdaImpl.presence.setPresence(
                             OnlineStatus.ONLINE,
-                            runBlocking { loritta.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId) }
+                            runBlocking {
+                                loritta.loadActivity()?.convertToJDAActivity(loritta, event.jda.shardInfo.shardId)
+                            }
                         )
 
                         logger.info { "Validating if all guilds has the self member information..." }
                         for (guild in jdaImpl.guilds) {
-                            val hasSelfMember = try { guild.selfMember } catch (e: IllegalStateException) { null } != null
+                            val hasSelfMember = try {
+                                guild.selfMember
+                            } catch (e: IllegalStateException) {
+                                null
+                            } != null
 
                             if (!hasSelfMember) {
                                 logger.warn { "Self Member in Guild ${guild.name} (${guild.idLong}): Missing! Something went wrong!!" }
@@ -154,67 +167,69 @@ class PreStartGatewayEventReplayListener(
         }
     }
 
-    override fun onStatusChange(event: StatusChangeEvent) {
+    // Due to race limit conditions, the webSocketClient may be null here if the JDA instance has been enqueued for login before the client assignment has been made
+    // (the WebSocketClient calls "api.getSessionController().appendSession(connectNode);" before the JDA client assignment)
+    // Working around this issue on the StatusChangeEvent is a pain in the butt, which is why we use our custom WebSocketPreConnectGatewayEvent event
+    override fun onWebSocketPreConnectGateway(event: WebSocketPreConnectGatewayEvent) {
         if (state.value == ProcessorState.FINISHED)
             return
 
-        if (event.newStatus == JDA.Status.CONNECTING_TO_WEBSOCKET) {
-            if (initialSession != null) {
-                val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
-                logger.info { "Connecting shard ${event.jda.shardInfo.shardId} to WebSocket, sending faked READY event... Took $diff since shard shutdown began to now" }
+       if (initialSession != null) {
+            val diff = gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - gatewayExtras.shutdownBeganAt }
+            logger.info { "Connecting shard ${event.jda.shardInfo.shardId} to WebSocket, sending faked READY event... Took $diff since shard shutdown began to now" }
 
-                val jdaImpl = event.jda as JDAImpl
+            val jdaImpl = event.jda as JDAImpl
 
-                // Update the current event sequence for resume
-                jdaImpl.setResponseTotal(initialSession.sequence.toInt())
+            // Update the current event sequence for resume
+            jdaImpl.setResponseTotal(initialSession.sequence.toInt())
 
-                // Send a fake READY event
-                jdaImpl.client.handleEvent(
-                    DataObject.fromJson(
-                        buildJsonObject {
-                            this.put("op", 0)
-                            this.putJsonObject("d") {
-                                this.putJsonArray("guilds") {
-                                    for (guildId in initialSession.guilds) {
-                                        addJsonObject {
-                                            this.put("id", guildId)
-                                            this.put("unavailable", true)
-                                        }
+            var webSocketClient = event.client
+
+            webSocketClient.handleEvent(
+                DataObject.fromJson(
+                    buildJsonObject {
+                        this.put("op", 0)
+                        this.putJsonObject("d") {
+                            this.putJsonArray("guilds") {
+                                for (guildId in initialSession.guilds) {
+                                    addJsonObject {
+                                        this.put("id", guildId)
+                                        this.put("unavailable", true)
                                     }
                                 }
-                                this.putJsonObject("user") {
-                                    put("id", event.jda.selfUser.idLong)
-                                    put("username", event.jda.selfUser.name)
-                                    put("global_name", event.jda.selfUser.globalName)
-                                    put("discriminator", event.jda.selfUser.discriminator)
-                                    put("avatar", event.jda.selfUser.avatarId)
-                                    put("public_flags", event.jda.selfUser.flagsRaw)
-                                    put("bot", event.jda.selfUser.isBot)
-                                    put("system", event.jda.selfUser.isSystem)
-                                }
-                                this.putJsonObject("application") {
-                                    // This requires the verifyToken to be enabled since we need JDA to query the self user before proceeding
-                                    // If you aren't using it, store the bot's app ID somewhere and pass it here instead!
-                                    put("id", (event.jda.selfUser as SelfUserImpl).applicationId)
-                                }
-                                this.put("session_id", initialSession.sessionId)
-                                this.put("resume_gateway_url", initialSession.resumeGatewayUrl)
-                                // This is always empty
-                                this.putJsonArray("private_channels") {}
                             }
-                            this.put("t", "READY")
-                            this.put(FAKE_EVENT_FIELD, true)
-                        }.toString()
-                    )
+                            this.putJsonObject("user") {
+                                put("id", event.jda.selfUser.idLong)
+                                put("username", event.jda.selfUser.name)
+                                put("global_name", event.jda.selfUser.globalName)
+                                put("discriminator", event.jda.selfUser.discriminator)
+                                put("avatar", event.jda.selfUser.avatarId)
+                                put("public_flags", event.jda.selfUser.flagsRaw)
+                                put("bot", event.jda.selfUser.isBot)
+                                put("system", event.jda.selfUser.isSystem)
+                            }
+                            this.putJsonObject("application") {
+                                // This requires the verifyToken to be enabled since we need JDA to query the self user before proceeding
+                                // If you aren't using it, store the bot's app ID somewhere and pass it here instead!
+                                put("id", (event.jda.selfUser as SelfUserImpl).applicationId)
+                            }
+                            this.put("session_id", initialSession.sessionId)
+                            this.put("resume_gateway_url", initialSession.resumeGatewayUrl)
+                            // This is always empty
+                            this.putJsonArray("private_channels") {}
+                        }
+                        this.put("t", "READY")
+                        this.put(FAKE_EVENT_FIELD, true)
+                    }.toString()
                 )
-                state.value = ProcessorState.WAITING_FOR_RESUME
+            )
+            state.value = ProcessorState.WAITING_FOR_RESUME
 
-                // When JDA connects, it will see that it has a non-null session ID and resume gateway URL, which will trigger a resume state instead of a identify... sweet!
-            } else {
-                // We don't have a gateway session, so just skip the gateway event processing shenanigans
-                state.value = ProcessorState.FINISHED
-                loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH
-            }
+            // When JDA connects, it will see that it has a non-null session ID and resume gateway URL, which will trigger a resume state instead of a identify... sweet!
+        } else {
+            // We don't have a gateway session, so just skip the gateway event processing shenanigans
+            state.value = ProcessorState.FINISHED
+            loritta.gatewayShardsStartupResumeStatus[event.jda.shardInfo.shardId] = GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH
         }
     }
 

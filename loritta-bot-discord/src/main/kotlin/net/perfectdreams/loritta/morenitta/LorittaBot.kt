@@ -379,22 +379,25 @@ class LorittaBot(
 
 		for (shardId in lorittaCluster.minShard..lorittaCluster.maxShard) {
 			val initialSession = initialSessions[shardId]
-			val state = MutableStateFlow(
-				if (initialSession != null) {
-					PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION
-				} else {
-					PreStartGatewayEventReplayListener.ProcessorState.FINISHED
-				}
-			)
-			logger.info { "Shard $shardId status: ${state.value}" }
 
-			if (state.value == PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {
+			val processorState = if (initialSession != null) {
+				PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION
+			} else {
+				// There isn't any cached gateway session related to this shard...
+				PreStartGatewayEventReplayListener.ProcessorState.FINISHED
+			}
+
+			logger.info { "Shard $shardId status: $processorState" }
+
+			if (processorState == PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {
 				// For these that are already FINISHED, they will always be LOGGED_IN_FROM_SCRATCH anyway
 				gatewayShardsStartupResumeStatus[shardId] = GatewayShardStartupResumeStatus.LOGGED_IN_FROM_SCRATCH
 			} else {
 				// A fallback, to avoid returning null when querying the gatewayShardsStartupResumeStatus
 				gatewayShardsStartupResumeStatus[shardId] = GatewayShardStartupResumeStatus.UNKNOWN
 			}
+
+			val state = MutableStateFlow(processorState)
 
 			preLoginStates[shardId] = state
 		}
