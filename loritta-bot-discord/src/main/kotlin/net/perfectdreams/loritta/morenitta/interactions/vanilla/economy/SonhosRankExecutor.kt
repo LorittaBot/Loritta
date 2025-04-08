@@ -65,7 +65,7 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                     Pair(totalCount, profilesInTheQuery)
                 } else {
                     val profiles = Profiles
-                        .selectAll().where { Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (GuildProfiles.userId notInSubQuery UsersService.botTokenUsersList()) }
+                        .selectAll().where { Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (Profiles.id notInSubQuery UsersService.botTokenUsersList()) }
                         .orderBy(Profiles.money, SortOrder.DESC)
                         .limit(5)
                         .offset(page * 5)
