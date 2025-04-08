@@ -174,6 +174,7 @@ class SpicyMorenitta : Logging {
 		SynchronizeFormWithSaveBarComponentMounter(),
 		LorittaSelectMenuComponentMounter(this),
 		LorittaDiscordMessageEditorComponentMounter(this),
+		GuildGeneralComponentMounter(this)
 	)
 
 	@OptIn(ExperimentalEncodingApi::class)
