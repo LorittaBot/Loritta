@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
@@ -473,25 +474,23 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                                     val now = Instant.now()
 
-                                    val result = if (isTails) {
-                                        val winner = context.user
-                                        val loser = invitedUser
-                                        loritta.newSuspendedTransaction {
-                                            selfUserProfile.addSonhosNested(money)
-                                            invitedUserProfile.takeSonhosNested(number)
+                                    suspend fun processCoinFlipResult(winner: User, winnerUserProfile: Profile, loser: User, loserUserProfile: Profile): Result {
+                                        return loritta.newSuspendedTransaction {
+                                            winnerUserProfile.addSonhosNested(money)
+                                            loserUserProfile.takeSonhosNested(number)
 
                                             PaymentUtils.addToTransactionLogNested(
                                                 number,
                                                 SonhosPaymentReason.COIN_FLIP_BET,
-                                                givenBy = invitedUserProfile.id.value,
-                                                receivedBy = selfUserProfile.id.value
+                                                givenBy = loserUserProfile.id.value,
+                                                receivedBy = winnerUserProfile.id.value
                                             )
 
                                             // Cinnamon transaction system
                                             val mmResult = CoinFlipBetMatchmakingResults.insertAndGetId {
                                                 it[CoinFlipBetMatchmakingResults.timestamp] = now
-                                                it[CoinFlipBetMatchmakingResults.winner] = selfUserProfile.id.value
-                                                it[CoinFlipBetMatchmakingResults.loser] = invitedUserProfile.id.value
+                                                it[CoinFlipBetMatchmakingResults.winner] = winnerUserProfile.id.value
+                                                it[CoinFlipBetMatchmakingResults.loser] = loserUserProfile.id.value
                                                 it[CoinFlipBetMatchmakingResults.quantity] = number
                                                 it[CoinFlipBetMatchmakingResults.quantityAfterTax] = money
                                                 it[CoinFlipBetMatchmakingResults.tax] = tax
@@ -500,7 +499,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                                             // Cinnamon transaction log
                                             SimpleSonhosTransactionsLogUtils.insert(
-                                                selfUserProfile.id.value,
+                                                winnerUserProfile.id.value,
                                                 now,
                                                 TransactionType.COINFLIP_BET,
                                                 money,
@@ -508,7 +507,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                             )
 
                                             SimpleSonhosTransactionsLogUtils.insert(
-                                                invitedUserProfile.id.value,
+                                                loserUserProfile.id.value,
                                                 now,
                                                 TransactionType.COINFLIP_BET,
                                                 number,
@@ -517,7 +516,7 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
 
                                             if (AprilFools.isAprilFools()) {
                                                 aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.selectAll().where {
-                                                    AprilFoolsCoinFlipBugs.userId eq selfUserProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
+                                                    AprilFoolsCoinFlipBugs.userId eq winnerUserProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
                                                         Constants.LORITTA_TIMEZONE
                                                     ).year)
                                                 }.limit(1)
@@ -571,103 +570,22 @@ class CoinFlipBetCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapp
                                                 loserRanking
                                             )
                                         }
+                                    }
+                                    
+                                    val result = if (isTails) {
+                                        val winner = context.user
+                                        val winnerUserProfile = selfUserProfile
+                                        val loser = invitedUser
+                                        val loserUserProfile = invitedUserProfile
+
+                                        processCoinFlipResult(winner, winnerUserProfile, loser, loserUserProfile)
                                     } else {
                                         val winner = invitedUser
+                                        val winnerUserProfile = invitedUserProfile
                                         val loser = context.user
-                                        loritta.newSuspendedTransaction {
-                                            invitedUserProfile.addSonhosNested(money)
-                                            selfUserProfile.takeSonhosNested(number)
+                                        val loserUserProfile = selfUserProfile
 
-                                            PaymentUtils.addToTransactionLogNested(
-                                                number,
-                                                SonhosPaymentReason.COIN_FLIP_BET,
-                                                givenBy = selfUserProfile.id.value,
-                                                receivedBy = invitedUserProfile.id.value
-                                            )
-
-                                            val mmResult = CoinFlipBetMatchmakingResults.insertAndGetId {
-                                                it[CoinFlipBetMatchmakingResults.timestamp] = Instant.now()
-                                                it[CoinFlipBetMatchmakingResults.winner] = invitedUserProfile.id.value
-                                                it[CoinFlipBetMatchmakingResults.loser] = selfUserProfile.id.value
-                                                it[CoinFlipBetMatchmakingResults.quantity] = number
-                                                it[CoinFlipBetMatchmakingResults.quantityAfterTax] = money
-                                                it[CoinFlipBetMatchmakingResults.tax] = tax
-                                                it[CoinFlipBetMatchmakingResults.taxPercentage] = totalRewardPercentage
-                                            }
-
-                                            // Cinnamon transaction log
-                                            SimpleSonhosTransactionsLogUtils.insert(
-                                                invitedUserProfile.id.value,
-                                                now,
-                                                TransactionType.COINFLIP_BET,
-                                                money,
-                                                StoredCoinFlipBetTransaction(mmResult.value)
-                                            )
-
-                                            SimpleSonhosTransactionsLogUtils.insert(
-                                                selfUserProfile.id.value,
-                                                now,
-                                                TransactionType.COINFLIP_BET,
-                                                number,
-                                                StoredCoinFlipBetTransaction(mmResult.value)
-                                            )
-
-                                            if (AprilFools.isAprilFools()) {
-                                                aprilFoolsWinnerBugMessage = AprilFoolsCoinFlipBugs.selectAll().where {
-                                                    AprilFoolsCoinFlipBugs.userId eq invitedUserProfile.id.value and (AprilFoolsCoinFlipBugs.year eq LocalDateTime.now(
-                                                        Constants.LORITTA_TIMEZONE
-                                                    ).year)
-                                                }.limit(1)
-                                                    .orderBy(AprilFoolsCoinFlipBugs.beggedAt, SortOrder.DESC)
-                                                    .lastOrNull()
-                                                    ?.get(AprilFoolsCoinFlipBugs.bug)
-                                            }
-
-                                            val couponData = WebsiteDiscountCoupons.selectAll()
-                                                .where {
-                                                    WebsiteDiscountCoupons.public and (WebsiteDiscountCoupons.startsAt lessEq now and (WebsiteDiscountCoupons.endsAt greaterEq now))
-                                                }
-                                                .orderBy(WebsiteDiscountCoupons.total, SortOrder.ASC)
-                                                .firstOrNull()
-
-                                            val activeCoupon = if (couponData != null) {
-                                                val paymentsThatUsedTheCouponCount = Payments.selectAll()
-                                                    .where {
-                                                        Payments.coupon eq couponData[WebsiteDiscountCoupons.id]
-                                                    }
-                                                    .count()
-
-                                                ClaimedWebsiteCoupon(
-                                                    couponData[WebsiteDiscountCoupons.id].value,
-                                                    couponData[WebsiteDiscountCoupons.code],
-                                                    couponData[WebsiteDiscountCoupons.endsAt],
-                                                    couponData[WebsiteDiscountCoupons.total],
-                                                    couponData[WebsiteDiscountCoupons.maxUses],
-                                                    paymentsThatUsedTheCouponCount,
-                                                )
-                                            } else null
-
-                                            // Get the profiles again
-                                            val updatedWinnerProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(winner.idLong))
-                                            val updatedLoserProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(loser.idLong))
-
-                                            val winnerRanking = if (updatedWinnerProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
-                                                updatedWinnerProfile.money
-                                            ) else null
-                                            val loserRanking = if (updatedLoserProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
-                                                updatedLoserProfile.money
-                                            ) else null
-
-                                            return@newSuspendedTransaction Result(
-                                                winner,
-                                                loser,
-                                                activeCoupon,
-                                                updatedWinnerProfile.money,
-                                                winnerRanking,
-                                                updatedLoserProfile.money,
-                                                loserRanking
-                                            )
-                                        }
+                                        processCoinFlipResult(winner, winnerUserProfile, loser, loserUserProfile)
                                     }
 
                                     componentContext.deferAndEditOriginal {
