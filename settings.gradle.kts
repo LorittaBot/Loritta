@@ -88,9 +88,6 @@ include(":web:showtime:showtime-frontend")
 // include(":web:dashboard:backend")
 // include(":web:dashboard:spicy-frontend")
 
-// ===[ LORITUBER ]===
-include(":lorituber:server")
-
 // ===[ MISC ]===
 include(":loritta-helper")
 include(":temmie-discord-auth")

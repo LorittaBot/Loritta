@@ -33,7 +33,6 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LanguageManager
-import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -47,7 +46,6 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text.TextTransformCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.images.*
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.lorituber.LoriTuberCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.minecraft.MinecraftCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.misc.LanguageCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.moderation.*
@@ -292,10 +290,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(LoriCoolCardsCommand(loritta))
         register(SonhosCommand(loritta))
         register(VacationCommand(loritta))
-
-        // ===[ DREAMLAND ]===
-        if (loritta.config.loritta.environment == EnvironmentType.CANARY)
-            register(LoriTuberCommand(loritta))
 
         // ===[ MINECRAFT ]===
         register(MinecraftCommand(loritta))

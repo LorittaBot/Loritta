@@ -42,9 +42,6 @@ import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.common.commands.InteractionContextType
 import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentGenre
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentLength
-import net.perfectdreams.loritta.common.lorituber.LoriTuberContentType
 import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.common.utils.easter2023.EasterEggColor
 import net.perfectdreams.loritta.serializable.BackgroundStorageType
@@ -253,11 +250,6 @@ class Pudding(
             GuildProfiles,
             Halloween2019Players,
             InteractionsData,
-            // LoriTuberChannels,
-            // LoriTuberCharacters,
-            // LoriTuberMails,
-            // LoriTuberPendingVideos,
-            // LoriTuberServerInfos,
             Marriages,
             MiscellaneousData,
             Mutes,
@@ -436,9 +428,6 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
                 createOrUpdatePostgreSQLEnum(WebsiteVoteSource.values())
                 createOrUpdatePostgreSQLEnum(PendingImportantNotificationState.values())
-                createOrUpdatePostgreSQLEnum(LoriTuberContentLength.values())
-                createOrUpdatePostgreSQLEnum(LoriTuberContentType.values())
-                createOrUpdatePostgreSQLEnum(LoriTuberContentGenre.values())
                 createOrUpdatePostgreSQLEnum(EasterEggColor.values())
                 createOrUpdatePostgreSQLEnum(RaffleType.values())
                 createOrUpdatePostgreSQLEnum(TransactionType.values())
