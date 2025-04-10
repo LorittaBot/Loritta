@@ -205,12 +205,6 @@ class ClearCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             this@ClearExecutor.unavailableGuilds.remove(context.guild.idLong)
         }
 
-        data class CommandOptions(
-            val targets: Set<Long?>,
-            val text: String?,
-            val textInserted: Boolean
-        )
-
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>

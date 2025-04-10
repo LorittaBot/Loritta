@@ -110,7 +110,7 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             // If the user that executed the command is in any of the ships, then this will be true
             // Used for achievements
             var isShipWithTheSelfUser = isShipWithSelfUser1 || isShipWithSelfUser2
-            
+
             // Now we will calculate the user's ship value, for that we will sum the user's IDs
             // The order of the sum doesn't change its result, so we don't need to sort it
             val seed = user1Id + user2Id

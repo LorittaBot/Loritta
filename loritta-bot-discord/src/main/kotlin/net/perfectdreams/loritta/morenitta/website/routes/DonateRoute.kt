@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import io.ktor.server.application.*
-import kotlinx.html.TD
-import kotlinx.html.i
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -53,12 +51,4 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 			).generateHtml()
 		)
 	}
-
-	data class DonationReward(val name: String, val minimumDonation: Double, val doNotDisplayInPlans: Boolean, val callback: TD.(Double) -> Unit = { column ->
-		if (column >= minimumDonation) {
-			i("fas fa-check") {}
-		} else {
-			i("fas fa-times") {}
-		}
-	})
 }

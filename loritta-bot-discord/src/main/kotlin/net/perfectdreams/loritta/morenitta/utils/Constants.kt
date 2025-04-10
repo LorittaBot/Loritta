@@ -1,14 +1,8 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import com.fasterxml.jackson.databind.*
-import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.type.MapType
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.serialization.hocon.Hocon
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.utils.jackson.FixedMapDeserializer
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -71,35 +65,6 @@ object Constants {
 
 	val JSON_MAPPER = ObjectMapper()
 	val HOCON = Hocon { useArrayPolymorphism = true }
-	val HOCON_MAPPER = ObjectMapper(HoconFactory()).apply {
-		this.enable(MapperFeature.ALLOW_EXPLICIT_PROPERTY_RENAMING)
-		this.registerModule(ParameterNamesModule())
-		val module = SimpleModule()
-
-		// Workaround for https://github.com/jclawson/jackson-dataformat-hocon/issues/15
-		module.setDeserializerModifier(object: BeanDeserializerModifier() {
-			override fun modifyMapDeserializer(config: DeserializationConfig, type: MapType, beanDesc: BeanDescription, deserializer: JsonDeserializer<*>): JsonDeserializer<*> {
-				return FixedMapDeserializer(type)
-			}
-		})
-
-		this.registerModule(module)
-
-		this.propertyNamingStrategy = object: PropertyNamingStrategy.PropertyNamingStrategyBase() {
-			override fun translate(p0: String): String {
-				val newField = StringBuilder()
-
-				for (ch in p0) {
-					if (ch.isUpperCase()) {
-						newField.append('-')
-					}
-					newField.append(ch.lowercase())
-				}
-
-				return newField.toString()
-			}
-		}
-	}
 
 	const val PORTUGUESE_SUPPORT_GUILD_ID = 297732013006389252L
 	const val ENGLISH_SUPPORT_GUILD_ID = 420626099257475072L

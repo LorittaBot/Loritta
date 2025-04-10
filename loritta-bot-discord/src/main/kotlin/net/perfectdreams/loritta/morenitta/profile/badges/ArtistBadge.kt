@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
-import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import java.util.*
 
 class ArtistBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
