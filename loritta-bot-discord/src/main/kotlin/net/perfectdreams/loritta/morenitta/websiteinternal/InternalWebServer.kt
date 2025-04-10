@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
-import net.perfectdreams.loritta.morenitta.websiteinternal.loriinternalapi.GuildJsonBenchmarkRoute
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.WebsitePublicAPIException
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.*
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.lorimessages.PostSaveMessageRoute
@@ -45,9 +44,9 @@ import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.RPCResponseExcept
 import net.perfectdreams.loritta.morenitta.websiteinternal.rpc.processors.Processors
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
 import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternalRPCResponse
+import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -77,9 +76,7 @@ class InternalWebServer(val m: LorittaBot) {
         PostRequestSonhosRoute(m),
         GetThirdPartySonhosTransferStatusRoute(m)
     )
-    private val internalAPIRoutes = listOf(
-        GuildJsonBenchmarkRoute(m)
-    )
+    private val internalAPIRoutes = listOf<BaseRoute>()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {

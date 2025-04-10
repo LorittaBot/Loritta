@@ -701,7 +701,7 @@ class LorittaBot(
 												for (guild in jdaImpl.guildsView) {
 													guild as GuildImpl
 
-													val serializableGuild = DeviousConverter.toSerializableGuildCreateEventV4(
+													val serializableGuild = DeviousConverter.toSerializableGuildCreateEvent(
 														guild,
 														serializableSelfUser
 													)
