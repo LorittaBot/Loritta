@@ -403,7 +403,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onUserContextInteraction(event: UserContextInteractionEvent) {
         loritta.launchMessageJob(event) {
-            val targetDeclaration = findCommandByRootLabel(event.name, manager.messageCommands) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
+            val targetDeclaration = findCommandByRootLabel(event.name, manager.userCommands) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
 
             val rootDeclaration = targetDeclaration
             val slashDeclaration = targetDeclaration
