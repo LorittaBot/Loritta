@@ -20,13 +20,14 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.nashorn.NashornCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
+import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.InviteCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ServerInfoCommand
+import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.LigarCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.minecraft.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.*
+import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.PatreonCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.music.LyricsCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.undertale.UndertaleBattleCommand
@@ -41,10 +42,8 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.sql.Connection
-import java.util.*
 import java.util.concurrent.CancellationException
 
 class CommandManager(val loritta: LorittaBot) {
@@ -93,9 +92,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// commandMap.add(KnuxThrowCommand(loritta))
 		commandMap.add(TextCraftCommand(loritta))
 		// commandMap.add(DrawnMaskCommand(loritta))
-
-		// =======[ DIVERSÃO ]======
-		commandMap.add(VemDeZapCommand(loritta))
 
 		// =======[ MISC ]======
 		commandMap.add(SayCommand(loritta))

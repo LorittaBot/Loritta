@@ -169,8 +169,6 @@ object DefaultRoutes {
 		PostSearchGuildsRoute(loritta),
 		PostSendMessageGuildRoute(loritta),
 		GetServerConfigSectionRoute(loritta, website),
-		GetGuildEmojiFightTopWinnersRoute(loritta),
-		GetGuildUserEmojiFightVictoriesRoute(loritta),
 
 		// Loritta
 		GetLanguageInfoRoute(loritta),
@@ -187,7 +185,6 @@ object DefaultRoutes {
 		PostLorittaActionRoute(loritta),
 		PostRaffleStatusRoute(loritta),
 		PostReputationMessageRoute(loritta),
-		PostUpdateUserBackgroundRoute(loritta),
 		PostErrorRoute(loritta),
 
 		// Twitch

@@ -6,16 +6,10 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
-import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
-import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
-import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationBuilder
-import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
-import java.util.UUID
+import java.util.*
 
 class TextTransformCommand: SlashCommandDeclarationWrapper {
     override fun command(): SlashCommandDeclarationBuilder =
@@ -39,12 +33,15 @@ class TextTransformCommand: SlashCommandDeclarationWrapper {
             ) {
                 executor = TextClapExecutor()
             }
+
             subcommand(
                 name = TextVemDeZapExecutor.I18N_PREFIX.Label,
                 description = TextVemDeZapExecutor.I18N_PREFIX.Description,
                 uniqueId = UUID.fromString("da3ac3a6-16f8-42d0-92d3-e0a9859d7ad4")
             ) {
                 executor = TextVemDeZapExecutor()
+                this.alternativeLegacyAbsoluteCommandPaths.add("vemdezap")
+                this.examples = TextVemDeZapExecutor.I18N_PREFIX.Examples
             }
         }
 

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.`fun`.text
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LegacyMessageCommandContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaLegacyMessageCommandExecutor
@@ -9,9 +10,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.iterator
 
 class TextVemDeZapExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     class Options : ApplicationCommandOptions() {
@@ -108,11 +106,39 @@ class TextVemDeZapExecutor: LorittaSlashCommandExecutor(), LorittaLegacyMessageC
         context: LegacyMessageCommandContext,
         args: List<String>
     ): Map<OptionReference<*>, Any?>? {
-        if (args.size < 2) return null
+        if (args.size < 2) {
+            context.explain()
+            return null
+        }
+
+        val mood = args[0]
+
+        val zapZapMood = try {
+            ZapZapMood.valueOf(mood.uppercase())
+        } catch (e: IllegalArgumentException) {
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.MissingMoods(ZapZapMood.entries.map { it.name.lowercase() }.joinToString(", ") { "`$it`" })),
+                    Emotes.Error
+                )
+            }
+            return null
+        }
+
+        val level = args[1].toLongOrNull()
+        if (level == null || level !in 0 until 4) {
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.InvalidLevel),
+                    Emotes.Error
+                )
+            }
+            return null
+        }
 
         return mapOf(
-            options.mood to args[0],
-            options.level to args[1],
+            options.mood to zapZapMood.name,
+            options.level to level.toString(),
             options.text to args.drop(2).joinToString(" ")
         )
     }
