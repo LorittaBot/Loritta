@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -124,50 +125,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         loritta.launchMessageJob(event) {
-            var rootDeclaration: SlashCommandDeclaration? = null
-            var slashDeclaration: SlashCommandDeclaration? = null
+            val slashSearchResult = findSlashCommandByLabel(event) ?: error("Unknown Slash Command! Are you sure it is registered? ${event.name}")
 
-            for (declaration in manager.slashCommands) {
-                val rootLabel = event.name
-                val subcommandGroupLabel = event.subcommandGroup
-                val subcommandLabel = event.subcommandName
-
-                if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
-                    if (subcommandGroupLabel == null && subcommandLabel == null) {
-                        // Already found it, yay!
-                        slashDeclaration = declaration
-                        rootDeclaration = declaration
-                    } else {
-                        // Check root subcommands
-                        if (subcommandLabel != null) {
-                            if (subcommandGroupLabel == null) {
-                                // "/name subcommand"
-                                slashDeclaration =
-                                    declaration.subcommands.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel }
-                                rootDeclaration = declaration
-                                break
-                            } else {
-                                // "/name subcommandGroup subcommand"
-                                slashDeclaration = declaration.subcommandGroups.firstOrNull {
-                                    manager.slashCommandDefaultI18nContext.get(it.name) == subcommandGroupLabel
-                                }
-                                    ?.subcommands
-                                    ?.firstOrNull {
-                                        manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel
-                                    }
-                                rootDeclaration = declaration
-                                break
-                            }
-                        }
-                    }
-                    break
-                }
-            }
-
-            // We should throw an error here
-            // But we won't because we still use Discord InteraKTions
-            if (rootDeclaration == null || slashDeclaration == null)
-                return@launchMessageJob
+            val rootDeclaration = slashSearchResult.first
+            val slashDeclaration = slashSearchResult.second
 
             val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
 
@@ -899,50 +860,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
         loritta.launchMessageJob(event) {
-            var rootDeclaration: SlashCommandDeclaration? = null
-            var slashDeclaration: SlashCommandDeclaration? = null
+            val slashSearchResult = findSlashCommandByLabel(event) ?: error("Unknown Slash Command! Are you sure it is registered? ${event.name}")
 
-            for (declaration in manager.slashCommands) {
-                val rootLabel = event.name
-                val subcommandGroupLabel = event.subcommandGroup
-                val subcommandLabel = event.subcommandName
-
-                if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
-                    if (subcommandGroupLabel == null && subcommandLabel == null) {
-                        // Already found it, yay!
-                        slashDeclaration = declaration
-                        rootDeclaration = declaration
-                    } else {
-                        // Check root subcommands
-                        if (subcommandLabel != null) {
-                            if (subcommandGroupLabel == null) {
-                                // "/name subcommand"
-                                slashDeclaration =
-                                    declaration.subcommands.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel }
-                                rootDeclaration = declaration
-                                break
-                            } else {
-                                // "/name subcommandGroup subcommand"
-                                slashDeclaration = declaration.subcommandGroups.firstOrNull {
-                                    manager.slashCommandDefaultI18nContext.get(it.name) == subcommandGroupLabel
-                                }
-                                    ?.subcommands
-                                    ?.firstOrNull {
-                                        manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel
-                                    }
-                                rootDeclaration = declaration
-                                break
-                            }
-                        }
-                    }
-                    break
-                }
-            }
-
-            // We should throw an error here
-            // But we won't because we still use Discord InteraKTions
-            if (rootDeclaration == null || slashDeclaration == null)
-                return@launchMessageJob
+            val rootDeclaration = slashSearchResult.first
+            val slashDeclaration = slashSearchResult.second
 
             // No executor, bail out!
             val executor = slashDeclaration.executor ?: return@launchMessageJob
@@ -1050,6 +971,61 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 logger.warn(e) { "Something went wrong while executing auto complete interaction! Error ID: $errorId" }
             }
         }
+    }
+
+    /**
+     * Finds a slash command by its label (label + subcommand group + subcommand label)
+     *
+     * @param event the event related to the slash command
+     * @return the root declaration the and slash declaration, or null if not found
+     */
+    private fun findSlashCommandByLabel(event: CommandInteractionPayload): Pair<SlashCommandDeclaration, SlashCommandDeclaration>? {
+        for (declaration in manager.slashCommands) {
+            val rootLabel = event.name
+            val subcommandGroupLabel = event.subcommandGroup
+            val subcommandLabel = event.subcommandName
+
+            if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
+                if (subcommandGroupLabel == null && subcommandLabel == null) {
+                    // Already found it, yay!
+                    return Pair(declaration, declaration)
+                } else {
+                    // Check root subcommands
+                    if (subcommandLabel != null) {
+                        if (subcommandGroupLabel == null) {
+                            // "/name subcommand"
+                            val slashDeclaration = declaration.subcommands.firstOrNull { manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel }
+                            if (slashDeclaration == null)
+                                return null
+
+                            return Pair(
+                                declaration,
+                                slashDeclaration
+                            )
+                        } else {
+                            // "/name subcommandGroup subcommand"
+                            val slashDeclaration = declaration.subcommandGroups.firstOrNull {
+                                manager.slashCommandDefaultI18nContext.get(it.name) == subcommandGroupLabel
+                            }
+                                ?.subcommands
+                                ?.firstOrNull {
+                                    manager.slashCommandDefaultI18nContext.get(it.name) == subcommandLabel
+                                }
+                            if (slashDeclaration == null)
+                                return null
+
+                            return Pair(
+                                declaration,
+                                slashDeclaration
+                            )
+                        }
+                    }
+                }
+                break
+            }
+        }
+
+        return null
     }
 
     /**
