@@ -277,26 +277,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 	fun queryMasterLorittaCluster(path: String): Deferred<JsonElement> {
 		val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
-
-		return GlobalScope.async(loritta.coroutineDispatcher) {
-			try {
-				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-					val response = loritta.http.get("${shard.getUrl(loritta)}$path") {
-						header("Authorization", loritta.lorittaInternalApiKey.name)
-						userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-					}
-
-					response.bodyAsText()
-				}
-
-				JsonParser.parseString(
-					body
-				)
-			} catch (e: Exception) {
-				logger.warn(e) { "Shard ${shard.name} ${shard.id} offline!" }
-				throw ClusterOfflineException(shard.id, shard.name)
-			}
-		}
+		return queryCluster(shard, path)
 	}
 
 	fun queryCluster(cluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig, path: String): Deferred<JsonElement> {
