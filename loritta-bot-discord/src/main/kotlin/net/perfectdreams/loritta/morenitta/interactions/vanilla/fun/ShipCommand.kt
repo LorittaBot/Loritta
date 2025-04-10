@@ -69,59 +69,48 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 inputConverter.convert(context, user2)
             else UserResult(context.user) // If the user2 is not present, we will use the user itself in the ship
 
-            val user1Id: Long
-            val user2Id: Long
-            val user1Name: String
-            val user2Name: String
-            val user1AvatarUrl: String
-            val user2AvatarUrl: String
+            data class AssetsResult(
+                val id: Long,
+                val nName: String,
+                val avatarUrl: String,
+                val isShipWithTheSelfUser: Boolean
+            )
+
+            fun getUserResult(result: ConverterResult): AssetsResult {
+                return when (result) {
+                    is StringResult -> {
+                        return AssetsResult(
+                            result.string.hashCode().toLong(),
+                            result.string,
+                            "https://cdn.discordapp.com/embed/avatars/0.png?size=256",
+                            false
+                        )
+                    }
+                    is UserResult -> {
+                        return AssetsResult(
+                            result.user.idLong,
+                            result.user.name,
+                            result.user.getEffectiveAvatarUrl(ImageFormat.PNG, 128),
+                            result.user.id == context.user.id
+                        )
+                    }
+                    is StringWithImageResult -> {
+                        return AssetsResult(
+                            result.string.hashCode().toLong(),
+                            result.string,
+                            result.imageUrl,
+                            false
+                        )
+                    }
+                }
+            }
+            val (user1Id, user1Name, user1AvatarUrl, isShipWithSelfUser1) = getUserResult(result1)
+            val (user2Id, user2Name, user2AvatarUrl, isShipWithSelfUser2) = getUserResult(result2)
 
             // If the user that executed the command is in any of the ships, then this will be true
             // Used for achievements
-            var isShipWithTheSelfUser = false
-
-            when (result1) {
-                is StringResult -> {
-                    user1Id = result1.string.hashCode().toLong()
-                    user1Name = result1.string
-                    user1AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
-                }
-                is UserResult -> {
-                    if (result1.user.id == context.user.id)
-                        isShipWithTheSelfUser = true
-
-                    user1Id = result1.user.idLong
-                    user1Name = result1.user.name
-                    user1AvatarUrl = result1.user.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
-                }
-                is StringWithImageResult -> {
-                    user1Id = result1.string.hashCode().toLong()
-                    user1Name = result1.string
-                    user1AvatarUrl = result1.imageUrl
-                }
-            }
-
-            when (result2) {
-                is StringResult -> {
-                    user2Id = result2.string.hashCode().toLong()
-                    user2Name = result2.string
-                    user2AvatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
-                }
-                is UserResult -> {
-                    if (result2.user.id == context.user.id)
-                        isShipWithTheSelfUser = true
-
-                    user2Id = result2.user.idLong
-                    user2Name = result2.user.name
-                    user2AvatarUrl = result2.user.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
-                }
-                is StringWithImageResult -> {
-                    user2Id = result2.string.hashCode().toLong()
-                    user2Name = result2.string
-                    user2AvatarUrl = result2.imageUrl
-                }
-            }
-
+            var isShipWithTheSelfUser = isShipWithSelfUser1 || isShipWithSelfUser2
+            
             // Now we will calculate the user's ship value, for that we will sum the user's IDs
             // The order of the sum doesn't change its result, so we don't need to sort it
             val seed = user1Id + user2Id
