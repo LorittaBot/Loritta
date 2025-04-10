@@ -3,8 +3,6 @@ package net.perfectdreams.loritta.morenitta.website
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks.*
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetDailyShopRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostBundlesRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostTransferBalanceExternalRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.*
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.languages.GetLanguageInfoRoute
@@ -158,8 +156,6 @@ object DefaultRoutes {
 
 		// Economy
 		PostTransferBalanceExternalRoute(loritta),
-		PostBundlesRoute(loritta),
-		GetDailyShopRoute(loritta),
 		PostBuyDailyShopItemRoute(loritta),
 
 		// Guild
