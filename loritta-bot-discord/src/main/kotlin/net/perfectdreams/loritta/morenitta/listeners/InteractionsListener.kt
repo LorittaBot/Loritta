@@ -403,23 +403,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onUserContextInteraction(event: UserContextInteractionEvent) {
         loritta.launchMessageJob(event) {
-            var rootDeclaration: UserCommandDeclaration? = null
-            var slashDeclaration: UserCommandDeclaration? = null
+            val targetDeclaration = findCommandByRootLabel(event.name, manager.messageCommands) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
 
-            for (declaration in manager.userCommands) {
-                val rootLabel = event.name
-
-                if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
-                    slashDeclaration = declaration
-                    rootDeclaration = declaration
-                    break
-                }
-            }
-
-            // We should throw an error here
-            // But we won't because we still use Discord InteraKTions
-            if (rootDeclaration == null || slashDeclaration == null)
-                return@launchMessageJob
+            val rootDeclaration = targetDeclaration
+            val slashDeclaration = targetDeclaration
 
             val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
 
@@ -517,23 +504,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
         loritta.launchMessageJob(event) {
-            var rootDeclaration: MessageCommandDeclaration? = null
-            var slashDeclaration: MessageCommandDeclaration? = null
+            val targetDeclaration = findCommandByRootLabel(event.name, manager.messageCommands) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
 
-            for (declaration in manager.messageCommands) {
-                val rootLabel = event.name
-
-                if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name)) {
-                    slashDeclaration = declaration
-                    rootDeclaration = declaration
-                    break
-                }
-            }
-
-            // We should throw an error here
-            // But we won't because we still use Discord InteraKTions
-            if (rootDeclaration == null || slashDeclaration == null)
-                return@launchMessageJob
+            val rootDeclaration = targetDeclaration
+            val slashDeclaration = targetDeclaration
 
             val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
 
@@ -1076,6 +1050,21 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 logger.warn(e) { "Something went wrong while executing auto complete interaction! Error ID: $errorId" }
             }
         }
+    }
+
+    /**
+     * Finds a command by its root label
+     *
+     * @param rootLabel    the root label
+     * @param declarations the list of the declarations that the root label will be matched against
+     * @return the declaration, or null if not found
+     */
+    private fun <T : ExecutableApplicationCommandDeclaration> findCommandByRootLabel(rootLabel: String, declarations: List<T>): T? {
+        for (declaration in declarations)
+            if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name))
+                return declaration
+
+        return null
     }
 
     private fun updateCommands(guildId: Long, action: (List<CommandData>) -> (List<Command>)): List<DiscordCommand> {
