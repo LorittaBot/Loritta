@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import java.awt.Color
-import java.util.*
 
 /**
  * Java Code to get a color name from rgb/hex value/awt color
@@ -11,13 +10,13 @@ import java.util.*
  *
  * @author Xiaoxiao Li
  */
-class ColorUtils {
+object ColorUtils {
+	private val colorList = ArrayList<ColorName>()
 
 	/**
 	 * Initialize the color list that we have.
 	 */
-	private fun initColorList(): ArrayList<ColorName> {
-		val colorList = ArrayList<ColorName>()
+	init {
 		colorList.add(ColorName("AliceBlue", 0xF0, 0xF8, 0xFF))
 		colorList.add(ColorName("AntiqueWhite", 0xFA, 0xEB, 0xD7))
 		colorList.add(ColorName("Aqua", 0x00, 0xFF, 0xFF))
@@ -158,7 +157,6 @@ class ColorUtils {
 		colorList.add(ColorName("WhiteSmoke", 0xF5, 0xF5, 0xF5))
 		colorList.add(ColorName("Yellow", 0xFF, 0xFF, 0x00))
 		colorList.add(ColorName("YellowGreen", 0x9A, 0xCD, 0x32))
-		return colorList
 	}
 
 	/**
@@ -170,11 +168,10 @@ class ColorUtils {
 	 * @return
 	 */
 	fun getColorNameFromRgb(r: Int, g: Int, b: Int): String {
-		val colorList = initColorList()
 		var closestMatch: ColorName? = null
 		var minMSE = Integer.MAX_VALUE
 		var mse: Int
-		for (c in colorList) {
+		for (c in this.colorList) {
 			mse = c.computeMSE(r, g, b)
 			if (mse < minMSE) {
 				minMSE = mse
@@ -203,12 +200,11 @@ class ColorUtils {
 	}
 
 	fun colorToHex(c: Color): Int {
-		return Integer.decode("0x" + Integer.toHexString(c.rgb).substring(2))!!
+		return Integer.decode("0x" + Integer.toHexString(c.rgb).substring(2))
 	}
 
 	fun getColorNameFromColor(color: Color): String {
-		return getColorNameFromRgb(color.red, color.green,
-				color.blue)
+		return getColorNameFromRgb(color.red, color.green, color.blue)
 	}
 
 	/**
@@ -216,8 +212,7 @@ class ColorUtils {
 	 *
 	 * @author Xiaoxiao Li
 	 */
-	inner class ColorName(var name: String, var r: Int, var g: Int, var b: Int) {
-
+	class ColorName(val name: String, val r: Int, val g: Int, val b: Int) {
 		fun computeMSE(pixR: Int, pixG: Int, pixB: Int): Int {
 			return (((pixR - r) * (pixR - r) + (pixG - g) * (pixG - g) + (pixB - b) * (pixB - b)) / 3).toInt()
 		}

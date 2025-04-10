@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 import dev.minn.jda.ktx.messages.InlineMessage
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.UserUtils
 import net.perfectdreams.loritta.serializable.*
 
 object NotificationUtils {

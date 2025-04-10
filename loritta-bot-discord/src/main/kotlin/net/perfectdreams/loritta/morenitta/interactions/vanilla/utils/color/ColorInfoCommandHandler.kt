@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.addFileData
+import net.perfectdreams.loritta.morenitta.utils.ColorUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import java.awt.Color
 import java.awt.Graphics

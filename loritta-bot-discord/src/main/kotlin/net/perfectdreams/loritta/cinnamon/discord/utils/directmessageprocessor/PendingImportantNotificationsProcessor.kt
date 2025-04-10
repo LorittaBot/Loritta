@@ -4,10 +4,10 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotificationUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.UserUtils
 import net.perfectdreams.loritta.serializable.UserId
 
 class PendingImportantNotificationsProcessor(val loritta: LorittaBot) : RunnableCoroutine {

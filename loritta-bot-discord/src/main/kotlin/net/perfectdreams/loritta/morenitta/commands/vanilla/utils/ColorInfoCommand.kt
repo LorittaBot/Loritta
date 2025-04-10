@@ -1,26 +1,20 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.utils
 
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.utils.ColorUtils
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.drawText
+import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.utils.*
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
-import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class ColorInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
-		val COLOR_UTILS = ColorUtils()
 		const val FACTOR = 0.7
 		private const val LOCALE_PREFIX = "commands.command.colorinfo"
 	}
@@ -168,7 +162,7 @@ class ColorInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "colorinf
 			graphics.drawImage(colorPreview.makeRoundedCorners(99999), 237, 167, null)
 
 			val embed = EmbedBuilder().apply {
-				setTitle("\uD83C\uDFA8 ${COLOR_UTILS.getColorNameFromColor(color)}")
+				setTitle("\uD83C\uDFA8 ${ColorUtils.getColorNameFromColor(color)}")
 
 				setImage("attachment://color.png")
 				setColor(color)
