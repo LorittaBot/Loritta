@@ -4,20 +4,22 @@ import com.github.salomonbrys.kotson.double
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.obj
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
-import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/donate") {
@@ -73,19 +75,22 @@ class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 		var metadata: JsonObject? = null
 		if (donationKey != null) {
 			discount = 0.2
-			metadata = jsonObject("renewKey" to donationKey.id.value)
+			metadata = buildJsonObject {
+				put("renewKey", donationKey.id.value)
+			}
 		}
 
 		val paymentUrl = loritta.perfectPaymentsClient.createPayment(
-				loritta,
-				userIdentification.id.toLong(),
-				"Loritta Premium - $whoDonated (${userIdentification.id})",
-				(realValue * 100).toLong(),
-				(storedAmount * 100).toLong(),
-				PaymentReason.DONATION,
-				"LORITTA-PREMIUM-%d",
-				discount,
-				metadata
+			loritta,
+			userIdentification.id.toLong(),
+			"Loritta Premium - $whoDonated (${userIdentification.id})",
+			(realValue * 100).toLong(),
+			(storedAmount * 100).toLong(),
+			PaymentReason.DONATION,
+			"LORITTA-PREMIUM-%d",
+			null,
+			discount,
+			metadata
 		)
 
 		call.respondJson(jsonObject("redirectUrl" to paymentUrl))

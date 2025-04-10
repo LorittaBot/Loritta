@@ -9,6 +9,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
@@ -52,18 +54,19 @@ class PostBundlesRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lorit
 			val sonhos = bundle[SonhosBundles.sonhos]
 
 			val paymentUrl = loritta.perfectPaymentsClient.createPayment(
-					loritta,
-					userIdentification.id.toLong(),
-					"$sonhos sonhos - $whoDonated (${userIdentification.id})",
-					(grana * 100).toLong(),
-					(grana * 100).toLong(),
-					PaymentReason.SONHOS_BUNDLE,
-					"LORITTA-BUNDLE-%d",
-					null,
-					jsonObject(
-							"bundleId" to bundleId,
-							"bundleType" to "dreams"
-					)
+				loritta,
+				userIdentification.id.toLong(),
+				"$sonhos sonhos - $whoDonated (${userIdentification.id})",
+				(grana * 100).toLong(),
+				(grana * 100).toLong(),
+				PaymentReason.SONHOS_BUNDLE,
+				"LORITTA-BUNDLE-%d",
+				null,
+				null,
+				metadata = buildJsonObject {
+					put("bundleId", bundleId)
+					put("bundleType", "dreams")
+				}
 			)
 
 			call.respondJson(jsonObject("redirectUrl" to paymentUrl))
