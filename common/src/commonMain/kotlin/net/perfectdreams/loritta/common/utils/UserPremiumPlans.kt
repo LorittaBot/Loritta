@@ -15,6 +15,7 @@ interface UserPremiumPlans {
 	val displayAds: Boolean
 	val customEmojisInAboutMe: Boolean
 	val customEmojisInEmojiFight: Boolean
+	val sonhosAPIAccess: Boolean
 
 	val isCoinFlipBetRewardTaxed: Boolean
 		get() = coinFlipRewardTax != 0.0
@@ -59,6 +60,7 @@ interface UserPremiumPlans {
 		override val displayAds = true
 		override val customEmojisInAboutMe = false
 		override val customEmojisInEmojiFight = false
+		override val sonhosAPIAccess = false
 	}
 
 	object Essential : UserPremiumPlans {
@@ -76,6 +78,7 @@ interface UserPremiumPlans {
 		override val displayAds = false
 		override val customEmojisInAboutMe = false
 		override val customEmojisInEmojiFight = false
+		override val sonhosAPIAccess = true
 	}
 
 	object Recommended : UserPremiumPlans {
@@ -93,6 +96,7 @@ interface UserPremiumPlans {
 		override val displayAds = false
 		override val customEmojisInAboutMe = true
 		override val customEmojisInEmojiFight = true
+		override val sonhosAPIAccess = true
 	}
 
 	object Complete : UserPremiumPlans {
@@ -110,5 +114,6 @@ interface UserPremiumPlans {
 		override val displayAds = false
 		override val customEmojisInAboutMe = true
 		override val customEmojisInEmojiFight = true
+		override val sonhosAPIAccess = true
 	}
 }

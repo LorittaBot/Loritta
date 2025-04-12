@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ThirdPartySonhosTransferRequests
 import net.perfectdreams.loritta.common.utils.TokenType
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
@@ -54,6 +55,21 @@ class PostTransferSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         }
 
         val request = Json.decodeFromString<TransferSonhosRequest>(call.receiveText())
+        if (request.receiverId != tokenInfo.creatorId) {
+            val premium = UserPremiumPlans.getPlanFromValue(m.getActiveMoneyFromDonations(tokenInfo.creatorId))
+            if (!premium.sonhosAPIAccess) {
+                call.respondJson(
+                    Json.encodeToString(
+                        GenericErrorResponse(
+                            "The token owner needs to have the Loritta \"Essential\" Premium Plan to be able to use sonhos transfers!"
+                        )
+                    ),
+                    status = HttpStatusCode.PaymentRequired
+                )
+                return
+            }
+        }
+
         val receiverSnowflake = UserSnowflake.fromId(request.receiverId)
         val channel = guild.getGuildMessageChannelById(call.parameters.getOrFail("channelId"))
         if (channel == null) {
