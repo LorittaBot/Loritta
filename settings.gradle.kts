@@ -76,10 +76,10 @@ include(":web:embed-editor:embed-renderer")
 include(":web:embed-editor:embed-editor-crosswindow")
 include(":web:embed-editor:embed-renderer")
 
-// ===[ SHOWTIME ]===
-include(":web:showtime:web-common")
-include(":web:showtime:backend")
-include(":web:showtime:showtime-frontend")
+// ===[ LORITTA'S WEBSITE ]===
+include(":loritta-website:web-common")
+include(":loritta-website:loritta-website-backend")
+include(":loritta-website:loritta-website-frontend")
 
 // ===[ DASHBOARD ]===
 // Disabled for now because something (Compose?) is causing errors on the spicy-frontend module
