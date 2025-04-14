@@ -350,19 +350,7 @@ class LegacyCommandsView(
         )
 
         // Generate ads below the <hr> tag
-        // Desktop
-        fieldSet {
-            legend {
-                style = "margin-left: auto;"
-
-                iconManager.ad.apply(this)
-            }
-
-            val zoneId = ZoneId.of("America/Sao_Paulo")
-            val now = LocalDate.now(zoneId)
-
-            // TODO: Readd ad here
-        }
+        // TODO: Readd ad here
 
         hr {}
 

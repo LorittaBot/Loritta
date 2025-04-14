@@ -1,17 +1,16 @@
 package net.perfectdreams.loritta.website.backend.views
 
 import kotlinx.html.*
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
-import net.perfectdreams.loritta.website.backend.utils.*
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.SlashCommandInfo
+import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
+import net.perfectdreams.loritta.website.backend.utils.EtherealGambiImages
+import net.perfectdreams.loritta.website.backend.utils.imgSrcSetFromEtherealGambi
 import java.awt.Color
-import java.time.LocalDate
-import java.time.ZoneId
 
 class ApplicationCommandsView(
     LorittaWebsiteBackend: LorittaWebsiteBackend,
@@ -313,19 +312,7 @@ class ApplicationCommandsView(
         )
 
         // Generate ads below the <hr> tag
-        // Desktop
-        fieldSet {
-            legend {
-                style = "margin-left: auto;"
-
-                iconManager.ad.apply(this)
-            }
-
-            val zoneId = ZoneId.of("America/Sao_Paulo")
-            val now = LocalDate.now(zoneId)
-
-            // TODO: Readd ad here
-        }
+        // TODO: Readd ad here
 
         hr {}
 
