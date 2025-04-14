@@ -28,7 +28,7 @@ kotlin {
 
         val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.12.0")
                 implementation(libs.ktor.client.core)
             }
         }

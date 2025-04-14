@@ -24,7 +24,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-html:0.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0")
                 api(libs.kotlinx.serialization.json)
                 api(libs.kotlin.logging)
             }

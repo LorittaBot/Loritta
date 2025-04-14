@@ -28,13 +28,13 @@ dependencies {
     implementation(libs.ktor.server.sessions)
 
     // KotlinX HTML
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
 
-    implementation("org.jsoup:jsoup:1.14.3")
+    implementation("org.jsoup:jsoup:1.19.1")
 
     // YAML
-    implementation("org.yaml:snakeyaml:1.30")
-    implementation("com.charleskorn.kaml:kaml:0.36.0")
+    implementation("org.yaml:snakeyaml:2.4")
+    implementation("com.charleskorn.kaml:kaml:0.76.0")
 
     implementation("net.perfectdreams.etherealgambi:client:1.0.0")
 
