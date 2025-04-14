@@ -4,7 +4,7 @@ plugins {
     id("io.github.turansky.kfc.latest-webpack")
 }
 
-group = "net.perfectdreams.showtime"
+group = "net.perfectdreams.loritta.website"
 version = "1.0-SNAPSHOT"
 
 kotlin {

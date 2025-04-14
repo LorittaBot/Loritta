@@ -4,7 +4,7 @@ plugins {
     id("com.google.cloud.tools.jib") version libs.versions.jib
 }
 
-group = "net.perfectdreams.showtime"
+group = "net.perfectdreams.loritta.website"
 version = "1.0-SNAPSHOT"
 
 dependencies {
