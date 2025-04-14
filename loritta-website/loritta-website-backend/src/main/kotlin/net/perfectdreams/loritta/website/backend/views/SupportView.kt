@@ -1,19 +1,14 @@
 package net.perfectdreams.loritta.website.backend.views
 
-import kotlinx.html.DIV
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.h2
-import kotlinx.html.p
-import kotlinx.html.style
+import kotlinx.html.*
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
 import net.perfectdreams.loritta.website.backend.utils.DiscordInviteWrapper.lorittaCommunityServerInvite
-import net.perfectdreams.loritta.website.backend.utils.DiscordInviteWrapper.lorittaSupportServerInvite
 import net.perfectdreams.loritta.website.backend.utils.imgSrcSetFromEtherealGambi
 import net.perfectdreams.loritta.website.backend.utils.innerContent
-import net.perfectdreams.loritta.common.locale.BaseLocale
 
 class SupportView(
     LorittaWebsiteBackend: LorittaWebsiteBackend,
@@ -68,30 +63,12 @@ class SupportView(
                     div(classes = "support-invite-wrapper") {
                         div(classes = "support-invite-content") {
                             h2 {
-                                +locale["website.support.supportServer.title"]
+                                text(i18nContext.get(I18nKeysData.Website.Support.SupportAndCommunity))
                             }
 
-                            locale.getList("website.support.supportServer.description").forEach {
+                            i18nContext.get(I18nKeysData.Website.Support.CommunityDescription).forEach {
                                 p {
-                                    +it
-                                }
-                            }
-                        }
-
-                        div(classes = "discord-support-invite-wrapper") {
-                            lorittaSupportServerInvite(LorittaWebsiteBackend, i18nContext)
-                        }
-                    }
-
-                    div(classes = "support-invite-wrapper") {
-                        div(classes = "support-invite-content") {
-                            h2 {
-                                +locale["website.support.communityServer.title"]
-                            }
-
-                            locale.getList("website.support.communityServer.description").forEach {
-                                p {
-                                    +it
+                                    text(it)
                                 }
                             }
                         }

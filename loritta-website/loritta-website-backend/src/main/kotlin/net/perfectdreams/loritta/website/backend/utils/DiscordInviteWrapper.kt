@@ -50,7 +50,7 @@ object DiscordInviteWrapper {
 
             +" ${i18nContext.get(I18nKeysData.Website.DiscordInvite.LorittaCommunityServerDetails)}"
         },
-        "https://discord.gg/lori"
+        "https://discord.gg/loritta"
     )
 
     fun FlowContent.sparklyPowerServerInvite(LorittaWebsiteBackend: LorittaWebsiteBackend, i18nContext: I18nContext) = discordInvite(
