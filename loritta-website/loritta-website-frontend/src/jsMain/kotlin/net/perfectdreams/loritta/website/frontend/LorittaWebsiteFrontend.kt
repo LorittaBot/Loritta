@@ -22,10 +22,9 @@ import mu.KotlinLoggingConfiguration
 import mu.KotlinLoggingLevel
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
-import net.perfectdreams.loritta.website.frontend.utils.extensions.get
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.website.frontend.utils.LinkPreloaderManager
-import net.perfectdreams.loritta.website.frontend.utils.NitroPayUtils
+import net.perfectdreams.loritta.website.frontend.utils.extensions.get
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
@@ -72,7 +71,6 @@ class LorittaWebsiteFrontend {
                 stopFakeProgressIndicator()
                 linkPreloaderManager.setupLinkPreloader()
                 addNavbarOptions()
-                NitroPayUtils.renderAds()
                 checkAndFixNavbarOverflownEntries()
                 loadLoggedInUser()
             }

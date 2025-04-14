@@ -10,11 +10,7 @@ import net.perfectdreams.loritta.website.frontend.LorittaWebsiteFrontend
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLBodyElement
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLTitleElement
-import org.w3c.dom.asList
+import org.w3c.dom.*
 import org.w3c.dom.url.URL
 
 class LinkPreloaderManager(val showtime: LorittaWebsiteFrontend) {
@@ -141,9 +137,6 @@ class LinkPreloaderManager(val showtime: LorittaWebsiteFrontend) {
 
                     // Setup link preloader again
                     setupLinkPreloader()
-
-                    // Also setup ads
-                    NitroPayUtils.renderAds()
                 }
             }
         }
