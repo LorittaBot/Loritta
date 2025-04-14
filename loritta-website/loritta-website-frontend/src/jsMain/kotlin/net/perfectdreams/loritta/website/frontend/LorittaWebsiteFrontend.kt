@@ -28,7 +28,6 @@ import net.perfectdreams.loritta.website.frontend.utils.extensions.get
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
-import net.perfectdreams.loritta.website.frontend.utils.gtag
 import net.perfectdreams.loritta.website.frontend.views.ViewManager
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
@@ -97,19 +96,6 @@ class LorittaWebsiteFrontend {
     fun pushState(pageUrl: String) {
         window.history.pushState(null, "", pageUrl)
         currentPath = window.location.pathname
-
-        // Trigger a Google Analytics page switch
-        try {
-            gtag(
-                    "config",
-                    "UA-53518408-9",
-                    object {
-                        val page_path: String = pageUrl
-                    }
-            )
-        } catch (e: Error) {
-            logger.warn { "Google Analytics not found or it wasn't loaded! Ignoring page switch track..." }
-        }
 
         logger.debug { "Updated current path to $currentPath" }
     }
