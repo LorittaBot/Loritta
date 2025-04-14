@@ -71,7 +71,7 @@ jobs:
           docker push ghcr.io/lorittabot/discord-chat-message-renderer-server:latest &
           docker push ghcr.io/lorittabot/lori-api-proxy:latest &
           docker push ghcr.io/lorittabot/spicy-morenitta:latest &
-          docker push ghcr.io/lorittabot/showtime-backend:latest &
+          docker push ghcr.io/lorittabot/loritta-website-backend:latest &
           docker push ghcr.io/lorittabot/broker-tickers-updater:latest &
           docker push ghcr.io/lorittabot/loritta-helper:latest &
           
