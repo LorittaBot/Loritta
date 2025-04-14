@@ -1,24 +1,18 @@
 package net.perfectdreams.loritta.website.backend.routes
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.typesafe.config.ConfigFactory
 import io.ktor.server.application.*
 import io.ktor.server.html.*
 import kotlinx.html.div
-import kotlinx.html.fieldSet
-import kotlinx.html.legend
 import kotlinx.html.stream.createHTML
-import kotlinx.html.style
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
 import net.perfectdreams.dokyo.RoutePath
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
-import net.perfectdreams.loritta.website.backend.utils.NitroPayAdGenerator
-import net.perfectdreams.loritta.website.backend.utils.NitroPayAdSize
 import net.perfectdreams.loritta.website.backend.utils.extras.ExtrasUtils
 import net.perfectdreams.loritta.website.backend.utils.extras.TooltipsConfig
-import net.perfectdreams.loritta.website.backend.utils.generateNitroPayAd
 import net.perfectdreams.loritta.website.backend.utils.userTheme
 import net.perfectdreams.loritta.website.backend.views.ExtrasView
 import org.jsoup.Jsoup
@@ -47,68 +41,7 @@ class ExtrasRoute(val showtime: LorittaWebsiteBackend) : LocalizedRoute(showtime
 
                 println(contentToBeTransformedToMarkdown)
 
-                contentToBeTransformedToMarkdown = contentToBeTransformedToMarkdown.replace(
-                    Regex("\\{\\{ in_content_ad\\(\"(.+)\"\\) }}")
-                ) {
-                    val adIdPrefix = "extras-${render.file.replace("/", "-").replace(".md", "")}-${it.groupValues[1]}"
-
-                    createHTML().div {
-                        fieldSet {
-                            legend {
-                                style = "margin-left: auto;"
-
-                                showtime.svgIconManager.ad.apply(this)
-                            }
-
-                            // Desktop Large
-                            generateNitroPayAd(
-                                "$adIdPrefix-desktop-large",
-                                listOf(
-                                    NitroPayAdSize(
-                                        728,
-                                        90
-                                    ),
-                                    NitroPayAdSize(
-                                        970,
-                                        90
-                                    ),
-                                    NitroPayAdSize(
-                                        970,
-                                        250
-                                    )
-                                ),
-                                mediaQuery = NitroPayAdGenerator.DESKTOP_LARGE_AD_MEDIA_QUERY
-                            )
-
-                            generateNitroPayAd(
-                                "$adIdPrefix-desktop",
-                                listOf(
-                                    NitroPayAdSize(
-                                        728,
-                                        90
-                                    )
-                                ),
-                                mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_DESKTOP_MEDIA_QUERY
-                            )
-
-                            // We don't do tablet here because there isn't any sizes that would fit a tablet comfortably
-                            generateNitroPayAd(
-                                "$adIdPrefix-phone",
-                                listOf(
-                                    NitroPayAdSize(
-                                        300,
-                                        250
-                                    ),
-                                    NitroPayAdSize(
-                                        320,
-                                        50
-                                    )
-                                ),
-                                mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_PHONE_MEDIA_QUERY
-                            )
-                        }
-                    }
-                }
+                // TODO: Readd ad here (to the contentToBeTransformedToMarkdown)
 
                 // Transform Content if needed
                 val renderDiscordMessageLines =

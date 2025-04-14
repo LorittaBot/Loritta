@@ -1,20 +1,11 @@
 package net.perfectdreams.loritta.website.backend.views.home
 
+import kotlinx.html.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.DIV
-import kotlinx.html.a
-import kotlinx.html.code
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.li
-import kotlinx.html.p
-import kotlinx.html.style
-import kotlinx.html.ul
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
-import net.perfectdreams.loritta.website.backend.utils.*
-import net.perfectdreams.loritta.website.backend.views.BaseView
+import net.perfectdreams.loritta.website.backend.utils.SVGIconManager
+import net.perfectdreams.loritta.website.backend.utils.imgSrcSetFromEtherealGambi
+import net.perfectdreams.loritta.website.backend.utils.mediaWithContentWrapper
 
 fun DIV.funnyCommands(
     m: LorittaWebsiteBackend,
@@ -27,12 +18,13 @@ fun DIV.funnyCommands(
         id = "fun-section"
 
         // TODO: Sponsor
-        adWrapper(svgIconManager) {
+        // TODO: Readd ad here
+        /* adWrapper(svgIconManager) {
             // generateNitroPayAdOrSponsor(2, "home-funny-commands1", "Loritta v2 Funny Commands") { true }
             // generateNitroPayAdOrSponsor(3, "home-funny-commands2", "Loritta v2 Funny Commands") { it != NitroPayAdDisplay.PHONE }
             generateNitroPayAd("home-funny-commands1", NitroPayAdGenerator.ALL_SIZES)
             generateNitroPayAd("home-funny-commands2", NitroPayAdGenerator.ALL_SIZES)
-        }
+        } */
 
         mediaWithContentWrapper(
             isImageOnTheRightSide,

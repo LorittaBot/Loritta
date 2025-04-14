@@ -10,10 +10,11 @@ fun DIV.notify(m: LorittaWebsiteBackend, svgIconManager: SVGIconManager, locale:
         style = "text-align: center;"
 
         // TODO: Sponsor
-        adWrapper(svgIconManager) {
+        // TODO: Readd ad here
+        /* adWrapper(svgIconManager) {
             // generateNitroPayAd("home-digital-influencers", "Loritta v2 Digital Influencers")
             generateNitroPayAd("home-digital-influencers", NitroPayAdGenerator.ALL_SIZES)
-        }
+        } */
 
         mediaWithContentWrapper(
             isImageOnTheRightSide,

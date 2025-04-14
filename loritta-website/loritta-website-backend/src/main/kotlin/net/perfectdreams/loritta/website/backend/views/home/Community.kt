@@ -15,9 +15,10 @@ fun DIV.community(m: LorittaWebsiteBackend, svgIconManager: SVGIconManager, loca
         style = "text-align: center;"
 
         // TODO: Sponsors
-        adWrapper(svgIconManager) {
+        // TODO: Readd ad here
+        /* adWrapper(svgIconManager) {
             generateNitroPayAd("home-community", NitroPayAdGenerator.ALL_SIZES)
-        }
+        } */
         // generateNitroPayAdOrSponsor(0, "home-community", "Loritta v2 Community") { true }
 
         // generateNitroPayAd("home-community", "Loritta v2 Community")

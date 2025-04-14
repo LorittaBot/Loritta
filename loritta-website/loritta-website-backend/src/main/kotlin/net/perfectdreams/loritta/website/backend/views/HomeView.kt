@@ -140,11 +140,7 @@ class HomeView(
             div { id = "about-me" }
             var sectionId = 1
             div(classes = getOddOrEvenClassName(sectionId++)) {
-                // TODO: Sponsor
-                adWrapper(iconManager) {
-                    generateNitroPayAd("home-below-header1", NitroPayAdGenerator.ALL_SIZES)
-                    generateNitroPayAd("home-below-header2", NitroPayAdGenerator.ALL_SIZES)
-                }
+                // TODO: Readd ad here
 
                 // generateHowToSponsorButton(locale)
 

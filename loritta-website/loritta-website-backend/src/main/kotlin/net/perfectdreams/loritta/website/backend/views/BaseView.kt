@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.website.backend.views
 
 import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
@@ -22,11 +22,6 @@ abstract class BaseView(
     val hashManager = LorittaWebsiteBackend.hashManager
 
     fun generateHtml(): HTML.() -> (Unit) = {
-        val supportUrl = "https://loritta.website/support"
-        val firefoxUrl = "https://www.mozilla.org/firefox"
-        val chromeUrl = "https://www.google.com/chrome"
-        val edgeUrl = "https://www.microsoft.com/edge"
-
         // "br" to "pt-BR", "us" to "en", "es" to "es", "pt" to "pt"
         val pageLanguage = when (locale.id) {
             "default" -> "pt-BR"
@@ -57,50 +52,7 @@ abstract class BaseView(
 
             styleLink("$versionPrefix/assets/css/style.css?hash=${assetHash("/assets/css/style.css")}")
 
-            // ===[ SCRIPTS ]===
-            // Usado para login: A SpicyMorenitta usa esse código ao autenticar via "auth_popup.kts"
-            // Já que é meio difícil chamar códigos de Kotlin/JS na parent window, existe esse método auxiliar para facilitar.
-            // authenticate(p) sendo p = "user identification do Discord"
-            // Também tem umas coisinhas do Google reCAPTCHA
-            // TODO: Fix
-            /* script(type = ScriptType.textJavaScript) {
-                unsafe {
-                    raw("""
-function authenticate(p) { output.net.perfectdreams.spicymorenitta.utils.AuthUtils.handlePostAuth(p); };
-
-document.domain = "loritta.website";
-
-function onGoogleRecaptchaLoadCallback() { this['spicy-morenitta'].net.perfectdreams.spicymorenitta.utils.GoogleRecaptchaUtils.onRecaptchaLoadCallback(); };
-
-window.addEventListener('load', function () {
-// Verificar se o usuário está usando o antigo Edge ou MSIE, já que nós não suportamos nenhum desses dois
-// ; MSIE == MS Internet Explorer
-// Trident/7.0 == MSIE11
-if (/(?:\b(MS)?IE\s+|\bTrident\/7\.0;.*\s+rv:|\bEdge\/)(\d+)/.test(navigator.userAgent)) {
-    alert("${locale.getList("website.unsupportedBrowser", supportUrl, firefoxUrl, chromeUrl, edgeUrl).joinToString("\\n\\n")}")
-}
-// Verificar se o SpicyMorenitta foi carregado corretamente
-if (window.spicyMorenittaLoaded === undefined) {
-    alert("${locale.getList("website.failedToLoadScripts", supportUrl, firefoxUrl, chromeUrl, edgeUrl).joinToString("\\n\\n")}")
-}
-});
-""")
-                }
-            } */
-
-            // TODO: Fix
-            // Detect AdBlock
-            // script(src = "$versionPrefix/adsbygoogle.js") {}
-
-            // Google Analytics
-            // TODO: Remove later if Plausible is that good
-            deferredScript("https://www.googletagmanager.com/gtag/js?id=UA-53518408-9")
-            script(type = ScriptType.textJavaScript) {
-                unsafe {
-                    raw("""window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-53518408-9');""")
-                }
-            }
-
+            // Plausible Analytics
             script(
                 src = "https://web-analytics.perfectdreams.net/js/plausible.js",
             ) {
@@ -109,24 +61,10 @@ if (window.spicyMorenittaLoaded === undefined) {
             }
 
             // Google AdSense
-            // script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}
+            script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}
 
             // Google ReCAPTCHA
             // script(src = "https://www.google.com/recaptcha/api.js?render=explicit&onload=onGoogleRecaptchaLoadCallback") {}
-
-            // NitroPay
-            script(type = ScriptType.textJavaScript) {
-                unsafe {
-                    raw("""
-window["nitroAds"] = window["nitroAds"] || {
-    createAd: function() {
-        window.nitroAds.queue.push(["createAd", arguments]);
-    },
-    queue: []
-};""".trimIndent())
-                }
-            }
-            deferredScript("https://s.nitropay.com/ads-595.js")
 
             // App itself
             deferredScript("/v3/assets/js/loritta-website-frontend.js?hash=${assetHash("/assets/js/loritta-website-frontend.js")}")

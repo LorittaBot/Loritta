@@ -6,11 +6,11 @@ import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.website.Ads
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.morenitta.website.components.Ads
 import net.perfectdreams.loritta.morenitta.website.components.EtherealGambiUtils.etherealGambiImg
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents
 import net.perfectdreams.loritta.morenitta.website.components.LoadingSectionComponents.fillContentLoadingSection

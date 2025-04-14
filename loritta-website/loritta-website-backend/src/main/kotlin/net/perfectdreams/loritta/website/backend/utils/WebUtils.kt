@@ -1,14 +1,6 @@
 package net.perfectdreams.loritta.website.backend.utils
 
-import kotlinx.html.DIV
-import kotlinx.html.FlowOrInteractiveOrPhrasingContent
-import kotlinx.html.IMG
-import kotlinx.html.div
-import kotlinx.html.fieldSet
-import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.legend
-import kotlinx.html.style
+import kotlinx.html.*
 import net.perfectdreams.etherealgambi.data.DefaultImageVariantPreset
 import net.perfectdreams.etherealgambi.data.ScaleDownToWidthImageVariantPreset
 import net.perfectdreams.etherealgambi.data.api.responses.ImageVariantsResponse
@@ -144,113 +136,13 @@ fun DIV.innerContent(block: DIV.() -> (Unit)) = div {
     block.invoke(this)
 }
 
-/* fun DIV.generateNitroPayAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, callback: (NitroPayAdDisplay) -> (Boolean)) {
-    // TODO: Fix
-    val sponsors = listOf<Sponsor>() // loritta.sponsors
-    val sponsor = sponsors.getOrNull(sponsorId)
-
-    if (sponsor != null) {
-        generateSponsor(sponsor)
-    } else {
-        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-desktop", NitroPayAdDisplay.DESKTOP, "Loritta Daily Reward", callback.invoke(
-            NitroPayAdDisplay.DESKTOP))
-        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-phone", NitroPayAdDisplay.PHONE, "Loritta Daily Reward", callback.invoke(
-            NitroPayAdDisplay.PHONE))
-        generateNitroPayAdOrSponsor(sponsorId, "$adSlot-tablet", NitroPayAdDisplay.TABLET, "Loritta Daily Reward", callback.invoke(
-            NitroPayAdDisplay.TABLET))
-    }
-}
-
-fun DIV.generateNitroPayAd(adSlot: String, adName: String? = null) {
-    generateNitroPayAd("$adSlot-desktop", NitroPayAdDisplay.DESKTOP, "Loritta Daily Reward")
-    generateNitroPayAd("$adSlot-phone", NitroPayAdDisplay.PHONE, "Loritta Daily Reward")
-    generateNitroPayAd("$adSlot-tablet", NitroPayAdDisplay.TABLET, "Loritta Daily Reward")
-}
-
-// TODO: Fix
-fun DIV.generateNitroPayAdOrSponsor(sponsorId: Int, adSlot: String, displayType: NitroPayAdDisplay, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateNitroPayAdOrSponsor(listOf<Sponsor>(), sponsorId, adSlot, displayType, adName, showIfSponsorIsMissing)
-
-fun DIV.generateNitroPayAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, displayType: NitroPayAdDisplay, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
-    val sponsor = sponsors.getOrNull(sponsorId)
-
-    if (sponsor != null) {
-        generateSponsor(sponsor)
-    } else if (showIfSponsorIsMissing) {
-        generateNitroPayAd(adSlot, displayType, adName)
-    }
-}
-
-// TODO: Fix
-fun DIV.generateNitroPayVideoAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateNitroPayVideoAdOrSponsor(listOf(), sponsorId, adSlot, adName, showIfSponsorIsMissing)
-
-fun DIV.generateNitroPayVideoAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
-    val sponsor = sponsors.getOrNull(sponsorId)
-
-    if (sponsor != null) {
-        generateSponsor(sponsor)
-    } else if (showIfSponsorIsMissing) {
-        generateNitroPayVideoAd(adSlot, adName)
-    }
-}
-
-fun DIV.generateAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateAdOrSponsor(listOf(), sponsorId, adSlot, adName, showIfSponsorIsMissing)
-
-fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
-    val sponsor = sponsors.getOrNull(sponsorId)
-
-    if (sponsor != null) {
-        generateSponsor(sponsor)
-    } else if (showIfSponsorIsMissing) {
-        generateAd(adSlot, adName, showOnMobile)
-    }
-}
-
-fun DIV.generateSponsor(sponsor: Sponsor) {
-    div(classes = "media") {
-        generateSponsorNoWrap(sponsor)
-    }
-}
-
-fun DIV.generateSponsorNoWrap(sponsor: Sponsor) {
-    a(href = "/sponsor/${sponsor.slug}", classes = "sponsor-wrapper", target = "_blank") {
-        div(classes = "sponsor-pc-image") {
-            img(src = sponsor.getRectangularBannerUrl(), classes = "sponsor-banner")
-        }
-        div(classes = "sponsor-mobile-image") {
-            img(src = sponsor.getSquareBannerUrl(), classes = "sponsor-banner")
-        }
-    }
-}
-
-fun DIV.generateHowToSponsorButton(locale: BaseLocale) {
-    div(classes = "media") {
-        style = "justify-content: end;"
-        div {
-            style = "font-size: 0.8em; margin: 8px;"
-            + (locale["website.sponsors.wantYourServerHere"] + " ")
-            a(href = "/sponsors") {
-                span(classes = "sponsor-button") {
-                    + "Premium Slots"
-                }
-            }
-        }
-    }
-}
-
-fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean = true) {
-    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
-    // TODO: Random ID
-    val adGen = "ad-$adSlot-"
-
+fun DIV.generateAd(adSlot: String, adsenseAdClass: String? = null) {
     div(classes = "centralized-ad") {
         ins(classes = "adsbygoogle") {
-            style = "display: block;"
+            if (adsenseAdClass != null)
+                classes += adsenseAdClass
 
-            if (!showOnMobile)
-                attributes["id"] = adGen
+            style = "display: block;"
 
             attributes["data-ad-client"] = "ca-pub-9989170954243288"
             attributes["data-ad-slot"] = adSlot
@@ -259,39 +151,9 @@ fun DIV.generateAd(adSlot: String, adName: String? = null, showOnMobile: Boolean
         }
     }
 
-    if (!showOnMobile) {
-        script(type = ScriptType.textJavaScript) {
-            unsafe {
-                raw("if (document.body.clientWidth >= 1366) { (adsbygoogle = window.adsbygoogle || []).push({}); } else { console.log(\"Not displaying ad: Browser width is too smol!\"); document.querySelector(\"#$adGen\").remove(); }")
-            }
-        }
-    } else {
-        script(type = ScriptType.textJavaScript) {
-            unsafe {
-                raw("(adsbygoogle = window.adsbygoogle || []).push({});")
-            }
+    script(type = ScriptType.textJavaScript) {
+        unsafe {
+            raw("(adsbygoogle = window.adsbygoogle || []).push({});")
         }
     }
 }
-
-fun DIV.generateNitroPayAd(adId: String, displayType: NitroPayAdDisplay, adName: String? = null) {
-    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
-    div(classes = "centralized-ad") {
-        div(classes = "nitropay-ad") {
-            id = adId
-            attributes["data-nitropay-ad-type"] = NitroPayAdType.STANDARD_BANNER.name.lowercase()
-            attributes["data-nitropay-ad-display"] = displayType.name.lowercase()
-        }
-    }
-}
-
-fun DIV.generateNitroPayVideoAd(adId: String, adName: String? = null) {
-    // O "adName" não é utilizado para nada, só está aí para que fique mais fácil de analisar aonde está cada ad (caso seja necessário)
-    div(classes = "centralized-ad") {
-        div(classes = "nitropay-ad") {
-            id = adId
-            attributes["data-nitropay-ad-type"] = NitroPayAdType.VIDEO_PLAYER.name.lowercase()
-            attributes["data-nitropay-ad-display"] = NitroPayAdDisplay.RESPONSIVE.name.lowercase()
-        }
-    }
-} */

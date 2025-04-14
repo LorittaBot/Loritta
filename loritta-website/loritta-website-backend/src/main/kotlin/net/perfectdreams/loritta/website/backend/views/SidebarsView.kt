@@ -1,20 +1,11 @@
 package net.perfectdreams.loritta.website.backend.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.DIV
-import kotlinx.html.HtmlBlockTag
-import kotlinx.html.InputType
-import kotlinx.html.aside
-import kotlinx.html.div
-import kotlinx.html.id
-import kotlinx.html.input
-import kotlinx.html.label
+import kotlinx.html.*
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.website.Ads
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
-import net.perfectdreams.loritta.website.backend.utils.NitroPayAdGenerator
-import net.perfectdreams.loritta.website.backend.utils.NitroPayAdSize
-import net.perfectdreams.loritta.website.backend.utils.generateNitroPayAd
 
 abstract class SidebarsView(
     LorittaWebsiteBackend: LorittaWebsiteBackend,
@@ -44,8 +35,9 @@ abstract class SidebarsView(
     override fun DIV.generateContent() {
         sidebarWrapper {
             leftSidebar {
+                // TODO: What's actually this?
                 // A nifty ad that shows next to the "Click Here" option in every sidebar
-                generateNitroPayAd(
+                /* generateNitroPayAd(
                         "$sidebarAdId-left-sidebar-ad",
                         listOf(
                                 NitroPayAdSize(
@@ -54,7 +46,7 @@ abstract class SidebarsView(
                                 )
                         ),
                         mediaQuery = "(max-width: 800px) and (min-width: 420px)"
-                )
+                ) */
 
                 div(classes = "contents") {
                     // So, we want to display a nifty navbar when the user wants to see all the entries (small screens only)
@@ -91,16 +83,19 @@ abstract class SidebarsView(
             }
 
             aside(classes = "sidebar-ad") {
-                generateNitroPayAd(
-                    "$sidebarAdId-right-sidebar-ad",
-                    listOf(
-                        NitroPayAdSize(
-                            160,
-                            600
-                        )
-                    ),
-                    mediaQuery = NitroPayAdGenerator.SIDEBAR_AD_MEDIA_QUERY
-                )
+                val adType = Ads.RIGHT_SIDEBAR_AD
+
+                ins(classes = "adsbygoogle") {
+                    classes += "adsbygoogle"
+                    style = "display: inline-block; width: ${adType.size.width}px; height: ${adType.size.height}px;"
+                    attributes["data-ad-client"] = "ca-pub-9989170954243288"
+                    attributes["data-ad-slot"] = adType.googleAdSenseId
+                }
+                script {
+                    unsafe {
+                        raw("(adsbygoogle = window.adsbygoogle || []).push({});")
+                    }
+                }
             }
         }
     }

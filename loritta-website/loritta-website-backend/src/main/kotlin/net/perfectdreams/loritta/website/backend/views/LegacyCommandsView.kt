@@ -361,64 +361,7 @@ class LegacyCommandsView(
             val zoneId = ZoneId.of("America/Sao_Paulo")
             val now = LocalDate.now(zoneId)
 
-            // Discords.com
-            // TODO: Proper sponsorship impl
-            if (now.isBefore(LocalDate.of(2021, 9, 10))) {
-                // A kinda weird workaround, but it works
-                unsafe {
-                    raw("""<a href="/sponsor/discords" target="_blank" class="sponsor-wrapper">
-<div class="sponsor-pc-image"><img src="https://loritta.website/assets/img/sponsors/discords_pc.png?v2" class="sponsor-banner"></div>
-<div class="sponsor-mobile-image"><img src="https://loritta.website/assets/img/sponsors/discords_mobile.png" class="sponsor-banner"></div>
-</a>""")
-                }
-            } else {
-                // Desktop Large
-                generateNitroPayAd(
-                    "commands-desktop-large",
-                    listOf(
-                        NitroPayAdSize(
-                            728,
-                            90
-                        ),
-                        NitroPayAdSize(
-                            970,
-                            90
-                        ),
-                        NitroPayAdSize(
-                            970,
-                            250
-                        )
-                    ),
-                    mediaQuery = NitroPayAdGenerator.DESKTOP_LARGE_AD_MEDIA_QUERY
-                )
-
-                generateNitroPayAd(
-                    "commands-desktop",
-                    listOf(
-                        NitroPayAdSize(
-                            728,
-                            90
-                        )
-                    ),
-                    mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_DESKTOP_MEDIA_QUERY
-                )
-
-                // We don't do tablet here because there isn't any sizes that would fit a tablet comfortably
-                generateNitroPayAd(
-                    "commands-phone",
-                    listOf(
-                        NitroPayAdSize(
-                            300,
-                            250
-                        ),
-                        NitroPayAdSize(
-                            320,
-                            50
-                        )
-                    ),
-                    mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_PHONE_MEDIA_QUERY
-                )
-            }
+            // TODO: Readd ad here
         }
 
         hr {}
