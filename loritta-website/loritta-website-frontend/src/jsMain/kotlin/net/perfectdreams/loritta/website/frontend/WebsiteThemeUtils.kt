@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.website.frontend
 
-import kotlinx.browser.document
-import kotlinx.dom.addClass
-import kotlinx.dom.removeClass
 import net.perfectdreams.dokyo.WebsiteTheme
+import net.perfectdreams.harmony.web.addClass
+import net.perfectdreams.harmony.web.removeClass
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLSpanElement
+import web.dom.Element
+import web.dom.document
 
 object WebsiteThemeUtils {
     /**

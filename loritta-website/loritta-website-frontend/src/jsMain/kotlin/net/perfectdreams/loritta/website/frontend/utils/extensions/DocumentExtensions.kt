@@ -1,21 +1,22 @@
 package net.perfectdreams.loritta.website.frontend.utils.extensions
 
-import kotlinx.browser.window
-import org.w3c.dom.Element
-import org.w3c.dom.ParentNode
-import org.w3c.dom.asList
-import org.w3c.dom.events.Event
+import js.array.asList
+import web.dom.Element
+import web.dom.ParentNode
+import web.events.addEventListener
+import web.uievents.MouseEvent
+import web.window.window
 
-inline fun <T> ParentNode.select(query: String): T {
+fun <T> ParentNode.select(query: String): T {
     return this.querySelector(query) as T
 }
 
-inline fun <T> ParentNode.selectAll(query: String): List<T> {
+fun <T> ParentNode.selectAll(query: String): List<T> {
     return this.querySelectorAll(query).asList() as List<T>
 }
 
-fun Element.onClick(callback: (Event) -> (Unit)) {
-    this.addEventListener("click", callback)
+fun Element.onClick(callback: (MouseEvent) -> (Unit)) {
+    this.addEventListener(MouseEvent.CLICK, callback)
 }
 
 fun Element.offset(): Offset {

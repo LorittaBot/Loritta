@@ -1,20 +1,17 @@
 package net.perfectdreams.loritta.website.frontend.views
 
-import kotlinx.browser.document
-import kotlinx.browser.window
-import kotlinx.dom.addClass
-import kotlinx.dom.removeClass
+import net.perfectdreams.harmony.web.addClass
+import net.perfectdreams.harmony.web.removeClass
 import net.perfectdreams.loritta.website.frontend.LorittaWebsiteFrontend
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLAnchorElement
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLInputElement
-import org.w3c.dom.HTMLSpanElement
-import org.w3c.dom.get
+import web.dom.Element
+import web.dom.document
+import web.events.addEventListener
+import web.html.*
+import web.uievents.InputEvent
+import web.window.window
 import kotlin.js.Date
 
 class CommandsView(val showtime: LorittaWebsiteFrontend) : DokyoView() {
@@ -83,7 +80,7 @@ class CommandsView(val showtime: LorittaWebsiteFrontend) : DokyoView() {
 
         // Search is a pain to handle, but not impossible!
         // We need to do filtering based on the currently visible elements AND the current active category!
-        searchBar.addEventListener("input", {
+        searchBar.addEventListener(InputEvent.INPUT, {
             val start = Date.now()
             // Cache the RegEx to avoid object creation!
             // Also, we escpae the search bar value to avoid users writing RegEx...
@@ -184,6 +181,6 @@ class CommandsView(val showtime: LorittaWebsiteFrontend) : DokyoView() {
             }
 
             println("End: ${Date.now() - start}")
-        }, false)
+        })
     }
 }

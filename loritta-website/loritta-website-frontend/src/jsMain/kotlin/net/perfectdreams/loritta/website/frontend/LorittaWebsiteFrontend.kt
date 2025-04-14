@@ -4,14 +4,8 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.browser.document
-import kotlinx.browser.window
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.withLock
-import kotlinx.dom.addClass
-import kotlinx.dom.clear
-import kotlinx.dom.hasClass
-import kotlinx.dom.removeClass
 import kotlinx.html.div
 import kotlinx.html.dom.append
 import kotlinx.html.img
@@ -22,6 +16,10 @@ import mu.KotlinLoggingConfiguration
 import mu.KotlinLoggingLevel
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
+import net.perfectdreams.harmony.web.addClass
+import net.perfectdreams.harmony.web.clear
+import net.perfectdreams.harmony.web.hasClass
+import net.perfectdreams.harmony.web.removeClass
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.website.frontend.utils.LinkPreloaderManager
 import net.perfectdreams.loritta.website.frontend.utils.extensions.get
@@ -29,8 +27,14 @@ import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
 import net.perfectdreams.loritta.website.frontend.views.ViewManager
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLDivElement
+import web.dom.Element
+import web.dom.document
+import web.events.Event
+import web.events.EventHandler
+import web.events.addEventListener
+import web.history.history
+import web.html.HTMLDivElement
+import web.window.window
 import kotlin.js.Json
 
 class LorittaWebsiteFrontend {
@@ -54,7 +58,7 @@ class LorittaWebsiteFrontend {
         KotlinLoggingConfiguration.LOG_LEVEL = KotlinLoggingLevel.DEBUG
         logger.debug { "Howdy from Kotlin ${KotlinVersion.CURRENT}! :3" }
 
-        document.addEventListener("DOMContentLoaded", {
+        document.addEventListener(Event.DOM_CONTENT_LOADED, {
             logger.debug { "DOM loaded" }
 
             // If the pathname doesn't exist... how that happens???
@@ -80,21 +84,21 @@ class LorittaWebsiteFrontend {
             // So we are coding our *own* hacky workaround! :3
             //
             // This requires the usage of the pushState(...) function in this class, that function will update the currentPath when needed
-            window.onpopstate = {
+            window.onpopstate = EventHandler {
                 if (currentPath == window.location.pathname) {
                     logger.debug { "History changed but seems to be a hash change (maybe?), ignoring onpopstate event..." }
                 } else {
                     logger.debug { "History changed! Trying to load the new page... New pathname is ${window.location.pathname}" }
                     // Just refresh the page and hope for the best
-                    document.location!!.reload()
+                    document.location.reload()
                 }
             }
 
-        }, false)
+        })
     }
 
     fun pushState(pageUrl: String) {
-        window.history.pushState(null, "", pageUrl)
+        history.pushState(null, "", pageUrl)
         currentPath = window.location.pathname
 
         logger.debug { "Updated current path to $currentPath" }
@@ -197,9 +201,9 @@ class LorittaWebsiteFrontend {
             if (hamburgerButton != null) {
                 logger.debug { "Setting up resize handler..." }
 
-                window.addEventListener("resize", {
+                window.addEventListener(Event.RESIZE, {
                     checkAndFixNavbarOverflownEntries()
-                }, true)
+                })
 
                 checkAndFixNavbarOverflownEntries()
 
@@ -268,7 +272,7 @@ class LorittaWebsiteFrontend {
             // cloned.setAttribute("href", "/$websiteLocaleId/dashboard")
             cloned.setAttribute("href", "/dashboard")
 
-            cloned.append {
+            cloned.unsafeCast<org.w3c.dom.HTMLDivElement>().append {
                 val avatarUrl = newUser.effectiveAvatarUrl
 
                 img(src = avatarUrl) {

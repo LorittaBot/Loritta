@@ -30,6 +30,7 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.12.0")
                 implementation(libs.ktor.client.core)
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-browser:2025.4.10")
             }
         }
     }

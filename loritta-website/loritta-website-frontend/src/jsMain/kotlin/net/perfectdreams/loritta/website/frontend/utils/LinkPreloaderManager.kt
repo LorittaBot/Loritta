@@ -2,16 +2,20 @@ package net.perfectdreams.loritta.website.frontend.utils
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import kotlinx.browser.document
-import kotlinx.browser.window
+import js.array.asList
 import kotlinx.coroutines.sync.withLock
-import kotlinx.dom.removeClass
+import net.perfectdreams.harmony.web.removeClass
 import net.perfectdreams.loritta.website.frontend.LorittaWebsiteFrontend
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
-import org.w3c.dom.*
-import org.w3c.dom.url.URL
+import web.dom.Element
+import web.dom.document
+import web.html.HTMLBodyElement
+import web.html.HTMLElement
+import web.html.HTMLTitleElement
+import web.url.URL
+import web.window.window
 
 class LinkPreloaderManager(val showtime: LorittaWebsiteFrontend) {
     companion object {
@@ -65,7 +69,7 @@ class LinkPreloaderManager(val showtime: LorittaWebsiteFrontend) {
                 // Close navbar if it is open, this avoids the user clicking on something and wondering "but where is the new content?"
                 val navbar = document.select<Element?>("#navigation-bar")
                 navbar?.removeClass("expanded")
-                document.body!!.style.overflowY = ""
+                document.body.style.overflowY = ""
 
                 // Start progress indicator
                 showtime.startFakeProgressIndicator()

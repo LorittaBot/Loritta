@@ -6,8 +6,8 @@ import net.perfectdreams.loritta.website.frontend.LorittaWebsiteFrontend
 import net.perfectdreams.loritta.website.frontend.utils.extensions.get
 import net.perfectdreams.loritta.website.frontend.utils.extensions.offset
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLImageElement
+import web.html.HTMLDivElement
+import web.html.HTMLImageElement
 
 class HomeView(val showtime: LorittaWebsiteFrontend) : DokyoView() {
     override suspend fun onLoad() {
