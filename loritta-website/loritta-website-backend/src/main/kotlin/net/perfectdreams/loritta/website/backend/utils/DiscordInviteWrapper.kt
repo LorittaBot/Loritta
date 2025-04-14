@@ -1,13 +1,7 @@
 package net.perfectdreams.loritta.website.backend.utils
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.html.DIV
-import kotlinx.html.FlowContent
-import kotlinx.html.a
-import kotlinx.html.classes
-import kotlinx.html.div
-import kotlinx.html.img
-import kotlinx.html.style
+import kotlinx.html.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
@@ -35,7 +29,7 @@ object DiscordInviteWrapper {
 
     fun FlowContent.lorittaCommunityServerInvite(LorittaWebsiteBackend: LorittaWebsiteBackend, i18nContext: I18nContext) = discordInvite(
         i18nContext,
-        "/v3/assets/img/server-icons/loritta-community-64.gif",
+        "https://stuff.loritta.website/official-server-icons/loritta-community-256.gif",
         "Apartamento da Loritta \uD83C\uDF07\uD83C\uDF03",
         {
             imgSrcSetFromEtherealGambi(
