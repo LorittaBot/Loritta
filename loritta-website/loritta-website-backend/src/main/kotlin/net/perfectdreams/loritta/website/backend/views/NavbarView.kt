@@ -1,23 +1,10 @@
 package net.perfectdreams.loritta.website.backend.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.DIV
-import kotlinx.html.HTML
-import kotlinx.html.a
-import kotlinx.html.body
-import kotlinx.html.div
-import kotlinx.html.footer
-import kotlinx.html.h2
-import kotlinx.html.h3
-import kotlinx.html.hr
-import kotlinx.html.id
-import kotlinx.html.nav
-import kotlinx.html.p
-import kotlinx.html.span
-import kotlinx.html.style
+import kotlinx.html.*
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
 import java.time.LocalDate
@@ -65,103 +52,83 @@ abstract class NavbarView(
 
                     div(classes = "left-side-entries") {
                         // Loritta Logo/Home Page
-                        div(classes = "entry loritta-navbar-logo") {
-                            a(classes = "home-page", href = "$base/") {
-                                attributes["data-preload-link"] = "true"
-                                style = "font-family: 'Pacifico', cursive; text-transform: none;"
+                        a(classes = "entry home-page loritta-navbar-logo", href = "$base/") {
+                            attributes["data-preload-link"] = "true"
+                            style = "font-family: 'Pacifico', cursive; text-transform: none;"
 
-                                +"Loritta"
-                            }
+                            +"Loritta"
                         }
 
                         // Support
-                        div(classes = "entry") {
-                            a(classes = "support", href = "$base/support") {
-                                attributes["data-preload-link"] = "true"
+                        a(classes = "entry support", href = "$base/support") {
+                            attributes["data-preload-link"] = "true"
 
-                                iconManager.discord.apply(this)
+                            iconManager.discord.apply(this)
 
-                                +" ${locale["website.navbar.support"]}"
-                            }
+                            +" ${locale["website.navbar.support"]}"
                         }
 
                         // Commands
-                        div(classes = "entry") {
-                            a(classes = "commands", href = "$base/commands/slash") {
-                                attributes["data-preload-link"] = "true"
+                        a(classes = "entry commands", href = "$base/commands/slash") {
+                            attributes["data-preload-link"] = "true"
 
-                                iconManager.terminal.apply(this)
+                            iconManager.terminal.apply(this)
 
-                                +" ${locale["modules.sectionNames.commands"]}"
-                            }
+                            +" ${locale["modules.sectionNames.commands"]}"
                         }
 
                         // Daily
-                        div(classes = "entry") {
-                            a(classes = "daily", href = "$base/daily") {
-                                iconManager.gift.apply(this)
+                        a(classes = "entry daily", href = "$base/daily") {
+                            iconManager.gift.apply(this)
 
-                                +" Daily"
-                            }
+                            +" Daily"
                         }
 
                         // Premium
-                        div(classes = "entry") {
-                            a(classes = "donate", href = "$base/donate") {
-                                // attributes["data-preload-link"] = "true"
+                        a(classes = "entry donate", href = "$base/donate") {
+                            // attributes["data-preload-link"] = "true"
 
-                                iconManager.sparkles.apply(this)
+                            iconManager.sparkles.apply(this)
 
-                                +" Premium"
-                            }
+                            +" Premium"
                         }
 
                         // Wiki
-                        div(classes = "entry") {
-                            a(classes = "extras", href = "$base/extras") {
-                                attributes["data-preload-link"] = "true"
+                        a(classes = "entry extras", href = "$base/extras") {
+                            attributes["data-preload-link"] = "true"
 
-                                iconManager.book.apply(this)
+                            iconManager.book.apply(this)
 
-                                +" Wiki"
-                            }
+                            +" Wiki"
                         }
 
                         // Merch
-                        div(classes = "entry") {
-                            a(classes = "merch", href = "https://perfectdreams.store/") {
-                                iconManager.shirt.apply(this)
+                        a(classes = "entry merch", href = "https://perfectdreams.store/") {
+                            iconManager.shirt.apply(this)
 
-                                +" Merch"
-                            }
+                            +" Merch"
                         }
 
                         // Equipe
-                        div(classes = "entry") {
-                            a(classes = "blog", href = "$base/staff") {
-                                attributes["data-preload-link"] = "true"
+                        a(classes = "entry", href = "$base/staff") {
+                            attributes["data-preload-link"] = "true"
 
-                                iconManager.rocket.apply(this)
+                            iconManager.rocket.apply(this)
 
-                                +" Equipe"
-                            }
+                            +" Equipe"
                         }
 
                         // Fan Arts
-                        div(classes = "entry") {
-                            a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
-                                iconManager.paintBrush.apply(this)
+                        a(classes = "entry fan-arts", href = "https://fanarts.perfectdreams.net/") {
+                            iconManager.paintBrush.apply(this)
 
-                                +" Fan Arts"
-                            }
+                            +" Fan Arts"
                         }
 
-                        div(classes = "entry") {
-                            a(classes = "sponsors", href = "$base/sponsors") {
-                                iconManager.heart.apply(this)
+                        a(classes = "entry sponsors", href = "$base/sponsors") {
+                            iconManager.heart.apply(this)
 
-                                +" ${locale["website.navbar.sponsors"]}"
-                            }
+                            +" ${locale["website.navbar.sponsors"]}"
                         }
                     }
 
@@ -178,22 +145,20 @@ abstract class NavbarView(
                     } */
 
                         // ===[ THEME CHANGER BUTTON ]===
-                        div(classes = "entry") {
-                            a(classes = "theme-changer") {
-                                id = "theme-changer-button"
+                        div(classes = "entry theme-changer") {
+                            id = "theme-changer-button"
 
-                                span {
-                                    if (websiteTheme != WebsiteTheme.DEFAULT)
-                                        style = "display: none;"
-                                    iconManager.moon.apply(this)
-                                }
+                            span {
+                                if (websiteTheme != WebsiteTheme.DEFAULT)
+                                    style = "display: none;"
+                                iconManager.moon.apply(this)
+                            }
 
-                                span {
-                                    if (websiteTheme != WebsiteTheme.DARK_THEME)
-                                        style = "display: none;"
+                            span {
+                                if (websiteTheme != WebsiteTheme.DARK_THEME)
+                                    style = "display: none;"
 
-                                    iconManager.sun.apply(this)
-                                }
+                                iconManager.sun.apply(this)
                             }
                         }
 
@@ -234,14 +199,12 @@ abstract class NavbarView(
                         }
 
                         // ===[ LOGIN BUTTON ]===
-                        div(classes = "entry") {
-                            // TODO: Fix
-                            a(href = "/dashboard") {
-                                id = "login-button"
-                                iconManager.signIn.apply(this)
+                        // TODO: Fix
+                        a(classes = "entry", href = "/dashboard") {
+                            id = "login-button"
+                            iconManager.signIn.apply(this)
 
-                                +" Login"
-                            }
+                            +" Login"
                         }
 
                         // ===[ HAMBURGER BUTTON ]===

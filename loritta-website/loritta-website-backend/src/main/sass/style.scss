@@ -2,10 +2,11 @@ $primary-color: #29a6fe;
 $min-reading-width: 1260px;
 $min-image-stacked-width: 800px;
 
+@import 'navigation-bar';
+
 // Lovely Style
 @import 'lovely-style/reset';
 @import 'lovely-style/body';
-@import 'lovely-style/navigation-bar';
 @import 'lovely-style/primary-color-headings';
 @import 'lovely-style/buttons';
 @import 'lovely-style/rainbow';
@@ -58,6 +59,8 @@ $min-image-stacked-width: 800px;
 // COLOR VARIABLES, USED IN CONTAINERS AND STUFF
 // Themes should override those variables!
 :root {
+  --loritta-blue: #29a6fe;
+
   // There are two variations of the background: One lighter and another darker
   // The darker one is also used in the left sidebar!
   --background-wrapper-primary: #fff;
