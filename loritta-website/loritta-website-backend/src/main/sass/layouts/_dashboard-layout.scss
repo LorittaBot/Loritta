@@ -354,7 +354,9 @@ aside#that-wasnt-very-cash-money-of-you {
 
   position: sticky;
   right: 0;
-  top: 0;
+  // We technically don't need to worry about the double navbar style here
+  // Because this is never displayed for mobile devices anyway
+  top: var(--navigation-bar-height);
   height: calc(100vh - var(--navigation-bar-height));
 
   @media (min-width: 1280px) {
