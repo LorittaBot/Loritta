@@ -63,22 +63,6 @@ class StaffView(
                     socialNetworks.add(TwitterSocialNetwork("srtabread"))
                 }
 
-                user("DanielaGC_") {
-                    socialNetworks.add(DiscordSocialNetwork(395788326835322882))
-                    socialNetworks.add(TwitterSocialNetwork("DanielaGC_0"))
-                    socialNetworks.add(LastFmSocialNetwork("DanielaGC_0"))
-                    socialNetworks.add(GitHubSocialNetwork("DanielaGC"))
-                }
-
-                user("PeterStark000") {
-                    socialNetworks.add(DiscordSocialNetwork(361977144445763585))
-                    socialNetworks.add(GitHubSocialNetwork("PeterStark000"))
-                    socialNetworks.add(TwitterSocialNetwork("PeterStark000"))
-                    socialNetworks.add(YouTubeSocialNetwork("UCcTTEVAyQ_xnfopzewr-5MA"))
-                    socialNetworks.add(RedditSocialNetwork("PeterStark000"))
-                    socialNetworks.add(LastFmSocialNetwork("PeterStark000"))
-                }
-
                 user("hechfx") {
                     socialNetworks.add(DiscordSocialNetwork(236167700777271297L))
                     socialNetworks.add(TwitterSocialNetwork("brviictoor"))
@@ -99,6 +83,10 @@ class StaffView(
 
                 user("José") {
                     socialNetworks.add(DiscordSocialNetwork(472085605623529496L))
+                }
+
+                user("Furalha") {
+                    socialNetworks.add(DiscordSocialNetwork(716468730799980587L))
                 }
             }
 
