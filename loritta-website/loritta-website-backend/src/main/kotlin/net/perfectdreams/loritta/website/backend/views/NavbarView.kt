@@ -103,11 +103,11 @@ abstract class NavbarView(
                         }
 
                         // Merch
-                        a(classes = "entry merch", href = "https://perfectdreams.store/") {
+                        /* a(classes = "entry merch", href = "https://perfectdreams.store/") {
                             iconManager.shirt.apply(this)
 
                             +" Merch"
-                        }
+                        } */
 
                         // Equipe
                         a(classes = "entry", href = "$base/staff") {

@@ -166,7 +166,7 @@ class DonateView(
                             style = "text-align: center;"
 
                             a(href = "#plans-features") {
-                                div(classes = "button-discord button-discord-info pure-button") {
+                                div(classes = "discord-button primary") {
                                     style = "font-size: 1.5em;"
 
                                     i(classes = "fas fa-list") {}
@@ -175,7 +175,7 @@ class DonateView(
                             }
 
                             if (keys.size != 0) {
-                                div(classes = "button-discord button-discord-info pure-button") {
+                                div(classes = "discord-button primary") {
                                     id = "renew-button"
                                     style = "font-size: 1.5em;"
 
@@ -315,7 +315,7 @@ class DonateView(
 
                                             if (needsToLogin) {
                                                 a(href = url) {
-                                                    div(classes = "button-discord button-discord-info pure-button") {
+                                                    div(classes = "discord-button primary") {
                                                         style = if (isBigger)
                                                             "display: flex; align-items: center; gap: 0.5em; font-size: 1.2em;"
                                                         else
@@ -326,7 +326,7 @@ class DonateView(
                                                     }
                                                 }
                                             } else {
-                                                div(classes = "button-discord button-discord-info pure-button") {
+                                                div(classes = "discord-button primary") {
                                                     id = buttonPlanId
                                                     style = if (isBigger)
                                                         "display: flex; align-items: center; gap: 0.5em; font-size: 1.2em;"

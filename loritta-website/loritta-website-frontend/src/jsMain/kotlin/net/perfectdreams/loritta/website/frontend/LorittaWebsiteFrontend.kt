@@ -21,6 +21,7 @@ import net.perfectdreams.harmony.web.clear
 import net.perfectdreams.harmony.web.hasClass
 import net.perfectdreams.harmony.web.removeClass
 import net.perfectdreams.loritta.serializable.UserIdentification
+import net.perfectdreams.loritta.website.frontend.components.SidebarHamburgerButtonComponentMounter
 import net.perfectdreams.loritta.website.frontend.utils.LinkPreloaderManager
 import net.perfectdreams.loritta.website.frontend.utils.extensions.get
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
@@ -34,6 +35,7 @@ import web.events.EventHandler
 import web.events.addEventListener
 import web.history.history
 import web.html.HTMLDivElement
+import web.html.HTMLElement
 import web.window.window
 import kotlin.js.Json
 
@@ -51,6 +53,9 @@ class LorittaWebsiteFrontend {
     val viewManager = ViewManager(this)
     val pageSpecificTasks = mutableListOf<Job>()
     val globalTasks = mutableListOf<Job>()
+    val mounters = listOf(
+        SidebarHamburgerButtonComponentMounter()
+    )
 
     var currentPath = window.location.pathname
 
@@ -76,6 +81,7 @@ class LorittaWebsiteFrontend {
                 addNavbarOptions()
                 checkAndFixNavbarOverflownEntries()
                 loadLoggedInUser()
+                mountComponents()
             }
 
             // Handles back button
@@ -305,5 +311,19 @@ class LorittaWebsiteFrontend {
 
         // Update the navbar entries because the name + avatar may cause the navbar to overflow
         checkAndFixNavbarOverflownEntries()
+    }
+
+    fun mountComponents() {
+        for (element in document.selectAll<HTMLElement>("[harmony-component-mounter]")) {
+            val componentId = element.getAttribute("harmony-component-mounter")
+            val mounter = mounters.firstOrNull { it.id == componentId }
+
+            if (mounter != null) {
+                logger.info { "Mounting component $componentId with mounter $mounter..." }
+                mounter.mount(element)
+            } else {
+                logger.debug { "Unknown component mounter! $componentId" }
+            }
+        }
     }
 }

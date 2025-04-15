@@ -2,13 +2,17 @@ $primary-color: #29a6fe;
 $min-reading-width: 1260px;
 $min-image-stacked-width: 800px;
 
+@use "placeholders/reset-link-styling";
+@use "placeholders/reset-button-styling";
+
 @import 'navigation-bar';
+@import 'primary-color-headings';
+@import 'layouts/dashboard-layout';
+@import 'components/discord-button';
 
 // Lovely Style
 @import 'lovely-style/reset';
 @import 'lovely-style/body';
-@import 'lovely-style/primary-color-headings';
-@import 'lovely-style/buttons';
 @import 'lovely-style/rainbow';
 @import 'lovely-style/fancy-table';
 @import 'lovely-style/text';
@@ -23,7 +27,6 @@ $min-image-stacked-width: 800px;
 @import 'header';
 @import 'effects';
 @import 'discord/discord_style_v2_edits';
-@import 'sidebars';
 @import 'fan-arts';
 @import 'dashboard';
 @import '_fonts';
@@ -31,7 +34,6 @@ $min-image-stacked-width: 800px;
 @import 'footer';
 @import 'code';
 // @import 'tingle.min';
-@import 'discord_buttons';
 @import '_daily-shop.scss';
 @import 'progress_indicator';
 @import 'fancy_details';
@@ -61,10 +63,17 @@ $min-image-stacked-width: 800px;
 :root {
   --loritta-blue: #29a6fe;
 
+  --navigation-bar-height: 46px;
+  --left-sidebar-width: 360px;
+  --sidebar-ad-width: 160px;
+
   // There are two variations of the background: One lighter and another darker
   // The darker one is also used in the left sidebar!
   --background-wrapper-primary: #fff;
   --background-wrapper-secondary: #f6f9fc;
+
+  --background-color: #ffffff;
+  --left-sidebar-background-color: #f2f3f5;
 
   // Used in the right sidebar background
   --background-right-sidebar: var(--background-wrapper-primary);
@@ -128,7 +137,6 @@ body {
 }
 
 @include navigation-bar();
-@include lovely-button-colors();
 
 .centralized-ad {
   text-align: center;

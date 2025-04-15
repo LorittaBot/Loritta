@@ -141,6 +141,8 @@ class LinkPreloaderManager(val showtime: LorittaWebsiteFrontend) {
 
                     // Setup link preloader again
                     setupLinkPreloader()
+
+                    showtime.mountComponents()
                 }
             }
         }

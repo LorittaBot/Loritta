@@ -1,15 +1,15 @@
-@mixin navigation-bar($navbar-font-family: "Oswald, Impact, Arial, sans-serif", $navbar-height: 46px) {
+@mixin navigation-bar($navbar-font-family: "Oswald, Impact, Arial, sans-serif") {
   .dummy-navigation-bar {
-    height: $navbar-height;
+    height: var(----navigation-bar-height);
   }
   
   nav.navigation-bar {
       top: 0px; // Deixa a navbar no topo da página (se não ela sempre fica um pouco abaixo)
       width: 100%; // Necessário se não fica feio
-      height: $navbar-height;
+      height: var(--navigation-bar-height);
       // overflow: hidden;
       background-color: var(--loritta-blue);
-      box-shadow: 0 0 15px rgba(0,0,0,.3);
+      box-shadow: color-mix(in hsl, color-mix(in hsl, var(--loritta-blue), rgb(0, 75, 200) 50%), transparent 40%) 0 0 15px;
       text-transform: uppercase;
       text-shadow: 0 1px rgba(0,0,0,.2);
       font-family: unquote($navbar-font-family);

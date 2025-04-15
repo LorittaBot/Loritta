@@ -50,11 +50,16 @@ $min-lori-width: 1280px;
         .buttons {
             text-align: center;
             margin-top: 2em;
-            display: inline-block;
             width: 100%;
-            
-            .button {
+            font-size: 1.25em;
+            display: grid;
+            gap: 1em;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+
+            .discord-button {
                 display: inline-block;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
                 
                 @keyframes swing-button {
                     0%, 50%, 100% { transform: rotate(0deg); animation-timing-function: ease-out; }
@@ -63,6 +68,24 @@ $min-lori-width: 1280px;
                 }
 
                 animation: 7s linear infinite forwards swing-button;
+
+                &.pink {
+                    &:hover {
+                        box-shadow: 0 0 15px #fe29a6, 0 0 15px #fe29a6, 0 0 15px #fe29a6;
+                    }
+                }
+
+                &.light-green {
+                    &:hover {
+                        box-shadow: 0 0 15px #37ef8d, 0 0 15px #37ef8d, 0 0 15px #37ef8d;
+                    }
+                }
+
+                &.purple {
+                    &:hover {
+                        box-shadow: 0 0 15px #8d37ef, 0 0 15px #8d37ef, 0 0 15px #8d37ef;
+                    }
+                }
             }
 
             .add-me {

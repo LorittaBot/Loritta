@@ -1,22 +1,10 @@
 package net.perfectdreams.loritta.website.backend.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.HtmlBlockTag
-import kotlinx.html.a
-import kotlinx.html.article
-import kotlinx.html.b
-import kotlinx.html.classes
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.hr
-import kotlinx.html.img
-import kotlinx.html.style
-import kotlinx.html.unsafe
+import kotlinx.html.*
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
-import net.perfectdreams.loritta.website.backend.utils.SVGIconManager
-import net.perfectdreams.loritta.website.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.loritta.website.backend.utils.extras.AuthorConfig
 import net.perfectdreams.loritta.website.backend.utils.extras.ExtrasUtils
 
@@ -41,7 +29,7 @@ open class ExtrasView(
 
     override fun HtmlBlockTag.leftSidebarContents() {
         for (category in categories) {
-            div(classes = "header") {
+            div(classes = "category") {
                 +category.title
             }
 

@@ -34,6 +34,15 @@ abstract class SidebarsView(
 
     override fun DIV.generateContent() {
         sidebarWrapper {
+            nav {
+                id = "mobile-left-sidebar"
+
+                button(classes = "discord-button no-background-theme-dependent-dark-text") {
+                    attributes["harmony-component-mounter"] = "sidebar-opener"
+                    LorittaWebsiteBackend.svgIconManager.bars.apply(this)
+                }
+            }
+
             leftSidebar {
                 // TODO: What's actually this?
                 // A nifty ad that shows next to the "Click Here" option in every sidebar
@@ -48,7 +57,7 @@ abstract class SidebarsView(
                         mediaQuery = "(max-width: 800px) and (min-width: 420px)"
                 ) */
 
-                div(classes = "contents") {
+                /* div(classes = "contents") {
                     // So, we want to display a nifty navbar when the user wants to see all the entries (small screens only)
                     // To do that, we are going to mimick what GitHub does!
                     // We could use a details + summary combo like GitHub, but we want to add a transition, so we are going to use the
@@ -74,26 +83,37 @@ abstract class SidebarsView(
                     div(classes = "inner-sidebar-content") {
                         leftSidebarContents()
                     }
+                } */
+
+                div(classes = "entries") {
+                    leftSidebarContents()
                 }
             }
+
             rightSidebar {
-                div(classes = "contents") {
-                    rightSidebarContents()
-                }
-            }
+                div {
+                    id = "right-sidebar-wrapper"
 
-            aside(classes = "sidebar-ad") {
-                val adType = Ads.RIGHT_SIDEBAR_AD
-
-                ins(classes = "adsbygoogle") {
-                    classes += "adsbygoogle"
-                    style = "display: inline-block; width: ${adType.size.width}px; height: ${adType.size.height}px;"
-                    attributes["data-ad-client"] = "ca-pub-9989170954243288"
-                    attributes["data-ad-slot"] = adType.googleAdSenseId
+                    div {
+                        id = "right-sidebar-content"
+                        rightSidebarContents()
+                    }
                 }
-                script {
-                    unsafe {
-                        raw("(adsbygoogle = window.adsbygoogle || []).push({});")
+
+                aside {
+                    id = "that-wasnt-very-cash-money-of-you"
+                    val adType = Ads.RIGHT_SIDEBAR_AD
+
+                    ins(classes = "adsbygoogle") {
+                        classes += "adsbygoogle"
+                        style = "display: inline-block; width: ${adType.size.width}px; height: ${adType.size.height}px;"
+                        attributes["data-ad-client"] = "ca-pub-9989170954243288"
+                        attributes["data-ad-slot"] = adType.googleAdSenseId
+                    }
+                    script {
+                        unsafe {
+                            raw("(adsbygoogle = window.adsbygoogle || []).push({});")
+                        }
                     }
                 }
             }

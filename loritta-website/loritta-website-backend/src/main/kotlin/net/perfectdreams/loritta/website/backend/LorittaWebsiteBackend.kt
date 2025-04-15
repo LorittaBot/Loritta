@@ -71,7 +71,6 @@ class LorittaWebsiteBackend(
     val renderer = HtmlRenderer.builder(options).build()
     val svgIconManager = SVGIconManager(this)
     val hashManager = WebsiteAssetsHashManager(this)
-    val publicApplicationCommands = PublicApplicationCommands(languageManager)
     val legacyLorittaCommands = LegacyLorittaCommands(this)
     val webEmotes = WebEmotes(images)
 

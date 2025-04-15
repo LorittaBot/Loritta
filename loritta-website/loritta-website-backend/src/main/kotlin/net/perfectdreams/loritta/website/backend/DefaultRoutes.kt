@@ -12,6 +12,7 @@ object DefaultRoutes {
         ExtrasRoute(showtime),
         StaffRoute(showtime),
         ContactRoute(showtime),
-        DonateRoute(showtime)
+        DonateRoute(showtime),
+        DashboardRoute(showtime)
     )
 }

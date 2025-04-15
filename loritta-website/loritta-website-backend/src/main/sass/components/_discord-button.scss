@@ -1,0 +1,187 @@
+@use "../placeholders/reset-button-styling";
+
+// We shouldn't wrap buttons inside a tags! But here's a solution for the underline...
+a:has(.discord-button) {
+  text-decoration: none;
+}
+
+.discord-button {
+    @extend %reset-button-styling;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 0.5em 1em;
+    transition-duration: 0.25s;
+    opacity: 1;
+    background-color: #757575;
+    border: 1px solid var(--soft-border-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .htmx-discord-like-loading-button {
+        .loading-text-wrapper {
+            display: none;
+            img {
+                height: 1em;
+            }
+        }
+
+        &.htmx-request {
+            div {
+                display: none;
+            }
+
+            .loading-text-wrapper {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+            }
+        }
+    }
+
+    // For anchor tags that looks like buttons
+    &.htmx-discord-like-loading-button {
+        .loading-text-wrapper {
+            display: none;
+            img {
+                height: 1em;
+            }
+        }
+
+        &.htmx-request {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+
+            div {
+                display: none;
+            }
+
+            .loading-text-wrapper {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+            }
+        }
+    }
+
+    &:hover {
+        background-color: darken(#757575, 10%);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+
+        &:hover {
+            background-color: darken(#757575, 10%);
+        }
+    }
+
+    &.primary {
+        background-color: var(--loritta-blue);
+
+        &:hover {
+            background-color: darken(#29a6fe, 10%);
+        }
+    }
+
+    &.success {
+        background-color: #298546;
+
+        &:hover {
+            background-color: darken(#298546, 10%);
+        }
+    }
+
+    &.danger {
+        background-color: #da373c;
+
+        &:hover {
+            background-color: darken(#da373c, 10%);
+        }
+    }
+
+    &.pink {
+        background-color: #fe29a6;
+
+        &:hover {
+            background-color: darken(#fe29a6, 10%);
+        }
+    }
+
+    &.purple {
+        background-color: #8d37ef;
+
+        &:hover {
+            background-color: darken(#8d37ef, 10%);
+        }
+    }
+
+    &.light-green {
+        background-color: #37ef8d;
+
+        &:hover {
+            background-color: darken(#37ef8d, 10%);
+        }
+    }
+
+    &.no-background-light-text {
+        background-color: initial;
+        color: #ffffff;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-dark-text {
+        background-color: initial;
+        color: #000000;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-theme-dependent-light-text {
+        background-color: initial;
+        color: var(--button-no-background-light-text-color);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.no-background-theme-dependent-dark-text {
+        background-color: initial;
+        color: var(--button-no-background-dark-text-color);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+// Overrides when using links as buttons
+a.discord-button {
+    // Remove the underline
+    text-decoration: none;
+}
+
+.modal-wrapper {
+    .buttons-wrapper {
+        .discord-button {
+            &.no-background {
+                // And the no background button has a black font
+                color: black;
+            }
+        }
+    }
+}

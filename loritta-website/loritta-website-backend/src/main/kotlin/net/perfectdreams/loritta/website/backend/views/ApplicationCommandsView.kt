@@ -55,7 +55,7 @@ class ApplicationCommandsView(
                 a(href = "/${locale.path}/commands/legacy") {
                     attributes["data-preload-link"] = "true"
 
-                    button(classes = "button-discord button-discord-info pure-button") {
+                    button(classes = "discord-button primary") {
                         +i18nContext.get(I18nKeysData.Website.Commands.ViewLegacyCommands)
                     }
                 }

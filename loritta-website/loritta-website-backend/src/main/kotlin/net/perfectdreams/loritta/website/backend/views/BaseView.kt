@@ -139,6 +139,7 @@ abstract class BaseView(
     }
 
     fun SectioningOrFlowContent.rightSidebar(block: HtmlBlockTag.() -> Unit = {}) = section(classes = "right-sidebar") {
+        id = "right-sidebar"
         block.invoke(this)
     }
 

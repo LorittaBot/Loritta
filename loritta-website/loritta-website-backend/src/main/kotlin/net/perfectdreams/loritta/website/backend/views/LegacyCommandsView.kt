@@ -71,7 +71,7 @@ class LegacyCommandsView(
                 a(href = "/${locale.path}/commands/slash") {
                     attributes["data-preload-link"] = "true"
 
-                    button(classes = "button-discord button-discord-info pure-button") {
+                    button(classes = "discord-button primary") {
                         +i18nContext.get(I18nKeysData.Website.Commands.ViewSlashCommands)
                     }
                 }

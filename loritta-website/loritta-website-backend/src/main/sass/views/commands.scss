@@ -2,6 +2,7 @@
 lori-command-category {
     display: flex;
     justify-content: space-between;
+    width: 100%;
 
     > div {
         text-overflow: ellipsis;

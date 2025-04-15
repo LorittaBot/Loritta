@@ -12,4 +12,5 @@ object RoutePath {
     const val BLOG_POST = "/blog/{post}"
     const val TEAM = "/staff"
     const val CONTACT = "/contact"
+    const val DASHBOARD = "/dashboard"
 }

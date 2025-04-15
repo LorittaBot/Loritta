@@ -1,30 +1,14 @@
 package net.perfectdreams.loritta.website.backend.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.DIV
-import kotlinx.html.a
-import kotlinx.html.classes
-import kotlinx.html.div
-import kotlinx.html.h1
-import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.span
-import kotlinx.html.style
+import kotlinx.html.*
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
-import net.perfectdreams.loritta.website.backend.utils.*
-import net.perfectdreams.loritta.website.backend.views.home.chitChat
-import net.perfectdreams.loritta.website.backend.views.home.community
-import net.perfectdreams.loritta.website.backend.views.home.customization
-import net.perfectdreams.loritta.website.backend.views.home.funnyCommands
-import net.perfectdreams.loritta.website.backend.views.home.makeItAwesome
-import net.perfectdreams.loritta.website.backend.views.home.moderation
-import net.perfectdreams.loritta.website.backend.views.home.muchMore
-import net.perfectdreams.loritta.website.backend.views.home.notify
-import net.perfectdreams.loritta.website.backend.views.home.trust
+import net.perfectdreams.loritta.website.backend.utils.imgSrcSetFromEtherealGambi
+import net.perfectdreams.loritta.website.backend.utils.innerContent
+import net.perfectdreams.loritta.website.backend.views.home.*
 
 class HomeView(
     LorittaWebsiteBackend: LorittaWebsiteBackend,
@@ -107,22 +91,27 @@ class HomeView(
                 }
                 div(classes = "buttons") {
                     div {
-                        a(classes = "add-me button pink has-shadow is-big", href = LorittaWebsiteBackend.addBotUrl.toString()) {
+                        style = "margin-left: auto;"
+                        a(classes = "discord-button pink add-me", href = LorittaWebsiteBackend.addBotUrl.toString()) {
                             img(classes = "lori-happy", src = "$versionPrefix/assets/img/lori_happy.gif")
                             LorittaWebsiteBackend.svgIconManager.plus.apply(this)
 
-                            + " ${locale["website.jumbotron.addMe"]}"
-                        }
-
-                        a(classes = "button light-green has-shadow is-big", href = "#about-me") {
-                            LorittaWebsiteBackend.svgIconManager.star.apply(this)
-
-                            + " ${locale["website.jumbotron.moreInfo"]}"
+                            +" ${locale["website.jumbotron.addMe"]}"
                         }
                     }
+
                     div {
-                        style = "margin-top: 0.5em;"
-                        a(classes = "add-me button purple has-shadow is-big", href = "/${locale.path}/dashboard") {
+                        style = "margin-right: auto;"
+                        a(classes = "discord-button light-green add-me", href = "#about-me") {
+                            LorittaWebsiteBackend.svgIconManager.star.apply(this)
+
+                            +" ${locale["website.jumbotron.moreInfo"]}"
+                        }
+                    }
+
+                    div(classes = "special-dashboard-button") {
+                        style = "grid-column: 1 / 3;"
+                        a(classes = "discord-button purple", href = "/${locale.path}/dashboard") {
                             LorittaWebsiteBackend.svgIconManager.cogs.apply(this)
 
                             + " ${locale["website.jumbotron.dashboard"]}"

@@ -1,0 +1,398 @@
+@mixin bp($point) {
+  @if $point == 'small' {
+    @media (min-width: 360px) { @content; }
+  }
+  @if $point == 'medium' {
+    @media (min-width: 1280px) { @content; }
+  }
+}
+
+lori-sidebar-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+#mobile-left-sidebar {
+  // Used for mobile devices
+  height: var(--navigation-bar-height);
+  position: fixed;
+  top: var(--navigation-bar-height); // Stay BELOW the original navbar!
+  left: 0;
+  width: 100%;
+  background-color: var(--left-sidebar-background-color);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 10px; // Shadow
+  // This needs to be on the BOTTOM of the navbar to avoid visual glitches when opening the main hamburger
+  z-index: 998;
+
+  // Centralize anything on the mobile sidebar!
+  display: flex;
+  align-items: center;
+
+  @media (min-width: 1280px) {
+    display: none;
+  }
+}
+
+// This sidebar looks weird because we need to do a lot of weird tricks just to hide the sidebar WHEN THE TRANSITION ENDS
+// We did this by having a "is-closed" state that plays the "toggle-sidebar-visibility" animation
+nav#left-sidebar {
+  // We will keep this as visibility hidden to avoid tabbing to the sidebar elements when they should be hidden
+  // We don't use "display: none;" because it would not animate our mobile transition when opening the sidebar when toggling display state!
+  visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; // Do not shink the sidebar!
+  box-shadow: initial; // Shadow
+  z-index: 9; // Make the left sidebar be on top of the right sidebar, fixes the shadow
+  color: var(--content-text-color);
+  background: var(--left-sidebar-background-color);
+  // Seems weird but this is used for mobile
+  // top: 50px;
+  top: calc(var(--navigation-bar-height) * 2); // This should ONLY be used if the navbar is present on the page
+  // Again, for small breakpoints
+  // We don't use 100vh because Chrome Mobile has a dynamic navbar that causes issues, this fixes the issue, albeit the page scroll animation becomes a bit crappy
+  // https://stackoverflow.com/questions/37112218/css3-100vh-not-constant-in-mobile-browser
+  height: calc(100% - calc(var(--navigation-bar-height) * 2));
+  position: fixed;
+  transition-property: transform, box-shadow;
+  transition-duration: 0.65s; // Used for the nice mobile animation
+  width: 100%;
+  transform: translate(-100%);
+  // Both will change, yay!
+  will-change: transform, box-shadow;
+
+  @media (min-width: 600px) {
+    // Makes it look kinda pretty instead of filling the entire screen
+    // However we will only apply if the screen size lets us do this without looking weird or ugly
+    max-width: var(--left-sidebar-width);
+  }
+
+  // Used for mobile
+  &.is-open {
+    visibility: visible;
+    left: 0%;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 10px; // Shadow
+    transform: translate(0%);
+  }
+
+  &.is-closed {
+    animation: toggle-sidebar-visibility 1s;
+  }
+
+  @media (min-width: 1280px) {
+    top: var(--navigation-bar-height); // This should ONLY be used if the navbar is present on the page
+
+    transform: translate(0%);
+
+    visibility: visible;
+    height: calc(100vh - var(--navigation-bar-height));
+
+    min-width: 350px;
+
+    left: 0; // Keep it on the left side of the screen
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px; // Shadow
+
+    position: sticky;
+  }
+
+  > .entries {
+    padding-left: 1em;
+    padding-right: 1em;
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: thin; // Firefox only for now
+    scrollbar-color: var(--loritta-blue) var(--left-sidebar-background-color); // Also only available in Firefox
+
+    > .divider {
+      width: 100%;
+      border: 1px solid var(--divider-color);
+    }
+
+    > .category {
+      font-weight: 1000;
+      color: var(--loritta-blue);
+      text-transform: uppercase;
+      font-size: 18px;
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
+
+      // Clamp lines to avoid line breaks
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    > .guild-icon-wrapper {
+      display: flex;
+      justify-content: center;
+
+      img {
+        border-radius: 100%;
+        width: 160px;
+        height: 160px;
+        background-color: #c8c8c8;
+      }
+    }
+
+    // Can be nested within a div
+    .entry {
+      @extend %reset-link-styling;
+
+      opacity: 0.8;
+      display: flex;
+      transition-duration: 0.1s;
+      align-items: center;
+      gap: 0.5em;
+      padding: 0.4em;
+      margin-top: 0.2em;
+      margin-bottom: 0.2em;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+
+      &.selected {
+        background-color: var(--loritta-blue);
+        color: white;
+        border-radius: 3px;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+
+      > .icon {
+        width: 20px;
+        height: 20px;
+        display: block;
+      }
+
+      .new-feature {
+        background-color: #da373c;
+        border-radius: 3px;
+        padding: 1px 3px 1px 5px;
+        color: white;
+        margin-left: auto;
+        text-transform: uppercase;
+        font-weight: bolder;
+      }
+    }
+
+    > .loritta-logo {
+      font-family: Pacifico;
+      font-size: 3em;
+      text-align: center;
+      display: block;
+      line-height: 1;
+      margin: 0;
+      color: var(--loritta-blue);
+      font-weight: normal;
+    }
+
+    > .guild-name {
+      font-family: "Lato", "Arial", "sans-serif";
+      font-size: 1.5em;
+      text-align: center;
+      display: block;
+      margin: 0;
+      color: var(--loritta-blue);
+      font-weight: 1000;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  > .user-info-wrapper {
+    background: var(--user-info-wrapper-background-color);
+    height: 60px;
+
+    > .user-info {
+      padding: 8px;
+      height: 100%;
+      width: 100%;
+
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.5em;
+
+      > img {
+        // Avatar Icon
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+      }
+
+      > .user-tag {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        > .name {
+          font-weight: bold;
+        }
+
+        > .discriminator {
+          opacity: 0.8;
+          font-size: 0.75em;
+        }
+      }
+    }
+  }
+}
+
+section#right-sidebar {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  // We don't use overflow here, to let the ad sidebar propagate scroll thru
+  // The space used by the left sidebar, we NEED to do it that way because we cannot use overflow + sticky on the sidebar, because we want the sidebar ad to propagate scroll events thru
+  // margin-left: var(--left-sidebar-width);
+  // Workaround to avoid the save bar overflowing and causing white background below it
+  overflow: clip;
+
+  @media (min-width: 1280px) {
+    width: calc(100% - 160px);
+  }
+
+  @media (max-width: 1279px) {
+    margin-top: 50px;
+    margin-left: 0;
+  }
+
+  #right-sidebar-wrapper {
+    width: 100%;
+    max-width: 70em;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.58;
+    // It was 5em before, now it is 4em, to allow more content to be visible in the join/leave sections
+    // Also with 4em+, the color palette wraps to a new row and that looks fugly lmao
+    // ...and now it is 6em after we migrated to the new website
+    padding-left: 6em;
+    padding-right: 6em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    @media (max-width: 500px) {
+      padding-left: 1em;
+      padding-right: 1em;
+    }
+
+    hr {
+      box-sizing: content-box;
+      background: rgba(0, 0, 0, 0.05);
+      border: 0;
+      height: 1px;
+    }
+
+    .hero-wrapper {
+      display: grid;
+      align-items: center;
+      // wow
+      // such specific value
+      // much perfectionism
+      grid-template-columns: 64fr 36fr;
+
+      .hero-image {
+        text-align: center;
+        aspect-ratio: 16/12;
+      }
+
+      .hero-text {
+        order: -1;
+      }
+
+      @media (max-width: 900px) {
+        text-align: center;
+        grid-template-columns: 1fr;
+
+        .hero-text {
+          order: 1;
+        }
+      }
+    }
+
+    // STATIC
+    .hero-image {
+      max-height: 100%;
+      width: 100%;
+      object-fit: contain;
+      -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+      mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+    }
+
+    // ANIMATED
+    .hero-web-animation {
+      height: 350px;
+      width: 100%;
+      object-fit: contain;
+      -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+      mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+
+      > div {
+        height: 100%;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+
+aside#that-wasnt-very-cash-money-of-you {
+  width: var(--sidebar-ad-width);
+  max-width: var(--sidebar-ad-width);
+  min-width: var(--sidebar-ad-width);
+  // background-color: rgba(200, 200, 200, 255);
+  align-items: center;
+  display: none;
+
+  position: sticky;
+  right: 0;
+  top: 0;
+  height: calc(100vh - var(--navigation-bar-height));
+
+  @media (min-width: 1280px) {
+    display: flex;
+  }
+
+  aside#loritta-snug {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: flex-end;
+
+    @media (min-width: 1280px) {
+      display: flex;
+    }
+
+    img {
+      height: auto;
+      width: 90%;
+      cursor: pointer;
+      animation: 4s ease-in-out infinite loritta-breathing-animation alternate;
+      transform-origin: bottom;
+    }
+  }
+}
+
+// Used to reserve space on the layout
+aside#that-wasnt-very-cash-money-of-you-reserved-space {
+  width: var(--sidebar-ad-width);
+  max-width: var(--sidebar-ad-width);
+  min-width: var(--sidebar-ad-width);
+  align-items: center;
+  display: none;
+
+  height: 100vh;
+
+  @media (min-width: 1280px) {
+    display: flex;
+  }
+}
