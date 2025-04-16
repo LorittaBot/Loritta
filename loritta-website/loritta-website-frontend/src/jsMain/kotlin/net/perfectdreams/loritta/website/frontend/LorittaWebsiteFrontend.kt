@@ -16,10 +16,7 @@ import mu.KotlinLoggingConfiguration
 import mu.KotlinLoggingLevel
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
-import net.perfectdreams.harmony.web.addClass
-import net.perfectdreams.harmony.web.clear
-import net.perfectdreams.harmony.web.hasClass
-import net.perfectdreams.harmony.web.removeClass
+import net.perfectdreams.harmony.web.*
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.website.frontend.components.SidebarHamburgerButtonComponentMounter
 import net.perfectdreams.loritta.website.frontend.utils.LinkPreloaderManager
@@ -32,6 +29,7 @@ import web.dom.Element
 import web.dom.document
 import web.events.Event
 import web.events.EventHandler
+import web.events.EventType
 import web.events.addEventListener
 import web.history.history
 import web.html.HTMLDivElement
@@ -81,7 +79,6 @@ class LorittaWebsiteFrontend {
                 addNavbarOptions()
                 checkAndFixNavbarOverflownEntries()
                 loadLoggedInUser()
-                mountComponents()
             }
 
             // Handles back button
@@ -99,8 +96,30 @@ class LorittaWebsiteFrontend {
                     document.location.reload()
                 }
             }
-
         })
+
+        document.addEventListener(
+            HTMXEvents.HTMX_BEFORE_REQUEST,
+            {
+                if (it.detail.elt.getAttribute("harmony-progress-bar") == "true") {
+                    startFakeProgressIndicator()
+                }
+            }
+        )
+
+        document.addEventListener(
+            EventType<Event>("htmx:afterOnLoad"),
+            {
+                stopFakeProgressIndicator()
+            }
+        )
+
+        document.addEventListener(
+            HTMXEvents.HTMX_LOAD,
+            {
+                mountComponents(it.detail.elt)
+            }
+        )
     }
 
     fun pushState(pageUrl: String) {
@@ -315,6 +334,20 @@ class LorittaWebsiteFrontend {
 
     fun mountComponents() {
         for (element in document.selectAll<HTMLElement>("[harmony-component-mounter]")) {
+            val componentId = element.getAttribute("harmony-component-mounter")
+            val mounter = mounters.firstOrNull { it.id == componentId }
+
+            if (mounter != null) {
+                logger.info { "Mounting component $componentId with mounter $mounter..." }
+                mounter.mount(element)
+            } else {
+                logger.debug { "Unknown component mounter! $componentId" }
+            }
+        }
+    }
+
+    fun mountComponents(element: HTMLElement) {
+        for (element in element.selectAll<HTMLElement>("[harmony-component-mounter]")) {
             val componentId = element.getAttribute("harmony-component-mounter")
             val mounter = mounters.firstOrNull { it.id == componentId }
 

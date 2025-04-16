@@ -42,18 +42,26 @@ abstract class NavbarView(
         body(classes = websiteTheme.bodyClass) {
             div {
                 HomeElements.progressIndicator.apply(this)
-                attributes["data-preload-persist"] = "true"
+                attributes["hx-preserve"] = "true"
             }
 
             if (hasNavbar) {
                 nav(classes = "navigation-bar fixed") {
-                    attributes["data-preload-persist"] = "true"
+                    attributes["hx-preserve"] = "true"
                     id = "navigation-bar"
 
+                    // We intentionally don't use hx-select here, if you do use it and select body, the page will be empty
+                    // While browsers are smart enough nowadays to not require this due to paint holding
+                    // We use it because we don't want to "undo" the navbar every time the user navigates to a new page
                     div(classes = "left-side-entries") {
                         // Loritta Logo/Home Page
                         a(classes = "entry home-page loritta-navbar-logo", href = "$base/") {
-                            attributes["data-preload-link"] = "true"
+                            attributes["hx-get"] = "$base/"
+                            attributes["hx-push-url"] = "true"
+                            attributes["hx-swap"] = "innerHTML"
+                            attributes["hx-target"] = "body"
+                            attributes["harmony-progress-bar"] = "true"
+
                             style = "font-family: 'Pacifico', cursive; text-transform: none;"
 
                             +"Loritta"
@@ -61,7 +69,11 @@ abstract class NavbarView(
 
                         // Support
                         a(classes = "entry support", href = "$base/support") {
-                            attributes["data-preload-link"] = "true"
+                            attributes["hx-get"] = "$base/support"
+                            attributes["hx-push-url"] = "true"
+                            attributes["hx-swap"] = "innerHTML"
+                            attributes["hx-target"] = "body"
+                            attributes["harmony-progress-bar"] = "true"
 
                             iconManager.discord.apply(this)
 
@@ -70,7 +82,11 @@ abstract class NavbarView(
 
                         // Commands
                         a(classes = "entry commands", href = "$base/commands/slash") {
-                            attributes["data-preload-link"] = "true"
+                            attributes["hx-get"] = "$base/commands/slash"
+                            attributes["hx-push-url"] = "true"
+                            attributes["hx-swap"] = "innerHTML"
+                            attributes["hx-target"] = "body"
+                            attributes["harmony-progress-bar"] = "true"
 
                             iconManager.terminal.apply(this)
 
@@ -79,6 +95,12 @@ abstract class NavbarView(
 
                         // Daily
                         a(classes = "entry daily", href = "$base/daily") {
+                            attributes["hx-get"] = "$base/commands/daily"
+                            attributes["hx-push-url"] = "true"
+                            attributes["hx-swap"] = "innerHTML"
+                            attributes["hx-target"] = "body"
+                            attributes["harmony-progress-bar"] = "true"
+
                             iconManager.gift.apply(this)
 
                             +" Daily"
@@ -95,7 +117,11 @@ abstract class NavbarView(
 
                         // Wiki
                         a(classes = "entry extras", href = "$base/extras") {
-                            attributes["data-preload-link"] = "true"
+                            attributes["hx-get"] = "$base/extras"
+                            attributes["hx-push-url"] = "true"
+                            attributes["hx-swap"] = "innerHTML"
+                            attributes["hx-target"] = "body"
+                            attributes["harmony-progress-bar"] = "true"
 
                             iconManager.book.apply(this)
 
@@ -111,7 +137,11 @@ abstract class NavbarView(
 
                         // Equipe
                         a(classes = "entry", href = "$base/staff") {
-                            attributes["data-preload-link"] = "true"
+                            attributes["hx-get"] = "$base/staff"
+                            attributes["hx-push-url"] = "true"
+                            attributes["hx-swap"] = "innerHTML"
+                            attributes["hx-target"] = "body"
+                            attributes["harmony-progress-bar"] = "true"
 
                             iconManager.rocket.apply(this)
 

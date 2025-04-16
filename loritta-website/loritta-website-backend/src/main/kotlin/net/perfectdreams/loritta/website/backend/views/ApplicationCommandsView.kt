@@ -53,7 +53,12 @@ class ApplicationCommandsView(
                 style = "text-align: center;"
 
                 a(href = "/${locale.path}/commands/legacy") {
-                    attributes["data-preload-link"] = "true"
+                    attributes["hx-get"] = "/${locale.path}/commands/legacy"
+                    attributes["hx-push-url"] = "true"
+                    attributes["hx-swap"] = "innerHTML"
+                    attributes["hx-target"] = "#content"
+                    attributes["hx-select"] = "#content"
+                    attributes["harmony-progress-bar"] = "true"
 
                     button(classes = "discord-button primary") {
                         +i18nContext.get(I18nKeysData.Website.Commands.ViewLegacyCommands)

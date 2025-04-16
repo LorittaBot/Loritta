@@ -1,42 +1,18 @@
 package net.perfectdreams.loritta.website.backend.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import kotlinx.html.FlowOrInteractiveContent
-import kotlinx.html.HTMLTag
-import kotlinx.html.HtmlBlockTag
-import kotlinx.html.TagConsumer
-import kotlinx.html.a
-import kotlinx.html.b
-import kotlinx.html.button
-import kotlinx.html.classes
-import kotlinx.html.code
-import kotlinx.html.details
-import kotlinx.html.div
-import kotlinx.html.fieldSet
-import kotlinx.html.hr
-import kotlinx.html.img
-import kotlinx.html.input
-import kotlinx.html.legend
-import kotlinx.html.p
-import kotlinx.html.source
-import kotlinx.html.span
-import kotlinx.html.style
-import kotlinx.html.summary
-import kotlinx.html.unsafe
-import kotlinx.html.video
-import kotlinx.html.visit
+import kotlinx.html.*
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
-import net.perfectdreams.loritta.website.backend.utils.*
-import net.perfectdreams.loritta.website.backend.utils.commands.AdditionalCommandInfoConfig
-import net.perfectdreams.loritta.website.backend.utils.locale.formatAsHtml
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.CommandInfo
+import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
+import net.perfectdreams.loritta.website.backend.utils.EtherealGambiImages
+import net.perfectdreams.loritta.website.backend.utils.commands.AdditionalCommandInfoConfig
+import net.perfectdreams.loritta.website.backend.utils.imgSrcSetFromEtherealGambi
+import net.perfectdreams.loritta.website.backend.utils.locale.formatAsHtml
 import java.awt.Color
-import java.time.LocalDate
-import java.time.ZoneId
 
 class LegacyCommandsView(
     LorittaWebsiteBackend: LorittaWebsiteBackend,
@@ -69,7 +45,12 @@ class LegacyCommandsView(
                 style = "text-align: center;"
 
                 a(href = "/${locale.path}/commands/slash") {
-                    attributes["data-preload-link"] = "true"
+                    attributes["hx-get"] = "/${locale.path}/commands/slash"
+                    attributes["hx-push-url"] = "true"
+                    attributes["hx-swap"] = "innerHTML"
+                    attributes["hx-target"] = "#content"
+                    attributes["hx-select"] = "#content"
+                    attributes["harmony-progress-bar"] = "true"
 
                     button(classes = "discord-button primary") {
                         +i18nContext.get(I18nKeysData.Website.Commands.ViewSlashCommands)
