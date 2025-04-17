@@ -62,8 +62,8 @@ jib {
     }
 }
 
-val jsBrowserDistribution = tasks.getByPath(":loritta-website:loritta-website-frontend:jsBrowserDevelopmentExecutableDistribution")
-val jsBrowserProductionWebpack = tasks.getByPath(":loritta-website:loritta-website-frontend:jsBrowserDevelopmentWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+val jsBrowserDistribution = tasks.getByPath(":loritta-website:loritta-website-frontend:jsBrowserDistribution")
+val jsBrowserProductionWebpack = tasks.getByPath(":loritta-website:loritta-website-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val sass = tasks.register<SassTask>("sass-style-scss") {
     this.inputSass.set(file("src/main/sass/style.scss"))
