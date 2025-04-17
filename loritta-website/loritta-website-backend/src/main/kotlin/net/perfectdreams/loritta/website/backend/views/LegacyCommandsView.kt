@@ -58,7 +58,7 @@ class LegacyCommandsView(
                 }
             }
 
-            div {
+            /* div {
                 style = "margin: 6px 10px;\n" +
                         "display: flex;\n" +
                         "align-items: center;\n" +
@@ -72,7 +72,7 @@ class LegacyCommandsView(
                 div {
                     iconManager.search.apply(this)
                 }
-            }
+            } */
 
             hr {}
         }
@@ -337,9 +337,7 @@ class LegacyCommandsView(
 
         // First we are going to sort by category count
         // We change the first compare by to negative because we want it in a descending order (most commands in category -> less commands)
-        for (command in publicCommands.sortedWith(compareBy({
-            -(commands.groupBy { it.category }[it.category]?.size ?: 0)
-        }, CommandInfo::category, CommandInfo::label))) {
+        for (command in publicCommands.sortedBy { i18nContext.get(it.name) }) {
             val commandDescriptionKey = command.description
             val commandExamplesKey = command.examples
             val commandLabel = command.label

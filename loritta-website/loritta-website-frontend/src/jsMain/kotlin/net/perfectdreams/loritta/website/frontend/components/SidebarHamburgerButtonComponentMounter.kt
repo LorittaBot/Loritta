@@ -7,6 +7,9 @@ import net.perfectdreams.harmony.web.removeClass
 import net.perfectdreams.loritta.website.frontend.utils.extensions.onClick
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import web.dom.document
+import web.events.Event
+import web.events.EventType
+import web.events.addEventListener
 import web.html.HTMLDivElement
 import web.html.HTMLElement
 
@@ -23,5 +26,17 @@ class SidebarHamburgerButtonComponentMounter : SimpleComponentMounter("sidebar-o
                 sidebar.removeClass("is-closed")
             }
         }
+
+        document.addEventListener(
+            EventType<Event>("loritta:closeSidebar"),
+            {
+                val sidebar = document.select<HTMLDivElement>("#left-sidebar")
+
+                if (sidebar.hasClass("is-open")) {
+                    sidebar.addClass("is-closed")
+                    sidebar.removeClass("is-open")
+                }
+            }
+        )
     }
 }

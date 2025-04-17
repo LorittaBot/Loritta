@@ -13,4 +13,6 @@ object RoutePath {
     const val TEAM = "/staff"
     const val CONTACT = "/contact"
     const val DASHBOARD = "/dashboard"
+    const val BLISS_PLAYGROUND = "/bliss-playground"
+    const val RANDOM = "/random"
 }

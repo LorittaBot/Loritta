@@ -14,9 +14,13 @@ import kotlinx.html.style
 import mu.KotlinLogging
 import mu.KotlinLoggingConfiguration
 import mu.KotlinLoggingLevel
+import net.perfectdreams.bliss.BlissManager
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
-import net.perfectdreams.harmony.web.*
+import net.perfectdreams.harmony.web.addClass
+import net.perfectdreams.harmony.web.clear
+import net.perfectdreams.harmony.web.hasClass
+import net.perfectdreams.harmony.web.removeClass
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.website.frontend.components.SidebarHamburgerButtonComponentMounter
 import net.perfectdreams.loritta.website.frontend.utils.LinkPreloaderManager
@@ -26,10 +30,10 @@ import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
 import net.perfectdreams.loritta.website.frontend.views.ViewManager
 import web.dom.Element
+import web.dom.ParentNode
 import web.dom.document
 import web.events.Event
 import web.events.EventHandler
-import web.events.EventType
 import web.events.addEventListener
 import web.history.history
 import web.html.HTMLDivElement
@@ -59,7 +63,13 @@ class LorittaWebsiteFrontend {
 
     fun start() {
         KotlinLoggingConfiguration.LOG_LEVEL = KotlinLoggingLevel.DEBUG
-        logger.debug { "Howdy from Kotlin ${KotlinVersion.CURRENT}! :3" }
+        logger.info { "HELLO FROM KOTLIN ${KotlinVersion.CURRENT.toString()}! :3" }
+        logger.info { "Howdy, my name is Loritta!" }
+        logger.info { "I want to make the world a better place... making people happier and helping other people... changing their lives..."  }
+        logger.info { "I hope I succeed..." }
+        logger.info { "Do you like peeking under the hood? https://github.com/LorittaBot/Loritta" }
+        // Chromium easter egg
+        console.log("%c       ", "font-size: 64px; background: url(https://stuff.loritta.website/loritta-zz-heathecliff.png) no-repeat; background-size: 64px 64px;")
 
         document.addEventListener(Event.DOM_CONTENT_LOADED, {
             logger.debug { "DOM loaded" }
@@ -75,10 +85,13 @@ class LorittaWebsiteFrontend {
                     viewManager.switchPreparingToActiveView()
                 }
                 stopFakeProgressIndicator()
+                // TODO: This needs to be here due to the viewManager cancelling our tasks
+                BlissManager.setup(this@LorittaWebsiteFrontend, document.body)
                 linkPreloaderManager.setupLinkPreloader()
                 addNavbarOptions()
                 checkAndFixNavbarOverflownEntries()
                 loadLoggedInUser()
+                mountComponents()
             }
 
             // Handles back button
@@ -97,29 +110,6 @@ class LorittaWebsiteFrontend {
                 }
             }
         })
-
-        document.addEventListener(
-            HTMXEvents.HTMX_BEFORE_REQUEST,
-            {
-                if (it.detail.elt.getAttribute("harmony-progress-bar") == "true") {
-                    startFakeProgressIndicator()
-                }
-            }
-        )
-
-        document.addEventListener(
-            EventType<Event>("htmx:afterOnLoad"),
-            {
-                stopFakeProgressIndicator()
-            }
-        )
-
-        document.addEventListener(
-            HTMXEvents.HTMX_LOAD,
-            {
-                mountComponents(it.detail.elt)
-            }
-        )
     }
 
     fun pushState(pageUrl: String) {
@@ -346,7 +336,7 @@ class LorittaWebsiteFrontend {
         }
     }
 
-    fun mountComponents(element: HTMLElement) {
+    fun mountComponents(element: ParentNode) {
         for (element in element.selectAll<HTMLElement>("[harmony-component-mounter]")) {
             val componentId = element.getAttribute("harmony-component-mounter")
             val mounter = mounters.firstOrNull { it.id == componentId }

@@ -157,3 +157,7 @@ fun DIV.generateAd(adSlot: String, adsenseAdClass: String? = null) {
         }
     }
 }
+
+fun Tag.enableHarmonyProgressBarOnLoad() {
+    attributes["harmony-progress-bar"] = "true"
+}

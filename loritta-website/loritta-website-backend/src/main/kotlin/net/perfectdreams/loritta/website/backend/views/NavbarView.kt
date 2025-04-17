@@ -42,12 +42,12 @@ abstract class NavbarView(
         body(classes = websiteTheme.bodyClass) {
             div {
                 HomeElements.progressIndicator.apply(this)
-                attributes["hx-preserve"] = "true"
+                attributes["bliss-preserve"] = "true"
             }
 
             if (hasNavbar) {
                 nav(classes = "navigation-bar fixed") {
-                    attributes["hx-preserve"] = "true"
+                    attributes["bliss-preserve"] = "true"
                     id = "navigation-bar"
 
                     // We intentionally don't use hx-select here, if you do use it and select body, the page will be empty
@@ -55,12 +55,16 @@ abstract class NavbarView(
                     // We use it because we don't want to "undo" the navbar every time the user navigates to a new page
                     div(classes = "left-side-entries") {
                         // Loritta Logo/Home Page
+                        /* aBodySwap(classes = "entry home-page loritta-navbar-logo", href = "$base/") {
+                            style = "font-family: 'Pacifico', cursive; text-transform: none;"
+
+                            +"Loritta"
+                        } */
                         a(classes = "entry home-page loritta-navbar-logo", href = "$base/") {
-                            attributes["hx-get"] = "$base/"
-                            attributes["hx-push-url"] = "true"
-                            attributes["hx-swap"] = "innerHTML"
-                            attributes["hx-target"] = "body"
-                            attributes["harmony-progress-bar"] = "true"
+                            attributes["bliss-get"] = "[href]"
+                            attributes["bliss-push-url"] = "[href]"
+                            attributes["bliss-swaps"] = "body -> body"
+                            attributes["bliss-after"] = "scroll:window:top"
 
                             style = "font-family: 'Pacifico', cursive; text-transform: none;"
 
@@ -69,11 +73,10 @@ abstract class NavbarView(
 
                         // Support
                         a(classes = "entry support", href = "$base/support") {
-                            attributes["hx-get"] = "$base/support"
-                            attributes["hx-push-url"] = "true"
-                            attributes["hx-swap"] = "innerHTML"
-                            attributes["hx-target"] = "body"
-                            attributes["harmony-progress-bar"] = "true"
+                            attributes["bliss-get"] = "[href]"
+                            attributes["bliss-push-url"] = "[href]"
+                            attributes["bliss-swaps"] = "body -> body"
+                            attributes["bliss-after"] = "scroll:window:top"
 
                             iconManager.discord.apply(this)
 
@@ -82,11 +85,10 @@ abstract class NavbarView(
 
                         // Commands
                         a(classes = "entry commands", href = "$base/commands/slash") {
-                            attributes["hx-get"] = "$base/commands/slash"
-                            attributes["hx-push-url"] = "true"
-                            attributes["hx-swap"] = "innerHTML"
-                            attributes["hx-target"] = "body"
-                            attributes["harmony-progress-bar"] = "true"
+                            attributes["bliss-get"] = "[href]"
+                            attributes["bliss-push-url"] = "[href]"
+                            attributes["bliss-swaps"] = "body -> body"
+                            attributes["bliss-after"] = "scroll:window:top"
 
                             iconManager.terminal.apply(this)
 
@@ -95,12 +97,6 @@ abstract class NavbarView(
 
                         // Daily
                         a(classes = "entry daily", href = "$base/daily") {
-                            attributes["hx-get"] = "$base/commands/daily"
-                            attributes["hx-push-url"] = "true"
-                            attributes["hx-swap"] = "innerHTML"
-                            attributes["hx-target"] = "body"
-                            attributes["harmony-progress-bar"] = "true"
-
                             iconManager.gift.apply(this)
 
                             +" Daily"
@@ -117,11 +113,10 @@ abstract class NavbarView(
 
                         // Wiki
                         a(classes = "entry extras", href = "$base/extras") {
-                            attributes["hx-get"] = "$base/extras"
-                            attributes["hx-push-url"] = "true"
-                            attributes["hx-swap"] = "innerHTML"
-                            attributes["hx-target"] = "body"
-                            attributes["harmony-progress-bar"] = "true"
+                            attributes["bliss-get"] = "[href]"
+                            attributes["bliss-push-url"] = "[href]"
+                            attributes["bliss-swaps"] = "body -> body"
+                            attributes["bliss-after"] = "scroll:window:top"
 
                             iconManager.book.apply(this)
 
@@ -137,11 +132,10 @@ abstract class NavbarView(
 
                         // Equipe
                         a(classes = "entry", href = "$base/staff") {
-                            attributes["hx-get"] = "$base/staff"
-                            attributes["hx-push-url"] = "true"
-                            attributes["hx-swap"] = "innerHTML"
-                            attributes["hx-target"] = "body"
-                            attributes["harmony-progress-bar"] = "true"
+                            attributes["bliss-get"] = "[href]"
+                            attributes["bliss-push-url"] = "[href]"
+                            attributes["bliss-swaps"] = "body -> body"
+                            attributes["bliss-after"] = "scroll:window:top"
 
                             iconManager.rocket.apply(this)
 
@@ -292,7 +286,11 @@ abstract class NavbarView(
                                 }
 
                                 a(href = "$base/") {
-                                    attributes["data-preload-link"] = "true"
+                                    attributes["bliss-get"] = "[href]"
+                                    attributes["bliss-push-url"] = "[href]"
+                                    attributes["bliss-swaps"] = "body -> body"
+                                    attributes["bliss-after"] = "scroll:window:top"
+
                                     +locale["website.navbar.home"]
                                 }
                                 a(href = "$base/discord-bot-brasileiro") {
@@ -302,11 +300,19 @@ abstract class NavbarView(
                                     +locale["website.navbar.dashboard"]
                                 }
                                 a(href = "$base/support") {
-                                    attributes["data-preload-link"] = "true"
+                                    attributes["bliss-get"] = "[href]"
+                                    attributes["bliss-push-url"] = "[href]"
+                                    attributes["bliss-swaps"] = "body -> body"
+                                    attributes["bliss-after"] = "scroll:window:top"
+
                                     +locale["website.navbar.support"]
                                 }
                                 a(href = "$base/commands/slash") {
-                                    attributes["data-preload-link"] = "true"
+                                    attributes["bliss-get"] = "[href]"
+                                    attributes["bliss-push-url"] = "[href]"
+                                    attributes["bliss-swaps"] = "body -> body"
+                                    attributes["bliss-after"] = "scroll:window:top"
+
                                     +locale["modules.sectionNames.commands"]
                                 }
                                 a(href = "$base/donate") {
@@ -319,11 +325,19 @@ abstract class NavbarView(
                                     +"Daily"
                                 }
                                 a(href = "$base/extras/faq-loritta/about-loritta-bot") {
-                                    attributes["data-preload-link"] = "true"
+                                    attributes["bliss-get"] = "[href]"
+                                    attributes["bliss-push-url"] = "[href]"
+                                    attributes["bliss-swaps"] = "body -> body"
+                                    attributes["bliss-after"] = "scroll:window:top"
+
                                     +"Sobre a Loritta (Bot)"
                                 }
                                 a(href = "$base/extras/stories/how-loritta-bot-was-created") {
-                                    attributes["data-preload-link"] = "true"
+                                    attributes["bliss-get"] = "[href]"
+                                    attributes["bliss-push-url"] = "[href]"
+                                    attributes["bliss-swaps"] = "body -> body"
+                                    attributes["bliss-after"] = "scroll:window:top"
+
                                     +"História da Criação da Loritta (Bot)"
                                 }
                             }
@@ -412,7 +426,7 @@ abstract class NavbarView(
                             }
 
                             div(classes = "add-cta") {
-                                a(classes = "add-me button pink shadow big", href = LorittaWebsiteBackend.addBotUrl.toString()) {
+                                a(classes = "discord-button pink", href = LorittaWebsiteBackend.addBotUrl.toString()) {
                                     style = "font-size: 1.5em;"
 
                                     LorittaWebsiteBackend.svgIconManager.plus.apply(this)

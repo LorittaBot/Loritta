@@ -38,7 +38,8 @@ lori-sidebar-wrapper {
 nav#left-sidebar {
   // We will keep this as visibility hidden to avoid tabbing to the sidebar elements when they should be hidden
   // We don't use "display: none;" because it would not animate our mobile transition when opening the sidebar when toggling display state!
-  visibility: hidden;
+  // TODO: Fix this, for some reason it is bugging out when animating the close animation
+  // visibility: hidden;
   display: flex;
   flex-direction: column;
   flex-shrink: 0; // Do not shink the sidebar!
@@ -151,14 +152,15 @@ nav#left-sidebar {
       font-weight: bold;
       cursor: pointer;
 
+      &:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.03);
+      }
+
       &.selected {
         background-color: var(--loritta-blue);
         color: white;
         border-radius: 3px;
-      }
-
-      &:hover {
-        opacity: 1;
       }
 
       > .icon {

@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.website.backend.views
 
 import kotlinx.html.*
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.website.backend.LorittaWebsiteBackend
@@ -68,9 +66,6 @@ abstract class BaseView(
             // Google ReCAPTCHA
             // script(src = "https://www.google.com/recaptcha/api.js?render=explicit&onload=onGoogleRecaptchaLoadCallback") {}
 
-            // htmx
-            deferredScript("/v3/assets/js/htmx.min.js?hash=${assetHash("/assets/js/htmx.min.js")}")
-
             // App itself
             deferredScript("/v3/assets/js/loritta-website-frontend.js?hash=${assetHash("/assets/js/loritta-website-frontend.js")}")
 
@@ -81,18 +76,6 @@ abstract class BaseView(
                     attributes["href"] = "$websiteUrl/$websiteLocaleId$path"
                 }
             }
-
-            meta(
-                name = "htmx-config",
-                content = buildJsonObject {
-                    // Disable htmx inheritance to make things more explicit
-                    put("disableInheritance", true)
-
-                    // Our pages don't really play well with going back in history
-                    put("historyCacheSize", 0)
-                    put("refreshOnHistoryMiss", true)
-                }.toString()
-            )
         }
         generateBody()
     }

@@ -43,11 +43,17 @@ open class ExtrasView(
                     }".removeSuffix("/"),
                     classes = "entry"
                 ) {
+                    attributes["bliss-get"] = "[href]"
+                    attributes["bliss-push-url"] = "[href]"
+                    attributes["bliss-swaps"] = """
+                                #left-sidebar-entries -> #left-sidebar-entries
+                                #right-sidebar -> #right-sidebar
+                            """.trimIndent()
+                    attributes["bliss-after"] = "scroll:window:top"
+
                     // Show that the current entry is "selected" in the sidebar
                     if (entry == renderEntry.entry)
                         classes = classes + "selected"
-
-                    attributes["data-preload-link"] = "true"
 
                     val svgIcon = iconManager.registeredSvgs[entry.icon]
                     if (svgIcon != null) {

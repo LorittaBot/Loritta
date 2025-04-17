@@ -86,6 +86,8 @@ abstract class SidebarsView(
                 } */
 
                 div(classes = "entries") {
+                    id = "left-sidebar-entries"
+
                     leftSidebarContents()
                 }
             }

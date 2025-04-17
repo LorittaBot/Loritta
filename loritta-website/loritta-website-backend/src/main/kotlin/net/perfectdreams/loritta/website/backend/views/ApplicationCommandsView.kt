@@ -66,7 +66,7 @@ class ApplicationCommandsView(
                 }
             }
 
-            div {
+            /* div {
                 style = "margin: 6px 10px;\n" +
                         "display: flex;\n" +
                         "align-items: center;\n" +
@@ -80,13 +80,21 @@ class ApplicationCommandsView(
                 div {
                     iconManager.search.apply(this)
                 }
-            }
+            } */
 
             hr {}
         }
 
         // The first entry is "All"
         a(href = "/${locale.path}/commands/slash", classes = "entry") {
+            attributes["bliss-get"] = "[href]"
+            attributes["bliss-push-url"] = "[href]"
+            attributes["bliss-swaps"] = """
+                    #left-sidebar-entries -> #left-sidebar-entries
+                    #right-sidebar -> #right-sidebar
+                """.trimIndent()
+            attributes["bliss-after"] = "scroll:window:top"
+
             if (filterByCategory == null)
                 classes = classes + "selected"
 
@@ -107,8 +115,15 @@ class ApplicationCommandsView(
         for (category in PUBLIC_CATEGORIES.sortedByDescending { category -> commands.count { it.category == category } }) {
             val commandsInThisCategory = commands.count { it.category == category }
 
-            // Register a redirect, the frontend will cancel this event if JS is enabled and filter the entries manually
             a(href = "/${locale.path}/commands/slash/${category.name.lowercase()}", classes = "entry") {
+                attributes["bliss-get"] = "[href]"
+                attributes["bliss-push-url"] = "[href]"
+                attributes["bliss-swaps"] = """
+                    #left-sidebar-entries -> #left-sidebar-entries
+                    #right-sidebar -> #right-sidebar
+                """.trimIndent()
+                attributes["bliss-after"] = "scroll:window:top"
+
                 if (filterByCategory == category)
                     classes = classes + "selected"
 
@@ -321,11 +336,45 @@ class ApplicationCommandsView(
 
         hr {}
 
-        // First we are going to sort by category count
-        // We change the first compare by to negative because we want it in a descending order (most commands in category -> less commands)
-        for (command in publicCommands.sortedWith(compareBy({
-            -(commands.groupBy { it.category }[it.category]?.size ?: 0)
-        }, SlashCommandInfo::category))) { // TODO: Fix sorting commands alphabetically
+        /* input(classes = "search-bar") {
+            attributes["harmonybliss-attributes"] = Json.encodeToString(
+                HarmonyBlissAttributes(
+                    listOf(
+                        HarmonyBlissAttributes.EventDefinition(
+                            listOf(
+                                Trigger.JSEvent("input"),
+                            ),
+                            BlissHttpMethod.GET,
+                            "/br/random",
+                            "false",
+                            listOf(
+                                DOMSelection(
+                                    "body",
+                                    "#list",
+                                    SwapType.INNER_HTML,
+                                    emptyMap()
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+            style = "width: 100%;"
+        }
+
+        // And we also need to wrap this into a div to avoid the icon resizing automatically due to the column-gap
+        div {
+            iconManager.search.apply(this)
+        }
+
+        div {
+            id = "list"
+        } */
+
+        // For the commands, we will sort by labels
+        // Before we sorted by category count, but I think that's way too confusing
+        for (command in publicCommands.sortedBy { i18nContext.get(it.name) }) {
             fun appendCommandEntry(commandPrefix: FlowOrInteractiveContent.() -> (Unit), command: SlashCommandInfo) {
                 val commandDescriptionKey = command.description
                 // TODO: Fix this
