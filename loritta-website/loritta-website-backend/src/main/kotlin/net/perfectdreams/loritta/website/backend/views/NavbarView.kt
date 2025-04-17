@@ -65,6 +65,7 @@ abstract class NavbarView(
                             attributes["bliss-push-url"] = "[href]"
                             attributes["bliss-swaps"] = "body -> body"
                             attributes["bliss-after"] = "scroll:window:top"
+                            attributes["bliss-preload"] = "true"
 
                             style = "font-family: 'Pacifico', cursive; text-transform: none;"
 
@@ -77,6 +78,7 @@ abstract class NavbarView(
                             attributes["bliss-push-url"] = "[href]"
                             attributes["bliss-swaps"] = "body -> body"
                             attributes["bliss-after"] = "scroll:window:top"
+                            attributes["bliss-preload"] = "true"
 
                             iconManager.discord.apply(this)
 
@@ -89,6 +91,7 @@ abstract class NavbarView(
                             attributes["bliss-push-url"] = "[href]"
                             attributes["bliss-swaps"] = "body -> body"
                             attributes["bliss-after"] = "scroll:window:top"
+                            attributes["bliss-preload"] = "true"
 
                             iconManager.terminal.apply(this)
 
@@ -117,6 +120,7 @@ abstract class NavbarView(
                             attributes["bliss-push-url"] = "[href]"
                             attributes["bliss-swaps"] = "body -> body"
                             attributes["bliss-after"] = "scroll:window:top"
+                            attributes["bliss-preload"] = "true"
 
                             iconManager.book.apply(this)
 
@@ -136,6 +140,7 @@ abstract class NavbarView(
                             attributes["bliss-push-url"] = "[href]"
                             attributes["bliss-swaps"] = "body -> body"
                             attributes["bliss-after"] = "scroll:window:top"
+                            attributes["bliss-preload"] = "true"
 
                             iconManager.rocket.apply(this)
 
@@ -290,6 +295,7 @@ abstract class NavbarView(
                                     attributes["bliss-push-url"] = "[href]"
                                     attributes["bliss-swaps"] = "body -> body"
                                     attributes["bliss-after"] = "scroll:window:top"
+                                    attributes["bliss-preload"] = "true"
 
                                     +locale["website.navbar.home"]
                                 }
@@ -304,6 +310,7 @@ abstract class NavbarView(
                                     attributes["bliss-push-url"] = "[href]"
                                     attributes["bliss-swaps"] = "body -> body"
                                     attributes["bliss-after"] = "scroll:window:top"
+                                    attributes["bliss-preload"] = "true"
 
                                     +locale["website.navbar.support"]
                                 }
@@ -312,6 +319,7 @@ abstract class NavbarView(
                                     attributes["bliss-push-url"] = "[href]"
                                     attributes["bliss-swaps"] = "body -> body"
                                     attributes["bliss-after"] = "scroll:window:top"
+                                    attributes["bliss-preload"] = "true"
 
                                     +locale["modules.sectionNames.commands"]
                                 }
@@ -329,6 +337,7 @@ abstract class NavbarView(
                                     attributes["bliss-push-url"] = "[href]"
                                     attributes["bliss-swaps"] = "body -> body"
                                     attributes["bliss-after"] = "scroll:window:top"
+                                    attributes["bliss-preload"] = "true"
 
                                     +"Sobre a Loritta (Bot)"
                                 }
@@ -337,6 +346,7 @@ abstract class NavbarView(
                                     attributes["bliss-push-url"] = "[href]"
                                     attributes["bliss-swaps"] = "body -> body"
                                     attributes["bliss-after"] = "scroll:window:top"
+                                    attributes["bliss-preload"] = "true"
 
                                     +"História da Criação da Loritta (Bot)"
                                 }

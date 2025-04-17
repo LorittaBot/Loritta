@@ -3,6 +3,10 @@ package net.perfectdreams.bliss
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import net.perfectdreams.loritta.website.frontend.LorittaWebsiteFrontend
 import net.perfectdreams.loritta.website.frontend.utils.extensions.select
 import net.perfectdreams.loritta.website.frontend.utils.extensions.selectAll
@@ -16,6 +20,7 @@ import web.html.HTMLDivElement
 import web.html.HTMLElement
 import web.parsing.DOMParser
 import web.parsing.DOMParserSupportedType
+import web.uievents.MouseEvent
 import web.window.window
 
 object BlissManager {
@@ -42,8 +47,99 @@ object BlissManager {
             for (trigger in triggers) {
                 if (trigger == "mount") {
                     m.launchGlobal {
-                        executeBlissRequest(m, element)
+                        val response = executeBlissRequest(m, element)
+                        executeBlissAction(m, element, response)
                     }
+                } else if (trigger == "click") {
+                    val blissPreload = element.getAttribute("bliss-preload")
+
+                    var preloadedRequestJob: Deferred<HttpResponse>? = null
+
+                    if (blissPreload != null) {
+                        element.addEventListener(
+                            MouseEvent.MOUSE_OVER,
+                            {
+                                m.launchGlobal {
+                                    delay(100)
+
+                                    // Are we still hovering?
+                                    if (element.matches(":hover")) {
+                                        // Then attempt to preload!
+                                        // Only preload if we don't already have a task created
+                                        if (preloadedRequestJob != null)
+                                            return@launchGlobal
+
+                                        // If mouse is down, we'll attempt to execute the query
+                                        preloadedRequestJob = GlobalScope.async {
+                                            println("Preloading request (mouse over)...")
+                                            val request = executeBlissRequest(m, element)
+                                            println("Request has been preloaded (mouse over)!")
+                                            request
+                                        }
+                                    }
+                                }
+                            }
+                        )
+
+                        element.addEventListener(
+                            MouseEvent.MOUSE_LEAVE,
+                            {
+                                // Cancel the preload request if the mouse has left the element
+                                val j = preloadedRequestJob
+                                preloadedRequestJob = null
+                                j?.cancel()
+                            }
+                        )
+
+                        // Alt implementation
+                        /* element.addEventListener(
+                            MouseEvent.MOUSE_DOWN,
+                            {
+                                // Only preload if we don't already have a task created
+                                if (preloadedRequestJob != null)
+                                    return@addEventListener
+
+                                // If mouse is down, we'll attempt to execute the query
+                                preloadedRequestJob = GlobalScope.async {
+                                    println("Preloading request (mouse down)...")
+                                    val request = executeBlissRequest(m, element)
+                                    println("Request has been preloaded (mouse down)!")
+                                    request
+                                }
+                            }
+                        ) */
+                    }
+
+                    element.addEventListener(
+                        EventType<Event>(trigger),
+                        {
+                            println("Clicked!")
+
+                            it.preventDefault()
+                            val preloadRequestJobOnInvoke = preloadedRequestJob
+
+                            m.launchGlobal {
+                                if (preloadRequestJobOnInvoke != null) {
+                                    val isJobComplete = preloadRequestJobOnInvoke.isCompleted
+                                    if (!isJobComplete)
+                                        m.startFakeProgressIndicator()
+
+                                    // If we already have a request in flight, let's invoke it!
+                                    executeBlissAction(m, element, preloadRequestJobOnInvoke.await())
+
+                                    if (!isJobComplete)
+                                        m.stopFakeProgressIndicator()
+                                } else {
+                                    m.startFakeProgressIndicator()
+
+                                    val response = executeBlissRequest(m, element)
+                                    executeBlissAction(m, element, response)
+
+                                    m.stopFakeProgressIndicator()
+                                }
+                            }
+                        }
+                    )
                 } else {
                     element.addEventListener(
                         EventType<Event>(trigger),
@@ -51,7 +147,12 @@ object BlissManager {
                             it.preventDefault()
 
                             m.launchGlobal {
-                                executeBlissRequest(m, element)
+                                m.startFakeProgressIndicator()
+
+                                val response = executeBlissRequest(m, element)
+                                executeBlissAction(m, element, response)
+
+                                m.stopFakeProgressIndicator()
                             }
                         }
                     )
@@ -60,11 +161,10 @@ object BlissManager {
         }
     }
 
-    private suspend fun executeBlissRequest(m: LorittaWebsiteFrontend, element: HTMLElement) {
+    private suspend fun executeBlissRequest(m: LorittaWebsiteFrontend, element: HTMLElement): HttpResponse {
         val actionUrl: String
 
         val getUrl = element.getAttribute("bliss-get")!!
-        val pushUrlAttribute = element.getAttribute("bliss-push-url")
 
         if (getUrl.startsWith("[") && getUrl.endsWith("]")) {
             actionUrl = element.getAttribute(getUrl.removePrefix("[").removeSuffix("]"))!!
@@ -72,11 +172,15 @@ object BlissManager {
             actionUrl = getUrl
         }
 
-        m.startFakeProgressIndicator()
-
         val response = http.get(actionUrl) {
             header("Bliss-Triggered-By-Id", element.id)
         }
+
+        return response
+    }
+
+    private suspend fun executeBlissAction(m: LorittaWebsiteFrontend, element: HTMLElement, response: HttpResponse) {
+        val pushUrlAttribute = element.getAttribute("bliss-push-url")
 
         val blissRedirectHeader = response.headers["Bliss-Redirect"]
         if (blissRedirectHeader != null) {

@@ -94,6 +94,7 @@ class ApplicationCommandsView(
                     #right-sidebar -> #right-sidebar
                 """.trimIndent()
             attributes["bliss-after"] = "scroll:window:top"
+            attributes["bliss-preload"] = "true"
 
             if (filterByCategory == null)
                 classes = classes + "selected"
@@ -123,6 +124,7 @@ class ApplicationCommandsView(
                     #right-sidebar -> #right-sidebar
                 """.trimIndent()
                 attributes["bliss-after"] = "scroll:window:top"
+                attributes["bliss-preload"] = "true"
 
                 if (filterByCategory == category)
                     classes = classes + "selected"
