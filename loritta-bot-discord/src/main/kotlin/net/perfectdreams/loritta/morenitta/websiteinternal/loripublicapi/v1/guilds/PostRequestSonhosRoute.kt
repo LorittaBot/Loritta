@@ -7,7 +7,6 @@ import io.ktor.server.request.*
 import io.ktor.server.util.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -21,13 +20,13 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosPayExecutor
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.ThirdPartySonhosTransferUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
-import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.v1.guilds.PostTransferSonhosRoute.TransferSonhosRequest
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.insert
@@ -193,6 +192,20 @@ class PostRequestSonhosRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
                 return
             }
             SonhosPayExecutor.Companion.AccountGotDailyAtLeastOnceResult.Success -> {}
+        }
+
+        // Check if the user got the daily reward today
+        val todayDailyReward = AccountUtils.getUserTodayDailyReward(m, senderProfile)
+        if (todayDailyReward == null) {
+            call.respondJson(
+                Json.encodeToString(
+                    GenericErrorResponse(
+                        "Sender has not received daily reward today!"
+                    )
+                ),
+                status = HttpStatusCode.BadRequest
+            )
+            return
         }
 
         // Check if the user is banned from using Loritta
