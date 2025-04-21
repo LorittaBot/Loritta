@@ -4,12 +4,14 @@ description: "Faça uma rinha de emojis com os seus amigos, o emoji mais forte g
 start:
   label: "iniciar"
   description: "Inicia uma rinha de emoji com os seus amigos, o emoji mais forte ganha a rinha!"
-
+  youCantStartAFightWithOnlyYouAllowed: "Eu sei que você gosta de ser um forever alone, mas qual é a graça de criar uma rinha que só você pode entrar? Você quer brincar com o seu bichano em paz?"
   options:
     maxPlayers:
       text: "A quantidade máxima de participantes na rinha"
     sonhos:
       text: "A quantidade de sonhos que você deseja apostar"
+    allowedUsers:
+      text: "Lista de IDs ou menções de usuários que podem participar da rinha"
 
 emoji:
   label: "emoji"
@@ -48,16 +50,18 @@ joinState:
     - "**Preço para participar da rinha:** Nada! É uma rinha apenas para se divertir! {emoji}"
     - "**Prêmio:** Nada! Se está procurando prêmios, vá em `{prefix}emojifight bet`"
     - "**Para participar**, clique em {joinEmoji}!"
+    - "**Usuários que podem entrar:** {listOfAllowedUsers}"
     - "-# Limite de {maxCount} jogadores"
     - "O ganhador será revelado quando {creatorMention} clicar em {startEmoji} ou após ter passado 60 segundos desde o início da rinha ou quando tiver {maxCount} jogadores na partida!"
   fightDescriptionBet:
   - "**Preço para participar da rinha:** {sonhosEntryPrice} sonhos"
   - "**Prêmio:** {prize} sonhos"
   - "**Para participar**, clique em {joinEmoji}!"
+  - "**Usuários que podem entrar:** {listOfAllowedUsers}"
   - "-# Limite de {maxCount} jogadores, e não se esqueça que você precisa ter pego a recompensa diária do daily de hoje para poder participar"
   - "O ganhador será revelado quando {creatorMention} clicar em {startEmoji} ou após ter passado 60 segundos desde o início da rinha ou quando tiver {maxCount} jogadores na partida!"
   - "-# É proibido a criação de contas alts/secundárias para participar de rinhas de emoji que valem sonhos, já que isso aumenta as suas chances de ganhar!"
-
+  everyoneCanJoin: "Todos podem participar!"
   successState:
     success1: "Você está participando da rinha com o seu habilidoso {emoji}, boa sorte para você e o seu bichano!"
     success2: "Você está participando da rinha com o seu charmoso {emoji}, boa sorte para você e o seu bichano!"
@@ -85,3 +89,4 @@ joinState:
   eventFinished: "A rinha já acabou. Seu bichano, que estava com fome de dar um sopapo, agora está deprimido..."
   didntGetDailyReward: "Parece que você não pegou a sua recompensa diária hoje, você só pode participar nas rinhas de emoji depois de pegar a sua recompensa diária. Que tal pegar agora? {dailyCommand}"
   accountTooNew: "Calma lá né, a sua conta é nova demais! Para você participar de rinhas de emojis, você precisa esperar {days} dias para começar a participar."
+  notInAllowedUsersList: "Você não está na lista de usuários que {creatorMention} colocou que podem participar desta rinha!"

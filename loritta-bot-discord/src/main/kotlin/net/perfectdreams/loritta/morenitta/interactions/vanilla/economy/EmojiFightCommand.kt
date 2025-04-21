@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
@@ -26,6 +27,36 @@ import java.util.*
 class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Emojifight
+
+        // TODO: Can't this be refactored so other commands can also use this?
+        private suspend fun extractAllowedUsersFromStringForEmojiFight(context: UnleashedContext, allowedUsersString: String?): Set<User>? {
+            if (allowedUsersString != null) {
+                val users = mutableSetOf(context.user) // The self user should ALWAYS join the fight!
+                val split = allowedUsersString.split(" ")
+
+                for (input in split) {
+                    val user = DiscordUtils.extractUserFromString(
+                        context.loritta,
+                        input,
+                        context.mentions.users,
+                        context.guildOrNull,
+                        extractUserViaEffectiveName = true,
+                        extractUserViaUsername = true
+                    )
+
+                    if (user != null) {
+                        users.add(user)
+                        // We are already at the max count, bail out!
+                        if (users.size == EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+                            break
+                    }
+                }
+
+                return users
+            } else {
+                return null
+            }
+        }
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("fae374b7-2c00-4575-9b1d-861e19b4e539")) {
@@ -69,6 +100,11 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 I18N_PREFIX.Start.Options.MaxPlayers.Text,
                 requiredRange = 2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT.toLong()
             )
+
+            val allowedUsers = optionalString(
+                "allowed_users",
+                I18N_PREFIX.Start.Options.AllowedUsers.Text
+            )
         }
 
         override val options = Options()
@@ -76,10 +112,22 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val maxPlayersInEvent = args[options.maxPlayers]?.toInt()?.coerceIn(2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT) ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
 
+            // Parse allowed users if provided
+            val allowedUsers = extractAllowedUsersFromStringForEmojiFight(context, args[options.allowedUsers])
+            if (allowedUsers != null && allowedUsers.size == 1) {
+                context.reply(true) {
+                    this.styled(
+                        context.i18nContext.get(I18N_PREFIX.Start.YouCantStartAFightWithOnlyYouAllowed),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
             val emojiFight = EmojiFight(
                 context,
                 null,
-                maxPlayersInEvent
+                maxPlayersInEvent,
+                allowedUsers
             )
 
             emojiFight.start()
@@ -90,8 +138,12 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             val participants = args.getOrNull(0)?.toLongOrNull()
+            val allowedUsers = args.getOrNull(1)
 
-            return mapOf(options.maxPlayers to participants)
+            return mapOf(
+                options.maxPlayers to participants,
+                options.allowedUsers to allowedUsers
+            )
         }
     }
 
@@ -106,6 +158,11 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                 "max_players",
                 I18N_PREFIX.Start.Options.MaxPlayers.Text,
                 requiredRange = 2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT.toLong()
+            )
+
+            val allowedUsers = optionalString(
+                "allowed_users",
+                I18N_PREFIX.Start.Options.AllowedUsers.Text
             )
         }
 
@@ -192,10 +249,23 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
 
             val maxPlayersInEvent = args[options.maxPlayers]?.toInt()?.coerceIn(2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT) ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
 
+            // Parse allowed users if provided
+            val allowedUsers = extractAllowedUsersFromStringForEmojiFight(context, args[options.allowedUsers])
+            if (allowedUsers != null && allowedUsers.size == 1) {
+                context.reply(true) {
+                    this.styled(
+                        context.i18nContext.get(I18N_PREFIX.Start.YouCantStartAFightWithOnlyYouAllowed),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
+
             val emojiFight = EmojiFight(
                 context,
                 totalEarnings,
-                maxPlayersInEvent
+                maxPlayersInEvent,
+                allowedUsers
             )
 
             emojiFight.start()
@@ -207,10 +277,12 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         ): Map<OptionReference<*>, Any?> {
             val sonhosQuantity = args.getOrNull(0)
             val participants = args.getOrNull(1)?.toLongOrNull()
+            val allowedUsers = args.getOrNull(2)
 
             return mapOf(
                 options.sonhos to sonhosQuantity,
-                options.maxPlayers to participants
+                options.maxPlayers to participants,
+                options.allowedUsers to allowedUsers
             )
         }
     }

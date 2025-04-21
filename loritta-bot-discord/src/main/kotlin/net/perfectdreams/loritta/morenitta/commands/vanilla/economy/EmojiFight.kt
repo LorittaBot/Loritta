@@ -49,9 +49,11 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
 class EmojiFight(
     private val context: UnleashedContext,
     private val entryPrice: Long?, // null = only for fun emoji fight
-    private val maxPlayers: Int = DEFAULT_MAX_PLAYER_COUNT
+    private val maxPlayers: Int = DEFAULT_MAX_PLAYER_COUNT,
+    private val allowedUsers: Set<User>? = null
 ) {
     val loritta = context.loritta
+    val creator = context.user
     private val availableEmotes = emojis.toMutableList()
     private val participatingUsers = ConcurrentHashMap<User, String>()
     private val updatingMessageMutex = Mutex()
@@ -152,6 +154,15 @@ class EmojiFight(
                         content = "Você é um bot! ...E eu acho que isso jamais deve acontecer!"
                     }
 
+                }
+
+                EmojiFightJoinState.NotInAllowedUsersList -> {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.JoinState.NotInAllowedUsersList(creator.asMention)),
+                            CinnamonEmotes.LoriSob
+                        )
+                    }
                 }
 
                 EmojiFightJoinState.YouAreAlreadyParticipating -> {
@@ -280,6 +291,7 @@ class EmojiFight(
                             entryPrice,
                             entryPrice * (participatingUsers.size - 1), // Needs to subtract -1 because the winner *won't* pay for his win
                             "\uD83D\uDC14",
+                            allowedUsers?.joinToString(", ") { it.asMention } ?: context.i18nContext.get(I18N_PREFIX.JoinState.EveryoneCanJoin),
                             maxPlayers,
                             context.user.asMention,
                             "✅",
@@ -291,6 +303,7 @@ class EmojiFight(
                             Emotes.LORI_PAT,
                             context.config.commandPrefix,
                             "\uD83D\uDC14",
+                            allowedUsers?.joinToString(", ") { it.asMention } ?: context.i18nContext.get(I18N_PREFIX.JoinState.EveryoneCanJoin),
                             maxPlayers,
                             context.user.asMention,
                             "✅",
@@ -346,6 +359,10 @@ class EmojiFight(
 
             if (participatingUsers.containsKey(user))
                 return EmojiFightJoinState.YouAreAlreadyParticipating
+
+            // Check if the user is in the allowed users list
+            if (allowedUsers != null && !allowedUsers.contains(user))
+                return EmojiFightJoinState.NotInAllowedUsersList
 
             if (entryPrice != null) {
                 val profile = loritta.getLorittaProfile(user.idLong) ?: return EmojiFightJoinState.NotEnoughMoney(0, entryPrice)
@@ -781,6 +798,7 @@ class EmojiFight(
         object DidntGetDailyReward : EmojiFightJoinState()
         object AccountTooNew : EmojiFightJoinState()
         object YouAreAlreadyParticipating : EmojiFightJoinState()
+        object NotInAllowedUsersList : EmojiFightJoinState()
         data class YouAreOnVacation(val vacationUntil: Instant) : EmojiFightJoinState()
         class Success(val emoji: String) : EmojiFightJoinState()
     }
