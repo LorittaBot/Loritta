@@ -29,7 +29,11 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Emojifight
 
         // TODO: Can't this be refactored so other commands can also use this?
-        private suspend fun extractAllowedUsersFromStringForEmojiFight(context: UnleashedContext, allowedUsersString: String?): Set<User>? {
+        private suspend fun extractAllowedUsersFromStringForEmojiFight(
+            context: UnleashedContext,
+            allowedUsersString: String?,
+            maxPlayers: Int
+        ): Set<User>? {
             if (allowedUsersString != null) {
                 val users = mutableSetOf(context.user) // The self user should ALWAYS join the fight!
                 val split = allowedUsersString.split(" ")
@@ -47,7 +51,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
                     if (user != null) {
                         users.add(user)
                         // We are already at the max count, bail out!
-                        if (users.size == EmojiFight.DEFAULT_MAX_PLAYER_COUNT)
+                        if (users.size == maxPlayers)
                             break
                     }
                 }
@@ -113,7 +117,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             val maxPlayersInEvent = args[options.maxPlayers]?.toInt()?.coerceIn(2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT) ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
 
             // Parse allowed users if provided
-            val allowedUsers = extractAllowedUsersFromStringForEmojiFight(context, args[options.allowedUsers])
+            val allowedUsers = extractAllowedUsersFromStringForEmojiFight(context, args[options.allowedUsers], maxPlayersInEvent)
             if (allowedUsers != null && allowedUsers.size == 1) {
                 context.reply(true) {
                     this.styled(
@@ -138,7 +142,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             args: List<String>
         ): Map<OptionReference<*>, Any?> {
             val participants = args.getOrNull(0)?.toLongOrNull()
-            val allowedUsers = args.getOrNull(1)
+            val allowedUsers = args.drop(1).joinToString(" ").ifBlank { null }
 
             return mapOf(
                 options.maxPlayers to participants,
@@ -250,7 +254,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
             val maxPlayersInEvent = args[options.maxPlayers]?.toInt()?.coerceIn(2..EmojiFight.DEFAULT_MAX_PLAYER_COUNT) ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT
 
             // Parse allowed users if provided
-            val allowedUsers = extractAllowedUsersFromStringForEmojiFight(context, args[options.allowedUsers])
+            val allowedUsers = extractAllowedUsersFromStringForEmojiFight(context, args[options.allowedUsers], maxPlayersInEvent)
             if (allowedUsers != null && allowedUsers.size == 1) {
                 context.reply(true) {
                     this.styled(
@@ -277,7 +281,7 @@ class EmojiFightCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrappe
         ): Map<OptionReference<*>, Any?> {
             val sonhosQuantity = args.getOrNull(0)
             val participants = args.getOrNull(1)?.toLongOrNull()
-            val allowedUsers = args.getOrNull(2)
+            val allowedUsers = args.drop(2).joinToString(" ").ifBlank { null }
 
             return mapOf(
                 options.sonhos to sonhosQuantity,
