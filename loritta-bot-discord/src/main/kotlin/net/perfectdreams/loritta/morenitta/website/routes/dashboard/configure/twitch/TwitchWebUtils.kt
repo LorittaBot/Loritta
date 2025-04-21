@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure.twitch
 
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedTwitchChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
@@ -11,10 +10,9 @@ import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.batchUpsert
-import org.jetbrains.exposed.sql.selectAll
+import net.perfectdreams.switchtwitch.data.TwitchUser
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.ceil
@@ -56,16 +54,7 @@ object TwitchWebUtils {
         // And add to our cache
         if (queriedUsers.isNotEmpty()) {
             loritta.transaction {
-                CachedTwitchChannels.batchUpsert(
-                    queriedUsers,
-                    CachedTwitchChannels.id,
-                    shouldReturnGeneratedValues = false
-                ) { item ->
-                    this[CachedTwitchChannels.id] = item.id
-                    this[CachedTwitchChannels.userLogin] = item.login
-                    this[CachedTwitchChannels.data] = Json.encodeToString(item)
-                    this[CachedTwitchChannels.queriedAt] = Instant.now()
-                }
+                batchUpsertTwitchUsersToCache(queriedUsers)
             }
         }
 
@@ -110,16 +99,7 @@ object TwitchWebUtils {
         // And add to our cache
         if (queriedUsers.isNotEmpty()) {
             loritta.transaction {
-                CachedTwitchChannels.batchUpsert(
-                    queriedUsers,
-                    CachedTwitchChannels.id,
-                    shouldReturnGeneratedValues = false
-                ) { item ->
-                    this[CachedTwitchChannels.id] = item.id
-                    this[CachedTwitchChannels.userLogin] = item.login
-                    this[CachedTwitchChannels.data] = Json.encodeToString(item)
-                    this[CachedTwitchChannels.queriedAt] = Instant.now()
-                }
+                batchUpsertTwitchUsersToCache(queriedUsers)
             }
         }
 
@@ -175,5 +155,24 @@ object TwitchWebUtils {
         }
 
         return TwitchAccountTrackState.UNAUTHORIZED
+    }
+
+    fun batchUpsertTwitchUsersToCache(queriedUsers: List<TwitchUser>) {
+        // We need to delete any user logins that are present on the database
+        // This seems stupid, but we need to do this to avoid errors when someone changes their user login to something else
+        CachedTwitchChannels.deleteWhere {
+            CachedTwitchChannels.userLogin inList queriedUsers.map { it.login }
+        }
+
+        CachedTwitchChannels.batchUpsert(
+            queriedUsers,
+            CachedTwitchChannels.id,
+            shouldReturnGeneratedValues = false
+        ) { item ->
+            this[CachedTwitchChannels.id] = item.id
+            this[CachedTwitchChannels.userLogin] = item.login
+            this[CachedTwitchChannels.data] = Json.encodeToString(item)
+            this[CachedTwitchChannels.queriedAt] = Instant.now()
+        }
     }
 }

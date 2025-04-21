@@ -6,7 +6,6 @@ import kotlinx.html.body
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.stream.createHTML
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -36,8 +35,11 @@ import net.perfectdreams.loritta.serializable.config.TrackedTwitchAccount
 import net.perfectdreams.loritta.serializable.config.TwitchAccountTrackState
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.selectAll
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.ceil
@@ -164,16 +166,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 		// And add to our cache
 		if (queriedUsers.isNotEmpty()) {
 			loritta.transaction {
-				CachedTwitchChannels.batchUpsert(
-					queriedUsers,
-					CachedTwitchChannels.id,
-					shouldReturnGeneratedValues = false
-				) { item ->
-					this[CachedTwitchChannels.id] = item.id
-					this[CachedTwitchChannels.userLogin] = item.login
-					this[CachedTwitchChannels.data] = Json.encodeToString(item)
-					this[CachedTwitchChannels.queriedAt] = Instant.now()
-				}
+				TwitchWebUtils.batchUpsertTwitchUsersToCache(queriedUsers)
 			}
 		}
 
@@ -218,16 +211,7 @@ class DeleteTwitchPremiumTrackRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
 		// And add to our cache
 		if (queriedUsers.isNotEmpty()) {
 			loritta.transaction {
-				CachedTwitchChannels.batchUpsert(
-					queriedUsers,
-					CachedTwitchChannels.id,
-					shouldReturnGeneratedValues = false
-				) { item ->
-					this[CachedTwitchChannels.id] = item.id
-					this[CachedTwitchChannels.userLogin] = item.login
-					this[CachedTwitchChannels.data] = Json.encodeToString(item)
-					this[CachedTwitchChannels.queriedAt] = Instant.now()
-				}
+				TwitchWebUtils.batchUpsertTwitchUsersToCache(queriedUsers)
 			}
 		}
 
