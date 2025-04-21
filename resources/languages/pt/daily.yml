@@ -8,6 +8,16 @@ daily:
     rules: "regras"
     buySonhos: "Se você deseja comprar sonhos de uma forma segura que ainda por cima ajuda a Loritta ficar online, visite a nossa loja de sonhos {clickHere}!"
     clickHere: "clicando aqui"
+    scamWarningTitle: "Cuidado! Não tenha os seus sonhos ROUBADOS!"
+    scamWarningText: "Pessoas horríveis estão tentando aplicar golpes em você para aplicar golpes para roubar os {yourSonhos}... e até mesmo a sua {yourDiscordAccount}!"
+    yourSonhos: "seus sonhos"
+    yourDiscordAccount: "conta do Discord"
+    scamWarningDontTrust: "Você não quer perder a sua conta? Então {dontTrust} em mensagens dizendo que você será banido da Loritta caso não siga o que ela manda. Essas mensagens são {fake} e elas propositalmente fomentam um sentimento de pavor para {followExactlyWhatItSays}, assim fazendo você perder seus sonhos e as sua conta."
+    dontTrust: "não confie"
+    fake: "falsas"
+    followExactlyWhatItSays: "você seguir exatamente o que ela manda"
+    scamWarningVerify: "Se você ainda tem dúvidas e quer confirmar com a equipe da Loritta se a mensagem que você recebeu é real, clique na mensagem, veja se a pessoa é realmente um bot, veja se é a tag da Loritta (Loritta#0219), veja se é possível usar comandos da Loritta nesta conversa privada e, é claro, entre em {ourSupportServer} e nós iremos te ajudar com outras dúvidas!"
+    ourSupportServer: "nosso servidor de suporte"
   questions:
     loriCute:
       title: "A Loritta é fofa?"

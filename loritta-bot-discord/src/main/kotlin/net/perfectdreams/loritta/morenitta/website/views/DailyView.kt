@@ -166,7 +166,83 @@ class DailyView(
                     adsenseAdClass = "responsive-adsense-ad"
                 )
             }
-            
+
+            div(classes = "media") {
+                div(classes = "media-body") {
+                    h2 {
+                        style = "color: red;"
+
+                        +i18nContext.get(I18nKeysData.Daily.Attention.ScamWarningTitle)
+                    }
+
+                    div {
+                        style = "text-align: center;"
+
+                        img(src = "https://stuff.loritta.website/loritta-fake-scam.png")
+                    }
+
+                    p {
+                        WebsiteUtils.buildAsHtml(
+                            i18nContext.language.textBundle.strings[I18nKeys.Daily.Attention.ScamWarningText.key]!!,
+                            {
+                                if (it == "yourSonhos") {
+                                    b {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.YourSonhos)
+                                    }
+                                } else if (it == "yourDiscordAccount") {
+                                    b {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.YourDiscordAccount)
+                                    }
+                                }
+                            },
+                            {
+                                +it
+                            }
+                        )
+                    }
+
+                    p {
+                        WebsiteUtils.buildAsHtml(
+                            i18nContext.language.textBundle.strings[I18nKeys.Daily.Attention.ScamWarningDontTrust.key]!!,
+                            {
+                                if (it == "dontTrust") {
+                                    b {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.DontTrust)
+                                    }
+                                } else if (it == "fake") {
+                                    b {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.Fake)
+                                    }
+                                } else if (it == "followExactlyWhatItSays") {
+                                    b {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.FollowExactlyWhatItSays)
+                                    }
+                                }
+                            },
+                            {
+                                +it
+                            }
+                        )
+                    }
+
+                    p {
+                        WebsiteUtils.buildAsHtml(
+                            i18nContext.language.textBundle.strings[I18nKeys.Daily.Attention.ScamWarningVerify.key]!!,
+                            {
+                                if (it == "ourSupportServer") {
+                                    a(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/support") {
+                                        +i18nContext.get(I18nKeysData.Daily.Attention.OurSupportServer)
+                                    }
+                                }
+                            },
+                            {
+                                +it
+                            }
+                        )
+                    }
+                }
+            }
+
             div(classes = "media") {
                 div(classes = "media-body") {
                     div {
