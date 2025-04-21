@@ -284,6 +284,7 @@ object WebsiteUtils {
 				if (ch == '}') {
 					onControlChar.invoke(controlStringBuilder.toString())
 					isControl = false
+					controlStringBuilder.clear()
 					continue
 				}
 

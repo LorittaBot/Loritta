@@ -12,11 +12,11 @@ daily:
     scamWarningText: "Pessoas horríveis estão tentando aplicar golpes em você para aplicar golpes para roubar os {yourSonhos}... e até mesmo a sua {yourDiscordAccount}!"
     yourSonhos: "seus sonhos"
     yourDiscordAccount: "conta do Discord"
-    scamWarningDontTrust: "Você não quer perder a sua conta? Então {dontTrust} em mensagens dizendo que você será banido da Loritta caso não siga o que ela manda. Essas mensagens são {fake} e elas propositalmente fomentam um sentimento de pavor para {followExactlyWhatItSays}, assim fazendo você perder seus sonhos e as sua conta."
+    scamWarningDontTrust: "Você não quer perder a sua conta? Então {dontTrust} em mensagens dizendo que você será banido da Loritta caso não siga o que ela manda. Essas mensagens são {fake} e elas propositalmente fomentam um sentimento de pavor para {followExactlyWhatItSays}, assim fazendo você perder seus sonhos e a sua conta."
     dontTrust: "não confie"
     fake: "falsas"
     followExactlyWhatItSays: "você seguir exatamente o que ela manda"
-    scamWarningVerify: "Se você ainda tem dúvidas e quer confirmar com a equipe da Loritta se a mensagem que você recebeu é real, clique na mensagem, veja se a pessoa é realmente um bot, veja se é a tag da Loritta (Loritta#0219), veja se é possível usar comandos da Loritta nesta conversa privada e, é claro, entre em {ourSupportServer} e nós iremos te ajudar com outras dúvidas!"
+    scamWarningVerify: "Se você ainda tem dúvidas e quer confirmar com a equipe da Loritta se a mensagem que você recebeu é real, clique na mensagem, veja se a pessoa é realmente um bot, veja se é a tag da Loritta (Loritta#0219), veja se é possível usar comandos da Loritta nesta conversa privada e, é claro, entre em {ourSupportServer} e a nossa equipe irá te ajudar se você ainda estiver em dúvida!"
     ourSupportServer: "nosso servidor de suporte"
   questions:
     loriCute:
