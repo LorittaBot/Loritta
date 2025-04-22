@@ -128,7 +128,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
 
                 builder.append("${userEmote} [${whenTheTransactionHappened.format(Constants.PRETTY_DATE_FORMAT)}] ${userData?.name} [${userData?.globalName}] (${daily[Dailies.receivedById]})")
                 builder.append("\n")
-                builder.append("- Email: ${daily[Dailies.email]}")
+                builder.append("- IP: ${daily[Dailies.ip]}")
                 val fingerprintData = daily[Dailies.browserFingerprints]
                 if (fingerprintData != null) {
                     builder.append("\n")
@@ -242,7 +242,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
 
                 builder.append("${userEmote} [${whenTheTransactionHappened.format(Constants.PRETTY_DATE_FORMAT)}] ${userData?.name} [${userData?.globalName}] (${daily[Dailies.receivedById]})")
                 builder.append("\n")
-                builder.append("- Email: ${daily[Dailies.email]}")
+                builder.append("- IP: ${daily[Dailies.ip]}")
                 val fingerprintData = daily[Dailies.browserFingerprints]
                 if (fingerprintData != null) {
                     builder.append("\n")
@@ -373,7 +373,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
 
                 builder.append("${userEmote} [${whenTheTransactionHappened.format(Constants.PRETTY_DATE_FORMAT)}] ${userData?.name} [${userData?.globalName}] (${daily[Dailies.receivedById]})")
                 builder.append("\n")
-                builder.append("- Email: ${daily[Dailies.email]}")
+                builder.append("- IP: ${daily[Dailies.ip]}")
                 val fingerprintData = daily[Dailies.browserFingerprints]
                 if (fingerprintData != null) {
                     builder.append("\n")
