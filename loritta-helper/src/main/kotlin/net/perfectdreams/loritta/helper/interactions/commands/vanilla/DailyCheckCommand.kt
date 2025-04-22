@@ -133,6 +133,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 if (fingerprintData != null) {
                     builder.append("\n")
                     builder.append("- Client ID: ${daily[BrowserFingerprints.clientId]}")
+                    matchedSameClientIds.getOrPut(daily[BrowserFingerprints.clientId]) { mutableSetOf() }.add(daily[Dailies.receivedById])
                 }
                 builder.append("\n\n")
             }
@@ -247,6 +248,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 if (fingerprintData != null) {
                     builder.append("\n")
                     builder.append("- Client ID: ${daily[BrowserFingerprints.clientId]}")
+                    matchedSameClientIds.getOrPut(daily[BrowserFingerprints.clientId]) { mutableSetOf() }.add(daily[Dailies.receivedById])
                 }
                 builder.append("\n\n")
                 foundIds.add(userId)
@@ -378,6 +380,7 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 if (fingerprintData != null) {
                     builder.append("\n")
                     builder.append("- Client ID: ${daily[BrowserFingerprints.clientId]}")
+                    matchedSameClientIds.getOrPut(daily[BrowserFingerprints.clientId]) { mutableSetOf() }.add(daily[Dailies.receivedById])
                 }
                 builder.append("\n\n")
                 foundIds.add(userId)
