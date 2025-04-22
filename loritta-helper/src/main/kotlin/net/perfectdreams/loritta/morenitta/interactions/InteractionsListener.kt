@@ -3,11 +3,6 @@ package net.perfectdreams.loritta.morenitta.interactions
 import dev.minn.jda.ktx.interactions.commands.updateCommands
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -17,8 +12,6 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.helper.utils.Emotes
@@ -26,8 +19,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
-import org.postgresql.util.PGobject
-import java.util.*
 
 class InteractionsListener(private val loritta: LorittaHelper) : ListenerAdapter() {
     companion object {
@@ -108,6 +99,7 @@ class InteractionsListener(private val loritta: LorittaHelper) : ListenerAdapter
                 val guild = event.guild
                 val member = event.member
 
+                CommandUtils.logMessageEvent(event, logger)
                 val args = SlashCommandArguments(event)
                 context = ApplicationCommandContext(
                     loritta,
@@ -118,6 +110,7 @@ class InteractionsListener(private val loritta: LorittaHelper) : ListenerAdapter
                     context,
                     args
                 )
+                CommandUtils.logMessageEventComplete(event, logger)
             } catch (e: CommandException) {
                 context?.reply(e.ephemeral, e.builder)
             } catch (e: Exception) {
