@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.interactions
 
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton.DO_NOT_USE_THIS_COMPONENT_ID
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedButton.DO_NOT_USE_THIS_LINK_URL

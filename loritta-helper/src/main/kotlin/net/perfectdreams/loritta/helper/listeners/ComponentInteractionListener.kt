@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
@@ -505,7 +505,7 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
 
                                 actionRow(
                                     Button.of(
-                                        net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY,
+                                        net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
                                         "create_ticket:${
                                             ComponentDataUtils.encode(
                                                 TicketSystemTypeData(systemInfo.systemType)
@@ -541,7 +541,7 @@ class ComponentInteractionListener(val m: LorittaHelper) : ListenerAdapter() {
 
                                 actionRow(
                                     Button.of(
-                                        net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY,
+                                        net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
                                         "create_ticket:${
                                             ComponentDataUtils.encode(
                                                 TicketSystemTypeData(systemInfo.systemType)

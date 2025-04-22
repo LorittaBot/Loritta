@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.helper.interactions.commands.vanilla
 
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.helper.utils.LorittaLandGuild
 import net.perfectdreams.loritta.helper.utils.buttonroles.LorittaCommunityRoleButtons

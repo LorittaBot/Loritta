@@ -5,12 +5,12 @@ import dev.minn.jda.ktx.interactions.components.replyModal
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import dev.minn.jda.ktx.messages.MessageEditBuilder
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
-import net.dv8tion.jda.api.interactions.components.Component
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -86,14 +86,16 @@ class ComponentContext(
 
             if (disableComponents)
                     event.message.components.asDisabled().forEach {
-                        this.actionRow(
-                            it.components.map {
-                                if (it is Button && event.componentId == it.id)
-                                    it.withEmoji(loadingEmoji.toJDA())
-                                else
-                                    it
-                            }
-                        )
+                        if (it is ActionRow) {
+                            this.actionRow(
+                                it.components.map {
+                                    if (it is Button && event.componentId == it.id)
+                                        it.withEmoji(loadingEmoji.toJDA())
+                                    else
+                                        it
+                                }
+                            )
+                        }
                     }
         }
 
@@ -141,12 +143,19 @@ class ComponentContext(
             Component.Type.ROLE_SELECT -> TODO()
             Component.Type.MENTIONABLE_SELECT -> TODO()
             Component.Type.CHANNEL_SELECT -> TODO()
+            Component.Type.SECTION -> TODO()
+            Component.Type.TEXT_DISPLAY -> TODO()
+            Component.Type.THUMBNAIL -> TODO()
+            Component.Type.MEDIA_GALLERY -> TODO()
+            Component.Type.FILE_DISPLAY -> TODO()
+            Component.Type.SEPARATOR -> TODO()
+            Component.Type.CONTAINER -> TODO()
         }
     }
 
     suspend fun sendModal(
         title: String,
-        components: List<LayoutComponent>,
+        components: List<ActionRow>,
         callback: suspend (ModalContext, ModalArguments) -> (Unit)
     ) {
         val unleashedComponentId = UnleashedComponentId(UUID.randomUUID())

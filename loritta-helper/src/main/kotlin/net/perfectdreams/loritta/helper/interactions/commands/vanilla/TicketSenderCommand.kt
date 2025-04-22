@@ -3,9 +3,9 @@ package net.perfectdreams.loritta.helper.interactions.commands.vanilla
 import dev.minn.jda.ktx.interactions.components.SelectOption
 import dev.minn.jda.ktx.interactions.components.StringSelectMenu
 import dev.minn.jda.ktx.messages.MessageCreate
+import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.helper.i18n.I18nKeysData
@@ -101,7 +101,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
                             actionRow(
                                 StringSelectMenu(
                                     "helper_response",
-                                    i18nContext.get(
+                                    placeholder = i18nContext.get(
                                         I18nKeysData.Tickets.ClickToFindYourQuestion
                                     ),
                                     options = listOf(
@@ -143,7 +143,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
 
                             actionRow(
                                 Button.of(
-                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY,
+                                    net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
                                     "create_ticket:${
                                         ComponentDataUtils.encode(
                                             TicketSystemTypeData(systemInfo.systemType)
@@ -190,7 +190,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
                             actionRow(
                                 StringSelectMenu(
                                     "helper_response",
-                                    i18nContext.get(
+                                    placeholder = i18nContext.get(
                                         I18nKeysData.Tickets.ClickToFindYourQuestion
                                     ),
 
@@ -387,7 +387,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
 
                             actionRow(
                                 Button.of(
-                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY,
+                                    net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
                                     "create_ticket:${
                                         ComponentDataUtils.encode(
                                             TicketSystemTypeData(systemInfo.systemType)
@@ -421,7 +421,7 @@ Antes de perguntar, verifique se a resposta dela não está no <#${systemInfo.fa
 
                         actionRow(
                             Button.of(
-                                net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY,
+                                net.dv8tion.jda.api.components.button.ButtonStyle.PRIMARY,
                                 "create_ticket:${
                                     ComponentDataUtils.encode(
                                         TicketSystemTypeData(systemInfo.systemType)

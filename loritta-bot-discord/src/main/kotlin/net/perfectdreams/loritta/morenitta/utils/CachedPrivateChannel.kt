@@ -20,10 +20,6 @@ class CachedPrivateChannel(private val jda: JDA, val cachedChannelId: Long) : Pr
         error("Cannot retrieve a user from a cached private channel!")
     }
 
-    override fun retrieveOpenPrivateChannel(): RestAction<PrivateChannel?> {
-        error("Cannot retrieve a open private channel from a cached private channel!")
-    }
-
     override fun getName(): String {
         error("Cannot get the name of a cached private channel!")
     }

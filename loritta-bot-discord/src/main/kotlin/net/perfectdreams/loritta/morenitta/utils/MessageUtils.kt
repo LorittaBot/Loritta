@@ -6,6 +6,11 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.serialization.SerializationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
+import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
@@ -16,12 +21,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Component
-import net.dv8tion.jda.api.interactions.components.ItemComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -38,9 +37,9 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.linkButton
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils.watermarkSayMessage
 import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
 import net.perfectdreams.loritta.morenitta.utils.placeholders.RenderableMessagePlaceholder
-import kotlin.collections.set
 
 object MessageUtils {
 	private val logger = KotlinLogging.logger {}
@@ -262,11 +261,12 @@ object MessageUtils {
 			}
 		}
 
+		// This code must be refactored later due to Components V2
 		fun recursiveComponentConverter(component: DiscordComponent): Component {
 			return when (component) {
 				is DiscordComponent.DiscordActionRow -> {
 					// ActionRows cannot have other ActionRows within them so whatever
-					ActionRow.of(component.components.map { recursiveComponentConverter(it) as ItemComponent })
+					ActionRow.of(component.components.map { recursiveComponentConverter(it) as ActionRowChildComponent })
 				}
 
 				is DiscordComponent.DiscordButton -> {
@@ -285,7 +285,7 @@ object MessageUtils {
 			for (component in components) {
 				// The first component must be a layout component (also known as... ActionRow)
 				// If it isn't, then the JSON is invalid!
-				messageBuilder.addComponents(recursiveComponentConverter(component) as LayoutComponent)
+				messageBuilder.addComponents(recursiveComponentConverter(component) as ActionRow) // Always MUST be an ActionRow here
 			}
 		}
 

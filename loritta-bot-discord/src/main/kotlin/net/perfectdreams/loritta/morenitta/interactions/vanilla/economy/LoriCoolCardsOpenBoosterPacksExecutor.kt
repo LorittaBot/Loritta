@@ -5,7 +5,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -183,7 +183,7 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
             is OpenBoosterPacksResult.Success -> {
                 val cards = result.cards.toMutableList()
 
-                suspend fun getCurrentStickerAndCreateMessage(): InlineMessage<*>.() -> (Unit) {
+                fun getCurrentStickerAndCreateMessage(): InlineMessage<*>.() -> (Unit) {
                     val currentCard = cards.removeFirst()
 
                     // val discordInfo = loritta.lorittaShards.retrieveUserInfoById(currentProfileId)

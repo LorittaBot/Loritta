@@ -1,14 +1,10 @@
 package net.perfectdreams.loritta.helper.utils.generateserverreport
 
-import kotlinx.coroutines.future.await
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
+import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
@@ -34,8 +30,8 @@ class GenerateAppealsReport(val m: LorittaHelper) {
         logger.info { "Received a report message!" }
         val attachment = event.message.attachments.first()
 
-        val text = attachment.retrieveInputStream().await()
-            .readAllBytes()
+        val text = LorittaHelper.http.get(attachment.url)
+            .bodyAsBytes()
             .toString(Charsets.UTF_8)
 
         logger.info { "Attachment Text: $text" }

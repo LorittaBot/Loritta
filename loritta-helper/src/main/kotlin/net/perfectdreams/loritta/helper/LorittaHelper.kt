@@ -5,8 +5,6 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -17,7 +15,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.galleryofdreams.client.GalleryOfDreamsClient
 import net.perfectdreams.loritta.helper.interactions.commands.vanilla.*
-import net.perfectdreams.loritta.helper.interactions.commands.vanilla.ButtonRoleSenderCommand
 import net.perfectdreams.loritta.helper.listeners.*
 import net.perfectdreams.loritta.helper.network.Databases
 import net.perfectdreams.loritta.helper.tables.*
@@ -182,7 +179,7 @@ class LorittaHelper(val config: LorittaHelperConfig, val fanArtsConfig: FanArtsC
             GatewayIntent.DIRECT_MESSAGES,
             GatewayIntent.MESSAGE_CONTENT,
             GatewayIntent.GUILD_MESSAGES,
-            GatewayIntent.GUILD_BANS,
+            GatewayIntent.GUILD_MODERATION,
             GatewayIntent.GUILD_MEMBERS,
             GatewayIntent.GUILD_MESSAGE_REACTIONS
         )

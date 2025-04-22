@@ -2,10 +2,10 @@ package net.perfectdreams.loritta.morenitta.interactions.components
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.replyModal
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.interactions.InteractionHook
-import net.dv8tion.jda.api.interactions.components.Component
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.morenitta.interactions.InteractionContext
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
@@ -46,12 +46,19 @@ class ComponentContext(
             Component.Type.ROLE_SELECT -> TODO()
             Component.Type.MENTIONABLE_SELECT -> TODO()
             Component.Type.CHANNEL_SELECT -> TODO()
+            Component.Type.SECTION -> TODO()
+            Component.Type.TEXT_DISPLAY -> TODO()
+            Component.Type.THUMBNAIL -> TODO()
+            Component.Type.MEDIA_GALLERY -> TODO()
+            Component.Type.FILE_DISPLAY -> TODO()
+            Component.Type.SEPARATOR -> TODO()
+            Component.Type.CONTAINER -> TODO()
         }
     }
 
     suspend fun sendModal(
         title: String,
-        components: List<LayoutComponent>,
+        components: List<ActionRow>,
         callback: suspend (ModalContext, ModalArguments) -> (Unit)
     ) {
         val unleashedComponentId = UnleashedComponentId(UUID.randomUUID())
