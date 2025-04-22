@@ -17,16 +17,23 @@ import net.perfectdreams.loritta.helper.serverresponses.loritta.english.LoriXpRe
 import net.perfectdreams.loritta.helper.serverresponses.loritta.english.MuteResponse
 import net.perfectdreams.loritta.helper.serverresponses.loritta.english.SparklyPowerInfoResponse
 import net.perfectdreams.loritta.helper.serverresponses.loritta.portuguese.*
+import net.perfectdreams.loritta.helper.serverresponses.loritta.portuguese.LoriOfflineResponse
+import net.perfectdreams.loritta.helper.serverresponses.loritta.portuguese.ReceiveSonhosResponse
+import net.perfectdreams.loritta.helper.serverresponses.loritta.portuguese.ValorShipResponse
 import net.perfectdreams.loritta.helper.serverresponses.sparklypower.*
 import net.perfectdreams.loritta.helper.utils.ComponentDataUtils
 import net.perfectdreams.loritta.helper.utils.Emotes
 import net.perfectdreams.loritta.helper.utils.extensions.await
+import net.perfectdreams.loritta.helper.utils.slash.PermissionLevel
 import net.perfectdreams.loritta.helper.utils.tickets.TicketSystemTypeData
 import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
 import net.perfectdreams.loritta.helper.utils.tickets.systems.FirstFanArtTicketSystem
 import net.perfectdreams.loritta.helper.utils.tickets.systems.HelpDeskTicketSystem
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import java.awt.Color
 
 class TicketSenderCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapper {
@@ -37,7 +44,7 @@ class TicketSenderCommand(val helper: LorittaHelper) : SlashCommandDeclarationWr
         executor = TicketSenderExecutor()
     }
 
-    inner class TicketSenderExecutor : LorittaSlashCommandExecutor() {
+    inner class TicketSenderExecutor : HelperExecutor(helper, PermissionLevel.ADMIN) {
         inner class Options : ApplicationCommandOptions() {
             val channel = channel("channel", "Canal aonde a mensagem será enviada")
 
@@ -54,7 +61,7 @@ class TicketSenderCommand(val helper: LorittaHelper) : SlashCommandDeclarationWr
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.reply(true) {
                 content = "As mensagens estão sendo enviadas! Segure firme!!"
             }

@@ -6,11 +6,13 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.perfectdreams.loritta.helper.LorittaHelper
-import net.perfectdreams.loritta.helper.serverresponses.loritta.portuguese.*
-import net.perfectdreams.loritta.helper.serverresponses.sparklypower.*
 import net.perfectdreams.loritta.helper.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.helper.utils.slash.PermissionLevel
+import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 
 class ReportMessageSenderCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(
@@ -20,14 +22,14 @@ class ReportMessageSenderCommand(val helper: LorittaHelper) : SlashCommandDeclar
         executor = ReportMessageSenderExecutor()
     }
 
-    inner class ReportMessageSenderExecutor : LorittaSlashCommandExecutor() {
+    inner class ReportMessageSenderExecutor : HelperExecutor(helper, PermissionLevel.ADMIN) {
         inner class Options : ApplicationCommandOptions() {
             val channel = channel("channel", "Canal aonde a mensagem será enviada")
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.reply(true) {
                 content = "As mensagens estão sendo enviadas! Segure firme!!"
             }

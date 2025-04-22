@@ -6,8 +6,12 @@ import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.helper.utils.LorittaLandGuild
 import net.perfectdreams.loritta.helper.utils.buttonroles.LorittaCommunityRoleButtons
 import net.perfectdreams.loritta.helper.utils.buttonroles.SparklyPowerRoleButtons
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.helper.utils.slash.PermissionLevel
+import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import net.perfectdreams.loritta.morenitta.interactions.styled
 import java.awt.Color
 
@@ -16,14 +20,14 @@ class ButtonRoleSenderCommand(val loritta: LorittaHelper) : SlashCommandDeclarat
         executor = ButtonRoleSenderCommandExecutor()
     }
 
-    inner class ButtonRoleSenderCommandExecutor : LorittaSlashCommandExecutor() {
+    inner class ButtonRoleSenderCommandExecutor : HelperExecutor(loritta, PermissionLevel.ADMIN) {
         inner class Options : ApplicationCommandOptions() {
             val channel = channel("channel", "Canal aonde a mensagem será enviada")
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             if (context.guildId == null)
                 return
 

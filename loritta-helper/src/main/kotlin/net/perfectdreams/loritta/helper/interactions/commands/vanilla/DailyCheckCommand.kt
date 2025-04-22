@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BrowserFingerprints
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.helper.utils.Constants
+import net.perfectdreams.loritta.helper.utils.slash.PermissionLevel
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import org.jetbrains.exposed.sql.SortOrder
@@ -64,14 +65,14 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
         }
     }
 
-    inner class DailyCheckExecutor : LorittaSlashCommandExecutor() {
+    inner class DailyCheckExecutor : HelperExecutor(helper, PermissionLevel.ADMIN) {
         inner class Options : ApplicationCommandOptions() {
             val userIds = string("user_ids", "ID do usuário que você deseja ver os dailies (pode ser vários)")
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             val usersIds = args[options.userIds]
@@ -192,14 +193,14 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
         }
     }
 
-    inner class DailyCheckByIpExecutor : LorittaSlashCommandExecutor() {
+    inner class DailyCheckByIpExecutor : HelperExecutor(helper, PermissionLevel.ADMIN) {
         inner class Options : ApplicationCommandOptions() {
             val ips = string("ips", "IP para ver os dailies")
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             val ips = args[options.ips]
@@ -336,14 +337,14 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
         }
     }
 
-    inner class DailyCheckByLorittaClientIdExecutor : LorittaSlashCommandExecutor() {
+    inner class DailyCheckByLorittaClientIdExecutor : HelperExecutor(helper, PermissionLevel.ADMIN) {
         inner class Options : ApplicationCommandOptions() {
             val clientIds = string("cids", "Client IDs para ver os dailies")
         }
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.deferChannelMessage(true)
 
             // Because we did stuff in a... unconventional way, we will get all matched user arguments in a unconventional way: By getting all resolved objects!

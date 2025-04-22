@@ -1,9 +1,13 @@
 package net.perfectdreams.loritta.helper.interactions.commands.vanilla
 
 import net.perfectdreams.loritta.helper.LorittaHelper
+import net.perfectdreams.loritta.helper.utils.slash.PermissionLevel
 import net.perfectdreams.loritta.helper.utils.tickets.TicketUtils
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 
 class TicketUtilsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(
@@ -19,7 +23,7 @@ class TicketUtilsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWra
         }
     }
 
-    inner class FindTicketExecutor : LorittaSlashCommandExecutor() {
+    inner class FindTicketExecutor : HelperExecutor(helper, PermissionLevel.ADMIN) {
         inner class Options : ApplicationCommandOptions() {
             val user = user("user", "O usuário que eu irei encontrar o ticket")
 
@@ -32,7 +36,7 @@ class TicketUtilsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWra
 
         override val options = Options()
 
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             val user = args[options.user]
             val ticketSystemType = TicketUtils.TicketSystemType.valueOf(args[options.type])
             val cache = helper.ticketUtils.getSystemBySystemType(ticketSystemType).cache
@@ -48,8 +52,8 @@ class TicketUtilsCommand(val helper: LorittaHelper) : SlashCommandDeclarationWra
         }
     }
 
-    inner class TicketInfoExecutor : LorittaSlashCommandExecutor() {
-        override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    inner class TicketInfoExecutor : HelperExecutor(helper, PermissionLevel.ADMIN) {
+        override suspend fun executeHelper(context: ApplicationCommandContext, args: SlashCommandArguments) {
             context.reply(true) {
                 content = buildString {
                     helper.ticketUtils.systems.values.forEach {
