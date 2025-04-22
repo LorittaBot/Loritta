@@ -178,7 +178,10 @@ class DailyView(
                     div {
                         style = "text-align: center;"
 
-                        img(src = "https://stuff.loritta.website/loritta-fake-scam.png")
+                        img(src = "https://stuff.loritta.website/loritta-fake-scam.png") {
+                            // We set a max-width to avoid overflows
+                            style = "max-width: 100%;"
+                        }
                     }
 
                     p {

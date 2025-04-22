@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.serializable.responses
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestion
@@ -62,7 +63,8 @@ sealed interface GetDailyRewardResponse : LorittaRPCResponse {
         val currentBalance: Long,
         val sponsoredBy: SonhosSponsor?,
         val failedGuilds: List<FailedGuild>,
-        val twitchChannelToAdvertise: TwitchChannel?
+        val twitchChannelToAdvertise: TwitchChannel?,
+        val loriCoolCardsEventReward: LoriCoolCardsEventReward?
     ) : GetDailyRewardResponse {
         @Serializable
         data class FailedGuild(
@@ -90,6 +92,15 @@ sealed interface GetDailyRewardResponse : LorittaRPCResponse {
 
         @Serializable
         data class TwitchChannel(val channelId: String)
+
+        @Serializable
+        data class LoriCoolCardsEventReward(
+            val eventName: String,
+            val endsAt: Instant,
+            val receivedBoosterPacks: Int,
+            val stickerPackImageUrl: String,
+            val sonhosReward: Long
+        )
     }
 
     @Serializable

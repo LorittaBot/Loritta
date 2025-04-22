@@ -4,7 +4,11 @@ package net.perfectdreams.spicymorenitta.components
 import androidx.compose.runtime.Composable
 import kotlinx.browser.window
 import kotlinx.coroutines.delay
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.serializable.responses.GetDailyRewardResponse
 import net.perfectdreams.spicymorenitta.i18nContext
 import net.perfectdreams.spicymorenitta.routes.DailyScreen
@@ -104,9 +108,7 @@ fun GotDailyRewardOverview(
                                             // We change the current here because there is no point in changing it outside the loop, since it would be
                                             // "instantaneous"
 
-                                            htmlDivElement.innerText =
-                                                (screen.response.dailyPayoutWithoutAnyBonus * sin(((i / screen.response.dailyPayoutWithoutAnyBonus.toDouble()) * PI) / 2)).toInt()
-                                                    .toString()
+                                            htmlDivElement.innerText = (screen.response.dailyPayoutWithoutAnyBonus * sin(((i / screen.response.dailyPayoutWithoutAnyBonus.toDouble()) * PI) / 2)).toInt().toString()
 
                                             while (storedTime >= delayBatch) {
                                                 delay(delayBatch.toLong())
@@ -138,6 +140,65 @@ fun GotDailyRewardOverview(
                         when (bonus) {
                             is GetDailyRewardResponse.Success.DailyPayoutBonus.DailyQuestionBonus -> Text("+ ${bonus.quantity} pelo acerto")
                         }
+                    }
+                }
+            }
+        }
+
+        val loriCoolCardsEventReward = screen.response.loriCoolCardsEventReward
+        if (loriCoolCardsEventReward != null) {
+            Div {
+                Div {
+                    Img(src = loriCoolCardsEventReward.stickerPackImageUrl) {
+                        attr("style", "max-width: min(500px, 100%);")
+                    }
+                }
+
+                Div {
+                    P {
+                        B {
+                            Text("Você ganhou ${loriCoolCardsEventReward.receivedBoosterPacks} pacotinhos do álbum de figurinhas \"${loriCoolCardsEventReward.eventName}\"!")
+                        }
+                    }
+
+                    P {
+                        Text("Quer saber o que tem dentro? Então use ")
+                        Span(attrs = {
+                            classes("discord-mention")
+                        }){
+                            Text("/figurittas abrir")
+                        }
+                        Text(" para ver quais figurinhas vieram e, depois, cole as figurinhas no seu álbum usando ")
+                        Span(attrs = {
+                            classes("discord-mention")
+                        }){
+                            Text("/figurittas colar")
+                        }
+                        Text(".")
+                    }
+
+                    P {
+                        val date = formatDateTime(loriCoolCardsEventReward.endsAt)
+
+                        Text("Se você completar o álbum antes de $date, você ganhará ${loriCoolCardsEventReward.sonhosReward} sonhos, designs de perfil e badges exclusivas! Então volte todos os dias no daily para conseguir mais pacotinhos.")
+                    }
+
+                    P {
+                        Text("Se estiver acabando o tempo para acabar o álbum e você ainda precisa de muitas figurinhas para completar, você pode comprar mais pacotes usando ")
+                        Span(attrs = {
+                            classes("discord-mention")
+                        }){
+                            Text("/figurittas comprar")
+                        }
+                        Text(".")
+                    }
+
+                    P {
+                        Text("Para mais informações, entre em nosso ")
+                        A(href = "/${i18nContext.get(I18nKeysData.Website.LocalePathId)}/support") {
+                            Text("servidor de suporte")
+                        }
+                        Text("!")
                     }
                 }
             }
@@ -300,4 +361,12 @@ fun GotDailyRewardOverview(
             }
         }
     }
+}
+
+// This is horribly hacky, but it works
+// kotlinx.datetime does NOT have formatting systems
+fun formatDateTime(instant: Instant, timeZone: TimeZone = TimeZone.currentSystemDefault()): String {
+    val localDateTime = instant.toLocalDateTime(timeZone)
+
+    return "${localDateTime.dayOfMonth.toString().padStart(2, '0')}/${localDateTime.monthNumber.toString().padStart(2, '0')}/${localDateTime.year.toString().padStart(2, '0')} ${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
 }

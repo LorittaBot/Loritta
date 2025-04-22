@@ -45,6 +45,7 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
 
     val loriCoolCardsBuy = commandMention("figurittas comprar")
     val loriCoolCardsStick = commandMention("figurittas colar")
+    val loriCoolCardsOpen = commandMention("figurittas abrir")
 
     /**
      * Creates a command mention of [path]. If the command doesn't exist, an error will be thrown.

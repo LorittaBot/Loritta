@@ -19,7 +19,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.time.Instant
 import java.util.*
@@ -31,6 +34,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
 
     val stickStickers = LoriCoolCardsStickStickersExecutor(loritta, this)
     val buyStickers = LoriCoolCardsBuyStickersExecutor(loritta, this)
+    val openStickers = LoriCoolCardsOpenBoosterPacksExecutor(loritta, this)
     val viewAlbum = LoriCoolCardsViewAlbumExecutor(loritta, this)
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY, UUID.fromString("1b5959b6-2e34-44eb-b411-2fec459dbcf8")) {
@@ -41,6 +45,12 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
             // Buy
             executor = buyStickers
         }
+
+        subcommand(I18N_PREFIX.Open.Label, I18N_PREFIX.Open.Description, UUID.fromString("ca157b6b-a786-4945-aa3d-d3687f8bd640")) {
+            // Open
+            executor = openStickers
+        }
+
 
         subcommand(I18N_PREFIX.View.Label, I18N_PREFIX.View.Description, UUID.fromString("c4d1ff4c-23b5-429c-9515-84ae0374085d")) {
             // View Figurinhas Stats

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.loricoolcards
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 
@@ -30,9 +31,17 @@ data class StickerAlbumTemplate(
      */
     val stickerProbabilityWeights: Map<CardRarity, Double>,
     /**
+     * After what date the booster packs will be available for purchase
+     */
+    val boosterPacksPurchaseAvailableAfter: Instant? = null,
+    /**
      * How many booster packs the user must buy before being able to trade
      */
     val minimumBoosterPacksToTrade: Int = 0,
+    /**
+     * How many booster packs the user can get when getting the daily reward
+     */
+    val boosterPacksOnDailyReward: Int = 0,
     /**
      * The pages of the album
      */

@@ -11,11 +11,15 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.toKotlinInstant
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity.ActivityType
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrowserFingerprints
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxNotifiedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsUserBoughtBoosterPacks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
@@ -28,6 +32,7 @@ import net.perfectdreams.loritta.common.utils.daily.DailyRewardQuestions
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.rpc.processors.LorittaRpcProcessor
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
@@ -36,12 +41,8 @@ import net.perfectdreams.loritta.serializable.StoredDailyRewardSonhosTransaction
 import net.perfectdreams.loritta.serializable.requests.GetDailyRewardRequest
 import net.perfectdreams.loritta.serializable.responses.*
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -283,7 +284,39 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                     logger.trace { "sponsoredBy = $sponsoredBy" }
                                     logger.trace { "multipliedBy = $multipliedBy" }
 
+                                    var loriCoolCardsReceivedBoosterPackResult: GetDailyRewardResponse.Success.LoriCoolCardsEventReward? = null
+
                                     loritta.newSuspendedTransaction {
+                                        val now = Instant.now()
+                                        val loriCoolCardsEvent = LoriCoolCardsEvents.selectAll().where {
+                                            LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                                        }.firstOrNull()
+
+                                        if (loriCoolCardsEvent != null) {
+                                            val template = Json.decodeFromString<StickerAlbumTemplate>(loriCoolCardsEvent[LoriCoolCardsEvents.template])
+
+                                            if (template.boosterPacksOnDailyReward != 0) {
+                                                repeat(template.boosterPacksOnDailyReward) {
+                                                    // If there is an active lori cool cards event, let's add an unopened booster pack to them!
+                                                    LoriCoolCardsUserBoughtBoosterPacks.insert {
+                                                        it[LoriCoolCardsUserBoughtBoosterPacks.user] = userId
+                                                        it[LoriCoolCardsUserBoughtBoosterPacks.event] = loriCoolCardsEvent[LoriCoolCardsEvents.id]
+                                                        it[LoriCoolCardsUserBoughtBoosterPacks.boughtAt] = now
+                                                    }
+                                                }
+
+                                                loriCoolCardsReceivedBoosterPackResult = GetDailyRewardResponse.Success.LoriCoolCardsEventReward(
+                                                    loriCoolCardsEvent[LoriCoolCardsEvents.eventName],
+                                                    loriCoolCardsEvent[LoriCoolCardsEvents.endsAt].toKotlinInstant(),
+                                                    template.boosterPacksOnDailyReward,
+                                                    template.stickerPackImageUrl,
+                                                    template.sonhosReward
+                                                )
+                                            }
+                                        } else {
+                                            loriCoolCardsReceivedBoosterPackResult = null
+                                        }
+
                                         val fingerprintId = BrowserFingerprints.insertAndGetId {
                                             it[BrowserFingerprints.width] = request.fingerprint.width
                                             it[BrowserFingerprints.height] = request.fingerprint.height
@@ -354,7 +387,8 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
                                         lorittaProfile.money,
                                         sponsoredByData,
                                         failedDailyServersInfo,
-                                        twitchChannelToBeAdvertised
+                                        twitchChannelToBeAdvertised,
+                                        loriCoolCardsReceivedBoosterPackResult
                                     )
                                 }
                             }

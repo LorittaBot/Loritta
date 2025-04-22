@@ -13,6 +13,13 @@ buy:
   stickStickers: "Colar Figurinhas"
   buyStickerBoosterPack: "Comprar Pacote de Figurinhas"
   summary: "Resumo"
+  youBoughtXStickerPacks: "Você comprou {stickerPackCount,plural, =0 {# pacotes de figurinhas} one {# pacote de figurinha} other {# pacotes de figurinhas}}! Abra os pacotinhos comprados usando {loriCoolCardsOpenCommandMention}."
+  storeNotAvailable: "A lojinha de pacotes de figurinhas não está aberta no momento, ela só estará aberta a partir de {timestamp}. Por enquanto você só pode conseguir pacotinhos pela recompensa diária da Loritta ({dailyCommand}). Volte mais tarde!"
+open:
+  label: "abrir"
+  description: "Abre seus pacotes de figurinhas"
+  youOpenedXStickerPacks: "Você abriu {stickerPackCount,plural, =0 {# pacotes de figurinhas} one {# pacote de figurinha} other {# pacotes de figurinhas}}!"
+  andXMoreStickers: "...e mais {stickersCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
 
 view:
   label: "ver"

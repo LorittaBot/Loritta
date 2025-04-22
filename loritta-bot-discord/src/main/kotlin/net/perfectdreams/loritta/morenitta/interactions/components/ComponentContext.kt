@@ -42,6 +42,8 @@ class ComponentContext(
 ) : InteractionContext(loritta, config, lorittaUser, locale, i18nContext, UnleashedMentions(emptyList(), emptyList(), emptyList(), emptyList()), event) {
     suspend fun deferEdit(): InteractionHook = event.deferEdit().await()
 
+    suspend fun deferEditAsync(): CompletableFuture<InteractionHook> = event.deferEdit().submit()
+
     /**
      * Edits the message that invoked the action
      */
