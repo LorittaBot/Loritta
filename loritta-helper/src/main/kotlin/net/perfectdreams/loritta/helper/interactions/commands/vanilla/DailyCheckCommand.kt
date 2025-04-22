@@ -10,8 +10,11 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.helper.LorittaHelper
 import net.perfectdreams.loritta.helper.utils.Constants
 import net.perfectdreams.loritta.helper.utils.slash.PermissionLevel
-import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
+import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
@@ -126,25 +129,10 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 builder.append("${userEmote} [${whenTheTransactionHappened.format(Constants.PRETTY_DATE_FORMAT)}] ${userData?.name} [${userData?.globalName}] (${daily[Dailies.receivedById]})")
                 builder.append("\n")
                 builder.append("- Email: ${daily[Dailies.email]}")
-                builder.append("\n")
-                builder.append("- IP: ${daily[Dailies.ip]}")
-                builder.append("\n")
-                builder.append("- User-Agent: ${daily[Dailies.userAgent]}")
                 val fingerprintData = daily[Dailies.browserFingerprints]
                 if (fingerprintData != null) {
                     builder.append("\n")
                     builder.append("- Client ID: ${daily[BrowserFingerprints.clientId]}")
-                    builder.append("\n")
-                    builder.append("- Accept: ${daily[BrowserFingerprints.accept]}")
-                    builder.append("\n")
-                    builder.append("- Accept-Language: ${daily[BrowserFingerprints.contentLanguage]}")
-                    builder.append("\n")
-                    builder.append("- Screen Size: ${daily[BrowserFingerprints.width]}x${daily[BrowserFingerprints.height]}")
-                    builder.append("\n")
-                    builder.append("- Available Screen Size: ${daily[BrowserFingerprints.availWidth]}x${daily[BrowserFingerprints.availHeight]}")
-                    builder.append("\n")
-                    builder.append("- Timezone Offset: ${daily[BrowserFingerprints.timezoneOffset]}")
-                    matchedSameClientIds.getOrPut(daily[BrowserFingerprints.clientId]) { mutableSetOf() }.add(daily[Dailies.receivedById])
                 }
                 builder.append("\n\n")
             }
@@ -255,25 +243,10 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 builder.append("${userEmote} [${whenTheTransactionHappened.format(Constants.PRETTY_DATE_FORMAT)}] ${userData?.name} [${userData?.globalName}] (${daily[Dailies.receivedById]})")
                 builder.append("\n")
                 builder.append("- Email: ${daily[Dailies.email]}")
-                builder.append("\n")
-                builder.append("- IP: ${daily[Dailies.ip]}")
-                builder.append("\n")
-                builder.append("- User-Agent: ${daily[Dailies.userAgent]}")
                 val fingerprintData = daily[Dailies.browserFingerprints]
                 if (fingerprintData != null) {
                     builder.append("\n")
                     builder.append("- Client ID: ${daily[BrowserFingerprints.clientId]}")
-                    builder.append("\n")
-                    builder.append("- Accept: ${daily[BrowserFingerprints.accept]}")
-                    builder.append("\n")
-                    builder.append("- Accept-Language: ${daily[BrowserFingerprints.contentLanguage]}")
-                    builder.append("\n")
-                    builder.append("- Screen Size: ${daily[BrowserFingerprints.width]}x${daily[BrowserFingerprints.height]}")
-                    builder.append("\n")
-                    builder.append("- Available Screen Size: ${daily[BrowserFingerprints.availWidth]}x${daily[BrowserFingerprints.availHeight]}")
-                    builder.append("\n")
-                    builder.append("- Timezone Offset: ${daily[BrowserFingerprints.timezoneOffset]}")
-                    matchedSameClientIds.getOrPut(daily[BrowserFingerprints.clientId]) { mutableSetOf() }.add(daily[Dailies.receivedById])
                 }
                 builder.append("\n\n")
                 foundIds.add(userId)
@@ -401,25 +374,10 @@ class DailyCheckCommand(val helper: LorittaHelper) : SlashCommandDeclarationWrap
                 builder.append("${userEmote} [${whenTheTransactionHappened.format(Constants.PRETTY_DATE_FORMAT)}] ${userData?.name} [${userData?.globalName}] (${daily[Dailies.receivedById]})")
                 builder.append("\n")
                 builder.append("- Email: ${daily[Dailies.email]}")
-                builder.append("\n")
-                builder.append("- IP: ${daily[Dailies.ip]}")
-                builder.append("\n")
-                builder.append("- User-Agent: ${daily[Dailies.userAgent]}")
                 val fingerprintData = daily[Dailies.browserFingerprints]
                 if (fingerprintData != null) {
                     builder.append("\n")
                     builder.append("- Client ID: ${daily[BrowserFingerprints.clientId]}")
-                    builder.append("\n")
-                    builder.append("- Accept: ${daily[BrowserFingerprints.accept]}")
-                    builder.append("\n")
-                    builder.append("- Accept-Language: ${daily[BrowserFingerprints.contentLanguage]}")
-                    builder.append("\n")
-                    builder.append("- Screen Size: ${daily[BrowserFingerprints.width]}x${daily[BrowserFingerprints.height]}")
-                    builder.append("\n")
-                    builder.append("- Available Screen Size: ${daily[BrowserFingerprints.availWidth]}x${daily[BrowserFingerprints.availHeight]}")
-                    builder.append("\n")
-                    builder.append("- Timezone Offset: ${daily[BrowserFingerprints.timezoneOffset]}")
-                    matchedSameClientIds.getOrPut(daily[BrowserFingerprints.clientId]) { mutableSetOf() }.add(daily[Dailies.receivedById])
                 }
                 builder.append("\n\n")
                 foundIds.add(userId)
