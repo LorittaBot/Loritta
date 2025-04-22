@@ -14,7 +14,7 @@ object CommandUtils {
      * @see logMessageEventComplete
      */
     fun logMessageEvent(event: SlashCommandInteractionEvent, logger: KLogger) {
-        logger.info("${event.user.name} (${event.user.idLong}): ${event.fullCommandName}")
+        logger.info("${event.user.name} (${event.user.idLong}): ${event.fullCommandName} (${event.options.toList().joinToString { "${it.name}=${it.asString}" }})")
     }
 
     /**
@@ -25,6 +25,6 @@ object CommandUtils {
      * @see logMessageEvent
      */
     fun logMessageEventComplete(event: SlashCommandInteractionEvent, logger: KLogger) {
-        logger.info("${event.user.name} (${event.user.idLong}): ${event.fullCommandName} - OK!")
+        logger.info("${event.user.name} (${event.user.idLong}): ${event.fullCommandName} (${event.options.toList().joinToString { "${it.name}=${it.asString}" }}) - OK!")
     }
 }
