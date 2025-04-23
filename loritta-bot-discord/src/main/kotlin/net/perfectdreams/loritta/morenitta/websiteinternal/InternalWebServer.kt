@@ -380,7 +380,7 @@ class InternalWebServer(val m: LorittaBot) {
                                     [Raro](https://stuff.loritta.website/loricoolcards/profile-rare.gif)
                                     [Épico](https://stuff.loritta.website/loricoolcards/profile-epic.gif)
                                     [Lendário](https://stuff.loritta.website/loricoolcards/profile-legendary.gif)
-                                    [Mítico](https://stuff.loritta.website/loricoolcards/profile-special.gif)
+                                    [Especial](https://stuff.loritta.website/loricoolcards/profile-special.gif)
                                     
                                     ## ${Emotes.LoriStonks} Designs de Perfil ESPECIAIS!
                                     
@@ -391,7 +391,7 @@ class InternalWebServer(val m: LorittaBot) {
                                     [Raro](https://stuff.loritta.website/loricoolcards/profile-plain-rare.gif)
                                     [Épico](https://stuff.loritta.website/loricoolcards/profile-plain-epic.gif)
                                     [Lendário](https://stuff.loritta.website/loricoolcards/profile-plain-legendary.gif)
-                                    [Mítico](https://stuff.loritta.website/loricoolcards/profile-plain-special.gif)
+                                    [Especial](https://stuff.loritta.website/loricoolcards/profile-plain-special.gif)
                                     
                                     ## ${Emotes.PantufaPickaxe} SparklyPower
                                 """.trimIndent())
