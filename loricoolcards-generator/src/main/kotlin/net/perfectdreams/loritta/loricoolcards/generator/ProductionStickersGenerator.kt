@@ -8,7 +8,6 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.datetime.Clock
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.User
@@ -73,7 +72,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v7_befopti"
+    val folderName = "production_v9_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")
@@ -140,7 +139,12 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
         StonksBadge(pudding),
         StickerFanBadge(pudding),
         ReactionEventBadge.Halloween2024ReactionEventBadge(pudding),
-        ReactionEventBadge.Halloween2024ReactionEventSuperBadge(pudding)
+        ReactionEventBadge.Halloween2024ReactionEventSuperBadge(pudding),
+        BratBadge(pudding),
+        ReactionEventBadge.Christmas2024ReactionEventBadge(pudding),
+        ReactionEventBadge.Christmas2024ReactionEventSuperBadge(pudding),
+        ReactionEventBadge.Anniversary2025ReactionEventBadge(pudding),
+        ReactionEventBadge.Anniversary2025ReactionEventSuperBadge(pudding)
     )
 
     // Badges that requires a "Loritta" instance, so, to avoid changing the badges too much, we just pretend that the badge is valid and carry on with our lives
@@ -191,21 +195,21 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
 
     // Avatars that will be falled back to user avatar
     val blacklistedUserAvatarsIds = mapOf<Long, String>(
-        492701937347723265L to "https://cdn.discordapp.com/attachments/739823666891849729/1302006414738194563/avatar_nsfw.png?ex=67268b77&is=672539f7&hm=ddf2388347944804ac19749b76787fd9c16a055a67bba9393b0d724b1b46a421&"
+        // 492701937347723265L to "https://cdn.discordapp.com/attachments/739823666891849729/1302006414738194563/avatar_nsfw.png?ex=67268b77&is=672539f7&hm=ddf2388347944804ac19749b76787fd9c16a055a67bba9393b0d724b1b46a421&"
         // 755138747938504871L to "https://cdn.discordapp.com/attachments/1082340413156892682/1257402203015221360/IMG_5412.jpg?ex=6684468e&is=6682f50e&hm=c6efc25a8f97c0b0df7573c50b29b06f3685d292b3782936425a4b865dd82b31&"
     )
 
     val staffIds = listOf(
-        123170274651668480,
-        197308318119755776,
-        400683515873591296,
-        197501878399926272,
-        395788326835322882,
-        351760430991147010,
-        361977144445763585,
-        472085605623529496,
-        437731723350900739,
-        236167700777271297
+        297153970613387264L,
+        123170274651668480L,
+        197308318119755776L,
+        400683515873591296L,
+        351760430991147010L,
+        437731723350900739L,
+        472085605623529496L,
+        236167700777271297L,
+        716468730799980587L,
+        197501878399926272L
     )
 
     // TODO: Sort staff profiles by specific order
@@ -220,24 +224,24 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
 
     // Sort staff profiles by specific order
     val staffProfiles = listOf(
-        staffProfilesTemporary.first { it[Profiles.id].value == 123170274651668480L }, // Power
+        staffProfilesTemporary.first { it[Profiles.id].value == 297153970613387264L }, // Loritta
 
+        staffProfilesTemporary.first { it[Profiles.id].value == 123170274651668480L }, // Power
         staffProfilesTemporary.first { it[Profiles.id].value == 197308318119755776L }, // JvGm45
         staffProfilesTemporary.first { it[Profiles.id].value == 400683515873591296L }, // Stéphany
-        staffProfilesTemporary.first { it[Profiles.id].value == 472085605623529496L }, // José
 
         staffProfilesTemporary.first { it[Profiles.id].value == 351760430991147010L }, // Arth
-        staffProfilesTemporary.first { it[Profiles.id].value == 361977144445763585L }, // Peter
         staffProfilesTemporary.first { it[Profiles.id].value == 437731723350900739L }, // nathaan
+        staffProfilesTemporary.first { it[Profiles.id].value == 472085605623529496L }, // José
 
         staffProfilesTemporary.first { it[Profiles.id].value == 236167700777271297L }, // Hech
-        staffProfilesTemporary.first { it[Profiles.id].value == 395788326835322882L }, // DanielaGC
+        staffProfilesTemporary.first { it[Profiles.id].value == 716468730799980587L }, // Furalha
         staffProfilesTemporary.first { it[Profiles.id].value == 197501878399926272L }, // Paum
     )
 
     val moneyProfiles = pudding.transaction {
         Profiles.innerJoin(UserSettings).selectAll().where {
-            Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (Profiles.id notInList staffIds)
+            Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()) and (Profiles.id notInList staffIds) and (Profiles.id notInSubQuery UsersService.botTokenUsersList())
         }
             .orderBy(Profiles.money, SortOrder.DESC)
             .limit(500)
@@ -356,7 +360,7 @@ suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig
                             } else if (moneyIndex in 0 until 500) {
                                 CardRarity.COMMON
                             } else error("Whoops $index"),
-                            user.name,
+                            user.name.lowercase(),
                             ImageIO.read(URL(userAvatarUrl)),
                             ImageIO.read(URL(activeBackgroundUrl)),
                             badgeTitle,

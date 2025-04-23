@@ -9,12 +9,12 @@ val fixedRandom = Random(0)
 fun main() {
     // Define weights corresponding to the enum values
     val weights = mapOf(
-        CardRarity.COMMON to 26.0,
-        CardRarity.UNCOMMON to 23.0,
-        CardRarity.RARE to 20.0,
-        CardRarity.EPIC to 13.0,
-        CardRarity.LEGENDARY to 8.0,
-        CardRarity.MYTHIC to 4.0,
+        CardRarity.COMMON to 1.0,
+        CardRarity.UNCOMMON to 0.95,
+        CardRarity.RARE to 0.9,
+        CardRarity.EPIC to 0.85,
+        CardRarity.LEGENDARY to 0.80,
+        CardRarity.MYTHIC to 0.75
     )
 
     println("Total weight value: ${weights.values.sum()}")

@@ -7,12 +7,12 @@ import kotlin.time.measureTime
 fun main() {
     // Define weights corresponding to the enum values
     val weights = mapOf(
-        CardRarity.COMMON to 26.0,
-        CardRarity.UNCOMMON to 23.0,
-        CardRarity.RARE to 20.0,
-        CardRarity.EPIC to 13.0,
-        CardRarity.LEGENDARY to 10.0,
-        CardRarity.MYTHIC to 8.0,
+        CardRarity.COMMON to 1.0,
+        CardRarity.UNCOMMON to 1.0,
+        CardRarity.RARE to 1.0,
+        CardRarity.EPIC to 1.0,
+        CardRarity.LEGENDARY to 1.0,
+        CardRarity.MYTHIC to 1.0
     )
 
     println("Total weight value: ${weights.values.sum()}")

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.loricoolcards.generator
 
-import kotlinx.serialization.encodeToString
+import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
@@ -449,61 +449,28 @@ fun main() {
         StickerAlbumTemplate(
             stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
             unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
-            sonhosPrice = 5_000,
-            // sonhosReward = 2_500_000,
-            sonhosReward = 3_500_000,
+            sonhosPrice = 25_000,
+            sonhosReward = 2_500_000,
             stickersInPack = 5,
+            boosterPacksOnDailyReward = 7,
+            boosterPacksPurchaseAvailableAfter = Instant.parse("2025-05-24T03:00:00+00"),
             stickerProbabilityWeights = mapOf(
-                // CardRarity.COMMON to 26.0,
-                // CardRarity.UNCOMMON to 23.0,
-                // CardRarity.RARE to 20.0,
-                // CardRarity.EPIC to 13.0,
-                // CardRarity.LEGENDARY to 10.0,
-                // CardRarity.MYTHIC to 8.0,
-                CardRarity.COMMON to 26.0,
-                CardRarity.UNCOMMON to 23.0,
-                CardRarity.RARE to 20.0,
-                CardRarity.EPIC to 13.0,
-                CardRarity.LEGENDARY to 8.0,
-                CardRarity.MYTHIC to 4.0,
+                CardRarity.COMMON to 1.0,
+                CardRarity.UNCOMMON to 1.0,
+                CardRarity.RARE to 1.0,
+                CardRarity.EPIC to 1.0,
+                CardRarity.LEGENDARY to 1.0,
+                CardRarity.MYTHIC to 1.0,
             ),
-            minimumBoosterPacksToTrade = 150,
+            minimumBoosterPacksToTrade = 50,
             pages = pages,
-            )
+        )
     )
 
-    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 7)', '2024-11-01 21:40:00+00', '2024-12-01 00:00:00+00', '$resultAsJson');")
-    if (false) {
+    println("INSERT INTO loricoolcardsevents (event_name, starts_at, ends_at, template) VALUES ('Top 500 Sonhadores (Temporada 9)', '2025-04-23 03:00:00+00', '2025-05-01 03:00:00+00', '$resultAsJson');")
+    if (true) {
         println(
-            "UPDATE loricoolcardsevents SET template = '${
-                Json.encodeToString(
-                    StickerAlbumTemplate(
-                        stickerPackImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/buying-booster-pack.gif",
-                        unknownStickerImageUrl = "https://stuff.loritta.website/loricoolcards/production/v1/sticker-unknownsticker-animated.gif",
-                        sonhosPrice = 5_000,
-                        // sonhosReward = 2_000_000,
-                        sonhosReward = 3_500_000,
-                        stickersInPack = 5,
-                        stickerProbabilityWeights = mapOf(
-                            // CardRarity.COMMON to 26.0,
-                            // CardRarity.UNCOMMON to 23.0,
-                            // CardRarity.RARE to 20.0,
-                            // CardRarity.EPIC to 13.0,
-                            // CardRarity.LEGENDARY to 10.0,
-                            // CardRarity.MYTHIC to 8.0,
-                            CardRarity.COMMON to 26.0,
-                            CardRarity.UNCOMMON to 23.0,
-                            CardRarity.RARE to 20.0,
-                            CardRarity.EPIC to 13.0,
-                            CardRarity.LEGENDARY to 8.0,
-                            CardRarity.MYTHIC to 4.0,
-                        ),
-                        minimumBoosterPacksToTrade = 200,
-                        pages = pages,
-
-                        )
-                )
-            }' WHERE id = 11;"
+            "UPDATE loricoolcardsevents SET ends_at = '2025-06-01 03:00:00+00', template = '${resultAsJson}' WHERE id = 20;"
         )
     }
 }
