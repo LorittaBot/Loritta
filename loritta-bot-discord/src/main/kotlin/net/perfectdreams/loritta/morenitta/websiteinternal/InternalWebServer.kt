@@ -293,7 +293,7 @@ class InternalWebServer(val m: LorittaBot) {
                     val request = Json.decodeFromString<NotifyLoriCoolCardsRequest>(call.receiveText())
 
                     val guild = m.lorittaShards.getGuildById(request.guildId)!!
-                    val channel = guild.getTextChannelById(request.channelId)!!
+                    val channel = guild.getGuildMessageChannelById(request.channelId)!!
 
                     val event = m.transaction {
                         LoriCoolCardsEvents.selectAll().where {
