@@ -375,23 +375,23 @@ class InternalWebServer(val m: LorittaBot) {
                                     
                                     Dependendo de quantas vezes você completou o evento, você pode ter designs de perfis diferentes!
                                     
-                                    [Comum](https://cdn.discordapp.com/attachments/547119872568459284/1364425046566768700/profile.gif)
-                                    [Incomum](https://cdn.discordapp.com/attachments/547119872568459284/1364425082310754305/profile.gif)
-                                    [Raro](https://cdn.discordapp.com/attachments/547119872568459284/1364425106776133642/profile.gif)
-                                    [Épico](https://cdn.discordapp.com/attachments/547119872568459284/1364425131690033194/profile.gif)
-                                    [Lendário](https://cdn.discordapp.com/attachments/547119872568459284/1364425161574715432/profile.gif)
-                                    [Mítico](https://cdn.discordapp.com/attachments/547119872568459284/1364425183212863609/profile.gif)
+                                    [Comum](https://cdn.discordapp.com/attachments/547119872568459284/1364425046566768700/profile.gif?ex=68099f58&is=68084dd8&hm=eb5e11fa0376c6761a6a3d3dcb2d8e3c433783c0e47e4dd89df890c999c70d9c&)
+                                    [Incomum](https://cdn.discordapp.com/attachments/547119872568459284/1364425082310754305/profile.gif?ex=68099f61&is=68084de1&hm=2357a84fc43686e1166a6285ac27f5b1275762301e3b556cc4d7037817dac322&)
+                                    [Raro](https://cdn.discordapp.com/attachments/547119872568459284/1364425106776133642/profile.gif?ex=68099f67&is=68084de7&hm=f0925a1311f258f5663058a24f45428897faf84c7e5300760c578ba6275d60b6&)
+                                    [Épico](https://cdn.discordapp.com/attachments/547119872568459284/1364425131690033194/profile.gif?ex=68099f6d&is=68084ded&hm=078f02c746dfacf7159dff96f1f1a79e68c9d348de7f121a99aeec8b6cedd2b9&)
+                                    [Lendário](https://cdn.discordapp.com/attachments/547119872568459284/1364425161574715432/profile.gif?ex=68099f74&is=68084df4&hm=2a9def3e097c6145b303d26470df1959b2413197a2a81514138e5d19e4df6446&)
+                                    [Mítico](https://cdn.discordapp.com/attachments/547119872568459284/1364425183212863609/profile.gif?ex=68099f79&is=68084df9&hm=a20fb1f70cb6f4f0dc443e56a49f4b179de0e3d83af6690c8662a5a3b779de34&)
                                     
                                     ## ${Emotes.LoriStonks} Designs de Perfil ESPECIAIS!
                                     
                                     Se você for aficionados por figurinhas o suficiente para acabar o álbum entre os top 100 primeiros, você ganhará um design de perfil ESPECIAL! Igual ao anterior, ele também é baseado em quantas vezes você já completou eventos.
                                     
-                                    [Comum](https://cdn.discordapp.com/attachments/547119872568459284/1364426116663742564/profile.gif)
-                                    [Incomum](https://cdn.discordapp.com/attachments/547119872568459284/1364426133419986994/profile.gif)
-                                    [Raro](https://cdn.discordapp.com/attachments/547119872568459284/1364426153703637114/profile.gif)
-                                    [Épico](https://cdn.discordapp.com/attachments/547119872568459284/1364426174494933053/profile.gif)
-                                    [Lendário](https://cdn.discordapp.com/attachments/547119872568459284/1364426191842447483/profile.gif)
-                                    [Mítico](https://cdn.discordapp.com/attachments/547119872568459284/1364426207332143195/profile.gif)
+                                    [Comum](https://cdn.discordapp.com/attachments/547119872568459284/1364426116663742564/profile.gif?ex=6809a058&is=68084ed8&hm=99b1a607cc11067f22031f7223abe3fea2a426edebbcd2c0db8dd7757cb3b440&)
+                                    [Incomum](https://cdn.discordapp.com/attachments/547119872568459284/1364426133419986994/profile.gif?ex=6809a05c&is=68084edc&hm=da297b1d79151078b9087bd6558c88b6c8bebb48524d9652a416b2215ed77386&)
+                                    [Raro](https://cdn.discordapp.com/attachments/547119872568459284/1364426153703637114/profile.gif?ex=6809a060&is=68084ee0&hm=0caa1df76da71f35fe0b7cceba9c38dc07eab887dd7d3d4512017e33f944615d&)
+                                    [Épico](https://cdn.discordapp.com/attachments/547119872568459284/1364426174494933053/profile.gif?ex=6809a065&is=68084ee5&hm=628ee21b5f12601a3c60de941b544662009a468e9b83c7b80b6fa00b5640185b&)
+                                    [Lendário](https://cdn.discordapp.com/attachments/547119872568459284/1364426191842447483/profile.gif?ex=6809a069&is=68084ee9&hm=3f6b8b9b5f86829e16936efd92fb69e113e3c09de945d29dc3a033698549dd5d&)
+                                    [Mítico](https://cdn.discordapp.com/attachments/547119872568459284/1364426207332143195/profile.gif?ex=6809a06d&is=68084eed&hm=548878b665e41bdf932885df6d1c9f8b59301624622e8121c9ef767cdbe1150c&)
                                     
                                     ## ${Emotes.PantufaPickaxe} SparklyPower
                                 """.trimIndent())
