@@ -393,14 +393,19 @@ class Pudding(
                 val xactLockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_xact_lock(?);")
                 xactLockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
                 xactLockStatement.execute()
+                var databaseSchemaVersion: Int? = null
 
-                if (checkIfTableExists(SchemaVersion)) {
-                    val schemaVersion =
-                        SchemaVersion.select(SchemaVersion.version).where { SchemaVersion.id eq SCHEMA_ID }
-                            .firstOrNull()
-                            ?.get(SchemaVersion.version)
+                val schemaVersionOverride = Integer.getInteger("loritta.schemaVersionOverride", null)
+                if (schemaVersionOverride != null) {
+                    logger.info { "Overriding Schema Version to $schemaVersionOverride" }
+                    databaseSchemaVersion = schemaVersionOverride
+                } else {
+                    if (checkIfTableExists(SchemaVersion)) {
+                        val schemaVersion =
+                            SchemaVersion.select(SchemaVersion.version).where { SchemaVersion.id eq SCHEMA_ID }
+                                .firstOrNull()
+                                ?.get(SchemaVersion.version)
 
-                    if (!java.lang.Boolean.getBoolean("loritta.ignoreSchemaVersion")) {
                         if (schemaVersion == SCHEMA_VERSION) {
                             logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
                             return@transaction
@@ -410,13 +415,12 @@ class Pudding(
                                 return@transaction
                             } else {
                                 logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
+                                databaseSchemaVersion = schemaVersion
                             }
                         }
                     } else {
-                        logger.info { "Ignoring schema version (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables anyway, yay!" }
+                        logger.warn { "SchemaVersion doesn't seem to exist, we will ignore the schema version check..." }
                     }
-                } else {
-                    logger.warn { "SchemaVersion doesn't seem to exist, we will ignore the schema version check..." }
                 }
 
                 createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
@@ -436,7 +440,7 @@ class Pudding(
                 createOrUpdatePostgreSQLEnum(InteractionContextType.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
-                SchemaUtils.createMissingTablesAndColumns(
+                SchemaUtils.create(
                     *schemas
                         .toMutableList()
                         // Partitioned tables
@@ -450,12 +454,30 @@ class Pudding(
                 if (ExecutedComponentsLog in schemas)
                     createPartitionedTable(ExecutedComponentsLog)
 
-                logger.info { "Updating database schema version to $SCHEMA_VERSION..." }
+                if (databaseSchemaVersion != null) {
+                    logger.info { "Running migration scripts in order..." }
+                    for (upgradeVersion in databaseSchemaVersion + 1..SCHEMA_VERSION) {
+                        logger.info { "Updating database schema version to $upgradeVersion..." }
 
-                SchemaVersion.upsert(SchemaVersion.id) {
-                    it[SchemaVersion.id] = SCHEMA_ID
-                    it[SchemaVersion.version] = SCHEMA_VERSION
+                        val migrationScript = Pudding::class.java.getResourceAsStream("/migrations/${upgradeVersion.toString().padStart(5, '0')}.sql")
+
+                        if (migrationScript != null) {
+                            val script = migrationScript.readBytes().toString(Charsets.UTF_8)
+
+                            val statement = this.connection.prepareStatement(script, false)
+                            statement.executeUpdate()
+                        } else {
+                            logger.info { "Version $upgradeVersion does not have a migration version!" }
+                        }
+
+                        SchemaVersion.upsert(SchemaVersion.id) {
+                            it[id] = SCHEMA_ID
+                            it[version] = upgradeVersion
+                        }
+                    }
                 }
+
+                logger.info { "All migrations were successfully applied!" }
             }
     }
 
