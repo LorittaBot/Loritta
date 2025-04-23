@@ -1,11 +1,13 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.interactions.components.*
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.separator.Separator
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -176,7 +178,8 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
             OpenBoosterPacksResult.YouDontHaveAnyPendingBoosterPacks -> {
                 context.reply(false) {
                     styled(
-                        "Você não tem nenhum pacotinho não aberto!"
+                        context.i18nContext.get(I18nKeysData.Commands.Command.Loricoolcards.Open.YouDontHaveAnyUnopenedPacks(loritta.commandMentions.daily, loritta.commandMentions.loriCoolCardsBuy)),
+                        Emotes.LoriBonk
                     )
                 }
             }
@@ -190,20 +193,26 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                     // val backgroundUrl = loritta.profileDesignManager.getUserProfileBackgroundUrl(currentProfileId)
 
                     return {
-                        embed {
+                        this.useComponentsV2 = true
+
+                        this.components += Container {
                             val title = currentCard.card[LoriCoolCardsEventCards.title]
                             val cardId = currentCard.card[LoriCoolCardsEventCards.fancyCardId]
                             val cardReceivedImageUrl = currentCard.card[LoriCoolCardsEventCards.cardReceivedImageUrl]
 
-                            if (currentCard.haveWeAlreadySeenThisCardBefore) {
-                                this.title =
-                                    "${currentCard.card[LoriCoolCardsEventCards.rarity].emoji} $cardId - $title"
+                            val embedLikeTitle = if (currentCard.haveWeAlreadySeenThisCardBefore) {
+                                "${currentCard.card[LoriCoolCardsEventCards.rarity].emoji} $cardId - $title"
                             } else {
-                                this.title =
-                                    "${currentCard.card[LoriCoolCardsEventCards.rarity].emoji} **[NOVO!]** $cardId - $title"
+                                "${currentCard.card[LoriCoolCardsEventCards.rarity].emoji} **[NOVO!]** $cardId - $title"
                             }
 
-                            this.description =
+                            + TextDisplay("### $embedLikeTitle")
+
+                            + MediaGallery {
+                                + this.item(cardReceivedImageUrl)
+                            }
+
+                            + TextDisplay(
                                 "${context.i18nContext.get(I18N_PREFIX.NowYouHaveXStickersOfThisType(currentCard.howManyCardsOfThisCardIdWeHave))}\n${
                                     context.i18nContext.get(
                                         I18N_PREFIX.AlbumProgress(
@@ -212,10 +221,9 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                         )
                                     )
                                 }"
-                            this.color = currentCard.card[LoriCoolCardsEventCards.rarity].color.rgb
-                            // image = backgroundUrl
+                            )
 
-                            this.image = cardReceivedImageUrl
+                            this.accentColor = currentCard.card[LoriCoolCardsEventCards.rarity].color.rgb
                         }
 
                         val nextStickerButton = UnleashedButton.of(
@@ -278,12 +286,14 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
 
                                 // Don't defer, let's edit the original message directly because we don't need to access the database here
                                 it.editMessage(
-                                    isReplace = false,
+                                    isReplace = true,
                                 ) {
-                                    embed {
-                                        title = "${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}"
-                                        color = LorittaColors.LorittaAqua.rgb
+                                    this.useComponentsV2 = true
 
+                                    this.components += Container {
+                                        accentColor = LorittaColors.LorittaAqua.rgb
+
+                                        + TextDisplay("### ${Emotes.LoriCoolSticker} ${context.i18nContext.get(I18N_PREFIX.Summary)}")
                                         val description = buildString {
                                             groupedCards.take(25).forEach {
                                                 val cardReference = it.second.first().card
@@ -297,31 +307,37 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                                 append("* ${context.i18nContext.get(I18nKeysData.Commands.Command.Loricoolcards.Open.AndXMoreStickers(stickersNotShown.sumOf { it.second.size }))}")
                                                 appendLine()
                                             }
-
-                                            appendLine("**Progresso do Álbum:** ${lastStickerOfThePacks.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${lastStickerOfThePacks.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
-                                            appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
                                         }
 
-                                        this.description = description
+                                        + TextDisplay(description)
 
-                                        footer(context.i18nContext.get(I18nKeysData.Commands.Command.Loricoolcards.Open.YouOpenedXStickerPacks(result.boosterPacksCount)))
-                                    }
-
-                                    if (result.alreadyStickedCardsCount != lastStickerOfThePacks.totalAlbumCompletionCount) {
-                                        // If the number is different, then it means that we have new stickers to be sticked!
-                                        actionRow(
-                                            loritta.interactivityManager
-                                                .buttonForUser(
-                                                    context.user,
-                                                    context.alwaysEphemeral,
-                                                    stickStickersButton
-                                                ) {
-                                                    loriCoolCardsCommand.stickStickers.stickStickers(it)
-                                                }
+                                        + row(
+                                            if (result.alreadyStickedCardsCount != lastStickerOfThePacks.totalAlbumCompletionCount) {
+                                                // If the number is different, then it means that we have new stickers to be sticked!
+                                                loritta.interactivityManager
+                                                    .buttonForUser(
+                                                        context.user,
+                                                        context.alwaysEphemeral,
+                                                        stickStickersButton
+                                                    ) {
+                                                        loriCoolCardsCommand.stickStickers.stickStickers(it)
+                                                    }
+                                            } else {
+                                                // If not, just disable the button
+                                                stickStickersButton.asDisabled()
+                                            }
                                         )
-                                    } else {
-                                        // If not, just disable the button
-                                        actionRow(stickStickersButton.asDisabled())
+
+                                        + Separator(true, Separator.Spacing.SMALL)
+
+                                        + TextDisplay(
+                                            buildString {
+                                                appendLine("**Progresso do Álbum:** ${lastStickerOfThePacks.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${lastStickerOfThePacks.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
+                                                appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
+                                            }
+                                        )
+
+                                        + TextDisplay("-# ${context.i18nContext.get(I18nKeysData.Commands.Command.Loricoolcards.Open.YouOpenedXStickerPacks(result.boosterPacksCount))}")
                                     }
                                 }
                             }
