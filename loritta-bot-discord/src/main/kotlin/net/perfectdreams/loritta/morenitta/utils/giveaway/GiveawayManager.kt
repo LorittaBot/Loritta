@@ -426,6 +426,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         if (giveaway.version == 2) {
             val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
             val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+            val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(locale.id)
 
             val participantsIds = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
                 GiveawayParticipants.selectAll().where {
@@ -435,7 +436,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                 }
             }.toMutableList()
 
-            val winners = mutableListOf<Member>()
+            val winners = mutableListOf<GiveawayWinnerEntry>()
 
             while (true) {
                 if (numberOfWinners == winners.size)
@@ -449,7 +450,12 @@ class GiveawayManager(val loritta: LorittaBot) {
                 val member = message.guild.retrieveMemberOrNullById(userId)
 
                 if (member != null)
-                    winners.add(member)
+                    winners.add(
+                        GiveawayWinnerEntry(
+                            member,
+                            randomItem.weight
+                        )
+                    )
 
                 participantsIds.remove(randomItem)
             }
@@ -471,17 +477,26 @@ class GiveawayManager(val loritta: LorittaBot) {
                             Message.MentionType.EMOJI
                         )
                     )
-                    .setContent("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                    .apply {
+                        if (winner.weight != 1) {
+                            setContent("\uD83C\uDF89 **|** ${i18nContext.get(I18nKeysData.Giveaway.OneWinnerWeighted(winner.member.asMention, winner.weight, "**${giveaway.reason}**"))} ${Emotes.LORI_HAPPY}")
+                        } else {
+                            setContent("\uD83C\uDF89 **|** ${i18nContext.get(I18nKeysData.Giveaway.OneWinner(winner.member.asMention, "**${giveaway.reason}**"))} ${Emotes.LORI_HAPPY}")
+                        }
+                    }
                 message.channel.sendMessageAsync(messageBuilder.build())
             } else { // Mais de um ganhador
-                val replies =
-                    mutableListOf("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
 
                 repeat(numberOfWinners) {
-                    val user = winners.getOrNull(it)
+                    val winnerEntry = winners.getOrNull(it)
 
-                    if (user != null) {
-                        replies.add("⭐ **|** ${user.asMention}")
+                    if (winnerEntry != null) {
+                        if (winnerEntry.weight != 1) {
+                            replies.add("⭐ **|** ${i18nContext.get(I18nKeysData.Giveaway.MultipleWinnersEntryWeighted(winnerEntry.member.asMention, winnerEntry.weight))}")
+                        } else {
+                            replies.add("⭐ **|** ${i18nContext.get(I18nKeysData.Giveaway.MultipleWinnersEntry(winnerEntry.member.asMention))}")
+                        }
                     } else {
                         replies.add("⭐ **|** ¯\\_(ツ)_/¯")
                     }
@@ -495,8 +510,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                 // This can be increased to 2000 when the bug is fixed, to check if it is fixed, copy this message and copy into chat and see if the last
                 // entries era displayed correctly.
                 // https://gist.github.com/MrPowerGamerBR/078a4f3ad44c8541e3b5241c9823335e
-                val chunkedResponse =
-                    StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
+                val chunkedResponse = StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
                 chunkedResponse.forEach {
                     messageBuilder
                         .setAllowedMentions(
@@ -514,7 +528,7 @@ class GiveawayManager(val loritta: LorittaBot) {
             if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)
                 val roles = giveaway.roleIds!!.mapNotNull { message.guild.getRoleById(it) }
 
-                winners.mapNotNull { message.guild.getMember(it) }.forEach { member ->
+                winners.forEach { (member, _) ->
                     val rolesToBeGiven = roles.filter {
                         !member.roles.contains(it) && message.guild.selfMember.canInteract(it)
                     }
@@ -689,5 +703,10 @@ class GiveawayManager(val loritta: LorittaBot) {
         val guild: Guild,
         val channel: GuildMessageChannel,
         val message: Message
+    )
+
+    private data class GiveawayWinnerEntry(
+        val member: Member,
+        val weight: Int
     )
 }

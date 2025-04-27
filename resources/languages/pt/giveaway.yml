@@ -8,6 +8,10 @@ giveaway:
   requirements: "Requisitos"
   participate: "Participar ({participantsCount})"
   roleExtraEntry: "Participantes com o cargo {roleMention} ganham {entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}} a mais"
+  oneWinner: "Parabéns {userMention} por ganhar o sorteio {giveawayName}!"
+  oneWinnerWeighted: "Parabéns {userMention} ({entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}}) por ganhar o sorteio {giveawayName}!"
+  multipleWinnersEntry: "{userMention}"
+  multipleWinnersEntryWeighted: "{userMention} ({entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}})"
 
   joinGiveaway:
     unknownGiveaway: "Sorteio desconhecido!"
