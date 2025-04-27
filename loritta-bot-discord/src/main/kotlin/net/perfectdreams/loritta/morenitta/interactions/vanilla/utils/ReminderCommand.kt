@@ -4,11 +4,11 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEditBuilder
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
@@ -130,14 +130,9 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
 
             createReminder(context, reason, localDateTime)
 
-            val dayOfMonth = String.format("%02d", localDateTime.dayOfMonth)
-            val month = String.format("%02d", localDateTime.monthValue)
-            val hours = String.format("%02d", localDateTime.hour)
-            val minutes = String.format("%02d", localDateTime.minute)
-
             context.reply(false) {
                 styled(
-                    context.locale["$LOCALE_PREFIX.success", dayOfMonth, month, localDateTime.year, hours, minutes]
+                    context.i18nContext.get(I18N_PREFIX.Create.Success(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(localDateTime.toInstant())))
                 )
             }
         }

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Reminder
 import net.perfectdreams.loritta.morenitta.utils.*
@@ -15,7 +16,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.deleteWhere
 import java.util.*
-import kotlin.collections.remove
 
 /*
 * Thread to check user reminders
@@ -149,11 +149,8 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
                 calendar.timeInMillis = newReminderTime
 
-                val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
-                val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
-                val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
-                val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-                val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+                val i18nContext = loritta.languageManager.defaultI18nContext
+                val messageContent = i18nContext.get(I18nKeysData.Commands.Command.Reminder.Create.Success(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(newReminderTime)))
 
                 message.editMessage("<@${reminder.userId}> $messageContent").queue()
                 message.clearReactions().queue()
@@ -194,11 +191,8 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
             calendar.timeInMillis = inMillis
 
-            val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
-            val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
-            val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
-            val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-            val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+            val i18nContext = loritta.languageManager.defaultI18nContext
+            val messageContent = i18nContext.get(I18nKeysData.Commands.Command.Reminder.Create.Success(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(calendar.toInstant())))
 
             reply.channel.sendMessage("<@${reminder.userId}> $messageContent").queue()
         }
