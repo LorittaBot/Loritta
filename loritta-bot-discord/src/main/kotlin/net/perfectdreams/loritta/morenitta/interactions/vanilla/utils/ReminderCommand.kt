@@ -120,6 +120,16 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
         private suspend fun createReminderAndSendMessage(context: UnleashedContext, reason: String, duration: String) {
             val inMillis = TimeUtils.convertToMillisRelativeToNow(duration)
             val instant = Instant.ofEpochMilli(inMillis)
+            val now = Instant.now()
+            if (now > instant) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.Create.DateInThePast(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(inMillis))),
+                        Constants.ERROR
+                    )
+                }
+                return
+            }
             val localDateTime = ZonedDateTime.ofInstant(instant, Constants.LORITTA_TIMEZONE)
 
             val messageContent = reason.trim()

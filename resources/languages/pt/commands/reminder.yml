@@ -9,6 +9,8 @@ examples:
 create:
   label: "criar"
   description: "Cria um lembrete"
+  success: "Eu irei te lembrar em **{date}**!"
+  dateInThePast: "Você acha que eu tenho uma máquina do tempo para te lembrar disto?! Envie uma data no futuro, pois {date} já está no passado, *e quem vive de passado é museu*."
 
   options:
     reason:
