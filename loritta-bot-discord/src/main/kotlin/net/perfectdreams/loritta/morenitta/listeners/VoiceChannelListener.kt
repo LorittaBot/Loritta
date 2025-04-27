@@ -30,6 +30,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 		val channelLeft = event.channelLeft
 		val channelJoined = event.channelJoined
+		logger.info { "Received Voice Update of member ${event.member.idLong} on guild ${event.guild.idLong} - They left channel ${channelLeft?.idLong} and joined channel ${channelJoined?.idLong}" }
 		if (event.guild.selfMember == event.member && channelLeft != null && channelJoined == null) {
 			// Clean up voice connection if Loritta disconnected and didn't join a new channel
 			GlobalScope.launch {
@@ -59,7 +60,11 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val mutex = mutexes.getOrPut(channelJoined.idLong) { Mutex() }
 
+			logger.info { "Attempting to process voice channel join of member ${member.idLong} on guild ${channelJoined.guild.idLong} to channel ${channelJoined.idLong}! Is mutex locked? ${mutex.isLocked}" }
+
 			mutex.withLock {
+				logger.info { "Processing voice channel join of member ${member.idLong} on guild ${channelJoined.guild.idLong} to channel ${channelJoined.idLong}!" }
+
 				// Carregar a configuração do servidor
 				val serverConfig = loritta.getOrCreateServerConfig(channelJoined.guild.idLong)
 				EventLog.onVoiceJoin(loritta, serverConfig, member, channelJoined)
@@ -71,7 +76,11 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val mutex = mutexes.getOrPut(channelLeft.idLong) { Mutex() }
 
+			logger.info { "Attempting to process voice channel leave of member ${member.idLong} on guild ${channelLeft.guild.idLong} from channel ${channelLeft.idLong}! Is mutex locked? ${mutex.isLocked}" }
+
 			mutex.withLock {
+				logger.info { "Processing voice channel leave of member ${member.idLong} on guild ${channelLeft.guild.idLong} from channel ${channelLeft.idLong}!" }
+
 				val serverConfig = loritta.getOrCreateServerConfig(channelLeft.guild.idLong)
 				EventLog.onVoiceLeave(loritta, serverConfig, member, channelLeft)
 			}
