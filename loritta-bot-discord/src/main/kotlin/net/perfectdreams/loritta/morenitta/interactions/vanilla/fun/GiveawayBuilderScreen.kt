@@ -1159,9 +1159,10 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
     class Templates(m: LorittaBot) : GiveawayBuilderScreen(m) {
         override suspend fun render(context: UnleashedContext, builder: GiveawayBuilder): InlineMessage<*>.() -> Unit {
             val templates = m.transaction {
-                GiveawayTemplates.select {
-                    GiveawayTemplates.guildId eq context.guildId!!
-                }
+                GiveawayTemplates.selectAll()
+                    .where {
+                        GiveawayTemplates.guildId eq context.guildId!!
+                    }
                     .toList()
                     .map {
                         GiveawayTemplateInformation(
