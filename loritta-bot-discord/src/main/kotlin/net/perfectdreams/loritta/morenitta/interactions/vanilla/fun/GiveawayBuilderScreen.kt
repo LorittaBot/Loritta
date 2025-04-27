@@ -593,7 +593,38 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 TextInputStyle.SHORT,
                 builder.numberOfWinners.toString()
             ) { builder, context, value ->
-                builder.numberOfWinners = value.toInt()
+                val newValue = value.toIntOrNull()
+                if (newValue == null) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.YouNeedToUseAInteger),
+                            Emotes.Error
+                        )
+                    }
+                    return@createGiveawayButtonQuickEdit
+                }
+
+                if (0 >= newValue) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.YouCannotUseNegativeNumberOfWinners),
+                            Emotes.Error
+                        )
+                    }
+                    return@createGiveawayButtonQuickEdit
+                }
+
+                if (newValue > 100) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.YouCannotUseNumberOfWinnersTooLarge),
+                            Emotes.Error
+                        )
+                    }
+                    return@createGiveawayButtonQuickEdit
+                }
+
+                builder.numberOfWinners = newValue
 
                 context.deferEdit().editOriginal(render(context, builder))
             }

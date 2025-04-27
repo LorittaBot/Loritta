@@ -47,6 +47,8 @@ setup:
   youCannotUseOneAsWeight: "Você não pode colocar o número de entradas como 1! Afinal, 1 é a quantidade padrão de entradas, então para que você vai querer criar uma entrada extra que é igual ao padrão?!"
   youCannotUseNegativeWeight: "Se você vai colocar um peso que é menor ou igual a zero, não faria mais sentido você colocar o cargo na lista de cargos que não podem entrar no sorteio?"
   youCannotUseWeightTooLarge: "Se a chance de ganhar é tão alta assim, então porque você não dá logo a recompensa para quem tem o cargo?"
+  youCannotUseNegativeNumberOfWinners: "Se você vai colocar que a quantidade de participantes seja menor ou igual a zero, não faria mais sentido você NÃO fazer o sorteio? Assim você economizaria tempo e dinheiro, e eu poderia relaxar sem me preocupar com o seu sorteio..."
+  youCannotUseNumberOfWinnersTooLarge: "Você não pode ter tantos vencedores assim!"
   extraEntriesIntro:
     - "As entradas extras permitem você colocar que participantes que tenham um cargo específico tenham mais chances de ganhar do que outros participantes. Útil se você deseja recompensar usuários que possuem VIP no seu servidor!"
     - "A verificação das entradas extras é realizada quando o participante entra no sorteio. Isto significa que, se você configurar uma entrada extra para um cargo, e uma pessoa entrar no sorteio com este cargo, ela irá receber as entradas extras na hora que ele entrar, e as entradas extras não serão removidas se ele acabar perdendo o cargo após a entrada!"
