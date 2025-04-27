@@ -467,7 +467,7 @@ class GiveawayManager(val loritta: LorittaBot) {
 
             val messageBuilder = MessageCreateBuilder()
 
-            if (winners.size == 1) { // Apenas um ganhador
+            if (numberOfWinners == 1) { // Apenas um ganhador
                 val winner = winners.first()
                 messageBuilder
                     .setAllowedMentions(
