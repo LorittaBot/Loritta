@@ -3,26 +3,27 @@ package net.perfectdreams.loritta.morenitta.utils.giveaway
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayRoleExtraEntries
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.WeightedRandom
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
@@ -31,8 +32,10 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
+import net.perfectdreams.loritta.serializable.GiveawayRoleExtraEntry
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import net.perfectdreams.sequins.text.StringUtils
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.Color
 import java.sql.Connection
@@ -83,7 +86,8 @@ class GiveawayManager(val loritta: LorittaBot) {
         giveawayDatabaseId: Long?,
         participants: Long,
         allowedRoles: GiveawayRoles?,
-        deniedRoles: GiveawayRoles?
+        deniedRoles: GiveawayRoles?,
+        extraEntries: List<GiveawayRoleExtraEntry>
     ): MessageCreateData {
         val builder = MessageCreateBuilder()
             .addContent(" ")
@@ -109,6 +113,12 @@ class GiveawayManager(val loritta: LorittaBot) {
                     val embedDescription = buildString {
                         this.appendLine(description)
                         this.appendLine()
+                        if (extraEntries.isNotEmpty()) {
+                            for (extraEntry in extraEntries) {
+                                this.appendLine("**${i18nContext.get(I18nKeysData.Giveaway.RoleExtraEntry("<@&${extraEntry.roleId}>", extraEntry.weight))}**")
+                            }
+                            this.appendLine()
+                        }
                         this.appendLine(i18nContext.get(I18N_PREFIX.UseButtonToEnter(getReactionMention(reaction))))
 
                         if ((allowedRoles != null && allowedRoles.roleIds.isNotEmpty()) || (deniedRoles != null && deniedRoles.roleIds.isNotEmpty())) {
@@ -198,7 +208,8 @@ class GiveawayManager(val loritta: LorittaBot) {
         selfServerEmojiFightBetVictories: Int?,
         selfServerEmojiFightBetLosses: Int?,
         messagesRequired: Int?,
-        messagesTimeThreshold: Long?
+        messagesTimeThreshold: Long?,
+        extraEntries: List<GiveawayRoleExtraEntry>
     ): Giveaway {
         logger.debug { "Spawning Giveaway! locale = $locale, i18nContext = $i18nContext, channel = $channel, reason = $reason, description = $description, reason = $reason, epoch = $epoch, numberOfWinners = $numberOfWinners, customMessage = $customMessage, roleIds = $roleIds" }
 
@@ -206,14 +217,14 @@ class GiveawayManager(val loritta: LorittaBot) {
 
         val message = try {
             channel.sendMessage(
-                createGiveawayMessage(i18nContext, reason, description, reaction, imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles)
+                createGiveawayMessage(i18nContext, reason, description, reaction, imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles, extraEntries)
             ).await()
         } catch (e: ErrorResponseException) {
             if (e.errorCode == 50035) {
                 logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)"}
                 validReaction = "\uD83C\uDF89"
                 channel.sendMessage(
-                    createGiveawayMessage(i18nContext, reason, description, "\uD83C\uDF89", imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles)
+                    createGiveawayMessage(i18nContext, reason, description, "\uD83C\uDF89", imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles, extraEntries)
                 ).await()
             } else throw e
         }
@@ -225,7 +236,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         logger.trace { "Storing giveaway info..." }
 
         val giveaway = loritta.newSuspendedTransaction {
-            Giveaway.new {
+            val giveaway = Giveaway.new {
                 this.guildId = channel.guild.idLong
                 this.textChannelId = channel.idLong
                 this.messageId = messageId
@@ -257,6 +268,14 @@ class GiveawayManager(val loritta: LorittaBot) {
 
                 this.version = 2
             }
+
+            GiveawayRoleExtraEntries.batchInsert(extraEntries) {
+                this[GiveawayRoleExtraEntries.giveawayId] = giveaway.id
+                this[GiveawayRoleExtraEntries.roleId] = it.roleId
+                this[GiveawayRoleExtraEntries.weight] = it.weight
+            }
+
+            giveaway
         }
 
         logger.trace { "Success! Giveaway ID is ${giveaway.id.value}, editing message and creating job..." }
@@ -277,7 +296,8 @@ class GiveawayManager(val loritta: LorittaBot) {
                     giveaway.id.value,
                     0,
                     allowedRoles,
-                    deniedRoles
+                    deniedRoles,
+                    extraEntries
                 )
             )
         ).await()
@@ -410,7 +430,9 @@ class GiveawayManager(val loritta: LorittaBot) {
             val participantsIds = loritta.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
                 GiveawayParticipants.selectAll().where {
                     GiveawayParticipants.giveawayId eq giveaway.id.value
-                }.map { it[GiveawayParticipants.userId] }
+                }.map {
+                    WeightedRandom.Item(it[GiveawayParticipants.userId], it[GiveawayParticipants.weight])
+                }
             }.toMutableList()
 
             val winners = mutableListOf<Member>()
@@ -421,14 +443,15 @@ class GiveawayManager(val loritta: LorittaBot) {
                 if (participantsIds.isEmpty())
                     break
 
-                val userId = participantsIds.random()
+                val randomItem = participantsIds.random()
+                val userId = randomItem.value
 
                 val member = message.guild.retrieveMemberOrNullById(userId)
 
                 if (member != null)
                     winners.add(member)
 
-                participantsIds.remove(userId)
+                participantsIds.remove(randomItem)
             }
 
             if (winners.isEmpty()) { // Ninguém participou do giveaway!

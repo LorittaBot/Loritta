@@ -18,6 +18,7 @@ object LorittaEmojis {
     val PomniPlush = applicationEmoji("pomni_plush")
     val RalseiPlush = applicationEmoji("ralsei_plush")
     val TailsPlush = applicationEmoji("tails_plush")
+    val Role = applicationEmoji("role")
 
     private fun applicationEmoji(emojiName: String): LorittaEmojiReference.ApplicationEmoji {
         val ref = LorittaEmojiReference.ApplicationEmoji(emojiName)

@@ -7,7 +7,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -18,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChann
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.websiteinternal.loripublicapi.*
 import net.perfectdreams.loritta.publichttpapi.LoriPublicHttpApiEndpoints
+import net.perfectdreams.loritta.serializable.GiveawayRoleExtraEntry
 import java.awt.Color
 import kotlin.time.Duration.Companion.seconds
 
@@ -160,6 +160,39 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             return
         }
 
+        val extraEntries = mutableListOf<GiveawayRoleExtraEntry>()
+        for (extraEntry in request.extraEntries) {
+            if (extraEntries.any { it.roleId == extraEntry.roleId }) {
+                call.respondJson(
+                    Json.encodeToString(
+                        GenericErrorResponse(
+                            "There are two or more extra entries for the same role ID"
+                        )
+                    ),
+                    status = HttpStatusCode.BadRequest
+                )
+                return
+            }
+
+            if (extraEntry.weight !in 2..100_000) {
+                call.respondJson(
+                    Json.encodeToString(
+                        GenericErrorResponse(
+                            "Extra entry weight is not in valid range (2..100000)"
+                        )
+                    ),
+                    status = HttpStatusCode.BadRequest
+                )
+                return
+            }
+
+            extraEntries.add(
+                GiveawayRoleExtraEntry(
+                    extraEntry.roleId,
+                    extraEntry.weight
+                )
+            )
+        }
 
         val createdGiveaway = m.giveawayManager.spawnGiveaway(
             baseLocale,
@@ -191,7 +224,8 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             null,
             null,
             null,
-            null
+            null,
+            extraEntries
         )
 
         call.respondJson(
@@ -283,7 +317,9 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         @LoriPublicAPIParameter
         val allowedRoles: GiveawayRoles? = null,
         @LoriPublicAPIParameter
-        val deniedRoles: GiveawayRoles? = null
+        val deniedRoles: GiveawayRoles? = null,
+        @LoriPublicAPIParameter
+        val extraEntries: List<GiveawayRoleExtraEntry> = emptyList()
     ) {
         @Serializable
         data class GiveawayRoles(
@@ -291,6 +327,14 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             val roleIds: List<Long>,
             @LoriPublicAPIParameter
             val isAndCondition: Boolean
+        )
+
+        @Serializable
+        data class GiveawayRoleExtraEntry(
+            @LoriPublicAPIParameter
+            val roleId: Long,
+            @LoriPublicAPIParameter
+            val weight: Int
         )
     }
 

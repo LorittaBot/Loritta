@@ -739,6 +739,20 @@ fun Message.onReactionAddByAuthor(context: DiscordCommandContext, function: susp
 /**
  * When the command executor adds a reaction to this message
  *
+ * @param context  the context of the message
+ * @param function the callback that should be invoked
+ * @return         the message object for chaining
+ */
+fun Message.onReactionAddByAuthor(context: UnleashedContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
+	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
+	return onReactionAddByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
+}
+
+
+/**
+ * When the command executor adds a reaction to this message
+ *
  * @param userId    the user's ID
  * @param guildId   the guild's ID, may be null
  * @param channelId the channel's ID, may be null

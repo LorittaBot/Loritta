@@ -24,7 +24,6 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayEndCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawayRerollCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.GiveawaySetupCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.AsciiCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.CocieloChavesCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.EmojiMashupCommand
@@ -92,7 +91,6 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 			GiveawayCommand(loritta),
 			GiveawayEndCommand(loritta),
 			GiveawayRerollCommand(loritta),
-			GiveawaySetupCommand(loritta),
 
 			// ===[ IMAGES ]===
 			// ArtCommand(loritta),
@@ -202,6 +200,11 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				.split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
 				.drop(removeArgumentCount)
 				.toMutableList()
+
+			// This ia workaround because "+giveaway setup" is handled by the new interactions slash command framework
+			// However "+giveaway" takes priority, which we do not want
+			if ((validLabel == "giveaway" || validLabel == "sorteio") && rawArgs.isNotEmpty())
+				return false
 
 			val strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
 			val args = strippedArgs

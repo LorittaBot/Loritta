@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.website.views.httpapidocs
 
 import io.ktor.http.*
 import kotlinx.html.*
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -466,6 +465,18 @@ class LoriEndpointDevelopersDocsView(
                         option,
                         PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoles::class.simpleName!!,
                         "Criar GiveawayRoles"
+                    )
+                } else if (option.name == "extraEntries") {
+                    // This is hacky because there is type erasure when using lists
+                    // We need a better option for this later but, for now, this should do the trick
+
+                    // We can't use a form here because nested forms are not allowed!
+                    createObjectTemplateButton(
+                        i18nContext,
+                        endpointId,
+                        option,
+                        PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoleExtraEntry::class.simpleName!!,
+                        "Criar Entrada Extra"
                     )
                 } else if (option.kType.withNullability(false) == Boolean::class.createType()) {
                     discordToggle(

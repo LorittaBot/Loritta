@@ -24,7 +24,8 @@ class StringDiscordModalOptionReference<T>(
     val style: TextInputStyle,
     val value: String?,
     required: Boolean,
-    val placeholder: String?
+    val placeholder: String?,
+    val range: IntRange?
 ) : DiscordModalOptionReference<T>(label, required) {
     override fun get(option: ModalMapping): T {
         return option.asString as T
@@ -34,22 +35,33 @@ class StringDiscordModalOptionReference<T>(
         name,
         label,
         style
-    ).setValue(value).setPlaceholder(placeholder).setRequired(required).build()
+    ).setValue(value)
+        .setPlaceholder(placeholder)
+        .setRequired(required)
+        .apply {
+            if (range != null) {
+                setMinLength(range.first)
+                setMaxLength(range.last)
+            }
+        }
+        .build()
 }
 
 // ===[ BUILDERS ]===
-fun modalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null) = StringDiscordModalOptionReference<String>(
+fun modalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null, range: IntRange? = null) = StringDiscordModalOptionReference<String>(
     label,
     style,
     value,
     true,
-    placeholder
+    placeholder,
+    range
 )
 
-fun optionalModalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null) = StringDiscordModalOptionReference<String?>(
+fun optionalModalString(label: String, style: TextInputStyle, value: String? = null, placeholder: String? = null, range: IntRange? = null) = StringDiscordModalOptionReference<String?>(
     label,
     style,
     value,
     false,
-    placeholder
+    placeholder,
+    range
 )

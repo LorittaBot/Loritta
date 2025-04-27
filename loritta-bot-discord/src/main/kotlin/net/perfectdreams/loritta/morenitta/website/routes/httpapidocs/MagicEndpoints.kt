@@ -4,7 +4,6 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.util.*
 import kotlinx.datetime.Clock
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -198,10 +197,10 @@ object MagicEndpoints {
                             { listOf("297732013006389252") }
                         }
                         "reason" -> {
-                            { listOf(it.get(I18nKeysData.Commands.Command.Giveaway.Setup.LetsSetupYourGiveawayStep.GiveawayNamePlaceholder)) }
+                            { listOf(it.get(I18nKeysData.Commands.Command.Giveaway.Setup.GiveawayNamePlaceholder)) }
                         }
                         "description" -> {
-                            { listOf(it.get(I18nKeysData.Commands.Command.Giveaway.Setup.LetsSetupYourGiveawayStep.GiveawayDescriptionPlaceholder)) }
+                            { listOf(it.get(I18nKeysData.Commands.Command.Giveaway.Setup.GiveawayDescriptionPlaceholder)) }
                         }
                         "reaction" -> {
                             {
@@ -227,6 +226,11 @@ object MagicEndpoints {
                     PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoles::class
                 ) {
                     { listOf() }
+                },
+                createAPIParametersFromClazzEntry(
+                    PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoleExtraEntry::class
+                ) {
+                    { listOf() }
                 }
             ),
             jsonBodyBuilder = { call, params ->
@@ -234,6 +238,9 @@ object MagicEndpoints {
                 val allowedRoleIsAndCondition = params["jsonparameter:allowedRoles.isAndCondition"] == "on"
                 val deniedRoleIds = params["jsonparameter:deniedRoles.roleIds"]?.ifBlank { null }
                 val deniedRoleIsAndCondition = params["jsonparameter:deniedRoles.isAndCondition"] == "on"
+
+                val extraEntriesRoleIds = params.getAll("jsonparameter:extraEntries.roleId")
+                val extraEntriesWeights = params.getAll("jsonparameter:extraEntries.weight")
 
                 val allowedRoles = if (allowedRoleIds != null) {
                     PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoles(
@@ -248,6 +255,21 @@ object MagicEndpoints {
                         deniedRoleIsAndCondition
                     )
                 } else null
+
+                val extraEntries = mutableListOf<PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoleExtraEntry>()
+                if (extraEntriesRoleIds != null && extraEntriesWeights != null) {
+                    for (idx in extraEntriesRoleIds.indices) {
+                        val roleId = extraEntriesRoleIds[idx]
+                        val weight = extraEntriesWeights[idx]
+
+                        extraEntries.add(
+                            PutGiveawayRoute.SpawnGiveawayRequest.GiveawayRoleExtraEntry(
+                                roleId.toLong(),
+                                weight.toInt()
+                            )
+                        )
+                    }
+                }
 
                 Json.encodeToString(
                     PutGiveawayRoute.SpawnGiveawayRequest(
@@ -265,7 +287,8 @@ object MagicEndpoints {
                             ?.split(",")
                             ?.map { it.toLong() },
                         allowedRoles = allowedRoles,
-                        deniedRoles = deniedRoles
+                        deniedRoles = deniedRoles,
+                        extraEntries = extraEntries
                     )
                 )
             },

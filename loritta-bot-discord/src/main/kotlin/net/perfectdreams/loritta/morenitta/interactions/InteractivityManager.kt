@@ -4,11 +4,13 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.selects.EntitySelectMenu
 import net.dv8tion.jda.api.components.selects.StringSelectMenu
+import net.dv8tion.jda.api.entities.IMentionable
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.emotes.Emote
@@ -39,6 +41,11 @@ class InteractivityManager {
         .newBuilder()
         .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
         .build<UUID, SelectMenuInteractionCallback>()
+        .asMap()
+    val selectMenuEntityInteractionCallbacks = Caffeine
+        .newBuilder()
+        .expireAfterWrite(INTERACTION_INVALIDATION_DELAY.toJavaDuration())
+        .build<UUID, SelectMenuEntityInteractionCallback>()
         .asMap()
     val modalCallbacks = Caffeine
         .newBuilder()
@@ -230,6 +237,56 @@ class InteractivityManager {
             .build()
     }
 
+    /**
+     * Creates an interactive select menu
+     */
+    fun entitySelectMenuForUser(
+        targetUser: User,
+        callbackAlwaysEphemeral: Boolean,
+        builder: (EntitySelectMenu.Builder).() -> (Unit) = {},
+        callback: suspend (ComponentContext, List<IMentionable>) -> (Unit)
+    ) = entitySelectMenuForUser(targetUser.idLong, callbackAlwaysEphemeral, builder, callback)
+
+    /**
+     * Creates an interactive select menu
+     */
+    fun entitySelectMenuForUser(
+        targetUserId: Long,
+        callbackAlwaysEphemeral: Boolean,
+        builder: (EntitySelectMenu.Builder).() -> (Unit) = {},
+        callback: suspend (ComponentContext, List<IMentionable>) -> (Unit)
+    ) = entitySelectMenu(
+        callbackAlwaysEphemeral,
+        builder
+    ) { context, strings ->
+        if (targetUserId != context.user.idLong) {
+            context.reply(true) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.YouArentTheUserSingleUser("<@$targetUserId>")),
+                    Emotes.LoriRage
+                )
+            }
+            return@entitySelectMenu
+        }
+
+        callback.invoke(context, strings)
+    }
+
+    /**
+     * Creates an interactive select menu
+     */
+    fun entitySelectMenu(
+        callbackAlwaysEphemeral: Boolean,
+        builder: (EntitySelectMenu.Builder).() -> (Unit) = {},
+        callback: suspend (ComponentContext, List<IMentionable>) -> (Unit)
+    ): EntitySelectMenu {
+        val buttonId = UUID.randomUUID()
+        selectMenuEntityInteractionCallbacks[buttonId] = SelectMenuEntityInteractionCallback(callbackAlwaysEphemeral, callback)
+        return EntitySelectMenu.create(UnleashedComponentId(buttonId).toString(), listOf(EntitySelectMenu.SelectTarget.CHANNEL))
+            .apply(builder)
+            .build()
+    }
+
     class JDAButtonBuilder(internal var button: Button) {
         // https://youtrack.jetbrains.com/issue/KT-6519
         @get:JvmSynthetic // Hide from Java callers
@@ -269,6 +326,14 @@ class InteractivityManager {
          */
         val alwaysEphemeral: Boolean,
         val callback: suspend (ComponentContext, List<String>) -> (Unit)
+    )
+
+    data class SelectMenuEntityInteractionCallback(
+        /**
+         * If true, the created context will always be ephemeral
+         */
+        val alwaysEphemeral: Boolean,
+        val callback: suspend (ComponentContext, List<IMentionable>) -> (Unit)
     )
 
     data class ModalInteractionCallback(

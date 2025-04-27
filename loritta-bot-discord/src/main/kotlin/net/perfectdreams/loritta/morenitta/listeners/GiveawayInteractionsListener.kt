@@ -9,10 +9,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -21,12 +21,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayRoleExtraEntries
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
+import net.perfectdreams.loritta.serializable.GiveawayRoleExtraEntry
 import net.perfectdreams.loritta.serializable.GiveawayRoles
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -55,6 +57,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                 // Serializable is used because REPEATABLE READ will cause issues if someone spam clicks the button, or if the giveaway ends at the same time someone clicks on the button
                 val state = m.transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE) {
+                    val member = event.member!!
+
                     val giveaway = Giveaways.selectAll().where { Giveaways.id eq dbId }
                         .firstOrNull() ?: return@transaction GiveawayState.UnknownGiveaway
 
@@ -65,11 +69,25 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     if (GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value and (GiveawayParticipants.userId eq event.user.idLong) }.count() != 0L)
                         return@transaction GiveawayState.AlreadyParticipating
 
+                    // While we could optimize this by only loading the roles that the user has
+                    // We need to load everything because we need all the entries to regenerate the giveaway message
+                    val extraEntries = GiveawayRoleExtraEntries.selectAll()
+                        .where {
+                            GiveawayRoleExtraEntries.giveawayId eq giveaway[Giveaways.id]
+                        }
+                        .toList()
+                        .map {
+                            GiveawayRoleExtraEntry(
+                                it[GiveawayRoleExtraEntries.roleId],
+                                it[GiveawayRoleExtraEntries.weight]
+                            )
+                        }
+
                     // Check if the user has all allowed roles
                     val allowedRoles = giveaway[Giveaways.allowedRoles]?.let { Json.decodeFromString<GiveawayRoles>(it) }
 
                     if (allowedRoles != null) {
-                        val memberRoleIds = event.member!!.roles.map { it.idLong }.toSet()
+                        val memberRoleIds = member.roles.map { it.idLong }.toSet()
 
                         if (allowedRoles.isAndCondition) {
                             val missingRoleIds = (allowedRoles.roleIds - memberRoleIds)
@@ -81,95 +99,13 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                             if (!hasAnyRole)
                                 return@transaction GiveawayState.MissingRoles(allowedRoles)
                         }
-
-                        // Check if the user does not have any blocked roles
-                        val deniedRoles =
-                            giveaway[Giveaways.deniedRoles]?.let { Json.decodeFromString<GiveawayRoles>(it) }
-
-                        if (deniedRoles != null) {
-                            val memberRoleIds = event.member!!.roles.map { it.idLong }.toSet()
-
-                            if (deniedRoles.isAndCondition) {
-                                val hasAllRoles = deniedRoles.roleIds.all { it in deniedRoles.roleIds }
-
-                                if (hasAllRoles)
-                                    return@transaction GiveawayState.BlockedRoles(deniedRoles)
-                            } else {
-                                val hasAnyRole = deniedRoles.roleIds.any { it in memberRoleIds }
-                                if (hasAnyRole)
-                                    return@transaction GiveawayState.BlockedRoles(deniedRoles)
-                            }
-                        }
-
-                        // Check if the user has got their daily reward today
-                        val needsToGetDailyBeforeParticipating =
-                            giveaway[Giveaways.needsToGetDailyBeforeParticipating] ?: false
-                        if (needsToGetDailyBeforeParticipating) {
-                            val gotTodaysDailyReward =
-                                AccountUtils.getUserTodayDailyReward(m, event.user.idLong) != null
-
-                            if (!gotTodaysDailyReward)
-                                return@transaction GiveawayState.NeedsToGetDailyRewardBeforeParticipating
-                        }
-
-                        // This super globby mess is here because Exposed can't behave and select the correct columns
-                        val innerJoin = EmojiFightParticipants.innerJoin(
-                            EmojiFightMatches.innerJoin(
-                                EmojiFightMatchmakingResults,
-                                { EmojiFightMatches.id },
-                                { EmojiFightMatchmakingResults.match }),
-                            { EmojiFightParticipants.match },
-                            { EmojiFightMatches.id })
-
-                        val giveawayCreatedAt = giveaway[Giveaways.createdAt]
-                        val selfServerEmojiFightBetVictories = giveaway[Giveaways.selfServerEmojiFightBetVictories]
-                        if (selfServerEmojiFightBetVictories != null && selfServerEmojiFightBetVictories > 0 && giveawayCreatedAt != null) {
-                            val matchesWon = innerJoin.selectAll().where {
-                                // Yes, it looks wonky, but it is correct
-                                EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner eq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
-                            }.count()
-
-                            if (selfServerEmojiFightBetVictories > matchesWon) {
-                                return@transaction GiveawayState.NeedsToWinMoreEmojiFightBets(
-                                    selfServerEmojiFightBetVictories,
-                                    matchesWon
-                                )
-                            }
-                        }
-
-                        val selfServerEmojiFightBetLosses = giveaway[Giveaways.selfServerEmojiFightBetLosses]
-                        if (selfServerEmojiFightBetLosses != null && selfServerEmojiFightBetLosses > 0 && giveawayCreatedAt != null) {
-                            val matchesLost = innerJoin.selectAll().where {
-                                // Yes, it looks wonky, but it is correct
-                                EmojiFightParticipants.user eq event.user.idLong and (EmojiFightMatchmakingResults.winner neq EmojiFightParticipants.id) and (EmojiFightMatchmakingResults.entryPrice neq 0) and (EmojiFightMatches.guild eq guild.idLong) and (EmojiFightMatches.createdAt greaterEq giveawayCreatedAt)
-                            }.count()
-
-                            if (selfServerEmojiFightBetLosses > matchesLost) {
-                                return@transaction GiveawayState.NeedsToLoseMoreEmojiFightBets(
-                                    selfServerEmojiFightBetLosses,
-                                    matchesLost
-                                )
-                            }
-                        }
-
-                        GiveawayParticipants.insert {
-                            it[GiveawayParticipants.userId] = event.user.idLong
-                            it[GiveawayParticipants.giveawayId] = dbId
-                            it[GiveawayParticipants.joinedAt] = Instant.now()
-                        }
-
-                        val participants =
-                            GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
-                                .count()
-
-                        return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles)
                     }
 
                     // Check if the user does not have any blocked roles
                     val deniedRoles = giveaway[Giveaways.deniedRoles]?.let { Json.decodeFromString<GiveawayRoles>(it) }
 
                     if (deniedRoles != null) {
-                        val memberRoleIds = event.member!!.roles.map { it.idLong }.toSet()
+                        val memberRoleIds = member.roles.map { it.idLong }.toSet()
 
                         if (deniedRoles.isAndCondition) {
                             val hasAllRoles = deniedRoles.roleIds.all { it in deniedRoles.roleIds }
@@ -220,17 +156,31 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                         }
                     }
 
+                    // Do we have any extra entry?
+                    var weight = 1
+                    var usedEntry: GiveawayRoleExtraEntry? = null
+                    val memberRoleIds = member.roles.map { it.idLong }.toSet()
+
+                    for (extraEntry in extraEntries.sortedByDescending { it.weight }) {
+                        if (extraEntry.roleId in memberRoleIds) {
+                            // Because we have already sorted by weight, we can us ethe first entry that was found!
+                            usedEntry = extraEntry
+                            weight = extraEntry.weight
+                            break
+                        }
+                    }
+
                     GiveawayParticipants.insert {
                         it[GiveawayParticipants.userId] = event.user.idLong
                         it[GiveawayParticipants.giveawayId] = dbId
                         it[GiveawayParticipants.joinedAt] = Instant.now()
+                        it[GiveawayParticipants.weight] = weight
                     }
 
-                    val participants =
-                        GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
-                            .count()
+                    val participants = GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
+                        .count()
 
-                    return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles)
+                    return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles, extraEntries, usedEntry)
                 }
 
                 when (state) {
@@ -284,6 +234,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                             val participants = GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
                                                 .count()
 
+                                            // We don't even need these because we are leaving the giveaway, but oh well, we need them fot the message!
                                             // Parse the allowed roles into JSON objects
                                             val allowedRoles = giveaway[Giveaways.allowedRoles]?.let {
                                                 Json.decodeFromString<GiveawayRoles>(it)
@@ -291,9 +242,20 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                             val deniedRoles = giveaway[Giveaways.deniedRoles]?.let {
                                                 Json.decodeFromString<GiveawayRoles>(it)
                                             }
+                                            val extraEntries = GiveawayRoleExtraEntries.selectAll()
+                                                .where {
+                                                    GiveawayRoleExtraEntries.giveawayId eq giveaway[Giveaways.id]
+                                                }
+                                                .toList()
+                                                .map {
+                                                    GiveawayRoleExtraEntry(
+                                                        it[GiveawayRoleExtraEntries.roleId],
+                                                        it[GiveawayRoleExtraEntries.weight]
+                                                    )
+                                                }
 
                                             // And that's a wrap!
-                                            LeftGiveaway(giveaway, participants, allowedRoles, deniedRoles)
+                                            LeftGiveaway(giveaway, participants, allowedRoles, deniedRoles, extraEntries)
                                         }
 
                                         // Update the giveaway message to indicate that the user left
@@ -326,7 +288,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                                             leftGiveaway.giveaway[Giveaways.id].value,
                                                             leftGiveaway.participants,
                                                             leftGiveaway.allowedRoles,
-                                                            leftGiveaway.deniedRoles
+                                                            leftGiveaway.deniedRoles,
+                                                            leftGiveaway.extraEntries
                                                         )
                                                     )
                                                 )
@@ -446,6 +409,13 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                     i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.YouAreNowParticipating),
                                     Emotes.LoriYay
                                 )
+
+                                if (state.usedEntry != null) {
+                                    styled(
+                                        i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.ExtraEntryTips("<@&${state.usedEntry.roleId}>", state.usedEntry.weight, 1)),
+                                        Emotes.LoriSunglasses
+                                    )
+                                }
                             })
                             .await()
 
@@ -480,7 +450,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                                 giveaway[Giveaways.id].value,
                                                 state.participants,
                                                 state.allowedRoles,
-                                                state.deniedRoles
+                                                state.deniedRoles,
+                                                state.extraEntries
                                             )
                                         )
                                     ).await()
@@ -544,8 +515,21 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
         object NeedsMoreMessages : GiveawayState()
         class MissingRoles(val allowedRoles: GiveawayRoles) : GiveawayState()
         class BlockedRoles(val deniedRoles: GiveawayRoles) : GiveawayState()
-        class Success(val giveaway: ResultRow, val participants: Long, val allowedRoles: GiveawayRoles?, val deniedRoles: GiveawayRoles?) : GiveawayState()
+        class Success(
+            val giveaway: ResultRow,
+            val participants: Long,
+            val allowedRoles: GiveawayRoles?,
+            val deniedRoles: GiveawayRoles?,
+            val extraEntries: List<GiveawayRoleExtraEntry>,
+            val usedEntry: GiveawayRoleExtraEntry?
+        ) : GiveawayState()
     }
 
-    class LeftGiveaway(val giveaway: ResultRow, val participants: Long, val allowedRoles: GiveawayRoles?, val deniedRoles: GiveawayRoles?)
+    class LeftGiveaway(
+        val giveaway: ResultRow,
+        val participants: Long,
+        val allowedRoles: GiveawayRoles?,
+        val deniedRoles: GiveawayRoles?,
+        val extraEntries: List<GiveawayRoleExtraEntry>,
+    )
 }

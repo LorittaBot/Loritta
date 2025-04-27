@@ -4,16 +4,18 @@ import dev.minn.jda.ktx.interactions.commands.updateCommands
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.*
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -23,8 +25,6 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -720,6 +720,115 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 }
 
                 val callbackData = loritta.interactivityManager.selectMenuInteractionCallbacks[componentId.uniqueId]
+                context = ComponentContext(
+                    loritta,
+                    serverConfig,
+                    lorittaUser,
+                    locale,
+                    i18nContext,
+                    event
+                )
+
+                // We don't know about this callback! It probably has expired, so let's tell the user about it
+                if (callbackData == null) {
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
+                            Emotes.LoriSleeping
+                        )
+                    }
+                    return@launch
+                }
+
+                context.alwaysEphemeral = callbackData.alwaysEphemeral // Inherit alwaysEphemeral from the callback data
+
+                callbackData.callback.invoke(context, event.interaction.values)
+            } catch (e: Exception) {
+                val errorId = LorittaUtils.generateErrorId(loritta)
+                logger.warn(e) { "Something went wrong while executing select menu interaction! Error ID: $errorId" }
+
+                val currentContext = context
+                val currentI18nContext = i18nContext
+                if (currentContext != null && currentI18nContext != null) {
+                    var sendExceptionToUser = true
+                    // Don't attempt to send the message to the user if it was a unknown interaction error, because attempting to follow up with a message with surely
+                    // cause yet another unknown interaction exception
+                    if (e is ErrorResponseException && e.errorResponse == ErrorResponse.UNKNOWN_INTERACTION)
+                        sendExceptionToUser = false
+
+                    if (sendExceptionToUser) {
+                        try {
+                            currentContext.reply(currentContext.wasInitiallyDeferredEphemerally == null || currentContext.wasInitiallyDeferredEphemerally == true) {
+                                styled(
+                                    currentI18nContext.get(
+                                        I18nKeysData.Commands.ErrorWhileExecutingCommandWithErrorId(
+                                            loriRage = Emotes.LoriRage,
+                                            loriSob = Emotes.LoriSob,
+                                            errorId = errorId.toString()
+                                        )
+                                    ),
+                                    Emotes.LoriSob
+                                )
+                            }
+                        } catch (e: Exception) {
+                            // wtf
+                            logger.warn(e) { "Something went wrong while sending the reason why the select menu interaction was not correctly executed! Error ID: ${LorittaUtils.generateErrorId(loritta)}" }
+                            // At this point just give up bro
+                            throw e
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onEntitySelectInteraction(event: EntitySelectInteractionEvent) {
+        GlobalScope.launch {
+            // Check if it is a InteraKTions Unleashed component
+            val componentId = try {
+                UnleashedComponentId(event.componentId)
+            } catch (e: IllegalArgumentException) {
+                return@launch
+            }
+
+            // These variables are used in the catch { ... } block, to make our lives easier
+            var i18nContext: I18nContext? = null
+            var context: ComponentContext? = null
+
+            try {
+                val guild = event.guild
+                val member = event.member
+
+                val serverConfigJob = if (guild != null)
+                    loritta.getOrCreateServerConfigDeferred(guild.idLong, true)
+                else
+                    loritta.getOrCreateServerConfigDeferred(-1, true)
+
+                val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.user.idLong)
+
+                val serverConfig = serverConfigJob.await()
+                val lorittaProfile = lorittaProfileJob.await()
+
+                val currentLocale = loritta.newSuspendedTransaction {
+                    (lorittaProfile?.settings?.language ?: serverConfig.localeId)
+                }
+
+                val locale = loritta.localeManager.getLocaleById(currentLocale)
+                i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+                val lorittaUser = if (guild != null && !guild.isDetached && member != null) {
+                    // We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
+                    val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, guild)
+                    val memberLorittaPermissions = LorittaUser.convertRolePermissionsMapToMemberPermissionList(
+                        member,
+                        rolesLorittaPermissions
+                    )
+                    GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
+                } else {
+                    LorittaUser(loritta, event.user, EnumSet.noneOf(LorittaPermission::class.java), lorittaProfile)
+                }
+
+                val callbackData = loritta.interactivityManager.selectMenuEntityInteractionCallbacks[componentId.uniqueId]
                 context = ComponentContext(
                     loritta,
                     serverConfig,
