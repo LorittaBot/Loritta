@@ -231,7 +231,18 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                         return@buttonForUser
             }
 
+            val now = System.currentTimeMillis()
             val epoch = TimeUtils.convertToMillisRelativeToNow(builder.duration)
+
+            if (now > epoch) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(SETUP_I18N_PREFIX.DateInThePast(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(epoch))),
+                        Emotes.Error
+                    )
+                }
+                return@buttonForUser
+            }
 
             val giveaway = m.giveawayManager.spawnGiveaway(
                 context.locale,

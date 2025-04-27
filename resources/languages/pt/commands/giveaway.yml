@@ -49,6 +49,7 @@ setup:
   youCannotUseWeightTooLarge: "Se a chance de ganhar é tão alta assim, então porque você não dá logo a recompensa para quem tem o cargo?"
   youCannotUseNegativeNumberOfWinners: "Se você vai colocar que a quantidade de participantes seja menor ou igual a zero, não faria mais sentido você NÃO fazer o sorteio? Assim você economizaria tempo e dinheiro, e eu poderia relaxar sem me preocupar com o seu sorteio..."
   youCannotUseNumberOfWinnersTooLarge: "Você não pode ter tantos vencedores assim!"
+  dateInThePast: "Você acha que eu tenho uma máquina do tempo para criar um sorteio nesta data?! Altere a duração do sorteio para ser uma data no futuro, ou coloque uma duração relativa que não depende de uma data fixa, pois {date} já está no passado, *e quem vive de passado é museu*."
   extraEntriesIntro:
     - "As entradas extras permitem você colocar que participantes que tenham um cargo específico tenham mais chances de ganhar do que outros participantes. Útil se você deseja recompensar usuários que possuem VIP no seu servidor!"
     - "A verificação das entradas extras é realizada quando o participante entra no sorteio. Isto significa que, se você configurar uma entrada extra para um cargo, e uma pessoa entrar no sorteio com este cargo, ela irá receber as entradas extras na hora que ele entrar, e as entradas extras não serão removidas se ele acabar perdendo o cargo após a entrada!"
