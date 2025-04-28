@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
+import net.perfectdreams.loritta.morenitta.interactions.modals.options.optionalModalString
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
@@ -61,6 +62,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
         builder: GiveawayBuilder,
         label: String,
         style: TextInputStyle,
+        isOptional: Boolean,
         value: String?,
         block: suspend (GiveawayBuilder, ModalContext, String) -> (Unit),
     ): Button {
@@ -70,11 +72,19 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
             ButtonStyle.PRIMARY,
             context.i18nContext.get(SETUP_I18N_PREFIX.Change),
         ) {
-            val option = modalString(
-                label,
-                style,
-                value = value
-            )
+            val option = if (isOptional) {
+                optionalModalString(
+                    label,
+                    style,
+                    value = value
+                )
+            } else {
+                modalString(
+                    label,
+                    style,
+                    value = value
+                )
+            }
 
             it.sendModal(
                 context.i18nContext.get(SETUP_I18N_PREFIX.ModalTitle),
@@ -84,7 +94,8 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     )
                 )
             ) { it, args ->
-                val value = args[option]
+                // TODO: It actually seems that InteraKTions Unleashed falls back to "" when it is optional (well, that's what Discord sends to us
+                val value = args[option] ?: ""
 
                 block.invoke(builder, it, value)
             }
@@ -417,6 +428,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(I18N_PREFIX.Setup.GiveawayName),
                 TextInputStyle.SHORT,
+                false,
                 builder.name
             ) { builder, context, value ->
                 builder.name = value
@@ -429,6 +441,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(I18N_PREFIX.Setup.GiveawayDescription),
                 TextInputStyle.PARAGRAPH,
+                false,
                 builder.description
             ) { builder, context, value ->
                 builder.description = value
@@ -441,6 +454,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(I18N_PREFIX.Setup.GiveawayEmbedImage),
                 TextInputStyle.SHORT,
+                true,
                 builder.imageUrl
             ) { builder, context, value ->
                 builder.imageUrl = value.ifBlank { null }
@@ -453,6 +467,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(I18N_PREFIX.Setup.GiveawayThumbnailImage),
                 TextInputStyle.SHORT,
+                true,
                 builder.thumbnailUrl
             ) { builder, context, value ->
                 builder.thumbnailUrl = value.ifBlank { null }
@@ -465,6 +480,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(I18N_PREFIX.Setup.GiveawayEmbedColor),
                 TextInputStyle.SHORT,
+                true,
                 String.format("#%02x%02x%02x", builder.color.red, builder.color.green, builder.color.blue)
             ) { builder, context, value ->
                 builder.color = value.let { ColorUtils.getColorFromString(it) } ?: LorittaColors.LorittaAqua.toJavaColor()
@@ -590,6 +606,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayDuration.Title),
                 TextInputStyle.SHORT,
+                false,
                 builder.duration
             ) { builder, context, value ->
                 builder.duration = value
@@ -602,6 +619,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayWinners.Title),
                 TextInputStyle.SHORT,
+                false,
                 builder.numberOfWinners.toString()
             ) { builder, context, value ->
                 val newValue = value.toIntOrNull()
@@ -1030,6 +1048,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 builder,
                 context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryQuantity.Title),
                 TextInputStyle.SHORT,
+                false,
                 builder.extraEntryBuilder.weight.toString()
             ) { builder, context, value ->
                 val newWeight = value.toIntOrNull()
