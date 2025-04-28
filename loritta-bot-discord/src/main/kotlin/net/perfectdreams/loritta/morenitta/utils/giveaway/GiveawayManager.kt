@@ -41,7 +41,6 @@ import java.awt.Color
 import java.sql.Connection
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.random.Random
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes as CinnamonEmotes
 
 class GiveawayManager(val loritta: LorittaBot) {
@@ -458,7 +457,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                 if (participantsIds.isEmpty())
                     break
 
-                val randomItem = WeightedRandom.random(Random.Default, participantsIds)
+                val randomItem = WeightedRandom.random(loritta.random, participantsIds)
                 val userId = randomItem.value
 
                 val member = message.guild.retrieveMemberOrNullById(userId)

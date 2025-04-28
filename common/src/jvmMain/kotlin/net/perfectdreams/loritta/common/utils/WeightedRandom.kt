@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.common.utils
 
-import kotlin.random.Random
+import java.util.*
 
 object WeightedRandom {
-    fun <T> random(random: Random, items: List<Item<T>>): T {
+    fun <T> random(random: Random, items: List<Item<T>>): Item<T> {
         val totalWeight = items.sumOf { it.weight }
         val randomValue = random.nextInt(totalWeight)
 
@@ -11,7 +11,7 @@ object WeightedRandom {
         for (item in items) {
             cumulativeWeight += item.weight
             if (randomValue < cumulativeWeight) {
-                return item.value
+                return item
             }
         }
 
