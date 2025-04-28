@@ -385,7 +385,8 @@ class Pudding(
         if (schemas.isNotEmpty()) {
             // We split up this in two separate transactions:
             // 1. One to request the lock
-            // 2. Another to actually process the update (and release the lock)
+            // 2. Another to actually process the update
+            // 3. And, finally, another to release the lock (this is not really needed, but it is easier to avoid releasing the lock when a error happens within the transaction)
             // Why? Because if we request the lock and process the update in the same transaction, we will have concurrent issues if
             // two instances try to update the schema at the same time!
             // Example:
@@ -403,104 +404,112 @@ class Pudding(
                 logger.info { "Successfully requested advisory lock!" }
             }
 
-            transaction {
-                // SchemaUtils is dangerous: If PostgreSQL is running a VACUUM, the app will wait until the lock is released, because Exposed
-                // tries loading the table info data from the table, and that conflicts with VACUUM.
-                // (Yes, Exposed will query the table info data EVEN IF there isn't updates to be done, smh)
-                //
-                // To work around this, we will store the current schema version on the database and ONLY THEN update the data.
-                // This also allows us to implement data migration steps down the road, yay!
+            try {
+                transaction {
+                    // SchemaUtils is dangerous: If PostgreSQL is running a VACUUM, the app will wait until the lock is released, because Exposed
+                    // tries loading the table info data from the table, and that conflicts with VACUUM.
+                    // (Yes, Exposed will query the table info data EVEN IF there isn't updates to be done, smh)
+                    //
+                    // To work around this, we will store the current schema version on the database and ONLY THEN update the data.
+                    // This also allows us to implement data migration steps down the road, yay!
 
-                // We will first lock to avoid multiple processes trying to update the data at the same time
-                var databaseSchemaVersion: Int? = null
-                val schemaVersionOverride = Integer.getInteger("loritta.schemaVersionOverride", null)
-                if (schemaVersionOverride != null) {
-                    logger.info { "Overriding Schema Version to $schemaVersionOverride" }
-                    databaseSchemaVersion = schemaVersionOverride
-                } else {
-                    if (checkIfTableExists(SchemaVersion)) {
-                        val schemaVersion =
-                            SchemaVersion.select(SchemaVersion.version).where { SchemaVersion.id eq SCHEMA_ID }
-                                .firstOrNull()
-                                ?.get(SchemaVersion.version)
+                    // We will first lock to avoid multiple processes trying to update the data at the same time
+                    var databaseSchemaVersion: Int? = null
+                    val schemaVersionOverride = Integer.getInteger("loritta.schemaVersionOverride", null)
+                    if (schemaVersionOverride != null) {
+                        logger.info { "Overriding Schema Version to $schemaVersionOverride" }
+                        databaseSchemaVersion = schemaVersionOverride
+                    } else {
+                        if (checkIfTableExists(SchemaVersion)) {
+                            val schemaVersion =
+                                SchemaVersion.select(SchemaVersion.version).where { SchemaVersion.id eq SCHEMA_ID }
+                                    .firstOrNull()
+                                    ?.get(SchemaVersion.version)
 
-                        if (schemaVersion == SCHEMA_VERSION) {
-                            logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
-                            return@transaction
-                        } else {
-                            if (schemaVersion != null && schemaVersion > SCHEMA_VERSION) {
-                                logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will not update the tables to avoid issues..." }
+                            if (schemaVersion == SCHEMA_VERSION) {
+                                logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
                                 return@transaction
                             } else {
-                                logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
-                                databaseSchemaVersion = schemaVersion
+                                if (schemaVersion != null && schemaVersion > SCHEMA_VERSION) {
+                                    logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will not update the tables to avoid issues..." }
+                                    return@transaction
+                                } else {
+                                    logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
+                                    databaseSchemaVersion = schemaVersion
+                                }
+                            }
+                        } else {
+                            logger.warn { "SchemaVersion doesn't seem to exist, we will ignore the schema version check..." }
+                        }
+                    }
+
+                    createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
+                    createOrUpdatePostgreSQLEnum(AchievementType.values())
+                    createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
+                    createOrUpdatePostgreSQLEnum(ComponentType.values())
+                    createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
+                    createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
+                    createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
+                    createOrUpdatePostgreSQLEnum(WebsiteVoteSource.values())
+                    createOrUpdatePostgreSQLEnum(PendingImportantNotificationState.values())
+                    createOrUpdatePostgreSQLEnum(EasterEggColor.values())
+                    createOrUpdatePostgreSQLEnum(RaffleType.values())
+                    createOrUpdatePostgreSQLEnum(TransactionType.values())
+                    createOrUpdatePostgreSQLEnum(CardRarity.values())
+                    createOrUpdatePostgreSQLEnum(ColorTheme.values())
+                    createOrUpdatePostgreSQLEnum(InteractionContextType.values())
+
+                    logger.info { "Tables to be created or updated: $schemas" }
+                    SchemaUtils.create(
+                        *schemas
+                            .toMutableList()
+                            // Partitioned tables
+                            .filter { it !in listOf(ExecutedApplicationCommandsLog, ExecutedComponentsLog) }
+                            .toTypedArray()
+                    )
+
+                    // This is a workaround because Exposed does not support (yet) Partitioned Tables
+                    if (ExecutedApplicationCommandsLog in schemas)
+                        createPartitionedTable(ExecutedApplicationCommandsLog)
+                    if (ExecutedComponentsLog in schemas)
+                        createPartitionedTable(ExecutedComponentsLog)
+
+                    if (databaseSchemaVersion != null) {
+                        logger.info { "Running migration scripts in order..." }
+                        for (upgradeVersion in databaseSchemaVersion + 1..SCHEMA_VERSION) {
+                            logger.info { "Updating database schema version to $upgradeVersion..." }
+
+                            val migrationScript = Pudding::class.java.getResourceAsStream(
+                                "/migrations/${
+                                    upgradeVersion.toString().padStart(5, '0')
+                                }.sql"
+                            )
+
+                            if (migrationScript != null) {
+                                val script = migrationScript.readBytes().toString(Charsets.UTF_8)
+
+                                val statement = this.connection.prepareStatement(script, false)
+                                statement.executeUpdate()
+                            } else {
+                                logger.info { "Version $upgradeVersion does not have a migration version!" }
+                            }
+
+                            SchemaVersion.upsert(SchemaVersion.id) {
+                                it[id] = SCHEMA_ID
+                                it[version] = upgradeVersion
                             }
                         }
-                    } else {
-                        logger.warn { "SchemaVersion doesn't seem to exist, we will ignore the schema version check..." }
                     }
+
+                    logger.info { "All migrations were successfully applied! Releasing advisory lock..." }
                 }
-
-                createOrUpdatePostgreSQLEnum(BackgroundStorageType.values())
-                createOrUpdatePostgreSQLEnum(AchievementType.values())
-                createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
-                createOrUpdatePostgreSQLEnum(ComponentType.values())
-                createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
-                createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
-                createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
-                createOrUpdatePostgreSQLEnum(WebsiteVoteSource.values())
-                createOrUpdatePostgreSQLEnum(PendingImportantNotificationState.values())
-                createOrUpdatePostgreSQLEnum(EasterEggColor.values())
-                createOrUpdatePostgreSQLEnum(RaffleType.values())
-                createOrUpdatePostgreSQLEnum(TransactionType.values())
-                createOrUpdatePostgreSQLEnum(CardRarity.values())
-                createOrUpdatePostgreSQLEnum(ColorTheme.values())
-                createOrUpdatePostgreSQLEnum(InteractionContextType.values())
-
-                logger.info { "Tables to be created or updated: $schemas" }
-                SchemaUtils.create(
-                    *schemas
-                        .toMutableList()
-                        // Partitioned tables
-                        .filter { it !in listOf(ExecutedApplicationCommandsLog, ExecutedComponentsLog) }
-                        .toTypedArray()
-                )
-
-                // This is a workaround because Exposed does not support (yet) Partitioned Tables
-                if (ExecutedApplicationCommandsLog in schemas)
-                    createPartitionedTable(ExecutedApplicationCommandsLog)
-                if (ExecutedComponentsLog in schemas)
-                    createPartitionedTable(ExecutedComponentsLog)
-
-                if (databaseSchemaVersion != null) {
-                    logger.info { "Running migration scripts in order..." }
-                    for (upgradeVersion in databaseSchemaVersion + 1..SCHEMA_VERSION) {
-                        logger.info { "Updating database schema version to $upgradeVersion..." }
-
-                        val migrationScript = Pudding::class.java.getResourceAsStream("/migrations/${upgradeVersion.toString().padStart(5, '0')}.sql")
-
-                        if (migrationScript != null) {
-                            val script = migrationScript.readBytes().toString(Charsets.UTF_8)
-
-                            val statement = this.connection.prepareStatement(script, false)
-                            statement.executeUpdate()
-                        } else {
-                            logger.info { "Version $upgradeVersion does not have a migration version!" }
-                        }
-
-                        SchemaVersion.upsert(SchemaVersion.id) {
-                            it[id] = SCHEMA_ID
-                            it[version] = upgradeVersion
-                        }
-                    }
+            } finally {
+                transaction {
+                    val unlockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_unlock(?);")
+                    unlockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
+                    unlockStatement.execute()
+                    logger.info { "Successfully released advisory lock!" }
                 }
-
-                logger.info { "All migrations were successfully applied! Releasing advisory lock..." }
-
-                val unlockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_unlock(?);")
-                unlockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
-                unlockStatement.execute()
-                logger.info { "Successfully released advisory lock!" }
             }
         }
     }
