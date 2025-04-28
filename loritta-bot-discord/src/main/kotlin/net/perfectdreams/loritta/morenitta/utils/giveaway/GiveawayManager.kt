@@ -115,7 +115,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                         this.appendLine(description)
                         this.appendLine()
                         if (extraEntries.isNotEmpty()) {
-                            for (extraEntry in extraEntries) {
+                            for (extraEntry in extraEntries.sortedByDescending { it.weight }) {
                                 if (extraEntriesShouldStack) {
                                     this.appendLine("**${i18nContext.get(I18N_PREFIX.RoleExtraEntryStacked("<@&${extraEntry.roleId}>", extraEntry.weight))}**")
                                 } else {
