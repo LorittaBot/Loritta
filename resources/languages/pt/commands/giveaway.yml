@@ -29,7 +29,7 @@ setup:
   enabled: "Ativado"
   disabled: "Desativado"
   youNeedToSetupAChannelBeforeStarting: "Você precisa configurar um canal antes de poder iniciar o sorteio!"
-  reactWithTheReactionYouWantOnThisMessage: "Reaja com a reação que você deseja que seja usada no sorteio nesta mensagem!"
+  reactWithTheReactionYouWantOnThisMessage: "Reaja com a reação que você deseja que seja usada no sorteio nesta mensagem que eu acabei de de enviar! Ou seja, é para reagir na mensagem que você está lendo neste exato momento."
   reminderThatTheEmojiShouldBeAccessible: "Lembrando que, se você estiver colocando um emoji personalizado, eu preciso estar no servidor que o emoji está para que eu possa usar!"
   addExtraEntry: "Adicionar Entrada Extra"
   remove: "Remover"
