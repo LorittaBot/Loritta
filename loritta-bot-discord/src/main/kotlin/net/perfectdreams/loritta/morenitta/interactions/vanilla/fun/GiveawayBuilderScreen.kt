@@ -1343,7 +1343,8 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                                                 it.roleId,
                                                 it.weight
                                             )
-                                        }
+                                        },
+                                        builder.extraEntriesShouldStack
                                     )
                                 )
                             }
