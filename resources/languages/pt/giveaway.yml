@@ -7,12 +7,14 @@ giveaway:
   endsAt: "Acabará em"
   requirements: "Requisitos"
   participate: "Participar ({participantsCount})"
-  roleExtraEntry: "Participantes com o cargo {roleMention} ganham {entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}} a mais"
+  roleExtraEntry: "Participantes com o cargo {roleMention} tem {entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}} ao invés de apenas {defaultEntryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}}"
+  roleExtraEntryStacked: "Participantes com o cargo {roleMention} ganham {entryWeight,plural, =0 {+# entradas} one {+# entrada} other {+# entradas}} a mais"
   oneWinner: "Parabéns {userMention} por ganhar o sorteio {giveawayName}!"
   oneWinnerWeighted: "Parabéns {userMention} ({entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}}) por ganhar o sorteio {giveawayName}!"
   multipleWinnersEntry: "{userMention}"
   multipleWinnersEntryWeighted: "{userMention} ({entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}})"
-
+  extraEntriesLargestWeight: "Se você possuir mais de um cargo entre os listados acima, você receberá as entradas extras concedidas pelo cargo que te dá mais entradas extras!"
+  extraEntriesStack: "Se você possuir mais de um cargo entre os listados acima, as entradas extras concedidas por eles serão somadas, aumentando ainda mais as suas chances no sorteio!"
   joinGiveaway:
     unknownGiveaway: "Sorteio desconhecido!"
     giveawayHasAlreadyEnded: "O sorteio já acabou!"
@@ -28,6 +30,8 @@ giveaway:
     youNeedToLoseMoreEmojiFightBets: "Eu sei que parece idiota falar isso... mas você precisa perder {matches,plural, =0 {# apostas em partidas de rinha de emoji} one {# aposta em partida de rinha de emoji} other {# apostas em partidas de rinha de emoji}} para participar do sorteio! Atualmente você perdeu {currentMatches,plural, =0 {# apostas} one {# aposta} other {# apostas}}."
     needsMoreMessages: "Você precisa enviar mais mensagens no servidor para participar do sorteio!"
     youAreNowParticipating: "Você agora está participando do sorteio, boa sorte!"
-    extraEntryTips: "Como você tem o cargo {roleMention}, você ganhou {entryWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}} ao invés de apenas {defaultWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}}, assim aumentando as suas chances de ganhar o sorteio!"
+    extraEntryTipsOneRole: "Como você tem o cargo {roleMention}, você tem {entryWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}} ao invés de apenas {defaultWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}}, assim aumentando as suas chances de ganhar o sorteio!"
+    extraEntryTipsMultipleRoles: "Como você tem os cargos {roleMentions}, você tem {entryWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}} ao invés de apenas {defaultWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}}, assim aumentando as suas chances de ganhar o sorteio!"
+
   giveawayParticipants:
     allDone: "Prontinho, aqui está a lista de todos os membros que estão participando do sorteio!"

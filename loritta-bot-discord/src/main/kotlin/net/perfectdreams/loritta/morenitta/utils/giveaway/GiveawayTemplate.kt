@@ -20,6 +20,7 @@ data class GiveawayTemplate(
     val deniedRolesIsAndCondition: Boolean,
     val needsToGetDailyBeforeParticipating: Boolean,
     val extraEntries: List<GiveawayRoleExtraEntry>,
+    val extraEntriesShouldStack: Boolean = false
 ) {
     @Serializable
     data class GiveawayRoleExtraEntry(

@@ -225,7 +225,8 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
             null,
             null,
             null,
-            extraEntries
+            extraEntries,
+            request.extraEntriesShouldStack
         )
 
         call.respondJson(
@@ -319,7 +320,9 @@ class PutGiveawayRoute(m: LorittaBot) : LoriPublicAPIGuildRoute(
         @LoriPublicAPIParameter
         val deniedRoles: GiveawayRoles? = null,
         @LoriPublicAPIParameter
-        val extraEntries: List<GiveawayRoleExtraEntry> = emptyList()
+        val extraEntries: List<GiveawayRoleExtraEntry> = emptyList(),
+        @LoriPublicAPIParameter
+        val extraEntriesShouldStack: Boolean = false
     ) {
         @Serializable
         data class GiveawayRoles(

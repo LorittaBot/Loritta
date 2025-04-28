@@ -158,15 +158,25 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
 
                     // Do we have any extra entry?
                     var weight = 1
-                    var usedEntry: GiveawayRoleExtraEntry? = null
+                    val usedEntries = mutableListOf<GiveawayRoleExtraEntry>()
                     val memberRoleIds = member.roles.map { it.idLong }.toSet()
 
-                    for (extraEntry in extraEntries.sortedByDescending { it.weight }) {
-                        if (extraEntry.roleId in memberRoleIds) {
-                            // Because we have already sorted by weight, we can us ethe first entry that was found!
-                            usedEntry = extraEntry
-                            weight = extraEntry.weight
-                            break
+                    if (giveaway[Giveaways.extraEntriesShouldStack]) {
+                        // If it should stack, then we should loop through all extra entries roles
+                        for (extraEntry in extraEntries.sortedByDescending { it.weight }) {
+                            if (extraEntry.roleId in memberRoleIds) {
+                                usedEntries.add(extraEntry)
+                                weight += extraEntry.weight
+                            }
+                        }
+                    } else {
+                        for (extraEntry in extraEntries.sortedByDescending { it.weight }) {
+                            if (extraEntry.roleId in memberRoleIds) {
+                                // Because we have already sorted by weight, we can use the first entry that was found!
+                                usedEntries.add(extraEntry)
+                                weight = extraEntry.weight
+                                break
+                            }
                         }
                     }
 
@@ -180,7 +190,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                     val participants = GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq giveaway[Giveaways.id].value }
                         .count()
 
-                    return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles, extraEntries, usedEntry)
+                    return@transaction GiveawayState.Success(giveaway, participants, allowedRoles, deniedRoles, extraEntries, usedEntries, weight,giveaway[Giveaways.extraEntriesShouldStack])
                 }
 
                 when (state) {
@@ -255,7 +265,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                                 }
 
                                             // And that's a wrap!
-                                            LeftGiveaway(giveaway, participants, allowedRoles, deniedRoles, extraEntries)
+                                            LeftGiveaway(giveaway, participants, allowedRoles, deniedRoles, extraEntries, giveaway[Giveaways.extraEntriesShouldStack])
                                         }
 
                                         // Update the giveaway message to indicate that the user left
@@ -289,7 +299,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                                             leftGiveaway.participants,
                                                             leftGiveaway.allowedRoles,
                                                             leftGiveaway.deniedRoles,
-                                                            leftGiveaway.extraEntries
+                                                            leftGiveaway.extraEntries,
+                                                            leftGiveaway.extraEntriesShouldStack
                                                         )
                                                     )
                                                 )
@@ -410,11 +421,31 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                     Emotes.LoriYay
                                 )
 
-                                if (state.usedEntry != null) {
-                                    styled(
-                                        i18nContext.get(GiveawayManager.I18N_PREFIX.JoinGiveaway.ExtraEntryTips("<@&${state.usedEntry.roleId}>", state.usedEntry.weight, 1)),
-                                        Emotes.LoriSunglasses
-                                    )
+                                if (state.usedEntries.isNotEmpty()) {
+                                    // The code itself is very similar, but that's because it doesn't matter if we use joinToString or not on a single entry, it's the same result!
+                                    if (state.usedEntries.size == 1) {
+                                        styled(
+                                            i18nContext.get(
+                                                GiveawayManager.I18N_PREFIX.JoinGiveaway.ExtraEntryTipsOneRole(
+                                                    state.usedEntries.joinToString(", ") { "<@&${it.roleId}>" },
+                                                    state.weight,
+                                                    1
+                                                )
+                                            ),
+                                            Emotes.LoriSunglasses
+                                        )
+                                    } else {
+                                        styled(
+                                            i18nContext.get(
+                                                GiveawayManager.I18N_PREFIX.JoinGiveaway.ExtraEntryTipsMultipleRoles(
+                                                    state.usedEntries.joinToString(", ") { "<@&${it.roleId}>" },
+                                                    state.weight,
+                                                    1
+                                                )
+                                            ),
+                                            Emotes.LoriSunglasses
+                                        )
+                                    }
                                 }
                             })
                             .await()
@@ -451,7 +482,8 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                                                 state.participants,
                                                 state.allowedRoles,
                                                 state.deniedRoles,
-                                                state.extraEntries
+                                                state.extraEntries,
+                                                state.extraEntriesShouldStack
                                             )
                                         )
                                     ).await()
@@ -521,7 +553,9 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
             val allowedRoles: GiveawayRoles?,
             val deniedRoles: GiveawayRoles?,
             val extraEntries: List<GiveawayRoleExtraEntry>,
-            val usedEntry: GiveawayRoleExtraEntry?
+            val usedEntries: List<GiveawayRoleExtraEntry>,
+            var weight: Int,
+            val extraEntriesShouldStack: Boolean
         ) : GiveawayState()
     }
 
@@ -531,5 +565,6 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
         val allowedRoles: GiveawayRoles?,
         val deniedRoles: GiveawayRoles?,
         val extraEntries: List<GiveawayRoleExtraEntry>,
+        val extraEntriesShouldStack: Boolean
     )
 }

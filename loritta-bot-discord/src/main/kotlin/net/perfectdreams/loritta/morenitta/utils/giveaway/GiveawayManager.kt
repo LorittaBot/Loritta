@@ -87,7 +87,8 @@ class GiveawayManager(val loritta: LorittaBot) {
         participants: Long,
         allowedRoles: GiveawayRoles?,
         deniedRoles: GiveawayRoles?,
-        extraEntries: List<GiveawayRoleExtraEntry>
+        extraEntries: List<GiveawayRoleExtraEntry>,
+        extraEntriesShouldStack: Boolean
     ): MessageCreateData {
         val builder = MessageCreateBuilder()
             .addContent(" ")
@@ -115,7 +116,16 @@ class GiveawayManager(val loritta: LorittaBot) {
                         this.appendLine()
                         if (extraEntries.isNotEmpty()) {
                             for (extraEntry in extraEntries) {
-                                this.appendLine("**${i18nContext.get(I18nKeysData.Giveaway.RoleExtraEntry("<@&${extraEntry.roleId}>", extraEntry.weight))}**")
+                                if (extraEntriesShouldStack) {
+                                    this.appendLine("**${i18nContext.get(I18N_PREFIX.RoleExtraEntryStacked("<@&${extraEntry.roleId}>", extraEntry.weight))}**")
+                                } else {
+                                    this.appendLine("**${i18nContext.get(I18N_PREFIX.RoleExtraEntry("<@&${extraEntry.roleId}>", extraEntry.weight, 1))}**")
+                                }
+                            }
+                            if (extraEntriesShouldStack) {
+                                this.appendLine(i18nContext.get(I18N_PREFIX.ExtraEntriesStack))
+                            } else {
+                                this.appendLine(i18nContext.get(I18N_PREFIX.ExtraEntriesLargestWeight))
                             }
                             this.appendLine()
                         }
@@ -209,7 +219,8 @@ class GiveawayManager(val loritta: LorittaBot) {
         selfServerEmojiFightBetLosses: Int?,
         messagesRequired: Int?,
         messagesTimeThreshold: Long?,
-        extraEntries: List<GiveawayRoleExtraEntry>
+        extraEntries: List<GiveawayRoleExtraEntry>,
+        extraEntriesShouldStack: Boolean
     ): Giveaway {
         logger.debug { "Spawning Giveaway! locale = $locale, i18nContext = $i18nContext, channel = $channel, reason = $reason, description = $description, reason = $reason, epoch = $epoch, numberOfWinners = $numberOfWinners, customMessage = $customMessage, roleIds = $roleIds" }
 
@@ -217,14 +228,14 @@ class GiveawayManager(val loritta: LorittaBot) {
 
         val message = try {
             channel.sendMessage(
-                createGiveawayMessage(i18nContext, reason, description, reaction, imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles, extraEntries)
+                createGiveawayMessage(i18nContext, reason, description, reaction, imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles, extraEntries, extraEntriesShouldStack)
             ).await()
         } catch (e: ErrorResponseException) {
             if (e.errorCode == 50035) {
                 logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)"}
                 validReaction = "\uD83C\uDF89"
                 channel.sendMessage(
-                    createGiveawayMessage(i18nContext, reason, description, "\uD83C\uDF89", imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles, extraEntries)
+                    createGiveawayMessage(i18nContext, reason, description, "\uD83C\uDF89", imageUrl, thumbnailUrl, color, epoch, channel.guild, customMessage, null, 0, allowedRoles, deniedRoles, extraEntries, extraEntriesShouldStack)
                 ).await()
             } else throw e
         }
@@ -263,6 +274,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                     this.messagesRequired = messagesRequired
                     this.messagesTimeThreshold = messagesTimeThreshold
                 }
+                this.extraEntriesShouldStack = extraEntriesShouldStack
                 this.createdAt = Instant.now()
                 this.finished = false
 
@@ -297,7 +309,8 @@ class GiveawayManager(val loritta: LorittaBot) {
                     0,
                     allowedRoles,
                     deniedRoles,
-                    extraEntries
+                    extraEntries,
+                    extraEntriesShouldStack
                 )
             )
         ).await()

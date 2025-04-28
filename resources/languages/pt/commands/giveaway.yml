@@ -44,7 +44,7 @@ setup:
   youCanOnlyAddExtraEntryAfterSelectingARole: "Você só pode adicionar uma entrada extra se você configurar um cargo!"
   tryingToAddExtraEntryThatAlreadyHasARole: "Já existe uma entrada extra que utiliza este cargo! Você terá que remover a entrada antes de poder configurar uma entrada para este cargo."
   youNeedToUseAInteger: "Você precisa colocar um número inteiro, como, por exemplo, `2`, `10`, `13`."
-  youCannotUseOneAsWeight: "Você não pode colocar o número de entradas como 1! Afinal, 1 é a quantidade padrão de entradas, então para que você vai querer criar uma entrada extra que é igual ao padrão?!"
+  youCannotUseOneAsWeight: "Você não pode colocar o número de entradas como 1! Afinal, 1 é a quantidade padrão de entradas, então para que você vai querer criar uma entrada extra que é igual ao padrão?! Se você pensou que colocar uma entrada extra concederia duas entradas no total, ou seja, uma entrada que é a padrão e outra que é a entrada extra, talvez você esteja pensando que o sistema de entradas extras funciona como soma, ao invés de substituir as entradas que a pessoa tem. Se você deseja trabalhar no modo de somar as entradas do usuário, você pode alterar a opção na seção de Entradas Extras!"
   youCannotUseNegativeWeight: "Se você vai colocar um peso que é menor ou igual a zero, não faria mais sentido você colocar o cargo na lista de cargos que não podem entrar no sorteio?"
   youCannotUseWeightTooLarge: "Se a chance de ganhar é tão alta assim, então porque você não dá logo a recompensa para quem tem o cargo?"
   youCannotUseNegativeNumberOfWinners: "Se você vai colocar que a quantidade de participantes seja menor ou igual a zero, não faria mais sentido você NÃO fazer o sorteio? Assim você economizaria tempo e dinheiro, e eu poderia relaxar sem me preocupar com o seu sorteio..."
@@ -55,6 +55,7 @@ setup:
     - "A verificação das entradas extras é realizada quando o participante entra no sorteio. Isto significa que, se você configurar uma entrada extra para um cargo, e uma pessoa entrar no sorteio com este cargo, ela irá receber as entradas extras na hora que ele entrar, e as entradas extras não serão removidas se ele acabar perdendo o cargo após a entrada!"
   invalidURLImage: "Você colocou uma URL inválida! Verifique se você colocou a URL corretamente. Se você deseja remover a imagem, você pode deixar a URL vazia e eu irei removê-la."
   invalidURLThumbnail: "Você colocou uma URL inválida! Verifique se você colocou a URL corretamente. Se você deseja remover a thumbnail, você pode deixar a URL vazia e eu irei removê-la."
+  youCannotChangeToNonStackBecauseWeightOne: "Você não pode alterar para não empilhar as entradas pois você tem uma entrada extra que tem apenas uma entrada extra! Você precisa removê-la antes de poder alterar o modo de empilhamento."
   rolesThatTheWinnersWillWin:
     title: "Cargos que os vencedores irão ganhar"
     description: "Imagine... você poderia dar um `cargo de subornou para ganhar o sorteio` automaticamente para os vencedores!"
@@ -74,6 +75,7 @@ setup:
   extraEntryQuantity:
     title: "Quantidade de Entradas Extras"
     description: "Se uma pessoa com o cargo selecionado participar do sorteio, seria como se ela tivesse entrado {entryWeight,plural, =0 {# vezes} one {# vez} other {# vezes}} no sorteio!"
+    descriptionStacked: "Se uma pessoa com o cargo selecionado participar do sorteio, ela ganhará {entryWeight,plural, =0 {+# entradas} one {+# entrada} other {+# entradas}} no sorteio!"
   allowedRoles:
     title: "Cargos Permitidos"
   deniedRoles:
@@ -90,7 +92,9 @@ setup:
   extraEntriesEntry:
     title: "Cargo {roleMention} (`{roleId}`)"
     extraEntries: "**Entrada Extras:** {entryWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}}"
-
+  extraEntriesShouldStack:
+    title: "Entradas extras deverão ser somadas"
+    description: "Se ativado, se um usuário possuir vários cargos que concedem entradas extras, todas as entradas serão somadas ao invés de considerar apenas o cargo que oferece o maior número de entradas. Enquanto ativado, a entrada padrão, que é concedida a todos usuários que participam do seu sorteio, também será somada na contagem de entradas, enquanto se a opção estiver desativada, as entradas extras substituem quantas vezes a pessoa entrou no sorteio. Ou seja, se uma pessoa entrar no sorteio enquanto a opção estiver ativada, e ela possuir um cargo que possui uma entrada extra, o total de entradas que ela terá será duas entradas: Uma entrada extra que você configurou, e outra entrada que é a entrada padrão."
   template:
     createdTemplates: "Templates Criados"
     modalTitle: "Criação de Templates"

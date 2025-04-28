@@ -28,6 +28,7 @@ object Giveaways : LongIdTable() {
 	var selfServerEmojiFightBetLosses = integer("self_server_emoji_fight_bet_losses").nullable()
 	var messagesRequired = integer("messages_required").nullable()
 	var messagesTimeThreshold = long("messages_time_threshold").nullable()
+	val extraEntriesShouldStack = bool("extra_entries_should_stack")
 	val createdAt = timestampWithTimeZone("created_at").nullable() // Can be nullable due to old giveaways
 
 	val finished = bool("finished").default(false).index()

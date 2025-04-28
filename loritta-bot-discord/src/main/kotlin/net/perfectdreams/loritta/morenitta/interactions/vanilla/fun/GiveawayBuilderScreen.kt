@@ -49,7 +49,8 @@ import java.time.Instant
 sealed class GiveawayBuilderScreen(val m: LorittaBot) {
     companion object {
         // This name is wonky as hell lol
-        const val MAX_EXTRA_ENTRIES_ENTRIES = 5
+        // We only have a low limit because Discord has a somewhat low max component limit, especially if you use sections
+        const val MAX_EXTRA_ENTRIES_ENTRIES = 4
         const val MAX_GIVEAWAY_TEMPLATES = 5
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Giveaway
         private val SETUP_I18N_PREFIX = I18N_PREFIX.Setup
@@ -291,7 +292,8 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                         it.roleId,
                         it.weight
                     )
-                }
+                },
+                builder.extraEntriesShouldStack
             )
 
             context.reply(true) {
@@ -948,10 +950,31 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     addNewExtraEntryUnleashedButton
                 ) {
                     builder.extraEntryBuilder.roleId = null
-                    builder.extraEntryBuilder.weight = 2
+                    builder.extraEntryBuilder.weight = if (builder.extraEntriesShouldStack) 1 else 2
 
                     it.deferEdit().editOriginal(MessageEdit { apply(AddNewExtraEntry(m).render(context, builder)) }).await()
                 }
+            }
+
+            val toggleExtraEntriesShouldStack = createGiveawayToggleButton(
+                context,
+                builder,
+                builder.extraEntriesShouldStack
+            ) { builder, context ->
+                // We check for true because we are toggling from true to false
+                if (builder.extraEntriesShouldStack && builder.extraEntries.any { it.weight == 1 }) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.YouCannotChangeToNonStackBecauseWeightOne),
+                            Emotes.Error
+                        )
+                    }
+                    return@createGiveawayToggleButton
+                }
+
+                builder.extraEntriesShouldStack = !builder.extraEntriesShouldStack
+
+                context.deferEdit().editOriginal(MessageEdit { apply(render(context, builder)) }).await()
             }
 
             val sections = mutableListOf<Section>()
@@ -1011,6 +1034,13 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     +row(
                         addNewExtraEntry
                     )
+
+                    +Section(toggleExtraEntriesShouldStack) {
+                        +OptionExplanationCombo(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntriesShouldStack.Title),
+                            context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntriesShouldStack.Description),
+                        )
+                    }
                 }
 
                 appendDefaultButtons(context, builder)
@@ -1057,6 +1087,16 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     return@buttonForUser
                 }
 
+                if (!builder.extraEntriesShouldStack && builder.extraEntryBuilder.weight == 1) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.YouCannotUseOneAsWeight),
+                            Emotes.Error
+                        )
+                    }
+                    return@buttonForUser
+                }
+
                 builder.extraEntries.add(
                     ExtraEntry(
                         rId,
@@ -1087,7 +1127,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     return@createGiveawayButtonQuickEdit
                 }
 
-                if (newWeight == 1) {
+                if (!builder.extraEntriesShouldStack && newWeight == 1) {
                     context.reply(true) {
                         styled(
                             context.i18nContext.get(SETUP_I18N_PREFIX.YouCannotUseOneAsWeight),
@@ -1162,7 +1202,11 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     +Section(editWeightButton) {
                         +OptionExplanationCombo(
                             context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryQuantity.Title),
-                            context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryQuantity.Description(builder.extraEntryBuilder.weight)),
+                            if (builder.extraEntriesShouldStack) {
+                                context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryQuantity.DescriptionStacked(builder.extraEntryBuilder.weight))
+                            } else {
+                                context.i18nContext.get(SETUP_I18N_PREFIX.ExtraEntryQuantity.Description(builder.extraEntryBuilder.weight))
+                            }
                         )
                     }
 
@@ -1429,6 +1473,8 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                                 ExtraEntry(it.roleId, it.weight)
                             }.toMutableList()
 
+                            builder.extraEntriesShouldStack = giveawayInformation.template.extraEntriesShouldStack
+
                             hook.editOriginal(MessageEdit { apply(Appearance(m).render(context, builder)) }).await()
                         }
                     )
@@ -1517,6 +1563,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
         var deniedRolesIsAndCondition = false
 
         var needsToGetDailyBeforeParticipating = false
+        var extraEntriesShouldStack = false
 
         var extraEntries = mutableListOf<ExtraEntry>()
 
