@@ -53,6 +53,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
         const val MAX_GIVEAWAY_TEMPLATES = 5
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Giveaway
         private val SETUP_I18N_PREFIX = I18N_PREFIX.Setup
+        private val URL_PATTERN = Regex("\\s*(https?)://\\S+\\s*", RegexOption.IGNORE_CASE)
     }
 
     abstract suspend fun render(context: UnleashedContext, builder: GiveawayBuilder): InlineMessage<*>.() -> (Unit)
@@ -456,7 +457,19 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 true,
                 builder.imageUrl
             ) { builder, context, value ->
-                builder.imageUrl = value.ifBlank { null }
+                val newValue = value.ifBlank { null }
+
+                if (newValue != null && !URL_PATTERN.matches(value)) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.InvalidURLImage),
+                            Constants.ERROR
+                        )
+                    }
+                    return@createGiveawayButtonQuickEdit
+                }
+
+                builder.imageUrl = newValue
 
                 context.deferEdit().editOriginal(render(context, builder))
             }
@@ -469,7 +482,19 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                 true,
                 builder.thumbnailUrl
             ) { builder, context, value ->
-                builder.thumbnailUrl = value.ifBlank { null }
+                val newValue = value.ifBlank { null }
+
+                if (newValue != null && !URL_PATTERN.matches(value)) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(SETUP_I18N_PREFIX.InvalidURLThumbnail),
+                            Constants.ERROR
+                        )
+                    }
+                    return@createGiveawayButtonQuickEdit
+                }
+
+                builder.thumbnailUrl = newValue
 
                 context.deferEdit().editOriginal(render(context, builder))
             }
