@@ -53,8 +53,8 @@ setup:
   extraEntriesIntro:
     - "As entradas extras permitem você colocar que participantes que tenham um cargo específico tenham mais chances de ganhar do que outros participantes. Útil se você deseja recompensar usuários que possuem VIP no seu servidor!"
     - "A verificação das entradas extras é realizada quando o participante entra no sorteio. Isto significa que, se você configurar uma entrada extra para um cargo, e uma pessoa entrar no sorteio com este cargo, ela irá receber as entradas extras na hora que ele entrar, e as entradas extras não serão removidas se ele acabar perdendo o cargo após a entrada!"
-  invalidURLImage: "Você colocou uma URL inválida! Verifique se você colocou a URL corretamente. Se você deseja remover a imagem, você pode deixar a URL vazia e eu irei remove-lá."
-  invalidURLThumbnail: "Você colocou uma URL inválida! Verifique se você colocou a URL corretamente. Se você deseja remover a thumbnail, você pode deixar a URL vazia e eu irei remove-lá."
+  invalidURLImage: "Você colocou uma URL inválida! Verifique se você colocou a URL corretamente. Se você deseja remover a imagem, você pode deixar a URL vazia e eu irei removê-la."
+  invalidURLThumbnail: "Você colocou uma URL inválida! Verifique se você colocou a URL corretamente. Se você deseja remover a thumbnail, você pode deixar a URL vazia e eu irei removê-la."
   rolesThatTheWinnersWillWin:
     title: "Cargos que os vencedores irão ganhar"
     description: "Imagine... você poderia dar um `cargo de subornou para ganhar o sorteio` automaticamente para os vencedores!"
