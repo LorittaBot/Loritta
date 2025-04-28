@@ -93,8 +93,8 @@ setup:
     title: "Cargo {roleMention} (`{roleId}`)"
     extraEntries: "**Entrada Extras:** {entryWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}}"
   extraEntriesShouldStack:
-    title: "Somar Entradas Extras"
-    description: "Se ativado, as entradas extras serão somadas para cada cargo que a pessoa tem, enquanto se a opção estiver desativada, as entradas extras substituem quantas vezes a pessoa entrou no sorteio e a quantidade que será substituída será baseada no cargo que dá mais entradas extras ao usuário. Ou seja, se uma pessoa entrar no sorteio enquanto a opção estiver ativada, e ela possuir um cargo que possui uma entrada extra, o total de entradas que ela terá será duas entradas: Uma entrada extra que você configurou, e outra entrada que é a entrada padrão."
+    title: "Somar Entradas Ao Invés de Substituir"
+    description: "Se ativado, as entradas extras serão somadas para cada cargo que a pessoa tem, enquanto se a opção estiver desativada, as entradas extras substituem quantas vezes a pessoa entrou no sorteio e a quantidade que será substituída será baseada no cargo que dá mais entradas extras ao usuário. Lembrando que, se a opção estiver ativada, a entrada padrão também é considerada na soma! Ou seja, se uma pessoa entrar no sorteio enquanto a opção estiver ativada, e ela possuir um cargo que possui uma entrada extra, o total de entradas que ela terá será duas entradas: Uma entrada extra que você configurou, e outra entrada que é a entrada padrão."
   template:
     createdTemplates: "Templates Criados"
     modalTitle: "Criação de Templates"
