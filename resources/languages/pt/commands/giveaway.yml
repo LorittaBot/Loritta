@@ -73,7 +73,7 @@ setup:
     title: "Cargo"
     description: "O cargo que receberá as entradas extras"
   extraEntryQuantity:
-    title: "Quantidade de Entradas Extras"
+    title: "Quantidade de Entradas"
     description: "Se uma pessoa com o cargo selecionado participar do sorteio, seria como se ela tivesse entrado {entryWeight,plural, =0 {# vezes} one {# vez} other {# vezes}} no sorteio!"
     descriptionStacked: "Se uma pessoa com o cargo selecionado participar do sorteio, ela ganhará {entryWeight,plural, =0 {+# entradas} one {+# entrada} other {+# entradas}} no sorteio!"
   allowedRoles:
@@ -93,8 +93,8 @@ setup:
     title: "Cargo {roleMention} (`{roleId}`)"
     extraEntries: "**Entrada Extras:** {entryWeight,plural, =0 {# entradas} one {# entrada} other {# entradas}}"
   extraEntriesShouldStack:
-    title: "Entradas extras deverão ser somadas"
-    description: "Se ativado, se um usuário possuir vários cargos que concedem entradas extras, todas as entradas serão somadas ao invés de considerar apenas o cargo que oferece o maior número de entradas. Enquanto ativado, a entrada padrão, que é concedida a todos usuários que participam do seu sorteio, também será somada na contagem de entradas, enquanto se a opção estiver desativada, as entradas extras substituem quantas vezes a pessoa entrou no sorteio. Ou seja, se uma pessoa entrar no sorteio enquanto a opção estiver ativada, e ela possuir um cargo que possui uma entrada extra, o total de entradas que ela terá será duas entradas: Uma entrada extra que você configurou, e outra entrada que é a entrada padrão."
+    title: "Somar Entradas Extras"
+    description: "Se ativado, as entradas extras serão somadas para cada cargo que a pessoa tem, enquanto se a opção estiver desativada, as entradas extras substituem quantas vezes a pessoa entrou no sorteio e a quantidade que será substituída será baseada no cargo que dá mais entradas extras ao usuário. Ou seja, se uma pessoa entrar no sorteio enquanto a opção estiver ativada, e ela possuir um cargo que possui uma entrada extra, o total de entradas que ela terá será duas entradas: Uma entrada extra que você configurou, e outra entrada que é a entrada padrão."
   template:
     createdTemplates: "Templates Criados"
     modalTitle: "Criação de Templates"
