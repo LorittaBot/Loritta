@@ -28,7 +28,16 @@ class StringDiscordModalOptionReference<T>(
     val range: IntRange?
 ) : DiscordModalOptionReference<T>(label, required) {
     override fun get(option: ModalMapping): T {
-        return option.asString as T
+        val value = option.asString
+
+        // Discord, when using an optional option, sends down a "" string when the user has not filled it with anything
+        //
+        // To make the behavior consistent between slash command args and modal args, we will manually send down null if
+        // we detect that the parameter is blank
+        if (!required && value.isBlank())
+            return null as T
+
+        return value as T
     }
 
     override fun toJDA() = TextInput.create(

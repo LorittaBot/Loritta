@@ -94,7 +94,6 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     )
                 )
             ) { it, args ->
-                // TODO: It actually seems that InteraKTions Unleashed falls back to "" when it is optional (well, that's what Discord sends to us
                 val value = args[option] ?: ""
 
                 block.invoke(builder, it, value)
