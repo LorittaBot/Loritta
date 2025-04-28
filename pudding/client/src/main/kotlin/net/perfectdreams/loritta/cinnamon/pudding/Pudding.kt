@@ -382,7 +382,27 @@ class Pudding(
             CachedPrivateChannels
         )
 
-        if (schemas.isNotEmpty())
+        if (schemas.isNotEmpty()) {
+            // We split up this in two separate transactions:
+            // 1. One to request the lock
+            // 2. Another to actually process the update (and release the lock)
+            // Why? Because if we request the lock and process the update in the same transaction, we will have concurrent issues if
+            // two instances try to update the schema at the same time!
+            // Example:
+            // * Instance1 and Instance2 starts up at the same time, both enters the transaction block but Instance1 gets the lock first
+            // * Instance1 updates the schema, and then releases the lock
+            // * Instance2 gets the lock, however it accesses the OLD schema version because it was already inside a transaction,
+            //   so it acesses the data it was available at the time of when the transaction started, which makes it get an older schema version
+            //   which causes it to run the migration scripts when it shouldn't, and then it crashes when trying to add things that already exist
+            //   (like columns)
+            transaction {
+                logger.info { "Requesting advisory lock..." }
+                val lockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_lock(?);")
+                lockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
+                lockStatement.execute()
+                logger.info { "Successfully requested advisory lock!" }
+            }
+
             transaction {
                 // SchemaUtils is dangerous: If PostgreSQL is running a VACUUM, the app will wait until the lock is released, because Exposed
                 // tries loading the table info data from the table, and that conflicts with VACUUM.
@@ -392,11 +412,7 @@ class Pudding(
                 // This also allows us to implement data migration steps down the road, yay!
 
                 // We will first lock to avoid multiple processes trying to update the data at the same time
-                val xactLockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_xact_lock(?);")
-                xactLockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
-                xactLockStatement.execute()
                 var databaseSchemaVersion: Int? = null
-
                 val schemaVersionOverride = Integer.getInteger("loritta.schemaVersionOverride", null)
                 if (schemaVersionOverride != null) {
                     logger.info { "Overriding Schema Version to $schemaVersionOverride" }
@@ -479,8 +495,14 @@ class Pudding(
                     }
                 }
 
-                logger.info { "All migrations were successfully applied!" }
+                logger.info { "All migrations were successfully applied! Releasing advisory lock..." }
+
+                val unlockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_unlock(?);")
+                unlockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
+                unlockStatement.execute()
+                logger.info { "Successfully released advisory lock!" }
             }
+        }
     }
 
     private fun Transaction.createPartitionedTable(table: Table) {
