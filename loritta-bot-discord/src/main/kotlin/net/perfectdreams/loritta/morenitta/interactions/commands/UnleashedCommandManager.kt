@@ -81,7 +81,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     // This is useful because Discord autocompletes the default string + the current Discord locale localization string
     val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
 
-    private var commandPathToDeclarations = mutableMapOf<String, SlashCommandDeclaration>()
+    private var commandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
 
     fun register(declaration: SlashCommandDeclarationWrapper) {
         val builtDeclaration = declaration.command().build()
@@ -93,12 +93,18 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 executors += builtDeclaration.executor
 
             for (subcommand in builtDeclaration.subcommands) {
+                if (subcommand.defaultMemberPermissions != null)
+                    error("Subcommands cannot have defaultMemberPermissions!")
+
                 if (subcommand.executor != null)
                     executors += subcommand.executor
             }
 
             for (subcommandGroup in builtDeclaration.subcommandGroups) {
                 for (subcommand in subcommandGroup.subcommands) {
+                    if (subcommand.defaultMemberPermissions != null)
+                        error("Subcommands cannot have defaultMemberPermissions!")
+
                     if (subcommand.executor != null)
                         executors += subcommand.executor
                 }
@@ -125,10 +131,13 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         fun isDeclarationExecutable(declaration: SlashCommandDeclaration) = declaration.executor != null
 
         // No match? Check all executor's absolute paths
-        val commandPathToDeclarations = mutableMapOf<String, SlashCommandDeclaration>()
+        val commandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
 
-        fun putNormalized(key: String, value: SlashCommandDeclaration) {
-            commandPathToDeclarations[key.normalize()] = value
+        fun putNormalized(key: String, rootDeclaration: SlashCommandDeclaration, slashDeclaration: SlashCommandDeclaration) {
+            commandPathToDeclarations[key.normalize()] = CommandDeclarationPair(
+                rootDeclaration,
+                slashDeclaration
+            )
         }
 
         // Get all executors that have enabled legacy message support enabled and add them to the command path
@@ -139,12 +148,12 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
             if (isDeclarationExecutable(declaration)) {
                 for (rootLabel in rootLabels) {
-                    putNormalized(rootLabel, declaration)
+                    putNormalized(rootLabel, declaration, declaration)
                 }
 
                 // And add the absolute commands!
                 for (absolutePath in declaration.alternativeLegacyAbsoluteCommandPaths) {
-                    putNormalized(absolutePath, declaration)
+                    putNormalized(absolutePath, declaration, declaration)
                 }
             }
 
@@ -156,13 +165,13 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
                     for (rootLabel in rootLabels) {
                         for (subcommandLabel in subcommandLabels) {
-                            putNormalized("$rootLabel $subcommandLabel", subcommand)
+                            putNormalized("$rootLabel $subcommandLabel", declaration, subcommand)
                         }
                     }
 
                     // And add the absolute commands!
                     for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
-                        putNormalized(absolutePath, subcommand)
+                        putNormalized(absolutePath, declaration, subcommand)
                     }
                 }
             }
@@ -181,14 +190,14 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                         for (rootLabel in rootLabels) {
                             for (subcommandGroupLabel in subcommandGroupLabels) {
                                 for (subcommandLabel in subcommandLabels) {
-                                    putNormalized("$rootLabel $subcommandGroupLabel $subcommandLabel", subcommand)
+                                    putNormalized("$rootLabel $subcommandGroupLabel $subcommandLabel", declaration, subcommand)
                                 }
                             }
                         }
 
                         // And add the absolute commands!
                         for (absolutePath in subcommand.alternativeLegacyAbsoluteCommandPaths) {
-                            putNormalized(absolutePath.normalize(), subcommand)
+                            putNormalized(absolutePath.normalize(), declaration, subcommand)
                         }
                     }
                 }
@@ -358,7 +367,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         var argumentsToBeDropped = 0
 
-        var bestMatch: SlashCommandDeclaration? = null
+        var bestMatch: CommandDeclarationPair? = null
         var absolutePathSize = 0
 
         commandDeclarationsLoop@for ((commandPath, declaration) in commandPathToDeclarations) {
@@ -384,8 +393,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         }
 
         if (bestMatch != null) {
-            rootDeclaration = bestMatch
-            slashDeclaration = bestMatch
+            rootDeclaration = bestMatch.rootDeclaration
+            slashDeclaration = bestMatch.slashDeclaration
             argumentsToBeDropped = absolutePathSize
         }
 
@@ -495,6 +504,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
                 // Get the permissions
                 // To mimick how slash commands work, we only check the root declaration permissions
+                // We need to get it as raw because JDA does not have an easy way to get each permission set in the command
                 val requiredPermissionsRaw = rootDeclaration.defaultMemberPermissions?.permissionsRaw
                 if (requiredPermissionsRaw != null) {
                     val requiredPermissions = Permission.getPermissions(requiredPermissionsRaw)
@@ -949,4 +959,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
 
         DiscordLocale.from(locale)
     }
+
+    // Used for the commandPathToDeclarations
+    private data class CommandDeclarationPair(
+        val rootDeclaration: SlashCommandDeclaration,
+        val slashDeclaration: SlashCommandDeclaration
+    )
 }
