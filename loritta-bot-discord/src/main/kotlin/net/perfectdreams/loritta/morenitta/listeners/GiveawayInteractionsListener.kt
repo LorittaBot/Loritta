@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GiveawayRoleExtraEntries
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.Giveaways
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -508,19 +509,20 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                 val participants = m.transaction {
                     GiveawayParticipants.selectAll().where { GiveawayParticipants.giveawayId eq dbId }
                         .orderBy(GiveawayParticipants.joinedAt, SortOrder.ASC)
-                        .map { it[GiveawayParticipants.userId] }
+                        .map { GiveawayParticipant(it[GiveawayParticipants.userId], it[GiveawayParticipants.weight]) }
                 }
 
                 val members = participants.associateWith {
                     KotlinLogging.logger {}.info { "GiveawayInteractionsListener#retrieveUserInfoById - UserId: ${it}" }
-                    m.lorittaShards.retrieveUserInfoById(it)
+                    GiveawayParticipant(m.lorittaShards.retrieveUserInfoById(it.value), it.weight)
                 }
                 val participantsText = StringBuilder()
-                members.forEach { (id, info) ->
+                members.forEach { (id, participant) ->
+                    val info = participant.value
                     if (info != null) {
-                        participantsText.appendLine("${info.name}#${info.discriminator} (${info.id})")
+                        participantsText.appendLine("${info.name}#${info.discriminator} (${info.id}) [${i18nContext.get(I18nKeysData.Giveaway.Entries(participant.weight))}]")
                     } else {
-                        participantsText.appendLine(id)
+                        participantsText.appendLine("$id [${i18nContext.get(I18nKeysData.Giveaway.Entries(participant.weight))}]")
                     }
                 }
 
@@ -566,5 +568,10 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
         val deniedRoles: GiveawayRoles?,
         val extraEntries: List<GiveawayRoleExtraEntry>,
         val extraEntriesShouldStack: Boolean
+    )
+
+    private data class GiveawayParticipant<T>(
+        val value: T,
+        val weight: Int
     )
 }

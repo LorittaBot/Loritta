@@ -7,6 +7,7 @@ giveaway:
   endsAt: "Acabará em"
   requirements: "Requisitos"
   participate: "Participar ({participantsCount})"
+  entries: "{entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}}"
   roleExtraEntry: "Participantes com o cargo {roleMention} tem {entryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}} ao invés de apenas {defaultEntryWeight,plural, =0 {#x entradas} one {#x entrada} other {#x entradas}}"
   roleExtraEntryStacked: "Participantes com o cargo {roleMention} ganham {entryWeight,plural, =0 {+# entradas} one {+# entrada} other {+# entradas}} a mais"
   oneWinner: "Parabéns {userMention} por ganhar o sorteio {giveawayName}!"
