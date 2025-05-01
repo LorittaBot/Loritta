@@ -113,3 +113,21 @@ setup:
     needsToHaveAllOfTheseRolesToParticipate: "Precisa ter todos os seguintes cargos para participar: {roleList}"
     cannotHaveOneOfTheseRolesToParticipate: "Não pode participar se tiver algum destes cargos: {roleList}"
     cannotHaveAllOfTheseRolesToParticipate: "Não pode participar se tiver todos estes cargos: {roleList}"
+
+reroll:
+  label: "reroll"
+  description: "Gire a roleta da sorte e faça eu gerar novos vencedores para um sorteio"
+
+  options:
+    messageUrl:
+      text: "O link da mensagem do sorteio"
+    rerollCount:
+      text: "A quantidade de pessoas que serão sorteadas"
+
+end:
+  label: "end"
+  description: "Encerra um sorteio antes da hora"
+
+  options:
+    messageUrl:
+      text: "O link da mensagem do sorteio"
