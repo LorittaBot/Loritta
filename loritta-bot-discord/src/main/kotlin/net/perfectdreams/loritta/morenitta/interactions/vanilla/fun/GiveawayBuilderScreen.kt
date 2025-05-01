@@ -50,7 +50,8 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
     companion object {
         // This name is wonky as hell lol
         // We only have a low limit because Discord has a somewhat low max component limit, especially if you use sections
-        const val MAX_EXTRA_ENTRIES_ENTRIES = 4
+        // Before it was 4 max "max entries", but because Discord increased the component limit to 40 instead of 30, we can change it back to 5
+        const val MAX_EXTRA_ENTRIES_ENTRIES = 5
         const val MAX_GIVEAWAY_TEMPLATES = 5
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Giveaway
         private val SETUP_I18N_PREFIX = I18N_PREFIX.Setup
