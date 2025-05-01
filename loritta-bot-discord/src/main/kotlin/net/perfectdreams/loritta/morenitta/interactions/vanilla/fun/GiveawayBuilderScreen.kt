@@ -1288,13 +1288,10 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
                     val option = modalString(
                         context.i18nContext.get(SETUP_I18N_PREFIX.Template.TemplateName),
                         TextInputStyle.SHORT,
-                        // We need to limit the length of the name to avoid errors if the name of the giveaway is larger than the template name,
-                        // However, we also need to make sure that
                         value = builder.name
-                            .take(50)
                             .let {
-                                // This is a bit confusing, but we also need to limit if it is not SMALLER than our range!
-                                if (it.length >= 3) {
+                                // We need to limit the length of the name to avoid errors if the name of the giveaway is larger OR smaller than the template name,
+                                if (it.length in 3..50) {
                                     it
                                 } else {
                                     context.i18nContext.get(SETUP_I18N_PREFIX.GiveawayNamePlaceholder)
