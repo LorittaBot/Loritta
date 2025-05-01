@@ -33,7 +33,7 @@ dependencies {
 
     // Discord
     implementation(libs.deviousjda)
-    implementation("com.github.freya022:jda-ktx:f00a80558d")
+    implementation("com.github.freya022:jda-ktx:e6ec98ea57")
     implementation("club.minnced:discord-webhooks:0.8.4")
 
     // Exposed & Databases

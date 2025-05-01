@@ -554,7 +554,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
                     if (imageUrl != null) {
                         +MediaGallery {
-                            +this.item(imageUrl)
+                            this.item(imageUrl)
                         }
                     }
 
@@ -571,7 +571,7 @@ sealed class GiveawayBuilderScreen(val m: LorittaBot) {
 
                     if (thumbnailUrl != null) {
                         +MediaGallery {
-                            +this.item(thumbnailUrl)
+                            this.item(thumbnailUrl)
                         }
                     }
 

@@ -209,7 +209,7 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                             + TextDisplay("### $embedLikeTitle")
 
                             + MediaGallery {
-                                + this.item(cardReceivedImageUrl)
+                                this.item(cardReceivedImageUrl)
                             }
 
                             + TextDisplay(

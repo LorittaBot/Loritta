@@ -310,7 +310,7 @@ class InternalWebServer(val m: LorittaBot) {
                             this.components += TextDisplay("<@&334734175531696128> <@&1279902783897604106>")
 
                             this.components += MediaGallery {
-                                + this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1301999867358609418/img1.png?ex=68089e9e&is=68074d1e&hm=6696ed2604b9649b66b29abfe286be90913fd8cb2ed5075167209f683e23a8e2&")
+                                this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1301999867358609418/img1.png?ex=68089e9e&is=68074d1e&hm=6696ed2604b9649b66b29abfe286be90913fd8cb2ed5075167209f683e23a8e2&")
                             }
 
                             this.components += Container {
@@ -324,7 +324,7 @@ class InternalWebServer(val m: LorittaBot) {
                                 """.trimIndent())
 
                                 this.components += MediaGallery {
-                                    + this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302000141493862473/img2.gif?ex=68089edf&is=68074d5f&hm=bec9ff4854d0578ea9c0eae935ec3e29f07f1021532a22a619513c3286215d99&")
+                                    this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302000141493862473/img2.gif?ex=68089edf&is=68074d5f&hm=bec9ff4854d0578ea9c0eae935ec3e29f07f1021532a22a619513c3286215d99&")
                                 }
 
                                 + TextDisplay("""
@@ -343,7 +343,7 @@ class InternalWebServer(val m: LorittaBot) {
                                 """.trimIndent())
 
                                 this.components += MediaGallery {
-                                    + this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302000933017878568/img4.gif?ex=68089f9c&is=68074e1c&hm=23245a180b43359dc472d37c0871eee8f116013a8f950007c5c2654c41a0eb07&")
+                                    this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302000933017878568/img4.gif?ex=68089f9c&is=68074e1c&hm=23245a180b43359dc472d37c0871eee8f116013a8f950007c5c2654c41a0eb07&")
                                 }
 
                                 + TextDisplay("""
@@ -397,7 +397,7 @@ class InternalWebServer(val m: LorittaBot) {
                                 """.trimIndent())
 
                                 + MediaGallery {
-                                    + this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302001792372178985/img8.png?ex=6808a069&is=68074ee9&hm=e9d79d194257820505d2ad3b1904455718bfd3a0d12b877f97d0abfde95dfae8&")
+                                    this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1302001792372178985/img8.png?ex=6808a069&is=68074ee9&hm=e9d79d194257820505d2ad3b1904455718bfd3a0d12b877f97d0abfde95dfae8&")
                                 }
 
                                 + TextDisplay("""
