@@ -178,7 +178,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
             // If we already have it stickied, we don't need to worry about any count things
             if (doWeHaveThisTypeSticked) {
                 stickerIdsThatCanBeGiven.add(sticker.id)
-                break
+                continue
             }
 
             // If we DON'T have it stickied...
@@ -186,7 +186,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
             if (amountInInventory >= 2) {
                 // We should only show that we can give it away if we have at least 2 of that type of sticker in our inventory
                 stickerIdsThatCanBeGiven.add(sticker.id)
-                break
+                continue
             }
         }
 
