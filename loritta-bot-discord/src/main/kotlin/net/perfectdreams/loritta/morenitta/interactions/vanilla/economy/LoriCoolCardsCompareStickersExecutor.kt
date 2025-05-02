@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
@@ -159,34 +158,41 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
         eventId: Long,
         user: User,
     ): UserStickers {
-        // This gets ALL the sticked stickers
-        val stickerIdsThatYouHaveSticked = LoriCoolCardsUserOwnedCards
-            .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
+        // This gets ALL stickers that we have, in the inventory or not
+        val stickersThatYouHave = LoriCoolCardsUserOwnedCards
+            .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.sticked)
             .where {
-                LoriCoolCardsUserOwnedCards.event eq eventId and (LoriCoolCardsUserOwnedCards.user eq user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq true)
+                LoriCoolCardsUserOwnedCards.event eq eventId and (LoriCoolCardsUserOwnedCards.user eq user.idLong)
             }
-            .groupBy(LoriCoolCardsUserOwnedCards.card)
             .toList()
-            .map { it[LoriCoolCardsUserOwnedCards.card].value }
+            .map { Sticker(it[LoriCoolCardsUserOwnedCards.card].value, it[LoriCoolCardsUserOwnedCards.sticked]) }
 
-        // This gets ALL the non-sticked stickers, this is used to know if we can give them to our friend
-        val stickersIdsThatYouHaveInYourInventory = LoriCoolCardsUserOwnedCards
-            .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.card.count())
-            .where {
-                LoriCoolCardsUserOwnedCards.event eq eventId and (LoriCoolCardsUserOwnedCards.user eq user.idLong) and (LoriCoolCardsUserOwnedCards.sticked eq false)
+        val stickersThatAreSticked = stickersThatYouHave.filter { it.sticked }
+        val stickersThatArentSticked = stickersThatYouHave.filter { !it.sticked }
+        val stickerIdsThatCanBeGiven = mutableSetOf<Long>()
+
+        // Add all sticker IDs that we already have stickied
+        for (sticker in stickersThatArentSticked) {
+            val doWeHaveThisTypeSticked = stickersThatAreSticked.any { it.id == sticker.id }
+
+            // If we already have it stickied, we don't need to worry about any count things
+            if (doWeHaveThisTypeSticked) {
+                stickerIdsThatCanBeGiven.add(sticker.id)
+                break
             }
-            .groupBy(LoriCoolCardsUserOwnedCards.card)
-            .toList()
-            .map { it[LoriCoolCardsUserOwnedCards.card].value }
-            .toSet()
 
-        val stickerIdsThatYouHave = mutableSetOf<Long>()
-        stickerIdsThatYouHave.addAll(stickerIdsThatYouHaveSticked)
-        stickerIdsThatYouHave.addAll(stickersIdsThatYouHaveInYourInventory)
+            // If we DON'T have it stickied...
+            val amountInInventory = stickersThatArentSticked.filter { it.id == sticker.id }.size
+            if (amountInInventory >= 2) {
+                // We should only show that we can give it away if we have at least 2 of that type of sticker in our inventory
+                stickerIdsThatCanBeGiven.add(sticker.id)
+                break
+            }
+        }
 
         return UserStickers(
-            stickerIdsThatYouHave,
-            stickersIdsThatYouHaveInYourInventory
+            stickersThatYouHave.map { it.id }.toSet(),
+            stickerIdsThatCanBeGiven
         )
     }
 
@@ -198,7 +204,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
         val yourStickersMissing = mutableListOf<ResultRow>()
 
         // What stickers you need that the other user has?
-        for (stickerId in whoHasTheStickers.stickerIdsThatWeHaveInOurInventory) {
+        for (stickerId in whoHasTheStickers.stickerIdsThatCanBeGiven) {
             val doWeHaveIt = whoNeedsTheStickers.stickerIdsThatWeHave.contains(stickerId)
 
             if (!doWeHaveIt) {
@@ -213,7 +219,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
 
     data class UserStickers(
         val stickerIdsThatWeHave: Set<Long>,
-        val stickerIdsThatWeHaveInOurInventory: Set<Long>,
+        val stickerIdsThatCanBeGiven: Set<Long>
     )
 
     sealed class CompareStickersResult {
@@ -224,6 +230,11 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
             val player2Stickers: UserStickers
         ) : CompareStickersResult()
     }
+
+    private data class Sticker(
+        val id: Long,
+        val sticked: Boolean
+    )
 
     override suspend fun convertToInteractionsArguments(
         context: LegacyMessageCommandContext,
