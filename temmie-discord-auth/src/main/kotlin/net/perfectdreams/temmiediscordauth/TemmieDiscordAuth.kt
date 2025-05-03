@@ -108,7 +108,7 @@ class TemmieDiscordAuth(
 		}
 
 		doStuff(false) {
-			accessTokenMutexes.remove(accessToken ?: unknownTokenMutexKey)
+			accessTokenMutexes.remove(accessToken ?: authCode ?: unknownTokenMutexKey)
 
 			val httpResponse = checkIfRequestWasValid(
 				http.post {
@@ -216,7 +216,7 @@ class TemmieDiscordAuth(
 	}
 
 	private suspend fun <T> doStuff(checkForRefresh: Boolean = true, callback: suspend () -> (T)): T {
-		val mutexToken = accessToken ?: unknownTokenMutexKey
+		val mutexToken = accessToken ?: authCode ?: unknownTokenMutexKey
 		val mutex = accessTokenMutexes.getOrPut(mutexToken.hashCode()) { Mutex() }
 
 		logger.info { "doStuff(...) mutex locked? ${mutex.isLocked}; mutex token: $mutexToken" }
