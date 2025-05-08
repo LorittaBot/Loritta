@@ -13,6 +13,8 @@ InteraKTions Unleashed supports "legacy" mode, which lets Loritta process the sl
 
 The `net.perfectdreams.loritta.morenitta.commands` package also has Loritta's commands, however, they were created using old frameworks and they do not support slash commands. You should NOT create commands using that framework unless explicitly stated otherwise.
 
+When creating a simple command, like a command with just a few executors, you can keep the command declaration and the executor on the same class, with the executor being a inner class of the declaration class. Examples of this convention are the `EventCommand` class and the `ReminderCommand` class.
+
 When creating i18n keys for a slash command, you should follow this convention:
 ```yml
 label: "commandlabel"
