@@ -1,6 +1,5 @@
----
 label: "ligar"
-description: "Liga para o número 40028922 para participar do programa Bom Dia & Cia e ganhar sonhos!"
+description: "Aaaaaaalô, você está me escutando? Ligue para o Bom Dia & Cia para ganhar sonhos!"
 examples:
   - "40028922 |-| Liga para o número do Bom Dia & Cia"
   - "40028922 frase para ganhar |-| Liga para o número do Bom Dia & Cia e diz a frase para ganhar"
@@ -12,4 +11,5 @@ unknownNumber: "Número desconhecido"
 notAvailable: "Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! (Você apenas deve ligar após a {botMention} anunciar no chat para ligar!)"
 wrongText: "Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Não se esqueça de escrever a nossa frase para que você possa ganhar o prêmio!"
 cheating: "Poxa, não foi dessa vez amiguinho... mas não desista, ligue somente durante o programa, tá? Valeu! Aliás, não utilize CTRL-C e CTRL-V para você tentar vencer mais rápido. :^)"
-youWon: "Rodamos a roleta e... Parabéns! Você ganhou **{prizeAmount} Sonhos**!\n*(Psiu, você sabia que conseguiu digitar aproximadamente **{wordsPerMinute}** palavras por minuto? Impressionante, você tá de parabéns! {loriYayEmoji})*"
+youWon: "Rodamos a roleta e... Parabéns! Você ganhou **{prizeAmount} Sonhos**!"
+youWonWpm: "*(Psiu, você sabia que conseguiu digitar aproximadamente **{wordsPerMinute}** palavras por minuto? Impressionante, você tá de parabéns! {loriYayEmoji})*"

@@ -4,6 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BomDiaECiaWinners
@@ -60,160 +61,157 @@ class LigarCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val phoneAndText = args[options.phoneAndText]
             val parts = phoneAndText.split(" ", limit = 2)
             val phoneNumber = parts.getOrNull(0)?.replace("-", "")
-            val text = if (parts.size > 1) parts[1] else ""
+            val text = parts.getOrNull(1) ?: ""
 
-            if (phoneNumber != null) {
-                if (phoneNumber == "40028922") {
-                    val profile = context.lorittaUser.profile
+            if (phoneNumber == "40028922") {
+                val profile = context.lorittaUser.profile
 
-                    if (75 > profile.money) {
-                        context.reply(false) {
-                            styled(
-                                context.i18nContext.get(I18N_PREFIX.InsufficientFunds),
-                                Constants.ERROR
-                            )
-                            styled(
-                                context.i18nContext.get(
-                                    GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                        "https://loritta.website/", // Hardcoded, woo
-                                        "call-legacy",
-                                        "yudi-is-sad-cuz-cant-call-him"
-                                    )
-                                ),
-                                Emotes.LoriRich
-                            )
-                        }
-                        return
-                    }
-
-                    loritta.newSuspendedTransaction {
-                        profile.takeSonhosAndAddToTransactionLogNested(
-                            75,
-                            SonhosPaymentReason.BOM_DIA_E_CIA
-                        )
-
-                        // Cinnamon transaction system
-                        SimpleSonhosTransactionsLogUtils.insert(
-                            profile.userId,
-                            Instant.now(),
-                            TransactionType.BOM_DIA_E_CIA,
-                            75,
-                            StoredBomDiaECiaCallCalledTransaction
-                        )
-                    }
-
-                    GlobalScope.launch(coroutineExecutor) {
-                        if (loritta.bomDiaECia.available) {
-                            if (text.contains("\u200B") || text.contains("\u200C") || text.contains("\u200D")) {
-                                context.reply(false) {
-                                    styled(
-                                        context.i18nContext.get(I18N_PREFIX.Cheating),
-                                        "<:yudi:446394608256024597>"
-                                    )
-                                }
-                                loritta.bomDiaECia.triedToCall.add(context.user.idLong)
-                                return@launch
-                            }
-
-                            if (text != loritta.bomDiaECia.currentText) {
-                                context.reply(false) {
-                                    styled(
-                                        context.i18nContext.get(I18N_PREFIX.WrongText),
-                                        "<:yudi:446394608256024597>"
-                                    )
-                                }
-                                loritta.bomDiaECia.triedToCall.add(context.user.idLong)
-                                return@launch
-                            }
-
-                            loritta.bomDiaECia.available = false
-
-                            val randomPrize = RANDOM.nextInt(5_000, 10_001)
-                                .toLong()
-                            val guild = context.guild
-                            val user = context.user
-                            val prizeAsBigDecimal = randomPrize.toBigDecimal()
-                            val wonMillis = System.currentTimeMillis()
-
-                            loritta.newSuspendedTransaction {
-                                profile.addSonhosNested(randomPrize)
-
-                                BomDiaECiaWinners.insert {
-                                    it[guildId] = guild.idLong
-                                    it[userId] = user.idLong
-                                    it[wonAt] = wonMillis
-                                    it[prize] = prizeAsBigDecimal
-                                }
-
-                                PaymentUtils.addToTransactionLogNested(
-                                    randomPrize,
-                                    SonhosPaymentReason.BOM_DIA_E_CIA,
-                                    receivedBy = context.user.idLong,
-                                    givenAtMillis = wonMillis
-                                )
-
-                                // Cinnamon transaction system
-                                SimpleSonhosTransactionsLogUtils.insert(
-                                    profile.userId,
-                                    Instant.now(),
-                                    TransactionType.BOM_DIA_E_CIA,
-                                    randomPrize,
-                                    StoredBomDiaECiaCallWonTransaction
-                                )
-                            }
-
-                            val wordsTyped = text.split(" ").size
-                            val timeDiff = wonMillis - loritta.bomDiaECia.lastBomDiaECia
-                            val wordsPerMinute = ((60 * wordsTyped) / (timeDiff / 1000)).toDouble()
-                            val wpmAsInt = wordsPerMinute.roundToInt()
-
-                            logger.info("${context.user.id} ganhou ${randomPrize} no Bom Dia & Cia!")
-                            logger.info("Demorou ${timeDiff}ms a acertar o Bom Dia & Cia, num total aproximado de ${wpmAsInt} palavras por minuto!")
-
-                            context.reply(false) {
-                                styled(
-                                    context.i18nContext.get(
-                                        I18N_PREFIX.YouWon(
-                                            prizeAmount = randomPrize,
-                                            wordsPerMinute = wpmAsInt,
-                                            loriYayEmoji = "<a:lori_yay_wobbly:638040459721310238>"
-                                        )
-                                    ),
-                                    "<:yudi:446394608256024597>"
-                                )
-                            }
-
-                            // The announceWinner method expects a GuildMessageChannelUnion, but context.channel is a MessageChannel
-                            // We need to get the guild channel from the context
-                            val guildChannel = context.guild.getGuildChannelById(context.channel.idLong)
-                            if (guildChannel != null) {
-                                loritta.bomDiaECia.announceWinner(guildChannel, context.guild, context.user)
-                            }
-                        } else {
-                            context.reply(false) {
-                                styled(
-                                    context.i18nContext.get(
-                                        I18N_PREFIX.NotAvailable(
-                                            botMention = context.jda.selfUser.asMention
-                                        )
-                                    ),
-                                    "<:yudi:446394608256024597>"
-                                )
-                            }
-                            if (30000 > System.currentTimeMillis() - loritta.bomDiaECia.lastBomDiaECia)
-                                loritta.bomDiaECia.triedToCall.add(context.user.idLong)
-                        }
-                    }
-                } else {
+                if (75 > profile.money) {
                     context.reply(false) {
                         styled(
-                            context.i18nContext.get(I18N_PREFIX.UnknownNumber),
-                            "\uD83D\uDCF4"
+                            context.i18nContext.get(I18N_PREFIX.InsufficientFunds),
+                            Constants.ERROR
                         )
+                        styled(
+                            context.i18nContext.get(
+                                GACampaigns.sonhosBundlesUpsellDiscordMessage(
+                                    "https://loritta.website/", // Hardcoded, woo
+                                    "call",
+                                    "yudi-is-sad-cuz-cant-call-him"
+                                )
+                            ),
+                            Emotes.LoriRich
+                        )
+                    }
+                    return
+                }
+
+                loritta.newSuspendedTransaction {
+                    profile.takeSonhosAndAddToTransactionLogNested(
+                        75,
+                        SonhosPaymentReason.BOM_DIA_E_CIA
+                    )
+
+                    // Cinnamon transaction system
+                    SimpleSonhosTransactionsLogUtils.insert(
+                        profile.userId,
+                        Instant.now(),
+                        TransactionType.BOM_DIA_E_CIA,
+                        75,
+                        StoredBomDiaECiaCallCalledTransaction
+                    )
+                }
+
+                GlobalScope.launch(coroutineExecutor) {
+                    if (loritta.bomDiaECia.available) {
+                        if (text.contains("\u200B") || text.contains("\u200C") || text.contains("\u200D")) {
+                            context.reply(false) {
+                                styled(
+                                    context.i18nContext.get(I18N_PREFIX.Cheating),
+                                    "<:yudi:446394608256024597>"
+                                )
+                            }
+                            loritta.bomDiaECia.triedToCall.add(context.user.idLong)
+                            return@launch
+                        }
+
+                        if (text != loritta.bomDiaECia.currentText) {
+                            context.reply(false) {
+                                styled(
+                                    context.i18nContext.get(I18N_PREFIX.WrongText),
+                                    "<:yudi:446394608256024597>"
+                                )
+                            }
+                            loritta.bomDiaECia.triedToCall.add(context.user.idLong)
+                            return@launch
+                        }
+
+                        loritta.bomDiaECia.available = false
+
+                        val randomPrize = RANDOM.nextInt(5_000, 10_001)
+                            .toLong()
+                        val guild = context.guild
+                        val user = context.user
+                        val prizeAsBigDecimal = randomPrize.toBigDecimal()
+                        val wonMillis = System.currentTimeMillis()
+
+                        loritta.newSuspendedTransaction {
+                            profile.addSonhosNested(randomPrize)
+
+                            BomDiaECiaWinners.insert {
+                                it[guildId] = guild.idLong
+                                it[userId] = user.idLong
+                                it[wonAt] = wonMillis
+                                it[prize] = prizeAsBigDecimal
+                            }
+
+                            PaymentUtils.addToTransactionLogNested(
+                                randomPrize,
+                                SonhosPaymentReason.BOM_DIA_E_CIA,
+                                receivedBy = context.user.idLong,
+                                givenAtMillis = wonMillis
+                            )
+
+                            // Cinnamon transaction system
+                            SimpleSonhosTransactionsLogUtils.insert(
+                                profile.userId,
+                                Instant.now(),
+                                TransactionType.BOM_DIA_E_CIA,
+                                randomPrize,
+                                StoredBomDiaECiaCallWonTransaction
+                            )
+                        }
+
+                        val wordsTyped = text.split(" ").size
+                        val timeDiff = wonMillis - loritta.bomDiaECia.lastBomDiaECia
+                        val wordsPerMinute = ((60 * wordsTyped) / (timeDiff / 1000)).toDouble()
+                        val wpmAsInt = wordsPerMinute.roundToInt()
+
+                        logger.info("${context.user.id} ganhou ${randomPrize} no Bom Dia & Cia!")
+                        logger.info("Demorou ${timeDiff}ms a acertar o Bom Dia & Cia, num total aproximado de ${wpmAsInt} palavras por minuto!")
+
+                        context.reply(false) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.YouWon(prizeAmount = randomPrize)
+                                ),
+                                "<:yudi:446394608256024597>"
+                            )
+
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.YouWonWpm(
+                                        wordsPerMinute = wpmAsInt,
+                                        loriYayEmoji = "<a:lori_yay_wobbly:638040459721310238>"
+                                    )
+                                ),
+                                Emotes.LoriLurk
+                            )
+                        }
+
+                        loritta.bomDiaECia.announceWinner(context.channel as GuildMessageChannelUnion, context.guild, context.user)
+                    } else {
+                        context.reply(false) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.NotAvailable(
+                                        botMention = context.jda.selfUser.asMention
+                                    )
+                                ),
+                                "<:yudi:446394608256024597>"
+                            )
+                        }
+                        if (30000 > System.currentTimeMillis() - loritta.bomDiaECia.lastBomDiaECia)
+                            loritta.bomDiaECia.triedToCall.add(context.user.idLong)
                     }
                 }
             } else {
-                context.explain()
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.UnknownNumber),
+                        "\uD83D\uDCF4"
+                    )
+                }
             }
         }
 

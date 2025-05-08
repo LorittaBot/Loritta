@@ -39,6 +39,8 @@ import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedComponentId
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.AutocompleteContext
@@ -49,6 +51,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.StringD
 import net.perfectdreams.loritta.morenitta.interactions.components.ComponentContext
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalArguments
 import net.perfectdreams.loritta.morenitta.interactions.modals.ModalContext
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LigarCommand
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
@@ -209,7 +212,12 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                val miscellaneousConfig = context.config.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
+
+                val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+                val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
+
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, isBomDiaECia, context, i18nContext, guildId))
                     return@launchMessageJob
 
                 loritta.transaction {
@@ -428,7 +436,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, false, context, i18nContext, guildId))
                     return@launchMessageJob
 
                 executor.execute(
@@ -530,7 +538,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, false, context, i18nContext, guildId))
                     return@launchMessageJob
 
                 executor.execute(
@@ -1226,6 +1234,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
     private suspend fun checkIfCommandIsDisabledOnGuild(
         event: GenericCommandInteractionEvent,
         slashDeclaration: ExecutableApplicationCommandDeclaration,
+        isBomDiaECiaExecutor: Boolean,
         context: ApplicationCommandContext,
         i18nContext: I18nContext,
         guildId: Long?,
@@ -1241,6 +1250,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 .firstOrNull()
                 .let { GuildCommandConfigData.fromResultRowOrDefault(it) }
         }
+
+        // Exception: The "/ligar" command can bypass the blocked commands list
+        if (isBomDiaECiaExecutor)
+            return true
 
         if (!g.enabled) {
             // Command is NOT enabled!
