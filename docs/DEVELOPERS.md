@@ -69,7 +69,7 @@ If this is the first time running Loritta, she will create a file named `loritta
 
 Then run the `LorittaLauncher` class again! If everything goes well, Loritta will be up and running!
 
-### ⚡ Tips
+## ⚡ Tips
 
 * When developing things for the `:loritta-bot-discord` module, you can skip the time-consuming `:web:spicy-morenitta` distribution task during compilation by adding `net.perfectdreams.loritta.skipSpicyMorenittaDistribution=true` to your `gradle.properties`.
 * The [`.junie/guidelines.md`](../.junie/guidelines.md) file has explanations of how Loritta the core principles behind Loritta's design. The document is for [JetBrains's Junie AI agent](https://www.jetbrains.com/junie/), but it is also useful because it explains how Loritta's code is structured.
