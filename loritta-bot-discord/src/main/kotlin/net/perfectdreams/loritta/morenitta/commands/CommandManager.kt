@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.morenitta.commands.nashorn.NashornCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.InviteCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.ServerInfoCommand
-import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.LigarCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
@@ -166,9 +165,6 @@ class CommandManager(val loritta: LorittaBot) {
 		// TODO: Fix compilation?
 		// if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 		// 	commandMap.add(AntiRaidCommand(loritta))
-
-		// =======[ ECONOMIA ]========
-		commandMap.add(LigarCommand(loritta))
 	}
 
 	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
@@ -307,26 +303,24 @@ class CommandManager(val loritta: LorittaBot) {
 				val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
 
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (!enableBomDiaECia || (enableBomDiaECia && command !is LigarCommand)) {
-						if (serverConfig.warnIfBlacklisted) {
-							if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
-								val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
-									i18nContext,
-									serverConfig.blacklistedWarning ?: "???",
-									listOf(ev.member, ev.textChannel, ev.guild),
-									ev.guild,
-									emptyMap(),
-									generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
-								)
+                    if (serverConfig.warnIfBlacklisted) {
+                        if (serverConfig.blacklistedWarning?.isNotEmpty() == true && ev.guild != null && ev.member != null && ev.textChannel != null) {
+                            val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+                                i18nContext,
+                                serverConfig.blacklistedWarning ?: "???",
+                                listOf(ev.member, ev.textChannel, ev.guild),
+                                ev.guild,
+                                emptyMap(),
+                                generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
+                            )
 
-								ev.textChannel.sendMessage(generatedMessage)
-									.referenceIfPossible(ev.message, serverConfig, true)
-									.await()
-							}
-						}
-						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
-					}
-				}
+                            ev.textChannel.sendMessage(generatedMessage)
+                                .referenceIfPossible(ev.message, serverConfig, true)
+                                .await()
+                        }
+                    }
+                    return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
+                }
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
 					// Verificar se o comando está ativado na guild atual

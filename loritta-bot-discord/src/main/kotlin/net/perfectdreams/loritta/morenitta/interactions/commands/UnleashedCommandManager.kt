@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.*
@@ -300,6 +301,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(LoriCoolCardsCommand(loritta))
         register(SonhosCommand(loritta))
         register(VacationCommand(loritta))
+        register(LigarCommand(loritta))
 
         // ===[ MINECRAFT ]===
         register(MinecraftCommand(loritta))
@@ -468,15 +470,23 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 }
 
                 if (!g.enabled) {
-                    // Command is NOT enabled!
-                    // Message commands should be fully disabled, no way around it! So let's bail out!
-                    context.reply(true) {
-                        styled(
-                            i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
-                            Emotes.Error
-                        )
+                    val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
+
+                    val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+                    val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
+
+                    // Exception: The "/ligar" command can bypass the blocked commands list
+                    if (!isBomDiaECia) {
+                        // Command is NOT enabled!
+                        // Message commands should be fully disabled, no way around it! So let's bail out!
+                        context.reply(true) {
+                            styled(
+                                i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
+                                Emotes.Error
+                            )
+                        }
+                        return true
                     }
-                    return true
                 }
             }
 
