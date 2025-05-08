@@ -1,8 +1,8 @@
 Loritta is a general-purpose Discord bot.
 
-## Commands
+## Commands Related Tasks
 
-The `net.perfectdreams.loritta.morenitta.interactions` package has "InteraKTions Unleashed", Loritta's command framework.
+The `net.perfectdreams.loritta.morenitta.interactions` package has "InteraKTions Unleashed", Loritta's command framework. Executors that use the "InteraKTions Unleashed" framework need to extend the `LorittaSlashCommandExecutor` class.
 
 The `net.perfectdreams.loritta.morenitta.interactions.vanilla` package has Loritta's application commands, this includes:
 * Slash Commands (type `/` in the chat -> Select the command)
@@ -13,7 +13,25 @@ InteraKTions Unleashed supports "legacy" mode, which lets Loritta process the sl
 
 The `net.perfectdreams.loritta.morenitta.commands` package also has Loritta's commands, however, they were created using old frameworks and they do not support slash commands. You should NOT create commands using that framework unless explicitly stated otherwise.
 
-## Internationalization
+When creating i18n keys for a slash command, you should follow this convention:
+```yml
+label: "commandlabel"
+description: "Description of the command here"
+```
+
+The label should be an alphanumeric string, with no spaces. The description should be kept under 100 characters. Both the label and the description must be a plain text string.
+
+When creating i18n keys for slash command options, you should follow this convention:
+
+```yml
+options:
+  nameOfTheOptionHere:
+    text: "Description of the option here"
+```
+
+Just like the slash command description, you should keep the text of the option under 100 characters, and it also must be a plain text string.
+
+## Internationalization Related Tasks
 
 When implementing features that have user facing strings, the strings should be added to the correct file in the `resources/languages/pt` folder, you NEED to run the `generateI18nKeys` Gradle task AFTER writing the strings on the folder, to be able to access them on the generated `I18nKeysData`.
 
@@ -49,14 +67,6 @@ helloWorld: "Loritta is so cute! Don't you think {userMention}?"
 ```
 You can use it in the code with `I18nKeysData.Commands.Command.Test.HelloWorld(userMention = "<@297153970613387264>")`. The `.Commands.Command.FileNameHere` is automatically added to the generated key!
 
-When creating i18n keys for slash command options, you should follow this convention:
-
-```yml
-options:
-  nameOfTheOptionHere:
-    text: "Description of the option here"
-```
-
 So, as an example: Let's suppose you are creating an `/user info` slash command that has an option named `user`, where the provided user is the user that you will look up their information, the i18n keys should be implemented as follows:
 
 ```yml
@@ -65,12 +75,20 @@ options:
     text: "O usuário que você deseja ver as informações dele"
 ```
 
-## Interactivity
+## Interactivity with Discord Components Related Tasks
 
-Interactions (such as buttons, select menus, entity menus, etc) should be handled via the `InteractivityManager` class.
+When tasked with features that require the use of components (buttons, select menus, entity menus, etc), you should use the `InteractivityManager` class.
 
 You should ALWAYS prefer the `___forUser(...)` functions in the `InteractivityManager` class UNLESS if the component you are creating NEEDS to be able to be used by other users. Example: If you are implementing a button that, when clicked, increases a counter, and anyone can click on the button to increase the counter. Example: `buttonForUser(...)`.
 
 If you need examples of how button interactivity works, check the following classes: `AchievementsExecutor`, `GiveawayBuilderScreen`, `UserInfoExecutor`.
 
-You should ONLY handle the interactivity manually when requested. When asked to do it manually, you should create the interaction listener and store the data related to the button on the database, similar to how the `SonhosPayExecutor` class works.
+When tasked with a feature that requires interactivity, you should ONLY handle the interactivity manually when requested. When asked to do it manually, you should create the interaction listener and store the data related to the button on the database, similar to how the `SonhosPayExecutor` class works.
+
+## Migrating Features Related Tasks
+
+Here are some tips when you are tasked to migrate features implemented using older systems or frameworks to newer systems.
+
+* You may encounter some i18n strings that use `{0}`,`{1}`, so on and so forth, especially when tasked to migrate old features. In these instances you MUST change the parameter name to something more cohesive.
+* Pieces of code that use `net.perfectdreams.loritta.morenitta.messages.LorittaReply` can be changed to use `styled(content, prefix)` or, if the prefix is not within a message builder, `createStyledContent(content, prefix)`.
+* Only migrate code that uses the legacy `BaseLocale` i18n system when requested.
