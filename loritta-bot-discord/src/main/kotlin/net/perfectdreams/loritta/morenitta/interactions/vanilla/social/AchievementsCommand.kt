@@ -3,8 +3,10 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.social
 import dev.minn.jda.ktx.interactions.components.option
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.common.achievements.AchievementCategory
@@ -19,14 +21,17 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.UserId
 import java.util.*
+import kotlin.math.ceil
 
 class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Achievements
+        private val ACHIEVEMENTS_PER_PAGE = 25
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("68ab22f2-fe44-4394-bd34-93665c9b1980")) {
@@ -35,8 +40,6 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
 
     class AchievementsExecutor : LorittaSlashCommandExecutor() {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
-            val achievements = context.loritta.pudding.users.getUserAchievements(UserId(context.user.idLong))
-
             context.reply(false) {
                 apply(
                     createMessage(
@@ -44,21 +47,23 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                         context.user,
                         context,
                         context.i18nContext,
-                        achievements,
-                        null
+                        null,
+                        0
                     )
                 )
             }
         }
 
-        fun createMessage(
+        suspend fun createMessage(
             loritta: LorittaBot,
             user: User,
             context: UnleashedContext,
             i18nContext: I18nContext,
-            achievements: List<PuddingAchievement>,
-            category: AchievementCategory?
+            category: AchievementCategory?,
+            page: Long = 0
         ): InlineMessage<*>.() -> (Unit) {
+            val achievements = context.loritta.pudding.users.getUserAchievements(UserId(context.user.idLong))
+
             val userAchievementsInAllCategoriesCount = achievements.size
             val totalAchievementsInAllCategoriesCount = AchievementType.values().size
             val userAchievementsInCurrentCategoryCount: Int
@@ -75,7 +80,30 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                 achievementsOfTheCurrentCategory = achievements.filter { it.type.category == category }
             }
 
+            // Sort the achievements by when they were achieved, so more recent achievements -> older achievements
+            val sortedAchievements = achievementsOfTheCurrentCategory.sortedByDescending { it.achievedAt }
+
+            val startIndex = (page * ACHIEVEMENTS_PER_PAGE).toInt()
+            val endIndex = minOf(startIndex + ACHIEVEMENTS_PER_PAGE, sortedAchievements.size)
+            val paginatedAchievements = if (sortedAchievements.isNotEmpty() && startIndex < sortedAchievements.size) {
+                sortedAchievements.subList(startIndex, endIndex)
+            } else {
+                emptyList()
+            }
+
+            // Calculate max page
+            val maxPage = ceil(sortedAchievements.size / ACHIEVEMENTS_PER_PAGE.toDouble())
+            val maxPageZeroIndexed = maxPage - 1
+
             return {
+                // Display page information
+                styled(
+                    i18nContext.get(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)
+                    ),
+                    Emotes.LoriReading
+                )
+
                 embed {
                     val description = StringBuilder()
 
@@ -90,7 +118,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                         description.append("\n\n")
                     }
 
-                    if (achievementsOfTheCurrentCategory.isEmpty()) {
+                    if (sortedAchievements.isEmpty()) {
                         description.append(
                             i18nContext.get(
                                 if (category == null)
@@ -100,8 +128,8 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                             )
                         )
                     } else {
-                        // Sort the achievements by when they were achieved, so more recent achievements -> older achievements
-                        for (achievement in achievementsOfTheCurrentCategory.sortedByDescending { it.achievedAt }) {
+                        // Display the paginated achievements
+                        for (achievement in paginatedAchievements) {
                             field(
                                 "${achievement.type.category.emote} ${i18nContext.get(achievement.type.title)}",
                                 """${i18nContext.get(achievement.type.description)}
@@ -124,7 +152,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                             fun insertOption(optionCategory: AchievementCategory) {
                                 val userAchievementsInCategoryCount =
                                     achievements.count { it.type.category == optionCategory }
-                                val totalAchievementsInCategoryCount = AchievementType.values()
+                                val totalAchievementsInCategoryCount = AchievementType.entries
                                     .count { it.category == optionCategory }
 
                                 this.option(
@@ -144,7 +172,7 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                                 default = category == null, // Set "ALL" as the default if the category is null (which means... "all categories")
                             )
 
-                            AchievementCategory.values().forEach {
+                            AchievementCategory.entries.forEach {
                                 insertOption(it)
                             }
                         }
@@ -152,7 +180,6 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                         val hook = context.deferEdit()
 
                         val newCategory = values.first()
-                        val achievements = loritta.pudding.users.getUserAchievements(UserId(user.idLong))
 
                         hook.editOriginal(
                             MessageEdit {
@@ -162,7 +189,6 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                                         user,
                                         context,
                                         context.i18nContext,
-                                        achievements,
                                         try {
                                             AchievementCategory.valueOf(newCategory)
                                         } catch (e: IllegalArgumentException) {
@@ -170,13 +196,76 @@ class AchievementsCommand(private val loritta: LorittaBot) : SlashCommandDeclara
                                                 null
                                             else
                                                 throw e
-                                        }
+                                        },
+                                        0 // Reset to first page when changing categories
                                     )
                                 )
                             }
                         ).await()
                     }
                 )
+
+                // Only show pagination buttons if there are multiple pages
+                if (sortedAchievements.isNotEmpty() && maxPage > 1) {
+                    actionRow(
+                        // left button
+                        loritta.interactivityManager.buttonForUser(
+                            user,
+                            context.alwaysEphemeral,
+                            ButtonStyle.PRIMARY,
+                            "",
+                            {
+                                loriEmoji = Emotes.ChevronLeft
+                            }
+                        ) {
+                            val hook = it.deferEdit()
+
+                            hook.editOriginal(
+                                MessageEdit {
+                                    apply(
+                                        createMessage(
+                                            loritta,
+                                            user,
+                                            it,
+                                            it.i18nContext,
+                                            category,
+                                            page - 1
+                                        )
+                                    )
+                                }
+                            ).await()
+                        },
+
+                        // right button
+                        loritta.interactivityManager.buttonForUser(
+                            user,
+                            context.alwaysEphemeral,
+                            ButtonStyle.PRIMARY,
+                            "",
+                            {
+                                loriEmoji = Emotes.ChevronRight
+                                disabled = page >= maxPageZeroIndexed
+                            }
+                        ) {
+                            val hook = it.deferEdit()
+
+                            hook.editOriginal(
+                                MessageEdit {
+                                    apply(
+                                        createMessage(
+                                            loritta,
+                                            user,
+                                            it,
+                                            it.i18nContext,
+                                            category,
+                                            page + 1
+                                        )
+                                    )
+                                }
+                            ).await()
+                        }
+                    )
+                }
             }
         }
     }
