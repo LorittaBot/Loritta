@@ -499,6 +499,13 @@ class Pudding(
                                 it[version] = upgradeVersion
                             }
                         }
+                    } else {
+                        // If the schema version is null, then we don't need to execute the migrations scripts
+                        // But we still need to upsert the current schema version!
+                        SchemaVersion.upsert(SchemaVersion.id) {
+                            it[id] = SCHEMA_ID
+                            it[version] = SCHEMA_VERSION
+                        }
                     }
 
                     logger.info { "All migrations were successfully applied! Releasing advisory lock..." }
