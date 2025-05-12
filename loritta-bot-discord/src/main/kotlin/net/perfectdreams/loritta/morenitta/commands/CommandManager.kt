@@ -102,8 +102,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(BackgroundCommand(loritta))
 		commandMap.add(RepCommand(loritta))
 //		commandMap.add(AfkCommand(loritta))
-		commandMap.add(MarryCommand(loritta))
-		commandMap.add(DivorceCommand(loritta))
 		commandMap.add(GenderCommand(loritta))
 
 		// =======[ UTILS ]=======
