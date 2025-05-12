@@ -1,0 +1,12 @@
+label: "casamento"
+description: "O amor está no ar! Comandos relacionados com o sistema de casamentos da Loritta"
+
+marry:
+  label: "casar"
+  description: "Case com a sua crush ou com a sua webnamorada!"
+  acceptMarryButton: "Aceitar Pedido"
+
+divorce:
+  label: "divorciar"
+  description: "O amor acabou? Então divorcie de um usuário"
+  divorceButton: "Divorciar"
