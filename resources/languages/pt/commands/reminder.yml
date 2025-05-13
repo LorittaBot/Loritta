@@ -21,6 +21,7 @@ create:
 list:
   label: "lista"
   description: "Mostra todos os seus lembretes"
+  view: "Ver"
 
   options:
     page:

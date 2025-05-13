@@ -1,5 +1,9 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.utils
 
+import dev.minn.jda.ktx.interactions.components.Container
+import dev.minn.jda.ktx.interactions.components.Section
+import dev.minn.jda.ktx.interactions.components.TextDisplay
+import dev.minn.jda.ktx.interactions.components.Thumbnail
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEditBuilder
 import mu.KotlinLogging
@@ -232,87 +236,101 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                 embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.content.substringIfNeeded(0..100)}\n")
             }
 
-            val reminderButtons = mutableListOf<Button>()
-
-            for ((index, reminder) in reminders.withIndex()) {
-                reminderButtons.add(
-                    loritta.interactivityManager
-                        .buttonForUser(
-                            context.user,
-                            context.alwaysEphemeral,
-                            ButtonStyle.PRIMARY,
-                            builder = {
-                                emoji = Emoji.fromUnicode(Constants.INDEXES[index])
-                            }
-                        ) {
-                            val textChannel = loritta.lorittaShards.getGuildMessageChannelById(reminder.channelId.toString())
-
-                            val guild = textChannel?.guild
-
-                            val embedBuilder = EmbedBuilder()
-                            if (guild != null) {
-                                embedBuilder.setThumbnail(guild.iconUrl)
-                            }
-
-                            embedBuilder.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
-                            embedBuilder.appendDescription("**${context.locale["${LOCALE_PREFIX}.remindAt"]} ** ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(reminder.remindAt)}\n")
-                            embedBuilder.appendDescription("**${context.locale["${LOCALE_PREFIX}.createdInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
-                            embedBuilder.appendDescription("**${context.locale["${LOCALE_PREFIX}.remindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
-                            embedBuilder.setColor(Color(255, 179, 43))
-
-                            it.editMessage(true) {
-                                embeds += embedBuilder.build()
-
-                                actionRow(
-                                    loritta.interactivityManager
-                                        .buttonForUser(
-                                            context.user,
-                                            context.alwaysEphemeral,
-                                            ButtonStyle.SECONDARY,
-                                            builder = {
-                                                loriEmoji = Emotes.ChevronLeft
-                                            }
-                                        ) {
-                                            it.deferAndEditOriginal {
-                                                createReminderListMessage(context, page).invoke(this)
-                                            }
-                                        },
-                                    loritta.interactivityManager
-                                        .buttonForUser(
-                                            context.user,
-                                            context.alwaysEphemeral,
-                                            ButtonStyle.SECONDARY,
-                                            builder = {
-                                                emoji = Emoji.fromUnicode("\uD83D\uDDD1")
-                                            }
-                                        ) {
-                                            val hook = it.updateMessageSetLoadingState()
-
-                                            loritta.newSuspendedTransaction {
-                                                Reminders.deleteWhere { Reminders.id eq reminder.id }
-                                            }
-
-                                            context.reply(true) {
-                                                styled(
-                                                    context.locale["${LOCALE_PREFIX}.reminderRemoved"]
-                                                )
-                                            }
-
-                                            hook.editOriginal(
-                                                MessageEditBuilder {
-                                                    createReminderListMessage(context, page).invoke(this)
-                                                }.build()
-                                            ).await()
-                                        }
-                                )
-                            }
-                        }
-                )
-            }
-
             return {
-                this.content = context.user.asMention
-                this.embeds += embed.build()
+                this.useComponentsV2 = true
+
+                this.components += Container {
+                    this.accentColor = Color(255, 179, 43).rgb
+                    +TextDisplay("### <a:lori_notification:394165039227207710> ${context.locale["$LOCALE_PREFIX.yourReminders"]} (${totalReminders})")
+
+                    for (reminder in reminders) {
+                        +Section(
+                            loritta.interactivityManager
+                                .buttonForUser(
+                                    context.user,
+                                    context.alwaysEphemeral,
+                                    ButtonStyle.PRIMARY,
+                                    context.i18nContext.get(I18N_PREFIX.List.View)
+                                ) {
+                                    val textChannel = loritta.lorittaShards.getGuildMessageChannelById(reminder.channelId.toString())
+
+                                    val guild = textChannel?.guild
+                                    val guildIconUrl = guild?.iconUrl
+
+                                    val text = buildString {
+                                        appendLine("### <a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
+                                        appendLine("**${context.locale["${LOCALE_PREFIX}.remindAt"]}** ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(reminder.remindAt)}\n")
+                                        appendLine("**${context.locale["${LOCALE_PREFIX}.createdInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
+                                        appendLine("**${context.locale["${LOCALE_PREFIX}.remindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
+                                    }
+
+                                    it.editMessage(true) {
+                                        this.useComponentsV2 = true
+                                        this.components += Container {
+                                            this.accentColor = Color(255, 179, 43).rgb
+                                            if (guildIconUrl != null) {
+                                                +Section(Thumbnail(guildIconUrl)) {
+                                                    +TextDisplay(text)
+                                                }
+                                            } else {
+                                                +TextDisplay(text)
+                                            }
+                                        }
+
+                                        actionRow(
+                                            loritta.interactivityManager
+                                                .buttonForUser(
+                                                    context.user,
+                                                    context.alwaysEphemeral,
+                                                    ButtonStyle.SECONDARY,
+                                                    builder = {
+                                                        loriEmoji = Emotes.ChevronLeft
+                                                    }
+                                                ) {
+                                                    it.deferAndEditOriginal {
+                                                        createReminderListMessage(context, page).invoke(this)
+                                                    }
+                                                },
+                                            loritta.interactivityManager
+                                                .buttonForUser(
+                                                    context.user,
+                                                    context.alwaysEphemeral,
+                                                    ButtonStyle.SECONDARY,
+                                                    builder = {
+                                                        emoji = Emoji.fromUnicode("\uD83D\uDDD1")
+                                                    }
+                                                ) {
+                                                    val hook = it.updateMessageSetLoadingState()
+
+                                                    loritta.newSuspendedTransaction {
+                                                        Reminders.deleteWhere { Reminders.id eq reminder.id }
+                                                    }
+
+                                                    context.reply(true) {
+                                                        styled(
+                                                            context.locale["${LOCALE_PREFIX}.reminderRemoved"]
+                                                        )
+                                                    }
+
+                                                    hook.editOriginal(
+                                                        MessageEditBuilder {
+                                                            createReminderListMessage(context, page).invoke(this)
+                                                        }.build()
+                                                    ).await()
+                                                }
+                                        )
+                                    }
+                                }
+                        ) {
+                            +TextDisplay(
+                                buildString {
+                                    appendLine("**${reminder.content.substringIfNeeded(0..100)}**")
+                                    appendLine( "-# ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(reminder.remindAt)}")
+                                }
+                            )
+                        }
+                    }
+                }
 
                 val leftButton = UnleashedButton.of(
                     ButtonStyle.SECONDARY,
@@ -323,10 +341,6 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                     ButtonStyle.SECONDARY,
                     emoji = Emotes.ChevronRight
                 )
-
-                if (reminderButtons.isNotEmpty()) {
-                    actionRow(reminderButtons)
-                }
 
                 actionRow(
                     if (page != 0) {
