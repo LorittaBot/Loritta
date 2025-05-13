@@ -357,7 +357,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                         leftButton.asDisabled()
                     },
 
-                    if (((page + 1) * REMINDERS_PER_PAGE) in 0..totalReminders) {
+                    if (((page + 1) * REMINDERS_PER_PAGE) in 0 until totalReminders) {
                         loritta.interactivityManager.buttonForUser(
                             context.user,
                             context.alwaysEphemeral,
