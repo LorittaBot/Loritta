@@ -210,17 +210,22 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
             context: UnleashedContext,
             page: Int
         ): InlineMessage<*>.() -> (Unit) {
-            val reminders = loritta.newSuspendedTransaction {
-                Reminder
+            val (totalReminders, reminders) = loritta.newSuspendedTransaction {
+                val totalReminders = Reminder.find { Reminders.userId eq context.user.idLong }
+                    .count()
+
+                val reminders = Reminder
                     .find { Reminders.userId eq context.user.idLong }
                     .orderBy(Reminders.remindAt to SortOrder.ASC) // Sort older reminders -> new reminders
                     .limit(REMINDERS_PER_PAGE)
                     .offset((page * REMINDERS_PER_PAGE).toLong())
                     .toMutableList()
+
+                return@newSuspendedTransaction Pair(totalReminders, reminders)
             }
 
             val embed = EmbedBuilder()
-            embed.setTitle("<a:lori_notification:394165039227207710> ${context.locale["$LOCALE_PREFIX.yourReminders"]} (${reminders.size})")
+            embed.setTitle("<a:lori_notification:394165039227207710> ${context.locale["$LOCALE_PREFIX.yourReminders"]} (${totalReminders})")
             embed.setColor(Color(255, 179, 43))
 
             for ((idx, reminder) in reminders.withIndex()) {
@@ -338,7 +343,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                         leftButton.asDisabled()
                     },
 
-                    if (((page + 1) * REMINDERS_PER_PAGE) in 0..reminders.size) {
+                    if (((page + 1) * REMINDERS_PER_PAGE) in 0..totalReminders) {
                         loritta.interactivityManager.buttonForUser(
                             context.user,
                             context.alwaysEphemeral,
