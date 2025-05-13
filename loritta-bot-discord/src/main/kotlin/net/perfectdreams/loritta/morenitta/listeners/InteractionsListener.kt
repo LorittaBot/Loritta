@@ -217,7 +217,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
                 val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
 
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, isBomDiaECia, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
                     return@launchMessageJob
 
                 loritta.transaction {
@@ -436,7 +436,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, false, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
                     return@launchMessageJob
 
                 executor.execute(
@@ -538,7 +538,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
                 // Check if the command is disabled
                 val guildId = context.guildId
-                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, false, context, i18nContext, guildId))
+                if (checkIfCommandIsDisabledOnGuild(event, slashDeclaration, context, i18nContext, guildId))
                     return@launchMessageJob
 
                 executor.execute(
@@ -1234,7 +1234,6 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
     private suspend fun checkIfCommandIsDisabledOnGuild(
         event: GenericCommandInteractionEvent,
         slashDeclaration: ExecutableApplicationCommandDeclaration,
-        isBomDiaECiaExecutor: Boolean,
         context: ApplicationCommandContext,
         i18nContext: I18nContext,
         guildId: Long?,
@@ -1250,10 +1249,6 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 .firstOrNull()
                 .let { GuildCommandConfigData.fromResultRowOrDefault(it) }
         }
-
-        // Exception: The "/ligar" command can bypass the blocked commands list
-        if (isBomDiaECiaExecutor)
-            return true
 
         if (!g.enabled) {
             // Command is NOT enabled!

@@ -434,24 +434,32 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             val guild = context.guildOrNull
 
             if (serverConfig.blacklistedChannels.contains(event.channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-                if (serverConfig.warnIfBlacklisted) {
-                    if (serverConfig.blacklistedWarning?.isNotEmpty() == true && event.guild != null && event.member != null && event.textChannel != null) {
-                        val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
-                            i18nContext,
-                            serverConfig.blacklistedWarning ?: "???",
-                            listOf(event.member, event.textChannel, event.guild),
-                            event.guild,
-                            emptyMap(),
-                            generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
-                        )
+                val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
-                        event.textChannel.sendMessage(generatedMessage)
-                            .referenceIfPossible(event.message, serverConfig, true)
-                            .await()
+                val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+                val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
+
+                // Exception: The "/ligar" command can bypass the blocked commands list
+                if (!isBomDiaECia) {
+                    if (serverConfig.warnIfBlacklisted) {
+                        if (serverConfig.blacklistedWarning?.isNotEmpty() == true && event.guild != null && event.member != null && event.textChannel != null) {
+                            val generatedMessage = MessageUtils.generateMessageOrFallbackIfInvalid(
+                                i18nContext,
+                                serverConfig.blacklistedWarning ?: "???",
+                                listOf(event.member, event.textChannel, event.guild),
+                                event.guild,
+                                emptyMap(),
+                                generationErrorMessageI18nKey = I18nKeysData.InvalidMessages.CommandDenylist
+                            )
+
+                            event.textChannel.sendMessage(generatedMessage)
+                                .referenceIfPossible(event.message, serverConfig, true)
+                                .await()
+                        }
                     }
+                    // Channel is blocked so let's bail out
+                    return true
                 }
-                // Channel is blocked so let's bail out
-                return true
             }
 
             // Check if user is banned
@@ -471,13 +479,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 }
 
                 if (!g.enabled) {
-                    val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
-
-                    val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
-                    val isBomDiaECia = enableBomDiaECia && executor is LigarCommand.LigarExecutor
-
-                    // Exception: The "/ligar" command can bypass the blocked commands list
-                    if (!isBomDiaECia) {
                         // Command is NOT enabled!
                         // Message commands should be fully disabled, no way around it! So let's bail out!
                         context.reply(true) {
@@ -487,7 +488,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                             )
                         }
                         return true
-                    }
                 }
             }
 
