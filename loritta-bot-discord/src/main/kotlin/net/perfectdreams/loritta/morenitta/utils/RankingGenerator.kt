@@ -25,6 +25,75 @@ object RankingGenerator {
 		rankedUsers: List<UserRankInformation>,
 		onNullUser: (suspend (Long) -> (CachedUserInfo?))? = null
 	): BufferedImage {
+        // We need to convert our UserRankInformation to EntryRankInformation
+        val entries = mutableListOf<EntryRankInformation>()
+
+        for (userRankInformation in rankedUsers) {
+            val member = loritta.lorittaShards.retrieveUserInfoById(userRankInformation.userId) ?: onNullUser?.invoke(userRankInformation.userId)
+
+            if (member != null) {
+                val (userProfile, profileSettings, activeBadgeId) = loritta.newSuspendedTransaction {
+                    val profile = loritta._getLorittaProfile(member.id)
+                    val profileSettings = profile?.settings
+                    val activeBadge = profileSettings?.activeBadge
+                    Triple(profile, profileSettings, activeBadge)
+                }
+
+                var iconableSubtitle = EntryRankInformation.EntryRankIconableSubtitle(null, "ID: ${member.id}")
+
+                if (userProfile != null && profileSettings != null) {
+                    // We need to query the user's badge to check if they still have their badge, instead of equipping a badge that they may not have anymore
+                    val badges = loritta.profileDesignManager.getUserBadges(
+                        loritta.profileDesignManager.transformUserToProfileUserInfoData(
+                            member,
+                            profileSettings
+                        ),
+                        userProfile,
+                        setOf() // We don't care about mutual guilds badges since users cannot equip guild badges anyway
+                    )
+
+                    val activeBadge = badges.firstOrNull { it.id == activeBadgeId }
+
+                    if (activeBadge != null) {
+                        val badgeImage = activeBadge.getImage()
+                        iconableSubtitle = EntryRankInformation.EntryRankIconableSubtitle(
+                            badgeImage,
+                            loritta.languageManager.defaultI18nContext.get(activeBadge.title) + " // ID: ${userProfile.userId}"
+                        )
+                    }
+                }
+
+                entries.add(
+                    EntryRankInformation(
+                        member.name,
+                        iconableSubtitle,
+                        userRankInformation.subtitle,
+                        member.getEffectiveAvatarUrl(ImageFormat.PNG).let { url -> ImageUtils.downloadImage(url) ?: ImageUtils.DEFAULT_DISCORD_AVATAR },
+                        loritta.profileDesignManager.getUserProfileBackground(member.id, ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
+                    )
+                )
+            }
+        }
+
+        return generateRanking(
+            loritta,
+            currentPosition,
+            title,
+            guildIconUrl,
+            entries
+        )
+	}
+
+	/**
+	 * Generates a ranking image
+	 */
+	suspend fun generateRanking(
+		loritta: LorittaBot,
+		currentPosition: Long,
+		title: String,
+		guildIconUrl: String?,
+		rankedEntries: List<EntryRankInformation>
+	): BufferedImage {
 		val rankHeader = readImageFromResources("/rank/rank_header.png")
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.createGraphics()
@@ -50,116 +119,79 @@ object RankingGenerator {
 		var idx = 0
 		var currentY = 74
 
-		for (profile in rankedUsers) {
+		for (entry in rankedEntries) {
 			if (idx >= 5) {
 				break
 			}
 
-			KotlinLogging.logger {}.info { "RankingGenerator#retrieveUserInfoById - UserId: ${profile.userId}" }
-			val member = loritta.lorittaShards.retrieveUserInfoById(profile.userId) ?: onNullUser?.invoke(profile.userId)
+			val rankBackground = entry.background
+			graphics.drawImage(rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
+				.getSubimage(0, idx * 104, 800, 106), 0, currentY, null)
 
-			if (member != null) {
-				val rankBackground = loritta.profileDesignManager.getUserProfileBackground(member.id, ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
-				graphics.drawImage(rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
-					.getSubimage(0, idx * 104, 800, 106), 0, currentY, null)
+			graphics.color = Color(0, 0, 0, 127)
+			graphics.fillRect(0, currentY, 800, 106)
 
-				graphics.color = Color(0, 0, 0, 127)
-				graphics.fillRect(0, currentY, 800, 106)
+			graphics.color = Color(255, 255, 255)
 
-				graphics.color = Color(255, 255, 255)
+			graphics.font = oswaldRegular20
 
-				graphics.font = oswaldRegular20
+			ImageUtils.drawString(loritta, graphics, "#${currentPosition + idx + 1} ${entry.name}", 288, currentY + 37, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
 
-				ImageUtils.drawString(loritta, graphics, "#${currentPosition + idx + 1} ${member.name}", 288, currentY + 37, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+			graphics.font = badgeTitleFont
 
-				graphics.font = badgeTitleFont
+			val subtitle = entry.iconableSubtitle
 
-				var renderedBadge = false
+			if (subtitle != null) {
+				val subtitleIcon = subtitle.icon
 
-				val (userProfile, profileSettings, activeBadgeId) = loritta.newSuspendedTransaction {
-					val profile = loritta._getLorittaProfile(member.id)
-					val profileSettings = profile?.settings
-					val activeBadge = profileSettings?.activeBadge
-					Triple(profile, profileSettings, activeBadge)
-				}
-
-				if (userProfile != null && profileSettings != null) {
-					// We need to query the user's badge to check if they still have their badge, instead of equipping a badge that they may not have anymore
-					val badges = loritta.profileDesignManager.getUserBadges(
-						loritta.profileDesignManager.transformUserToProfileUserInfoData(member, profileSettings),
-						userProfile,
-						setOf() // We don't care about mutual guilds badges since users cannot equip guild badges anyway
-					)
-
-					val activeBadge = badges.firstOrNull { it.id == activeBadgeId }
-
-					if (activeBadge != null) {
-						val badgeImage = activeBadge.getImage()
-
-						if (badgeImage != null) {
-							graphics.drawImage(
-								badgeImage.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH).toBufferedImage(),
-								288,
-								currentY + 40,
-								null
-							)
-						}
-
-						// Show the user's ID in badge title
-						ImageUtils.drawString(
-							loritta,
-							graphics,
-							loritta.languageManager.defaultI18nContext.get(activeBadge.title) + " // ID: ${userProfile.userId}",
-							288 + 28,
-							currentY + 40 + 22,
-							ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
-						)
-
-						renderedBadge = true
-					}
-				}
-
-				if (!renderedBadge) {
-					// Show the user's ID in badge title
-					ImageUtils.drawString(
-						loritta,
-						graphics,
-						"ID: ${profile.userId}",
+				if (subtitleIcon != null) {
+					graphics.drawImage(
+						subtitleIcon.getScaledInstance(24, 24, BufferedImage.SCALE_SMOOTH).toBufferedImage(),
 						288,
-						currentY + 40 + 22,
-						ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+						currentY + 40,
+						null
 					)
 				}
 
-				if (profile.subtitle != null) {
-					graphics.font = profileSubtitleFont
-					ImageUtils.drawString(loritta, graphics, profile.subtitle, 288, currentY + 96, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
-				}
-
-				graphics.font = oswaldRegular10
-
-				val userAvatar = member.getEffectiveAvatarUrl(ImageFormat.PNG)
-				val avatar = (ImageUtils.downloadImage(userAvatar) ?: ImageUtils.DEFAULT_DISCORD_AVATAR).getResizedInstance(286, 286, InterpolationType.BILINEAR)
-
-				var editedAvatar = BufferedImage(286, 286, BufferedImage.TYPE_INT_ARGB)
-				val avatarGraphics = editedAvatar.graphics as Graphics2D
-
-				val path = Path2D.Double()
-				path.moveTo(0.0, 90.0)
-				path.lineTo(264.0, 90.0)
-				path.lineTo(286.0, 196.0)
-				path.lineTo(0.0, 196.0)
-				path.closePath()
-
-				avatarGraphics.clip = path
-
-				avatarGraphics.drawImage(avatar, 0, 0, null)
-
-				editedAvatar = editedAvatar.getSubimage(0, 90, 286, 106)
-				graphics.drawImage(editedAvatar, 0, currentY, null)
-				idx++
-				currentY += 106
+				// Show the user's ID in badge title
+				ImageUtils.drawString(
+					loritta,
+					graphics,
+					entry.iconableSubtitle.text,
+					if (subtitleIcon != null) 288 + 28 else 288,
+					currentY + 40 + 22,
+					ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+				)
 			}
+
+			if (entry.subtitle != null) {
+				graphics.font = profileSubtitleFont
+				ImageUtils.drawString(loritta, graphics, entry.subtitle, 288, currentY + 96, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+			}
+
+			graphics.font = oswaldRegular10
+
+			val userAvatar = entry.icon
+			val avatar = userAvatar.getResizedInstance(286, 286, InterpolationType.BILINEAR)
+
+			var editedAvatar = BufferedImage(286, 286, BufferedImage.TYPE_INT_ARGB)
+			val avatarGraphics = editedAvatar.graphics as Graphics2D
+
+			val path = Path2D.Double()
+			path.moveTo(0.0, 90.0)
+			path.lineTo(264.0, 90.0)
+			path.lineTo(286.0, 196.0)
+			path.lineTo(0.0, 196.0)
+			path.closePath()
+
+			avatarGraphics.clip = path
+
+			avatarGraphics.drawImage(avatar, 0, 0, null)
+
+			editedAvatar = editedAvatar.getSubimage(0, 90, 286, 106)
+			graphics.drawImage(editedAvatar, 0, currentY, null)
+			idx++
+			currentY += 106
 		}
 		return base
 	}
@@ -179,4 +211,17 @@ object RankingGenerator {
 		val userId: Long,
 		val subtitle: String? = null
 	)
+
+	data class EntryRankInformation(
+		val name: String,
+		val iconableSubtitle: EntryRankIconableSubtitle?,
+		val subtitle: String?,
+		val icon: BufferedImage,
+		val background: BufferedImage
+	) {
+		data class EntryRankIconableSubtitle(
+			val icon: BufferedImage?,
+			val text: String
+		)
+	}
 }
