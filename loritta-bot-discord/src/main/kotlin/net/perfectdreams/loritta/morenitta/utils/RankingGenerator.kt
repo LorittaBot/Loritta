@@ -11,15 +11,16 @@ import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import java.awt.Color
 import java.awt.GradientPaint
 import java.awt.Graphics
+import java.awt.Polygon
 import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 
 object RankingGenerator {
 	val VALID_RANKING_PAGES = 1L..1000L
-	private const val HEADER_HEIGHT = 60
-	private const val SERVER_ICON_SIZE = 60 - 4 - 4
-	private const val ENTRIES_START_Y = HEADER_HEIGHT + 10
+	private const val HEADER_HEIGHT = 70
+	private const val SERVER_ICON_SIZE = 70 - 4 - 4
+	private const val ENTRIES_START_Y = HEADER_HEIGHT
 	private val HEADER_COLOR = Color(30, 33, 36)
 	private val BACKGROUND_COLOR = Color(18, 18, 20)
 	private val GRADIENT_LEFT_COLOR =  Color(0, 0, 10, 190) // a tiny bit of blue!
@@ -195,74 +196,42 @@ object RankingGenerator {
 
 			val rankBackground = entry.background
 
-			if (true) {
-				val sourceX = 0
-				// If it is the first entry, we need to get a lil bit more of the background due to the triangle flair
-				val sourceY = (idx * 106) + if (idx == 0)
-					HEADER_HEIGHT
-				else
-					ENTRIES_START_Y
+			val sourceX = 0
+			// If it is the first entry, we need to get a lil bit more of the background due to the triangle flair
+			val sourceY = (idx * 106) + ENTRIES_START_Y
 
-				val userBackgroundSectionPart = rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
-					.getSubimage(sourceX, sourceY, 800,
-						if (idx == 0)
-							106 + (ENTRIES_START_Y - HEADER_HEIGHT)
-						else
-							106
-					)
-
-				val userBackgroundSectionPartBase = BufferedImage(userBackgroundSectionPart.width, userBackgroundSectionPart.height, BufferedImage.TYPE_INT_ARGB)
-				val userBackgroundSectionPartBaseGraphics = userBackgroundSectionPartBase.createGraphics()
-				userBackgroundSectionPartBaseGraphics.drawImage(userBackgroundSectionPart, 0, 0, null)
-
-				val originalPaint = userBackgroundSectionPartBaseGraphics.paint // Store original paint
-
-				// Create a GradientPaint object
-				// The gradient goes from (entryDrawX, entryDrawY) to (entryDrawX + entryWidth, entryDrawY)
-				val gradient = GradientPaint(
-					0f,
-					currentY.toFloat(), // Y-coordinate for the gradient line start
-					GRADIENT_LEFT_COLOR,
-					(800 / 2).toFloat(),
-					currentY.toFloat(), // Y-coordinate for the gradient line end (same for horizontal)
-					GRADIENT_RIGHT_COLOR
+			val userBackgroundSectionPart = rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
+				.getSubimage(sourceX, sourceY, 800,
+					if (idx == 0)
+						106 + (ENTRIES_START_Y - HEADER_HEIGHT)
+					else
+						106
 				)
 
-				userBackgroundSectionPartBaseGraphics.paint = gradient // Apply the gradient
-				userBackgroundSectionPartBaseGraphics.fillRect(0, 0, userBackgroundSectionPartBase.width, userBackgroundSectionPartBase.height) // Fill the area
+			val userBackgroundSectionPartBase = BufferedImage(userBackgroundSectionPart.width, userBackgroundSectionPart.height, BufferedImage.TYPE_INT_ARGB)
+			val userBackgroundSectionPartBaseGraphics = userBackgroundSectionPartBase.createGraphics()
+			userBackgroundSectionPartBaseGraphics.drawImage(userBackgroundSectionPart, 0, 0, null)
 
-				graphics.drawImage(
-					userBackgroundSectionPartBase,
-					sourceX,
-					sourceY,
-					null
-				)
+			// Create a GradientPaint object
+			// The gradient goes from (entryDrawX, entryDrawY) to (entryDrawX + entryWidth, entryDrawY)
+			val gradient = GradientPaint(
+				0f,
+				currentY.toFloat(), // Y-coordinate for the gradient line start
+				GRADIENT_LEFT_COLOR,
+				(800 / 2).toFloat(),
+				currentY.toFloat(), // Y-coordinate for the gradient line end (same for horizontal)
+				GRADIENT_RIGHT_COLOR
+			)
 
-				graphics.paint = originalPaint // Restore original paint
-			} else {
-				graphics.drawImage(
-					rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
-						.getSubimage(0, idx * 104, 800, 106), 0, currentY, null
-				)
+			userBackgroundSectionPartBaseGraphics.paint = gradient // Apply the gradient
+			userBackgroundSectionPartBaseGraphics.fillRect(0, 0, userBackgroundSectionPartBase.width, userBackgroundSectionPartBase.height) // Fill the area
 
-				val originalPaint = graphics.paint // Store original paint
-
-				// Create a GradientPaint object
-				// The gradient goes from (entryDrawX, entryDrawY) to (entryDrawX + entryWidth, entryDrawY)
-				val gradient = GradientPaint(
-					0f,
-					currentY.toFloat(), // Y-coordinate for the gradient line start
-					GRADIENT_LEFT_COLOR,
-					(800 / 2).toFloat(),
-					currentY.toFloat(), // Y-coordinate for the gradient line end (same for horizontal)
-					GRADIENT_RIGHT_COLOR
-				)
-
-				graphics.paint = gradient // Apply the gradient
-				graphics.fillRect(0, currentY, 800, 106) // Fill the area
-
-				graphics.paint = originalPaint // Restore original paint
-			}
+			graphics.drawImage(
+				userBackgroundSectionPartBase,
+				sourceX,
+				sourceY,
+				null
+			)
 
 			graphics.color = Color(255, 255, 255)
 
@@ -312,19 +281,6 @@ object RankingGenerator {
 
 			idx++
 			currentY += 106
-		}
-
-		// The triangles below the header
-		graphics.color = HEADER_COLOR
-
-		repeat(base.width / 25) {
-			val offsetX = it * 25
-
-			graphics.fillPolygon(
-				intArrayOf(0 + offsetX, 13 + offsetX, 25 + offsetX),
-				intArrayOf(HEADER_HEIGHT, HEADER_HEIGHT + 10, HEADER_HEIGHT),
-				3
-			)
 		}
 
 		return base
