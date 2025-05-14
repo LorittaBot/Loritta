@@ -74,7 +74,7 @@ object RankingGenerator {
 
 				entries.add(
 					EntryRankInformation(
-						member.name,
+						member.globalName ?: member.name,
 						iconableSubtitle,
 						userRankInformation.subtitle,
 						member.getEffectiveAvatarUrl(ImageFormat.PNG).let { url -> ImageUtils.downloadImage(url) ?: ImageUtils.DEFAULT_DISCORD_AVATAR },
