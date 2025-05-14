@@ -21,7 +21,7 @@ object RankingGenerator {
 	private val HEADER_COLOR = Color(30, 33, 36)
 	private val BACKGROUND_COLOR = Color(18, 18, 20)
 	private val GRADIENT_LEFT_COLOR =  Color(0, 0, 10, 190) // a tiny bit of blue!
-	private val GRADIENT_RIGHT_COLOR = Color(0, 0, 0, 127)
+	private val GRADIENT_RIGHT_COLOR = Color(0, 0, 0, 150)
 
 	/**
 	 * Generates a ranking image
