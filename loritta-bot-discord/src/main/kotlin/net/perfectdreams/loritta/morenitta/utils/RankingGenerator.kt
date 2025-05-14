@@ -3,12 +3,14 @@ package net.perfectdreams.loritta.morenitta.utils
 import kotlinx.html.HEADER
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.DrawableType
 import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import java.awt.Color
 import java.awt.GradientPaint
+import java.awt.Graphics
 import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -114,6 +116,29 @@ object RankingGenerator {
 			RenderingHints.KEY_RENDERING,
 			RenderingHints.VALUE_RENDER_QUALITY
 		)
+
+		suspend fun drawStringWithDropShadow(text: String, x: Int, y: Int) {
+			val originalColor = graphics.color
+			graphics.color = Color.BLACK
+
+			ImageUtils.drawString(
+				loritta, graphics,
+				text,
+				x,
+				y + 2,
+				ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+			)
+
+			graphics.color = originalColor
+
+			ImageUtils.drawString(
+				loritta, graphics,
+				text,
+				x,
+				y,
+				ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+			)
+		}
 
 		graphics.color = BACKGROUND_COLOR
 		graphics.fillRect(0, 0, 800, 600)
@@ -243,7 +268,7 @@ object RankingGenerator {
 
 			graphics.font = userTitleFont
 
-			ImageUtils.drawString(loritta, graphics, "#${currentPosition + idx + 1} ${entry.name}", textOffsetX, currentY + 37, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+			drawStringWithDropShadow("#${currentPosition + idx + 1} ${entry.name}", textOffsetX, currentY + 37)
 
 			graphics.font = badgeTitleFont
 
@@ -261,20 +286,16 @@ object RankingGenerator {
 					)
 				}
 
-				// Show the user's ID in badge title
-				ImageUtils.drawString(
-					loritta,
-					graphics,
+				drawStringWithDropShadow(
 					entry.iconableSubtitle.text,
 					if (subtitleIcon != null) textOffsetX + 28 else textOffsetX,
-					currentY + 42 + 22,
-					ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+					currentY + 42 + 22
 				)
 			}
 
 			if (entry.subtitle != null) {
 				graphics.font = profileSubtitleFont
-				ImageUtils.drawString(loritta, graphics, entry.subtitle, textOffsetX, currentY + 96, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+				drawStringWithDropShadow(entry.subtitle, textOffsetX, currentY + 96)
 			}
 
 			// Make the background of the icon the same color as the background of the header
