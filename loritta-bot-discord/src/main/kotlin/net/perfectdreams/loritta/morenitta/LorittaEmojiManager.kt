@@ -4,7 +4,6 @@ import com.zaxxer.hikari.pool.HikariProxyConnection
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Icon
-import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationEmojis
 import net.perfectdreams.loritta.common.emojis.LorittaEmojiReference
 import net.perfectdreams.loritta.common.emojis.LorittaEmojis
@@ -32,6 +31,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
     }
 
     private val registeredApplicationEmojis = mutableMapOf<LorittaEmojiReference, DiscordEmote>()
+    private var updatedEmojiList = false
 
     private fun sha256Hash(byteArray: ByteArray): ByteArray {
         val digest = MessageDigest.getInstance("SHA-256")
@@ -190,6 +190,8 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
 
                 logger.info { "Successfully synced all emojis! :) Application Emojis count: ${registeredApplicationEmojis.size}" }
             }
+
+            this.updatedEmojiList = true
         } finally {
             loritta.transaction {
                 val unlockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_unlock(?);")
@@ -203,7 +205,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
     fun get(ref: LorittaEmojiReference): Emote {
         return when (ref) {
             is LorittaEmojiReference.ApplicationEmoji -> {
-                return registeredApplicationEmojis[ref] ?: error("Missing ${ref.name} from the uploaded application emoji list!")
+                return registeredApplicationEmojis[ref] ?: error("Missing ${ref.name} from the uploaded application emoji list! Is the emoji list updated? ${this.updatedEmojiList}")
             }
             is LorittaEmojiReference.GuildEmoji -> DiscordEmote(
                 ref.id,
