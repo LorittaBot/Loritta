@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Birthday2020Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedBirthday2020Points
 import net.perfectdreams.loritta.cinnamon.pudding.utils.BirthdayTeam
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
@@ -18,6 +19,7 @@ class SparklyStaffBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	ProfileDesignManager.I18N_BADGES_PREFIX.SparklyStaff.Title,
 	ProfileDesignManager.I18N_BADGES_PREFIX.SparklyStaff.Description,
 	"sparkly_staff.png",
+	LorittaEmojis.SparklyStaff,
 	900
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {

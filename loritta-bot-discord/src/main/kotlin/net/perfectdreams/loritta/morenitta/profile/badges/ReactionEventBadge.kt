@@ -4,6 +4,8 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.CraftedReactionEventItems
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventPlayers
+import net.perfectdreams.loritta.common.emojis.LorittaEmojiReference
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
@@ -22,6 +24,7 @@ sealed class ReactionEventBadge(
 	title: StringI18nData,
 	description: StringI18nData,
 	badgeName: String,
+	emoji: LorittaEmojiReference,
 	priority: Int,
 	reactionEvent: ReactionEvent,
 	val requiredPoints: Int
@@ -30,6 +33,7 @@ sealed class ReactionEventBadge(
 	title,
 	description,
 	badgeName,
+	emoji,
 	priority
 ) {
 	class Halloween2024ReactionEventBadge(pudding: Pudding) : ReactionEventBadge(
@@ -38,6 +42,7 @@ sealed class ReactionEventBadge(
 		ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2024.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2024.Description,
 		"halloween2019.png",
+		LorittaEmojis.Halloween2019,
 		100,
 		Halloween2024ReactionEvent,
 		10
@@ -49,6 +54,7 @@ sealed class ReactionEventBadge(
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperHalloween2024.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperHalloween2024.Description,
 		"halloween2024_super.png",
+		LorittaEmojis.Halloween2024ReactionEventSuper,
 		100,
 		Halloween2024ReactionEvent,
 		1_000
@@ -60,6 +66,7 @@ sealed class ReactionEventBadge(
 		ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2024.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2024.Description,
 		"christmas2024.png",
+		LorittaEmojis.Christmas2024ReactionEvent,
 		100,
 		Christmas2024ReactionEvent,
 		10
@@ -71,6 +78,7 @@ sealed class ReactionEventBadge(
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperChristmas2024.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperChristmas2024.Description,
 		"christmas2024_super.png",
+		LorittaEmojis.Christmas2024ReactionEventSuper,
 		100,
 		Christmas2024ReactionEvent,
 		700
@@ -82,6 +90,7 @@ sealed class ReactionEventBadge(
 		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.Anniversary2025.Description,
 		"anniversary2025.png",
+		LorittaEmojis.Anniversary2025ReactionEvent,
 		100,
 		Anniversary2025ReactionEvent,
 		10
@@ -93,6 +102,7 @@ sealed class ReactionEventBadge(
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Title,
 		ProfileDesignManager.I18N_BADGES_PREFIX.SuperAnniversary2025.Description,
 		"anniversary2025_super.png",
+		LorittaEmojis.Anniversary2025ReactionEventSuper,
 		100,
 		Anniversary2025ReactionEvent,
 		500

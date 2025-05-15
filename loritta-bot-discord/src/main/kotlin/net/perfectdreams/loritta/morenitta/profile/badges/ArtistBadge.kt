@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.profile.badges
 
 import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.profile.Badge
@@ -13,6 +14,7 @@ class ArtistBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	ProfileDesignManager.I18N_BADGES_PREFIX.Artist.Title,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Artist.Description,
 	"artist.png",
+	LorittaEmojis.Artist,
 	25
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {

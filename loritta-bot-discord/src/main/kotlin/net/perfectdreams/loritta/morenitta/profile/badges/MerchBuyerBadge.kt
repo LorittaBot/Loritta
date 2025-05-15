@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile.badges
 
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
@@ -12,6 +13,7 @@ class MerchBuyerBadge(val m: LorittaBot) : Badge.LorittaBadge(
 	ProfileDesignManager.I18N_BADGES_PREFIX.MerchBuyer.Title,
 	ProfileDesignManager.I18N_BADGES_PREFIX.MerchBuyer.Description,
 	"lori_caneca.png",
+	LorittaEmojis.LoriCaneca,
 	225
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {

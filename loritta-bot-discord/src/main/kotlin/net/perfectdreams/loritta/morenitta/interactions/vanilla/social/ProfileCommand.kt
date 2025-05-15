@@ -212,7 +212,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     // Get bought profile designs
                     val boughtDesignsInternalNames = loritta.pudding.transaction {
-                        ProfileDesignsPayments.select(ProfileDesignsPayments.profile).where { 
+                        ProfileDesignsPayments.select(ProfileDesignsPayments.profile).where {
                             ProfileDesignsPayments.userId eq matchedUserId
                         }.toSet().map { it[ProfileDesignsPayments.profile].value }
                     }.toMutableList()
@@ -259,7 +259,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 // If not null, we need to validate if the user has the selected profile design!
                 // Get bought profile designs
                 val boughtDesignsInternalNames = loritta.pudding.transaction {
-                    ProfileDesignsPayments.select(ProfileDesignsPayments.profile).where { 
+                    ProfileDesignsPayments.select(ProfileDesignsPayments.profile).where {
                         ProfileDesignsPayments.userId eq userToBeViewed.idLong
                     }.toSet().map { it[ProfileDesignsPayments.profile].value }
                 }.toMutableList()
@@ -393,8 +393,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 } else {
                     embed {
                         title = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.YourBadges)
-                        description =
-                            context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgesDescription).joinToString("\n\n")
+                        description = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgesDescription).joinToString("\n\n")
                         color = LorittaColors.LorittaAqua.rgb
                     }
 
@@ -409,7 +408,11 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                     addOption(
                                         context.i18nContext.get(badge.title),
                                         badge.id.toString(),
-                                        context.i18nContext.get(badge.description).shortenWithEllipsis(100)
+                                        context.i18nContext.get(badge.description).shortenWithEllipsis(100),
+                                        if (badge is Badge.LorittaBadge)
+                                            loritta.emojiManager.get(badge.emoji).toJDA()
+                                        else
+                                            null
                                     )
                                 }
                             }
@@ -458,7 +461,14 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         ): suspend InlineMessage<*>.() -> (Unit) {
             return {
                 embed {
-                    title = context.i18nContext.get(badge.title)
+                    title = buildString {
+                        if (badge is Badge.LorittaBadge) {
+                            append(context.loritta.emojiManager.get(badge.emoji).toJDA().formatted)
+                            append(" ")
+                        }
+
+                        append(context.i18nContext.get(badge.title))
+                    }
                     description = context.i18nContext.get(badge.description)
                     thumbnail = "attachment://badge.png"
                     color = LorittaColors.LorittaAqua.rgb

@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Birthday2020Players
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedBirthday2020Points
 import net.perfectdreams.loritta.cinnamon.pudding.utils.BirthdayTeam
+import net.perfectdreams.loritta.common.emojis.LorittaEmojis
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
@@ -16,6 +17,7 @@ class PantufaBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	ProfileDesignManager.I18N_BADGES_PREFIX.Pantufa2020.Title,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Pantufa2020.Description,
 	"birthday2020_pantufa.png",
+	LorittaEmojis.PantufaHead,
 	100
 ) {
 	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {

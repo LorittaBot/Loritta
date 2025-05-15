@@ -1,14 +1,13 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import io.ktor.http.*
-import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.common.emojis.LorittaEmojiReference
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import java.awt.image.BufferedImage
 import java.util.*
@@ -28,7 +27,8 @@ sealed class Badge(
 		title: StringI18nData,
 		description: StringI18nData,
 		val badgeFileName: String,
-		priority: Int
+		val emoji: LorittaEmojiReference,
+		priority: Int,
 	) : Badge(id, title, description, priority) {
 		override suspend fun getImage() = readImageFromResources("/badges/$badgeFileName")
 	}
