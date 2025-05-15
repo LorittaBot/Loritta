@@ -193,7 +193,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
         } finally {
             loritta.transaction {
                 val unlockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_unlock(?);")
-                unlockStatement.setInt(1, lockId.hashCode())
+                unlockStatement.setInt(1, lockId)
                 unlockStatement.execute()
                 logger.info { "Successfully released advisory lock!" }
             }
