@@ -67,6 +67,7 @@ dependencies {
     implementation("io.ktor:ktor-server-sessions:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-metrics-micrometer:${Versions.KTOR}")
+    implementation("io.ktor:ktor-client-logging:${Versions.KTOR}")
     implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
 
     implementation("com.google.code.gson:gson:2.10.1")

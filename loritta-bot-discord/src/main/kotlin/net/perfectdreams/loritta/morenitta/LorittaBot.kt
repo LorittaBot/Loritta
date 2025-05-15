@@ -12,6 +12,7 @@ import com.google.gson.JsonParser
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -197,6 +198,7 @@ class LorittaBot(
 	val gabrielaImageServerClient = GabrielaImageServerClient(
 		config.loritta.gabrielaImageServer.url,
 		HttpClient {
+			install(Logging)
 			// Increase the default timeout for image generation, because some video generations may take too long to be generated
 			install(HttpTimeout) {
 				this.socketTimeoutMillis = 60_000
@@ -271,6 +273,7 @@ class LorittaBot(
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	val http = HttpClient(Apache) {
 		this.expectSuccess = false
+		install(Logging)
 
 		engine {
 			this.socketTimeout = 25_000
@@ -288,6 +291,7 @@ class LorittaBot(
 	}
 	val httpWithoutTimeout = HttpClient(Apache) {
 		this.expectSuccess = false
+		install(Logging)
 
 		engine {
 			this.socketTimeout = 60_000
