@@ -9,6 +9,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
@@ -18,6 +19,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.json.XML
 import java.io.File
 import java.net.InetAddress
+import kotlin.time.Duration.Companion.seconds
 
 object MiscUtils {
 	private val logger = KotlinLogging.logger {}
@@ -83,25 +85,31 @@ object MiscUtils {
 
 		logger.info("Verifying IP: $ip")
 		// Antes de nós realmente decidir "ele deu upvote então vamos dar o upvote", nós iremos verificar o IP no StopForumSpam
-		val stopForumSpam = loritta.http.get("http://api.stopforumspam.org/api?ip=$ip")
-			.bodyAsText()
+		try {
+			val stopForumSpamResponse = withTimeout(15.seconds) {
+				loritta.http.get("http://api.stopforumspam.org/api?ip=$ip")
+					.bodyAsText()
+			}
 
-		logger.info("Stop Forum Spam: $stopForumSpam")
+			logger.info("Stop Forum Spam: $stopForumSpamResponse")
 
-		// STOP FORUM SPAM
-		val xmlJSONObj = XML.toJSONObject(stopForumSpam)
+			// STOP FORUM SPAM
+			val xmlJSONObj = XML.toJSONObject(stopForumSpamResponse)
 
-		logger.info("as JSON: $xmlJSONObj")
+			logger.info("as JSON: $xmlJSONObj")
 
-		val response = JsonParser.parseString(xmlJSONObj.toString(4)).obj["response"]
+			val response = JsonParser.parseString(xmlJSONObj.toString(4)).obj["response"]
 
-		val isSpam = response["appears"].nullBool
+			val isSpam = response["appears"].nullBool
 
-		if (isSpam == null) {
-			logger.warn { "Appears response is missing from StopForumSpam response! Bug? We are going to ignore the spam check! Checked IP $ip and the response is $response" }
-		} else {
-			if (isSpam)
-				return AccountCheckResult.STOP_FORUM_SPAM
+			if (isSpam == null) {
+				logger.warn { "Appears response is missing from StopForumSpam response! Bug? We are going to ignore the spam check! Checked IP $ip and the response is $response" }
+			} else {
+				if (isSpam)
+					return AccountCheckResult.STOP_FORUM_SPAM
+			}
+		} catch (e: Exception) {
+			logger.warn(e) { "Something went wrong while trying to check IP $ip on StopForumSpam! Bug? We are going to ignore the spam check!" }
 		}
 
 		// HOSTNAME BLOCC:tm:
