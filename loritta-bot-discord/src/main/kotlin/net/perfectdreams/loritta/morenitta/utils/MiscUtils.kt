@@ -86,7 +86,7 @@ object MiscUtils {
 		logger.info("Verifying IP: $ip")
 		// Antes de nós realmente decidir "ele deu upvote então vamos dar o upvote", nós iremos verificar o IP no StopForumSpam
 		try {
-			val stopForumSpamResponse = withTimeout(15.seconds) {
+			val stopForumSpamResponse = withTimeout(2.seconds) {
 				loritta.http.get("http://api.stopforumspam.org/api?ip=$ip")
 					.bodyAsText()
 			}
