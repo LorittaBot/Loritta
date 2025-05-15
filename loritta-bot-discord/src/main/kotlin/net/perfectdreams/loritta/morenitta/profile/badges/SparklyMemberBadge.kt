@@ -17,6 +17,7 @@ import java.util.*
 class SparklyMemberBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	UUID.fromString("7facf3a6-9f29-4841-9eb0-b27312a0ceb1"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.SparklyMember.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.SparklyMember.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.SparklyMember.Description,
 	"sparkly_member.png",
 	LorittaEmojis.SparklyMember,

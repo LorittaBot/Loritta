@@ -8,7 +8,8 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.DiscordCommand
  *
  * Mentions are automatically validated based on the commands registered. If a command doesn't exist, the class will fail to initialize!
  */
-class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
+class
+CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val achievements = commandMention("conquistas")
 
     val daily = commandMention("daily")
@@ -50,6 +51,9 @@ class CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val loriCoolCardsTrade = commandMention("figurittas trocar")
     val loriCoolCardsGive = commandMention("figurittas dar")
     val loriCoolCardsCompare = commandMention("figurittas comparar")
+
+    val marriageMarry = commandMention("casamento casar")
+    val marriageShop = commandMention("casamento loja")
 
     /**
      * Creates a command mention of [path]. If the command doesn't exist, an error will be thrown.

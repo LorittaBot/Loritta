@@ -8,24 +8,31 @@ profiles:
       description: "Insígnia para membros do servidor {serverName}"
     premium:
       title: "Pagador de Aluguel"
+      titlePlural: "Pagadores de Aluguel"
       description: "Insígnia para membros premium"
     superPremium:
       title: "Magnata"
+      titlePlural: "Magnatas"
       description: "Insígnia para membros que possuem o plano premium mais alto"
     artist:
       title: "Artista"
+      titlePlural: "Artistas"
       description: "Insígnia para artistas que fizeram uma fan art para a Loritta"
     merchBuyer:
       title: "Fashionista"
+      titlePlural: "Fashionistas"
       description: "Insígnia para pessoas que compraram merchandising da Loritta"
     christmas2019:
       title: "Natalino"
+      titlePlural: "Natalinos"
       description: "Insígnia para pessoas que participam do Evento de Natal da Loritta 2019"
     christmas2022:
       title: "Natalino"
+      titlePlural: "Natalinos"
       description: "Insígnia para pessoas que participam do Evento de Natal da Loritta 2022"
     easter2023:
       title: "Saltitante"
+      titlePlural: "Saltitantes"
       description: "Insígnia para pessoas que participaram do Evento de Páscoa da Loritta 2023"
     gabriela2020:
       title: "Team Gabriela"
@@ -34,28 +41,36 @@ profiles:
       title: "Team Pantufa"
       description: "Insígnia para pessoas que participaram do time da Pantufa no Evento de Aniversário da Loritta 2020"
     halloween2019:
-      title: "Açúcarado"
+      title: "Açucarado"
+      titlePlural: "Açucarados"
       description: "Insígnia para pessoas que participaram do Evento de Halloween da Loritta 2019"
     married:
       title: "Casado"
+      titlePlural: "Casados"
       description: "Insígnia para pessoas que estão casadas na Loritta"
     discordNitro:
       title: "Fã do Wumpus"
+      titlePlural: "Fãs do Wumpus"
       description: "Insígnia do Discord para pessoas que possuem Discord Nitro"
     discordBravery:
       title: "Corajoso"
+      titlePlural: "Corajosos"
       description: "Insígnia do Discord para pessoas da equipe do HypeSquad Bravery"
     discordBrilliance:
       title: "Esplendido"
+      titlePlural: "Esplendidos"
       description: "Insígnia do Discord para pessoas da equipe do HypeSquad Brilliance"
     discordBalance:
       title: "Equilibrado"
+      titlePlural: "Equilibrados"
       description: "Insígnia do Discord para pessoas da equipe do HypeSquad Balance"
     discordEarlySupporter:
       title: "Fanático pelo Wumpus"
+      titlePlural: "Fanáticos pelo Wumpus"
       description: "Insígnia do Discord para pessoas que compraram Nitro antes de Outubro 2018"
     discordPartner:
       title: "Parceiro do Discord"
+      titlePlural: "Parceiros do Discord"
       description: "Insígnia do Discord para pessoas parceiras"
     discordHypesquadEvents:
       title: "Eventos de HypeSquad"
@@ -65,18 +80,22 @@ profiles:
       description: "Insígnia do Discord para pessoas que eram moderadores certificados pelo Discord"
     discordVerifiedDeveloper:
       title: "Desenvolvedor de Bots Pioneiro"
+      titlePlural: "Desenvolvedores de Bots Pioneiro"
       description: "Insígnia do Discord para pessoas que verificaram o seu bot"
     discordActiveDeveloper:
       title: "Desenvolvedor de Bots"
+      titlePlural: "Desenvolvedores de Bots"
       description: "Insígnia do Discord para pessoas que possuem um bot verificado no Discord que está ativo"
     discordStaff:
       title: "Equipe do Discord"
       description: "Insígnia do Discord para pessoas que trabalham no Discord"
     grassCutter:
       title: "Talarico"
+      titlePlural: "Talaricos"
       description: "Insígnia para quem conseguiu a conquista de Talarico na Loritta, eita!"
     sparklyMember:
       title: "Fã da Pantufa"
+      titlePlural: "Fãs da Pantufa"
       description: "Insígnia para quem registrou a conta no SparklyPower, o servidor de Minecraft da Loritta"
     lorittaStaff:
       title: "Equipe da Loritta"
@@ -89,25 +108,32 @@ profiles:
       description: "Insígnia para quem conseguiu a conquista de Stonks! na Loritta"
     stickerFan:
       title: "Fanático por Figurinhas"
+      titlePlural: "Fanáticos por Figurinhas"
       description: "Insígnia para quem terminou um álbum das Figurittas da Loritta"
     halloween2024:
       title: "Adocicado"
+      titlePlural: "Adocicados"
       description: "Insígnia para pessoas que participaram do Evento de Halloween da Loritta 2024"
     superHalloween2024:
       title: "Super Adocicado"
+      titlePlural: "Super Adocicados"
       description: "Insígnia para pessoas que zeraram o Evento de Halloween da Loritta 2024"
     brat:
       title: "brat"
       description: "Insígina para pessoas que compraram todos os backgrounds de brat na loja diária de bugigangas da Loritta"
     christmas2024:
       title: "Festivo"
+      titlePlural: "Festivos"
       description: "Insígnia para pessoas que participaram o Evento de Natal da Loritta 2024"
     superChristmas2024:
       title: "Super Festivo"
+      titlePlural: "Super Festivos"
       description: "Insígnia para pessoas que zeraram o Evento de Natal da Loritta 2024"
     anniversary2025:
       title: "Aniversariante"
+      titlePlural: "Aniversariantes"
       description: "Uma torta holandesa. Exótico, não acha? Insígnia para pessoas que participaram o Evento de Aniversário da Loritta 2025"
     superAnniversary2025:
       title: "Super Aniversariante"
+      titlePlural: "Super Aniversariantes"
       description: "Uau, a Loritta ganhou tantas pelúcias de aniversário, que ela acabou virando um! Bem, na verdade ela virou um amigurumi... Agora, como faz para desvirar ela? Insígnia para pessoas que zeraram o Evento de Aniversário da Loritta 2025"

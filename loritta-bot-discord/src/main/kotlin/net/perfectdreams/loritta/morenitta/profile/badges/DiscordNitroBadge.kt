@@ -11,6 +11,7 @@ import java.util.*
 class DiscordNitroBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("df4f5660-24c6-45a8-82ac-084f8281043a"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.DiscordNitro.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.DiscordNitro.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.DiscordNitro.Description,
 	"discord_nitro.png",
 	LorittaEmojis.DiscordNitro,

@@ -15,6 +15,7 @@ import java.util.*
 class GabrielaBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("53459f78-d0ff-46cd-bb00-8e274b93704b"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Gabriela2020.Title,
+	null,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Gabriela2020.Description,
 	"birthday2020_gabriela.png",
 	LorittaEmojis.GabrielaHead,

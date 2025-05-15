@@ -10,6 +10,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.User.UserFlag
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
@@ -46,6 +47,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.EnumSet
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
@@ -340,13 +342,18 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		user.flags
 	)
 
-	fun transformUserToProfileUserInfoData(cachedUserInfo: CachedUserInfo, profileSettings: ProfileSettings) = ProfileUserInfoData(
+	fun transformUserToProfileUserInfoData(cachedUserInfo: CachedUserInfo, profileSettings: ProfileSettings) = transformUserToProfileUserInfoData(
+		cachedUserInfo,
+		UserFlag.getFlags(profileSettings.discordAccountFlags)
+	)
+
+	fun transformUserToProfileUserInfoData(cachedUserInfo: CachedUserInfo, flags: EnumSet<User.UserFlag>) = ProfileUserInfoData(
 		cachedUserInfo.id,
 		cachedUserInfo.name,
 		cachedUserInfo.discriminator,
 		cachedUserInfo.effectiveAvatarUrl,
 		false,
-		UserFlag.getFlags(profileSettings.discordAccountFlags),
+		flags
 	)
 
 	fun transformGuildToProfileGuildInfoData(guild: Guild): ProfileGuildInfoData {
@@ -421,9 +428,9 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))
 		if (userId == loritta.config.loritta.discord.applicationId.toLong()) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
 		if (user.isBot) badges += readImageFromResources("/badges/bot.png")
-		val marriage = loritta.newSuspendedTransaction { profile.marriage }
+		val marriage = loritta.pudding.marriages.getMarriageByUser(UserId(user.id))
 		if (marriage != null) {
-			if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
+			if (System.currentTimeMillis() - marriage.marriedSince.toEpochMilliseconds() > 2_592_000_000) {
 				badges += ImageIO.read(File(LorittaBot.ASSETS + "blob_snuggle.png"))
 			}
 		}
@@ -469,6 +476,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 							loritta,
 							config.guildId,
 							I18N_BADGES_PREFIX.Guild.Title,
+							null,
 							I18N_BADGES_PREFIX.Guild.Description(config.guildId.toString()),
 							badgeFile,
 							badgeMediaType,

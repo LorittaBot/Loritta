@@ -42,25 +42,14 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 		val latoRegular16 = latoBold.deriveFont(16f)
 		val latoBlack12 = latoBlack.deriveFont(12f)
 		val oswaldRegular50 = Constants.OSWALD_REGULAR
-				.deriveFont(50F)
+			.deriveFont(50F)
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
-				.deriveFont(42F)
+			.deriveFont(42F)
 
 		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
 		val marrySection = readImageFromResources("/profile/halloween_2019/marry.png")
 
-		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
-
-		val marriedWithId = if (marriage?.user1 == user.id.toLong()) {
-			marriage.user2
-		} else {
-			marriage?.user1
-		}
-
-		val marriedWith = if (marriedWithId != null) {
-			KotlinLogging.logger {}.info { "Halloween2019ProfileCreator#retrieveUserInfoById - UserId: ${marriedWithId}" }
-			loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
-		} else { null }
+		val marriage = ProfileUtils.getMarriageInfo(loritta, userProfile)
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
@@ -108,15 +97,13 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 			if (marriage != null) {
 				graphics.drawImage(marrySection, 0, 0, null)
 
-				if (marriedWith != null) {
-					graphics.color = Color.WHITE
-					graphics.font = latoBlack12
-					ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 350, 165, 14), latoBlack12)
-					graphics.font = latoRegular16
-					ImageUtils.drawCenteredString(graphics, marriedWith.name, Rectangle(635, 350 + 16, 165, 18), latoRegular16)
-					graphics.font = latoBlack12
-					ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(635, 350 + 16 + 18, 165, 14), latoBlack12)
-				}
+				graphics.color = Color.WHITE
+				graphics.font = latoBlack12
+				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 350, 165, 14), latoBlack12)
+				graphics.font = latoRegular16
+				ImageUtils.drawCenteredString(graphics, marriage.partner.name, Rectangle(635, 350 + 16, 165, 18), latoRegular16)
+				graphics.font = latoBlack12
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), 3), Rectangle(635, 350 + 16 + 18, 165, 14), latoBlack12)
 			}
 
 			list.add(base.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH).toBufferedImage())
@@ -127,11 +114,11 @@ class Halloween2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(
 
 	fun drawAvatar(avatar: Image, graphics: Graphics) {
 		graphics.drawImage(
-				avatar.toBufferedImage()
-						.makeRoundedCorners(999),
-				3,
-				406,
-				null
+			avatar.toBufferedImage()
+				.makeRoundedCorners(999),
+			3,
+			406,
+			null
 		)
 	}
 

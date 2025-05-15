@@ -5,7 +5,9 @@ import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import net.perfectdreams.randomroleplaypictures.common.Gender
 import net.perfectdreams.randomroleplaypictures.common.data.api.PictureResponse
+import org.jetbrains.exposed.sql.Column
 import java.awt.Color
+import kotlin.reflect.KProperty0
 
 data class RoleplayActionAttributes(
     val userI18nDescription: StringI18nData,
@@ -13,5 +15,6 @@ data class RoleplayActionAttributes(
     val actionBlock: suspend RandomRoleplayPicturesClient.(Gender, Gender) -> PictureResponse,
     val embedResponse: (String, String) -> StringI18nData,
     val embedColor: Color,
-    val embedEmoji: Emote
+    val embedEmoji: Emote,
+    val marriedActionTrackColumn: KProperty0<Column<Int>>
 )

@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reminders
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
@@ -116,7 +115,7 @@ class PostDeleteDataRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lo
 				}
 
 				// First we will select the marriage, check if there is a marriage and THEN update all profiles to have a null reference to it, and then delete it!
-				val marriage = Marriages.selectAll().where { Marriages.user1 eq userId or (Marriages.user2 eq userId) }
+				/* val marriage = Marriages.selectAll().where { Marriages.user1 eq userId or (Marriages.user2 eq userId) }
 					.firstOrNull()
 				if (marriage != null) {
 					logger.info { "Deleting $userId's marriage..." }
@@ -127,7 +126,7 @@ class PostDeleteDataRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lo
 					Marriages.deleteWhere { Marriages.id eq marriage[Marriages.id] }
 				} else {
 					logger.info { "Not deleting $userId's marriage because they aren't married! :P" }
-				}
+				} */
 
 				logger.info { "Deleting $userId's profile..." }
 				Profiles.deleteWhere {

@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
-import net.perfectdreams.loritta.morenitta.dao.Marriage
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -187,7 +186,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 					}
 
 					// MARRY - Aviar sobre sonhos
-					val documents = loritta.pudding.transaction {
+					/* val documents = loritta.pudding.transaction {
 						Profile.find { Profiles.marriage.isNotNull() and Profiles.money.less(MARRIAGE_DAILY_TAX) }
 							.toMutableList()
 					}
@@ -296,7 +295,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 						removeMarriages.forEach {
 							it.delete()
 						}
-					}
+					} */
 				}
 			} catch (e: Exception) {
 				logger.error("Erro ao atualizar a taxa diária!", e)

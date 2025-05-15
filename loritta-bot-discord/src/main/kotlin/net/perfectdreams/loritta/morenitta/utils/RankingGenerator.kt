@@ -8,6 +8,8 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import java.awt.Color
 import java.awt.GradientPaint
+import java.awt.Graphics
+import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -21,9 +23,50 @@ object RankingGenerator {
 	private val BACKGROUND_COLOR = Color(18, 18, 20)
 	private val GRADIENT_LEFT_COLOR =  Color(0, 0, 10, 190) // a tiny bit of blue!
 	private val GRADIENT_RIGHT_COLOR = Color(0, 0, 0, 150)
+	private const val MAXIMUM_RENDERABLE_ENTRIES = 5
+	private const val ENTRY_HEIGHT = 106
 
 	/**
-	 * Generates a ranking image
+	 * Draws the gradient used on each of the entries in the ranking
+	 *
+	 * @param image the source image
+	 */
+	fun drawEntryBackgroundGradient(image: BufferedImage) {
+		val graphics = image.createGraphics()
+
+		// The gradient goes from (entryDrawX, entryDrawY) to (entryDrawX + entryWidth, entryDrawY)
+		val gradient = GradientPaint(
+			0f,
+			0f, // Y-coordinate for the gradient line start
+			GRADIENT_LEFT_COLOR,
+			(800 / 2).toFloat(),
+			0f, // Y-coordinate for the gradient line end (same for horizontal)
+			GRADIENT_RIGHT_COLOR
+		)
+
+		graphics.paint = gradient // Apply the gradient
+
+		// Fill the area
+		graphics.fillRect(
+			0,
+			0,
+			image.width,
+			image.height
+		)
+
+		graphics.dispose()
+	}
+
+	/**
+	 * Generates a ranking image of a user list
+	 *
+	 * @param loritta         loritta
+	 * @param currentPosition the position of the first user of the list in the ranking
+	 * @param title           the title of the ranking
+	 * @param guildIconUrl    the icon URL of the guild
+	 * @param rankedUsers     the list of users that will be rendered on the ranking
+	 * @param onNullUser      a function that is called when a user is null
+	 * @return the rank image
 	 */
 	suspend fun generateRanking(
 		loritta: LorittaBot,
@@ -36,6 +79,7 @@ object RankingGenerator {
 		// We need to convert our UserRankInformation to EntryRankInformation
 		val entries = mutableListOf<EntryRankInformation>()
 
+		var idx = 0
 		for (userRankInformation in rankedUsers) {
 			val member = loritta.lorittaShards.retrieveUserInfoById(userRankInformation.userId) ?: onNullUser?.invoke(userRankInformation.userId)
 
@@ -71,15 +115,35 @@ object RankingGenerator {
 					}
 				}
 
+				val rankBackground = loritta.profileDesignManager.getUserProfileBackground(member.id, ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
+
+				val userBackgroundSectionPart = rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
+					.getSubimage(
+						0, ENTRIES_START_Y + (idx * ENTRY_HEIGHT), 800,
+						ENTRY_HEIGHT
+					)
+
+				val userBackgroundSectionPartBase = BufferedImage(
+					userBackgroundSectionPart.width,
+					userBackgroundSectionPart.height,
+					BufferedImage.TYPE_INT_ARGB
+				)
+				val userBackgroundSectionPartBaseGraphics = userBackgroundSectionPartBase.createGraphics()
+				userBackgroundSectionPartBaseGraphics.drawImage(userBackgroundSectionPart, 0, 0, null)
+
+				drawEntryBackgroundGradient(userBackgroundSectionPartBase)
+
 				entries.add(
 					EntryRankInformation(
 						member.globalName ?: member.name,
 						iconableSubtitle,
 						userRankInformation.subtitle,
 						member.getEffectiveAvatarUrl(ImageFormat.PNG).let { url -> ImageUtils.downloadImage(url) ?: ImageUtils.DEFAULT_DISCORD_AVATAR },
-						loritta.profileDesignManager.getUserProfileBackground(member.id, ProfileDesign.DEFAULT_PROFILE_DESIGN_ID)
+						userBackgroundSectionPartBase
 					)
 				)
+
+				idx++
 			}
 		}
 
@@ -88,20 +152,40 @@ object RankingGenerator {
 			currentPosition,
 			title,
 			guildIconUrl,
+			null,
 			entries
 		)
 	}
 
 	/**
-	 * Generates a ranking image
+	 * Generates a ranking image of a entry list
+	 *
+	 * @param loritta         loritta
+	 * @param currentPosition the position of the first entry of the list in the ranking
+	 * @param title           the title of the ranking
+	 * @param guildIconUrl    the icon URL of the guild
+	 * @param background      the background that will be displayed
+	 * @param rankedEntries   the list of entries that will be rendered on the ranking
+	 * @return the rank image
 	 */
 	suspend fun generateRanking(
 		loritta: LorittaBot,
 		currentPosition: Long,
 		title: String,
 		guildIconUrl: String?,
+		background: BufferedImage?,
 		rankedEntries: List<EntryRankInformation>
 	): BufferedImage {
+		// Validate if all entries are valid
+		// In theory we DO NOT need to filter this, but we do have this check to check if any of the commands are querying way too many values and passing thru here
+		if (rankedEntries.size > MAXIMUM_RENDERABLE_ENTRIES)
+			error("Rendering too many entries! You can only render a maximum of $MAXIMUM_RENDERABLE_ENTRIES entries per ranking! Count: ${rankedEntries.size}")
+
+		for (entry in rankedEntries) {
+			if (entry.background != null && (entry.background.width != 800 || entry.background.height != ENTRY_HEIGHT))
+				error("Background size of entry ${entry.name} is invalid! The background must be 800x${ENTRY_HEIGHT}! Current size: ${entry.background.width}x${entry.background.height}")
+		}
+
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.createGraphics()
 			.withTextAntialiasing()
@@ -139,6 +223,9 @@ object RankingGenerator {
 
 		graphics.color = BACKGROUND_COLOR
 		graphics.fillRect(0, 0, 800, 600)
+
+		if (background != null)
+			graphics.drawImage(background, 0, 0, null)
 
 		graphics.color = HEADER_COLOR
 		graphics.fillRect(0, 0, 800, HEADER_HEIGHT)
@@ -184,59 +271,18 @@ object RankingGenerator {
 		var currentY = ENTRIES_START_Y
 
 		for (entry in rankedEntries) {
-			if (idx >= 5) {
-				break
-			}
-
 			val textOffsetX = 98 + 24 + 16
 
 			val rankBackground = entry.background
 
-			val sourceX = 0
-			// If it is the first entry, we need to get a lil bit more of the background due to the triangle flair
-			val sourceY = (idx * 106) + ENTRIES_START_Y
+			val targetX = 0
+			val targetY = (idx * 106) + ENTRIES_START_Y
 
 			if (rankBackground != null) {
-				val userBackgroundSectionPart = rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
-					.getSubimage(
-						sourceX, sourceY, 800,
-						if (idx == 0)
-							106 + (ENTRIES_START_Y - HEADER_HEIGHT)
-						else
-							106
-					)
-
-				val userBackgroundSectionPartBase = BufferedImage(
-					userBackgroundSectionPart.width,
-					userBackgroundSectionPart.height,
-					BufferedImage.TYPE_INT_ARGB
-				)
-				val userBackgroundSectionPartBaseGraphics = userBackgroundSectionPartBase.createGraphics()
-				userBackgroundSectionPartBaseGraphics.drawImage(userBackgroundSectionPart, 0, 0, null)
-
-				// Create a GradientPaint object
-				// The gradient goes from (entryDrawX, entryDrawY) to (entryDrawX + entryWidth, entryDrawY)
-				val gradient = GradientPaint(
-					0f,
-					currentY.toFloat(), // Y-coordinate for the gradient line start
-					GRADIENT_LEFT_COLOR,
-					(800 / 2).toFloat(),
-					currentY.toFloat(), // Y-coordinate for the gradient line end (same for horizontal)
-					GRADIENT_RIGHT_COLOR
-				)
-
-				userBackgroundSectionPartBaseGraphics.paint = gradient // Apply the gradient
-				userBackgroundSectionPartBaseGraphics.fillRect(
-					0,
-					0,
-					userBackgroundSectionPartBase.width,
-					userBackgroundSectionPartBase.height
-				) // Fill the area
-
 				graphics.drawImage(
-					userBackgroundSectionPartBase,
-					sourceX,
-					sourceY,
+					rankBackground,
+					targetX,
+					targetY,
 					null
 				)
 			}

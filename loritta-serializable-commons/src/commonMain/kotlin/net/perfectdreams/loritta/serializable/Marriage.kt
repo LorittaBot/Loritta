@@ -6,7 +6,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Marriage(
     val id: Long,
-    val user1: UserId,
-    val user2: UserId,
-    val marriedSince: Instant
+    val participants: List<UserId>,
+    val marriedSince: Instant,
+    val coupleName: String?,
+    val coupleBadge: String?,
+    val affinity: Int,
+    val hugCount: Int,
+    val kissCount: Int,
+    val headPatCount: Int,
 )

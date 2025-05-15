@@ -67,7 +67,7 @@ class Pudding(
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
         private val ISOLATION_LEVEL =
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
-        private const val SCHEMA_VERSION = 86 // Bump this every time any table is added/updated!
+        private const val SCHEMA_VERSION = 87 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
 
         /**
@@ -250,7 +250,6 @@ class Pudding(
             GuildProfiles,
             Halloween2019Players,
             InteractionsData,
-            Marriages,
             MiscellaneousData,
             Mutes,
             CorreiosPackageUpdateUserNotifications,
@@ -379,7 +378,9 @@ class Pudding(
             ThirdPartySonhosTransferRequests,
             ThirdPartyPaymentSonhosTransactionResults,
             ReceivedUpdatedGuidelinesNotifications,
-            CachedPrivateChannels
+            CachedPrivateChannels,
+            UserMarriages,
+            MarriageParticipants
         )
 
         if (schemas.isNotEmpty()) {

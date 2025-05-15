@@ -59,16 +59,6 @@ open class Service(private val pudding: Pudding) {
         )
     )
 
-    fun PuddingMarriage.Companion.fromRow(row: ResultRow) = PuddingMarriage(
-        pudding,
-        Marriage(
-            row[Marriages.id].value,
-            UserId(row[Marriages.user1].toULong()),
-            UserId(row[Marriages.user2].toULong()),
-            Instant.fromEpochMilliseconds(row[Marriages.marriedSince])
-        )
-    )
-
     fun PuddingServerConfigRoot.Companion.fromRow(row: ResultRow) = PuddingServerConfigRoot(
         pudding,
         ServerConfigRoot(

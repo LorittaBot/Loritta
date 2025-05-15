@@ -16,6 +16,6 @@ object Profiles : SnowflakeTable() {
     // DON'T SET THIS TO ON DELETE CASCADE!
     // If this is set to on delete cascade, if someone married deletes their user data, the user data of the user
     // AND the data of the user that is married with will be deleted!
-    var marriage = reference("marriage", Marriages).nullable().index()
+    // var marriage = reference("marriage", Marriages).nullable().index()
     val vacationUntil = timestampWithTimeZone("vacation_until").nullable()
 }

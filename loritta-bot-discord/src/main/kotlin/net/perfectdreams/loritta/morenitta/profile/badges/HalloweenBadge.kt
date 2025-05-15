@@ -13,6 +13,7 @@ import java.util.*
 class HalloweenBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("3b74665b-d30c-4cc6-8465-0873ec3dc3b6"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2019.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2019.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Halloween2019.Description,
 	"halloween2019.png",
 	LorittaEmojis.Halloween2019,

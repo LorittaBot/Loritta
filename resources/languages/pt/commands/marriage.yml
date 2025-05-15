@@ -6,7 +6,51 @@ marry:
   description: "Case com a sua crush ou com a sua webnamorada!"
   acceptMarryButton: "Aceitar Pedido"
 
+  options:
+    user:
+      text: "A pessoa sortuda que irá receber o seu pedido de casamento"
+
 divorce:
   label: "divorciar"
   description: "O amor acabou? Então divorcie de um usuário"
   divorceButton: "Divorciar"
+
+view:
+  label: "ver"
+  description: "Mostra informações sobre o seu Casamento"
+  youAreNotMarried: "Você não está casado! Antes de poder ver as informações do seu casamento, você precisa se casar antes usando {marryCommand}!"
+  userIsNotMarried: "{userMention} não está casado!"
+  youLoseXPointsEveryDay: "Você perde {affinityPoints,plural, =0 {# pontos} one {# ponto} other {# pontos}} de afinidade por dia! Para ganhar mais pontos de afinidade, compre presentes para o seu relacionamento no {marryShopCommand}."
+  userMarriage: "Casamento de {userMention}"
+
+  options:
+    user:
+      text: "O usuário que você quer ver o casamento dele"
+
+restore:
+  label: "recuperar"
+  description: "Restaure que foi perdido por falta de afinidade"
+
+store:
+  label: "loja"
+  description: "A lojinha para pombinhos apaixonados! Compre presentes para aumentar a afinidade do seu relacionamento!"
+
+rank:
+  label: "rank"
+  description: "Ranking de casados"
+  longestMarriages: "Casamentos Mais Duradouros"
+
+configure:
+  label: "configurar"
+  description: "Configurações sobre o seu Casamento"
+
+  general: "Geral"
+  change: "Alterar"
+  modalTitle: "Configurações do Casamento"
+  coupleTitle:
+    title: "Nome do Casal"
+    description: "Dê um nome fofinho para o seu relacionamento!"
+    notSet: "Não definido"
+  equippedBadge:
+    title: "Insígnia Equipada"
+    description: "Insígnias equipadas aparecem ao ver o seu casamento no comando de ranking de casados. Você pode equipar qualquer badge que pelo ou menos um dos participantes do casamento tenha!"

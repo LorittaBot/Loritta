@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.morenitta.profile
 
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
-import net.perfectdreams.loritta.morenitta.dao.Marriage
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 
@@ -22,22 +23,21 @@ object ProfileUtils {
      * @return the marriage information or null if the user isn't married
      */
     suspend fun getMarriageInfo(loritta: LorittaBot, userProfile: Profile): MarriageInfo? {
-        val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
+        val marriage = loritta.pudding.marriages.getMarriageByUser(UserId(userProfile.userId)) ?: return null
 
-        if (marriage != null) {
-            val marriedWithId = if (marriage.user1 == userProfile.id.value) {
-                marriage.user2
-            } else {
-                marriage.user1
-            }.toString()
-
-            KotlinLogging.logger {}.info { "ProfileUtils#retrieveUserInfoById - UserId: ${marriedWithId}" }
-            return loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())?.let {
-                MarriageInfo(marriage, it)
-            }
+        val partnerId = if (marriage.user1.value.toLong() == userProfile.id.value) {
+            marriage.user2
+        } else {
+            marriage.user1
         }
 
-        return null
+        KotlinLogging.logger {}.info { "ProfileUtils#retrieveUserInfoById - UserId: ${partnerId}" }
+        val partner = loritta.lorittaShards.retrieveUserInfoById(partnerId) ?: return null
+
+        return MarriageInfo(
+            marriage,
+            partner
+        )
     }
 
     /**
@@ -90,7 +90,7 @@ object ProfileUtils {
     }
 
     data class MarriageInfo(
-        val marriage: Marriage,
+        val marriage: PuddingMarriage,
         val partner: CachedUserInfo
     )
 }

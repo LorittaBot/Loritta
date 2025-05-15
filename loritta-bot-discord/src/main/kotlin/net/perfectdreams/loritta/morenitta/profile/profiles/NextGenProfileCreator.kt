@@ -47,30 +47,21 @@ class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 
 		drawAvatar(avatar, graphics)
 
-		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
-
+		val marriage = ProfileUtils.getMarriageInfo(loritta, userProfile)
+		
 		/* if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
-				marriage.user2
-			} else {
-				marriage.user1
-			}.toString()
-
-			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/marry.png"))
+			val marrySection = readImageFromResources("/profile/cowboy/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = runBlocking { loritta.lorittaShards.retrieveUserById(marriedWithId) }
-
-			if (marriedWith != null) {
-				val latoBold16 = latoBold.deriveFont(16f)
-				val latoRegular20 = latoRegular22.deriveFont(20f)
-				graphics.color = Color.WHITE
-				graphics.font = latoBold16
-				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(311, 0, 216, 14), latoBold16)
-				graphics.font = latoRegular20
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), latoRegular20)
-				graphics.font = latoBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(311, 0 + 18 + 24, 216, 14), latoBold16)
-			}
+			
+			val latoBold16 = latoBold.deriveFont(16f)
+			val latoRegular20 = latoRegular22.deriveFont(20f)
+			graphics.color = Color.WHITE
+			graphics.font = latoBold16
+			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(311, 0, 216, 14), latoBold16)
+			graphics.font = latoRegular20
+			ImageUtils.drawCenteredString(graphics, marriage.partner.name, Rectangle(311, 0 + 18, 216, 18), latoRegular20)
+			graphics.font = latoBold16
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), 3), Rectangle(311, 0 + 18 + 24, 216, 14), latoBold16)
 		} */
 
 		graphics.color = Color.WHITE
@@ -177,9 +168,9 @@ class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 	}
 
 	suspend fun drawMarriageStatus(userProfile: Profile, locale: BaseLocale, graphics: Graphics) {
-		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
+		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, partner) ->
 			graphics.drawText(loritta, locale["profile.marriedWith"], 271, 34)
-			graphics.drawText(loritta, marriedWith.name, 271, 54)
+			graphics.drawText(loritta, partner.name, 271, 54)
 		}
 	}
 }

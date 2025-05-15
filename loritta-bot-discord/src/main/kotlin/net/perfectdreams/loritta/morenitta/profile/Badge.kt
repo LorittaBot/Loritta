@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.profile
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.common.emojis.LorittaEmojiReference
-import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -15,6 +14,7 @@ import java.util.*
 sealed class Badge(
 	val id: UUID,
 	val title: StringI18nData,
+	val titlePlural: StringI18nData?,
 	val description: StringI18nData,
 	val priority: Int
 ) {
@@ -25,11 +25,12 @@ sealed class Badge(
 	abstract class LorittaBadge(
 		id: UUID,
 		title: StringI18nData,
+		titlePlural: StringI18nData?,
 		description: StringI18nData,
 		val badgeFileName: String,
 		val emoji: LorittaEmojiReference,
 		priority: Int,
-	) : Badge(id, title, description, priority) {
+	) : Badge(id, title, titlePlural, description, priority) {
 		override suspend fun getImage() = readImageFromResources("/badges/$badgeFileName")
 	}
 
@@ -38,12 +39,13 @@ sealed class Badge(
 		val loritta: LorittaBot,
 		val guildId: Long,
 		title: StringI18nData,
+		titlePlural: StringI18nData?,
 		description: StringI18nData,
 		val badgeFile: String,
 		val badgeMediaType: String,
 		val dssNamespace: String,
 		priority: Int
-	) : Badge(UUID(0, guildId), title, description, priority) {
+	) : Badge(UUID(0, guildId), title, titlePlural, description, priority) {
 		override suspend fun checkIfUserDeservesBadge(
 			user: ProfileUserInfoData,
 			profile: Profile,

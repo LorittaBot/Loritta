@@ -15,6 +15,7 @@ import java.util.*
 class PantufaBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("5196d860-e8a6-4781-a22f-6bfa26c0af7c"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Pantufa2020.Title,
+	null,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Pantufa2020.Description,
 	"birthday2020_pantufa.png",
 	LorittaEmojis.PantufaHead,

@@ -6,6 +6,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -22,7 +23,8 @@ object RoleplayUtils {
         RandomRoleplayPicturesClient::hug,
         I18nKeysData.Commands.Command.Roleplay.Hug::Response,
         Color(255, 141, 230),
-        Emotes.Blush
+        Emotes.Blush,
+        UserMarriages::hugCount
     )
 
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
@@ -31,7 +33,8 @@ object RoleplayUtils {
         RandomRoleplayPicturesClient::headPat,
         I18nKeysData.Commands.Command.Roleplay.Headpat::Response,
         Color(156, 39, 176),
-        Emotes.LoriPat
+        Emotes.LoriPat,
+        UserMarriages::headPatCount
     )
 
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
@@ -40,7 +43,8 @@ object RoleplayUtils {
         RandomRoleplayPicturesClient::highFive,
         I18nKeysData.Commands.Command.Roleplay.Highfive::Response,
         Color(165, 255, 76),
-        Emotes.LoriHi
+        Emotes.LoriHi,
+        UserMarriages::highFiveCount
     )
 
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
@@ -49,7 +53,8 @@ object RoleplayUtils {
         RandomRoleplayPicturesClient::slap,
         I18nKeysData.Commands.Command.Roleplay.Slap::Response,
         Color(244, 67, 54),
-        Emotes.LoriPunch
+        Emotes.LoriPunch,
+        UserMarriages::slapCount
     )
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
@@ -58,7 +63,8 @@ object RoleplayUtils {
         RandomRoleplayPicturesClient::attack,
         I18nKeysData.Commands.Command.Roleplay.Attack::Response,
         Color(244, 67, 54),
-        Emotes.LoriRage
+        Emotes.LoriRage,
+        UserMarriages::attackCount
     )
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
@@ -67,7 +73,8 @@ object RoleplayUtils {
         RandomRoleplayPicturesClient::dance,
         I18nKeysData.Commands.Command.Roleplay.Dance::Response,
         Color(255, 152, 0),
-        Emotes.Dancer
+        Emotes.Dancer,
+        UserMarriages::danceCount
     )
 
     val KISS_ATTRIBUTES = RoleplayActionAttributes(
@@ -76,7 +83,8 @@ object RoleplayUtils {
         RandomRoleplayPicturesClient::kiss,
         I18nKeysData.Commands.Command.Roleplay.Kiss::Response,
         Color(233, 30, 99),
-        Emotes.LoriKiss
+        Emotes.LoriKiss,
+        UserMarriages::kissCount
     )
 
     val RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG = listOf(

@@ -33,6 +33,12 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val inputConverter = ShipDiscordMentionInputConverter()
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Ship
+
+        fun createShipName(user1Name: String, user2Name: String): String {
+            val name1 = user1Name.substring(0..(user1Name.length / 2))
+            val name2 = user2Name.substring(user2Name.length / 2 until user2Name.length)
+            return name1 + name2
+        }
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.FUN, UUID.fromString("7820547b-dff0-4a2c-b1c9-f77cf299f116")) {
@@ -77,7 +83,7 @@ class ShipCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             )
 
             fun getUserResult(result: ConverterResult): AssetsResult {
-                return when (result) {
+                when (result) {
                     is StringResult -> {
                         return AssetsResult(
                             result.string.hashCode().toLong(),

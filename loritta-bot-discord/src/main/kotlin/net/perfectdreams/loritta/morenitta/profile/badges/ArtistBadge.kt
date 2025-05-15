@@ -12,6 +12,7 @@ import java.util.*
 class ArtistBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	UUID.fromString("81788d4a-7e6c-415f-8832-d55573f8c40b"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Artist.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.Artist.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Artist.Description,
 	"artist.png",
 	LorittaEmojis.Artist,

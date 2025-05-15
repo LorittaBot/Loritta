@@ -17,6 +17,7 @@ import java.util.*
 class Easter2023Badge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("bacdf6ee-0279-4f15-a865-0cfc5fcbd720"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Easter2023.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.Easter2023.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Easter2023.Description,
 	"easter2023.png",
 	LorittaEmojis.Easter2023,

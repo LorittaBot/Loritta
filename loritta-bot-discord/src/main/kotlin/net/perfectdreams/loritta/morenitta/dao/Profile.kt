@@ -32,8 +32,6 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	var vacationUntil by Profiles.vacationUntil
 
 	var settings by ProfileSettings referencedOn Profiles.settings
-	val marriageId by Profiles.marriage
-	var marriage by Marriage optionalReferencedOn Profiles.marriage
 
 	/**
 	 * Returns if the user can get a daily

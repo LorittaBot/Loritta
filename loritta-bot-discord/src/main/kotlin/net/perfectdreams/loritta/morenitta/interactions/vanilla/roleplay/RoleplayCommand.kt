@@ -9,12 +9,15 @@ import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
+import org.jetbrains.exposed.sql.update
 import java.util.*
 
 class RoleplayCommand {
@@ -54,6 +57,21 @@ class RoleplayCommand {
                     context.giveAchievementAndNotify(achievement, ephemeral = true)
                 else
                     AchievementUtils.giveAchievementToUser(context.loritta, UserId(achievementReceiver), achievement)
+            }
+
+            val marriage = context.loritta.pudding.marriages.getMarriageByUser(UserId(context.user.idLong))
+            if (marriage != null) {
+                // Figure out who we are talking about
+                val partner = if (marriage.user1.value.toLong() == context.user.idLong) marriage.user2 else marriage.user1
+
+                if (partner.value.toLong() == receiver.idLong) {
+                    // They are our partner!
+                    context.loritta.transaction {
+                        UserMarriages.update({ UserMarriages.id eq marriage.id }) {
+                            it[attributes.marriedActionTrackColumn.get()] = attributes.marriedActionTrackColumn.get() + 1
+                        }
+                    }
+                }
             }
 
             // Easter Egg: Small chance for Loritta to retribute the action (1%)

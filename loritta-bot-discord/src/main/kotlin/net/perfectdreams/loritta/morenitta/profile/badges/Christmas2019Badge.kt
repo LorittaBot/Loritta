@@ -13,6 +13,7 @@ import java.util.*
 class Christmas2019Badge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("d9dc5547-9e26-4029-a5e5-4edeed1319c1"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2019.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2019.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Christmas2019.Description,
 	"christmas2019.png",
 	LorittaEmojis.Christmas2019,

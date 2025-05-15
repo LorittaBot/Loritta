@@ -227,7 +227,7 @@ open class LoriCoolCardsStickerReceivedProfileCreator(
 								loritta,
 								DateUtils.formatDateDiff(
 									i18nContext,
-									marriageInfo.marriage.marriedSince,
+									marriageInfo.marriage.marriedSince.toEpochMilliseconds(),
 									System.currentTimeMillis(),
 									3
 								),

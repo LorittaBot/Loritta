@@ -135,30 +135,20 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 		else
 			graphics.drawText(loritta, "${userProfile.money}", 159, 116  + shiftY, 800 - 6)
 
-		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
-
+		val marriage = ProfileUtils.getMarriageInfo(loritta, userProfile)
+		
 		if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
-				marriage.user2
-			} else {
-				marriage.user1
-			}.toString()
-
 			val marrySection = readImageFromResources("/profile/nostalgia/marry.png")
 			graphics.drawImage(marrySection, 0, 0, null)
-			KotlinLogging.logger {}.info { "NostalgiaProfileCreator#retrieveUserInfoById - UserId: ${marriedWithId}" }
-			val marriedWith = loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
-
-			if (marriedWith != null) {
-				val latoBold16 = latoBold.deriveFont(16f)
-				val latoRegular20 = latoRegular22.deriveFont(20f)
-				graphics.font = latoBold16
-				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(545, 108, 256, 14), latoBold16)
-				graphics.font = latoRegular20
-				ImageUtils.drawCenteredString(graphics, marriedWith.name, Rectangle(545, 108 + 14, 256, 18), latoRegular20)
-				graphics.font = latoBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(545, 108 + 14  + 18, 256, 14), latoBold16)
-			}
+		
+			val latoBold16 = latoBold.deriveFont(16f)
+			val latoRegular20 = latoRegular22.deriveFont(20f)
+			graphics.font = latoBold16
+			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(545, 108, 256, 14), latoBold16)
+			graphics.font = latoRegular20
+			ImageUtils.drawCenteredString(graphics, marriage.partner.name, Rectangle(545, 108 + 14, 256, 18), latoRegular20)
+			graphics.font = latoBold16
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), 3), Rectangle(545, 108 + 14  + 18, 256, 14), latoBold16)
 		}
 
 		return base

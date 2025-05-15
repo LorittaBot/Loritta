@@ -15,6 +15,7 @@ import java.util.*
 class StonksBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("4c029e28-95ec-479e-9570-1ad9dab32816"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Stonks.Title,
+	null,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Stonks.Description,
 	"stonks.png",
 	LorittaEmojis.Stonks,

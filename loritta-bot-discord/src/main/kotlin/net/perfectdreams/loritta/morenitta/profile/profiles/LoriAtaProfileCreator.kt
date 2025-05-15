@@ -117,7 +117,7 @@ class LoriAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(16f)
 			ImageUtils.drawCenteredString(graphics, marriedWith.name, Rectangle(200 + 280, 270 + 23, 218, 18), graphics.font)
 			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(12f)
-			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince, System.currentTimeMillis(), 3), Rectangle(200 + 280, 270 + 23 + 16, 218, 15), graphics.font)
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), 3), Rectangle(200 + 280, 270 + 23 + 16, 218, 15), graphics.font)
 		}
 
 		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(13f)

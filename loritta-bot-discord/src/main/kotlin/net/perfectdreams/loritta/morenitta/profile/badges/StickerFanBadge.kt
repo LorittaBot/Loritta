@@ -16,6 +16,7 @@ import java.util.*
 class StickerFanBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("d5e6b7be-5bd4-4822-b81e-1285427f208f"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.StickerFan.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.StickerFan.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.StickerFan.Description,
 	"sticker_fan.png",
 	LorittaEmojis.StickerFan,

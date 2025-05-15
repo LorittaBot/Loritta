@@ -13,6 +13,7 @@ import java.util.*
 class BratBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("3e95aa2d-b092-43dc-8aef-7d2112e13f28"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Brat.Title,
+	null,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Brat.Description,
 	"brat.png",
 	LorittaEmojis.Brat,

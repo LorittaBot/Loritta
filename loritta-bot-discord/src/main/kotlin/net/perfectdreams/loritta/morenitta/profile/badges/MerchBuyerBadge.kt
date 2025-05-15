@@ -11,6 +11,7 @@ import java.util.*
 class MerchBuyerBadge(val m: LorittaBot) : Badge.LorittaBadge(
 	UUID.fromString("00b2b958-55bd-4daa-8822-eafd29b933ca"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.MerchBuyer.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.MerchBuyer.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.MerchBuyer.Description,
 	"lori_caneca.png",
 	LorittaEmojis.LoriCaneca,

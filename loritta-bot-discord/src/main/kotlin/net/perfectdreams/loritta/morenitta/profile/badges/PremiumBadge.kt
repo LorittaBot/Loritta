@@ -11,6 +11,7 @@ import java.util.*
 class PremiumBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	UUID.fromString("2ef616dd-dd0e-4a17-98e1-10a6bfa7d6a6"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.Premium.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.Premium.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.Premium.Description,
 	"donator.png",
 	LorittaEmojis.LoriRich,

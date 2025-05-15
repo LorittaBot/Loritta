@@ -22,7 +22,7 @@ object PurgeInactiveUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 
 		val inactiveUsersQuery = loritta.pudding.transaction {
 			Profiles.selectAll().where {
-				Profiles.money eq 0 and (Profiles.xp eq 0) and (Profiles.lastMessageSentAt eq 0) and (Profiles.marriage.isNull())
+				Profiles.money eq 0 and (Profiles.xp eq 0) and (Profiles.lastMessageSentAt eq 0)
 			}
 		}
 
@@ -34,7 +34,7 @@ object PurgeInactiveUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 			)
 
 			val count = loritta.pudding.transaction {
-				Profiles.deleteWhere { Profiles.money eq 0 and (Profiles.xp eq 0) and (Profiles.lastMessageSentAt eq 0) and (Profiles.marriage.isNull()) }
+				Profiles.deleteWhere { Profiles.money eq 0 and (Profiles.xp eq 0) and (Profiles.lastMessageSentAt eq 0) }
 			}
 
 			reply(

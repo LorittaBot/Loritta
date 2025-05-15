@@ -17,6 +17,7 @@ import java.util.*
 class LorittaStaffBadge(val loritta: LorittaBot) : Badge.LorittaBadge(
 	UUID.fromString("8f707b11-55cb-4b8c-aae3-62e382e268fc"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.LorittaStaff.Title,
+	null,
 	ProfileDesignManager.I18N_BADGES_PREFIX.LorittaStaff.Description,
 	"loritta_staff.png",
 	LorittaEmojis.LorittaStaff,

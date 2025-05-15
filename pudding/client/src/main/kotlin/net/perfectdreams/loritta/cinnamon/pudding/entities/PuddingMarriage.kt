@@ -10,7 +10,9 @@ class PuddingMarriage(
     companion object;
 
     val id by data::id
-    val user1 by data::user1
-    val user2 by data::user2
+    // These are temporary, this WILL need to be changed after Loritta supports more than 2 participants on the marriage
+    val user1 = data.participants[0]
+    val user2 = data.participants[1]
+    val participants by data::participants
     val marriedSince by data::marriedSince
 }

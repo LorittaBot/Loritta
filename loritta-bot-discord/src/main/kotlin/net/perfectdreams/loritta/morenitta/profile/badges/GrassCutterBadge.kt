@@ -15,6 +15,7 @@ import java.util.*
 class GrassCutterBadge(val pudding: Pudding) : Badge.LorittaBadge(
 	UUID.fromString("d8858fec-4075-4308-8494-e7692041cbfa"),
 	ProfileDesignManager.I18N_BADGES_PREFIX.GrassCutter.Title,
+	ProfileDesignManager.I18N_BADGES_PREFIX.GrassCutter.TitlePlural,
 	ProfileDesignManager.I18N_BADGES_PREFIX.GrassCutter.Description,
 	"grass_cutter.png",
 	LorittaEmojis.GrassCutter,
