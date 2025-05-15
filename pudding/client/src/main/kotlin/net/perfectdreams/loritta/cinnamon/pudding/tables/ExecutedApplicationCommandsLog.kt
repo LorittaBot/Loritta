@@ -22,6 +22,7 @@ object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey()
     val context = postgresEnumeration<InteractionContextType>("context").nullable()
     val guildIntegration = long("guild_integration").nullable()
     val userIntegration = long("user_integration").nullable()
+    val lorittaCluster = integer("loritta_cluster").nullable()
 
     val stacktrace = text("stacktrace").nullable()
 

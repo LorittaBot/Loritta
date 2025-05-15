@@ -28,6 +28,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
         context: InteractionContextType,
         guildIntegrationId: Long?,
         userIntegrationId: Long?,
+        lorittaClusterId: Int
     ): Long {
         return pudding.transaction {
             ExecutedApplicationCommandsLog.insertAndGetId {
@@ -44,6 +45,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
                 it[ExecutedApplicationCommandsLog.context] = context
                 it[ExecutedApplicationCommandsLog.guildIntegration] = guildIntegrationId
                 it[ExecutedApplicationCommandsLog.userIntegration] = userIntegrationId
+                it[ExecutedApplicationCommandsLog.lorittaCluster] = lorittaClusterId
                 it[ExecutedApplicationCommandsLog.stacktrace] = stacktrace
             }
         }.value

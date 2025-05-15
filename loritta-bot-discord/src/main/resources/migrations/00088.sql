@@ -1,0 +1,1 @@
+ALTER TABLE ExecutedApplicationCommandsLog ADD COLUMN loritta_cluster INTEGER;

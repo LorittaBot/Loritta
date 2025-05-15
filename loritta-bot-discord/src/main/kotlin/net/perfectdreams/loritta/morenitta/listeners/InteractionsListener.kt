@@ -366,6 +366,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 event.interaction.context.toLoritta(),
                 if (event.interaction.integrationOwners.isGuildIntegration) event.interaction.integrationOwners.authorizingGuildIdLong else null,
                 if (event.interaction.integrationOwners.isUserIntegration)  event.interaction.integrationOwners.authorizingUserIdLong else null,
+                loritta.lorittaCluster.id
             )
         }
     }
@@ -467,6 +468,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 event.interaction.context.toLoritta(),
                 if (event.interaction.integrationOwners.isGuildIntegration) event.interaction.integrationOwners.authorizingGuildIdLong else null,
                 if (event.interaction.integrationOwners.isUserIntegration)  event.interaction.integrationOwners.authorizingUserIdLong else null,
+                loritta.lorittaCluster.id
             )
         }
     }
@@ -569,6 +571,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 event.interaction.context.toLoritta(),
                 if (event.interaction.integrationOwners.isGuildIntegration) event.interaction.integrationOwners.authorizingGuildIdLong else null,
                 if (event.interaction.integrationOwners.isUserIntegration)  event.interaction.integrationOwners.authorizingUserIdLong else null,
+                loritta.lorittaCluster.id
             )
         }
     }

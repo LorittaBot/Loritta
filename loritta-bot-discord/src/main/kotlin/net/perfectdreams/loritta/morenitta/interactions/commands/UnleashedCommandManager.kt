@@ -632,7 +632,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 0L
             } else event.guild?.idLong, // If else, then it is a guild
             // And finally, messages cannot be installed into the user's account
-            null
+            null,
+            loritta.lorittaCluster.id
         )
 
         return true
