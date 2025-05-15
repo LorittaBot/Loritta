@@ -13,6 +13,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
+import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ReactionEventsConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
@@ -33,6 +35,7 @@ import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventReward
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.RankPaginationUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
@@ -715,11 +718,6 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             event: ReactionEvent,
             rankType: ReactionEventRankType
         ): suspend InlineMessage<*>.() -> (Unit) = {
-            styled(
-                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
-                Emotes.LoriReading
-            )
-
             val countColumn = CraftedReactionEventItems.user.count()
             val minFinishedAtColumn = ReactionEventFinishedEventUsers.finishedAt.min()
 
@@ -782,9 +780,12 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             // Calculates the max page
             val maxPage = ceil(totalCount / 5.0)
-            val maxPageZeroIndexed = maxPage - 1
 
-            files += FileUpload.fromData(
+            RankPaginationUtils.createRankMessage(
+                loritta,
+                context,
+                page,
+                maxPage.toInt(),
                 RankingGenerator.generateRanking(
                     loritta,
                     page * 5,
@@ -807,50 +808,10 @@ class EventCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     }
                 ) {
                     null
-                }.toByteArray(ImageFormatType.PNG).inputStream(),
-                "rank.png"
-            )
-
-            actionRow(
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    builder = {
-                        loriEmoji = Emotes.ChevronLeft
-                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES
-                    }
-                ) {
-                    val hook = it.updateMessageSetLoadingState()
-
-                    val builtMessage = createRankMessage(it, page - 1, event, rankType)
-
-                    val asMessageEditData = MessageEdit {
-                        builtMessage()
-                    }
-
-                    hook.editOriginal(asMessageEditData).await()
-                },
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    builder = {
-                        loriEmoji = Emotes.ChevronRight
-                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
-                    }
-                ) {
-                    val hook = it.updateMessageSetLoadingState()
-
-                    val builtMessage = createRankMessage(it, page + 1, event, rankType)
-
-                    val asMessageEditData = MessageEdit {
-                        builtMessage()
-                    }
-
-                    hook.editOriginal(asMessageEditData).await()
-                },
-            )
+                }
+            ) {
+                createRankMessage(context, it, event, rankType)
+            }.invoke(this)
         }
     }
 

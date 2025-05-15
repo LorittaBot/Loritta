@@ -1,17 +1,13 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import kotlinx.html.HEADER
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.DrawableType
-import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
-import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.withTextAntialiasing
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import java.awt.Color
 import java.awt.GradientPaint
-import java.awt.Graphics
-import java.awt.Polygon
 import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -200,38 +196,50 @@ object RankingGenerator {
 			// If it is the first entry, we need to get a lil bit more of the background due to the triangle flair
 			val sourceY = (idx * 106) + ENTRIES_START_Y
 
-			val userBackgroundSectionPart = rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
-				.getSubimage(sourceX, sourceY, 800,
-					if (idx == 0)
-						106 + (ENTRIES_START_Y - HEADER_HEIGHT)
-					else
-						106
+			if (rankBackground != null) {
+				val userBackgroundSectionPart = rankBackground.getResizedInstance(800, 600, InterpolationType.BILINEAR)
+					.getSubimage(
+						sourceX, sourceY, 800,
+						if (idx == 0)
+							106 + (ENTRIES_START_Y - HEADER_HEIGHT)
+						else
+							106
+					)
+
+				val userBackgroundSectionPartBase = BufferedImage(
+					userBackgroundSectionPart.width,
+					userBackgroundSectionPart.height,
+					BufferedImage.TYPE_INT_ARGB
+				)
+				val userBackgroundSectionPartBaseGraphics = userBackgroundSectionPartBase.createGraphics()
+				userBackgroundSectionPartBaseGraphics.drawImage(userBackgroundSectionPart, 0, 0, null)
+
+				// Create a GradientPaint object
+				// The gradient goes from (entryDrawX, entryDrawY) to (entryDrawX + entryWidth, entryDrawY)
+				val gradient = GradientPaint(
+					0f,
+					currentY.toFloat(), // Y-coordinate for the gradient line start
+					GRADIENT_LEFT_COLOR,
+					(800 / 2).toFloat(),
+					currentY.toFloat(), // Y-coordinate for the gradient line end (same for horizontal)
+					GRADIENT_RIGHT_COLOR
 				)
 
-			val userBackgroundSectionPartBase = BufferedImage(userBackgroundSectionPart.width, userBackgroundSectionPart.height, BufferedImage.TYPE_INT_ARGB)
-			val userBackgroundSectionPartBaseGraphics = userBackgroundSectionPartBase.createGraphics()
-			userBackgroundSectionPartBaseGraphics.drawImage(userBackgroundSectionPart, 0, 0, null)
+				userBackgroundSectionPartBaseGraphics.paint = gradient // Apply the gradient
+				userBackgroundSectionPartBaseGraphics.fillRect(
+					0,
+					0,
+					userBackgroundSectionPartBase.width,
+					userBackgroundSectionPartBase.height
+				) // Fill the area
 
-			// Create a GradientPaint object
-			// The gradient goes from (entryDrawX, entryDrawY) to (entryDrawX + entryWidth, entryDrawY)
-			val gradient = GradientPaint(
-				0f,
-				currentY.toFloat(), // Y-coordinate for the gradient line start
-				GRADIENT_LEFT_COLOR,
-				(800 / 2).toFloat(),
-				currentY.toFloat(), // Y-coordinate for the gradient line end (same for horizontal)
-				GRADIENT_RIGHT_COLOR
-			)
-
-			userBackgroundSectionPartBaseGraphics.paint = gradient // Apply the gradient
-			userBackgroundSectionPartBaseGraphics.fillRect(0, 0, userBackgroundSectionPartBase.width, userBackgroundSectionPartBase.height) // Fill the area
-
-			graphics.drawImage(
-				userBackgroundSectionPartBase,
-				sourceX,
-				sourceY,
-				null
-			)
+				graphics.drawImage(
+					userBackgroundSectionPartBase,
+					sourceX,
+					sourceY,
+					null
+				)
+			}
 
 			graphics.color = Color(255, 255, 255)
 
@@ -270,14 +278,22 @@ object RankingGenerator {
 			// Make the background of the icon the same color as the background of the header
 			// (mostly for transparent icons)
 			val userAvatar = entry.icon
-			val userAvatarBase = BufferedImage(98, 98, BufferedImage.TYPE_INT_ARGB)
-			val userAvatarBaseGraphics = userAvatarBase.createGraphics()
+			if (userAvatar != null) {
+				val userAvatarBase = BufferedImage(98, 98, BufferedImage.TYPE_INT_ARGB)
+				val userAvatarBaseGraphics = userAvatarBase.createGraphics()
 
-			userAvatarBaseGraphics.color = HEADER_COLOR
-			userAvatarBaseGraphics.fillRect(0, 0, userAvatarBase.width, userAvatarBase.height)
-			userAvatarBaseGraphics.drawImage(userAvatar.getResizedInstance(userAvatarBase.width, userAvatarBase.height, InterpolationType.BILINEAR), 0, 0, null)
+				userAvatarBaseGraphics.color = HEADER_COLOR
+				userAvatarBaseGraphics.fillRect(0, 0, userAvatarBase.width, userAvatarBase.height)
+				userAvatarBaseGraphics.drawImage(
+					userAvatar.getResizedInstance(
+						userAvatarBase.width,
+						userAvatarBase.height,
+						InterpolationType.BILINEAR
+					), 0, 0, null
+				)
 
-			graphics.drawImage(userAvatarBase.makeRoundedCorners(userAvatarBase.width), 24, currentY + 4, null)
+				graphics.drawImage(userAvatarBase.makeRoundedCorners(userAvatarBase.width), 24, currentY + 4, null)
+			}
 
 			idx++
 			currentY += 106
@@ -306,8 +322,8 @@ object RankingGenerator {
 		val name: String,
 		val iconableSubtitle: EntryRankIconableSubtitle?,
 		val subtitle: String?,
-		val icon: BufferedImage,
-		val background: BufferedImage
+		val icon: BufferedImage?,
+		val background: BufferedImage?
 	) {
 		data class EntryRankIconableSubtitle(
 			val icon: BufferedImage?,

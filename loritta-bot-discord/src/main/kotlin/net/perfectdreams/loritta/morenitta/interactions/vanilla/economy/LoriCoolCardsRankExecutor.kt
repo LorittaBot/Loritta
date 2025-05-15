@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsFinishedAlbumUsers
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -20,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.RankPaginationUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.ResultRow
@@ -64,7 +66,7 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
         context.deferChannelMessage(false)
 
         val albumId = args[options.album].toLong()
-        val page = (args[options.page]?.minus(1)) ?: 0
+        val page = (args[options.page]?.minus(1)?.coerceAtLeast(0)) ?: 0
 
         context.reply(false) {
             createRankMessage(context, albumId, page)()
@@ -76,11 +78,6 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
         eventId: Long,
         page: Long
     ): suspend InlineMessage<*>.() -> (Unit) = {
-        styled(
-            context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
-            Emotes.LoriReading
-        )
-
         val now = Instant.now()
 
         val result = loritta.transaction {
@@ -124,13 +121,15 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
             is ViewAlbumRankResult.Success -> {
                 // Calculates the max page
                 val maxPage = ceil(result.totalCount / 5.0)
-                val maxPageZeroIndexed = maxPage - 1
 
-                files += FileUpload.fromData(
+                RankPaginationUtils.createRankMessage(
+                    loritta,
+                    context,
+                    page,
+                    maxPage.toInt(),
                     RankingGenerator.generateRanking(
                         loritta,
                         page * 5,
-
                         result.eventData[LoriCoolCardsEvents.eventName],
                         null,
                         result.users.map {
@@ -141,50 +140,10 @@ class LoriCoolCardsRankExecutor(val loritta: LorittaBot, private val loriCoolCar
                         }
                     ) {
                         null
-                    }.toByteArray(ImageFormatType.PNG).inputStream(),
-                    "rank.png"
-                )
-
-                actionRow(
-                    loritta.interactivityManager.buttonForUser(
-                        context.user,
-                        context.alwaysEphemeral,
-                        ButtonStyle.PRIMARY,
-                        builder = {
-                            loriEmoji = Emotes.ChevronLeft
-                            disabled = page !in RankingGenerator.VALID_RANKING_PAGES
-                        }
-                    ) {
-                        val hook = it.updateMessageSetLoadingState()
-
-                        val builtMessage = createRankMessage(it, eventId, page - 1)
-
-                        val asMessageEditData = MessageEdit {
-                            builtMessage()
-                        }
-
-                        hook.editOriginal(asMessageEditData).await()
-                    },
-                    loritta.interactivityManager.buttonForUser(
-                        context.user,
-                        context.alwaysEphemeral,
-                        ButtonStyle.PRIMARY,
-                        builder = {
-                            loriEmoji = Emotes.ChevronRight
-                            disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
-                        }
-                    ) {
-                        val hook = it.updateMessageSetLoadingState()
-
-                        val builtMessage = createRankMessage(it, eventId, page + 1)
-
-                        val asMessageEditData = MessageEdit {
-                            builtMessage()
-                        }
-
-                        hook.editOriginal(asMessageEditData).await()
                     }
-                )
+                ) {
+                    createRankMessage(context, eventId, it)
+                }.invoke(this)
             }
         }
     }

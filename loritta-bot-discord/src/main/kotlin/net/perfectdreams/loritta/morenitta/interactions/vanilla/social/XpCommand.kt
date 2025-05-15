@@ -500,11 +500,6 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             guild: Guild,
             page: Long
         ): suspend InlineMessage<*>.() -> (Unit) = {
-            styled(
-                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
-                Emotes.LoriReading
-            )
-
             val (totalCount, profiles) = loritta.pudding.transaction {
                 val totalCount = GuildProfiles.selectAll().where {
                     (GuildProfiles.guildId eq guild.id.toLong()) and
@@ -525,9 +520,12 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             // Calculates the max page
             val maxPage = ceil(totalCount / 5.0)
-            val maxPageZeroIndexed = maxPage - 1
 
-            files += AttachedFile.fromData(
+            RankPaginationUtils.createRankMessage(
+                loritta,
+                context,
+                page,
+                maxPage.toInt(),
                 RankingGenerator.generateRanking(
                     loritta,
                     page * 5,
@@ -549,42 +547,10 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
                     }
                     null
-                }.toByteArray(ImageFormatType.PNG).inputStream(),
-                "rank.png"
-            )
-
-            actionRow(
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    builder = {
-                        loriEmoji = Emotes.ChevronLeft
-                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES
-                    }
-                ) {
-                    it.deferAndEditOriginal {
-                        val message = createMessage(loritta, context, guild, page - 1)
-
-                        message()
-                    }
-                },
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    builder = {
-                        loriEmoji = Emotes.ChevronRight
-                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
-                    }
-                ) {
-                    it.deferAndEditOriginal {
-                        val message = createMessage(loritta, context, guild, page + 1)
-
-                        message()
-                    }
                 }
-            )
+            ) {
+                createMessage(loritta, context, guild, it)
+            }.invoke(this)
         }
 
         override suspend fun convertToInteractionsArguments(

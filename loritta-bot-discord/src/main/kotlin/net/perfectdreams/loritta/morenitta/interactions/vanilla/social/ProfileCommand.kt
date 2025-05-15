@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventPlayers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -33,10 +34,13 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.reactionevents.ReactionEventRankType
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.profiles.ProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.RankPaginationUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
@@ -532,11 +536,6 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context: UnleashedContext,
             page: Long
         ): suspend InlineMessage<*>.() -> (Unit) = {
-            styled(
-                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
-                Emotes.LoriReading
-            )
-
             val users = mutableListOf<RankingGenerator.UserRankInformation>()
             var totalUsers: Long? = null
 
@@ -621,9 +620,12 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             // Calculates the max page
             val maxPage = ceil((totalUsers ?: 1) / 5.0)
-            val maxPageZeroIndexed = maxPage - 1
 
-            files += FileUpload.fromData(
+            RankPaginationUtils.createRankMessage(
+                loritta,
+                context,
+                page,
+                maxPage.toInt(),
                 RankingGenerator.generateRanking(
                     loritta,
                     page * 5,
@@ -632,50 +634,10 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                     users
                 ) {
                     null
-                }.toByteArray(ImageFormatType.PNG).inputStream(),
-                "rank.png"
-            )
-
-            actionRow(
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    builder = {
-                        loriEmoji = Emotes.ChevronLeft
-                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES
-                    }
-                ) {
-                    val hook = it.updateMessageSetLoadingState()
-
-                    val builtMessage = createRankMessage(it, page - 1)
-
-                    val asMessageEditData = MessageEdit {
-                        builtMessage()
-                    }
-
-                    hook.editOriginal(asMessageEditData).await()
-                },
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    builder = {
-                        loriEmoji = Emotes.ChevronRight
-                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
-                    }
-                ) {
-                    val hook = it.updateMessageSetLoadingState()
-
-                    val builtMessage = createRankMessage(it, page + 1)
-
-                    val asMessageEditData = MessageEdit {
-                        builtMessage()
-                    }
-
-                    hook.editOriginal(asMessageEditData).await()
                 }
-            )
+            ) {
+                createRankMessage(context, it)
+            }.invoke(this)
         }
 
         override suspend fun convertToInteractionsArguments(

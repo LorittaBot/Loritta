@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.RankPaginationUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getIconUrl
@@ -39,13 +40,6 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
         ): suspend InlineMessage<*>.() -> (Unit) = {
             // It's quite simple, if the guild is null, the rank is global, otherwise it's local.
             // The Kord version has two functions to do the same stuff, but I'm going to use only one function, this function.
-            styled(
-                context.i18nContext.get(
-                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)
-                ),
-                Emotes.LoriReading
-            )
-
             val (totalCount, profiles) = loritta.pudding.transaction {
                 if (guild != null) {
                     val totalCount = Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
@@ -83,10 +77,13 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
             }
 
             val maxPage = ceil(totalCount / 5.0)
-            val maxPageZeroIndexed = maxPage - 1
 
-            val file = if (guild == null) {
-                FileUpload.fromData(
+            if (guild == null) {
+                RankPaginationUtils.createRankMessage(
+                    loritta,
+                    context,
+                    page,
+                    maxPage.toInt(),
                     RankingGenerator.generateRanking(
                         loritta,
                         page * 5,
@@ -102,11 +99,16 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                                 )
                             )
                         }
-                    ).toByteArray(ImageFormatType.PNG).inputStream(),
-                    "rank.png"
-                )
+                    )
+                ) {
+                    createRankMessage(loritta, context, it, guild)
+                }.invoke(this)
             } else {
-                FileUpload.fromData(
+                RankPaginationUtils.createRankMessage(
+                    loritta,
+                    context,
+                    page,
+                    maxPage.toInt(),
                     RankingGenerator.generateRanking(
                         loritta,
                         page * 5,
@@ -125,58 +127,11 @@ class SonhosRankExecutor(private val loritta: LorittaBot) : LorittaSlashCommandE
                             }
                         }
                         null
-                    }.toByteArray(ImageFormatType.PNG).inputStream(),
-                    "rank.png"
-                )
+                    }
+                ) {
+                    createRankMessage(loritta, context, it, guild)
+                }.invoke(this)
             }
-
-            files.plusAssign(file)
-
-            actionRow(
-                // left button
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    "",
-                    {
-                        loriEmoji = Emotes.ChevronLeft
-                        disabled = page !in RankingGenerator.VALID_RANKING_PAGES
-                    }
-                ) {
-                    val hook = it.updateMessageSetLoadingState()
-
-                    val builtMessage = createRankMessage(loritta, it, page - 1, guild)
-
-                    val asMessageEditData = MessageEdit {
-                        builtMessage()
-                    }
-
-                    hook.editOriginal(asMessageEditData).await()
-                },
-                
-                // right button
-                loritta.interactivityManager.buttonForUser(
-                    context.user,
-                    context.alwaysEphemeral,
-                    ButtonStyle.PRIMARY,
-                    "",
-                    {
-                        loriEmoji = Emotes.ChevronRight
-                        disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
-                    }
-                ) {
-                    val hook = it.updateMessageSetLoadingState()
-
-                    val builtMessage = createRankMessage(loritta, it, page + 1, guild)
-
-                    val asMessageEditData = MessageEdit {
-                        builtMessage()
-                    }
-
-                    hook.editOriginal(asMessageEditData).await()
-                }
-            )
         }
     }
 
