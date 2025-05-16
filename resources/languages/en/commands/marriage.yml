@@ -1,2 +1,6 @@
 view:
   label: "view"
+rank:
+  options:
+    page:
+      text: "The page that you want to jump to"
