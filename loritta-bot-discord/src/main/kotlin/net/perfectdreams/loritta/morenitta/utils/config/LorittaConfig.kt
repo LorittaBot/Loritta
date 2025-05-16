@@ -94,9 +94,11 @@ data class LorittaConfig(
             val minShard: Int,
             val maxShard: Int,
             val websiteUrl: String,
+            val websiteInternalUrl: String,
             val rpcUrl: String
         ) {
             fun getUrl(loritta: LorittaBot) = DiscordUtils.getUrlForLorittaClusterId(loritta, id)
+            fun getInternalUrl(loritta: LorittaBot) = DiscordUtils.getInternalUrlForLorittaClusterId(loritta, id)
             fun getUserAgent(loritta: LorittaBot) = getUserAgent(loritta.config.loritta.environment)
             fun getUserAgent(environmentType: EnvironmentType) = (
                     if (environmentType == EnvironmentType.CANARY)

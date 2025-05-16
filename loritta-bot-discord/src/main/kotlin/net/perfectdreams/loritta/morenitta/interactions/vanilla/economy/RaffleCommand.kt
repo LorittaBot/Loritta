@@ -153,7 +153,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
 
-            val body = loritta.httpWithoutTimeout.get("${shard.getUrl(loritta)}/api/v1/loritta/raffle?type=${raffleType.name}") {
+            val body = loritta.httpWithoutTimeout.get("${shard.getInternalUrl(loritta)}/api/v1/loritta/raffle?type=${raffleType.name}") {
                 userAgent(loritta.lorittaCluster.getUserAgent(loritta))
                 header("Authorization", loritta.lorittaInternalApiKey.name)
             }.bodyAsText()
@@ -428,7 +428,7 @@ class RaffleCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            val body = loritta.httpWithoutTimeout.post("${shard.getUrl(loritta)}/api/v1/loritta/raffle") {
+            val body = loritta.httpWithoutTimeout.post("${shard.getInternalUrl(loritta)}/api/v1/loritta/raffle") {
                 userAgent(loritta.lorittaCluster.getUserAgent(loritta))
                 header("Authorization", loritta.lorittaInternalApiKey.name)
 

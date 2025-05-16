@@ -286,7 +286,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 					logger.info { "Executing $path to ${cluster.getUserAgent(loritta)}" }
 
-					val response = loritta.http.get("${cluster.getUrl(loritta)}$path") {
+					val response = loritta.http.get("${cluster.getInternalUrl(loritta)}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
 						userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 					}
@@ -338,7 +338,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("${it.getUrl(loritta)}/api/v1/users/search") {
+						val response = loritta.http.post("${it.getInternalUrl(loritta)}/api/v1/users/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 
@@ -388,7 +388,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("${it.getUrl(loritta)}/api/v1/guilds/search") {
+						val response = loritta.http.post("${it.getInternalUrl(loritta)}/api/v1/guilds/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 
@@ -474,7 +474,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 	suspend fun queryGuildById(id: Long): JsonObject? {
 		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, id)
 		val clusterId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
-		val url = DiscordUtils.getUrlForLorittaClusterId(loritta, clusterId)
+		val url = DiscordUtils.getInternalUrlForLorittaClusterId(loritta, clusterId)
 
 		val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 			val response = loritta.http.get("$url/api/v1/guilds/$id") {

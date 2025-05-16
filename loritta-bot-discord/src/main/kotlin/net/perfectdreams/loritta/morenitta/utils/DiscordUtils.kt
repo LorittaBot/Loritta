@@ -53,11 +53,20 @@ object DiscordUtils {
 	/**
 	 * Gets the URL for the specified Loritta Cluster
 	 *
-	 * @return the url in a "test.example.com" format
+	 * @return the url in a "https://test.example.com/" format
 	 */
 	fun getUrlForLorittaClusterId(loritta: LorittaBot, id: Int) = loritta.config.loritta.clusters.instances.first() {
 		it.id == id
 	}.websiteUrl.format(id)
+
+	/**
+	 * Gets the Internal URL for the specified Loritta Cluster
+	 *
+	 * @return the url in a "https://test.example.com/" format
+	 */
+	fun getInternalUrlForLorittaClusterId(loritta: LorittaBot, id: Int) = loritta.config.loritta.clusters.instances.first() {
+		it.id == id
+	}.websiteInternalUrl.format(id)
 
 	suspend fun extractUserFromString(
 		loritta: LorittaBot,

@@ -286,7 +286,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     try {
                         withTimeout(context.loritta.config.loritta.clusterConnectionTimeout.toLong()) {
                             val start = System.currentTimeMillis()
-                            val response = context.loritta.http.get("${it.getUrl(context.loritta)}/api/v1/loritta/status") {
+                            val response = context.loritta.http.get("${it.getInternalUrl(context.loritta)}/api/v1/loritta/status") {
                                 userAgent(context.loritta.lorittaCluster.getUserAgent(context.loritta))
                                 header("Authorization", context.loritta.lorittaInternalApiKey.name)
                             }

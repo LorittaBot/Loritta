@@ -84,7 +84,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				val jobs = shards.map {
 					GlobalScope.async(context.loritta.coroutineDispatcher) {
 						try {
-							val body = HttpRequest.get("${it.getUrl(loritta)}/api/v1/loritta/update")
+							val body = HttpRequest.get("${it.getInternalUrl(loritta)}/api/v1/loritta/update")
 								.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
 								.header("Authorization", context.loritta.lorittaInternalApiKey.name)
 								.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
@@ -470,7 +470,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				shards.map {
 					GlobalScope.async(context.loritta.coroutineDispatcher) {
 						try {
-							val body = HttpRequest.post("${it.getUrl(loritta)}/api/v1/loritta/action/economy")
+							val body = HttpRequest.post("${it.getInternalUrl(loritta)}/api/v1/loritta/action/economy")
 								.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
 								.header("Authorization", context.loritta.lorittaInternalApiKey.name)
 								.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
