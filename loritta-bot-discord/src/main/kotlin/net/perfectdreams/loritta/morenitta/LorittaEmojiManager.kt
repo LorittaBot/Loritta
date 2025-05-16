@@ -1,9 +1,11 @@
 package net.perfectdreams.loritta.morenitta
 
 import com.zaxxer.hikari.pool.HikariProxyConnection
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Icon
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationEmojis
 import net.perfectdreams.loritta.common.emojis.LorittaEmojiReference
 import net.perfectdreams.loritta.common.emojis.LorittaEmojis
@@ -39,20 +41,24 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
     }
 
     suspend fun syncEmojis(jda: JDA) {
-        logger.info { "Attempting to sync emojis..." }
-        // Just like the Pudding advisory lock code, we also split this in multiple transactions
-        loritta.transaction {
-            logger.info { "Locking PostgreSQL advisory lock $lockId" }
-            val rawConnection = (this.connection as ExposedConnection<HikariProxyConnection>).connection.unwrap(Connection::class.java)
-            // First, we will hold a lock to avoid other instances trying to update the app emojis at the same time
-            val xactLockStatement = rawConnection.prepareStatement("SELECT pg_advisory_lock(?);")
-            xactLockStatement.setInt(1, lockId)
-            xactLockStatement.execute()
-            logger.info { "Successfully acquired PostgreSQL advisory lock $lockId!" }
-        }
+        while (true) {
+            logger.info { "Attempting to sync emojis..." }
 
-        try {
-            loritta.transaction {
+            val processed = loritta.transaction {
+                logger.info { "Requesting PostgreSQL advisory lock ${lockId}..." }
+                val lockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_try_advisory_xact_lock(?);")
+                lockStatement.setInt(1, lockId)
+                var lockAcquired = false
+                lockStatement.executeQuery().use { rs ->
+                    if (rs.next()) {
+                        lockAcquired = rs.getBoolean(1)
+                    }
+                }
+                if (!lockAcquired)
+                    return@transaction false
+
+                logger.info { "Successfully requested advisory lock ${lockId}!" }
+
                 // To avoid querying Discord on each startup, we'll pull the emojis from the database directly and ONLY query Discord when needed
                 val remoteApplicationEmojis = DiscordLorittaApplicationEmojis
                     .selectAll()
@@ -106,7 +112,7 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
 
                 if (allEmojisAreUpToDate) {
                     logger.info { "All emojis are up to date and we don't need to query Discord to sync the emojis! :) Application Emojis count: ${registeredApplicationEmojis.size}" }
-                    return@transaction
+                    return@transaction true
                 } else {
                     logger.info { "Emojis are not up to date and require a resync!" }
                     registeredApplicationEmojis.clear()
@@ -189,16 +195,17 @@ class LorittaEmojiManager(private val loritta: LorittaBot) {
                 }
 
                 logger.info { "Successfully synced all emojis! :) Application Emojis count: ${registeredApplicationEmojis.size}" }
+
+                return@transaction true
             }
 
-            this.updatedEmojiList = true
-        } finally {
-            loritta.transaction {
-                val unlockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_unlock(?);")
-                unlockStatement.setInt(1, lockId)
-                unlockStatement.execute()
-                logger.info { "Successfully released advisory lock!" }
+            if (processed) {
+                this.updatedEmojiList = true
+                break
             }
+
+            logger.info { "Could not acquire lock! Retrying in 100ms..." }
+            delay(100)
         }
     }
 

@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import mu.KotlinLogging
@@ -55,6 +56,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
+
 class Pudding(
     val hikariDataSource: HikariDataSource,
     val database: Database,
@@ -69,6 +71,7 @@ class Pudding(
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
         private const val SCHEMA_VERSION = 88 // Bump this every time any table is added/updated!
         private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392") // This is a random unique ID, it is used for upserting the schema version
+        private val lockId = "loritta-cinnamon-pudding-schema-updater".hashCode()
 
         /**
          * Creates a Pudding instance backed by a PostgreSQL database
@@ -384,29 +387,23 @@ class Pudding(
         )
 
         if (schemas.isNotEmpty()) {
-            // We split up this in two separate transactions:
-            // 1. One to request the lock
-            // 2. Another to actually process the update
-            // 3. And, finally, another to release the lock (this is not really needed, but it is easier to avoid releasing the lock when a error happens within the transaction)
-            // Why? Because if we request the lock and process the update in the same transaction, we will have concurrent issues if
-            // two instances try to update the schema at the same time!
-            // Example:
-            // * Instance1 and Instance2 starts up at the same time, both enters the transaction block but Instance1 gets the lock first
-            // * Instance1 updates the schema, and then releases the lock
-            // * Instance2 gets the lock, however it accesses the OLD schema version because it was already inside a transaction,
-            //   so it acesses the data it was available at the time of when the transaction started, which makes it get an older schema version
-            //   which causes it to run the migration scripts when it shouldn't, and then it crashes when trying to add things that already exist
-            //   (like columns)
-            transaction {
-                logger.info { "Requesting advisory lock..." }
-                val lockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_lock(?);")
-                lockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
-                lockStatement.execute()
-                logger.info { "Successfully requested advisory lock!" }
-            }
+            while (true) {
+                logger.info { "Attempting to process schema updates..." }
+                val processed = transaction {
+                    logger.info { "Requesting PostgreSQL advisory lock $lockId..." }
+                    val lockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_try_advisory_xact_lock(?);")
+                    lockStatement.setInt(1, lockId)
+                    var lockAcquired = false
+                    lockStatement.executeQuery().use { rs ->
+                        if (rs.next()) {
+                            lockAcquired = rs.getBoolean(1)
+                        }
+                    }
+                    if (!lockAcquired)
+                        return@transaction false
 
-            try {
-                transaction {
+                    logger.info { "Successfully requested advisory lock $lockId!" }
+
                     // SchemaUtils is dangerous: If PostgreSQL is running a VACUUM, the app will wait until the lock is released, because Exposed
                     // tries loading the table info data from the table, and that conflicts with VACUUM.
                     // (Yes, Exposed will query the table info data EVEN IF there isn't updates to be done, smh)
@@ -429,11 +426,11 @@ class Pudding(
 
                             if (schemaVersion == SCHEMA_VERSION) {
                                 logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
-                                return@transaction
+                                return@transaction true
                             } else {
                                 if (schemaVersion != null && schemaVersion > SCHEMA_VERSION) {
                                     logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will not update the tables to avoid issues..." }
-                                    return@transaction
+                                    return@transaction true
                                 } else {
                                     logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
                                     databaseSchemaVersion = schemaVersion
@@ -510,14 +507,14 @@ class Pudding(
                     }
 
                     logger.info { "All migrations were successfully applied! Releasing advisory lock..." }
+                    return@transaction true
                 }
-            } finally {
-                transaction {
-                    val unlockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_unlock(?);")
-                    unlockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
-                    unlockStatement.execute()
-                    logger.info { "Successfully released advisory lock!" }
-                }
+
+                if (processed)
+                    break
+
+                logger.info { "Could not acquire lock! Retrying in 100ms..." }
+                delay(100)
             }
         }
     }
