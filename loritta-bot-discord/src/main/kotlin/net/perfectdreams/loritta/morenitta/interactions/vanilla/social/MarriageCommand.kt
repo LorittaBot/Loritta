@@ -7,6 +7,7 @@ import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
@@ -77,6 +78,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.SOCIAL, UUID.fromString("4aea2db6-4805-47dc-b138-f1bb5d15a9f0")) {
         this.enableLegacyMessageSupport = true
+        this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
         subcommand(I18N_PREFIX.Marry.Label, I18N_PREFIX.Marry.Description, UUID.fromString("3b154846-ed9c-4147-81c8-4e5a98bff0db")) {
             this.enableLegacyMessageSupport = true
