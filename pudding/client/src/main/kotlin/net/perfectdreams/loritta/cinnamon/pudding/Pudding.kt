@@ -530,16 +530,6 @@ class Pudding(
 
         execStatements(false, createStatements)
         commit()
-
-        val alterStatements = SchemaUtils.addMissingColumnsStatements(
-            table
-        )
-
-        // Now call the addMissingColumnsStatements again with the partitioned tables
-        // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
-        // because it is a partitioned table!
-        execStatements(false, alterStatements)
-        commit()
     }
 
     // From Exposed
