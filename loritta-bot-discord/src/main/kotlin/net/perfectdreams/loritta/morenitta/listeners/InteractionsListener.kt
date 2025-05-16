@@ -128,10 +128,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         loritta.launchMessageJob(event) {
-            val slashSearchResult = findSlashCommandByLabel(event) ?: error("Unknown Slash Command! Are you sure it is registered? ${event.name}")
+            val slashSearchResult = manager.findSlashCommandByFullCommandName(event.fullCommandName) ?: error("Unknown Slash Command! Are you sure it is registered? ${event.name}")
 
-            val rootDeclaration = slashSearchResult.first
-            val slashDeclaration = slashSearchResult.second
+            val rootDeclaration = slashSearchResult.rootDeclaration
+            val slashDeclaration = slashSearchResult.slashDeclaration
 
             val executor = slashDeclaration.executor ?: error("Missing executor on $slashDeclaration!")
 
@@ -373,7 +373,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onUserContextInteraction(event: UserContextInteractionEvent) {
         loritta.launchMessageJob(event) {
-            val targetDeclaration = findCommandByRootLabel(event.name, manager.userCommands) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
+            val targetDeclaration = manager.findUserCommandByFullCommandName(event.fullCommandName) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
 
             val rootDeclaration = targetDeclaration
             val slashDeclaration = targetDeclaration
@@ -475,7 +475,7 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
         loritta.launchMessageJob(event) {
-            val targetDeclaration = findCommandByRootLabel(event.name, manager.messageCommands) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
+            val targetDeclaration = manager.findMessageCommandByFullCommandName(event.fullCommandName) ?: error("Unknown Message Command! Are you sure it is registered? ${event.name}")
 
             val rootDeclaration = targetDeclaration
             val slashDeclaration = targetDeclaration
@@ -980,10 +980,10 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
 
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
         loritta.launchMessageJob(event) {
-            val slashSearchResult = findSlashCommandByLabel(event) ?: error("Unknown Slash Command! Are you sure it is registered? ${event.name}")
+            val slashSearchResult = manager.findSlashCommandByFullCommandName(event.fullCommandName) ?: error("Unknown Slash Command! Are you sure it is registered? ${event.name}")
 
-            val rootDeclaration = slashSearchResult.first
-            val slashDeclaration = slashSearchResult.second
+            val rootDeclaration = slashSearchResult.rootDeclaration
+            val slashDeclaration = slashSearchResult.slashDeclaration
 
             // No executor, bail out!
             val executor = slashDeclaration.executor ?: return@launchMessageJob
@@ -1144,21 +1144,6 @@ class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() 
                 break
             }
         }
-
-        return null
-    }
-
-    /**
-     * Finds a command by its root label
-     *
-     * @param rootLabel    the root label
-     * @param declarations the list of the declarations that the root label will be matched against
-     * @return the declaration, or null if not found
-     */
-    private fun <T : ExecutableApplicationCommandDeclaration> findCommandByRootLabel(rootLabel: String, declarations: List<T>): T? {
-        for (declaration in declarations)
-            if (rootLabel == manager.slashCommandDefaultI18nContext.get(declaration.name))
-                return declaration
 
         return null
     }

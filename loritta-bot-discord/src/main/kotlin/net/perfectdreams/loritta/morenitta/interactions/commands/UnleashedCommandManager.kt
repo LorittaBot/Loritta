@@ -14,14 +14,12 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
-import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -59,7 +57,6 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.Undert
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.color.ColorInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.*
-import net.perfectdreams.loritta.morenitta.listeners.InteractionsListener
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
@@ -85,7 +82,10 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     // This is useful because Discord autocompletes the default string + the current Discord locale localization string
     val slashCommandDefaultI18nContext = languageManager.getI18nContextById("en")
 
-    private var commandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
+    private var slashCommandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
+    private var userCommandPathToDeclarations = mutableMapOf<String, UserCommandDeclaration>()
+    private var messageCommandPathToDeclarations = mutableMapOf<String, MessageCommandDeclaration>()
+    private var legacyCommandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
 
     fun register(declaration: SlashCommandDeclarationWrapper) {
         val builtDeclaration = declaration.command().build()
@@ -132,9 +132,45 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     }
 
     private fun updateCommandPathToDeclarations() {
-        fun isDeclarationExecutable(declaration: SlashCommandDeclaration) = declaration.executor != null
+        this.slashCommandPathToDeclarations = createSlashCommandPathToDeclarations()
+        this.userCommandPathToDeclarations = createGenericCommandPathToDeclarations(this.userCommands)
+        this.messageCommandPathToDeclarations = createGenericCommandPathToDeclarations(this.messageCommands)
+        this.legacyCommandPathToDeclarations = createLegacyCommandPathToDeclarations()
+    }
 
-        // No match? Check all executor's absolute paths
+    private fun createSlashCommandPathToDeclarations(): MutableMap<String, CommandDeclarationPair> {
+        val slashCommandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
+        for (rootDeclaration in slashCommands) {
+            if (isDeclarationExecutable(rootDeclaration)) {
+                slashCommandPathToDeclarations[slashCommandDefaultI18nContext.get(rootDeclaration.name)] = CommandDeclarationPair(rootDeclaration, rootDeclaration)
+            }
+
+            for (subcommand in rootDeclaration.subcommands) {
+                if (isDeclarationExecutable(subcommand)) {
+                    slashCommandPathToDeclarations["${slashCommandDefaultI18nContext.get(rootDeclaration.name)} ${slashCommandDefaultI18nContext.get(subcommand.name)}"] = CommandDeclarationPair(rootDeclaration, subcommand)
+                }
+            }
+
+            for (subcommandGroup in rootDeclaration.subcommandGroups) {
+                for (subcommand in subcommandGroup.subcommands) {
+                    if (isDeclarationExecutable(subcommand)) {
+                        slashCommandPathToDeclarations["${slashCommandDefaultI18nContext.get(rootDeclaration.name)} ${slashCommandDefaultI18nContext.get(subcommandGroup.name)} ${slashCommandDefaultI18nContext.get(subcommand.name)}"] = CommandDeclarationPair(rootDeclaration, subcommand)
+                    }
+                }
+            }
+        }
+        return slashCommandPathToDeclarations
+    }
+
+    private fun <T : ExecutableApplicationCommandDeclaration> createGenericCommandPathToDeclarations(declarations: List<T>): MutableMap<String, T> {
+        val pathToDeclarations = mutableMapOf<String, T>()
+        for (declaration in declarations) {
+            pathToDeclarations[slashCommandDefaultI18nContext.get(declaration.name)] = declaration
+        }
+        return pathToDeclarations
+    }
+
+    private fun createLegacyCommandPathToDeclarations(): MutableMap<String, CommandDeclarationPair> {
         val commandPathToDeclarations = mutableMapOf<String, CommandDeclarationPair>()
 
         fun putNormalized(key: String, rootDeclaration: SlashCommandDeclaration, slashDeclaration: SlashCommandDeclaration) {
@@ -208,8 +244,14 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
             }
         }
 
-        this.commandPathToDeclarations = commandPathToDeclarations
+        return commandPathToDeclarations
     }
+
+    fun findSlashCommandByFullCommandName(fullCommandName: String) = this.slashCommandPathToDeclarations[fullCommandName]
+    fun findUserCommandByFullCommandName(fullCommandName: String) = this.userCommandPathToDeclarations[fullCommandName]
+    fun findMessageCommandByFullCommandName(fullCommandName: String) = this.messageCommandPathToDeclarations[fullCommandName]
+
+    private fun isDeclarationExecutable(declaration: SlashCommandDeclaration) = declaration.executor != null
 
     init {
         // ===[ DISCORD ]===
@@ -376,7 +418,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         var bestMatch: CommandDeclarationPair? = null
         var absolutePathSize = 0
 
-        commandDeclarationsLoop@for ((commandPath, declaration) in commandPathToDeclarations) {
+        commandDeclarationsLoop@for ((commandPath, declaration) in legacyCommandPathToDeclarations) {
             argumentsToBeDropped = 0
 
             val absolutePathSplit = commandPath.split(" ")
@@ -1000,7 +1042,7 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
     }
 
     // Used for the commandPathToDeclarations
-    private data class CommandDeclarationPair(
+    data class CommandDeclarationPair(
         val rootDeclaration: SlashCommandDeclaration,
         val slashDeclaration: SlashCommandDeclaration
     )
