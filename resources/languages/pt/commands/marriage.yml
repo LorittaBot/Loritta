@@ -39,6 +39,9 @@ rank:
   label: "rank"
   description: "Ranking de casados"
   longestMarriages: "Casamentos Mais Duradouros"
+  options:
+    page:
+      text: "A página que você deseja ir"
 
 configure:
   label: "configurar"

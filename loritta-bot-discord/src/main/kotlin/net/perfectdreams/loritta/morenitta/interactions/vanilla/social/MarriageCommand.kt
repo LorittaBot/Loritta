@@ -894,7 +894,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
     class MarriageRankExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
-            val page = optionalLong("page", TodoFixThisData)
+            val page = optionalLong("page", I18N_PREFIX.Rank.Options.Page.Text)
         }
 
         override val options = Options()
