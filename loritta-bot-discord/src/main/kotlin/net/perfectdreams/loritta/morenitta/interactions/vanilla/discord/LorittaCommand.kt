@@ -399,7 +399,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         }
                     }
                 } catch (e: ClusterOfflineException) {
-                    row0.add("X ${e.id} (${e.name})")
+                    row0.add("X Cluster ${e.id} (${e.name})")
                     row1.add("---")
                     row2.add("---")
                     row3.add("OFFLINE!")
