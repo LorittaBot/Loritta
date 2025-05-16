@@ -14,12 +14,14 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -57,6 +59,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.undertale.Undert
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.*
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.utils.color.ColorInfoCommand
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.videos.*
+import net.perfectdreams.loritta.morenitta.listeners.InteractionsListener
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getLocalizedName
@@ -479,15 +482,15 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                 }
 
                 if (!g.enabled) {
-                        // Command is NOT enabled!
-                        // Message commands should be fully disabled, no way around it! So let's bail out!
-                        context.reply(true) {
-                            styled(
-                                i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
-                                Emotes.Error
-                            )
-                        }
-                        return true
+                    // Command is NOT enabled!
+                    // Message commands should be fully disabled, no way around it! So let's bail out!
+                    context.reply(true) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.DisabledCommandOnThisGuild),
+                            Emotes.Error
+                        )
+                    }
+                    return true
                 }
             }
 
@@ -601,10 +604,34 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         } catch (e: CommandException) {
             context?.reply(e.ephemeral, e.builder)
         } catch (e: Exception) {
-            // TODO: Proper catch and throw
-            e.printStackTrace()
+            val errorId = LorittaUtils.generateErrorId(loritta)
+            logger.warn(e) { "Something went wrong while executing command ${executor::class.simpleName}! Error ID: $errorId" }
 
             stacktrace = e.stackTraceToString()
+
+            val currentContext = context
+            val currentI18nContext = i18nContext
+            if (currentContext != null && currentI18nContext != null) {
+                try {
+                    currentContext.reply(currentContext.wasInitiallyDeferredEphemerally == null || currentContext.wasInitiallyDeferredEphemerally == true) {
+                        styled(
+                            currentI18nContext.get(
+                                I18nKeysData.Commands.ErrorWhileExecutingCommandWithErrorId(
+                                    loriRage = Emotes.LoriRage,
+                                    loriSob = Emotes.LoriSob,
+                                    errorId = errorId.toString()
+                                )
+                            ),
+                            Emotes.LoriSob
+                        )
+                    }
+                } catch (e: Exception) {
+                    // wtf
+                    logger.warn(e) { "Something went wrong while sending the reason why command ${executor::class.simpleName} was not correctly executed! $errorId" }
+                    // At this point just give up bro
+                    throw e
+                }
+            }
         }
 
         loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(
