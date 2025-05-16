@@ -232,17 +232,33 @@ object RankingGenerator {
 
 		if (guildIconUrl != null) {
 			val serverIcon = (guildIconUrl.let { ImageUtils.downloadImage(it) } ?: ImageUtils.DEFAULT_DISCORD_AVATAR)
-				.getResizedInstance(SERVER_ICON_SIZE, SERVER_ICON_SIZE, InterpolationType.BILINEAR)
 
-			val serverIconBase = BufferedImage(serverIcon.width, serverIcon.height, BufferedImage.TYPE_INT_ARGB)
+			val serverIconBase = BufferedImage(SERVER_ICON_SIZE, SERVER_ICON_SIZE, BufferedImage.TYPE_INT_ARGB)
 			val serverIconBaseGraphics = serverIconBase.createGraphics()
 
 			serverIconBaseGraphics.color = HEADER_COLOR
 			serverIconBaseGraphics.fillRect(0, 0, serverIconBase.width, serverIconBase.height)
-			serverIconBaseGraphics.drawImage(serverIcon.getResizedInstance(serverIconBase.width, serverIconBase.height, InterpolationType.BILINEAR), 0, 0, null)
+			serverIconBaseGraphics.setRenderingHint(
+				RenderingHints.KEY_INTERPOLATION,
+				InterpolationType.BILINEAR.graphics2DRenderingHint
+			)
+			serverIconBaseGraphics.drawImage(
+				serverIcon,
+				// destination
+				0,
+				0,
+				serverIconBase.width,
+				serverIconBase.height,
+				// source
+				0,
+				0,
+				serverIcon.width,
+				serverIcon.height,
+				null
+			)
 
 			// we don't round fully round because that's how Discord server icons look on the sidebar nowadays
-			val roundedIcon = serverIcon.makeRoundedCorners(36)
+			val roundedIcon = serverIconBase.makeRoundedCorners(36)
 
 			// right side icon
 			graphics.drawImage(roundedIcon, 800 - 4 - SERVER_ICON_SIZE, 4, null)
@@ -330,12 +346,23 @@ object RankingGenerator {
 
 				userAvatarBaseGraphics.color = HEADER_COLOR
 				userAvatarBaseGraphics.fillRect(0, 0, userAvatarBase.width, userAvatarBase.height)
+				userAvatarBaseGraphics.setRenderingHint(
+					RenderingHints.KEY_INTERPOLATION,
+					InterpolationType.BILINEAR.graphics2DRenderingHint
+				)
 				userAvatarBaseGraphics.drawImage(
-					userAvatar.getResizedInstance(
-						userAvatarBase.width,
-						userAvatarBase.height,
-						InterpolationType.BILINEAR
-					), 0, 0, null
+					userAvatar,
+					// destination
+					0,
+					0,
+					userAvatarBase.width,
+					userAvatarBase.height,
+					// source
+					0,
+					0,
+					userAvatar.width,
+					userAvatar.height,
+					null
 				)
 
 				graphics.drawImage(userAvatarBase.makeRoundedCorners(userAvatarBase.width), 24, currentY + 4, null)
