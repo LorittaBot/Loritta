@@ -228,14 +228,6 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
                 return@newSuspendedTransaction Pair(totalReminders, reminders)
             }
 
-            val embed = EmbedBuilder()
-            embed.setTitle("<a:lori_notification:394165039227207710> ${context.locale["$LOCALE_PREFIX.yourReminders"]} (${totalReminders})")
-            embed.setColor(Color(255, 179, 43))
-
-            for ((idx, reminder) in reminders.withIndex()) {
-                embed.appendDescription(Constants.INDEXES[idx] + " ${reminder.content.substringIfNeeded(0..100)}\n")
-            }
-
             return {
                 this.useComponentsV2 = true
 
