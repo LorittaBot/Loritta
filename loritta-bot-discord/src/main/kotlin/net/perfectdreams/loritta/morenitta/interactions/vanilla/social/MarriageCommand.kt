@@ -571,13 +571,14 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 .value
 
             // Calculate next anniversary date
+            val marriedSince = marriage.marriedSince.toJavaInstant()
             val now = Instant.now()
-            val marriageDate = marriage.marriedSince.toJavaInstant().atZone(Constants.LORITTA_TIMEZONE)
+            val marriageDate = marriedSince.atZone(Constants.LORITTA_TIMEZONE)
             val marriageAnniversaryDate = findNextAnniversary(now.atZone(Constants.LORITTA_TIMEZONE), marriageDate)
 
             val (marriageRank, marriageAffinityRank) = loritta.transaction {
                 val marriageRank = UserMarriages.selectAll()
-                    .where { UserMarriages.active eq true and (UserMarriages.createdAt lessEq now) }
+                    .where { UserMarriages.active eq true and (UserMarriages.createdAt lessEq marriedSince) }
                     .orderBy(Pair(UserMarriages.createdAt, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
                     .count()
 
