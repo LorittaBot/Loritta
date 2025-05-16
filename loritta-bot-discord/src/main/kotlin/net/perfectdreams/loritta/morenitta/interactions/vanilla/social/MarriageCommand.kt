@@ -1059,7 +1059,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
             val ranking = RankingGenerator.generateRanking(
                 loritta,
-                0,
+                page * 5,
                 context.i18nContext.get(I18N_PREFIX.Rank.LongestMarriages),
                 null,
                 readImageFromResources("/marriages/marriage_rank_background.png"),
