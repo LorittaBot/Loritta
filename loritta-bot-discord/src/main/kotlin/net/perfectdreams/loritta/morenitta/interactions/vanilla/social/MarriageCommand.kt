@@ -55,6 +55,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.time.Instant
@@ -992,8 +993,38 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 val avatarCollab = BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB)
                 val avatarCollabGraphics = avatarCollab.createGraphics()
 
-                avatarCollabGraphics.drawImage(avatar1.getResizedInstance(256, 256, InterpolationType.BILINEAR), 0, 0, null)
-                avatarCollabGraphics.drawImage(avatar2.getResizedInstance(256, 256, InterpolationType.BILINEAR), 128, 0, null)
+                avatarCollabGraphics.setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    InterpolationType.BILINEAR.graphics2DRenderingHint
+                )
+                avatarCollabGraphics.drawImage(
+                    avatar1,
+                    // destination
+                    0,
+                    0,
+                    128,
+                    256,
+                    // source
+                    0,
+                    0,
+                    avatar1.width / 2,
+                    avatar1.height,
+                    null
+                )
+                avatarCollabGraphics.drawImage(
+                    avatar2,
+                    // destination
+                    128,
+                    0,
+                    256,
+                    256,
+                    // source
+                    avatar1.width / 2,
+                    0,
+                    avatar1.width,
+                    avatar1.height,
+                    null
+                )
 
                 var subtitle = RankingGenerator.EntryRankInformation.EntryRankIconableSubtitle(
                     icon = null,
@@ -1005,7 +1036,6 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     val equippedBadge = loritta.profileDesignManager.badges.firstOrNull { it.id == coupleBadgeId }
 
                     if (equippedBadge != null) {
-                        // TODO: Check if we deserve to use this badge
                         var canUseBadge = false
 
                         for (participant in participantsAsUserInfos.filterNotNull()) {
