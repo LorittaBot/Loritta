@@ -284,19 +284,38 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             val results = context.loritta.config.loritta.clusters.instances.map {
                 GlobalScope.async(context.loritta.coroutineDispatcher) {
                     try {
-                        withTimeout(context.loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+                        val (internalResponse, internalTime) = withTimeout(context.loritta.config.loritta.clusterConnectionTimeout.toLong()) {
                             val start = System.currentTimeMillis()
                             val response = context.loritta.http.get("${it.getInternalUrl(context.loritta)}/api/v1/loritta/status") {
                                 userAgent(context.loritta.lorittaCluster.getUserAgent(context.loritta))
                                 header("Authorization", context.loritta.lorittaInternalApiKey.name)
                             }
 
-                            val body = response.bodyAsText()
-                            ClusterQueryResult(
-                                System.currentTimeMillis()- start,
-                                JsonParser.parseString(body)
-                            )
+                            Pair(response.bodyAsText(), System.currentTimeMillis() - start)
                         }
+
+                        // We only care about the public time here, we don't care if it timeouts
+                        val publicTime = try {
+                            val (_, publicTime) = withTimeout(context.loritta.config.loritta.clusterConnectionTimeout.toLong()) {
+                                val start = System.currentTimeMillis()
+                                val response =
+                                    context.loritta.http.get("${it.getUrl(context.loritta)}/api/v1/loritta/status") {
+                                        userAgent(context.loritta.lorittaCluster.getUserAgent(context.loritta))
+                                        header("Authorization", context.loritta.lorittaInternalApiKey.name)
+                                    }
+
+                                Pair(response.bodyAsText(), System.currentTimeMillis() - start)
+                            }
+                            publicTime
+                        } catch (e: Exception) {
+                            null
+                        }
+
+                        ClusterQueryResult(
+                            internalTime,
+                            publicTime,
+                            JsonParser.parseString(internalResponse)
+                        )
                     } catch (e: Exception) {
                         logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
                         throw ClusterOfflineException(it.id, it.name)
@@ -314,7 +333,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
 
             results.forEach {
                 try {
-                    val (time, json) = it.await()
+                    val (internalTime, publicTime, json) = it.await()
 
                     val shardId = json["id"].long
                     val name = json["name"].string
@@ -349,8 +368,8 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                     val unknown = gatewayResumeStatuses.count { it == GatewayShardStartupResumeStatus.UNKNOWN }
 
                     row0.add("$pendingMessagesStatus Cluster $shardId ($name) [b$loriBuild]")
-                    row1.add("~${pingAverage}ms")
-                    row2.add("~${time}ms")
+                    row1.add("${pingAverage}ms")
+                    row2.add("${internalTime}ms/${publicTime ?: "???"}ms")
                     row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
                     row4.add("$totalGuildCount")
                     row5.add("$pendingMessages")
@@ -380,7 +399,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                         }
                     }
                 } catch (e: ClusterOfflineException) {
-                    row0.add("X Cluster ${e.id} (${e.name})")
+                    row0.add("X ${e.id} (${e.name})")
                     row1.add("---")
                     row2.add("---")
                     row3.add("OFFLINE!")
@@ -396,6 +415,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
             val maxRow3 = row3.maxByOrNull { it.length }!!.length
             val maxRow4 = row4.maxByOrNull { it.length }!!.length
             val maxRow5 = row5.maxByOrNull { it.length }!!.length
+            val maxRow6 = row6.maxByOrNull { it.length }!!.length
 
             val lines = mutableListOf<String>()
             for (i in 0 until row0.size) {
@@ -407,7 +427,7 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
                 val arg5 = row5.getOrNull(i) ?: "---"
                 val arg6 = row6.getOrNull(i) ?: "---"
 
-                lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')} | ${arg5.padEnd(maxRow4, ' ')} | ${arg6.padEnd(maxRow5, ' ')}"
+                lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')} | ${arg5.padEnd(maxRow5, ' ')} | ${arg6.padEnd(maxRow6, ' ')}"
             }
 
             val asMessage = mutableListOf<String>()
@@ -518,7 +538,8 @@ class LorittaCommand : SlashCommandDeclarationWrapper {
     }
 
     private data class ClusterQueryResult(
-        val time: Long,
+        val durationInternalUrl: Long,
+        val durationPublicUrl: Long?,
         val response: JsonElement
     )
 }
