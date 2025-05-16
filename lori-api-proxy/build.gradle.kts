@@ -42,6 +42,6 @@ jib {
         // This image comes from the "docker" folder Dockerfile!
         // Don't forget to build the image before compiling!
         // https://github.com/GoogleContainerTools/jib/issues/1468
-        image = "eclipse-temurin:21-jammy"
+        image = "eclipse-temurin:24-noble"
     }
 }
