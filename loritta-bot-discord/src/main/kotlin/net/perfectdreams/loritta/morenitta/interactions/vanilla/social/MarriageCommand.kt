@@ -1019,10 +1019,10 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     256,
                     256,
                     // source
-                    avatar1.width / 2,
+                    avatar2.width / 2,
                     0,
-                    avatar1.width,
-                    avatar1.height,
+                    avatar2.width,
+                    avatar2.height,
                     null
                 )
 
