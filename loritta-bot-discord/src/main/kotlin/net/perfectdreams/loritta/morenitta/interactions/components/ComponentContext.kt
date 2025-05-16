@@ -71,20 +71,29 @@ class ComponentContext(
     }
 
     suspend fun updateMessageSetLoadingState(
-        updateMessageContent: Boolean = true,
+        updateMessageContent: Boolean = !event.message.isUsingComponentsV2,
         disableComponents: Boolean = true,
         loadingEmoji: DiscordEmote = LoadingEmojis.random()
     ): InteractionHook {
         val hook = deferEdit()
 
         val builtMessage = MessageEdit {
+            // We need to pass through the "useComponentsV2" flag
+            this.useComponentsV2 = event.message.isUsingComponentsV2
+
             if (updateMessageContent)
                 styled(
                     i18nContext.get(I18nKeysData.Website.Dashboard.Loading),
                     loadingEmoji
                 )
 
-            if (disableComponents)
+            if (disableComponents) {
+                if (this.useComponentsV2) {
+                    // TODO: It would be cool to replace the button with the loading emoji like the non-components v2 codepath
+                    //  However that is a bit harder to do here, because we need to loop through ALL components and, because the components are not mutable, we need to
+                    //  "recreate" them manually
+                    this.components += event.message.components.asDisabled()
+                } else {
                     event.message.components.asDisabled().forEach {
                         if (it is ActionRow) {
                             this.actionRow(
@@ -97,6 +106,8 @@ class ComponentContext(
                             )
                         }
                     }
+                }
+            }
         }
 
         hook.editOriginal(builtMessage).await()
