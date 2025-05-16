@@ -39,7 +39,7 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
                     marriageParticipants.map { UserId(it[MarriageParticipants.user]) },
                     selfMarriage[UserMarriages.createdAt].toKotlinInstant(),
                     selfMarriage[UserMarriages.coupleName],
-                    selfMarriage[UserMarriages.coupleBadge].toString(),
+                    selfMarriage[UserMarriages.coupleBadge]?.toString(),
                     0,
                     selfMarriage[UserMarriages.hugCount],
                     selfMarriage[UserMarriages.kissCount],
