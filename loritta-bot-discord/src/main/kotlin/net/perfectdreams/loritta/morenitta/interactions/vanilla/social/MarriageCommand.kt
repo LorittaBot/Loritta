@@ -258,7 +258,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         return@transaction MarryResult.ProposedToIsAlreadyMarried
 
                     val requestedByProfile = loritta.getOrCreateLorittaProfile(requestedBy.idLong)
-                    val proposeToProfile = loritta.getOrCreateLorittaProfile(requestedBy.idLong)
+                    val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.idLong)
 
                     if (splitCost > requestedByProfile.money) {
                         // Não tem dinheiro suficiente!
@@ -385,7 +385,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     "\uD83D\uDC8D"
                 )
                 styled(
-                    "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **15000 Sonhos** (7500 para cada usuário), e **250 Sonhos** todos os dias!",
+                    "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **$MARRIAGE_COST Sonhos** (${MARRIAGE_COST / 2} para cada usuário), e **250 Sonhos** todos os dias!",
                     "\uD83D\uDCB5"
                 )
                 styled(
