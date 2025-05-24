@@ -934,7 +934,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     }
 
                     UserMarriages.update({ UserMarriages.id eq activeMarriage[UserMarriages.id] }) {
-                        it[UserMarriages.affinity] = UserMarriages.affinity + 2
+                        it[UserMarriages.affinity] = UserMarriages.affinity + LOVE_LETTER_AFFINITY
                     }
 
                     val result = SonhosUtils.takeSonhosAndLogToTransactionLog(
@@ -945,7 +945,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     )
 
                     val marriageAffinityRank = UserMarriages.selectAll()
-                        .where { UserMarriages.active eq true and (UserMarriages.affinity greaterEq activeMarriage[UserMarriages.affinity]) }
+                        .where { UserMarriages.active eq true and (UserMarriages.affinity greaterEq activeMarriage[UserMarriages.affinity] + LOVE_LETTER_AFFINITY) }
                         .orderBy(Pair(UserMarriages.affinity, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
                         .count()
 
