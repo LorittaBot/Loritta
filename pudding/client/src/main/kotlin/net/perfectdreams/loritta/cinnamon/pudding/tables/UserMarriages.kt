@@ -7,7 +7,7 @@ object UserMarriages : LongIdTable() {
     val createdAt = timestampWithTimeZone("created_at").index()
     val active = bool("active").index()
     val expiredAt = timestampWithTimeZone("expired_at").nullable().index()
-    // val affinity = integer("affinity")
+    val affinity = integer("affinity").index()
     val hugCount = integer("hug_count")
     val headPatCount = integer("head_pat_count")
     val highFiveCount = integer("high_five_count")
@@ -17,4 +17,5 @@ object UserMarriages : LongIdTable() {
     val kissCount = integer("kiss_count")
     val coupleName = text("couple_name").nullable()
     val coupleBadge = uuid("couple_badge").nullable()
+    val lastRoleplayAffinityReward = timestampWithTimeZone("last_roleplay_affinity_reward").nullable()
 }

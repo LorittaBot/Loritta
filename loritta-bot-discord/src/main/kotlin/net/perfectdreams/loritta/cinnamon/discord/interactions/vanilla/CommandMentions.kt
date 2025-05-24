@@ -52,8 +52,14 @@ CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val loriCoolCardsGive = commandMention("figurittas dar")
     val loriCoolCardsCompare = commandMention("figurittas comparar")
 
+    val roleplayKiss = commandMention("roleplay beijar")
+    val roleplayHug = commandMention("roleplay abraçar")
+    val roleplayHeadPat = commandMention("roleplay cafuné")
+
     val marriageMarry = commandMention("casamento casar")
-    // val marriageShop = commandMention("casamento loja")
+    val marriageView = commandMention("casamento ver")
+    val marriageLetter = commandMention("casamento cartinha")
+    val marriageRank = commandMention("casamento rank")
 
     /**
      * Creates a command mention of [path]. If the command doesn't exist, an error will be thrown.

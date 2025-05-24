@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay
 
 import kotlinx.coroutines.delay
+import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
@@ -15,9 +16,11 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.update
+import java.time.LocalDateTime
 import java.util.*
 
 class RoleplayCommand {
@@ -66,9 +69,37 @@ class RoleplayCommand {
 
                 if (partner.value.toLong() == receiver.idLong) {
                     // They are our partner!
+                    var giveOutAffinityReward = false
+
+                    if (attributes.givesAffinityReward) {
+                        val lastRoleplayAffinityReward = marriage?.data?.lastRoleplayAffinityReward?.toJavaInstant()
+
+                        if (lastRoleplayAffinityReward != null) {
+                            val lastRoleplayAffinityRewardAtCurrentZone = lastRoleplayAffinityReward.atZone(Constants.LORITTA_TIMEZONE)
+                            val today = LocalDateTime.now(Constants.LORITTA_TIMEZONE)
+
+                            giveOutAffinityReward = today.toLocalDate() != lastRoleplayAffinityRewardAtCurrentZone.toLocalDate()
+                        } else {
+                            giveOutAffinityReward = true
+                        }
+                    }
+
                     context.loritta.transaction {
                         UserMarriages.update({ UserMarriages.id eq marriage.id }) {
                             it[attributes.marriedActionTrackColumn.get()] = attributes.marriedActionTrackColumn.get() + 1
+                            if (giveOutAffinityReward) {
+                                it[UserMarriages.affinity] = UserMarriages.affinity + 2
+                                it[UserMarriages.lastRoleplayAffinityReward] = java.time.Instant.now()
+                            }
+                        }
+                    }
+
+                    if (giveOutAffinityReward) {
+                        context.reply(true) {
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(context.loritta.commandMentions.marriageView)),
+                                Emotes.LoriHappy
+                            )
                         }
                     }
                 }

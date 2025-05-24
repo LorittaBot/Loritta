@@ -16,5 +16,6 @@ data class RoleplayActionAttributes(
     val embedResponse: (String, String) -> StringI18nData,
     val embedColor: Color,
     val embedEmoji: Emote,
-    val marriedActionTrackColumn: KProperty0<Column<Int>>
+    val marriedActionTrackColumn: KProperty0<Column<Int>>,
+    val givesAffinityReward: Boolean
 )

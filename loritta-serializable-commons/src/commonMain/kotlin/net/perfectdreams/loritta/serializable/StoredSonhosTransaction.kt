@@ -172,6 +172,12 @@ data class StoredGarticosTransferTransaction(
 data class StoredMarriageMarryTransaction(val marriedWithUserId: Long) : StoredSonhosTransaction()
 
 @Serializable
+data object StoredMarriageRestoreTransaction : StoredSonhosTransaction()
+
+@Serializable
+data object StoredMarriageLoveLetterTransaction : StoredSonhosTransaction()
+
+@Serializable
 data class StoredChargebackedSonhosBundleTransaction(val triggeredByUserId: Long) : StoredSonhosTransaction()
 
 @Serializable

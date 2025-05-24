@@ -20,7 +20,7 @@ view:
   description: "Mostra informações sobre o seu Casamento"
   youAreNotMarried: "Você não está casado! Antes de poder ver as informações do seu casamento, você precisa se casar antes usando {marryCommand}!"
   userIsNotMarried: "{userMention} não está casado!"
-  youLoseXPointsEveryDay: "Você perde {affinityPoints,plural, =0 {# pontos} one {# ponto} other {# pontos}} de afinidade por dia! Para ganhar mais pontos de afinidade, compre presentes para o seu relacionamento no {marryShopCommand}."
+  youLoseXPointsEveryDay: "Você perde {affinityPoints,plural, =0 {# pontos} one {# ponto} other {# pontos}} de afinidade por dia! Você ganha pontos de afinidade uma vez por dia fazendo ações de roleplay fofinhas com o seu parceiro ({roleplayHugCommand} {roleplayKissCommand} {roleplayHeadPatCommand}) e também você enviar uma cartinha de amor usando {marryLetterCommand}."
   userMarriage: "Casamento de {userMention}"
 
   options:
@@ -28,18 +28,22 @@ view:
       text: "O usuário que você quer ver o casamento dele"
 
 restore:
-  label: "recuperar"
+  label: "restaurar"
   description: "Restaure que foi perdido por falta de afinidade"
-
-store:
-  label: "loja"
-  description: "A lojinha para pombinhos apaixonados! Compre presentes para aumentar a afinidade do seu relacionamento!"
+  youHaveAMarriageThatCanBeRestored: "Você tem um casamento que pode ser restaurado!"
+  restoreInformation: "O custo para restaurar é de {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, o seu casamento voltará com a data de casamento original ({marriageDate}) e com 20 pontos de afinidade."
+  restoreLimit: "Você tem até {restoreExpiresAtDate} para decidir se você deseja restaurar o casamento ou não."
+  restoreMarriageButton: "Restaurar Casamento"
 
 rank:
   label: "rank"
   description: "Ranking de casados"
   longestMarriages: "Casamentos Mais Duradouros"
+  affinityMarriages: "Casamentos Com Maior Afinidade"
+  affinityPoints: "{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}"
   options:
+    rankType:
+      text: "Qual tipo de rank de casados você deseja ver"
     page:
       text: "A página que você deseja ir"
 
@@ -57,3 +61,12 @@ configure:
   equippedBadge:
     title: "Insígnia Equipada"
     description: "Insígnias equipadas aparecem ao ver o seu casamento no comando de ranking de casados. Você pode equipar qualquer badge que pelo ou menos um dos participantes do casamento tenha!"
+
+letter:
+  label: "cartinha"
+  description: "Escreva uma cartinha de amor para o seu parceiro!"
+  youAlreadySentALoveLetterToday: "Você já mandou uma cartinha de amor hoje!"
+
+  options:
+    message:
+      text: "A mensagem que você deseja enviar"

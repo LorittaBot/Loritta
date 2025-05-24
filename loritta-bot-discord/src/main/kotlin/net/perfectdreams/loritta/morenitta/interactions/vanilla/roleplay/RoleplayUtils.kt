@@ -24,7 +24,8 @@ object RoleplayUtils {
         I18nKeysData.Commands.Command.Roleplay.Hug::Response,
         Color(255, 141, 230),
         Emotes.Blush,
-        UserMarriages::hugCount
+        UserMarriages::hugCount,
+        true
     )
 
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
@@ -34,7 +35,8 @@ object RoleplayUtils {
         I18nKeysData.Commands.Command.Roleplay.Headpat::Response,
         Color(156, 39, 176),
         Emotes.LoriPat,
-        UserMarriages::headPatCount
+        UserMarriages::headPatCount,
+        true
     )
 
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
@@ -44,7 +46,8 @@ object RoleplayUtils {
         I18nKeysData.Commands.Command.Roleplay.Highfive::Response,
         Color(165, 255, 76),
         Emotes.LoriHi,
-        UserMarriages::highFiveCount
+        UserMarriages::highFiveCount,
+        false
     )
 
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
@@ -54,7 +57,8 @@ object RoleplayUtils {
         I18nKeysData.Commands.Command.Roleplay.Slap::Response,
         Color(244, 67, 54),
         Emotes.LoriPunch,
-        UserMarriages::slapCount
+        UserMarriages::slapCount,
+        false
     )
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
@@ -64,7 +68,8 @@ object RoleplayUtils {
         I18nKeysData.Commands.Command.Roleplay.Attack::Response,
         Color(244, 67, 54),
         Emotes.LoriRage,
-        UserMarriages::attackCount
+        UserMarriages::attackCount,
+        false
     )
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
@@ -74,7 +79,8 @@ object RoleplayUtils {
         I18nKeysData.Commands.Command.Roleplay.Dance::Response,
         Color(255, 152, 0),
         Emotes.Dancer,
-        UserMarriages::danceCount
+        UserMarriages::danceCount,
+        false
     )
 
     val KISS_ATTRIBUTES = RoleplayActionAttributes(
@@ -84,7 +90,8 @@ object RoleplayUtils {
         I18nKeysData.Commands.Command.Roleplay.Kiss::Response,
         Color(233, 30, 99),
         Emotes.LoriKiss,
-        UserMarriages::kissCount
+        UserMarriages::kissCount,
+        true
     )
 
     val RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG = listOf(

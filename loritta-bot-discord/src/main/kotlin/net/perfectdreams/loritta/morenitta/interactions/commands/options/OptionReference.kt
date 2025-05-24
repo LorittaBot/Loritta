@@ -29,7 +29,7 @@ sealed class DiscordOptionReference<T>(
     abstract fun get(option: OptionMapping): T
 }
 
-class StringDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean) : DiscordOptionReference<T>(name, description, required) {
+class StringDiscordOptionReference<T>(name: String, description: StringI18nData, required: Boolean, val range: IntRange?) : DiscordOptionReference<T>(name, description, required) {
     val choices = mutableListOf<Choice>()
     var autocompleteExecutor: AutocompleteExecutor<T>? = null
 

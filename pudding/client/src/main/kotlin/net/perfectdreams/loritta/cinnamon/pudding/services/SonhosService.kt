@@ -342,6 +342,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
                         is StoredMarriageMarryTransaction -> createUsingReflection(MarriageMarryTransaction::class, stored.marriedWithUserId)
 
+                        is StoredMarriageRestoreTransaction -> createUsingReflection(MarriageRestoreTransaction::class)
+
+                        StoredMarriageLoveLetterTransaction -> createUsingReflection(MarriageLoveLetterTransaction::class)
+
                         is StoredChargebackedSonhosBundleTransaction -> createUsingReflection(ChargebackedSonhosBundleTransaction::class, stored.triggeredByUserId)
 
                         is StoredEmojiFightBetSonhosTransaction -> {

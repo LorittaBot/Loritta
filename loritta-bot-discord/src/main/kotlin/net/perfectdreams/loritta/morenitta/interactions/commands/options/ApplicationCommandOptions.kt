@@ -12,11 +12,11 @@ open class ApplicationCommandOptions {
 
     val registeredOptions = mutableListOf<OptionReference<*>>()
 
-    fun string(name: String, description: StringI18nData, builder: StringDiscordOptionReference<String>.() -> (Unit) = {}) = StringDiscordOptionReference<String>(name, description, true)
+    fun string(name: String, description: StringI18nData, range: IntRange? = null, builder: StringDiscordOptionReference<String>.() -> (Unit) = {}) = StringDiscordOptionReference<String>(name, description, true, range)
         .apply(builder)
         .also { registeredOptions.add(it) }
 
-    fun optionalString(name: String, description: StringI18nData, builder: StringDiscordOptionReference<String?>.() -> (Unit) = {}) = StringDiscordOptionReference<String?>(name, description, false)
+    fun optionalString(name: String, description: StringI18nData, range: IntRange? = null, builder: StringDiscordOptionReference<String?>.() -> (Unit) = {}) = StringDiscordOptionReference<String?>(name, description, false, range)
         .apply(builder)
         .also { registeredOptions.add(it) }
 

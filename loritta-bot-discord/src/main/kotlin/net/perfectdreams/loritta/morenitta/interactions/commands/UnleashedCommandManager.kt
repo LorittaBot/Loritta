@@ -905,6 +905,9 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
                                     isAutoComplete = true
                                 }
 
+                                if (interaKTionsOption.range != null)
+                                    setRequiredLength(interaKTionsOption.range.first, interaKTionsOption.range.last)
+
                                 for (choice in interaKTionsOption.choices) {
                                     when (choice) {
                                         is StringDiscordOptionReference.Choice.LocalizedChoice -> {

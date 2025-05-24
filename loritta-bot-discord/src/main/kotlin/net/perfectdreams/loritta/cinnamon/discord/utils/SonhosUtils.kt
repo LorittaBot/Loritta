@@ -13,19 +13,26 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EconomyState
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand.Companion.MARRIAGE_RESTORE_COST
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventReward
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
+import net.perfectdreams.loritta.serializable.StoredSonhosTransaction
 import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import java.time.*
 import java.util.*
 
@@ -270,6 +277,74 @@ object SonhosUtils {
         }
 
         return SpecialTotalCoinFlipReward.NoChange(currentTax)
+    }
+
+    /**
+     * Checks if the user with the ID [userId] has enough Sonhos to pay the [value]
+     *
+     * @param userId the user id
+     * @param value  the value to pay
+     */
+    fun checkIfUserHasEnoughSonhos(userId: Long, value: Long): SonhosCheckResult {
+        val profile = Profiles.selectAll()
+            .where {
+                Profiles.id eq userId
+            }
+            .firstOrNull() ?: return SonhosCheckResult.NotEnoughSonhos(0)
+
+        val sonhos = profile[Profiles.money]
+
+        return if (sonhos >= value) {
+            SonhosCheckResult.Success
+        } else {
+            SonhosCheckResult.NotEnoughSonhos(sonhos)
+        }
+    }
+
+    fun takeSonhosAndLogToTransactionLog(
+        userId: Long,
+        value: Long,
+        type: TransactionType,
+        metadata: StoredSonhosTransaction
+    ): SonhosRemovalResult {
+        val profile = Profiles.selectAll()
+            .where {
+                Profiles.id eq userId
+            }
+            .firstOrNull() ?: return SonhosRemovalResult.NotEnoughSonhos(0)
+
+        val sonhos = profile[Profiles.money]
+
+        return if (sonhos >= value) {
+            Profiles.update({ Profiles.id eq profile[Profiles.id] }) {
+                with(SqlExpressionBuilder) {
+                    it[Profiles.money] = Profiles.money - value
+                }
+            }
+
+            // Cinnamon transactions log
+            SimpleSonhosTransactionsLogUtils.insert(
+                userId,
+                Instant.now(),
+                type,
+                value,
+                metadata
+            )
+
+            SonhosRemovalResult.Success
+        } else {
+            SonhosRemovalResult.NotEnoughSonhos(sonhos)
+        }
+    }
+
+    sealed class SonhosCheckResult {
+        object Success : SonhosCheckResult()
+        class NotEnoughSonhos(val balance: Long) : SonhosCheckResult()
+    }
+
+    sealed class SonhosRemovalResult {
+        object Success : SonhosRemovalResult()
+        class NotEnoughSonhos(val balance: Long) : SonhosRemovalResult()
     }
 
     sealed class SpecialTotalCoinFlipReward(val value: Double) {

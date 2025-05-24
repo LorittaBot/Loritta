@@ -91,6 +91,8 @@ import net.perfectdreams.loritta.morenitta.easter2023event.listeners.Easter2023R
 import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
 import net.perfectdreams.loritta.morenitta.listeners.*
 import net.perfectdreams.loritta.morenitta.loricoolcards.LoriCoolCardsManager
+import net.perfectdreams.loritta.morenitta.marriages.MarriageAffinityDecayTask
+import net.perfectdreams.loritta.morenitta.marriages.MarriageAffinityWarnerTask
 import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
@@ -99,6 +101,8 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedContro
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.raffles.LorittaRaffleTask
+import net.perfectdreams.loritta.morenitta.scheduledtasks.TaskManager
+import net.perfectdreams.loritta.morenitta.scheduledtasks.TestTask
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
 import net.perfectdreams.loritta.morenitta.twitch.TwitchSubscriptionsHandler
@@ -364,6 +368,8 @@ class LorittaBot(
 
 	// Used to lock raffle ticket purchases and raffle results
 	val raffleResultsMutex = Mutex()
+
+	val taskManager = TaskManager(this)
 
 	init {
 		FOLDER = config.loritta.folders.root
@@ -1292,6 +1298,37 @@ class LorittaBot(
 			LocalTime.MIDNIGHT,
 			dailyTaxCollector
 		)
+
+		runBlocking {
+			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+				LocalTime.of(18 + 3, 32),
+				TestTask()
+			)
+
+			// 12 hours before
+			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+				LocalTime.of(12, 0),
+				MarriageAffinityWarnerTask(this@LorittaBot, 12)
+			)
+
+			// 4 hours before
+			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+				LocalTime.of(20, 0),
+				MarriageAffinityWarnerTask(this@LorittaBot, 20)
+			)
+
+			// 1 hour before
+			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+				LocalTime.of(23, 0),
+				MarriageAffinityWarnerTask(this@LorittaBot, 23)
+			)
+
+			// at midnight do the decay
+			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+				LocalTime.MIDNIGHT,
+				MarriageAffinityDecayTask(this@LorittaBot)
+			)
+		}
 	}
 
 	suspend inline fun <reified T : LorittaInternalRPCResponse> makeRPCRequest(

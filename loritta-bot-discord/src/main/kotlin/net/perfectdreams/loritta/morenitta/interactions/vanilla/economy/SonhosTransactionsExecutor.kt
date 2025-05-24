@@ -324,6 +324,8 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
                         // ===[ MARRIAGE ]===
                         is MarriageMarryTransaction -> MarriageMarrySonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is MarriageRestoreTransaction -> MarriageRestoreSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is MarriageLoveLetterTransaction -> MarriageLoveLetterTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         is VacationModeLeaveTransaction -> VacationModeLeaveSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 

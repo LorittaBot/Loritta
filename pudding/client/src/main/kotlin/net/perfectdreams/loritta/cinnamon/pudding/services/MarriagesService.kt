@@ -40,10 +40,11 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
                     selfMarriage[UserMarriages.createdAt].toKotlinInstant(),
                     selfMarriage[UserMarriages.coupleName],
                     selfMarriage[UserMarriages.coupleBadge]?.toString(),
-                    0,
+                    selfMarriage[UserMarriages.affinity],
                     selfMarriage[UserMarriages.hugCount],
                     selfMarriage[UserMarriages.kissCount],
-                    selfMarriage[UserMarriages.headPatCount]
+                    selfMarriage[UserMarriages.headPatCount],
+                    selfMarriage[UserMarriages.lastRoleplayAffinityReward]?.toKotlinInstant(),
                 )
             )
         }

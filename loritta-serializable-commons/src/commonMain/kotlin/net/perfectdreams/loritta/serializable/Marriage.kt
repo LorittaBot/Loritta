@@ -14,4 +14,5 @@ data class Marriage(
     val hugCount: Int,
     val kissCount: Int,
     val headPatCount: Int,
+    val lastRoleplayAffinityReward: Instant?
 )

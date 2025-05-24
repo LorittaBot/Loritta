@@ -415,6 +415,13 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.sonhos,
                     transaction.marriedWithUserId
                 )
+                is net.perfectdreams.loritta.serializable.MarriageRestoreTransaction -> MarriageRestoreTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos
+                )
                 is net.perfectdreams.loritta.serializable.ChargebackedSonhosBundleTransaction -> ChargebackedSonhosBundleTransaction(
                     transaction.id,
                     transaction.transactionType,
@@ -435,6 +442,14 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
                     transaction.transactionType,
                     transaction.timestamp,
                     transaction.user
+                )
+
+                is net.perfectdreams.loritta.serializable.MarriageLoveLetterTransaction -> MarriageLoveLetterTransaction(
+                    transaction.id,
+                    transaction.transactionType,
+                    transaction.timestamp,
+                    transaction.user,
+                    transaction.sonhos
                 )
             }
         }
@@ -846,6 +861,26 @@ class GetUserTransactionsRoute(m: LorittaBot) : LoriPublicAPIRoute(
         override val user: UserId,
         val sonhos: Long,
         val marriedWithUserId: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class MarriageRestoreTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long
+    ) : SonhosTransaction()
+
+    @Serializable
+    data class MarriageLoveLetterTransaction(
+        override val id: Long,
+        override val transactionType: TransactionType,
+        override val timestamp: kotlinx.datetime.Instant,
+        @Serializable(UserIdAsStringSerializer::class)
+        override val user: UserId,
+        val sonhos: Long
     ) : SonhosTransaction()
 
     @Serializable

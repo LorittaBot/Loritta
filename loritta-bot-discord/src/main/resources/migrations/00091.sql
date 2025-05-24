@@ -1,0 +1,1 @@
+ALTER TABLE UserMarriages ADD COLUMN last_roleplay_affinity_reward TIMESTAMP WITH TIME ZONE;
