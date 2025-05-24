@@ -944,8 +944,10 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         StoredMarriageLoveLetterTransaction
                     )
 
+                    val newAffinity = activeMarriage[UserMarriages.affinity] + LOVE_LETTER_AFFINITY
+
                     val marriageAffinityRank = UserMarriages.selectAll()
-                        .where { UserMarriages.active eq true and (UserMarriages.affinity greaterEq activeMarriage[UserMarriages.affinity] + LOVE_LETTER_AFFINITY) }
+                        .where { UserMarriages.active eq true and (UserMarriages.affinity greaterEq newAffinity) }
                         .orderBy(Pair(UserMarriages.affinity, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
                         .count()
 
@@ -954,7 +956,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             return@transaction MarriageLetterResult.NotEnoughSonhos(result.balance)
                         }
                         SonhosUtils.SonhosRemovalResult.Success -> {
-                            return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, activeMarriage[UserMarriages.affinity] + 2, marriageAffinityRank)
+                            return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank)
                         }
                     }
                 }
