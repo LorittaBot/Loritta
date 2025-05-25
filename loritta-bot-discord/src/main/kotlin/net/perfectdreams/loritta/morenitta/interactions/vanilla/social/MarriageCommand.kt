@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.SonhosRankType
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
@@ -1228,7 +1229,16 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
-            return emptyMap()
+            if (args.isEmpty()) {
+                context.explain()
+                return null
+            }
+
+            val message = args.joinToString(" ")
+
+            return mapOf(
+                options.message to message
+            )
         }
 
         private sealed class MarriageLetterPreResult {
@@ -1699,7 +1709,34 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             context: LegacyMessageCommandContext,
             args: List<String>
         ): Map<OptionReference<*>, Any?>? {
-            return emptyMap()
+            val arg0 = args.getOrNull(0)
+
+            // Check if the first argument is a page number
+            val arg0AsPage = arg0?.toLongOrNull()
+
+            if (arg0AsPage != null) {
+                // If the first argument is a number, it's the page number and we use LONGEST as the rank type
+                return mapOf(
+                    options.rankType to MarriageRankType.LONGEST.name,
+                    options.page to arg0AsPage
+                )
+            }
+
+            // Parse the rank type from the first argument
+            val rankType = when (arg0?.lowercase()) {
+                "longest" -> MarriageRankType.LONGEST.name
+                "affinity" -> MarriageRankType.AFFINITY.name
+                "letters", "love_letters", "loveletters" -> MarriageRankType.LOVE_LETTERS.name
+                else -> MarriageRankType.LONGEST.name // Default to LONGEST if not specified
+            }
+
+            // Parse the page number from the second argument
+            val page = args.getOrNull(1)?.toLongOrNull()
+
+            return mapOf(
+                options.rankType to rankType,
+                options.page to page
+            )
         }
 
         private data class MarriageRankResult(val totalCount: Long, val entries: List<MarriageEntry>)
