@@ -24,7 +24,7 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
     override val taskName = "marriage-affinity-decay-task"
 
     override suspend fun run() {
-        val expiredMarriages = m.transaction {
+        val expiredMarriages = m.pudding.transaction(repetitions = Int.MAX_VALUE) {
             val now = Instant.now()
 
             // Apply decay
@@ -80,7 +80,7 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                                 +TextDisplay(
                                     buildString {
                                         appendLine("### Taxa de Afinidade do Casamento")
-                                        appendLine("O seu casamento acabou por falta de afinidade...")
+                                        appendLine("O seu casamento acabou por falta de afinidade... Você pode restaurar o seu casamento usando ${m.commandMentions.marriageRestore}")
                                     }
                                 )
                             }

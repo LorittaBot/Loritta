@@ -25,7 +25,7 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
     override val taskName = "marriage-affinity-warner-$t-task"
 
     override suspend fun run() {
-        val expiredMarriages = m.transaction {
+        val expiredMarriages = m.pudding.transaction(repetitions = Int.MAX_VALUE) {
             // Check which marriages will be affected by today's marriage decay
             val marriages = UserMarriages.selectAll()
                 .where {

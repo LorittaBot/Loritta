@@ -65,8 +65,26 @@ configure:
 letter:
   label: "cartinha"
   description: "Escreva uma cartinha de amor para o seu parceiro!"
-  youAlreadySentALoveLetterToday: "Você já mandou uma cartinha de amor hoje!"
-
+  loveLetter: "Cartinha do Amor"
+  sendLetter: "Enviar Cartinha ({sonhosCount,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}})"
+  letterSent: "Você pagou {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para enviar a cartinha. A {messengerName} levou a carta até as suas pessoas queridas e, com isso, você ganhou **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}**! Agora vocês possuem **{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** e estão em #{rankPosition,number,#} lugar no ranking. Você pode usar {marriageRankCommand} para ver quais relacionamentos possuem mais afinidade."
+  letterSentPrivateChannel: "**Observação:** Se a pessoa estiver com o privado fechado, eu não irei conseguir enviar a mensagem para ela! Mas não se preocupe, você ganhará os pontos de afinidade mesmo assim."
+  intro:
+    - "O correio encantado está ao seu dispor! As doces mensageiras do Oráculo do Amor entregarão a sua carta com muito amor e carinho até o privado das pessoas que você tanto ama. A cada cartinha enviada, você ganhará **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento."
+    - ""
+    - "Claro, as nossas mensageiras do amor adoram um mimo pelo trabalho. Para você, cada cartinha está custando **{loveLetterSonhosEmoji} {loveLetterPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, e o preço aumenta a cada carta enviada. Mas quando a lua da meia-noite sorri, o preço magicamente retorna para **{originalLoveLetterSonhosEmoji} {originalLoveLetterPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**."
+    - ""
+    - "**Observação:** Se a pessoa estiver com o privado fechado, eu não irei conseguir enviar a mensagem para ela! Mas não se preocupe, você ganhará os pontos de afinidade mesmo assim."
+  privateMessage:
+    aLoveLetter: "Uma Cartinha de Amor"
+    intro:
+      - "Risadinhas cristalinas e um leve farfalhar de asas anunciam..."
+      - ""
+      - "{messengerName}, a mensageira do amor, chegou no seu privado!"
+      - ""
+      - "Com um sorriso doce, ela oferece um pequeno envelope e diz: \"Uma alma querida transformou o amor dela em palavras, e o destino me trouxe para entregá-las a você!\""
+    afterReadingTheLetterAffinity: "Após ler a cartinha, você ganhou **{loveLetterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento! Agora vocês possuem **{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** e estão em #{rankPosition,number,#} lugar no ranking."
+    commandsUpsell: "Você pode usar {marriageRankCommand} para ver quais relacionamentos possuem mais afinidade e, se você quiser retribuir o afeto com uma cartinha, basta usar {marriageLetterCommand}."
   options:
     message:
       text: "A mensagem que você deseja enviar"

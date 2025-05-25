@@ -43,6 +43,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.Month
 import java.time.Year
 import java.time.ZonedDateTime
@@ -370,7 +371,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     "\uD83D\uDC8D"
                 )
                 styled(
-                    "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **$MARRIAGE_COST Sonhos** (${MARRIAGE_COST / 2} para cada usuário) e você perde **dois pontos de afinidade** todos os dias, sendo possível ganhar pontos enviando cartinhas de amor e usando ações fofinhas nos comandos de roleplay.",
+                    "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **$MARRIAGE_COST Sonhos** (${MARRIAGE_COST / 2} para cada usuário) e você perde **dois pontos de afinidade** todos os dias (cada casamento começa com 20 pontos), sendo possível ganhar pontos enviando cartinhas de amor e usando ações fofinhas nos comandos de roleplay. Se você chegar em zero pontos, o seu casamento acaba...",
                     "\uD83D\uDCB5"
                 )
                 styled(
@@ -866,6 +867,14 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
     }
 
     class MarriageLetterExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        companion object {
+            private val MESSENGERS = listOf(
+                Pair("Loritta", "https://stuff.loritta.website/ship/loritta.png"),
+                Pair("Pantufa", "https://stuff.loritta.website/ship/pantufa.png"),
+                Pair("Gabriela", "https://stuff.loritta.website/ship/gabriela.png")
+            )
+        }
+
         inner class Options : ApplicationCommandOptions() {
             val message = string("message", I18N_PREFIX.Letter.Options.Message.Text, range = 5..500)
         }
@@ -877,11 +886,39 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
             val message = args[options.message]
 
+            val lettersSentToday = loritta.transaction {
+                val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+                    .withHour(0)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .toInstant()
+
+                val activeMarriage = MarriageParticipants
+                    .innerJoin(UserMarriages)
+                    .selectAll()
+                    .where {
+                        UserMarriages.active eq true and (MarriageParticipants.user eq context.user.idLong)
+                    }
+                    .firstOrNull()
+
+                if (activeMarriage == null)
+                    return@transaction 0
+
+                MarriageLoveLetters.selectAll()
+                    .where {
+                        MarriageLoveLetters.marriage eq activeMarriage[UserMarriages.id] and (MarriageLoveLetters.sentBy eq context.user.idLong) and (MarriageLoveLetters.sentAt greaterEq todayAtMidnight)
+                    }
+                    .orderBy(MarriageLoveLetters.sentBy, SortOrder.DESC)
+                    .count() + 1 // plus one if we are sending this one
+            }
+
+            val letterPrice = lettersSentToday * LOVE_LETTER_PRICE
+
             val button = loritta.interactivityManager.buttonForUser(
                 context.user,
                 context.alwaysEphemeral,
                 ButtonStyle.PRIMARY,
-                "Enviar Cartinha ($LOVE_LETTER_PRICE sonhos)",
+                context.i18nContext.get(I18N_PREFIX.Letter.SendLetter(letterPrice)),
                 {
                     this.loriEmoji = Emotes.LoveLetter
                 }
@@ -889,6 +926,12 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 context.deferChannelMessage(false)
 
                 val result = loritta.transaction {
+                    val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+                        .withHour(0)
+                        .withMinute(0)
+                        .withSecond(0)
+                        .toInstant()
+
                     val activeMarriage = MarriageParticipants
                         .innerJoin(UserMarriages)
                         .selectAll()
@@ -902,29 +945,16 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
                     val marriageParticipantsThatArentMe = MarriageParticipants.selectAll()
                         .where {
-                            MarriageParticipants.marriage eq activeMarriage[MarriageParticipants.marriage] and (MarriageParticipants.user neq context.user.idLong)
+                            MarriageParticipants.marriage eq activeMarriage[MarriageParticipants.marriage] and (MarriageParticipants.user eq context.user.idLong)
                         }
                         .toList()
 
-                    val lastLoveLetter = MarriageLoveLetters.selectAll()
+                    val lettersSentToday = MarriageLoveLetters.selectAll()
                         .where {
-                            MarriageLoveLetters.marriage eq activeMarriage[UserMarriages.id] and (MarriageLoveLetters.sentBy eq context.user.idLong)
+                            MarriageLoveLetters.marriage eq activeMarriage[UserMarriages.id] and (MarriageLoveLetters.sentBy eq context.user.idLong) and (MarriageLoveLetters.sentAt greaterEq todayAtMidnight)
                         }
                         .orderBy(MarriageLoveLetters.sentBy, SortOrder.DESC)
-                        .limit(1)
-                        .firstOrNull()
-
-                    // What's our most recent love letter?
-                    if (lastLoveLetter != null) {
-                        // Was it sent today?
-                        val letterSentAt = lastLoveLetter[MarriageLoveLetters.sentAt].atZone(Constants.LORITTA_TIMEZONE)
-                        val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
-
-                        if (letterSentAt.year == now.year && letterSentAt.month == now.month && letterSentAt.dayOfMonth == now.dayOfMonth) {
-                            // Same day, cannot send it!
-                            return@transaction MarriageLetterResult.AlreadySentLetterToday
-                        }
-                    }
+                        .count() + 1 // plus this one!
 
                     MarriageLoveLetters.insert {
                         it[MarriageLoveLetters.marriage] = activeMarriage[UserMarriages.id]
@@ -937,9 +967,11 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         it[UserMarriages.affinity] = UserMarriages.affinity + LOVE_LETTER_AFFINITY
                     }
 
+                    val price = LOVE_LETTER_PRICE * lettersSentToday
+
                     val result = SonhosUtils.takeSonhosAndLogToTransactionLog(
                         context.user.idLong,
-                        LOVE_LETTER_PRICE,
+                        price,
                         TransactionType.MARRIAGE,
                         StoredMarriageLoveLetterTransaction
                     )
@@ -956,20 +988,12 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             return@transaction MarriageLetterResult.NotEnoughSonhos(result.balance)
                         }
                         SonhosUtils.SonhosRemovalResult.Success -> {
-                            return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank)
+                            return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price)
                         }
                     }
                 }
 
                 when (result) {
-                    MarriageLetterResult.AlreadySentLetterToday -> {
-                        context.reply(false) {
-                            styled(
-                                context.i18nContext.get(I18N_PREFIX.Letter.YouAlreadySentALoveLetterToday),
-                                Emotes.LoriSob
-                            )
-                        }
-                    }
                     MarriageLetterResult.YouAreNotMarried -> {
                         context.reply(false) {
                             styled(
@@ -987,44 +1011,75 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         }
                     }
                     is MarriageLetterResult.Success -> {
+                        val messenger = MESSENGERS.random()
+
                         for (participant in result.marriageParticipantsThatArentMe) {
-                            val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participant[MarriageParticipants.user]) ?: continue
+                            try {
+                                val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participant[MarriageParticipants.user])
+                                    ?: continue
 
-                            privateChannel.sendMessage(
-                                MessageCreate {
-                                    this.useComponentsV2 = true
+                                privateChannel.sendMessage(
+                                    MessageCreate {
+                                        this.useComponentsV2 = true
 
-                                    this.components += Container {
-                                        this.accentColor = LorittaColors.LorittaPink.rgb
+                                        this.components += Container {
+                                            +Section(
+                                                Thumbnail(messenger.second)
+                                            ) {
+                                                +TextDisplay(
+                                                    buildString {
+                                                        appendLine("### ${Emotes.LoveLetter} ${context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.ALoveLetter)}")
+                                                        for (line in context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.Intro(messenger.first))) {
+                                                            if (line.isNotEmpty()) {
+                                                                appendLine("*$line*")
+                                                            } else {
+                                                                appendLine()
+                                                            }
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        }
 
-                                        +Section(
-                                            Thumbnail("https://stuff.loritta.website/ship/loritta.png")
-                                        ) {
+                                        this.components += Container {
+                                            this.accentColor = LorittaColors.LorittaPink.rgb
+
+                                            +Section(
+                                                Thumbnail(context.user.effectiveAvatarUrl)
+                                            ) {
+                                                +TextDisplay(
+                                                    buildString {
+                                                        for (line in message.lines()) {
+                                                            appendLine("> $line")
+                                                        }
+                                                        appendLine("\\- ${context.user.asMention} ${Emotes.LoriHeartCombo1}${Emotes.LoriHeartCombo2}")
+                                                    }
+                                                )
+                                            }
+                                        }
+
+                                        this.components += Container {
                                             +TextDisplay(
                                                 buildString {
-                                                    appendLine("### ${Emotes.LoveLetter} Você recebeu uma cartinha de ${context.user.asMention}!")
+                                                    appendLine(context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.AfterReadingTheLetterAffinity(LOVE_LETTER_AFFINITY, result.affinity, result.affinityRank)))
                                                     appendLine()
-                                                    for (line in message.lines()) {
-                                                        appendLine("> $line")
-                                                    }
-                                                    appendLine()
-                                                    appendLine("Você ganhou $LOVE_LETTER_AFFINITY pontos de afinidade com isso. Agora vocês possuem ${result.affinity} pontos de afinidade e estão em #${result.affinityRank} lugar no ranking! Você pode usar ${loritta.commandMentions.marriageRank} para ver as pessoas com mais afinidade no relacionamento.")
+                                                    appendLine(context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.CommandsUpsell( loritta.commandMentions.marriageRank, loritta.commandMentions.marriageLetter)))
                                                 }
                                             )
                                         }
                                     }
-                                }
-                            ).await()
+                                ).queue()
+                            } catch (e: Exception) {}
                         }
 
                         context.reply(false) {
                             styled(
-                                "A sua cartinha foi enviada e, com isso, você ganhou $LOVE_LETTER_AFFINITY pontos de afinidade! Agora vocês possuem ${result.affinity} pontos de afinidade e estão em #${result.affinityRank} lugar no ranking! Você pode usar ${loritta.commandMentions.marriageRank} para ver as pessoas com mais afinidade no relacionamento.",
+                                context.i18nContext.get(I18N_PREFIX.Letter.LetterSent(SonhosUtils.getSonhosEmojiOfQuantity(result.price), result.price, messenger.first, LOVE_LETTER_AFFINITY, result.affinity, result.affinityRank, loritta.commandMentions.marriageRank)),
                                 Emotes.LoriHeart
                             )
 
                             styled(
-                                "**Observação:** Se a pessoa estiver com as DMs fechadas, eu não irei conseguir enviar a mensagem para ela, mas não se preocupe, você ganhará os pontos de afinidade mesmo assim!",
+                                context.i18nContext.get(I18N_PREFIX.Letter.LetterSentPrivateChannel),
                                 Emotes.LoriLurk
                             )
                         }
@@ -1039,17 +1094,19 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     this.accentColor = LorittaColors.LorittaPink.rgb
 
                     +Section(
-                        Thumbnail("https://stuff.loritta.website/ship/pantufa.png")
+                        Thumbnail("https://stuff.loritta.website/ship/loritta.png")
                     ) {
                         + TextDisplay(
                             buildString {
-                                appendLine("### ${Emotes.LoveLetter} Sua Cartinha")
+                                appendLine("### ${Emotes.LoveLetter} ${context.i18nContext.get(I18N_PREFIX.Letter.LoveLetter)}")
                                 appendLine()
                                 for (line in message.lines()) {
                                     appendLine("> $line")
                                 }
                                 appendLine()
-                                appendLine("Ao enviar a carta, as outras pessoas do seu casamento receberão a mensagem e você ganhará $LOVE_LETTER_AFFINITY pontos de afinidade no seu casamento!")
+                                for (line in context.i18nContext.get(I18N_PREFIX.Letter.Intro(LOVE_LETTER_AFFINITY, SonhosUtils.getSonhosEmojiOfQuantity(letterPrice), letterPrice, SonhosUtils.getSonhosEmojiOfQuantity(LOVE_LETTER_PRICE), LOVE_LETTER_PRICE))) {
+                                    appendLine(line)
+                                }
                             }
                         )
                     }
@@ -1067,8 +1124,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
         }
 
         private sealed class MarriageLetterResult {
-            data class Success(val marriageParticipantsThatArentMe: List<ResultRow>, val affinity: Int, val affinityRank: Long) : MarriageLetterResult()
-            data object AlreadySentLetterToday : MarriageLetterResult()
+            data class Success(val marriageParticipantsThatArentMe: List<ResultRow>, val affinity: Int, val affinityRank: Long, val price: Long) : MarriageLetterResult()
             data class NotEnoughSonhos(val userBalance: Long) : MarriageLetterResult()
             data object YouAreNotMarried : MarriageLetterResult()
         }

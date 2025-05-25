@@ -102,7 +102,6 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAsse
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.raffles.LorittaRaffleTask
 import net.perfectdreams.loritta.morenitta.scheduledtasks.TaskManager
-import net.perfectdreams.loritta.morenitta.scheduledtasks.TestTask
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.twitch.TwitchAPI
 import net.perfectdreams.loritta.morenitta.twitch.TwitchSubscriptionsHandler
@@ -1300,34 +1299,32 @@ class LorittaBot(
 		)
 
 		runBlocking {
-			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
-				LocalTime.of(18 + 3, 32),
-				TestTask()
-			)
+			// Only the main instance should run these tasks!
+			if (isMainInstance) {
+				// 12 hours before
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.of(12, 0),
+					MarriageAffinityWarnerTask(this@LorittaBot, 12)
+				)
 
-			// 12 hours before
-			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
-				LocalTime.of(12, 0),
-				MarriageAffinityWarnerTask(this@LorittaBot, 12)
-			)
+				// 4 hours before
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.of(20, 0),
+					MarriageAffinityWarnerTask(this@LorittaBot, 20)
+				)
 
-			// 4 hours before
-			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
-				LocalTime.of(20, 0),
-				MarriageAffinityWarnerTask(this@LorittaBot, 20)
-			)
+				// 1 hour before
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.of(23, 0),
+					MarriageAffinityWarnerTask(this@LorittaBot, 23)
+				)
 
-			// 1 hour before
-			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
-				LocalTime.of(23, 0),
-				MarriageAffinityWarnerTask(this@LorittaBot, 23)
-			)
-
-			// at midnight do the decay
-			taskManager.scheduleCoroutineEveryDayAtSpecificHour(
-				LocalTime.MIDNIGHT,
-				MarriageAffinityDecayTask(this@LorittaBot)
-			)
+				// at midnight do the decay
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.MIDNIGHT,
+					MarriageAffinityDecayTask(this@LorittaBot)
+				)
+			}
 		}
 	}
 
