@@ -834,7 +834,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                     is RestoreMarriageResult.NotEnoughSonhos -> {
                                         context.reply(false) {
                                             styled(
-                                                context.i18nContext.get(SonhosUtils.insufficientSonhos(MARRIAGE_RESTORE_COST.toLong(), result.userBalance)),
+                                                context.i18nContext.get(SonhosUtils.insufficientSonhos(result.userBalance, MARRIAGE_RESTORE_COST.toLong())),
                                                 Emotes.LoriSob
                                             )
                                         }
@@ -1050,7 +1050,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     is MarriageLetterResult.NotEnoughSonhos -> {
                         context.reply(false) {
                             styled(
-                                context.i18nContext.get(SonhosUtils.insufficientSonhos(LOVE_LETTER_PRICE, result.userBalance)),
+                                context.i18nContext.get(SonhosUtils.insufficientSonhos(result.userBalance, LOVE_LETTER_PRICE)),
                                 Emotes.LoriSob
                             )
                         }

@@ -21,7 +21,6 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.CommandContextCompat
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand.Companion.MARRIAGE_RESTORE_COST
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEvent
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventReward
@@ -49,8 +48,8 @@ object SonhosUtils {
         Emotes.PowerHanglooseRight
     )
 
-    fun insufficientSonhos(profile: PuddingUserProfile?, howMuch: Long) = insufficientSonhos(profile?.money ?: 0L, howMuch)
-    fun insufficientSonhos(sonhos: Long, howMuch: Long) = I18nKeysData.Commands.InsufficientFunds(howMuch, howMuch - sonhos)
+    fun insufficientSonhos(profile: PuddingUserProfile?, howMuchItCosts: Long) = insufficientSonhos(profile?.money ?: 0L, howMuchItCosts)
+    fun insufficientSonhos(userSonhosBalance: Long, howMuchItCosts: Long) = I18nKeysData.Commands.InsufficientFunds(userSonhosBalance, howMuchItCosts - userSonhosBalance)
 
     fun InlineMessage<*>.appendCouponSonhosBundleUpsellInformationIfNotNull(
         loritta: LorittaBot,
@@ -348,7 +347,7 @@ object SonhosUtils {
         val result = takeSonhosAndLogToTransactionLog(userId, value, type, metadata)
 
         when (result) {
-            is SonhosRemovalResult.NotEnoughSonhos -> onFailure.invoke(value)
+            is SonhosRemovalResult.NotEnoughSonhos -> onFailure.invoke(result.balance)
             SonhosRemovalResult.Success -> onSuccess.invoke()
         }
     }
