@@ -8,4 +8,5 @@ object MarriageLoveLetters : LongIdTable() {
     val content = text("content")
     val sentAt = timestampWithTimeZone("sent_at").index()
     val sentBy = long("sent_by_id")
+    val affinityReward = bool("affinity_reward")
 }

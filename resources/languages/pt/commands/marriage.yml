@@ -40,7 +40,9 @@ rank:
   description: "Ranking de casados"
   longestMarriages: "Casamentos Mais Duradouros"
   affinityMarriages: "Casamentos Com Maior Afinidade"
+  loveLettersMarriages: "Casamentos Com Mais Cartinhas de Amor"
   affinityPoints: "{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}"
+  loveLetters: "{loveLettters,plural, =0 {# cartinhas de amor} one {# cartinha de amor} other {# cartinhas de amor}}"
   options:
     rankType:
       text: "Qual tipo de rank de casados você deseja ver"
@@ -67,13 +69,15 @@ letter:
   description: "Escreva uma cartinha de amor para o seu parceiro!"
   loveLetter: "Cartinha do Amor"
   sendLetter: "Enviar Cartinha ({sonhosCount,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}})"
+  sendLetterNoAffinityReward: "Enviar Cartinha ({sonhosCount,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}) (Sem Ganhar Pontos de Afinidade)"
   letterSent: "Você pagou {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para enviar a cartinha. A {messengerName} levou a carta até as suas pessoas queridas e, com isso, você ganhou **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}**! Agora vocês possuem **{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** e estão em #{rankPosition,number,#} lugar no ranking. Você pode usar {marriageRankCommand} para ver quais relacionamentos possuem mais afinidade."
+  letterSentNoAffinityReward: "Você pagou {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para enviar a cartinha. A {messengerName} levou a carta até as suas pessoas queridas e, com isso, você não ganhou pontos de afinidade pois você já tinha enviado uma cartinha hoje... mas você ganhou o sentimento *quentinho* de saber que o seu parceiro vai amar a sua mensagem!"
   letterSentPrivateChannel: "**Observação:** Se a pessoa estiver com o privado fechado, eu não irei conseguir enviar a mensagem para ela! Mas não se preocupe, você ganhará os pontos de afinidade mesmo assim."
   letterContentIdenticalToPreviousLetter: "O conteúdo da sua carta é idêntico ao conteúdo da sua última carta! Eu acho que o seu amorzinho merece mais criatividade na cartinha de amor, né?"
   intro:
-    - "O correio encantado está ao seu dispor! As doces mensageiras do Oráculo do Amor entregarão a sua carta com muito amor e carinho até o privado das pessoas que você tanto ama. A cada cartinha enviada, você ganhará **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento."
+    - "O correio encantado está ao seu dispor! As doces mensageiras do Oráculo do Amor entregarão a sua carta com muito amor e carinho até o privado das pessoas que você tanto ama. Na primeira cartinha que você enviar no dia, você ganhará **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento."
     - ""
-    - "Claro, as nossas mensageiras do amor adoram um mimo pelo trabalho. Para você, cada cartinha está custando **{loveLetterSonhosEmoji} {loveLetterPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, e o preço aumenta a cada carta enviada. Mas quando a lua da meia-noite sorri, o preço magicamente retorna para **{originalLoveLetterSonhosEmoji} {originalLoveLetterPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**."
+    - "Claro, as nossas mensageiras do amor adoram um mimo pelo trabalho. Cada cartinha está custando **{loveLetterSonhosEmoji} {loveLetterPrice,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**. Quando a lua da meia-noite sorri, a possibilidade de ganhar os pontos de afinidade voltam."
     - ""
     - "**Observação:** Se a pessoa estiver com o privado fechado, eu não irei conseguir enviar a mensagem para ela! Mas não se preocupe, você ganhará os pontos de afinidade mesmo assim."
   privateMessage:
@@ -85,6 +89,7 @@ letter:
       - ""
       - "Com um sorriso doce, ela oferece um pequeno envelope e diz: \"Uma alma querida transformou o amor dela em palavras, e o destino me trouxe para entregá-las a você!\""
     afterReadingTheLetterAffinity: "Após ler a cartinha, você ganhou **{loveLetterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento! Agora vocês possuem **{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** e estão em #{rankPosition,number,#} lugar no ranking."
+    afterReadingTheLetterNoAffinityReward: "Como {userMention} já tinha enviado uma cartinha hoje, vocês não ganharam pontos de afinidade... Ou seja, ele te enviou esta cartinha só para mostrar o quanto ele te ama! Ah... Como eu queria ter alguém assim na minha vida..."
     commandsUpsell: "Você pode usar {marriageRankCommand} para ver quais relacionamentos possuem mais afinidade e, se você quiser retribuir o afeto com uma cartinha, basta usar {marriageLetterCommand}."
   options:
     message:

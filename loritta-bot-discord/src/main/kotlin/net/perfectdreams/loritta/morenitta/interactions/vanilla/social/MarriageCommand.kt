@@ -35,7 +35,6 @@ import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -43,7 +42,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.Month
 import java.time.Year
 import java.time.ZonedDateTime
@@ -897,7 +895,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
             val message = args[options.message]
 
-            val lettersSentToday = loritta.transaction {
+            val result = loritta.transaction {
                 val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
                     .withHour(0)
                     .withMinute(0)
@@ -913,23 +911,38 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     .firstOrNull()
 
                 if (activeMarriage == null)
-                    return@transaction 1
+                    return@transaction MarriageLetterPreResult.YouAreNotMarried
 
-                MarriageLoveLetters.selectAll()
+                val lettersSentToday = MarriageLoveLetters.selectAll()
                     .where {
                         MarriageLoveLetters.marriage eq activeMarriage[UserMarriages.id] and (MarriageLoveLetters.sentBy eq context.user.idLong) and (MarriageLoveLetters.sentAt greaterEq todayAtMidnight)
                     }
                     .orderBy(MarriageLoveLetters.sentBy, SortOrder.DESC)
-                    .count() + 1 // plus one if we are sending this one
+                    .count()
+
+                return@transaction MarriageLetterPreResult.Success(lettersSentToday)
             }
 
-            val letterPrice = lettersSentToday * LOVE_LETTER_PRICE
+            val letterPrice = LOVE_LETTER_PRICE
+            val sentLoveLetterToday: Boolean = when (result) {
+                is MarriageLetterPreResult.Success -> {
+                    result.lettersSentToday != 0L
+                }
+
+                MarriageLetterPreResult.YouAreNotMarried -> {
+                    false
+                }
+            }
 
             val button = loritta.interactivityManager.buttonForUser(
                 context.user,
                 context.alwaysEphemeral,
                 ButtonStyle.PRIMARY,
-                context.i18nContext.get(I18N_PREFIX.Letter.SendLetter(letterPrice)),
+                if (sentLoveLetterToday) {
+                    context.i18nContext.get(I18N_PREFIX.Letter.SendLetterNoAffinityReward(letterPrice))
+                } else {
+                    context.i18nContext.get(I18N_PREFIX.Letter.SendLetter(letterPrice))
+                },
                 {
                     this.loriEmoji = Emotes.LoveLetter
                 }
@@ -970,25 +983,29 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     if (lastLoveLetter != null && lastLoveLetter[MarriageLoveLetters.content].equals(message, true))
                         return@transaction MarriageLetterResult.MessageContentIdenticalToPreviousLetter
 
-                    val lettersSentToday = MarriageLoveLetters.selectAll()
+                    val sentLoveLettersTodayNotIncludingCurrent = MarriageLoveLetters.selectAll()
                         .where {
                             MarriageLoveLetters.marriage eq activeMarriage[UserMarriages.id] and (MarriageLoveLetters.sentBy eq context.user.idLong) and (MarriageLoveLetters.sentAt greaterEq todayAtMidnight)
                         }
                         .orderBy(MarriageLoveLetters.sentAt, SortOrder.DESC)
-                        .count() + 1 // plus this one!
+                        .count() != 0L
+                    val receivedAffinityPoints = !sentLoveLettersTodayNotIncludingCurrent
 
                     MarriageLoveLetters.insert {
                         it[MarriageLoveLetters.marriage] = activeMarriage[UserMarriages.id]
                         it[MarriageLoveLetters.content] = message
                         it[MarriageLoveLetters.sentAt] = Instant.now()
                         it[MarriageLoveLetters.sentBy] = context.user.idLong
+                        it[MarriageLoveLetters.affinityReward] = receivedAffinityPoints
                     }
 
-                    UserMarriages.update({ UserMarriages.id eq activeMarriage[UserMarriages.id] }) {
-                        it[UserMarriages.affinity] = UserMarriages.affinity + LOVE_LETTER_AFFINITY
+                    if (receivedAffinityPoints) {
+                        UserMarriages.update({ UserMarriages.id eq activeMarriage[UserMarriages.id] }) {
+                            it[UserMarriages.affinity] = UserMarriages.affinity + LOVE_LETTER_AFFINITY
+                        }
                     }
 
-                    val price = LOVE_LETTER_PRICE * lettersSentToday
+                    val price = LOVE_LETTER_PRICE
 
                     val result = SonhosUtils.takeSonhosAndLogToTransactionLog(
                         context.user.idLong,
@@ -997,6 +1014,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         StoredMarriageLoveLetterTransaction
                     )
 
+                    // Technically not displayed when the letter does not give any reward
                     val newAffinity = activeMarriage[UserMarriages.affinity] + LOVE_LETTER_AFFINITY
 
                     val marriageAffinityRank = UserMarriages.selectAll()
@@ -1009,7 +1027,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             return@transaction MarriageLetterResult.NotEnoughSonhos(result.balance)
                         }
                         SonhosUtils.SonhosRemovalResult.Success -> {
-                            return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price)
+                            return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price, receivedAffinityPoints)
                         }
                     }
                 }
@@ -1090,7 +1108,11 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                         this.components += Container {
                                             +TextDisplay(
                                                 buildString {
-                                                    appendLine(context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.AfterReadingTheLetterAffinity(LOVE_LETTER_AFFINITY, result.affinity, result.affinityRank)))
+                                                    if (result.receivedAffinityPoints) {
+                                                        appendLine(context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.AfterReadingTheLetterAffinity(LOVE_LETTER_AFFINITY, result.affinity, result.affinityRank)))
+                                                    } else {
+                                                        appendLine(context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.AfterReadingTheLetterNoAffinityReward(context.user.asMention)))
+                                                    }
                                                     appendLine()
                                                     appendLine(context.i18nContext.get(I18N_PREFIX.Letter.PrivateMessage.CommandsUpsell( loritta.commandMentions.marriageRank, loritta.commandMentions.marriageLetter)))
                                                 }
@@ -1102,10 +1124,37 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         }
 
                         context.reply(false) {
-                            styled(
-                                context.i18nContext.get(I18N_PREFIX.Letter.LetterSent(SonhosUtils.getSonhosEmojiOfQuantity(result.price), result.price, messenger.first, LOVE_LETTER_AFFINITY, result.affinity, result.affinityRank, loritta.commandMentions.marriageRank)),
-                                Emotes.LoriHeart
-                            )
+                            if (result.receivedAffinityPoints) {
+                                styled(
+                                    context.i18nContext.get(
+                                        I18N_PREFIX.Letter.LetterSent(
+                                            SonhosUtils.getSonhosEmojiOfQuantity(
+                                                result.price
+                                            ),
+                                            result.price,
+                                            messenger.first,
+                                            LOVE_LETTER_AFFINITY,
+                                            result.affinity,
+                                            result.affinityRank,
+                                            loritta.commandMentions.marriageRank
+                                        )
+                                    ),
+                                    Emotes.LoriHeart
+                                )
+                            } else {
+                                styled(
+                                    context.i18nContext.get(
+                                        I18N_PREFIX.Letter.LetterSentNoAffinityReward(
+                                            SonhosUtils.getSonhosEmojiOfQuantity(
+                                                result.price
+                                            ),
+                                            result.price,
+                                            messenger.first
+                                        )
+                                    ),
+                                    Emotes.LoriHeart
+                                )
+                            }
 
                             styled(
                                 context.i18nContext.get(I18N_PREFIX.Letter.LetterSentPrivateChannel),
@@ -1133,7 +1182,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                     appendLine("> $line")
                                 }
                                 appendLine()
-                                for (line in context.i18nContext.get(I18N_PREFIX.Letter.Intro(LOVE_LETTER_AFFINITY, SonhosUtils.getSonhosEmojiOfQuantity(letterPrice), letterPrice, SonhosUtils.getSonhosEmojiOfQuantity(LOVE_LETTER_PRICE), LOVE_LETTER_PRICE))) {
+                                for (line in context.i18nContext.get(I18N_PREFIX.Letter.Intro(LOVE_LETTER_AFFINITY, SonhosUtils.getSonhosEmojiOfQuantity(letterPrice), letterPrice))) {
                                     appendLine(line)
                                 }
                             }
@@ -1152,8 +1201,21 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             return emptyMap()
         }
 
+        private sealed class MarriageLetterPreResult {
+            data class Success(
+                val lettersSentToday: Long
+            ) : MarriageLetterPreResult()
+            data object YouAreNotMarried : MarriageLetterPreResult()
+        }
+
         private sealed class MarriageLetterResult {
-            data class Success(val marriageParticipantsThatArentMe: List<ResultRow>, val affinity: Int, val affinityRank: Long, val price: Long) : MarriageLetterResult()
+            data class Success(
+                val marriageParticipantsThatArentMe: List<ResultRow>,
+                val affinity: Int,
+                val affinityRank: Long,
+                val price: Long,
+                val receivedAffinityPoints: Boolean
+            ) : MarriageLetterResult()
             data class NotEnoughSonhos(val userBalance: Long) : MarriageLetterResult()
             data object YouAreNotMarried : MarriageLetterResult()
             data object MessageContentIdenticalToPreviousLetter : MarriageLetterResult()
@@ -1165,6 +1227,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             val rankType = string("rank_type", I18N_PREFIX.Rank.Options.RankType.Text) {
                 choice(I18N_PREFIX.Rank.LongestMarriages, MarriageRankType.LONGEST.name)
                 choice(I18N_PREFIX.Rank.AffinityMarriages, MarriageRankType.AFFINITY.name)
+                choice(I18N_PREFIX.Rank.LoveLettersMarriages, MarriageRankType.LOVE_LETTERS.name)
             }
             val page = optionalLong("page", I18N_PREFIX.Rank.Options.Page.Text)
         }
@@ -1185,187 +1248,396 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             rankType: MarriageRankType,
             page: Long
         ): suspend InlineMessage<*>.() -> (Unit) = {
-            val result = loritta.transaction {
-                val rm = mutableListOf<MarriageEntry>()
-
-                val totalCount = UserMarriages.selectAll()
-                    .where {
-                        UserMarriages.active eq true
-                    }
-                    .count()
-
-                val marriages = UserMarriages.selectAll()
-                    .where {
-                        UserMarriages.active eq true
-                    }
-                    .apply {
-                        when (rankType) {
-                            MarriageRankType.LONGEST -> orderBy(UserMarriages.createdAt, SortOrder.ASC)
-                            MarriageRankType.AFFINITY -> orderBy(UserMarriages.affinity, SortOrder.DESC)
-                        }
-                    }
-                    .limit(5)
-                    .offset(page * 5)
-                    .toList()
-
-                for (marriage in marriages) {
-                    val participants = MarriageParticipants.selectAll()
-                        .where {
-                            MarriageParticipants.marriage eq marriage[UserMarriages.id]
-                        }
-                        .toList()
-
-                    rm.add(
-                        MarriageEntry(
-                            marriage,
-                            participants
-                        )
-                    )
-                }
-
-                return@transaction MarriageRankResult(totalCount, rm)
-            }
-
             val genericEntryGradient = BufferedImage(800, 106, BufferedImage.TYPE_INT_ARGB)
             RankingGenerator.drawEntryBackgroundGradient(genericEntryGradient)
 
             val now = Instant.now()
+            val totalCount: Long
 
             val entries = mutableListOf<RankingGenerator.EntryRankInformation>()
 
-            for (marriage in result.entries) {
-                if (marriage.participants.size != 2)
-                    error("Unsupported participants count! ${marriage.participants.size}")
+            // TODO: Refactor this, the rank generator code could be reused
+            if (rankType == MarriageRankType.LOVE_LETTERS) {
+                // We split it up because the love letters filtering is a bit trickier
+                val result = loritta.transaction {
+                    val rm = mutableListOf<MarriageLoveLettersEntry>()
 
-                val participantsAsUserInfos = mutableListOf<CachedUserInfo?>()
-
-                for (participantData in marriage.participants) {
-                    val user = loritta.lorittaShards.retrieveUserInfoById(participantData[MarriageParticipants.user])
-
-                    participantsAsUserInfos.add(user)
-                }
-
-                val participantNamesAsUsers = mutableListOf<String>()
-
-                for (userInfo in participantsAsUserInfos) {
-                    participantNamesAsUsers.add(userInfo?.globalName ?: userInfo?.name ?: "???")
-                }
-
-                val sorted = participantNamesAsUsers.sorted()
-
-                val coupleNameByUserNames = ShipCommand.createShipName(sorted[0], sorted[1])
-                val coupleNameByUserNamesSubtitle = participantNamesAsUsers.sorted().joinToString(" x ")
-
-                // Creates a collage between the both marriage participants
-                // When marriages support more than 2 participants, we will need to fix this somehow
-                val avatar1 = participantsAsUserInfos[0]?.effectiveAvatarUrl?.let {
-                    LorittaUtils.downloadImage(loritta, it)
-                } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
-                val avatar2 = participantsAsUserInfos[1]?.effectiveAvatarUrl?.let {
-                    LorittaUtils.downloadImage(loritta, it)
-                } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
-
-                val avatarCollab = BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB)
-                val avatarCollabGraphics = avatarCollab.createGraphics()
-
-                avatarCollabGraphics.setRenderingHint(
-                    RenderingHints.KEY_INTERPOLATION,
-                    InterpolationType.BILINEAR.graphics2DRenderingHint
-                )
-                avatarCollabGraphics.drawImage(
-                    avatar1,
-                    // destination
-                    0,
-                    0,
-                    128,
-                    256,
-                    // source
-                    0,
-                    0,
-                    avatar1.width / 2,
-                    avatar1.height,
-                    null
-                )
-                avatarCollabGraphics.drawImage(
-                    avatar2,
-                    // destination
-                    128,
-                    0,
-                    256,
-                    256,
-                    // source
-                    avatar2.width / 2,
-                    0,
-                    avatar2.width,
-                    avatar2.height,
-                    null
-                )
-
-                var subtitle = RankingGenerator.EntryRankInformation.EntryRankIconableSubtitle(
-                    icon = null,
-                    text = coupleNameByUserNamesSubtitle
-                )
-
-                val coupleBadgeId = marriage.data[UserMarriages.coupleBadge]
-                if (coupleBadgeId != null) {
-                    val equippedBadge = loritta.profileDesignManager.badges.firstOrNull { it.id == coupleBadgeId }
-
-                    if (equippedBadge != null) {
-                        var canUseBadge = false
-
-                        for (participant in participantsAsUserInfos.filterNotNull()) {
-                            val profile = loritta.getOrCreateLorittaProfile(participant.id)
-                            val settings = loritta.transaction {
-                                profile.settings
-                            }
-
-                            val deservesBadge = equippedBadge.checkIfUserDeservesBadge(
-                                loritta.profileDesignManager.transformUserToProfileUserInfoData(
-                                    participant,
-                                    settings
-                                ),
-                                profile,
-                                setOf()
-                            )
-
-                            if (deservesBadge) {
-                                // We can get out after we find out that at least one of the participants can use the badge
-                                canUseBadge = true
-                                break
-                            }
+                    val totalCount = MarriageLoveLetters.innerJoin(UserMarriages).select(MarriageLoveLetters.marriage)
+                        .groupBy(MarriageLoveLetters.marriage)
+                        .where {
+                            UserMarriages.active eq true
                         }
+                        .count()
 
-                        if (canUseBadge) {
-                            subtitle = RankingGenerator.EntryRankInformation.EntryRankIconableSubtitle(
-                                icon = equippedBadge.getImage(),
-                                text = loritta.languageManager.defaultI18nContext.get(equippedBadge.titlePlural ?: equippedBadge.title) + " // " + coupleNameByUserNamesSubtitle
-                            )
+                    val count = MarriageLoveLetters.marriage.count()
+
+                    val sortedMarriages = MarriageLoveLetters.innerJoin(UserMarriages)
+                        .select(MarriageLoveLetters.marriage, count)
+                        .where {
+                            UserMarriages.active eq true
                         }
+                        .groupBy(MarriageLoveLetters.marriage)
+                        .orderBy(count, SortOrder.DESC)
+                        .limit(5)
+                        .offset(page * 5)
+                        .toList()
+
+                    for (sortedMarriage in sortedMarriages) {
+                        val marriage = UserMarriages.selectAll()
+                            .where {
+                                UserMarriages.id eq sortedMarriage[MarriageLoveLetters.marriage]
+                            }
+                            .first()
+
+                        val participants = MarriageParticipants.selectAll()
+                            .where {
+                                MarriageParticipants.marriage eq marriage[UserMarriages.id]
+                            }
+                            .toList()
+
+                        rm.add(
+                            MarriageLoveLettersEntry(
+                                marriage,
+                                participants,
+                                sortedMarriage[count]
+                            )
+                        )
                     }
+
+                    return@transaction MarriageLoveLettersRankResult(totalCount, rm)
                 }
 
-                entries.add(
-                    RankingGenerator.EntryRankInformation(
-                        marriage.data[UserMarriages.coupleName] ?: coupleNameByUserNames,
-                        subtitle,
-                        when (rankType) {
-                            MarriageRankType.LONGEST -> {
-                                DateUtils.formatDateDiff(
-                                    context.i18nContext,
-                                    marriage.data[UserMarriages.createdAt],
-                                    now
+                for (marriage in result.entries) {
+                    if (marriage.participants.size != 2)
+                        error("Unsupported participants count! ${marriage.participants.size}")
+
+                    val participantsAsUserInfos = mutableListOf<CachedUserInfo?>()
+
+                    for (participantData in marriage.participants) {
+                        val user = loritta.lorittaShards.retrieveUserInfoById(participantData[MarriageParticipants.user])
+
+                        participantsAsUserInfos.add(user)
+                    }
+
+                    val participantNamesAsUsers = mutableListOf<String>()
+
+                    for (userInfo in participantsAsUserInfos) {
+                        participantNamesAsUsers.add(userInfo?.globalName ?: userInfo?.name ?: "???")
+                    }
+
+                    val sorted = participantNamesAsUsers.sorted()
+
+                    val coupleNameByUserNames = ShipCommand.createShipName(sorted[0], sorted[1])
+                    val coupleNameByUserNamesSubtitle = participantNamesAsUsers.sorted().joinToString(" x ")
+
+                    // Creates a collage between the both marriage participants
+                    // When marriages support more than 2 participants, we will need to fix this somehow
+                    val avatar1 = participantsAsUserInfos[0]?.effectiveAvatarUrl?.let {
+                        LorittaUtils.downloadImage(loritta, it)
+                    } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+                    val avatar2 = participantsAsUserInfos[1]?.effectiveAvatarUrl?.let {
+                        LorittaUtils.downloadImage(loritta, it)
+                    } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+
+                    val avatarCollab = BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB)
+                    val avatarCollabGraphics = avatarCollab.createGraphics()
+
+                    avatarCollabGraphics.setRenderingHint(
+                        RenderingHints.KEY_INTERPOLATION,
+                        InterpolationType.BILINEAR.graphics2DRenderingHint
+                    )
+                    avatarCollabGraphics.drawImage(
+                        avatar1,
+                        // destination
+                        0,
+                        0,
+                        128,
+                        256,
+                        // source
+                        0,
+                        0,
+                        avatar1.width / 2,
+                        avatar1.height,
+                        null
+                    )
+                    avatarCollabGraphics.drawImage(
+                        avatar2,
+                        // destination
+                        128,
+                        0,
+                        256,
+                        256,
+                        // source
+                        avatar2.width / 2,
+                        0,
+                        avatar2.width,
+                        avatar2.height,
+                        null
+                    )
+
+                    var subtitle = RankingGenerator.EntryRankInformation.EntryRankIconableSubtitle(
+                        icon = null,
+                        text = coupleNameByUserNamesSubtitle
+                    )
+
+                    val coupleBadgeId = marriage.data[UserMarriages.coupleBadge]
+                    if (coupleBadgeId != null) {
+                        val equippedBadge = loritta.profileDesignManager.badges.firstOrNull { it.id == coupleBadgeId }
+
+                        if (equippedBadge != null) {
+                            var canUseBadge = false
+
+                            for (participant in participantsAsUserInfos.filterNotNull()) {
+                                val profile = loritta.getOrCreateLorittaProfile(participant.id)
+                                val settings = loritta.transaction {
+                                    profile.settings
+                                }
+
+                                val deservesBadge = equippedBadge.checkIfUserDeservesBadge(
+                                    loritta.profileDesignManager.transformUserToProfileUserInfoData(
+                                        participant,
+                                        settings
+                                    ),
+                                    profile,
+                                    setOf()
+                                )
+
+                                if (deservesBadge) {
+                                    // We can get out after we find out that at least one of the participants can use the badge
+                                    canUseBadge = true
+                                    break
+                                }
+                            }
+
+                            if (canUseBadge) {
+                                subtitle = RankingGenerator.EntryRankInformation.EntryRankIconableSubtitle(
+                                    icon = equippedBadge.getImage(),
+                                    text = loritta.languageManager.defaultI18nContext.get(
+                                        equippedBadge.titlePlural ?: equippedBadge.title
+                                    ) + " // " + coupleNameByUserNamesSubtitle
                                 )
                             }
-                            MarriageRankType.AFFINITY -> context.i18nContext.get(I18N_PREFIX.Rank.AffinityPoints(marriage.data[UserMarriages.affinity]))
-                        },
-                        avatarCollab,
-                        genericEntryGradient
+                        }
+                    }
+
+                    entries.add(
+                        RankingGenerator.EntryRankInformation(
+                            marriage.data[UserMarriages.coupleName] ?: coupleNameByUserNames,
+                            subtitle,
+                            when (rankType) {
+                                MarriageRankType.LONGEST -> {
+                                    DateUtils.formatDateDiff(
+                                        context.i18nContext,
+                                        marriage.data[UserMarriages.createdAt],
+                                        now
+                                    )
+                                }
+
+                                MarriageRankType.AFFINITY -> context.i18nContext.get(
+                                    I18N_PREFIX.Rank.AffinityPoints(
+                                        marriage.data[UserMarriages.affinity]
+                                    )
+                                )
+
+                                MarriageRankType.LOVE_LETTERS -> context.i18nContext.get(
+                                    I18N_PREFIX.Rank.LoveLetters(marriage.letters)
+                                )
+                            },
+                            avatarCollab,
+                            genericEntryGradient
+                        )
                     )
-                )
+                }
+
+                totalCount = result.totalCount
+            } else {
+                val result = loritta.transaction {
+                    val rm = mutableListOf<MarriageEntry>()
+
+                    val totalCount = UserMarriages.selectAll()
+                        .where {
+                            UserMarriages.active eq true
+                        }
+                        .count()
+
+                    val marriages = UserMarriages.selectAll()
+                        .where {
+                            UserMarriages.active eq true
+                        }
+                        .apply {
+                            when (rankType) {
+                                MarriageRankType.LONGEST -> orderBy(UserMarriages.createdAt, SortOrder.ASC)
+                                MarriageRankType.AFFINITY -> orderBy(UserMarriages.affinity, SortOrder.DESC)
+                                MarriageRankType.LOVE_LETTERS -> error("This should never happen!")
+                            }
+                        }
+                        .limit(5)
+                        .offset(page * 5)
+                        .toList()
+
+                    for (marriage in marriages) {
+                        val participants = MarriageParticipants.selectAll()
+                            .where {
+                                MarriageParticipants.marriage eq marriage[UserMarriages.id]
+                            }
+                            .toList()
+
+                        rm.add(
+                            MarriageEntry(
+                                marriage,
+                                participants
+                            )
+                        )
+                    }
+
+                    return@transaction MarriageRankResult(totalCount, rm)
+                }
+
+                for (marriage in result.entries) {
+                    if (marriage.participants.size != 2)
+                        error("Unsupported participants count! ${marriage.participants.size}")
+
+                    val participantsAsUserInfos = mutableListOf<CachedUserInfo?>()
+
+                    for (participantData in marriage.participants) {
+                        val user = loritta.lorittaShards.retrieveUserInfoById(participantData[MarriageParticipants.user])
+
+                        participantsAsUserInfos.add(user)
+                    }
+
+                    val participantNamesAsUsers = mutableListOf<String>()
+
+                    for (userInfo in participantsAsUserInfos) {
+                        participantNamesAsUsers.add(userInfo?.globalName ?: userInfo?.name ?: "???")
+                    }
+
+                    val sorted = participantNamesAsUsers.sorted()
+
+                    val coupleNameByUserNames = ShipCommand.createShipName(sorted[0], sorted[1])
+                    val coupleNameByUserNamesSubtitle = participantNamesAsUsers.sorted().joinToString(" x ")
+
+                    // Creates a collage between the both marriage participants
+                    // When marriages support more than 2 participants, we will need to fix this somehow
+                    val avatar1 = participantsAsUserInfos[0]?.effectiveAvatarUrl?.let {
+                        LorittaUtils.downloadImage(loritta, it)
+                    } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+                    val avatar2 = participantsAsUserInfos[1]?.effectiveAvatarUrl?.let {
+                        LorittaUtils.downloadImage(loritta, it)
+                    } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+
+                    val avatarCollab = BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB)
+                    val avatarCollabGraphics = avatarCollab.createGraphics()
+
+                    avatarCollabGraphics.setRenderingHint(
+                        RenderingHints.KEY_INTERPOLATION,
+                        InterpolationType.BILINEAR.graphics2DRenderingHint
+                    )
+                    avatarCollabGraphics.drawImage(
+                        avatar1,
+                        // destination
+                        0,
+                        0,
+                        128,
+                        256,
+                        // source
+                        0,
+                        0,
+                        avatar1.width / 2,
+                        avatar1.height,
+                        null
+                    )
+                    avatarCollabGraphics.drawImage(
+                        avatar2,
+                        // destination
+                        128,
+                        0,
+                        256,
+                        256,
+                        // source
+                        avatar2.width / 2,
+                        0,
+                        avatar2.width,
+                        avatar2.height,
+                        null
+                    )
+
+                    var subtitle = RankingGenerator.EntryRankInformation.EntryRankIconableSubtitle(
+                        icon = null,
+                        text = coupleNameByUserNamesSubtitle
+                    )
+
+                    val coupleBadgeId = marriage.data[UserMarriages.coupleBadge]
+                    if (coupleBadgeId != null) {
+                        val equippedBadge = loritta.profileDesignManager.badges.firstOrNull { it.id == coupleBadgeId }
+
+                        if (equippedBadge != null) {
+                            var canUseBadge = false
+
+                            for (participant in participantsAsUserInfos.filterNotNull()) {
+                                val profile = loritta.getOrCreateLorittaProfile(participant.id)
+                                val settings = loritta.transaction {
+                                    profile.settings
+                                }
+
+                                val deservesBadge = equippedBadge.checkIfUserDeservesBadge(
+                                    loritta.profileDesignManager.transformUserToProfileUserInfoData(
+                                        participant,
+                                        settings
+                                    ),
+                                    profile,
+                                    setOf()
+                                )
+
+                                if (deservesBadge) {
+                                    // We can get out after we find out that at least one of the participants can use the badge
+                                    canUseBadge = true
+                                    break
+                                }
+                            }
+
+                            if (canUseBadge) {
+                                subtitle = RankingGenerator.EntryRankInformation.EntryRankIconableSubtitle(
+                                    icon = equippedBadge.getImage(),
+                                    text = loritta.languageManager.defaultI18nContext.get(
+                                        equippedBadge.titlePlural ?: equippedBadge.title
+                                    ) + " // " + coupleNameByUserNamesSubtitle
+                                )
+                            }
+                        }
+                    }
+
+                    entries.add(
+                        RankingGenerator.EntryRankInformation(
+                            marriage.data[UserMarriages.coupleName] ?: coupleNameByUserNames,
+                            subtitle,
+                            when (rankType) {
+                                MarriageRankType.LONGEST -> {
+                                    DateUtils.formatDateDiff(
+                                        context.i18nContext,
+                                        marriage.data[UserMarriages.createdAt],
+                                        now
+                                    )
+                                }
+
+                                MarriageRankType.AFFINITY -> context.i18nContext.get(
+                                    I18N_PREFIX.Rank.AffinityPoints(
+                                        marriage.data[UserMarriages.affinity]
+                                    )
+                                )
+
+                                MarriageRankType.LOVE_LETTERS -> error("This should never happen!")
+                            },
+                            avatarCollab,
+                            genericEntryGradient
+                        )
+                    )
+                }
+
+                totalCount = result.totalCount
             }
 
             // Calculates the max page
-            val maxPage = ceil(result.totalCount / 5.0)
+            val maxPage = ceil(totalCount / 5.0)
 
             val ranking = RankingGenerator.generateRanking(
                 loritta,
@@ -1373,6 +1645,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 when (rankType) {
                     MarriageRankType.LONGEST -> context.i18nContext.get(I18N_PREFIX.Rank.LongestMarriages)
                     MarriageRankType.AFFINITY -> context.i18nContext.get(I18N_PREFIX.Rank.AffinityMarriages)
+                    MarriageRankType.LOVE_LETTERS -> context.i18nContext.get(I18N_PREFIX.Rank.LoveLettersMarriages)
                 },
                 null,
                 readImageFromResources("/marriages/marriage_rank_background.png"),
@@ -1388,6 +1661,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             ) {
                 createRankMessage(context, rankType, it)
             }.invoke(this)
+
         }
 
         override suspend fun convertToInteractionsArguments(
@@ -1398,15 +1672,23 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
         }
 
         private data class MarriageRankResult(val totalCount: Long, val entries: List<MarriageEntry>)
+        private data class MarriageLoveLettersRankResult(val totalCount: Long, val entries: List<MarriageLoveLettersEntry>)
 
         private data class MarriageEntry(
             val data: ResultRow,
             val participants: List<ResultRow>
         )
 
+        private data class MarriageLoveLettersEntry(
+            val data: ResultRow,
+            val participants: List<ResultRow>,
+            val letters: Long
+        )
+
         enum class MarriageRankType {
             LONGEST,
-            AFFINITY
+            AFFINITY,
+            LOVE_LETTERS
         }
     }
 
