@@ -803,27 +803,23 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                         return@transaction RestoreMarriageResult.ParticipantIsAlreadyMarried(activeMarriage[MarriageParticipants.user])
                                     }
 
-                                    UserMarriages.update({ UserMarriages.id eq result.marriage[UserMarriages.id] }) {
-                                        it[UserMarriages.expiredAt] = null
-                                        it[UserMarriages.active] = true
-                                        it[UserMarriages.affinity] = DEFAULT_AFFINITY
-                                    }
-
-                                    val sonhosCheckResult = SonhosUtils.takeSonhosAndLogToTransactionLog(
+                                    SonhosUtils.takeSonhosAndLogToTransactionLog(
                                         context.user.idLong,
                                         MARRIAGE_RESTORE_COST.toLong(),
                                         TransactionType.MARRIAGE,
-                                        StoredMarriageRestoreTransaction
-                                    )
-
-                                    when (sonhosCheckResult) {
-                                        is SonhosUtils.SonhosRemovalResult.NotEnoughSonhos -> {
-                                            return@transaction RestoreMarriageResult.NotEnoughSonhos(sonhosCheckResult.balance)
+                                        StoredMarriageRestoreTransaction,
+                                        {
+                                            return@transaction RestoreMarriageResult.NotEnoughSonhos(it)
                                         }
-                                        SonhosUtils.SonhosRemovalResult.Success -> {}
-                                    }
+                                    ) {
+                                        UserMarriages.update({ UserMarriages.id eq result.marriage[UserMarriages.id] }) {
+                                            it[UserMarriages.expiredAt] = null
+                                            it[UserMarriages.active] = true
+                                            it[UserMarriages.affinity] = DEFAULT_AFFINITY
+                                        }
 
-                                    return@transaction RestoreMarriageResult.Success
+                                        return@transaction RestoreMarriageResult.Success
+                                    }
                                 }
 
                                 when (result) {
@@ -1005,45 +1001,41 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         .count() != 0L
                     val receivedAffinityPoints = !sentLoveLettersTodayNotIncludingCurrent
 
-                    val result = SonhosUtils.takeSonhosAndLogToTransactionLog(
+                    SonhosUtils.takeSonhosAndLogToTransactionLog(
                         context.user.idLong,
                         LOVE_LETTER_PRICE,
                         TransactionType.MARRIAGE,
-                        StoredMarriageLoveLetterTransaction
-                    )
-
-                    when (result) {
-                        is SonhosUtils.SonhosRemovalResult.NotEnoughSonhos -> {
-                            return@transaction MarriageLetterResult.NotEnoughSonhos(result.balance)
+                        StoredMarriageLoveLetterTransaction,
+                        {
+                            return@transaction MarriageLetterResult.NotEnoughSonhos(it)
                         }
-                        SonhosUtils.SonhosRemovalResult.Success -> {}
-                    }
-
-                    MarriageLoveLetters.insert {
-                        it[MarriageLoveLetters.marriage] = activeMarriage[UserMarriages.id]
-                        it[MarriageLoveLetters.content] = message
-                        it[MarriageLoveLetters.sentAt] = Instant.now()
-                        it[MarriageLoveLetters.sentBy] = context.user.idLong
-                        it[MarriageLoveLetters.affinityReward] = receivedAffinityPoints
-                    }
-
-                    if (receivedAffinityPoints) {
-                        UserMarriages.update({ UserMarriages.id eq activeMarriage[UserMarriages.id] }) {
-                            it[UserMarriages.affinity] = UserMarriages.affinity + LOVE_LETTER_AFFINITY
+                    ) {
+                        MarriageLoveLetters.insert {
+                            it[MarriageLoveLetters.marriage] = activeMarriage[UserMarriages.id]
+                            it[MarriageLoveLetters.content] = message
+                            it[MarriageLoveLetters.sentAt] = Instant.now()
+                            it[MarriageLoveLetters.sentBy] = context.user.idLong
+                            it[MarriageLoveLetters.affinityReward] = receivedAffinityPoints
                         }
+
+                        if (receivedAffinityPoints) {
+                            UserMarriages.update({ UserMarriages.id eq activeMarriage[UserMarriages.id] }) {
+                                it[UserMarriages.affinity] = UserMarriages.affinity + LOVE_LETTER_AFFINITY
+                            }
+                        }
+
+                        val price = LOVE_LETTER_PRICE
+
+                        // Technically not displayed when the letter does not give any reward
+                        val newAffinity = activeMarriage[UserMarriages.affinity] + LOVE_LETTER_AFFINITY
+
+                        val marriageAffinityRank = UserMarriages.selectAll()
+                            .where { UserMarriages.active eq true and (UserMarriages.affinity greaterEq newAffinity) }
+                            .orderBy(Pair(UserMarriages.affinity, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
+                            .count()
+
+                        return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price, receivedAffinityPoints)
                     }
-
-                    val price = LOVE_LETTER_PRICE
-
-                    // Technically not displayed when the letter does not give any reward
-                    val newAffinity = activeMarriage[UserMarriages.affinity] + LOVE_LETTER_AFFINITY
-
-                    val marriageAffinityRank = UserMarriages.selectAll()
-                        .where { UserMarriages.active eq true and (UserMarriages.affinity greaterEq newAffinity) }
-                        .orderBy(Pair(UserMarriages.affinity, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
-                        .count()
-
-                    return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price, receivedAffinityPoints)
                 }
 
                 when (result) {
