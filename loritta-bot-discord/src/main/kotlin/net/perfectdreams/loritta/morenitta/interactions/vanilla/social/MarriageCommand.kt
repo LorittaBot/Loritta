@@ -956,7 +956,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
                     val marriageParticipantsThatArentMe = MarriageParticipants.selectAll()
                         .where {
-                            MarriageParticipants.marriage eq activeMarriage[MarriageParticipants.marriage] and (MarriageParticipants.user eq context.user.idLong)
+                            MarriageParticipants.marriage eq activeMarriage[MarriageParticipants.marriage] and (MarriageParticipants.user neq context.user.idLong)
                         }
                         .toList()
 
