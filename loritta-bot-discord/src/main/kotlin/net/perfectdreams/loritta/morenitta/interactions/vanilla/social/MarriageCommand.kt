@@ -913,7 +913,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     .firstOrNull()
 
                 if (activeMarriage == null)
-                    return@transaction 0
+                    return@transaction 1
 
                 MarriageLoveLetters.selectAll()
                     .where {
