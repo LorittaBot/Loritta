@@ -92,6 +92,7 @@ letter:
     afterReadingTheLetterAffinity: "Após ler a cartinha, você ganhou **{loveLetterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento! Agora vocês possuem **{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** e estão em #{rankPosition,number,#} lugar no ranking."
     afterReadingTheLetterNoAffinityReward: "Como {userMention} já tinha enviado uma cartinha hoje, vocês não ganharam pontos de afinidade... Ou seja, ele te enviou esta cartinha só para mostrar o quanto ele te ama! Ah... Como eu queria ter alguém assim na minha vida..."
     commandsUpsell: "Você pode usar {marriageRankCommand} para ver quais relacionamentos possuem mais afinidade e quais enviaram mais cartinhas de amor e, se você quiser retribuir o afeto com uma cartinha, basta usar {marriageLetterCommand}."
+  messageRangeError: "A sua mensagem precisa ter entre {minLength,number,#} e {maxLength,number,#} caracteres! A sua mensagem tem {currentLength,number,#} caracteres."
   options:
     message:
       text: "A mensagem que você deseja enviar"

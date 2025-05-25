@@ -1236,6 +1236,26 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
             val message = args.joinToString(" ")
 
+            // Check if the message length is within the allowed range
+            // We do not need to do that on the slash command executor itself because Discord already processes that for us on their backend when
+            // using the slash command
+            val range = options.message.range
+            if (range != null && message.length !in range) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(
+                            I18nKeysData.Commands.Command.Marriage.Letter.MessageRangeError(
+                                minLength = range.first,
+                                maxLength = range.last,
+                                currentLength = message.length
+                            )
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
+                return null
+            }
+
             return mapOf(
                 options.message to message
             )
