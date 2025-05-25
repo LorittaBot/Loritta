@@ -563,7 +563,9 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             val marriageDate = marriedSince.atZone(Constants.LORITTA_TIMEZONE)
             val marriageAnniversaryDate = findNextAnniversary(now.atZone(Constants.LORITTA_TIMEZONE), marriageDate)
 
-            val (marriageRank, marriageAffinityRank) = loritta.transaction {
+            val sentByCountField = MarriageLoveLetters.sentBy.count()
+
+            val (marriageRank, marriageAffinityRank, loveLetters) = loritta.transaction {
                 val marriageRank = UserMarriages.selectAll()
                     .where { UserMarriages.active eq true and (UserMarriages.createdAt lessEq marriedSince) }
                     .orderBy(Pair(UserMarriages.createdAt, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
@@ -574,7 +576,12 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     .orderBy(Pair(UserMarriages.affinity, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
                     .count()
 
-                Pair(marriageRank, marriageAffinityRank)
+                val loveLetters = MarriageLoveLetters.select(MarriageLoveLetters.sentBy, sentByCountField)
+                    .where { MarriageLoveLetters.marriage eq marriage.data.id }
+                    .groupBy(MarriageLoveLetters.sentBy)
+                    .toList()
+
+                Triple(marriageRank, marriageAffinityRank, loveLetters)
             }
 
             val coupleName = if (marriage.data.coupleName != null)
@@ -640,6 +647,10 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             appendLine("**Abraços dados:** ${marriage.data.hugCount}")
                             appendLine("**Beijos dados:** ${marriage.data.kissCount}")
                             appendLine("**Cafunés dados:** ${marriage.data.headPatCount}")
+                            appendLine()
+                            for (loveLetter in loveLetters) {
+                                appendLine("${Emotes.LoveLetter} ${context.i18nContext.get(I18N_PREFIX.View.SentXLoveLetters("<@${loveLetter[MarriageLoveLetters.sentBy]}>", loveLetter[sentByCountField]))}")
+                            }
                         }
                     )
                 }
@@ -949,11 +960,21 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         }
                         .toList()
 
+                    val lastLoveLetter = MarriageLoveLetters.selectAll()
+                        .where {
+                            MarriageLoveLetters.marriage eq activeMarriage[UserMarriages.id] and (MarriageLoveLetters.sentBy eq context.user.idLong)
+                        }
+                        .orderBy(MarriageLoveLetters.sentAt, SortOrder.DESC)
+                        .firstOrNull()
+
+                    if (lastLoveLetter != null && lastLoveLetter[MarriageLoveLetters.content].equals(message, true))
+                        return@transaction MarriageLetterResult.MessageContentIdenticalToPreviousLetter
+
                     val lettersSentToday = MarriageLoveLetters.selectAll()
                         .where {
                             MarriageLoveLetters.marriage eq activeMarriage[UserMarriages.id] and (MarriageLoveLetters.sentBy eq context.user.idLong) and (MarriageLoveLetters.sentAt greaterEq todayAtMidnight)
                         }
-                        .orderBy(MarriageLoveLetters.sentBy, SortOrder.DESC)
+                        .orderBy(MarriageLoveLetters.sentAt, SortOrder.DESC)
                         .count() + 1 // plus this one!
 
                     MarriageLoveLetters.insert {
@@ -1006,6 +1027,14 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         context.reply(false) {
                             styled(
                                 context.i18nContext.get(SonhosUtils.insufficientSonhos(LOVE_LETTER_PRICE, result.userBalance)),
+                                Emotes.LoriSob
+                            )
+                        }
+                    }
+                    MarriageLetterResult.MessageContentIdenticalToPreviousLetter -> {
+                        context.reply(false) {
+                            styled(
+                                context.i18nContext.get(I18N_PREFIX.Letter.LetterContentIdenticalToPreviousLetter),
                                 Emotes.LoriSob
                             )
                         }
@@ -1127,6 +1156,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             data class Success(val marriageParticipantsThatArentMe: List<ResultRow>, val affinity: Int, val affinityRank: Long, val price: Long) : MarriageLetterResult()
             data class NotEnoughSonhos(val userBalance: Long) : MarriageLetterResult()
             data object YouAreNotMarried : MarriageLetterResult()
+            data object MessageContentIdenticalToPreviousLetter : MarriageLetterResult()
         }
     }
 

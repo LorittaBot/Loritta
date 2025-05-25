@@ -22,7 +22,7 @@ view:
   userIsNotMarried: "{userMention} não está casado!"
   youLoseXPointsEveryDay: "Você perde {affinityPoints,plural, =0 {# pontos} one {# ponto} other {# pontos}} de afinidade por dia! Você ganha pontos de afinidade uma vez por dia fazendo ações de roleplay fofinhas com o seu parceiro ({roleplayHugCommand} {roleplayKissCommand} {roleplayHeadPatCommand}) e também você enviar uma cartinha de amor usando {marryLetterCommand}."
   userMarriage: "Casamento de {userMention}"
-
+  sentXLoveLetters: "{userMention} enviou {loveLettersCount,plural, =0 {# cartinhas de amor} one {# cartinha de amor} other {# cartinhas de amor}}"
   options:
     user:
       text: "O usuário que você quer ver o casamento dele"
@@ -69,6 +69,7 @@ letter:
   sendLetter: "Enviar Cartinha ({sonhosCount,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}})"
   letterSent: "Você pagou {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para enviar a cartinha. A {messengerName} levou a carta até as suas pessoas queridas e, com isso, você ganhou **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}**! Agora vocês possuem **{affinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** e estão em #{rankPosition,number,#} lugar no ranking. Você pode usar {marriageRankCommand} para ver quais relacionamentos possuem mais afinidade."
   letterSentPrivateChannel: "**Observação:** Se a pessoa estiver com o privado fechado, eu não irei conseguir enviar a mensagem para ela! Mas não se preocupe, você ganhará os pontos de afinidade mesmo assim."
+  letterContentIdenticalToPreviousLetter: "O conteúdo da sua carta é idêntico ao conteúdo da sua última carta! Eu acho que o seu amorzinho merece mais criatividade na cartinha de amor, né?"
   intro:
     - "O correio encantado está ao seu dispor! As doces mensageiras do Oráculo do Amor entregarão a sua carta com muito amor e carinho até o privado das pessoas que você tanto ama. A cada cartinha enviada, você ganhará **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento."
     - ""
