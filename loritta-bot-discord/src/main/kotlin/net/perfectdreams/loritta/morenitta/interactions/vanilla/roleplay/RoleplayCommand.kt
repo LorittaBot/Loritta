@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -19,6 +20,8 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
 import java.util.*
@@ -62,46 +65,65 @@ class RoleplayCommand {
                     AchievementUtils.giveAchievementToUser(context.loritta, UserId(achievementReceiver), achievement)
             }
 
-            val marriage = context.loritta.pudding.marriages.getMarriageByUser(UserId(context.user.idLong))
-            if (marriage != null) {
-                // Figure out who we are talking about
-                val partner = if (marriage.user1.value.toLong() == context.user.idLong) marriage.user2 else marriage.user1
+            val giveOutAffinityReward = context.loritta.transaction {
+                val selfMarriage = MarriageParticipants
+                    .innerJoin(UserMarriages)
+                    .selectAll()
+                    .where {
+                        UserMarriages.active eq true and (MarriageParticipants.user eq context.user.idLong)
+                    }
+                    .firstOrNull() ?: return@transaction false
 
-                if (partner.value.toLong() == receiver.idLong) {
-                    // They are our partner!
-                    var giveOutAffinityReward = false
+                val marriageParticipants = MarriageParticipants.selectAll()
+                    .where {
+                        MarriageParticipants.marriage eq selfMarriage[UserMarriages.id]
+                    }
+                    .toList()
 
-                    if (attributes.givesAffinityReward) {
-                        val lastRoleplayAffinityReward = marriage?.data?.lastRoleplayAffinityReward?.toJavaInstant()
+                val marriageParticipantsIds = marriageParticipants.map { it[MarriageParticipants.user] }
+                    .toSet()
 
-                        if (lastRoleplayAffinityReward != null) {
-                            val lastRoleplayAffinityRewardAtCurrentZone = lastRoleplayAffinityReward.atZone(Constants.LORITTA_TIMEZONE)
-                            val today = LocalDateTime.now(Constants.LORITTA_TIMEZONE)
-
-                            giveOutAffinityReward = today.toLocalDate() != lastRoleplayAffinityRewardAtCurrentZone.toLocalDate()
-                        } else {
-                            giveOutAffinityReward = true
-                        }
+                val marriageParticipantsIdsExceptMyself = marriageParticipantsIds.toMutableSet()
+                    .apply {
+                        this.remove(context.user.idLong)
                     }
 
-                    context.loritta.transaction {
-                        UserMarriages.update({ UserMarriages.id eq marriage.id }) {
-                            it[attributes.marriedActionTrackColumn.get()] = attributes.marriedActionTrackColumn.get() + 1
-                            if (giveOutAffinityReward) {
-                                it[UserMarriages.affinity] = UserMarriages.affinity + 2
-                                it[UserMarriages.lastRoleplayAffinityReward] = java.time.Instant.now()
-                            }
-                        }
-                    }
+                if (receiver.idLong !in marriageParticipantsIdsExceptMyself)
+                    return@transaction false
 
+                // They are our partner!
+                var giveOutAffinityReward = false
+
+                if (attributes.givesAffinityReward) {
+                    val lastRoleplayAffinityReward = selfMarriage[UserMarriages.lastRoleplayAffinityReward]
+
+                    if (lastRoleplayAffinityReward != null) {
+                        val lastRoleplayAffinityRewardAtCurrentZone = lastRoleplayAffinityReward.atZone(Constants.LORITTA_TIMEZONE)
+                        val today = LocalDateTime.now(Constants.LORITTA_TIMEZONE)
+
+                        giveOutAffinityReward = today.toLocalDate() != lastRoleplayAffinityRewardAtCurrentZone.toLocalDate()
+                    } else {
+                        giveOutAffinityReward = true
+                    }
+                }
+
+                UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
+                    it[attributes.marriedActionTrackColumn.get()] = attributes.marriedActionTrackColumn.get() + 1
                     if (giveOutAffinityReward) {
-                        context.reply(true) {
-                            styled(
-                                context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(context.loritta.commandMentions.marriageView)),
-                                Emotes.LoriHappy
-                            )
-                        }
+                        it[UserMarriages.affinity] = UserMarriages.affinity + 2
+                        it[UserMarriages.lastRoleplayAffinityReward] = java.time.Instant.now()
                     }
+                }
+
+                return@transaction giveOutAffinityReward
+            }
+
+            if (giveOutAffinityReward) {
+                context.reply(true) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(context.loritta.commandMentions.marriageView)),
+                        Emotes.LoriHappy
+                    )
                 }
             }
 
