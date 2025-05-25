@@ -1005,6 +1005,20 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         .count() != 0L
                     val receivedAffinityPoints = !sentLoveLettersTodayNotIncludingCurrent
 
+                    val result = SonhosUtils.takeSonhosAndLogToTransactionLog(
+                        context.user.idLong,
+                        LOVE_LETTER_PRICE,
+                        TransactionType.MARRIAGE,
+                        StoredMarriageLoveLetterTransaction
+                    )
+
+                    when (result) {
+                        is SonhosUtils.SonhosRemovalResult.NotEnoughSonhos -> {
+                            return@transaction MarriageLetterResult.NotEnoughSonhos(result.balance)
+                        }
+                        SonhosUtils.SonhosRemovalResult.Success -> {}
+                    }
+
                     MarriageLoveLetters.insert {
                         it[MarriageLoveLetters.marriage] = activeMarriage[UserMarriages.id]
                         it[MarriageLoveLetters.content] = message
@@ -1021,13 +1035,6 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
                     val price = LOVE_LETTER_PRICE
 
-                    val result = SonhosUtils.takeSonhosAndLogToTransactionLog(
-                        context.user.idLong,
-                        price,
-                        TransactionType.MARRIAGE,
-                        StoredMarriageLoveLetterTransaction
-                    )
-
                     // Technically not displayed when the letter does not give any reward
                     val newAffinity = activeMarriage[UserMarriages.affinity] + LOVE_LETTER_AFFINITY
 
@@ -1036,14 +1043,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         .orderBy(Pair(UserMarriages.affinity, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
                         .count()
 
-                    when (result) {
-                        is SonhosUtils.SonhosRemovalResult.NotEnoughSonhos -> {
-                            return@transaction MarriageLetterResult.NotEnoughSonhos(result.balance)
-                        }
-                        SonhosUtils.SonhosRemovalResult.Success -> {
-                            return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price, receivedAffinityPoints)
-                        }
-                    }
+                    return@transaction MarriageLetterResult.Success(marriageParticipantsThatArentMe, newAffinity, marriageAffinityRank, price, receivedAffinityPoints)
                 }
 
                 when (result) {
