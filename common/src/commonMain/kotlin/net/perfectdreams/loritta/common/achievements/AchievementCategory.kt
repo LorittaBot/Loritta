@@ -4,6 +4,7 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.Color
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
 enum class AchievementCategory(
@@ -41,6 +42,12 @@ enum class AchievementCategory(
         I18nKeysData.Achievements.Category.Roleplay.Description("/roleplay"),
         Emotes.LoriKiss,
         Color(255, 141, 230),
+    ),
+    MARRY(
+        I18nKeysData.Achievements.Category.Marry.Title,
+        I18nKeysData.Achievements.Category.Marry.Description("/casamento"),
+        Emotes.MarriageRing,
+        LorittaColors.LorittaPink,
     ),
     MISCELLANEOUS(
         I18nKeysData.Achievements.Category.Miscellaneous.Title,

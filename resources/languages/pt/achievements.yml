@@ -18,6 +18,9 @@ achievements:
     roleplay:
       title: "Roleplay"
       description: "Beijos, tapas, abraços e carinhos são legais... mas por que não apimentá-los com algumas conquistas? Conquistas relacionadas ao comando `{command}`" #This references the Roleplay category description
+    marry:
+      title: "Casamentos"
+      description: "Beijos, tapas, abraços e carinhos são legais... ainda mais com a pessoa que você está casada! Conquistas relacionadas ao comando `{command}`" #This references the Marry category description
     generic:
       description: "Conquistas relacionadas ao comando `{command}`" #This is a generic description for achievements that do not have a custom description
     miscellaneous:
@@ -107,3 +110,7 @@ achievements:
     grassCutter:
       title: "Talarico"
       description: "Beijou alguém que está casado, eita!"
+    #===[ MARRY ]===
+    enchantedMail:
+      title: "Correio Encantado"
+      description: "Enviou uma carta de amor para o seu parceiro"

@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageLoveLetters
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -1161,6 +1162,11 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                                 Emotes.LoriLurk
                             )
                         }
+
+                        context.giveAchievementAndNotify(
+                            AchievementType.ENCHANTED_MAIL,
+                            true
+                        )
                     }
                 }
             }

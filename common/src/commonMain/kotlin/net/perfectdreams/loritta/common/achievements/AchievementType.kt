@@ -148,4 +148,11 @@ enum class AchievementType(
         I18nKeysData.Achievements.Achievement.GrassCutter.Title,
         I18nKeysData.Achievements.Achievement.GrassCutter.Description
     ),
+
+    // === [ MARRY ] ===
+    ENCHANTED_MAIL(
+        AchievementCategory.MARRY,
+        I18nKeysData.Achievements.Achievement.EnchantedMail.Title,
+        I18nKeysData.Achievements.Achievement.EnchantedMail.Description
+    ),
 }
