@@ -981,8 +981,20 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         .orderBy(MarriageLoveLetters.sentAt, SortOrder.DESC)
                         .firstOrNull()
 
-                    if (lastLoveLetter != null && lastLoveLetter[MarriageLoveLetters.content].equals(message, true))
-                        return@transaction MarriageLetterResult.MessageContentIdenticalToPreviousLetter
+                    if (lastLoveLetter != null) {
+                        // Check if the content is identical
+                        if (lastLoveLetter[MarriageLoveLetters.content].equals(message, true))
+                            return@transaction MarriageLetterResult.MessageContentIdenticalToPreviousLetter
+
+                        // Check if the letter was sent within the last minute (cooldown)
+                        val lastLetterTime = lastLoveLetter[MarriageLoveLetters.sentAt]
+                        val cooldownExpiresAt = lastLetterTime.plusSeconds(60)
+                        val now = Instant.now()
+
+                        if (cooldownExpiresAt > now) {
+                            return@transaction MarriageLetterResult.OnCooldown(cooldownExpiresAt)
+                        }
+                    }
 
                     val sentLoveLettersTodayNotIncludingCurrent = MarriageLoveLetters.selectAll()
                         .where {
@@ -1054,6 +1066,18 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         context.reply(false) {
                             styled(
                                 context.i18nContext.get(I18N_PREFIX.Letter.LetterContentIdenticalToPreviousLetter),
+                                Emotes.LoriSob
+                            )
+                        }
+                    }
+                    is MarriageLetterResult.OnCooldown -> {
+                        context.reply(false) {
+                            styled(
+                                context.i18nContext.get(
+                                    I18N_PREFIX.Letter.OnCooldown(
+                                        DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(result.cooldownExpiresAt)
+                                    )
+                                ),
                                 Emotes.LoriSob
                             )
                         }
@@ -1225,6 +1249,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
             data class NotEnoughSonhos(val userBalance: Long) : MarriageLetterResult()
             data object YouAreNotMarried : MarriageLetterResult()
             data object MessageContentIdenticalToPreviousLetter : MarriageLetterResult()
+            data class OnCooldown(val cooldownExpiresAt: Instant) : MarriageLetterResult()
         }
     }
 

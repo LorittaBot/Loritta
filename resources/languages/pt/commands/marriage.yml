@@ -74,6 +74,7 @@ letter:
   letterSentNoAffinityReward: "Você pagou {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para enviar a cartinha. A {messengerName} levou a carta até as suas pessoas queridas e, com isso, você não ganhou pontos de afinidade pois você já tinha enviado uma cartinha hoje... mas você ganhou o sentimento *quentinho* de saber que o seu parceiro vai amar a sua mensagem!"
   letterSentPrivateChannel: "**Observação:** Se a pessoa estiver com o privado fechado, eu não irei conseguir enviar a mensagem para ela! Mas não se preocupe, você ganhará os pontos de afinidade mesmo assim."
   letterContentIdenticalToPreviousLetter: "O conteúdo da sua carta é idêntico ao conteúdo da sua última carta! Eu acho que o seu amorzinho merece mais criatividade na cartinha de amor, né?"
+  onCooldown: "Eu sei que o seu amor pelo seu parceiro é forte... Mas as mensageiras do Oráculo do Amor precisam descansar! Você precisa esperar até {cooldownExpiresAt} antes de enviar outra cartinha de amor!"
   intro:
     - "O correio encantado está ao seu dispor! As doces mensageiras do Oráculo do Amor entregarão a sua carta com muito amor e carinho até o privado das pessoas que você tanto ama. Na primeira cartinha que você enviar no dia, você ganhará **{letterAffinityPoints,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}}** no seu relacionamento."
     - ""
