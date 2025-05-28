@@ -652,7 +652,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             appendLine("**Beijos dados:** ${result.actions[RoleplayAction.KISS] ?: 0}")
                             appendLine("**Cafunés dados:** ${result.actions[RoleplayAction.HEAD_PAT] ?: 0}")
                             appendLine()
-                            for (loveLetter in result.loveLetters) {
+                            for (loveLetter in result.loveLetters.sortedByDescending { it[sentByCountField] }) {
                                 appendLine("${Emotes.LoveLetter} ${context.i18nContext.get(I18N_PREFIX.View.SentXLoveLetters("<@${loveLetter[MarriageLoveLetters.sentBy]}>", loveLetter[sentByCountField]))}")
                             }
                         }
