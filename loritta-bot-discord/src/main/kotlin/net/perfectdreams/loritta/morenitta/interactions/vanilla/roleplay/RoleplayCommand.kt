@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageRoleplayActions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -21,9 +22,11 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.*
 
 class RoleplayCommand {
@@ -94,25 +97,35 @@ class RoleplayCommand {
                 // They are our partner!
                 var giveOutAffinityReward = false
 
+                val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+                val todayAtMidnight = now
+                    .withHour(0)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .toInstant()
+
                 if (attributes.givesAffinityReward) {
-                    val lastRoleplayAffinityReward = selfMarriage[UserMarriages.lastRoleplayAffinityReward]
+                    val sentRoleplayActionTodayNotIncludingCurrent = MarriageRoleplayActions.selectAll()
+                        .where {
+                            MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy eq context.user.idLong)
+                        }
+                        .count() != 0L
 
-                    if (lastRoleplayAffinityReward != null) {
-                        val lastRoleplayAffinityRewardAtCurrentZone = lastRoleplayAffinityReward.atZone(Constants.LORITTA_TIMEZONE)
-                        val today = LocalDateTime.now(Constants.LORITTA_TIMEZONE)
+                    giveOutAffinityReward = !sentRoleplayActionTodayNotIncludingCurrent
+                }
 
-                        giveOutAffinityReward = today.toLocalDate() != lastRoleplayAffinityRewardAtCurrentZone.toLocalDate()
-                    } else {
-                        giveOutAffinityReward = true
+                if (giveOutAffinityReward) {
+                    UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
+                        it[UserMarriages.affinity] = UserMarriages.affinity + 1
                     }
                 }
 
-                UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
-                    it[attributes.marriedActionTrackColumn.get()] = attributes.marriedActionTrackColumn.get() + 1
-                    if (giveOutAffinityReward) {
-                        it[UserMarriages.affinity] = UserMarriages.affinity + 2
-                        it[UserMarriages.lastRoleplayAffinityReward] = java.time.Instant.now()
-                    }
+                MarriageRoleplayActions.insert {
+                    it[MarriageRoleplayActions.marriage] = selfMarriage[UserMarriages.id]
+                    it[MarriageRoleplayActions.action] = attributes.type
+                    it[MarriageRoleplayActions.sentAt] = now.toInstant()
+                    it[MarriageRoleplayActions.sentBy] = context.user.idLong
+                    it[MarriageRoleplayActions.affinityReward] = giveOutAffinityReward
                 }
 
                 return@transaction giveOutAffinityReward

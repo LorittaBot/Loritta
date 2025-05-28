@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.common.utils.RoleplayAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
@@ -18,79 +19,79 @@ import java.awt.Color
 
 object RoleplayUtils {
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayAction.HUG,
         RoleplayCommand.I18N_PREFIX.Hug.Options.User.Text,
         RoleplayCommand.I18N_PREFIX.Hug.ButtonLabel,
         RandomRoleplayPicturesClient::hug,
         I18nKeysData.Commands.Command.Roleplay.Hug::Response,
         Color(255, 141, 230),
         Emotes.Blush,
-        UserMarriages::hugCount,
         true
     )
 
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayAction.HEAD_PAT,
         RoleplayCommand.I18N_PREFIX.Headpat.Options.User.Text,
         RoleplayCommand.I18N_PREFIX.Headpat.ButtonLabel,
         RandomRoleplayPicturesClient::headPat,
         I18nKeysData.Commands.Command.Roleplay.Headpat::Response,
         Color(156, 39, 176),
         Emotes.LoriPat,
-        UserMarriages::headPatCount,
         true
     )
 
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayAction.HIGH_FIVE,
         RoleplayCommand.I18N_PREFIX.Highfive.Options.User.Text,
         RoleplayCommand.I18N_PREFIX.Highfive.ButtonLabel,
         RandomRoleplayPicturesClient::highFive,
         I18nKeysData.Commands.Command.Roleplay.Highfive::Response,
         Color(165, 255, 76),
         Emotes.LoriHi,
-        UserMarriages::highFiveCount,
         false
     )
 
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayAction.SLAP,
         RoleplayCommand.I18N_PREFIX.Slap.Options.User.Text,
         RoleplayCommand.I18N_PREFIX.Slap.ButtonLabel,
         RandomRoleplayPicturesClient::slap,
         I18nKeysData.Commands.Command.Roleplay.Slap::Response,
         Color(244, 67, 54),
         Emotes.LoriPunch,
-        UserMarriages::slapCount,
         false
     )
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayAction.ATTACK,
         RoleplayCommand.I18N_PREFIX.Attack.Options.User.Text,
         RoleplayCommand.I18N_PREFIX.Attack.ButtonLabel,
         RandomRoleplayPicturesClient::attack,
         I18nKeysData.Commands.Command.Roleplay.Attack::Response,
         Color(244, 67, 54),
         Emotes.LoriRage,
-        UserMarriages::attackCount,
         false
     )
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayAction.DANCE,
         RoleplayCommand.I18N_PREFIX.Dance.Options.User.Text,
         RoleplayCommand.I18N_PREFIX.Dance.ButtonLabel,
         RandomRoleplayPicturesClient::dance,
         I18nKeysData.Commands.Command.Roleplay.Dance::Response,
         Color(255, 152, 0),
         Emotes.Dancer,
-        UserMarriages::danceCount,
         false
     )
 
     val KISS_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayAction.KISS,
         RoleplayCommand.I18N_PREFIX.Kiss.Options.User.Text,
         RoleplayCommand.I18N_PREFIX.Kiss.ButtonLabel,
         RandomRoleplayPicturesClient::kiss,
         I18nKeysData.Commands.Command.Roleplay.Kiss::Response,
         Color(233, 30, 99),
         Emotes.LoriKiss,
-        UserMarriages::kissCount,
         true
     )
 

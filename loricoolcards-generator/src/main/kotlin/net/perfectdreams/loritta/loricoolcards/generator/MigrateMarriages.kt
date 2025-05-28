@@ -108,13 +108,6 @@ suspend fun main() {
                             it[UserMarriages.createdAt] = createdAt
                             it[UserMarriages.active] = true
                             // it[UserMarriages.affinity] = DEFAULT_AFFINITY
-                            it[UserMarriages.hugCount] = 0
-                            it[UserMarriages.headPatCount] = 0
-                            it[UserMarriages.highFiveCount] = 0
-                            it[UserMarriages.slapCount] = 0
-                            it[UserMarriages.attackCount] = 0
-                            it[UserMarriages.danceCount] = 0
-                            it[UserMarriages.kissCount] = 0
                             it[UserMarriages.coupleName] = null
                         }
 

@@ -19,12 +19,14 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromReso
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageLoveLetters
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageRoleplayActions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.EnvironmentType
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.RoleplayAction
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -260,13 +262,6 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         it[UserMarriages.createdAt] = now
                         it[UserMarriages.active] = true
                         it[UserMarriages.affinity] = DEFAULT_AFFINITY
-                        it[UserMarriages.hugCount] = 0
-                        it[UserMarriages.headPatCount] = 0
-                        it[UserMarriages.highFiveCount] = 0
-                        it[UserMarriages.slapCount] = 0
-                        it[UserMarriages.attackCount] = 0
-                        it[UserMarriages.danceCount] = 0
-                        it[UserMarriages.kissCount] = 0
                         it[UserMarriages.coupleName] = null
                     }
 
@@ -565,7 +560,9 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
 
             val sentByCountField = MarriageLoveLetters.sentBy.count()
 
-            val (marriageRank, marriageAffinityRank, loveLetters) = loritta.transaction {
+            val actionCountField = MarriageRoleplayActions.action.count()
+
+            val result = loritta.transaction {
                 val marriageRank = UserMarriages.selectAll()
                     .where { UserMarriages.active eq true and (UserMarriages.createdAt lessEq marriedSince) }
                     .orderBy(Pair(UserMarriages.createdAt, SortOrder.ASC), Pair(UserMarriages.id, SortOrder.ASC))
@@ -581,7 +578,14 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                     .groupBy(MarriageLoveLetters.sentBy)
                     .toList()
 
-                Triple(marriageRank, marriageAffinityRank, loveLetters)
+                val roleplayActions = MarriageRoleplayActions.select(MarriageRoleplayActions.action, actionCountField)
+                    .where {
+                        MarriageRoleplayActions.marriage eq marriage.data.id
+                    }
+                    .groupBy(MarriageRoleplayActions.action)
+                    .associate { it[MarriageRoleplayActions.action] to it[actionCountField] }
+
+                Result(marriageRank, marriageAffinityRank, loveLetters, roleplayActions)
             }
 
             val coupleName = if (marriage.data.coupleName != null)
@@ -635,20 +639,20 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             appendLine()
 
                             appendLine("**Afinidade:** ${marriage.data.affinity} pontos")
-                            appendLine("Este casamento é o #${marriageAffinityRank} com mais afinidade em toda a Loritta!")
+                            appendLine("Este casamento é o #${result.affinityRank} com mais afinidade em toda a Loritta!")
                             appendLine(context.i18nContext.get(I18N_PREFIX.View.YouLoseXPointsEveryDay(marriage.participants.size, loritta.commandMentions.roleplayHug, loritta.commandMentions.roleplayKiss, loritta.commandMentions.roleplayHeadPat, loritta.commandMentions.marriageLetter)))
                             appendLine()
 
                             appendLine("**Casados desde:** ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(marriage.marriedSince.toJavaInstant())}")
                             appendLine("**Próximo aniversário do casamento:** ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(marriageAnniversaryDate.toInstant())}")
-                            appendLine("Este casamento é o #${marriageRank} mais duradouro em toda a Loritta!")
+                            appendLine("Este casamento é o #${result.marriageRank} mais duradouro em toda a Loritta!")
                             appendLine()
 
-                            appendLine("**Abraços dados:** ${marriage.data.hugCount}")
-                            appendLine("**Beijos dados:** ${marriage.data.kissCount}")
-                            appendLine("**Cafunés dados:** ${marriage.data.headPatCount}")
+                            appendLine("**Abraços dados:** ${result.actions[RoleplayAction.HUG] ?: 0}")
+                            appendLine("**Beijos dados:** ${result.actions[RoleplayAction.KISS] ?: 0}")
+                            appendLine("**Cafunés dados:** ${result.actions[RoleplayAction.HEAD_PAT] ?: 0}")
                             appendLine()
-                            for (loveLetter in loveLetters) {
+                            for (loveLetter in result.loveLetters) {
                                 appendLine("${Emotes.LoveLetter} ${context.i18nContext.get(I18N_PREFIX.View.SentXLoveLetters("<@${loveLetter[MarriageLoveLetters.sentBy]}>", loveLetter[sentByCountField]))}")
                             }
                         }
@@ -717,6 +721,13 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
         ): Map<OptionReference<*>, Any?>? {
             return emptyMap()
         }
+
+        private data class Result(
+            val marriageRank: Long,
+            val affinityRank: Long,
+            val loveLetters: List<ResultRow>,
+            val actions: Map<RoleplayAction, Long>
+        )
     }
 
     class MarriageRestoreExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {

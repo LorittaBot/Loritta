@@ -10,9 +10,5 @@ data class Marriage(
     val marriedSince: Instant,
     val coupleName: String?,
     val coupleBadge: String?,
-    val affinity: Int,
-    val hugCount: Int,
-    val kissCount: Int,
-    val headPatCount: Int,
-    val lastRoleplayAffinityReward: Instant?
+    val affinity: Int
 )
