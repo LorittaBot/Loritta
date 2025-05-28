@@ -6,6 +6,8 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageRoleplayActions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.Gender
@@ -13,9 +15,17 @@ import net.perfectdreams.loritta.common.utils.RoleplayAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.roleplay.RoleplayCommand.Companion.I18N_PREFIX
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import net.perfectdreams.randomroleplaypictures.common.data.api.AnimeSource
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import java.awt.Color
+import java.time.ZonedDateTime
 
 object RoleplayUtils {
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
@@ -133,7 +143,7 @@ object RoleplayUtils {
             // ===[ KISS ]===
             KISS_ATTRIBUTES -> {
                 if (receiver == loritta.config.loritta.discord.applicationId.toLong()) {
-                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA))) {
+                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA)), false) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
                             Emotes.LoriBonk
@@ -256,7 +266,70 @@ object RoleplayUtils {
 
         val (picturePath, pictureSource) = result
 
-        return RoleplayResponse(achievements) {
+        val giveOutAffinityReward = context.loritta.transaction {
+            val selfMarriage = MarriageParticipants
+                .innerJoin(UserMarriages)
+                .selectAll()
+                .where {
+                    UserMarriages.active eq true and (MarriageParticipants.user eq context.user.idLong)
+                }
+                .firstOrNull() ?: return@transaction false
+
+            val marriageParticipants = MarriageParticipants.selectAll()
+                .where {
+                    MarriageParticipants.marriage eq selfMarriage[UserMarriages.id]
+                }
+                .toList()
+
+            val marriageParticipantsIds = marriageParticipants.map { it[MarriageParticipants.user] }
+                .toSet()
+
+            val marriageParticipantsIdsExceptMyself = marriageParticipantsIds.toMutableSet()
+                .apply {
+                    this.remove(context.user.idLong)
+                }
+
+            if (receiver !in marriageParticipantsIdsExceptMyself)
+                return@transaction false
+
+            // They are our partner!
+            var giveOutAffinityReward = false
+
+            val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
+            val todayAtMidnight = now
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .toInstant()
+
+            if (roleplayActionAttributes.givesAffinityReward) {
+                val sentRoleplayActionTodayNotIncludingCurrent = MarriageRoleplayActions.selectAll()
+                    .where {
+                        MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy eq context.user.idLong)
+                    }
+                    .count() != 0L
+
+                giveOutAffinityReward = !sentRoleplayActionTodayNotIncludingCurrent
+            }
+
+            if (giveOutAffinityReward) {
+                UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
+                    it[UserMarriages.affinity] = UserMarriages.affinity + 1
+                }
+            }
+
+            MarriageRoleplayActions.insert {
+                it[MarriageRoleplayActions.marriage] = selfMarriage[UserMarriages.id]
+                it[MarriageRoleplayActions.action] = roleplayActionAttributes.type
+                it[MarriageRoleplayActions.sentAt] = now.toInstant()
+                it[MarriageRoleplayActions.sentBy] = context.user.idLong
+                it[MarriageRoleplayActions.affinityReward] = giveOutAffinityReward
+            }
+
+            return@transaction giveOutAffinityReward
+        }
+
+        return RoleplayResponse(achievements, giveOutAffinityReward) {
             embed {
                 description = buildString {
                     if (data.combo >= 3) {
@@ -290,7 +363,7 @@ object RoleplayUtils {
                         context.invalidateComponentCallback()
 
                         // Retribute
-                        val (achievementTargets, message) = handleRoleplayMessage(
+                        val (achievementTargets, giveOutAffinityReward, message) = handleRoleplayMessage(
                             context.loritta,
                             context,
                             context.i18nContext,
@@ -313,6 +386,15 @@ object RoleplayUtils {
                                 context.giveAchievementAndNotify(achievement, ephemeral = true)
                             else
                                 AchievementUtils.giveAchievementToUser(context.loritta, net.perfectdreams.loritta.serializable.UserId(achievementReceiver), achievement)
+                        }
+
+                        if (giveOutAffinityReward) {
+                            context.reply(true) {
+                                styled(
+                                    context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(context.loritta.commandMentions.marriageView)),
+                                    Emotes.LoriHappy
+                                )
+                            }
                         }
                     }
                 } else {
@@ -354,6 +436,7 @@ object RoleplayUtils {
 
     data class RoleplayResponse(
         val achievements: List<AchievementTarget>,
+        val giveOutAffinityReward: Boolean,
         val builder: InlineMessage<*>.() -> (Unit)
     )
 

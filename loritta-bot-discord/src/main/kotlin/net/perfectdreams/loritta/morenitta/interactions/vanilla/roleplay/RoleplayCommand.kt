@@ -43,7 +43,7 @@ class RoleplayCommand {
         ) {
             context.deferChannelMessage(false)
 
-            val (achievementTargets, message) = RoleplayUtils.handleRoleplayMessage(
+            val (achievementTargets, giveOutAffinityReward, message) = RoleplayUtils.handleRoleplayMessage(
                 context.loritta,
                 context,
                 context.i18nContext,
@@ -68,69 +68,6 @@ class RoleplayCommand {
                     AchievementUtils.giveAchievementToUser(context.loritta, UserId(achievementReceiver), achievement)
             }
 
-            val giveOutAffinityReward = context.loritta.transaction {
-                val selfMarriage = MarriageParticipants
-                    .innerJoin(UserMarriages)
-                    .selectAll()
-                    .where {
-                        UserMarriages.active eq true and (MarriageParticipants.user eq context.user.idLong)
-                    }
-                    .firstOrNull() ?: return@transaction false
-
-                val marriageParticipants = MarriageParticipants.selectAll()
-                    .where {
-                        MarriageParticipants.marriage eq selfMarriage[UserMarriages.id]
-                    }
-                    .toList()
-
-                val marriageParticipantsIds = marriageParticipants.map { it[MarriageParticipants.user] }
-                    .toSet()
-
-                val marriageParticipantsIdsExceptMyself = marriageParticipantsIds.toMutableSet()
-                    .apply {
-                        this.remove(context.user.idLong)
-                    }
-
-                if (receiver.idLong !in marriageParticipantsIdsExceptMyself)
-                    return@transaction false
-
-                // They are our partner!
-                var giveOutAffinityReward = false
-
-                val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
-                val todayAtMidnight = now
-                    .withHour(0)
-                    .withMinute(0)
-                    .withSecond(0)
-                    .toInstant()
-
-                if (attributes.givesAffinityReward) {
-                    val sentRoleplayActionTodayNotIncludingCurrent = MarriageRoleplayActions.selectAll()
-                        .where {
-                            MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy eq context.user.idLong)
-                        }
-                        .count() != 0L
-
-                    giveOutAffinityReward = !sentRoleplayActionTodayNotIncludingCurrent
-                }
-
-                if (giveOutAffinityReward) {
-                    UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
-                        it[UserMarriages.affinity] = UserMarriages.affinity + 1
-                    }
-                }
-
-                MarriageRoleplayActions.insert {
-                    it[MarriageRoleplayActions.marriage] = selfMarriage[UserMarriages.id]
-                    it[MarriageRoleplayActions.action] = attributes.type
-                    it[MarriageRoleplayActions.sentAt] = now.toInstant()
-                    it[MarriageRoleplayActions.sentBy] = context.user.idLong
-                    it[MarriageRoleplayActions.affinityReward] = giveOutAffinityReward
-                }
-
-                return@transaction giveOutAffinityReward
-            }
-
             if (giveOutAffinityReward) {
                 context.reply(true) {
                     styled(
@@ -148,7 +85,7 @@ class RoleplayCommand {
                 delay(5_000)
 
                 // We don't care about achievements, because none of the actions that Loritta do *should* trigger a achievement
-                val (_, lorittaMessage) = RoleplayUtils.handleRoleplayMessage(
+                val (_, _, lorittaMessage) = RoleplayUtils.handleRoleplayMessage(
                     context.loritta,
                     context,
                     context.i18nContext,
