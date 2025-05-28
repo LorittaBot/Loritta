@@ -1330,7 +1330,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                             UserMarriages.active eq true
                         }
                         .groupBy(MarriageLoveLetters.marriage)
-                        .orderBy(count, SortOrder.DESC)
+                        .orderBy(count to SortOrder.DESC, UserMarriages.createdAt to SortOrder.ASC)
                         .limit(5)
                         .offset(page * 5)
                         .toList()
@@ -1519,8 +1519,8 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         }
                         .apply {
                             when (rankType) {
-                                MarriageRankType.LONGEST -> orderBy(UserMarriages.createdAt, SortOrder.ASC)
-                                MarriageRankType.AFFINITY -> orderBy(UserMarriages.affinity, SortOrder.DESC)
+                                MarriageRankType.LONGEST -> orderBy(UserMarriages.createdAt to SortOrder.ASC)
+                                MarriageRankType.AFFINITY -> orderBy(UserMarriages.affinity to SortOrder.DESC, UserMarriages.createdAt to SortOrder.ASC)
                                 MarriageRankType.LOVE_LETTERS -> error("This should never happen!")
                             }
                         }
