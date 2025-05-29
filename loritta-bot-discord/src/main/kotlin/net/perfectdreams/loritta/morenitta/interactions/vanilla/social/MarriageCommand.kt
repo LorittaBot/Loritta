@@ -1334,14 +1334,15 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                         .count()
 
                     val count = MarriageLoveLetters.marriage.count()
+                    val maxCreatedAt = UserMarriages.createdAt.max()
 
                     val sortedMarriages = MarriageLoveLetters.innerJoin(UserMarriages)
-                        .select(MarriageLoveLetters.marriage, count)
+                        .select(MarriageLoveLetters.marriage, maxCreatedAt, count)
                         .where {
                             UserMarriages.active eq true
                         }
                         .groupBy(MarriageLoveLetters.marriage)
-                        .orderBy(count to SortOrder.DESC, UserMarriages.createdAt to SortOrder.ASC)
+                        .orderBy(count to SortOrder.DESC, maxCreatedAt to SortOrder.ASC)
                         .limit(5)
                         .offset(page * 5)
                         .toList()
