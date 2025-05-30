@@ -177,12 +177,19 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
             val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
-            val boughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+            val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                 LoriCoolCardsUserBoughtBoosterPacks.user eq userThatWillReceiveTheSticker.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
             }.count()
 
-            if (template.minimumBoosterPacksToTrade > boughtPacks)
-                return@transaction GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, boughtPacks)
+            if (template.minimumBoosterPacksToGive > receiverBoughtPacks)
+                return@transaction GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, receiverBoughtPacks)
+
+            val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+            }.count()
+
+            if (template.minimumBoosterPacksToGive > giverBoughtPacks)
+                return@transaction GiveStickerResult.GiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
 
             val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
                 LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
@@ -223,6 +230,14 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 context.reply(false) {
                     styled(
                         "Nenhum evento de figurinhas ativo"
+                    )
+                }
+            }
+
+            is GiveStickerResult.GiverDidntBuyEnoughBoosterPacks -> {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.YouDidntBuyEnoughBoosterPacks(result.requiredPacks - result.currentPacks))
                     )
                 }
             }
@@ -293,7 +308,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                 }.toList()
 
                                 if (stickersToBeGiven.size != stickerFancyIdsList.size)
-                                    return@transaction GiveStickerResult.UnknownCard
+                                    return@transaction GiveStickerAcceptedTransactionResult.UnknownCard
 
                                 val stickersIdsToBeGiven = stickersToBeGiven.map {
                                     it[LoriCoolCardsEventCards.id].value
@@ -317,7 +332,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                 }
 
                                 if (missingStickers.isNotEmpty())
-                                    return@transaction GiveStickerResult.NotEnoughCards(missingStickers)
+                                    return@transaction GiveStickerAcceptedTransactionResult.NotEnoughCards(missingStickers)
 
                                 val stickerIdsToBeGivenMappedToOwnedStickerId = stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsUserOwnedCards.id].value }
                                 val stickerIdsToBeGivenMappedToEventStickerId = stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsEventCards.id].value }
@@ -409,6 +424,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
         data object EventUnavailable : GiveStickerResult()
         data object UnknownCard : GiveStickerResult()
         data class NotEnoughCards(val stickersMissing: List<ResultRow>) : GiveStickerResult()
+        data class GiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : GiveStickerResult()
         data class ReceiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : GiveStickerResult()
         data class Success(val givenStickers: List<ResultRow>) : GiveStickerResult()
     }

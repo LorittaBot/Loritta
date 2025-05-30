@@ -134,6 +134,11 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         loriEmoji = Emotes.LoriCoolSticker
                     }
                 ) { context ->
+                    val receiverUser = if (context.user == userThatYouWantToTradeWith)
+                        selfUser
+                    else
+                        userThatYouWantToTradeWith
+
                     mutex.withLock {
                         if (usersThatHaveConfirmedTheTrade.isNotEmpty()) {
                             context.reply(true) {
@@ -199,12 +204,19 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                                 val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
-                                val boughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                                     LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
                                 }.count()
 
-                                if (template.minimumBoosterPacksToTrade > boughtPacks)
-                                    return@transaction SetStickersResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, boughtPacks)
+                                if (template.minimumBoosterPacksToTrade > giverBoughtPacks)
+                                    return@transaction SetStickersResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
+
+                                val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                    LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                }.count()
+
+                                if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
+                                    return@transaction SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
 
                                 val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
                                     LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
@@ -262,6 +274,13 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         )
                                     }
                                 }
+                                is SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks -> {
+                                    context.reply(true) {
+                                        styled(
+                                            context.i18nContext.get(I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacks(receiverUser.asMention, result.requiredPacks - result.currentPacks))
+                                        )
+                                    }
+                                }
                                 is SetStickersResult.NotEnoughCards -> {
                                     context.reply(true) {
                                         styled(
@@ -290,6 +309,11 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         loriEmoji = Emotes.Sonhos2
                     }
                 ) { context ->
+                    val receiverUser = if (context.user == userThatYouWantToTradeWith)
+                        selfUser
+                    else
+                        userThatYouWantToTradeWith
+
                     mutex.withLock {
                         if (usersThatHaveConfirmedTheTrade.isNotEmpty()) {
                             context.reply(true) {
@@ -353,12 +377,19 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
                                     val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
-                                    val boughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                    val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                                         LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
                                     }.count()
 
-                                    if (template.minimumBoosterPacksToTrade > boughtPacks)
-                                        return@transaction SetSonhosResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, boughtPacks)
+                                    if (template.minimumBoosterPacksToTradeBySonhos > giverBoughtPacks)
+                                        return@transaction SetSonhosResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTradeBySonhos, giverBoughtPacks)
+
+                                    val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                        LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                    }.count()
+
+                                    if (template.minimumBoosterPacksToTradeBySonhos > receiverBoughtPacks)
+                                        return@transaction SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTradeBySonhos, receiverBoughtPacks)
 
                                     val userSonhos = Profiles.select(Profiles.money).where {
                                         Profiles.id eq context.user.idLong
@@ -382,6 +413,13 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         context.reply(true) {
                                             styled(
                                                 context.i18nContext.get(I18N_PREFIX.YouDidntBuyEnoughBoosterPacks(result.requiredPacks - result.currentPacks))
+                                            )
+                                        }
+                                    }
+                                    is SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacksSonhosTrade(receiverUser.asMention, result.requiredPacks - result.currentPacks))
                                             )
                                         }
                                     }
@@ -978,6 +1016,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         data object EventUnavailable : SetStickersResult()
         data object UnknownCard : SetStickersResult()
         data class YouDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : SetStickersResult()
+        data class ReceiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : SetStickersResult()
         data class NotEnoughCards(val stickersMissing: List<ResultRow>) : SetStickersResult()
         data class Success(val stickerFancyIds: List<String>) : SetStickersResult()
     }
@@ -986,6 +1025,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         data object EventUnavailable : SetSonhosResult()
         data class NotEnoughSonhos(val userSonhos: Long, val howMuch: Long) : SetSonhosResult()
         data class YouDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : SetSonhosResult()
+        data class ReceiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : SetSonhosResult()
         data object Success : SetSonhosResult()
     }
 

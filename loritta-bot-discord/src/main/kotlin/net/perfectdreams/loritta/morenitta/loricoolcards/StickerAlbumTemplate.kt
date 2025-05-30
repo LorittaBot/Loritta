@@ -43,6 +43,14 @@ data class StickerAlbumTemplate(
      */
     val boosterPacksOnDailyReward: Int = 0,
     /**
+     * How many booster packs the user must buy before being able to give stickers
+     */
+    val minimumBoosterPacksToGive: Int = minimumBoosterPacksToTrade,
+    /**
+     * How many booster packs the user must buy before being able to trade by sonhos
+     */
+    val minimumBoosterPacksToTradeBySonhos: Int = minimumBoosterPacksToTrade,
+    /**
      * The pages of the album
      */
     val pages: List<AlbumComboPage>,
