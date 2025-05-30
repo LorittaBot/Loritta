@@ -182,14 +182,14 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
             }.count()
 
             if (template.minimumBoosterPacksToGive > receiverBoughtPacks)
-                return@transaction GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, receiverBoughtPacks)
+                return@transaction GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToGive, receiverBoughtPacks)
 
             val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                 LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
             }.count()
 
             if (template.minimumBoosterPacksToGive > giverBoughtPacks)
-                return@transaction GiveStickerResult.GiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
+                return@transaction GiveStickerResult.GiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToGive, giverBoughtPacks)
 
             val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
                 LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
