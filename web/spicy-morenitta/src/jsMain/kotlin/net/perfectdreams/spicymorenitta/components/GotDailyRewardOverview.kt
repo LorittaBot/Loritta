@@ -184,7 +184,23 @@ fun GotDailyRewardOverview(
                     }
 
                     P {
-                        Text("Se estiver acabando o tempo para acabar o álbum e você ainda precisa de muitas figurinhas para completar, você pode comprar mais pacotes usando ")
+                        Text("Aquelas figurinhas repetidas que não te servem mais podem ser a alegria de outra pessoa! Troque figurinhas com ")
+                        Span(attrs = {
+                            classes("discord-mention")
+                        }){
+                            Text("/figurittas trocar")
+                        }
+                        Text(" ou doe elas com ")
+                        Span(attrs = {
+                            classes("discord-mention")
+                        }){
+                            Text("/figurittas dar")
+                        }
+                        Text(". Fique esperto, pois você terá que trocar figurinhas com outras pessoas para conseguir finalizar o evento!")
+                    }
+
+                    P {
+                        Text("Se estiver acabando o tempo para acabar o álbum e você estiver desesperado para ter mais pacotinhos de figurinhas, você pode comprar pacotinhos usando ")
                         Span(attrs = {
                             classes("discord-mention")
                         }){
