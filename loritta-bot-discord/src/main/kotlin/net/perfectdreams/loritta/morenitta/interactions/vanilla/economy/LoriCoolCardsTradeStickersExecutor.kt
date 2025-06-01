@@ -217,125 +217,127 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                 return@sendModal
                             }
 
-                            val result = loritta.transaction {
-                                val event = LoriCoolCardsEvents.selectAll().where {
-                                    LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-                                }.firstOrNull() ?: return@transaction SetStickersResult.EventUnavailable
+                            mutex.withLock {
+                                val result = loritta.transaction {
+                                    val event = LoriCoolCardsEvents.selectAll().where {
+                                        LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                                    }.firstOrNull() ?: return@transaction SetStickersResult.EventUnavailable
 
-                                val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
+                                    val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
-                                val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
-                                    LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
-                                }.count()
+                                    val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                        LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                    }.count()
 
-                                if (template.minimumBoosterPacksToTrade > giverBoughtPacks)
-                                    return@transaction SetStickersResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
+                                    if (template.minimumBoosterPacksToTrade > giverBoughtPacks)
+                                        return@transaction SetStickersResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
 
-                                val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
-                                    LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
-                                }.count()
+                                    val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                        LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                    }.count()
 
-                                if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
-                                    return@transaction SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
+                                    if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
+                                        return@transaction SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
 
-                                val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
-                                    LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
-                                }.toList()
+                                    val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
+                                        LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
+                                    }.toList()
 
-                                if (stickersToBeGiven.size != stickerFancyIdsList.size)
-                                    return@transaction SetStickersResult.UnknownCard
+                                    if (stickersToBeGiven.size != stickerFancyIdsList.size)
+                                        return@transaction SetStickersResult.UnknownCard
 
-                                val stickersIdsToBeGiven = stickersToBeGiven.map {
-                                    it[LoriCoolCardsEventCards.id].value
-                                }
-
-                                val ownedStickersStickedMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
-                                    LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                                }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                                    .toList()
-                                    .map { it[LoriCoolCardsUserOwnedCards.card].value }
-
-                                val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
-                                    LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                                }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                                    .toList()
-
-                                val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
-                                val missingStickers = mutableListOf<ResultRow>()
-                                val stickersThatArentStickedButAreTryingToBeGiven = mutableListOf<ResultRow>()
-
-                                for (stickerId in stickersIdsToBeGiven) {
-                                    val stickerData = ownedStickersMatchingTheIds.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
-                                    if (stickerData == null) {
-                                        missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                                    } else {
-                                        if (!ownedStickersStickedMatchingTheIds.contains(stickerId))
-                                            stickersThatArentStickedButAreTryingToBeGiven.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                                        else
-                                            stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
+                                    val stickersIdsToBeGiven = stickersToBeGiven.map {
+                                        it[LoriCoolCardsEventCards.id].value
                                     }
-                                }
 
-                                if (missingStickers.isNotEmpty())
-                                    return@transaction SetStickersResult.NotEnoughCards(missingStickers)
+                                    val ownedStickersStickedMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
+                                        LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                                    }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
+                                        .toList()
+                                        .map { it[LoriCoolCardsUserOwnedCards.card].value }
 
-                                if (stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
-                                    return@transaction SetStickersResult.TryingToGiveStickersThatArentStickedYet(stickersThatArentStickedButAreTryingToBeGiven)
+                                    val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
+                                        LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                                    }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
+                                        .toList()
 
-                                return@transaction SetStickersResult.Success(stickerIdsToBeGivenMappedToSticker.values.map { it[LoriCoolCardsEventCards.fancyCardId] })
-                            }
+                                    val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
+                                    val missingStickers = mutableListOf<ResultRow>()
+                                    val stickersThatArentStickedButAreTryingToBeGiven = mutableListOf<ResultRow>()
 
-                            when (result) {
-                                SetStickersResult.EventUnavailable -> {
-                                    context.reply(false) {
-                                        styled(
-                                            "Nenhum evento de figurinhas ativo"
-                                        )
-                                    }
-                                }
-                                is SetStickersResult.UnknownCard -> {
-                                    context.reply(true) {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.TryingToGiveAnUnknownSticker)
-                                        )
-                                    }
-                                }
-                                is SetStickersResult.YouDidntBuyEnoughBoosterPacks -> {
-                                    context.reply(true) {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.YouDidntBuyEnoughBoosterPacks(result.requiredPacks - result.currentPacks))
-                                        )
-                                    }
-                                }
-                                is SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks -> {
-                                    context.reply(true) {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacks(receiverUser.asMention, result.requiredPacks - result.currentPacks))
-                                        )
-                                    }
-                                }
-                                is SetStickersResult.NotEnoughCards -> {
-                                    context.reply(true) {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.YouDontHaveEnoughStickers(result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
-                                        )
-                                    }
-                                }
-                                is SetStickersResult.TryingToGiveStickersThatArentStickedYet -> {
-                                    context.reply(true) {
-                                        styled(
-                                            context.i18nContext.get(I18N_PREFIX.YouAreTryingToGiveStickersThatYouHaventStickedYet(result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
-                                        )
-                                    }
-                                }
-                                is SetStickersResult.Success -> {
-                                    playerThatMatchesThisTrade.stickerFancyIds.clear()
-                                    playerThatMatchesThisTrade.stickerFancyIds.addAll(result.stickerFancyIds)
-                                    deferEdit.editOriginal(
-                                        MessageEdit {
-                                            apply(createTradeMessage())
+                                    for (stickerId in stickersIdsToBeGiven) {
+                                        val stickerData = ownedStickersMatchingTheIds.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
+                                        if (stickerData == null) {
+                                            missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                                        } else {
+                                            if (!ownedStickersStickedMatchingTheIds.contains(stickerId))
+                                                stickersThatArentStickedButAreTryingToBeGiven.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                                            else
+                                                stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
                                         }
-                                    )
+                                    }
+
+                                    if (missingStickers.isNotEmpty())
+                                        return@transaction SetStickersResult.NotEnoughCards(missingStickers)
+
+                                    if (stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
+                                        return@transaction SetStickersResult.TryingToGiveStickersThatArentStickedYet(stickersThatArentStickedButAreTryingToBeGiven)
+
+                                    return@transaction SetStickersResult.Success(stickerIdsToBeGivenMappedToSticker.values.map { it[LoriCoolCardsEventCards.fancyCardId] })
+                                }
+
+                                when (result) {
+                                    SetStickersResult.EventUnavailable -> {
+                                        context.reply(false) {
+                                            styled(
+                                                "Nenhum evento de figurinhas ativo"
+                                            )
+                                        }
+                                    }
+                                    is SetStickersResult.UnknownCard -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.TryingToGiveAnUnknownSticker)
+                                            )
+                                        }
+                                    }
+                                    is SetStickersResult.YouDidntBuyEnoughBoosterPacks -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.YouDidntBuyEnoughBoosterPacks(result.requiredPacks - result.currentPacks))
+                                            )
+                                        }
+                                    }
+                                    is SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacks(receiverUser.asMention, result.requiredPacks - result.currentPacks))
+                                            )
+                                        }
+                                    }
+                                    is SetStickersResult.NotEnoughCards -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.YouDontHaveEnoughStickers(result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
+                                            )
+                                        }
+                                    }
+                                    is SetStickersResult.TryingToGiveStickersThatArentStickedYet -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.YouAreTryingToGiveStickersThatYouHaventStickedYet(result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
+                                            )
+                                        }
+                                    }
+                                    is SetStickersResult.Success -> {
+                                        playerThatMatchesThisTrade.stickerFancyIds.clear()
+                                        playerThatMatchesThisTrade.stickerFancyIds.addAll(result.stickerFancyIds)
+                                        deferEdit.editOriginal(
+                                            MessageEdit {
+                                                apply(createTradeMessage())
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -406,99 +408,128 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                 context.i18nContext,
                                 args[sonhosQuantityOption]
                             )
+
                             if (parsedValue != null && 0 >= parsedValue)
                                 parsedValue = null
 
-                            if (parsedValue != null) {
-                                if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
-                                    return@sendModal
-                                if (VacationModeUtils.checkIfUserIsOnVacation(context, receiverUser, true))
-                                    return@sendModal
+                            mutex.withLock {
+                                if (parsedValue != null) {
+                                    if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                                        return@sendModal
+                                    if (VacationModeUtils.checkIfUserIsOnVacation(context, receiverUser, true))
+                                        return@sendModal
 
-                                val result = loritta.transaction {
-                                    val event = LoriCoolCardsEvents.selectAll().where {
-                                        LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
-                                    }.firstOrNull() ?: return@transaction SetSonhosResult.EventUnavailable
+                                    val result = loritta.transaction {
+                                        val event = LoriCoolCardsEvents.selectAll().where {
+                                            LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                                        }.firstOrNull() ?: return@transaction SetSonhosResult.EventUnavailable
 
-                                    val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
+                                        val template =
+                                            Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
-                                    val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
-                                        LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
-                                    }.count()
+                                        val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                            LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                        }.count()
 
-                                    if (template.minimumBoosterPacksToTradeBySonhos > giverBoughtPacks)
-                                        return@transaction SetSonhosResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTradeBySonhos, giverBoughtPacks)
+                                        if (template.minimumBoosterPacksToTradeBySonhos > giverBoughtPacks)
+                                            return@transaction SetSonhosResult.YouDidntBuyEnoughBoosterPacks(
+                                                template.minimumBoosterPacksToTradeBySonhos,
+                                                giverBoughtPacks
+                                            )
 
-                                    val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
-                                        LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
-                                    }.count()
+                                        val receiverBoughtPacks =
+                                            LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                                LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                            }.count()
 
-                                    if (template.minimumBoosterPacksToTradeBySonhos > receiverBoughtPacks)
-                                        return@transaction SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTradeBySonhos, receiverBoughtPacks)
+                                        if (template.minimumBoosterPacksToTradeBySonhos > receiverBoughtPacks)
+                                            return@transaction SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks(
+                                                template.minimumBoosterPacksToTradeBySonhos,
+                                                receiverBoughtPacks
+                                            )
 
-                                    val userSonhos = Profiles.select(Profiles.money).where {
-                                        Profiles.id eq context.user.idLong
-                                    }.firstOrNull()?.get(Profiles.money) ?: 0
+                                        val userSonhos = Profiles.select(Profiles.money).where {
+                                            Profiles.id eq context.user.idLong
+                                        }.firstOrNull()?.get(Profiles.money) ?: 0
 
-                                    if (parsedValue > userSonhos)
-                                        return@transaction SetSonhosResult.NotEnoughSonhos(userSonhos, parsedValue)
+                                        if (parsedValue > userSonhos)
+                                            return@transaction SetSonhosResult.NotEnoughSonhos(userSonhos, parsedValue)
 
-                                    return@transaction SetSonhosResult.Success
+                                        return@transaction SetSonhosResult.Success
+                                    }
+
+                                    when (result) {
+                                        SetSonhosResult.EventUnavailable -> {
+                                            context.reply(false) {
+                                                styled(
+                                                    "Nenhum evento de figurinhas ativo"
+                                                )
+                                            }
+                                        }
+
+                                        is SetSonhosResult.YouDidntBuyEnoughBoosterPacks -> {
+                                            context.reply(true) {
+                                                styled(
+                                                    context.i18nContext.get(
+                                                        I18N_PREFIX.YouDidntBuyEnoughBoosterPacksSonhosTrade(
+                                                            result.requiredPacks - result.currentPacks
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                        }
+
+                                        is SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks -> {
+                                            context.reply(true) {
+                                                styled(
+                                                    context.i18nContext.get(
+                                                        I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacksSonhosTrade(
+                                                            receiverUser.asMention,
+                                                            result.requiredPacks - result.currentPacks
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                        }
+
+                                        is SetSonhosResult.NotEnoughSonhos -> {
+                                            context.reply(true) {
+                                                styled(
+                                                    context.i18nContext.get(
+                                                        SonhosUtils.insufficientSonhos(
+                                                            result.userSonhos,
+                                                            result.howMuch
+                                                        )
+                                                    ),
+                                                    Emotes.LoriSob
+                                                )
+
+                                                appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
+                                                    context.loritta,
+                                                    context.i18nContext,
+                                                    UserId(context.user.idLong),
+                                                    "lori-cool-cards",
+                                                    "trade-figurittas-not-enough-sonhos"
+                                                )
+                                            }
+                                        }
+
+                                        SetSonhosResult.Success -> {
+                                            // Yay, we do have enough sonhos!
+                                            playerThatMatchesThisTrade.sonhos = parsedValue
+                                        }
+                                    }
+                                } else {
+                                    // Value is null, no need to check it on the database...
+                                    playerThatMatchesThisTrade.sonhos = parsedValue
                                 }
 
-                                when (result) {
-                                    SetSonhosResult.EventUnavailable -> {
-                                        context.reply(false) {
-                                            styled(
-                                                "Nenhum evento de figurinhas ativo"
-                                            )
-                                        }
+                                deferEdit.editOriginal(
+                                    MessageEdit {
+                                        apply(createTradeMessage())
                                     }
-                                    is SetSonhosResult.YouDidntBuyEnoughBoosterPacks -> {
-                                        context.reply(true) {
-                                            styled(
-                                                context.i18nContext.get(I18N_PREFIX.YouDidntBuyEnoughBoosterPacksSonhosTrade(result.requiredPacks - result.currentPacks))
-                                            )
-                                        }
-                                    }
-                                    is SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks -> {
-                                        context.reply(true) {
-                                            styled(
-                                                context.i18nContext.get(I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacksSonhosTrade(receiverUser.asMention, result.requiredPacks - result.currentPacks))
-                                            )
-                                        }
-                                    }
-                                    is SetSonhosResult.NotEnoughSonhos -> {
-                                        context.reply(true) {
-                                            styled(
-                                                context.i18nContext.get(SonhosUtils.insufficientSonhos(result.userSonhos, result.howMuch)),
-                                                Emotes.LoriSob
-                                            )
-
-                                            appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
-                                                context.loritta,
-                                                context.i18nContext,
-                                                UserId(context.user.idLong),
-                                                "lori-cool-cards",
-                                                "trade-figurittas-not-enough-sonhos"
-                                            )
-                                        }
-                                    }
-                                    SetSonhosResult.Success -> {
-                                        // Yay, we do have enough sonhos!
-                                        playerThatMatchesThisTrade.sonhos = parsedValue
-                                    }
-                                }
-                            } else {
-                                // Value is null, no need to check it on the database...
-                                playerThatMatchesThisTrade.sonhos = parsedValue
+                                )
                             }
-
-                            deferEdit.editOriginal(
-                                MessageEdit {
-                                    apply(createTradeMessage())
-                                }
-                            )
                         }
                     }
                 }
@@ -1008,7 +1039,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers =
             LoriCoolCardsSeenCards.select(
                 LoriCoolCardsSeenCards.card
-            ).where { 
+            ).where {
                 LoriCoolCardsSeenCards.card inList stickerIdsToBeGivenMappedToEventStickerId and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
             }.map { it[LoriCoolCardsSeenCards.card].value }
 
