@@ -18,7 +18,10 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.LorittaSlashCom
 import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsGiveStickersExecutor.GiveStickerAcceptedTransactionResult.*
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import java.time.Instant
@@ -54,7 +57,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                     val countField = LoriCoolCardsUserOwnedCards.card.count()
 
-                    val cardsThatTheUserHas = LoriCoolCardsUserOwnedCards.select(LoriCoolCardsUserOwnedCards.card, countField).where { 
+                    val cardsThatTheUserHas = LoriCoolCardsUserOwnedCards.select(LoriCoolCardsUserOwnedCards.card, countField).where {
                         LoriCoolCardsUserOwnedCards.user eq it.event.user.idLong and (LoriCoolCardsUserOwnedCards.sticked eq false)
                     }.groupBy(LoriCoolCardsUserOwnedCards.card)
                         .having {
@@ -168,6 +171,29 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
         context.deferChannelMessage(false)
 
+        // Only allow users to give stickers if they got their daily reward today
+        val giverTodayDailyReward = AccountUtils.getUserTodayDailyReward(loritta, context.lorittaUser.profile)
+        if (giverTodayDailyReward == null) {
+            context.reply(false) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.YouNeedToGetDailyRewardBeforeGivingASticker(loritta.commandMentions.daily)),
+                    Constants.ERROR
+                )
+            }
+            return
+        }
+
+        val receiverTodayDailyReward = AccountUtils.getUserTodayDailyReward(loritta, userThatWillReceiveTheSticker.idLong)
+        if (receiverTodayDailyReward == null) {
+            context.reply(false) {
+                styled(
+                    context.i18nContext.get(I18N_PREFIX.ReceiverNeedsToGetDailyRewardBeforeGivingASticker(userThatWillReceiveTheSticker.asMention, loritta.commandMentions.daily)),
+                    Constants.ERROR
+                )
+            }
+            return
+        }
+
         val now = Instant.now()
 
         val result = loritta.transaction {
@@ -202,6 +228,12 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 it[LoriCoolCardsEventCards.id].value
             }
 
+            val ownedStickersStickedMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
+                LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+            }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
+                .toList()
+                .map { it[LoriCoolCardsUserOwnedCards.card].value }
+
             val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                 LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
             }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
@@ -209,18 +241,25 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
             val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
             val missingStickers = mutableListOf<ResultRow>()
+            val stickersThatArentStickedButAreTryingToBeGiven = mutableListOf<ResultRow>()
 
             for (stickerId in stickersIdsToBeGiven) {
                 val stickerData = ownedStickersMatchingTheIds.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
                 if (stickerData == null) {
                     missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
                 } else {
-                    stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
+                    if (!ownedStickersStickedMatchingTheIds.contains(stickerId))
+                        stickersThatArentStickedButAreTryingToBeGiven.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                    else
+                        stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
                 }
             }
 
             if (missingStickers.isNotEmpty())
                 return@transaction GiveStickerResult.NotEnoughCards(missingStickers)
+
+            if (stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
+                return@transaction GiveStickerResult.TryingToGiveStickersThatArentStickedYet(stickersThatArentStickedButAreTryingToBeGiven)
 
             return@transaction GiveStickerResult.Success(stickerIdsToBeGivenMappedToSticker.map { it.value })
         }
@@ -259,6 +298,13 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 context.reply(false) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.YouDontHaveEnoughStickers(result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" },))
+                    )
+                }
+            }
+            is GiveStickerResult.TryingToGiveStickersThatArentStickedYet -> {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(I18N_PREFIX.YouAreTryingToGiveStickersThatYouHaventStickedYet(result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" },))
                     )
                 }
             }
@@ -314,6 +360,12 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                     it[LoriCoolCardsEventCards.id].value
                                 }
 
+                                val ownedStickersStickedMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
+                                    LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
+                                }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
+                                    .toList()
+                                    .map { it[LoriCoolCardsUserOwnedCards.id].value }
+
                                 val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
                                     LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
                                 }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
@@ -321,18 +373,25 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                                 val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
                                 val missingStickers = mutableListOf<ResultRow>()
+                                val stickersThatArentStickedButAreTryingToBeGiven = mutableListOf<ResultRow>()
 
                                 for (stickerId in stickersIdsToBeGiven) {
                                     val stickerData = ownedStickersMatchingTheIds.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
                                     if (stickerData == null) {
                                         missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
                                     } else {
-                                        stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
+                                        if (!ownedStickersStickedMatchingTheIds.contains(stickerId))
+                                            stickersThatArentStickedButAreTryingToBeGiven.add(stickersThatArentStickedButAreTryingToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                                        else
+                                            stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
                                     }
                                 }
 
                                 if (missingStickers.isNotEmpty())
                                     return@transaction GiveStickerAcceptedTransactionResult.NotEnoughCards(missingStickers)
+
+                                if (stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
+                                    return@transaction GiveStickerAcceptedTransactionResult.TryingToGiveStickersThatArentStickedYet(missingStickers)
 
                                 val stickerIdsToBeGivenMappedToOwnedStickerId = stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsUserOwnedCards.id].value }
                                 val stickerIdsToBeGivenMappedToEventStickerId = stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsEventCards.id].value }
@@ -354,7 +413,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
 
                                 // Now that we selected the cards, we will mark them as seen + owned
                                 // OPTIMIZATION: Get all seen stickers beforehand, this way we don't need to do an individual select for each sticker
-                                val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers = LoriCoolCardsSeenCards.select(LoriCoolCardsSeenCards.card).where { 
+                                val stickersThatWeHaveAlreadySeenBeforeBasedOnTheSelectedStickers = LoriCoolCardsSeenCards.select(LoriCoolCardsSeenCards.card).where {
                                     LoriCoolCardsSeenCards.card inList stickerIdsToBeGivenMappedToEventStickerId and (LoriCoolCardsSeenCards.user eq userThatWillReceiveTheSticker.idLong)
                                 }.map { it[LoriCoolCardsSeenCards.card].value }
 
@@ -377,28 +436,35 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                             }
 
                             when (finalResult) {
-                                GiveStickerAcceptedTransactionResult.EventUnavailable -> {
+                                EventUnavailable -> {
                                     it.reply(false) {
                                         styled(
                                             "Nenhum evento de figurinhas ativo"
                                         )
                                     }
                                 }
-                                GiveStickerAcceptedTransactionResult.UnknownCard -> {
+                                UnknownCard -> {
                                     it.reply(false) {
                                         styled(
                                             context.i18nContext.get(I18N_PREFIX.TryingToGiveAnUnknownSticker)
                                         )
                                     }
                                 }
-                                is GiveStickerAcceptedTransactionResult.NotEnoughCards -> {
+                                is NotEnoughCards -> {
                                     it.reply(false) {
                                         styled(
                                             context.i18nContext.get(I18N_PREFIX.YouDontHaveEnoughStickers(finalResult.stickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
                                         )
                                     }
                                 }
-                                is GiveStickerAcceptedTransactionResult.Success -> {
+                                is TryingToGiveStickersThatArentStickedYet -> {
+                                    it.reply(false) {
+                                        styled(
+                                            context.i18nContext.get(I18N_PREFIX.YouAreTryingToGiveStickersThatYouHaventStickedYet(finalResult.stickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
+                                        )
+                                    }
+                                }
+                                is Success -> {
                                     it.reply(false) {
                                         styled(
                                             context.i18nContext.get(
@@ -424,6 +490,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
         data object EventUnavailable : GiveStickerResult()
         data object UnknownCard : GiveStickerResult()
         data class NotEnoughCards(val stickersMissing: List<ResultRow>) : GiveStickerResult()
+        data class TryingToGiveStickersThatArentStickedYet(val stickersMissing: List<ResultRow>) : GiveStickerResult()
         data class GiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : GiveStickerResult()
         data class ReceiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : GiveStickerResult()
         data class Success(val givenStickers: List<ResultRow>) : GiveStickerResult()
@@ -433,6 +500,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
         data object EventUnavailable : GiveStickerAcceptedTransactionResult()
         data object UnknownCard : GiveStickerAcceptedTransactionResult()
         data class NotEnoughCards(val stickersMissing: List<ResultRow>) : GiveStickerAcceptedTransactionResult()
+        data class TryingToGiveStickersThatArentStickedYet(val stickersMissing: List<ResultRow>) : GiveStickerAcceptedTransactionResult()
         data class Success(val givenStickers: List<ResultRow>) : GiveStickerAcceptedTransactionResult()
     }
 

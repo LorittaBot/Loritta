@@ -20,6 +20,7 @@ import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
@@ -34,6 +35,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
+import net.perfectdreams.loritta.morenitta.loricoolcards.StickerMetadata
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.PendingUpdate
@@ -56,6 +58,7 @@ import net.perfectdreams.loritta.serializable.internal.responses.LorittaInternal
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
+import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.selectAll
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -310,7 +313,7 @@ class InternalWebServer(val m: LorittaBot) {
                             this.components += TextDisplay("<@&334734175531696128> <@&1279902783897604106>")
 
                             this.components += MediaGallery {
-                                this.item("https://cdn.discordapp.com/attachments/1268382385280651336/1301999867358609418/img1.png?ex=68089e9e&is=68074d1e&hm=6696ed2604b9649b66b29abfe286be90913fd8cb2ed5075167209f683e23a8e2&")
+                                this.item("https://stuff.loritta.website/loricoolcards/figurittas-da-loritta-header.png")
                             }
 
                             this.components += Container {
@@ -360,6 +363,12 @@ class InternalWebServer(val m: LorittaBot) {
                                     Se você quer ser caridoso e dar as figurinhas sem nada em troca, você pode usar o ${m.commandMentions.loriCoolCardsGive}.
                                     
                                     Para comparar as figurinhas entre você e outra pessoa, use ${m.commandMentions.loriCoolCardsCompare}.
+                                    
+                                    No servidor da Loritta, nós temos canais onde você pode encontrar outras pessoas que também querem trocar figurinhas!
+                                    
+                                    * <#1236362912105369610>
+                                    * <#1366812808926335058>
+                                    * <#1366812844632445023>
                                 """.trimIndent())
                             }
                         }
@@ -375,23 +384,29 @@ class InternalWebServer(val m: LorittaBot) {
                                     
                                     Dependendo de quantas vezes você completou o evento, você pode ter designs de perfis diferentes!
                                     
-                                    [Comum](https://stuff.loritta.website/loricoolcards/profile-common.gif)
-                                    [Incomum](https://stuff.loritta.website/loricoolcards/profile-uncommon.gif)
-                                    [Raro](https://stuff.loritta.website/loricoolcards/profile-rare.gif)
-                                    [Épico](https://stuff.loritta.website/loricoolcards/profile-epic.gif)
-                                    [Lendário](https://stuff.loritta.website/loricoolcards/profile-legendary.gif)
-                                    [Especial](https://stuff.loritta.website/loricoolcards/profile-special.gif)
+                                    * [Comum](https://stuff.loritta.website/loricoolcards/profile-common.gif)
+                                    * [Incomum](https://stuff.loritta.website/loricoolcards/profile-uncommon.gif)
+                                    * [Raro](https://stuff.loritta.website/loricoolcards/profile-rare.gif)
+                                    * [Épico](https://stuff.loritta.website/loricoolcards/profile-epic.gif)
+                                    * [Lendário](https://stuff.loritta.website/loricoolcards/profile-legendary.gif)
+                                    * [Especial](https://stuff.loritta.website/loricoolcards/profile-special.gif)
+                                    * [Comum (Background Personalizado)](https://stuff.loritta.website/loricoolcards/profile-common-bg.gif)
+                                    * [Incomum (Background Personalizado)](https://stuff.loritta.website/loricoolcards/profile-uncommon-bg.gif)
+                                    * [Raro (Background Personalizado)](https://stuff.loritta.website/loricoolcards/profile-rare-bg.gif)
+                                    * [Épico (Background Personalizado)](https://stuff.loritta.website/loricoolcards/profile-epic-bg.gif)
+                                    * [Lendário (Background Personalizado)](https://stuff.loritta.website/loricoolcards/profile-legendary-bg.gif)
+                                    * [Especial (Background Personalizado)](https://stuff.loritta.website/loricoolcards/profile-special-bg.gif)
                                     
                                     ## ${Emotes.LoriStonks} Designs de Perfil ESPECIAIS!
                                     
                                     Se você for aficionados por figurinhas o suficiente para acabar o álbum entre os top 100 primeiros, você ganhará um design de perfil ESPECIAL! Igual ao anterior, ele também é baseado em quantas vezes você já completou eventos.
                                     
-                                    [Comum](https://stuff.loritta.website/loricoolcards/profile-plain-common.gif)
-                                    [Incomum](https://stuff.loritta.website/loricoolcards/profile-plain-uncommon.gif)
-                                    [Raro](https://stuff.loritta.website/loricoolcards/profile-plain-rare.gif)
-                                    [Épico](https://stuff.loritta.website/loricoolcards/profile-plain-epic.gif)
-                                    [Lendário](https://stuff.loritta.website/loricoolcards/profile-plain-legendary.gif)
-                                    [Especial](https://stuff.loritta.website/loricoolcards/profile-plain-special.gif)
+                                    * [Comum](https://stuff.loritta.website/loricoolcards/profile-plain-common.gif)
+                                    * [Incomum](https://stuff.loritta.website/loricoolcards/profile-plain-uncommon.gif)
+                                    * [Raro](https://stuff.loritta.website/loricoolcards/profile-plain-rare.gif)
+                                    * [Épico](https://stuff.loritta.website/loricoolcards/profile-plain-epic.gif)
+                                    * [Lendário](https://stuff.loritta.website/loricoolcards/profile-plain-legendary.gif)
+                                    * [Especial](https://stuff.loritta.website/loricoolcards/profile-plain-special.gif)
                                     
                                     ## ${Emotes.PantufaPickaxe} SparklyPower
                                 """.trimIndent())
@@ -413,6 +428,77 @@ class InternalWebServer(val m: LorittaBot) {
                             }
                         }
                     ).await()
+
+                    call.respondText("{}")
+                }
+
+                post("/loricoolcards/events/{eventId}/notify-stickers") {
+                    val eventId = call.parameters.getOrFail("eventId").toLong()
+
+                    val (event, stickers) = m.transaction {
+                        val event = LoriCoolCardsEvents.selectAll().where {
+                            LoriCoolCardsEvents.id eq eventId
+                        }.first()
+
+                        val stickers = LoriCoolCardsEventCards
+                            .selectAll()
+                            .where {
+                                LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
+                            }
+                            .toList()
+
+                        Pair(event, stickers)
+                    }
+
+                    for (sticker in stickers) {
+                        val metadataString = sticker[LoriCoolCardsEventCards.metadata]
+
+                        if (metadataString != null) {
+                            val metadata = Json.decodeFromString<StickerMetadata>(metadataString)
+
+                            when (metadata) {
+                                is StickerMetadata.DiscordUserStickerMetadata -> {
+                                    val userId = metadata.userId
+
+                                    val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
+
+                                    try {
+                                        logger.info { "Notifying $userId that they are in the LoriCoolCards event..." }
+                                        privateChannel.sendMessage(
+                                            MessageCreate {
+                                                this.useComponentsV2 = true
+
+                                                this.components += Container {
+                                                    +MediaGallery {
+                                                        this.item("https://stuff.loritta.website/loricoolcards/figurittas-da-loritta-header.png")
+                                                    }
+
+                                                    +TextDisplay(
+                                                        buildString {
+                                                            appendLine("### ${Emotes.LoriCoolSticker} Você está no Álbum de Figurittas da Loritta!")
+                                                            appendLine("**Parabéns!** Por estar entre os 500 mais ricos da Loritta, você conquistou um lugar no álbum **${event[LoriCoolCardsEvents.eventName]}** das Figurittas da Loritta!")
+                                                        }
+                                                    )
+
+                                                    +MediaGallery {
+                                                        this.item(sticker[LoriCoolCardsEventCards.cardReceivedImageUrl])
+                                                    }
+
+                                                    +TextDisplay(
+                                                        buildString {
+                                                            appendLine("Use ${m.commandMentions.daily} para pegar seus pacotinhos de Figurittas e comece já a sua coleção!")
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        ).queue()
+                                    } catch (e: Exception) {
+                                        logger.warn(e) { "Failed to send LoriCoolCards sticker notification to $userId!" }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     call.respondText("{}")
                 }
