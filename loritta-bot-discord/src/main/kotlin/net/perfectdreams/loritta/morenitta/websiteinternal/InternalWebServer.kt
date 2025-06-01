@@ -445,10 +445,14 @@ class InternalWebServer(val m: LorittaBot) {
                             .where {
                                 LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id]
                             }
+                            .orderBy(LoriCoolCardsEventCards.fancyCardId, SortOrder.ASC)
                             .toList()
 
                         Pair(event, stickers)
                     }
+
+                    var success = 0
+                    var failure = 0
 
                     for (sticker in stickers) {
                         val metadataString = sticker[LoriCoolCardsEventCards.metadata]
@@ -460,9 +464,9 @@ class InternalWebServer(val m: LorittaBot) {
                                 is StickerMetadata.DiscordUserStickerMetadata -> {
                                     val userId = metadata.userId
 
-                                    val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
-
                                     try {
+                                        val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
+
                                         logger.info { "Notifying $userId that they are in the LoriCoolCards event..." }
                                         privateChannel.sendMessage(
                                             MessageCreate {
@@ -491,16 +495,23 @@ class InternalWebServer(val m: LorittaBot) {
                                                     )
                                                 }
                                             }
-                                        ).queue()
+                                        ).await()
+                                        success++
                                     } catch (e: Exception) {
                                         logger.warn(e) { "Failed to send LoriCoolCards sticker notification to $userId!" }
+                                        failure++
                                     }
                                 }
                             }
                         }
                     }
 
-                    call.respondText("{}")
+                    call.respondJson(
+                        buildJsonObject {
+                            put("successes", success)
+                            put("failures", failure)
+                        }
+                    )
                 }
 
                 for (route in publicAPIRoutes) {
