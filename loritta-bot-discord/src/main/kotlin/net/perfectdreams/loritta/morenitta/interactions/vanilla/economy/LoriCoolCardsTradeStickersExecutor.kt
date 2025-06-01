@@ -77,11 +77,6 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         if (AccountUtils.checkAndSendMessageIfUserIsBanned(loritta, context, userThatYouWantToTradeWith.idLong))
             return
 
-        if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
-            return
-        if (VacationModeUtils.checkIfUserIsOnVacation(context, userThatYouWantToTradeWith, true))
-            return
-
         // Only allow users to give stickers if they got their daily reward today
         val giverTodayDailyReward = AccountUtils.getUserTodayDailyReward(loritta, context.lorittaUser.profile)
         if (giverTodayDailyReward == null) {
@@ -415,6 +410,11 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                 parsedValue = null
 
                             if (parsedValue != null) {
+                                if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
+                                    return@sendModal
+                                if (VacationModeUtils.checkIfUserIsOnVacation(context, userThatYouWantToTradeWith, true))
+                                    return@sendModal
+
                                 val result = loritta.transaction {
                                     val event = LoriCoolCardsEvents.selectAll().where {
                                         LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
