@@ -22,6 +22,7 @@ open:
   youDontHaveAnyUnopenedPacks: "Você não tem nenhum pacotinho que não foi aberto ainda! Quer mais pacotinhos? Então pegue a sua recompensa diária {dailyCommand} ou compre mais pacotinhos {buyPacksCommand}!"
   youOpenedXStickerPacks: "Você abriu {stickerPackCount,plural, =0 {# pacotes de figurinhas} one {# pacote de figurinhas} other {# pacotes de figurinhas}}!"
   andXMoreStickers: "...e mais {stickersCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
+  tradeTip: "Nenhuma figurinha que te apetece? Troque figurinhas com outras pessoas usando {loriCoolCardsTradeCommand} ou seja generoso e doe elas usando {loriCoolCardsGiveCommand}!"
 
 view:
   label: "ver"
