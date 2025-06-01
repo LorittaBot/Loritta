@@ -412,7 +412,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                             if (parsedValue != null) {
                                 if (VacationModeUtils.checkIfWeAreOnVacation(context, true))
                                     return@sendModal
-                                if (VacationModeUtils.checkIfUserIsOnVacation(context, userThatYouWantToTradeWith, true))
+                                if (VacationModeUtils.checkIfUserIsOnVacation(context, receiverUser, true))
                                     return@sendModal
 
                                 val result = loritta.transaction {
