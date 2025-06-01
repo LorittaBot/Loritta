@@ -381,7 +381,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                         missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
                                     } else {
                                         if (!ownedStickersStickedMatchingTheIds.contains(stickerId))
-                                            stickersThatArentStickedButAreTryingToBeGiven.add(stickersThatArentStickedButAreTryingToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                                            stickersThatArentStickedButAreTryingToBeGiven.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
                                         else
                                             stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
                                     }
