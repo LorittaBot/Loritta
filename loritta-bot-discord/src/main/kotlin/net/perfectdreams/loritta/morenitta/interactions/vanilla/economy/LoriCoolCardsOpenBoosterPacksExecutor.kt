@@ -334,6 +334,7 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                                             buildString {
                                                 appendLine("**Progresso do Álbum:** ${lastStickerOfThePacks.totalAlbumCompletionCount}/${result.albumCardsCount} figurinhas (+${lastStickerOfThePacks.totalAlbumCompletionCount - result.totalAlbumCompletionCountBeforeBuying})")
                                                 appendLine("**Progresso do Álbum:** ${result.alreadyStickedCardsCount}/${result.albumCardsCount} figurinhas coladas")
+                                                appendLine(context.i18nContext.get(I18nKeysData.Commands.Command.Loricoolcards.Open.TradeTip(loritta.commandMentions.loriCoolCardsTrade, loritta.commandMentions.loriCoolCardsGive)))
                                             }
                                         )
 
