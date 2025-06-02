@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -349,6 +350,8 @@ class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val
                 context.reply(false) {
                     apply(getCurrentStickerAndCreateMessage())
                 }
+
+                context.giveAchievementAndNotify(AchievementType.NEW_ITEM_SMELL, true)
             }
         }
     }

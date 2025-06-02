@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -916,6 +917,9 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         Emotes.LoriCoolSticker
                                     )
                                 }
+
+                                context.giveAchievementAndNotify(selfUser, AchievementType.DEAL_ACCEPTED, false)
+                                context.giveAchievementAndNotify(userThatYouWantToTradeWith, AchievementType.DEAL_ACCEPTED, false)
                             }
                         }
                     }

@@ -49,6 +49,12 @@ enum class AchievementCategory(
         Emotes.MarriageRing,
         LorittaColors.LorittaPink,
     ),
+    LORICOOLCARDS(
+        I18nKeysData.Achievements.Category.Loricoolcards.Title,
+        I18nKeysData.Achievements.Category.Loricoolcards.Description,
+        Emotes.LoriCoolSticker,
+        LorittaColors.LorittaAqua,
+    ),
     MISCELLANEOUS(
         I18nKeysData.Achievements.Category.Miscellaneous.Title,
         I18nKeysData.Achievements.Category.Miscellaneous.Description,

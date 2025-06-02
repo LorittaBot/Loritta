@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.components.button.Button
@@ -15,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TransactionType
@@ -33,6 +35,7 @@ import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsFinishedAlbumSonhosTransaction
+import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.rank
 import org.jetbrains.exposed.sql.vendors.ForUpdateOption
@@ -101,8 +104,14 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                     cardsThatCanBeStickedUnique.add(card)
                 }
 
+                val giveOutAchievement = loritta.pudding.users.giveAchievement(
+                    UserId(context.user.idLong),
+                    AchievementType.STICKING_STICKERS,
+                    Clock.System.now()
+                )
+
                 // The stickers will be sticked when the user clicks to stick the sticker
-                return@transaction StickStickersResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]), totalEventCards, cardsThatCanBeStickedUnique, alreadyStickedCards)
+                return@transaction StickStickersResult.Success(Json.decodeFromString(event[LoriCoolCardsEvents.template]), totalEventCards, cardsThatCanBeStickedUnique, alreadyStickedCards, giveOutAchievement)
             }
         }
 
@@ -352,9 +361,17 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                         }
                                     }
                                 }
+
+                                val giveOutAchievement = loritta.pudding.users.giveAchievement(
+                                    UserId(context.user.idLong),
+                                    AchievementType.ALBUM_COMPLETED,
+                                    Clock.System.now()
+                                )
+
+                                return@transaction StickedStickerResult.Success(hasStickedAllAlbumCards, giveOutAchievement)
                             }
 
-                            return@transaction StickedStickerResult.Success(hasStickedAllAlbumCards)
+                            return@transaction StickedStickerResult.Success(hasStickedAllAlbumCards, false)
                         }
                     }
 
@@ -455,6 +472,9 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                                                     }
                                                 }
                                             ).setReplace(true).await()
+
+                                            if (stickResult.giveOutAchievement)
+                                                context.notifyAchievement(AchievementType.ALBUM_COMPLETED, true)
                                         }
                                     )
                                 } else {
@@ -596,6 +616,9 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
                     context.reply(false) {
                         it.invoke(this)
                     }
+
+                    if (result.giveOutAchievement)
+                        context.notifyAchievement(AchievementType.STICKING_STICKERS, true)
                 }
             }
         }
@@ -615,14 +638,16 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
             val template: StickerAlbumTemplate,
             val totalEventCards: Long,
             val cardsThatCanBeSticked: List<ResultRow>,
-            val alreadyStickedCards: List<ResultRow>
+            val alreadyStickedCards: List<ResultRow>,
+            val giveOutAchievement: Boolean
         ) : StickStickersResult()
     }
 
     sealed class StickedStickerResult {
         data object StickerAlreadySticked : StickedStickerResult()
         class Success(
-            val hasStickedAllAlbumCards: Boolean
+            val hasStickedAllAlbumCards: Boolean,
+            val giveOutAchievement: Boolean
         ) : StickedStickerResult()
     }
 }

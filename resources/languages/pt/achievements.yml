@@ -21,6 +21,9 @@ achievements:
     marry:
       title: "Casamentos"
       description: "Beijos, tapas, abraços e carinhos são legais... ainda mais com a pessoa que você está casada! Conquistas relacionadas ao comando `{command}`" #This references the Marry category description
+    loricoolcards:
+      title: "Figurittas da Loritta"
+      description: "Colecione figurinhas! Conquistas relacionadas ao sistema das Figurittas da Loritta"
     generic:
       description: "Conquistas relacionadas ao comando `{command}`" #This is a generic description for achievements that do not have a custom description
     miscellaneous:
@@ -114,3 +117,16 @@ achievements:
     enchantedMail:
       title: "Correio Encantado"
       description: "Enviou uma carta de amor para o seu parceiro"
+    #===[ LORICOOLCARDS ]===
+    newItemSmell:
+      title: "Cheirinho de Coisa Nova"
+      description: "Abriu pacotinhos de figurinhas"
+    stickingStickers:
+      title: "A Primeira Colagem"
+      description: "Colou uma figurinha no seu álbum das Figurittas da Loritta"
+    dealAccepted:
+      title: "Trato Feito"
+      description: "Fez uma troca de figurinhas com outra pessoa"
+    albumCompleted:
+      title: "Um Álbum Perfeito"
+      description: "Completou um álbum das Figurittas da Loritta"

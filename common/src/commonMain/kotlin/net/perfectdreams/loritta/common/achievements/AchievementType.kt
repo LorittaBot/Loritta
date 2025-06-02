@@ -155,4 +155,26 @@ enum class AchievementType(
         I18nKeysData.Achievements.Achievement.EnchantedMail.Title,
         I18nKeysData.Achievements.Achievement.EnchantedMail.Description
     ),
+
+    // ===[ LORICOOLCARDS ]===
+    NEW_ITEM_SMELL(
+        AchievementCategory.LORICOOLCARDS,
+        I18nKeysData.Achievements.Achievement.NewItemSmell.Title,
+        I18nKeysData.Achievements.Achievement.NewItemSmell.Description
+    ),
+    STICKING_STICKERS(
+        AchievementCategory.LORICOOLCARDS,
+        I18nKeysData.Achievements.Achievement.StickingStickers.Title,
+        I18nKeysData.Achievements.Achievement.StickingStickers.Description
+    ),
+    DEAL_ACCEPTED(
+        AchievementCategory.LORICOOLCARDS,
+        I18nKeysData.Achievements.Achievement.DealAccepted.Title,
+        I18nKeysData.Achievements.Achievement.DealAccepted.Description
+    ),
+    ALBUM_COMPLETED(
+        AchievementCategory.LORICOOLCARDS,
+        I18nKeysData.Achievements.Achievement.AlbumCompleted.Title,
+        I18nKeysData.Achievements.Achievement.AlbumCompleted.Description
+    )
 }

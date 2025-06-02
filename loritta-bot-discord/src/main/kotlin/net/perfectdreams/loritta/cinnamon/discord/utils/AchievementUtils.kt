@@ -60,23 +60,48 @@ object AchievementUtils {
             achievedAt
         )
 
-        if (wasAchievementGiven)
-            context.reply(ephemeral) {
-                styled(
-                    content = "${userId.asMention} **${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
-                    prefix = Emotes.Sparkles
-                )
+        if (wasAchievementGiven) {
+            notifyUserAboutAchievement(
+                loritta,
+                context,
+                i18nContext,
+                userId,
+                type,
+                ephemeral
+            )
+        }
+    }
 
-                styled(
-                    "**${i18nContext.get(type.title)}:** ${i18nContext.get(type.description)}",
-                    prefix = type.category.emote
-                )
+    /**
+     * Notifies [user] about an achievement.
+     *
+     * @param type       what achievement is the notification about
+     * @param achievedAt when the achievement was achieved, default is now
+     */
+    suspend fun notifyUserAboutAchievement(
+        loritta: LorittaBot,
+        context: UnleashedContext,
+        i18nContext: I18nContext,
+        userId: UserSnowflake,
+        type: AchievementType,
+        ephemeral: Boolean
+    ) {
+        context.reply(ephemeral) {
+            styled(
+                content = "${userId.asMention} **${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
+                prefix = Emotes.Sparkles
+            )
 
-                styled(
-                    i18nContext.get(I18nKeysData.Achievements.ViewYourAchievements(loritta.commandMentions.achievements)),
-                    prefix = Emotes.LoriWow
-                )
-            }
+            styled(
+                "**${i18nContext.get(type.title)}:** ${i18nContext.get(type.description)}",
+                prefix = type.category.emote
+            )
+
+            styled(
+                i18nContext.get(I18nKeysData.Achievements.ViewYourAchievements(loritta.commandMentions.achievements)),
+                prefix = Emotes.LoriWow
+            )
+        }
     }
 
     /**

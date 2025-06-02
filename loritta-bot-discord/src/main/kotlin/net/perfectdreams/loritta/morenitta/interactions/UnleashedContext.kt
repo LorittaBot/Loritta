@@ -147,6 +147,15 @@ abstract class UnleashedContext(
             = giveAchievementAndNotify(this.user, type, ephemeral, achievedAt)
 
     /**
+     * Notifies [user] about an achievement.
+     *
+     * @param type       what achievement should be given
+     * @param achievedAt when the achievement was achieved, default is now
+     */
+    suspend fun notifyAchievement(type: AchievementType, ephemeral: Boolean)
+            = AchievementUtils.notifyUserAboutAchievement(loritta, this, i18nContext, UserSnowflake.fromId(user.idLong), type, ephemeral)
+
+    /**
      * Gives an achievement to the [user] if they don't have it yet.
      *
      * If the user receives an achievement, they will receive an ephemeral message talking about the new achievement.
