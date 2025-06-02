@@ -101,6 +101,39 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             return
         }
 
+        val hasGiveArbitraryStickerCountSupport = loritta.transaction {
+            val event = LoriCoolCardsEvents.selectAll().where {
+                LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+            }.firstOrNull() ?: return@transaction null
+
+            val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
+
+            val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                LoriCoolCardsUserBoughtBoosterPacks.user eq selfUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+            }.count()
+
+            if (template.minimumBoosterPacksToGive > giverBoughtPacks)
+                return@transaction false
+
+            val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                LoriCoolCardsUserBoughtBoosterPacks.user eq userThatYouWantToTradeWith.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+            }.count()
+
+            if (template.minimumBoosterPacksToGive > receiverBoughtPacks)
+                return@transaction false
+
+            return@transaction true
+        }
+
+        if (hasGiveArbitraryStickerCountSupport == null) {
+            context.reply(false) {
+                styled(
+                    "Nenhum evento de figurinhas ativo"
+                )
+            }
+            return
+        }
+
         val usersThatHaveConfirmedTheTrade = mutableSetOf<User>()
         var alreadyProcessed = false
         val mutex = Mutex()
@@ -113,7 +146,8 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             TradeThings(
                 mutableListOf(),
                 null
-            )
+            ),
+            hasGiveArbitraryStickerCountSupport
         )
 
         // We keep it in here to avoid the message changing on every rerender
@@ -1032,11 +1066,15 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
     @Serializable
     class TradeOffer(
         var player1: TradeThings,
-        var player2: TradeThings
+        var player2: TradeThings,
+        val hasGiveArbitraryStickerCountSupport: Boolean
     ) {
         fun isTradeValid(): Boolean {
             // A trade cannot be a only sonhos trade
             if (player1.sonhos != null && player2.sonhos != null)
+                return false
+
+            if (!hasGiveArbitraryStickerCountSupport && player1.stickerFancyIds.size != player2.stickerFancyIds.size)
                 return false
 
             return player1.isTradeValid() && player2.isTradeValid()
