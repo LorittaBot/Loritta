@@ -56,12 +56,7 @@ object ProfileUtils {
      * @param  userProfile the user's profile
      * @return the user's current global position in the economy ranking
      */
-    suspend fun getGlobalEconomyPosition(loritta: LorittaBot, userProfile: Profile) =
-        // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any sonhos, we just return null! :3
-        if (userProfile.money >= 100_000L)
-            loritta.newSuspendedTransaction {
-                Profiles.selectAll().where { Profiles.money greaterEq userProfile.money }.count()
-            } else null
+    suspend fun getGlobalEconomyPosition(loritta: LorittaBot, userProfile: Profile) = loritta.pudding.sonhos.getSonhosRankPositionBySonhos(userProfile.money)
 
     /**
      * Gets the user's local profile in the [guild] or null if the user does not have a profile in the guild
