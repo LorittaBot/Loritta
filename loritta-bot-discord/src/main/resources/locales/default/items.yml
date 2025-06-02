@@ -89,7 +89,7 @@ profileDesigns:
   plainGreenHearts:
     title: "Simplesmente Verde com Corações"
     description: *defaultPlainProfile
-  plainPlainBlack:
+  plainPureBlack:
     title: "Simplesmente Preto"
     description: *defaultPlainProfile
   cowboy:
