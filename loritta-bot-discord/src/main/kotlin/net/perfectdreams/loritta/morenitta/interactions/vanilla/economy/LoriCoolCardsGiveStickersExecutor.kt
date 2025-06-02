@@ -29,6 +29,68 @@ import java.time.Instant
 class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Give
+
+        /**
+         * Queries and matches if [userToBeMatchedAgainst] has all the [stickersToBeGiven] of the given [event]
+         *
+         * The function does check if the user has at least two stickers on their inventory before allowing them to be given out, that is,
+         * the user MUST have the sticker stickied on their inventory
+         *
+         * @param userToBeMatchedAgainst the user that will be matched against
+         * @param event                  the LoriCoolCards event
+         * @param stickersToBeGiven      the stickers that will be given
+         * @return the query result
+         */
+        fun matchStickers(
+            userToBeMatchedAgainst: Long,
+            event: ResultRow,
+            stickersToBeGiven: List<ResultRow>
+        ): MatchStickersResult {
+            val stickersIdsToBeGiven = stickersToBeGiven.map {
+                it[LoriCoolCardsEventCards.id].value
+            }
+
+            // This includes ALL stickers, sticked and unsticked, and this is intentional!
+            val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
+                LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.user eq userToBeMatchedAgainst)
+            }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
+                .toList()
+
+            val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
+            val missingStickers = mutableListOf<ResultRow>()
+            val stickersThatArentStickedButAreTryingToBeGiven = mutableListOf<ResultRow>()
+
+            for (stickerId in stickersIdsToBeGiven) {
+                val stickersData = ownedStickersMatchingTheIds.filter { it[LoriCoolCardsEventCards.id].value == stickerId }
+                if (stickersData.isEmpty()) {
+                    missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                } else {
+                    // Okay, so we do have matching stickers!
+                    // Give me the run down!
+                    val stickersInInventory = stickersData.size
+                    val nonStickedStickers = stickersData.filter { !it[LoriCoolCardsUserOwnedCards.sticked] }
+
+                    // The second check is, admittedly, worthless. If you have more than two stickers in your inventory you WILL have a non-sticked sticker
+                    // But to avoid the world turning on ourselves (maybe a bug allowed someone to stick the same sticker twice?) we will double check our data before moving along...
+                    if (2 > stickersInInventory && nonStickedStickers.isEmpty())
+                        stickersThatArentStickedButAreTryingToBeGiven.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                    else
+                        stickerIdsToBeGivenMappedToSticker[stickerId] = nonStickedStickers.first()
+                }
+            }
+
+            return MatchStickersResult(
+                stickerIdsToBeGivenMappedToSticker,
+                missingStickers,
+                stickersThatArentStickedButAreTryingToBeGiven
+            )
+        }
+
+        class MatchStickersResult(
+            val stickerIdsToBeGivenMappedToSticker: Map<Long, ResultRow>,
+            val missingStickers: List<ResultRow>,
+            val stickersThatArentStickedButAreTryingToBeGiven: List<ResultRow>
+        )
     }
 
     inner class Options : ApplicationCommandOptions() {
@@ -224,44 +286,19 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
             if (stickersToBeGiven.size != stickerFancyIdsList.size)
                 return@transaction GiveStickerResult.UnknownCard
 
-            val stickersIdsToBeGiven = stickersToBeGiven.map {
-                it[LoriCoolCardsEventCards.id].value
-            }
+            val things = matchStickers(
+                context.user.idLong,
+                event,
+                stickersToBeGiven
+            )
 
-            val ownedStickersStickedMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
-                LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-            }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                .toList()
-                .map { it[LoriCoolCardsUserOwnedCards.card].value }
+            if (things.missingStickers.isNotEmpty())
+                return@transaction GiveStickerResult.NotEnoughCards(things.missingStickers)
 
-            val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
-                LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-            }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                .toList()
+            if (things.stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
+                return@transaction GiveStickerResult.TryingToGiveStickersThatArentStickedYet(things.stickersThatArentStickedButAreTryingToBeGiven)
 
-            val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
-            val missingStickers = mutableListOf<ResultRow>()
-            val stickersThatArentStickedButAreTryingToBeGiven = mutableListOf<ResultRow>()
-
-            for (stickerId in stickersIdsToBeGiven) {
-                val stickerData = ownedStickersMatchingTheIds.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
-                if (stickerData == null) {
-                    missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                } else {
-                    if (!ownedStickersStickedMatchingTheIds.contains(stickerId))
-                        stickersThatArentStickedButAreTryingToBeGiven.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                    else
-                        stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
-                }
-            }
-
-            if (missingStickers.isNotEmpty())
-                return@transaction GiveStickerResult.NotEnoughCards(missingStickers)
-
-            if (stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
-                return@transaction GiveStickerResult.TryingToGiveStickersThatArentStickedYet(stickersThatArentStickedButAreTryingToBeGiven)
-
-            return@transaction GiveStickerResult.Success(stickerIdsToBeGivenMappedToSticker.map { it.value })
+            return@transaction GiveStickerResult.Success( things.stickerIdsToBeGivenMappedToSticker.map { it.value })
         }
 
         when (result) {
@@ -356,45 +393,20 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                                 if (stickersToBeGiven.size != stickerFancyIdsList.size)
                                     return@transaction GiveStickerAcceptedTransactionResult.UnknownCard
 
-                                val stickersIdsToBeGiven = stickersToBeGiven.map {
-                                    it[LoriCoolCardsEventCards.id].value
-                                }
+                                val things = matchStickers(
+                                    context.user.idLong,
+                                    event,
+                                    stickersToBeGiven
+                                )
 
-                                val ownedStickersStickedMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
-                                    LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq true) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                                }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                                    .toList()
-                                    .map { it[LoriCoolCardsUserOwnedCards.id].value }
+                                if (things.missingStickers.isNotEmpty())
+                                    return@transaction GiveStickerAcceptedTransactionResult.NotEnoughCards(things.missingStickers)
 
-                                val ownedStickersMatchingTheIds = LoriCoolCardsUserOwnedCards.innerJoin(LoriCoolCardsEventCards).selectAll().where {
-                                    LoriCoolCardsUserOwnedCards.card inList stickersIdsToBeGiven and (LoriCoolCardsUserOwnedCards.event eq event[LoriCoolCardsEvents.id]) and (LoriCoolCardsUserOwnedCards.sticked eq false) and (LoriCoolCardsUserOwnedCards.user eq context.user.idLong)
-                                }.orderBy(LoriCoolCardsUserOwnedCards.receivedAt, SortOrder.DESC)
-                                    .toList()
+                                if (things.stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
+                                    return@transaction GiveStickerAcceptedTransactionResult.TryingToGiveStickersThatArentStickedYet(things.missingStickers)
 
-                                val stickerIdsToBeGivenMappedToSticker = mutableMapOf<Long, ResultRow>()
-                                val missingStickers = mutableListOf<ResultRow>()
-                                val stickersThatArentStickedButAreTryingToBeGiven = mutableListOf<ResultRow>()
-
-                                for (stickerId in stickersIdsToBeGiven) {
-                                    val stickerData = ownedStickersMatchingTheIds.firstOrNull { it[LoriCoolCardsEventCards.id].value == stickerId }
-                                    if (stickerData == null) {
-                                        missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                                    } else {
-                                        if (!ownedStickersStickedMatchingTheIds.contains(stickerId))
-                                            stickersThatArentStickedButAreTryingToBeGiven.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
-                                        else
-                                            stickerIdsToBeGivenMappedToSticker[stickerId] = stickerData
-                                    }
-                                }
-
-                                if (missingStickers.isNotEmpty())
-                                    return@transaction GiveStickerAcceptedTransactionResult.NotEnoughCards(missingStickers)
-
-                                if (stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
-                                    return@transaction GiveStickerAcceptedTransactionResult.TryingToGiveStickersThatArentStickedYet(missingStickers)
-
-                                val stickerIdsToBeGivenMappedToOwnedStickerId = stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsUserOwnedCards.id].value }
-                                val stickerIdsToBeGivenMappedToEventStickerId = stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsEventCards.id].value }
+                                val stickerIdsToBeGivenMappedToOwnedStickerId = things.stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsUserOwnedCards.id].value }
+                                val stickerIdsToBeGivenMappedToEventStickerId = things.stickerIdsToBeGivenMappedToSticker.map { it.value[LoriCoolCardsEventCards.id].value }
 
                                 // Transfer
                                 // Delete the old card
