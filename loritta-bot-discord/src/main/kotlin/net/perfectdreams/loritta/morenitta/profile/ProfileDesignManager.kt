@@ -103,6 +103,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerDesign(PlainProfileCreator.PlainAquaProfileCreator(loritta))
 		registerDesign(PlainProfileCreator.PlainGreenProfileCreator(loritta))
 		registerDesign(PlainProfileCreator.PlainGreenHeartsProfileCreator(loritta))
+		registerDesign(PlainProfileCreator.PlainPureBlackProfileCreator(loritta))
 		registerDesign(CowboyProfileCreator(loritta))
 		registerDesign(NextGenProfileCreator(loritta))
 		registerDesign(MonicaAtaProfileCreator(loritta))

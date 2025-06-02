@@ -16,13 +16,14 @@ import java.awt.Image
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
-open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val folderName: String) : StaticProfileCreator(loritta, internalName) {
-	class PlainWhiteProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainWhite", "white")
-	class PlainOrangeProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainOrange", "orange")
-	class PlainPurpleProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainPurple", "purple")
-	class PlainAquaProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainAqua", "aqua")
-	class PlainGreenProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainGreen", "green")
-	class PlainGreenHeartsProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainGreenHearts", "green_hearts")
+open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val folderName: String, val textColor: Color) : StaticProfileCreator(loritta, internalName) {
+	class PlainWhiteProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainWhite", "white", Color.BLACK)
+	class PlainOrangeProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainOrange", "orange", Color.BLACK)
+	class PlainPurpleProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainPurple", "purple", Color.BLACK)
+	class PlainAquaProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainAqua", "aqua", Color.BLACK)
+	class PlainGreenProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainGreen", "green", Color.BLACK)
+	class PlainGreenHeartsProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainGreenHearts", "green_hearts", Color.BLACK)
+	class PlainPureBlackProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainPureBlack", "pure_black", Color.WHITE)
 
 	override suspend fun create(
 		sender: ProfileUserInfoData,
@@ -67,14 +68,14 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(i18nContext, marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), 3), Rectangle(635, 350 + 16 + 18, 165, 14), latoBlack12)
 		}
 
-		graphics.color = Color.BLACK
+		graphics.color = textColor
 		graphics.drawImage(profileWrapper, 0, 0, null)
 		drawAvatar(avatar, graphics)
 
 		val oswaldRegular50 = Constants.OSWALD_REGULAR
-				.deriveFont(50F)
+			.deriveFont(50F)
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
-				.deriveFont(42F)
+			.deriveFont(42F)
 
 		graphics.font = oswaldRegular50
 		graphics.drawText(loritta, user.name, 162, 461) // Nome do usuário
@@ -96,11 +97,11 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 
 	fun drawAvatar(avatar: Image, graphics: Graphics) {
 		graphics.drawImage(
-				avatar.toBufferedImage()
-						.makeRoundedCorners(999),
-				3,
-				406,
-				null
+			avatar.toBufferedImage()
+				.makeRoundedCorners(999),
+			3,
+			406,
+			null
 		)
 	}
 

@@ -55,6 +55,7 @@ object TrinketsStuff {
         "plainAqua",
         "plainGreen",
         "plainGreenHearts",
+        "plainPureBlack",
         "cowboy",
         "halloween2019",
         "christmas2019",
@@ -184,6 +185,7 @@ object TrinketsStuff {
         createProfileDesign("plainAqua", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = listOf("brigadeirim"))
         createProfileDesign("plainGreen", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = listOf("brigadeirim"))
         createProfileDesign("plainGreenHearts", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = listOf("brigadeirim"))
+        createProfileDesign("plainPureBlack", true, Rarity.UNCOMMON, LocalDate.of(2025, 6, 2))
         createProfileDesign("cowboy", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = listOf("brigadeirim"))
         createProfileDesign("nextGenDark", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = listOf("peterstark000"))
         createProfileDesign("monicaAta", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = listOf("brigadeirim"))
