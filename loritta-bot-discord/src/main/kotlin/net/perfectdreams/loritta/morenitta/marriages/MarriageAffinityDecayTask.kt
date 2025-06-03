@@ -70,8 +70,9 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
         for (marriage in expiredMarriages.marriages) {
             // TODO: Send the DM!
             for (participantId in marriage.participantIds) {
-                val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participantId) ?: continue
                 try {
+                    val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(participantId) ?: continue
+
                     privateChannel.sendMessage(
                         MessageCreate {
                             this.useComponentsV2 = true
