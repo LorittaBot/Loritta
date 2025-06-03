@@ -103,7 +103,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
 
                 // Used for Math stuff
-                api("com.ionspin.kotlin:bignum:0.3.3")
+                api("com.ionspin.kotlin:bignum:0.3.10")
             }
         }
 
