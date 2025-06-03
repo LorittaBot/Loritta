@@ -1,5 +1,5 @@
 plugins {
-	kotlin("js")
+	kotlin("multiplatform")
 	kotlin("plugin.serialization")
 }
 
@@ -9,7 +9,7 @@ kotlin {
 	}
 
 	sourceSets {
-		js().compilations["main"].defaultSourceSet {
+		jsMain {
 			dependencies {
 				api(project(":web:embed-editor:embed-renderer"))
 			}
