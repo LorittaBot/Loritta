@@ -7,9 +7,7 @@ group = "net.perfectdreams.loritta.website"
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    jvm {
-        withJava()
-    }
+    jvm()
     js(IR) { // Use new, but experimental, compiler
         browser {
             binaries.executable()

@@ -7,7 +7,6 @@ kotlin {
         compilations.all {
             kotlinOptions.jvmTarget = Versions.JVM_TARGET
         }
-        withJava()
     }
 
     js(IR) {
