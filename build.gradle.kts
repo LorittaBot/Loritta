@@ -4,7 +4,6 @@ plugins {
     java
     kotlin("jvm") version Versions.KOTLIN apply false
     kotlin("plugin.serialization") version Versions.KOTLIN
-    id("io.github.turansky.kfc.latest-webpack") version "8.10.0" apply false
 }
 
 allprojects {
