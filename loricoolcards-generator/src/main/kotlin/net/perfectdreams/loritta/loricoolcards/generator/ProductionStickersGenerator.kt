@@ -72,7 +72,7 @@ suspend fun main() {
 }
 
 suspend fun generateCards(config: LoriCoolCardsGeneratorProductionStickersConfig) {
-    val folderName = "production_v9_befopti"
+    val folderName = "production_v10_befopti"
     val http = HttpClient {}
 
     println("Max memory: ${Runtime.getRuntime().maxMemory()}")

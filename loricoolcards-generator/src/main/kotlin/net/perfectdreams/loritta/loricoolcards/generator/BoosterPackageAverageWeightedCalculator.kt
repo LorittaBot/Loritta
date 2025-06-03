@@ -76,6 +76,8 @@ fun main() {
         }
 
         println("Total Booster Packs: ${totalBoosterPacks.average()}")
+        println("Minimum: ${totalBoosterPacks.min()}")
+        println("Maximum: ${totalBoosterPacks.max()}")
     }.also { println("Took $it") }
 }
 

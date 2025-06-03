@@ -4,17 +4,10 @@ import net.perfectdreams.loritta.common.loricoolcards.CardRarity
 import kotlin.random.Random
 import kotlin.time.measureTime
 
-val fixedRandom = Random(0)
-
 fun main() {
     // Define weights corresponding to the enum values
     val weights = mapOf(
-        CardRarity.COMMON to 1.0,
-        CardRarity.UNCOMMON to 1.0,
-        CardRarity.RARE to 1.0,
-        CardRarity.EPIC to 1.0,
-        CardRarity.LEGENDARY to 1.0,
-        CardRarity.MYTHIC to 1.0
+        CardRarity.COMMON to 1.0
     )
 
     println("Total weight value: ${weights.values.sum()}")
@@ -22,26 +15,11 @@ fun main() {
     val cards = mutableListOf<Pair<Int, CardRarity>>()
 
     repeat(10) {
-        cards.add(Pair(it + 1, CardRarity.MYTHIC))
+        cards.add(Pair(it + 1, CardRarity.COMMON))
     }
 
     repeat(500) { moneyIndex ->
-        val rarity = if (moneyIndex in 0 until 10) {
-            // 10 stickers = legendary
-            CardRarity.LEGENDARY
-        } else if (moneyIndex in 0 until 50) {
-            // 40 stickers = epic
-            CardRarity.EPIC
-        } else if (moneyIndex in 0 until 150) {
-            // 100 stickers = rare
-            CardRarity.RARE
-        } else if (moneyIndex in 0 until 300) {
-            // 150 stickers = uncommon
-            CardRarity.UNCOMMON
-            // 200 stickers (the rest) = common
-        } else {
-            CardRarity.COMMON
-        }
+        val rarity = CardRarity.COMMON
 
         cards.add(
             Pair(
