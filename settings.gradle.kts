@@ -10,15 +10,15 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val kotlin = version("kotlin", "1.7.10")
-            val kotlinXSerialization = version("kotlinx-serialization", "1.7.1")
+            // Just because a variable is unused here, does NOT mean that it is unused in a project!
+            val kotlinXSerialization = version("kotlinx-serialization", "1.8.1")
             val ktor = version("ktor", "3.1.3")
-            val jib = version("jib", "3.4.3")
             val exposed = version("exposed", "0.60.0")
             val i18nHelper = version("i18nhelper", "0.0.6-SNAPSHOT")
             val i18nHelperPlugin = version("i18nhelperplugin", "0.0.6-SNAPSHOT")
-            val logback = version("logback", "1.4.14")
-            val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
+            val logback = version("logback", "1.5.18")
+            val kotlinxCoroutines = version("kotlinx-coroutines", "1.10.2")
+            val jib = version("jib", "3.4.3")
 
             library("deviousjda", "com.github.LorittaBot", "DeviousJDA").version("21af945035")
 
@@ -46,8 +46,8 @@ dependencyResolutionManagement {
 
             library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
 
-            library("hikaricp", "com.zaxxer", "HikariCP").version("5.1.0")
-            library("postgresqljdbcdriver", "org.postgresql", "postgresql").version("42.7.1")
+            library("hikaricp", "com.zaxxer", "HikariCP").version("6.3.0")
+            library("postgresqljdbcdriver", "org.postgresql", "postgresql").version("42.7.6")
         }
     }
 }

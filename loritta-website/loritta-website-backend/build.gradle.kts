@@ -34,7 +34,7 @@ dependencies {
 
     // YAML
     implementation("org.yaml:snakeyaml:2.4")
-    implementation("com.charleskorn.kaml:kaml:0.76.0")
+    implementation("com.charleskorn.kaml:kaml:0.80.1")
 
     implementation("net.perfectdreams.etherealgambi:client:1.0.0")
 

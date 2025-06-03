@@ -111,16 +111,16 @@ kotlin {
             dependencies {
                 api(kotlin("stdlib-jdk8"))
 
-                api("ch.qos.logback:logback-classic:1.4.11")
+                api(libs.logback.classic)
 
                 // Used for caching
-                api("com.github.ben-manes.caffeine:caffeine:3.0.1")
+                api("com.github.ben-manes.caffeine:caffeine:3.2.0")
 
                 // Used for config
-                api("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLIN_SERIALIZATION}")
+                api(libs.kotlinx.serialization.hocon)
 
                 // Used for the LocaleManager
-                implementation("org.yaml:snakeyaml:1.28")
+                implementation("org.yaml:snakeyaml:2.4")
 
                 // Used by Minecraft related commands
                 api("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.2")
@@ -130,7 +130,7 @@ kotlin {
                 api("io.ktor:ktor-client-apache:${Versions.KTOR}")
 
                 // Used for caching
-                api("com.github.ben-manes.caffeine:caffeine:3.0.1")
+                api("com.github.ben-manes.caffeine:caffeine:3.2.0")
 
                 // Used for config
                 api(libs.kotlinx.serialization.hocon)
@@ -140,7 +140,7 @@ kotlin {
 
                 // Internationalization
                 api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:${libs.versions.i18nhelper.get()}")
-                implementation("com.charleskorn.kaml:kaml:0.38.0")
+                implementation("com.charleskorn.kaml:kaml:0.80.1")
                 implementation("com.ibm.icu:icu4j:70.1")
 
                 // Gabriela Image Server

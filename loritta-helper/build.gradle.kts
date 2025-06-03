@@ -54,8 +54,8 @@ dependencies {
     implementation("net.perfectdreams.galleryofdreams:client:1.0.13")
 
     // Used for the LocaleManager
-    implementation("org.yaml:snakeyaml:1.30")
-    implementation("com.charleskorn.kaml:kaml:0.43.0")
+    implementation("org.yaml:snakeyaml:2.4")
+    implementation("com.charleskorn.kaml:kaml:0.80.1")
 
     // ICU
     implementation("com.ibm.icu:icu4j:71.1")

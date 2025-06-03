@@ -53,9 +53,6 @@ kotlin {
 				implementation("app.softwork:kotlinx-uuid-core:0.0.17")
 				// api(npm("htmx.org", "2.0.2"))
 				api(npm("hyperscript.org", "0.9.12"))
-
-				// Yes, deprecated... but we need this because if we don't add this, DCE will fail :(
-				api(npm("text-encoding", "0.7.0"))
 			}
 		}
 	}
