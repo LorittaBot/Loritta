@@ -227,18 +227,22 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 val result = loritta.transaction {
                     val now = Instant.now()
 
-                    val requesterAlreadyHasMarriage = MarriageParticipants.selectAll()
+                    val requesterAlreadyHasMarriage = MarriageParticipants
+                        .innerJoin(UserMarriages)
+                        .selectAll()
                         .where {
-                            MarriageParticipants.user eq requestedBy.idLong
+                            MarriageParticipants.user eq requestedBy.idLong and (UserMarriages.active eq true)
                         }
                         .count() != 0L
 
                     if (requesterAlreadyHasMarriage)
                         return@transaction MarryResult.RequesterIsAlreadyMarried
 
-                    val proposeToAlreadyHasMarriage = MarriageParticipants.selectAll()
+                    val proposeToAlreadyHasMarriage = MarriageParticipants
+                        .innerJoin(UserMarriages)
+                        .selectAll()
                         .where {
-                            MarriageParticipants.user eq proposeTo.idLong
+                            MarriageParticipants.user eq proposeTo.idLong and (UserMarriages.active eq true)
                         }
                         .count() != 0L
 
