@@ -61,7 +61,7 @@ class LigarCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val phoneAndText = args[options.phoneAndText]
             val parts = phoneAndText.split(" ", limit = 2)
             val phoneNumber = parts.getOrNull(0)?.replace("-", "")
-            val text = parts.getOrNull(1) ?: ""
+            val text = (parts.getOrNull(1) ?: "").lowercase()
 
             if (phoneNumber == "40028922") {
                 val profile = context.lorittaUser.profile
