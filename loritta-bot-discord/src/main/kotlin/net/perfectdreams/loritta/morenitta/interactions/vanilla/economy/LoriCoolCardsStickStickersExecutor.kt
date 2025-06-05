@@ -128,7 +128,7 @@ class LoriCoolCardsStickStickersExecutor(val loritta: LorittaBot, private val lo
             StickStickersResult.NoCardsToBeSticked -> {
                 context.reply(true) {
                     styled(
-                        "Você não tem figurinhas a serem coladas!"
+                        context.i18nContext.get(I18N_PREFIX.YouDontHaveStickersToBeStickied(loritta.commandMentions.loriCoolCardsStick))
                     )
                 }
             }

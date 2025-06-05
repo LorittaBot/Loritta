@@ -46,6 +46,7 @@ view:
 stick:
   label: "colar"
   description: "Cola as figurinhas que você tem no seu inventário no seu álbum de figurinhas"
+  youDontHaveStickersToBeStickied: "Você não tem figurinhas a serem coladas! Se você tem pacotinhos, não se esqueça de abrir eles antes de colar as figurinhas usando {loriCoolCardsStickStickersCommand}."
 
   stickXStickers: "Colar +{stickerCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}"
 
