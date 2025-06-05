@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsGiveStickersExecutor.GiveStickerAcceptedTransactionResult.NotEnoughCards
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsGiveStickersExecutor.Companion.matchStickers
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
@@ -336,7 +335,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                     is SetStickersResult.TryingToGiveStickersThatArentStickedYet -> {
                                         context.reply(true) {
                                             styled(
-                                                context.i18nContext.get(I18N_PREFIX.YouAreTryingToGiveStickersThatYouHaventStickedYet(result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
+                                                context.i18nContext.get(I18N_PREFIX.UserIsTryingToGiveStickersThatArentStickedYet(context.user.asMention, result.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
                                             )
                                         }
                                     }
@@ -654,7 +653,13 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                                 verificationResultPlayer1.missingStickers
                                             )
 
-                                        // There are only two possible results here anyway
+                                        if (verificationResultPlayer1 is StickerVerificationResult.TryingToGiveStickersThatArentStickedYet)
+                                            return@transaction TradeStickerResult.TryingToGiveStickersThatArentStickedYet(
+                                                selfUser,
+                                                verificationResultPlayer1.stickersMissing
+                                            )
+
+                                        // There are only three possible results here anyway
                                         verificationResultPlayer1 as StickerVerificationResult.Success
 
                                         val verificationResultPlayer2 = verifyStickers(
@@ -668,7 +673,13 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                                 verificationResultPlayer2.missingStickers
                                             )
 
-                                        // There are only two possible results here anyway
+                                        if (verificationResultPlayer2 is StickerVerificationResult.TryingToGiveStickersThatArentStickedYet)
+                                            return@transaction TradeStickerResult.TryingToGiveStickersThatArentStickedYet(
+                                                userThatYouWantToTradeWith,
+                                                verificationResultPlayer2.stickersMissing
+                                            )
+
+                                        // There are only three possible results here anyway
                                         verificationResultPlayer2 as StickerVerificationResult.Success
 
                                         val stickerIdsByPlayer1ToBeGivenToPlayer2MappedToOwnedStickerId = verificationResultPlayer1.stickerIdsToBeGivenMappedToOwnedStickerId
@@ -834,6 +845,13 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                             context.reply(false) {
                                                 styled(
                                                     context.i18nContext.get(I18N_PREFIX.UserDoesNotHaveEnoughStickers(response.user.asMention, response.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
+                                                )
+                                            }
+                                        }
+                                        is TradeStickerResult.TryingToGiveStickersThatArentStickedYet -> {
+                                            context.reply(false) {
+                                                styled(
+                                                    context.i18nContext.get(I18N_PREFIX.UserIsTryingToGiveStickersThatArentStickedYet(response.user.asMention, response.stickersMissing.joinToString { "`${it[LoriCoolCardsEventCards.fancyCardId]}`" }))
                                                 )
                                             }
                                         }
@@ -1017,6 +1035,10 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         if (matchResult.missingStickers.isNotEmpty())
             return StickerVerificationResult.NotEnoughCards(matchResult.missingStickers)
 
+        // Check if there are stickers that aren't sticked yet but are trying to be given
+        if (matchResult.stickersThatArentStickedButAreTryingToBeGiven.isNotEmpty())
+            return StickerVerificationResult.TryingToGiveStickersThatArentStickedYet(matchResult.stickersThatArentStickedButAreTryingToBeGiven)
+
         val stickerIdsToBeGivenMappedToOwnedStickerId = matchResult.stickerIdsToBeGivenMappedToSticker.values.map { it[LoriCoolCardsUserOwnedCards.id].value }
         val stickerIdsToBeGivenMappedToEventStickerId = matchResult.stickerIdsToBeGivenMappedToSticker.values.map { it[LoriCoolCardsEventCards.id].value }
 
@@ -1028,6 +1050,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
 
     sealed class StickerVerificationResult {
         data class NotEnoughCards(val missingStickers: List<ResultRow>) : StickerVerificationResult()
+        data class TryingToGiveStickersThatArentStickedYet(val stickersMissing: List<ResultRow>) : StickerVerificationResult()
         data class Success(
             val stickerIdsToBeGivenMappedToOwnedStickerId: List<Long>,
             val stickerIdsToBeGivenMappedToEventStickerId: List<Long>
@@ -1121,6 +1144,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         data class UnknownCard(val user: User) : TradeStickerResult()
         data class NotEnoughSonhos(val user: User) : TradeStickerResult()
         data class NotEnoughCards(val user: User, val stickersMissing: List<ResultRow>) : TradeStickerResult()
+        data class TryingToGiveStickersThatArentStickedYet(val user: User, val stickersMissing: List<ResultRow>) : TradeStickerResult()
         data class Success(
             val givenStickersToPlayer1: List<ResultRow>,
             val givenSonhosToPlayer1: Long,

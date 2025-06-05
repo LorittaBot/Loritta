@@ -101,7 +101,7 @@ trade:
   receiverDidntBuyEnoughBoosterPacks: "{receiver} precisa comprar mais **{boosterPackCount,plural, =0 {# pacotinhos} one {# pacotinho} other {# pacotinhos}}** para poder trocar figurinhas!"
   receiverDidntBuyEnoughBoosterPacksSonhosTrade: "{receiver} precisa comprar mais **{boosterPackCount,plural, =0 {# pacotinhos} one {# pacotinho} other {# pacotinhos}}** para poder trocar figurinhas por sonhos!"
   youNeedToGetDailyRewardBeforeTradingStickers: "Você precisa pegar a recompensa diária antes de poder trocar figurinhas! {dailyCommand}"
-  youAreTryingToGiveStickersThatYouHaventStickedYet: "Você está tentando dar uma figurinha que, enquanto você tem no seu inventário, você não tem ela colada no seu álbum! **Figurinhas que precisam ser coladas no seu álbum antes de poderem ser dadas:** {stickerList}"
+  userIsTryingToGiveStickersThatArentStickedYet: "{user} está tentando dar uma figurinha que, enquanto tem no inventário, não tem ela colada no álbum! **Figurinhas que precisam ser coladas no álbum antes de poderem ser dadas:** {stickerList}"
   receiverNeedsToGetDailyRewardBeforeTradingStickers: "{userMention} precisa pegar a recompensa diária antes de poder trocar figurinhas! {dailyCommand}"
   nothingTradedYetFunnyMessages:
     - "Vazio, igualzinho a minha conta bancária"
