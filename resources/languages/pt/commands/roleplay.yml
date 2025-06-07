@@ -7,7 +7,7 @@ pictureSource: "Fonte da Imagem" #Source of the Action's Picture
 whatActionDoYouWantForTheUser: "Qual ação você deseja fazer em {userMention}?"
 youCantUseThisHere: "Você não consegue fazer ações de roleplay aqui!"
 genderTip: "Dica: Sabia que as GIFs mudam dependendo do seu \"/gênero\" configurado na Loritta?"
-youReceivedAffinityPointsForRoleplaying: "Você recebeu 1 ponto de afinidade no seu casamento por ter feito uma ação com o seu parceiro! Você ganha pontos de afinidade no seu casamento ao realizar uma ação todos os dias. Para mais informações, veja informações sobre o seu casamento no {marriageViewCommand}."
+youReceivedAffinityPointsForRoleplaying: "Você recebeu {affinityCount,plural, =0 {# pontos de afinidade} one {# ponto de afinidade} other {# pontos de afinidade}} no seu casamento por ter feito uma ação com o seu parceiro! Você ganha pontos de afinidade no seu casamento ao realizar uma ação todos os dias. Para mais informações, veja informações sobre o seu casamento no {marriageViewCommand}."
 hug:
   label: "abraçar"
   buttonLabel: "Abraçar"
