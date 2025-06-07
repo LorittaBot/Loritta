@@ -43,7 +43,7 @@ class RoleplayCommand {
         ) {
             context.deferChannelMessage(false)
 
-            val (achievementTargets, giveOutAffinityReward, message) = RoleplayUtils.handleRoleplayMessage(
+            val (achievementTargets, giveOutAffinityReward, givenAffinity, message) = RoleplayUtils.handleRoleplayMessage(
                 context.loritta,
                 context,
                 context.i18nContext,
@@ -71,7 +71,7 @@ class RoleplayCommand {
             if (giveOutAffinityReward) {
                 context.reply(true) {
                     styled(
-                        context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(context.loritta.commandMentions.marriageView)),
+                        context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(givenAffinity, context.loritta.commandMentions.marriageView)),
                         Emotes.LoriHappy
                     )
                 }
@@ -85,7 +85,7 @@ class RoleplayCommand {
                 delay(5_000)
 
                 // We don't care about achievements, because none of the actions that Loritta do *should* trigger a achievement
-                val (_, _, lorittaMessage) = RoleplayUtils.handleRoleplayMessage(
+                val (_, _, _, lorittaMessage) = RoleplayUtils.handleRoleplayMessage(
                     context.loritta,
                     context,
                     context.i18nContext,

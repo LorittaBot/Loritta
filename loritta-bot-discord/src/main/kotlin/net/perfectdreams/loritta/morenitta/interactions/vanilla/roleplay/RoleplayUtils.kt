@@ -144,7 +144,7 @@ object RoleplayUtils {
             // ===[ KISS ]===
             KISS_ATTRIBUTES -> {
                 if (receiver == loritta.config.loritta.discord.applicationId.toLong()) {
-                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA)), 0, false) {
+                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA)), false, 0) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
                             Emotes.LoriBonk
@@ -316,16 +316,29 @@ object RoleplayUtils {
 
             if (giveOutAffinityReward) {
                 if (now.isAfter(ZonedDateTime.of(2025, 6, 8, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE))) {
-                    UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
-                        it[UserMarriages.affinity] = UserMarriages.affinity + 2
+                    // Have any of our other partners sent affinity today?
+                    val sentRoleplayActionOtherPartners = MarriageRoleplayActions.selectAll()
+                        .where {
+                            MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy neq context.user.idLong)
+                        }
+                        .count() != 0L
+
+                    givenAffinity = if (sentRoleplayActionOtherPartners) {
+                        // They did!
+                        3
+                    } else {
+                        // They did not :(
+                        1
                     }
-                    givenAffinity = 2
                 } else {
                     // TODO: Remove this after the date has been elapsed!
-                    UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
-                        it[UserMarriages.affinity] = UserMarriages.affinity + 1
-                    }
                     givenAffinity = 1
+                }
+            }
+
+            if (givenAffinity != 0) {
+                UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
+                    it[UserMarriages.affinity] = UserMarriages.affinity + givenAffinity
                 }
             }
 
