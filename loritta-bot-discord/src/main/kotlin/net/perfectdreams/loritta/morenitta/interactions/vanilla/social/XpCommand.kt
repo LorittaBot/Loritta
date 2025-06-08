@@ -60,8 +60,6 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         }
 
         subcommand(XP_NOTIFICATIONS_I18N_PREFIX.Label, XP_VIEW_I18N_PREFIX.Description,UUID.fromString("7c4d1ef0-6c2a-4ac6-8b4f-9dbba03005f2")) {
-            enableLegacyMessageSupport = true
-
             executor = XpNotificationsExecutor()
         }
 
