@@ -44,6 +44,7 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         val XP_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Xprank
         val XP_EDIT_I18N_PREFIX = I18nKeysData.Commands.Command.Xpedit
         val XP_TRANSFER_I18N_PREFIX = I18nKeysData.Commands.Command.Xptransfer
+        val XP_NOTIFICATIONS_I18N_PREFIX = I18nKeysData.Commands.Command.Xpnotifications
         val I18N_PREFIX = I18nKeysData.Commands.Command.Xp
     }
 
@@ -56,6 +57,12 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
         subcommand(XP_VIEW_I18N_PREFIX.Label, XP_VIEW_I18N_PREFIX.Description, UUID.fromString("3e0b3704-3c10-42c7-8b90-54a02db05751")) {
             executor = viewXpExecutor
+        }
+
+        subcommand(XP_NOTIFICATIONS_I18N_PREFIX.Label, XP_VIEW_I18N_PREFIX.Description,UUID.fromString("7c4d1ef0-6c2a-4ac6-8b4f-9dbba03005f2")) {
+            enableLegacyMessageSupport = true
+
+            executor = XpNotificationsExecutor()
         }
 
         subcommand(XP_RANK_I18N_PREFIX.Label, XP_RANK_I18N_PREFIX.Description, UUID.fromString("5bc39edc-2dc1-462b-9b96-15ea27b168f9")) {
@@ -82,6 +89,38 @@ class XpCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         subcommand(XP_TRANSFER_I18N_PREFIX.Label, XP_TRANSFER_I18N_PREFIX.Description, UUID.fromString("0ec48ce1-967e-422d-8147-eded127d5913")) {
             executor = TransferXpExecutor()
         }
+    }
+
+    inner class XpNotificationsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+            val newValue = loritta.newSuspendedTransaction {
+                context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm =
+                    !context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm
+
+                context.lorittaUser.profile.settings.doNotSendXpNotificationsInDm
+            }
+
+            if (newValue) {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(XP_NOTIFICATIONS_I18N_PREFIX.DisabledNotifications),
+                        Emotes.LoriSmile
+                    )
+                }
+            } else {
+                context.reply(false) {
+                    styled(
+                        context.i18nContext.get(XP_NOTIFICATIONS_I18N_PREFIX.EnabledNotifications),
+                        Emotes.LoriSmile
+                    )
+                }
+            }
+        }
+
+        override suspend fun convertToInteractionsArguments(
+            context: LegacyMessageCommandContext,
+            args: List<String>
+        ): Map<OptionReference<*>, Any?>? = LorittaLegacyMessageCommandExecutor.NO_ARGS
     }
 
     inner class ViewXpExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
