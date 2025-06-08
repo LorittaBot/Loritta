@@ -25,6 +25,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.awt.Color
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 object RoleplayUtils {
@@ -143,7 +144,7 @@ object RoleplayUtils {
             // ===[ KISS ]===
             KISS_ATTRIBUTES -> {
                 if (receiver == loritta.config.loritta.discord.applicationId.toLong()) {
-                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA)), false) {
+                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA)), false, 0) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
                             Emotes.LoriBonk
@@ -266,14 +267,14 @@ object RoleplayUtils {
 
         val (picturePath, pictureSource) = result
 
-        val giveOutAffinityReward = context.loritta.transaction {
+        val (giveOutAffinityReward, givenAffinity) = context.loritta.transaction {
             val selfMarriage = MarriageParticipants
                 .innerJoin(UserMarriages)
                 .selectAll()
                 .where {
                     UserMarriages.active eq true and (MarriageParticipants.user eq context.user.idLong)
                 }
-                .firstOrNull() ?: return@transaction false
+                .firstOrNull() ?: return@transaction Pair(false, 0)
 
             val marriageParticipants = MarriageParticipants.selectAll()
                 .where {
@@ -290,10 +291,11 @@ object RoleplayUtils {
                 }
 
             if (receiver !in marriageParticipantsIdsExceptMyself)
-                return@transaction false
+                return@transaction Pair(false, 0)
 
             // They are our partner!
             var giveOutAffinityReward = false
+            var givenAffinity = 0
 
             val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
             val todayAtMidnight = now
@@ -313,8 +315,30 @@ object RoleplayUtils {
             }
 
             if (giveOutAffinityReward) {
+                if (now.isAfter(ZonedDateTime.of(2025, 6, 8, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE))) {
+                    // Have any of our other partners sent affinity today?
+                    val sentRoleplayActionOtherPartners = MarriageRoleplayActions.selectAll()
+                        .where {
+                            MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy neq context.user.idLong)
+                        }
+                        .count() != 0L
+
+                    givenAffinity = if (sentRoleplayActionOtherPartners) {
+                        // They did!
+                        3
+                    } else {
+                        // They did not :(
+                        1
+                    }
+                } else {
+                    // TODO: Remove this after the date has been elapsed!
+                    givenAffinity = 1
+                }
+            }
+
+            if (givenAffinity != 0) {
                 UserMarriages.update({ UserMarriages.id eq selfMarriage[UserMarriages.id] }) {
-                    it[UserMarriages.affinity] = UserMarriages.affinity + 1
+                    it[UserMarriages.affinity] = UserMarriages.affinity + givenAffinity
                 }
             }
 
@@ -326,10 +350,10 @@ object RoleplayUtils {
                 it[MarriageRoleplayActions.affinityReward] = giveOutAffinityReward
             }
 
-            return@transaction giveOutAffinityReward
+            return@transaction Pair(giveOutAffinityReward, givenAffinity)
         }
 
-        return RoleplayResponse(achievements, giveOutAffinityReward) {
+        return RoleplayResponse(achievements, giveOutAffinityReward, givenAffinity) {
             embed {
                 description = buildString {
                     if (data.combo >= 3) {
@@ -363,7 +387,7 @@ object RoleplayUtils {
                         context.invalidateComponentCallback()
 
                         // Retribute
-                        val (achievementTargets, giveOutAffinityReward, message) = handleRoleplayMessage(
+                        val (achievementTargets, giveOutAffinityReward, givenAffinity, message) = handleRoleplayMessage(
                             context.loritta,
                             context,
                             context.i18nContext,
@@ -391,7 +415,7 @@ object RoleplayUtils {
                         if (giveOutAffinityReward) {
                             context.reply(true) {
                                 styled(
-                                    context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(context.loritta.commandMentions.marriageView)),
+                                    context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(givenAffinity, context.loritta.commandMentions.marriageView)),
                                     Emotes.LoriHappy
                                 )
                             }
@@ -437,6 +461,7 @@ object RoleplayUtils {
     data class RoleplayResponse(
         val achievements: List<AchievementTarget>,
         val giveOutAffinityReward: Boolean,
+        val givenAffinity: Int,
         val builder: InlineMessage<*>.() -> (Unit)
     )
 
