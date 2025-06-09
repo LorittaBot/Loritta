@@ -175,6 +175,9 @@ data class StoredMarriageMarryTransaction(val marriedWithUserId: Long) : StoredS
 data object StoredMarriageRestoreTransaction : StoredSonhosTransaction()
 
 @Serializable
+data object StoredMarriageRestoreAutomaticTransaction : StoredSonhosTransaction()
+
+@Serializable
 data object StoredMarriageLoveLetterTransaction : StoredSonhosTransaction()
 
 @Serializable

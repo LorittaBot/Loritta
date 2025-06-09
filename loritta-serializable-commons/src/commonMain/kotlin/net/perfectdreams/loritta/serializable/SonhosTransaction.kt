@@ -379,6 +379,15 @@ data class MarriageRestoreTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class MarriageRestoreAutomaticTransaction(
+    override val id: Long,
+    override val transactionType: TransactionType,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long
+) : SonhosTransaction()
+
+@Serializable
 data class MarriageLoveLetterTransaction(
     override val id: Long,
     override val transactionType: TransactionType,

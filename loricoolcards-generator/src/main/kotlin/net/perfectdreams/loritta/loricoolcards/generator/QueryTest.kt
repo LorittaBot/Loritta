@@ -314,6 +314,7 @@ suspend fun main() {
                     StoredVacationModeLeaveTransaction -> TODO()
                     StoredMarriageLoveLetterTransaction -> TODO()
                     StoredMarriageRestoreTransaction -> TODO()
+                    StoredMarriageRestoreAutomaticTransaction -> TODO()
                 }
             }
     }

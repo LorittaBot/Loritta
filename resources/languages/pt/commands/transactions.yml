@@ -143,6 +143,7 @@ types:
     married: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para casar com {marriedWithUserPreview}"
     marryDailyTax: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em impostos para continuar casado com {user}"
     restoredMarriage: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para restaurar o casamento"
+    restoredMarriageAutomatic: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para restaurar o casamento (automático)"
     boughtMarriageStoreItem: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em itens na loja de casados"
     loveLetter: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para enviar uma cartinha de amor no casamento"
   vacationMode:

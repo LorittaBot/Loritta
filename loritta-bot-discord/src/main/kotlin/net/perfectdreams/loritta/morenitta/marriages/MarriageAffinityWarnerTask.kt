@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand
 import net.perfectdreams.loritta.morenitta.scheduledtasks.NamedRunnableCoroutine
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
@@ -71,7 +72,8 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
                                 +TextDisplay(
                                     buildString {
                                         appendLine("### Taxa de Afinidade do Casamento")
-                                        appendLine("O seu casamento irá acabar em breve se você não conseguir mais afinidade! Para conseguir mais afinidade, veja as informações do seu casamento com ${m.commandMentions.marriageView}")
+                                        appendLine("O seu casamento irá acabar em breve se você não conseguir mais afinidade e o casamento chegar em 0 pontos de afinidade! Para conseguir mais afinidade, veja as informações do seu casamento com ${m.commandMentions.marriageView}")
+                                        appendLine("Se um dos usuários tiver ${MarriageCommand.MARRIAGE_RESTORE_COST} sonhos quando chegar em 0 pontos de afinidade, ele será cobrado e o casamento será automaticamente restaurado com 20 pontos.")
                                     }
                                 )
                             }
