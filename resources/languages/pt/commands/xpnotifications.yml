@@ -1,0 +1,4 @@
+label: "notificações"
+description: "Ative ou desative as notificações quando você sobe de nível nas suas mensagens diretas"
+disabledNotifications: "Você desativou as notificações quando você sobe de nível por mensagem direta!"
+enabledNotifications: "Você ativou as notificações quando você sobe de nível por mensagem direta!"
