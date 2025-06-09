@@ -452,9 +452,9 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                                 LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
                                             }.count()
 
-                                        if (template.minimumBoosterPacksToTradeBySonhos > receiverBoughtPacks)
+                                        if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
                                             return@transaction SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks(
-                                                template.minimumBoosterPacksToTradeBySonhos,
+                                                template.minimumBoosterPacksToTrade,
                                                 receiverBoughtPacks
                                             )
 
