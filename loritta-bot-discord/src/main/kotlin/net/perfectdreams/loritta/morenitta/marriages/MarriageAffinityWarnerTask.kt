@@ -29,7 +29,7 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
             // Check which marriages will be affected by today's marriage decay
             val marriages = UserMarriages.selectAll()
                 .where {
-                    UserMarriages.affinity lessEq 2 and (UserMarriages.active eq true)
+                    UserMarriages.affinity lessEq 6 and (UserMarriages.active eq true)
                 }
                 .toList()
 
