@@ -970,7 +970,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             }
 
             if (tradeOfferThings.stickerFancyIds.isNotEmpty()) {
-                appendLine("${Emotes.LoriCoolSticker} `${tradeOfferThings.stickerFancyIds.joinToString()}`")
+                appendLine("${Emotes.LoriCoolSticker} (${tradeOfferThings.stickerFancyIds.size}x) `${tradeOfferThings.stickerFancyIds.joinToString()}`")
             }
         }.ifEmpty { "*${emptyFunnyMessage}*" }
     }
