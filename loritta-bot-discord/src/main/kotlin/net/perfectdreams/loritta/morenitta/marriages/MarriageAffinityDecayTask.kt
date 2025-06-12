@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand
 import net.perfectdreams.loritta.morenitta.scheduledtasks.NamedRunnableCoroutine
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.StoredMarriageRestoreAutomaticTransaction
 import org.jetbrains.exposed.sql.SortOrder
@@ -154,7 +153,7 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                             this.components += Container {
                                 +TextDisplay(
                                     buildString {
-                                        appendLine("### ${Emotes.MarriageRing} Uma Segunda Chance para o Amor!")
+                                        appendLine("### ${Emotes.LoriHeart} Uma Segunda Chance para o Amor!")
                                         appendLine("A afinidade do seu casamento chegou a zero, levando ao fim do seu casamento...")
                                         appendLine()
                                         appendLine("Felizmente <@${marriage.restoredBy}> tinha **${SonhosUtils.getSonhosEmojiOfQuantity(MarriageCommand.MARRIAGE_RESTORE_COST.toLong())} ${MarriageCommand.MARRIAGE_RESTORE_COST} sonhos** no bolso e, com eles, a afinidade do casamento foi restaurada! O seu casamento continuará, agora com ${MarriageCommand.DEFAULT_AFFINITY} pontos de afinidade.")
