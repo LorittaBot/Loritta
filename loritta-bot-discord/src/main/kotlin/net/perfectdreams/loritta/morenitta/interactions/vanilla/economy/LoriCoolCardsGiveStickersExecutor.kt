@@ -269,7 +269,7 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                 LoriCoolCardsUserBoughtBoosterPacks.user eq userThatWillReceiveTheSticker.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
             }.count()
 
-            if (template.minimumBoosterPacksToGive > receiverBoughtPacks)
+            if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
                 return@transaction GiveStickerResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToGive, receiverBoughtPacks)
 
             val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {

@@ -445,10 +445,6 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 }
             ) { context ->
                 loritta.newSuspendedTransaction {
-                    MarriageParticipants.deleteWhere {
-                        MarriageParticipants.marriage eq userMarriage.data.id
-                    }
-
                     UserMarriages.update({ UserMarriages.id eq userMarriage.data.id }) {
                         it[UserMarriages.active] = false
                     }
