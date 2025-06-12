@@ -52,6 +52,7 @@ object LorittaEmojis {
     val SparklyStaff = applicationEmoji("sparkly_staff", "/badges/")
     val StickerFan = applicationEmoji("sticker_fan", "/badges/")
     val Stonks = applicationEmoji("stonks", "/badges/")
+    val TopLoveLetter = applicationEmoji("top_love_letter", "/badges/")
     val LoriCard = applicationEmoji("super_donator", "/badges/")
 
     private fun applicationEmoji(emojiName: String, imageFolder: String = "/application_emojis/"): LorittaEmojiReference.ApplicationEmoji {

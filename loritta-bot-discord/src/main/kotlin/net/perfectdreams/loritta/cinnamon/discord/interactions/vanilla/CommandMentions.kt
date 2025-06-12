@@ -61,6 +61,7 @@ CommandMentions(private val registeredCommands: List<DiscordCommand>) {
     val marriageLetter = commandMention("casamento cartinha")
     val marriageRank = commandMention("casamento rank")
     val marriageRestore = commandMention("casamento restaurar")
+    val marriageDivorce = commandMention("casamento divorciar")
 
     /**
      * Creates a command mention of [path]. If the command doesn't exist, an error will be thrown.

@@ -137,3 +137,7 @@ profiles:
       title: "Super Aniversariante"
       titlePlural: "Super Aniversariantes"
       description: "Uau, a Loritta ganhou tantas pelúcias de aniversário, que ela acabou virando um! Bem, na verdade ela virou um amigurumi... Agora, como faz para desvirar ela? Insígnia para pessoas que zeraram o Evento de Aniversário da Loritta 2025"
+    topLoveLetter:
+      title: "Autor Apaixonado"
+      titlePlural: "Autores Apaixonados"
+      description: "Insígnia para quem está em primeiro lugar no ranking de cartinhas de amor enviadas"
