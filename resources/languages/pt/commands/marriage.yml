@@ -34,6 +34,7 @@ restore:
   restoreInformation: "O custo para restaurar é de {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, o seu casamento voltará com a data de casamento original ({marriageDate}) e com 20 pontos de afinidade."
   restoreLimit: "Você tem até {restoreExpiresAtDate} para decidir se você deseja restaurar o casamento ou não."
   restoreMarriageButton: "Restaurar Casamento"
+  noAvailableMarriageToBeRestored: "Você não tem nenhum casamento que pode ser restaurado! Apenas casamentos que foram perdidos pór falta de afinidade desde {dateRestore} podem ser recuperados."
 
 rank:
   label: "rank"

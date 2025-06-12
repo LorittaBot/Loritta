@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.SonhosRankType
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
@@ -41,7 +40,6 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.serializable.*
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -758,7 +756,7 @@ class MarriageCommand(private val loritta: LorittaBot) : SlashCommandDeclaration
                 RestorableMarriageQueryResult.NotFound -> {
                     context.reply(false) {
                         styled(
-                            "Você não tem nenhum casamento que pode ser restaurado! Apenas casamentos que foram perdidos por falta de afinidade podem ser recuperados.",
+                            context.i18nContext.get(I18N_PREFIX.Restore.NoAvailableMarriageToBeRestored(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(now7DaysAgo))),
                             Emotes.LoriSob
                         )
                     }
