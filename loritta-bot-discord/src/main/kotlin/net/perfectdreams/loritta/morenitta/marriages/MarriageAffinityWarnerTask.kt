@@ -5,6 +5,8 @@ import dev.minn.jda.ktx.interactions.components.TextDisplay
 import dev.minn.jda.ktx.messages.MessageCreate
 import mu.KotlinLogging
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -34,7 +36,9 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
                 }
                 .toList()
 
-            val negativeAffinityMarriagesIds = marriages.map { it[UserMarriages.id] }
+            val marriagesWithAffinity = marriages.map { 
+                it[UserMarriages.id] to it[UserMarriages.affinity]
+            }.toMap()
 
             // Get each participant of each marriage that was affected so we can notify them!
             val affectedParticipants = MarriageParticipants.selectAll()
@@ -47,12 +51,13 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
             updateStoredTimer(m)
 
             return@transaction MarriagesThatAreGoingToExpireResult(
-                negativeAffinityMarriagesIds.map {
+                marriagesWithAffinity.map { (marriageId, affinity) ->
                     MarriagesThatAreGoingToExpireResult.ExpiredMarriage(
-                        it.value,
+                        marriageId.value,
                         affectedParticipants.filter { participantRow ->
-                            participantRow[MarriageParticipants.marriage] == it
-                        }.map { it[MarriageParticipants.user] }
+                            participantRow[MarriageParticipants.marriage] == marriageId
+                        }.map { it[MarriageParticipants.user] },
+                        affinity
                     )
                 }
             )
@@ -71,9 +76,14 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
                             this.components += Container {
                                 +TextDisplay(
                                     buildString {
-                                        appendLine("### Taxa de Afinidade do Casamento")
-                                        appendLine("O seu casamento irá acabar em breve se você não conseguir mais afinidade e o casamento chegar em 0 pontos de afinidade! Para conseguir mais afinidade, veja as informações do seu casamento com ${m.commandMentions.marriageView}")
-                                        appendLine("Se um dos usuários tiver ${MarriageCommand.MARRIAGE_RESTORE_COST} sonhos quando chegar em 0 pontos de afinidade, ele será cobrado e o casamento será automaticamente restaurado com 20 pontos.")
+                                        appendLine("### ${Emotes.MarriageRing} Taxa de Afinidade do Casamento")
+                                        appendLine("Assim como uma chama, você precisa cuidar da afinidade do seu casamento para ela se manter acesa. Naturalmente, a afinidade diminui 2 pontos a cada dia.")
+                                        appendLine()
+                                        appendLine("Vocês estão com ${marriage.affinity} pontos de afinidade. Se ela chegar em 0, o casamento acabará! Veja como conseguir mais pontos de afinidade com ${m.commandMentions.marriageView}.")
+                                        appendLine()
+                                        appendLine("Se um de vocês tiver ${SonhosUtils.getSonhosEmojiOfQuantity(MarriageCommand.MARRIAGE_RESTORE_COST.toLong())} **${MarriageCommand.MARRIAGE_RESTORE_COST} sonhos** quando a afinidade chegar em 0 pontos, ele será automaticamente cobrado e o casamento será restaurado, voltando com 20 pontos sem perder a duração do seu casamento. O casamento também poderá ser restaurado após acabar usando ${m.commandMentions.marriageRestore}, pagando o mesmo preço.")
+                                        appendLine()
+                                        appendLine("E se sentirem que é hora de seguir caminhos diferentes, a opção de ${m.commandMentions.marriageDivorce} está sempre disponível.")
                                     }
                                 )
                             }
@@ -91,7 +101,8 @@ class MarriageAffinityWarnerTask(val m: LorittaBot, val t: Long) : NamedRunnable
     ) {
         data class ExpiredMarriage(
             val marriageId: Long,
-            val participantIds: List<Long>
+            val participantIds: List<Long>,
+            val affinity: Int
         )
     }
 }

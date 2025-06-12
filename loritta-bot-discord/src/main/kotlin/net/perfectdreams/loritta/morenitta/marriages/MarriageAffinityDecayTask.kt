@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.interactions.components.TextDisplay
 import dev.minn.jda.ktx.messages.MessageCreate
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserMarriages
@@ -12,9 +13,11 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageCommand
 import net.perfectdreams.loritta.morenitta.scheduledtasks.NamedRunnableCoroutine
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.serializable.StoredMarriageRestoreAutomaticTransaction
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -62,9 +65,13 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                     participantRow[MarriageParticipants.marriage].value == marriageId
                 }
 
-                val participantProfiles = Profiles.selectAll().where {
-                    Profiles.id inList participants.map { it[MarriageParticipants.user] }
-                }.toList()
+                val participantProfiles = Profiles.selectAll()
+                    .where {
+                        Profiles.id inList participants.map { it[MarriageParticipants.user] }
+                    }
+                    // Try to get the richest to the poorest, because it is more likely that the richest person will be able to pay for the marriage restore task
+                    .orderBy(Profiles.money, SortOrder.DESC)
+                    .toList()
 
                 for (profile in participantProfiles) {
                     if (profile[Profiles.money] >= MarriageCommand.MARRIAGE_RESTORE_COST) {
@@ -133,6 +140,8 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
             )
         }
 
+        val expiresAfter = Instant.now().plusMillis(604_800_000)
+
         for (marriage in expiredMarriages.marriages) {
             for (participantId in marriage.participantIds) {
                 try {
@@ -145,9 +154,12 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                             this.components += Container {
                                 +TextDisplay(
                                     buildString {
-                                        appendLine("### Taxa de Afinidade do Casamento")
-                                        appendLine("O seu casamento acabou por falta de afinidade... Mas ele foi automaticamente restaurado por <@${marriage.restoredBy}> após ter pagado ${MarriageCommand.MARRIAGE_COST} sonhos!")
-                                        appendLine("Evite acabar o seu casamento por falta de afinidade para evitar imprevistos assim.")
+                                        appendLine("### ${Emotes.MarriageRing} Uma Segunda Chance para o Amor!")
+                                        appendLine("A afinidade do seu casamento chegou a zero, levando ao fim do seu casamento...")
+                                        appendLine()
+                                        appendLine("Felizmente <@${marriage.restoredBy}> tinha **${SonhosUtils.getSonhosEmojiOfQuantity(MarriageCommand.MARRIAGE_RESTORE_COST.toLong())} ${MarriageCommand.MARRIAGE_RESTORE_COST} sonhos** no bolso e, com eles, a afinidade do casamento foi restaurada! O seu casamento continuará, agora com ${MarriageCommand.DEFAULT_AFFINITY} pontos de afinidade.")
+                                        appendLine()
+                                        appendLine("Cuidem bem um do outro para que o casamento não chegue ao fim. Para saber como conseguir pontos de afinidade, use ${m.commandMentions.marriageView}!")
                                     }
                                 )
                             }
@@ -170,9 +182,12 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
                             this.components += Container {
                                 +TextDisplay(
                                     buildString {
-                                        appendLine("### Taxa de Afinidade do Casamento")
-                                        appendLine("O seu casamento acabou por falta de afinidade... Você pode restaurar o seu casamento usando ${m.commandMentions.marriageRestore}")
-                                        appendLine("Evite acabar o seu casamento por falta de afinidade para evitar imprevistos assim.")
+                                        appendLine("### ${Emotes.LoriSob} Seu Casamento Acabou...")
+                                        appendLine("Infelizmente o seu casamento acabou por falta de afinidade...")
+                                        appendLine()
+                                        appendLine("Mas nem tudo está perdido! Vocês têm uma chance de reacender essa chama e continuar a história de onde pararam usando ${m.commandMentions.marriageRestore}. Mas cuidado, vocês tem até ${DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(expiresAfter)} para poder restaurar o casamento!")
+                                        appendLine()
+                                        appendLine("**Que esta experiência seja um lembrete:** Os laços mais fortes são aqueles que cuidamos todos os dias.")
                                     }
                                 )
                             }
