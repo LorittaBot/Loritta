@@ -25,6 +25,9 @@ class DiscordBotListCommand(val loritta: LorittaBot) : SlashCommandDeclarationWr
         I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MISC,
         uniqueId = UUID.fromString("f91c8c3e-31b3-4e7c-b17a-d5e9a9c8432c")
     ) {
+        alternativeLegacyLabels.apply {
+            add("upvote")
+        }
         enableLegacyMessageSupport = true
 
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
