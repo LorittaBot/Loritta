@@ -139,7 +139,7 @@ class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
             )
         }
 
-        val expiresAfter = Instant.now().plusMillis(604_800_000)
+        val expiresAfter = Instant.now().plusMillis(MarriageCommand.MARRIAGE_RESTORE_MAX_TIME)
 
         for (marriage in expiredMarriages.marriages) {
             for (participantId in marriage.participantIds) {
