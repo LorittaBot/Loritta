@@ -29,7 +29,7 @@ currencies:
   try: "Lira turca (TRY)"
   aud: "Dólar australiano (AUD)"
   cad: "Dólar canadense (CAD)"
-  cny: "Remimbi (CNY)"
+  cny: "Yuan/Renminbi (CNY)"
   hkd: "Dólar de Hong Kong (HKD)"
   idr: "Rupia Indonésia (IDR)"
   ils: "Novo shekel israelense (ILS)"

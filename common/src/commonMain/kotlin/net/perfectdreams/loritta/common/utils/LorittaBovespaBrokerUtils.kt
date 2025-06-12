@@ -62,11 +62,6 @@ object LorittaBovespaBrokerUtils {
             CompanyCategory.CONSUMER_GOODS
         ),
         StockTickerInfo(
-            "CRFB3",
-            "Atacadão",
-            CompanyCategory.CONSUMER_GOODS
-        ),
-        StockTickerInfo(
             "ABEV3",
             "AMBEV",
             CompanyCategory.CONSUMER_GOODS
