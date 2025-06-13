@@ -21,11 +21,6 @@ object LorittaBovespaBrokerUtils {
     val trackedTickerCodes = listOf(
         // ===[ INDUSTRIAL GOODS ]===
         StockTickerInfo(
-            "GOLL4",
-            "Gol",
-            CompanyCategory.INDUSTRIAL_GOODS
-        ),
-        StockTickerInfo(
             "AZUL4",
             "Azul",
             CompanyCategory.INDUSTRIAL_GOODS
