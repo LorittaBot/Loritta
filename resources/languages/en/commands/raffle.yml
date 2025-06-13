@@ -1,2 +1,9 @@
+label: "raffle"
+status:
+  label: "status"
 buy:
   label: "buy"
+history:
+  options:
+    page:
+      text: "The page that you want to view"
