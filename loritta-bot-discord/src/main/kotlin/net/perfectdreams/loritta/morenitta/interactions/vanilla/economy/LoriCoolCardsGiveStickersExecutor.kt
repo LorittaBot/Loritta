@@ -70,6 +70,11 @@ class LoriCoolCardsGiveStickersExecutor(val loritta: LorittaBot, private val lor
                     val stickersInInventory = stickersData.size
                     val nonStickedStickers = stickersData.filter { !it[LoriCoolCardsUserOwnedCards.sticked] }
 
+                    if (nonStickedStickers.size == 0) {
+                        missingStickers.add(stickersToBeGiven.first { it[LoriCoolCardsEventCards.id].value == stickerId })
+                        continue
+                    }
+
                     // The second check is, admittedly, worthless. If you have more than two stickers in your inventory you WILL have a non-sticked sticker
                     // But to avoid the world turning on ourselves (maybe a bug allowed someone to stick the same sticker twice?) we will double check our data before moving along...
                     if (2 > stickersInInventory && nonStickedStickers.isEmpty())
