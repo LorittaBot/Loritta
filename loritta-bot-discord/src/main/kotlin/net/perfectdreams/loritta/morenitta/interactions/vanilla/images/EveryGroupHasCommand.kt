@@ -32,10 +32,10 @@ class EveryGroupHasCommand : SlashCommandDeclarationWrapper  {
         examples = I18N_PREFIX.Examples
         this.integrationTypes = listOf(IntegrationType.GUILD_INSTALL, IntegrationType.USER_INSTALL)
 
-        executor = SadRealityExecutor()
+        executor = EveryGroupHasExecutor()
     }
 
-    inner class SadRealityExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    inner class EveryGroupHasExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val user1 = optionalUser("user1", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Popular.Male))
             val user2 = optionalUser("user2", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Quiet.Male))
