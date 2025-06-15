@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.images
 
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
@@ -31,10 +30,10 @@ class ThanksFriendsCommand : SlashCommandDeclarationWrapper  {
         enableLegacyMessageSupport = true
         examples = I18N_PREFIX.Examples
 
-        executor = SadRealityExecutor()
+        executor = ThanksFriendsExecutor()
     }
 
-    inner class SadRealityExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    inner class ThanksFriendsExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             val user1 = optionalUser("user1", I18N_PREFIX.Options.User1.Text(I18N_PREFIX.Slot.Thanks))
             val user2 = optionalUser("user2", I18N_PREFIX.Options.User2.Text(I18N_PREFIX.Slot.For))
