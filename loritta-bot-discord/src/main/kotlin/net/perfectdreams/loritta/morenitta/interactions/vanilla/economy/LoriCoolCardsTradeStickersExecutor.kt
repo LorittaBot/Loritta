@@ -440,7 +440,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         ) { context, args ->
                             val deferEdit = context.deferEdit()
                             val stickersFillCountRaw = args[stickerCountOption]
-                            val stickersFillCount = stickersFillCountRaw.toIntOrNull()
+                            val stickersFillCount = stickersFillCountRaw.toIntOrNull()?.coerceAtLeast(0)
 
                             if (stickersFillCount == null) {
                                 context.reply(true) {
@@ -461,6 +461,17 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                             }
 
                             mutex.withLock {
+                                // Fast clear if it is zero!
+                                if (stickersFillCount == 0) {
+                                    playerThatMatchesThisTrade.stickerFancyIds.clear()
+                                    deferEdit.editOriginal(
+                                        MessageEdit {
+                                            apply(createTradeMessage())
+                                        }
+                                    )
+                                    return@withLock
+                                }
+
                                 val result = loritta.transaction {
                                     // Implementing this is quite a bit annoying
                                     // The "auto fill" should NOT just "get random stickers that we have lol"
