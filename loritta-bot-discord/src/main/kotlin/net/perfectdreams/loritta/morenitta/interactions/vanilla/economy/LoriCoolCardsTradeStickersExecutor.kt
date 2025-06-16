@@ -657,27 +657,27 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                             LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
                                         }.firstOrNull() ?: return@transaction SetSonhosResult.EventUnavailable
 
-                                        val template =
-                                            Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
+                                        val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
 
+                                        // When trading stickers for sonhos, the RECEIVER must have already finished the album,
+                                        // while the GIVER does not need to
                                         val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                                             LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
                                         }.count()
 
-                                        if (template.minimumBoosterPacksToTradeBySonhos > giverBoughtPacks)
+                                        if (template.minimumBoosterPacksToTrade > giverBoughtPacks)
                                             return@transaction SetSonhosResult.YouDidntBuyEnoughBoosterPacks(
-                                                template.minimumBoosterPacksToTradeBySonhos,
+                                                template.minimumBoosterPacksToTrade,
                                                 giverBoughtPacks
                                             )
 
-                                        val receiverBoughtPacks =
-                                            LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
-                                                LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
-                                            }.count()
+                                        val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                            LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                        }.count()
 
-                                        if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
+                                        if (template.minimumBoosterPacksToTradeBySonhos > receiverBoughtPacks)
                                             return@transaction SetSonhosResult.ReceiverDidntBuyEnoughBoosterPacks(
-                                                template.minimumBoosterPacksToTrade,
+                                                template.minimumBoosterPacksToTradeBySonhos,
                                                 receiverBoughtPacks
                                             )
 
