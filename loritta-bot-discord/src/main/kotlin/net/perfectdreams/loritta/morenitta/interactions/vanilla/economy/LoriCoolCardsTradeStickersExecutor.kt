@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.common.emotes.DiscordEmote
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -101,7 +102,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             return
         }
 
-        val hasGiveArbitraryStickerCountSupport = loritta.transaction {
+        val result = loritta.transaction {
             val event = LoriCoolCardsEvents.selectAll().where {
                 LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
             }.firstOrNull() ?: return@transaction null
@@ -113,19 +114,19 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             }.count()
 
             if (template.minimumBoosterPacksToGive > giverBoughtPacks)
-                return@transaction false
+                return@transaction Pair(template, false)
 
             val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
                 LoriCoolCardsUserBoughtBoosterPacks.user eq userThatYouWantToTradeWith.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
             }.count()
 
             if (template.minimumBoosterPacksToGive > receiverBoughtPacks)
-                return@transaction false
+                return@transaction Pair(template, false)
 
-            return@transaction true
+            return@transaction Pair(template, true)
         }
 
-        if (hasGiveArbitraryStickerCountSupport == null) {
+        if (result == null) {
             context.reply(false) {
                 styled(
                     "Nenhum evento de figurinhas ativo"
@@ -133,6 +134,9 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             }
             return
         }
+
+        val template = result.first
+        val hasGiveArbitraryStickerCountSupport = result.second
 
         val usersThatHaveConfirmedTheTrade = mutableSetOf<User>()
         var alreadyProcessed = false
@@ -191,6 +195,14 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         emptyFunnyMessageForPlayer2
                     )
                 )
+            }
+
+            // Warning if the user is trying to trade arbitrary stickers
+            if (!hasGiveArbitraryStickerCountSupport) {
+                embed {
+                    color = LorittaColors.LorittaRed.rgb
+                    description = context.i18nContext.get(I18N_PREFIX.CantTradeNonMatchingStickersCount(template.minimumBoosterPacksToGive))
+                }
             }
 
             actionRow(

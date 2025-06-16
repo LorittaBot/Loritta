@@ -129,6 +129,7 @@ trade:
   cantTradeSameStickers: "Vocês dois estão tentando trocar a mesma figurinha!"
   tooManyStickers: "Eu sei que você está caridoso e quer trocar bastante figurinhas, mas você só pode trocar 100 figurinhas por comando!"
   tryingToGiveMoreStickersThanYouHave: "Você está tentando dar mais figurinhas do que você tem! Atualmente você tem **{stickersCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}** que podem ser trocadas e que o {userMention} precisa."
+  cantTradeNonMatchingStickersCount: "Trocas de figurinhas devem ser de quantidades iguais (1x1, 2x2...). Trocas com quantidades diferentes serão liberadas após vocês conseguirem **{boosterPackCount, plural, =0 {# pacotinhos} one {# pacotinho} other {# pacotinhos}}**."
   tradeModal:
     stickerTrade: "Troca de Figurinhas"
     sonhosToBeTraded: "Sonhos que você deseja trocar"
