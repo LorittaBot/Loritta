@@ -106,6 +106,7 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
 
         context.deferChannelMessage(false)
 
+        val selfUser = context.user
         val userToBeComparedTo = args[options.user].user
 
         // We expect that this is already deferred by the caller
@@ -185,6 +186,12 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                         Emotes.PantufaHanglooseRight
                     )
 
+                    val startTradeButton = UnleashedButton.of(
+                        ButtonStyle.SECONDARY,
+                        context.i18nContext.get(I18N_PREFIX.StartTrade),
+                        Emotes.Handshake
+                    )
+
                     actionRow(
                         if (yourStickersMissing.isEmpty())
                             stickersThatYouNeedButton.asDisabled()
@@ -211,6 +218,33 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                                     content = friendStickersMissing.sortedBy { it[LoriCoolCardsEventCards.fancyCardId] }.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }
                                 }
                             }
+                    )
+
+                    actionRow(
+                        loritta.interactivityManager.button(
+                            context.alwaysEphemeral,
+                            startTradeButton
+                        ) { context ->
+                            if (context.user != selfUser && context.user != userToBeComparedTo) {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(I18nKeysData.Commands.YouArentTheUserGeneric),
+                                        Emotes.LoriRage
+                                    )
+                                }
+                                return@button
+                            }
+
+                            val userToTradeWith = if (context.user == selfUser)
+                                userToBeComparedTo
+                            else
+                                context.user
+
+                            loriCoolCardsCommand.tradeStickers.startTrade(
+                                context,
+                                userToTradeWith
+                            )
+                        }
                     )
                 }
             }

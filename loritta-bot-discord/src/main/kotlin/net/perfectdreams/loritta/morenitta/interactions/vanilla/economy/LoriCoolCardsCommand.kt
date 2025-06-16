@@ -36,6 +36,7 @@ class LoriCoolCardsCommand(private val loritta: LorittaBot) : SlashCommandDeclar
     val buyStickers = LoriCoolCardsBuyStickersExecutor(loritta, this)
     val openStickers = LoriCoolCardsOpenBoosterPacksExecutor(loritta, this)
     val viewAlbum = LoriCoolCardsViewAlbumExecutor(loritta, this)
+    val tradeStickers = LoriCoolCardsTradeStickersExecutor(loritta, this)
 
     override fun command() = slashCommand(I18N_PREFIX.Label, TodoFixThisData, CommandCategory.ECONOMY, UUID.fromString("1b5959b6-2e34-44eb-b411-2fec459dbcf8")) {
         this.enableLegacyMessageSupport = true

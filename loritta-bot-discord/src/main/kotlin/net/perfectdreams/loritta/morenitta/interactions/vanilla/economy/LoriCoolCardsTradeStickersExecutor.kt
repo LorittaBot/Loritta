@@ -44,6 +44,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import java.awt.Color
 import java.time.Instant
 import java.util.*
+import kotlin.collections.get
 
 class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
@@ -57,12 +58,15 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
     override val options = Options()
 
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
+        startTrade(context, args[options.user].user)
+    }
+
+    suspend fun startTrade(context: UnleashedContext, userThatYouWantToTradeWith: User) {
         if (SonhosUtils.checkIfEconomyIsDisabled(context))
             return
 
         // TODO: PLEASE PLEASE PLEASE REFACTOR THIS COMMAND
         //  It has a LOT of duplicate code!!
-        val userThatYouWantToTradeWith = args[options.user].user
         val selfUser = context.user
         val now = Instant.now()
 
@@ -1124,6 +1128,8 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         }
                                     }
 
+                                    context.giveAchievementAndNotify(selfUser, AchievementType.DEAL_ACCEPTED, false)
+                                    context.giveAchievementAndNotify(userThatYouWantToTradeWith, AchievementType.DEAL_ACCEPTED, false)
                                     return@button
                                 }
 
@@ -1142,9 +1148,6 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                         Emotes.LoriCoolSticker
                                     )
                                 }
-
-                                context.giveAchievementAndNotify(selfUser, AchievementType.DEAL_ACCEPTED, false)
-                                context.giveAchievementAndNotify(userThatYouWantToTradeWith, AchievementType.DEAL_ACCEPTED, false)
                             }
                         }
                     }

@@ -155,6 +155,7 @@ compare:
   noStickersToBeCompared: "*Nenhuma Figurinha*"
   getFirstListOfStickers: "Pegar a primeira lista de figurinhas"
   getSecondListOfStickers: "Pegar a segunda lista de figurinhas"
+  startTrade: "Iniciar Troca"
   options:
     user:
       text: "O usuário que você deseja comparar as suas figurinhas com as dele"
