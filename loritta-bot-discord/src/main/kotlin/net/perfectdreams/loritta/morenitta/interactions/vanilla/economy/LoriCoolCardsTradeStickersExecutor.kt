@@ -1106,7 +1106,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                                         context.i18nContext.get(
                                                             I18N_PREFIX.TradePlayerReceivedStickers(selfUser.asMention, response.givenStickersToPlayer1.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }),
                                                         ),
-                                                        Emotes.LoriHanglooseRight
+                                                        user1Emote
                                                     )
                                                 }
 
@@ -1115,7 +1115,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                                         context.i18nContext.get(
                                                             I18N_PREFIX.TradePlayerReceivedSonhos(selfUser.asMention, SonhosUtils.getSonhosEmojiOfQuantity(response.givenSonhosToPlayer1), response.givenSonhosToPlayer1)
                                                         ),
-                                                        Emotes.LoriHanglooseRight
+                                                        user1Emote
                                                     )
                                                 }
 
@@ -1124,7 +1124,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                                         context.i18nContext.get(
                                                             I18N_PREFIX.TradePlayerReceivedStickers(userThatYouWantToTradeWith.asMention, response.givenStickersToPlayer2.joinToString { it[LoriCoolCardsEventCards.fancyCardId] }),
                                                         ),
-                                                        Emotes.PantufaHanglooseRight
+                                                        user2Emote
                                                     )
                                                 }
 
@@ -1133,7 +1133,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                                         context.i18nContext.get(
                                                             I18N_PREFIX.TradePlayerReceivedSonhos(userThatYouWantToTradeWith.asMention, SonhosUtils.getSonhosEmojiOfQuantity(response.givenSonhosToPlayer1), response.givenSonhosToPlayer2)
                                                         ),
-                                                        Emotes.PantufaHanglooseRight
+                                                        user2Emote
                                                     )
                                                 }
                                             }
