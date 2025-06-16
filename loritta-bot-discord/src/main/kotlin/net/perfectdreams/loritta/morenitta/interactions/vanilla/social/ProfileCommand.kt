@@ -354,15 +354,23 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     }
 
     inner class ProfileBadgesExecutor : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+        inner class Options : ApplicationCommandOptions() {
+            val page = optionalLong("page", XpCommand.XP_RANK_I18N_PREFIX.Options.Page.Text)
+        }
+
+        override val options = Options()
+
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             context.deferChannelMessage(false)
 
+            val page = (args[options.page]?.minus(1)) ?: 0
+
             context.reply(false) {
-                createBadgeListMessage(context)()
+                createBadgeListMessage(context, page)()
             }
         }
 
-        private suspend fun createBadgeListMessage(context: UnleashedContext): suspend InlineMessage<*>.() -> (Unit) {
+        private suspend fun createBadgeListMessage(context: UnleashedContext, page: Long = 0): suspend InlineMessage<*>.() -> (Unit) {
             return {
                 // We need the mutual guilds to retrieve the user's guild badges.
                 // However, because bots can be in a LOT of guilds (causing GC pressure), so we will just return an empty array.
@@ -391,6 +399,24 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         Emotes.LoriSob
                     )
                 } else {
+                    // Calculate pagination values
+                    val badgesPerPage = 25
+                    val totalPages = ceil(badges.size.toDouble() / badgesPerPage).toLong()
+                    val safePageIndex = page.coerceIn(0, totalPages - 1)
+                    val startIndex = (safePageIndex * badgesPerPage).toInt()
+                    val endIndex = minOf(startIndex + badgesPerPage, badges.size)
+                    val currentPageBadges = badges.subList(startIndex, endIndex)
+
+                    // Display page information if there are multiple pages
+                    if (totalPages > 1) {
+                        styled(
+                            context.i18nContext.get(
+                                SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(safePageIndex + 1)
+                            ),
+                            Emotes.LoriReading
+                        )
+                    }
+
                     embed {
                         title = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.YourBadges)
                         description = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgesDescription).joinToString("\n\n")
@@ -404,7 +430,7 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                             {
                                 placeholder = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.ChooseABadge)
 
-                                for (badge in badges.take(25)) {
+                                for (badge in currentPageBadges) {
                                     addOption(
                                         context.i18nContext.get(badge.title),
                                         badge.id.toString(),
@@ -430,6 +456,44 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 .await()
                         }
                     )
+
+                    // Add pagination buttons if there are multiple pages
+                    if (totalPages > 1) {
+                        actionRow(
+                            loritta.interactivityManager.buttonForUser(
+                                context.user,
+                                context.alwaysEphemeral,
+                                ButtonStyle.PRIMARY,
+                                "",
+                                {
+                                    loriEmoji = Emotes.ChevronLeft
+                                    disabled = safePageIndex <= 0
+                                }
+                            ) {
+                                it.deferEdit().editOriginal(
+                                    MessageEdit {
+                                        createBadgeListMessage(context, safePageIndex - 1)()
+                                    }
+                                ).setReplace(true).await()
+                            },
+                            loritta.interactivityManager.buttonForUser(
+                                context.user,
+                                context.alwaysEphemeral,
+                                ButtonStyle.PRIMARY,
+                                "",
+                                {
+                                    loriEmoji = Emotes.ChevronRight
+                                    disabled = safePageIndex >= totalPages - 1
+                                }
+                            ) {
+                                it.deferEdit().editOriginal(
+                                    MessageEdit {
+                                        createBadgeListMessage(context, safePageIndex + 1)()
+                                    }
+                                ).setReplace(true).await()
+                            }
+                        )
+                    }
 
                     actionRow(
                         loritta.interactivityManager.buttonForUser(
@@ -522,7 +586,15 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override suspend fun convertToInteractionsArguments(
             context: LegacyMessageCommandContext,
             args: List<String>
-        ): Map<OptionReference<*>, Any?> = LorittaLegacyMessageCommandExecutor.NO_ARGS
+        ): Map<OptionReference<*>, Any?> {
+            val pageNumber = args.getOrNull(0)?.toLongOrNull()
+
+            return if (pageNumber != null) {
+                mapOf(options.page to pageNumber)
+            } else {
+                LorittaLegacyMessageCommandExecutor.NO_ARGS
+            }
+        }
     }
 
     class ShopRankExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
