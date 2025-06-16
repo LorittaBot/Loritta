@@ -5,7 +5,6 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.button.ButtonStyle
@@ -20,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -32,7 +32,6 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.SlashCommandArg
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.LoriCoolCardsGiveStickersExecutor.Companion.matchStickers
 import net.perfectdreams.loritta.morenitta.loricoolcards.StickerAlbumTemplate
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -41,6 +40,7 @@ import net.perfectdreams.loritta.serializable.StoredLoriCoolCardsPaymentSonhosTr
 import net.perfectdreams.loritta.serializable.UserId
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import java.awt.Color
 import java.time.Instant
 import java.util.*
 
@@ -138,14 +138,20 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         var alreadyProcessed = false
         val mutex = Mutex()
 
+        // Let's add a random emoji just to look cute
+        val user1Emote = SonhosUtils.HANGLOOSE_EMOTES.random()
+        val user2Emote = SonhosUtils.HANGLOOSE_EMOTES.filter { it != user1Emote }.random()
+
         val trade = TradeOffer(
             TradeThings(
                 mutableListOf(),
-                null
+                null,
+                user1Emote
             ),
             TradeThings(
                 mutableListOf(),
-                null
+                null,
+                user2Emote
             ),
             hasGiveArbitraryStickerCountSupport
         )
@@ -153,6 +159,13 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         // We keep it in here to avoid the message changing on every rerender
         val emptyFunnyMessageForPlayer1 = context.i18nContext.get(I18N_PREFIX.NothingTradedYetFunnyMessages).random()
         val emptyFunnyMessageForPlayer2 = context.i18nContext.get(I18N_PREFIX.NothingTradedYetFunnyMessages).random()
+
+        fun getReceiverUser(currentUser: User): User {
+            return if (currentUser == userThatYouWantToTradeWith)
+                selfUser
+            else
+                userThatYouWantToTradeWith
+        }
 
         fun createTradeMessage(): InlineMessage<*>.() -> (Unit) = {
             content = "**${context.i18nContext.get(I18N_PREFIX.StickerTradeBetweenUsers(context.user.asMention, userThatYouWantToTradeWith.asMention))}**"
@@ -189,10 +202,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         loriEmoji = Emotes.LoriCoolSticker
                     }
                 ) { context ->
-                    val receiverUser = if (context.user == userThatYouWantToTradeWith)
-                        selfUser
-                    else
-                        userThatYouWantToTradeWith
+                    val receiverUser = getReceiverUser(context.user)
 
                     mutex.withLock {
                         if (usersThatHaveConfirmedTheTrade.isNotEmpty()) {
@@ -272,7 +282,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                     }.count()
 
                                     if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
-                                        return@transaction SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
+                                        return@transaction SetStickersResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, receiverBoughtPacks)
 
                                     val stickersToBeGiven = LoriCoolCardsEventCards.selectAll().where {
                                         LoriCoolCardsEventCards.fancyCardId inList stickerFancyIdsList and (LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id])
@@ -281,7 +291,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                                     if (stickersToBeGiven.size != stickerFancyIdsList.size)
                                         return@transaction SetStickersResult.UnknownCard
 
-                                    val matchResult = matchStickers(
+                                    val matchResult = LoriCoolCardsGiveStickersExecutor.matchStickers(
                                         context.user.idLong,
                                         event,
                                         stickersToBeGiven
@@ -356,15 +366,200 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                 loritta.interactivityManager.button(
                     context.alwaysEphemeral,
                     ButtonStyle.PRIMARY,
+                    context.i18nContext.get(I18N_PREFIX.SetStickersFill),
+                    {
+                        loriEmoji = Emotes.LoriCoolSticker
+                    }
+                ) { context ->
+                    val receiverUser = getReceiverUser(context.user)
+
+                    mutex.withLock {
+                        if (usersThatHaveConfirmedTheTrade.isNotEmpty()) {
+                            context.reply(true) {
+                                styled(
+                                    if (selfUser == context.user && usersThatHaveConfirmedTheTrade.contains(selfUser)) context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYouHaveApproved) else context.i18nContext.get(I18N_PREFIX.YouCantChangeATradeThatYourFriendHasApproved),
+                                    Emotes.LoriRage
+                                )
+                            }
+                            return@button
+                        }
+
+                        val playerThatMatchesThisTrade = when (context.user) {
+                            selfUser -> trade.player1
+                            userThatYouWantToTradeWith -> trade.player2
+                            else -> null
+                        }
+
+                        if (playerThatMatchesThisTrade == null) {
+                            context.reply(true) {
+                                styled(
+                                    context.i18nContext.get(I18nKeysData.Commands.YouArentTheUserGeneric),
+                                    Emotes.LoriRage
+                                )
+                            }
+                            return@button
+                        }
+
+                        if (alreadyProcessed) {
+                            context.reply(true) {
+                                styled(
+                                    context.i18nContext.get(I18N_PREFIX.TradeHasAlreadyBeenProcessed),
+                                    Emotes.LoriRage
+                                )
+                            }
+                            return@button
+                        }
+
+                        val stickerCountOption = modalString(
+                            context.i18nContext.get(I18N_PREFIX.TradeModal.StickersToBeTradedFill),
+                            TextInputStyle.SHORT,
+                            // Auto fill with the sticker count to make it easier
+                            // If all of them are empty, then it will be empty (null)
+                            value = trade.player1.stickerFancyIds.ifEmpty { null }?.size?.toString() ?: trade.player2.stickerFancyIds.ifEmpty { null }?.size?.toString()
+                        )
+
+                        context.sendModal(
+                            context.i18nContext.get(I18N_PREFIX.TradeModal.StickerTrade),
+                            listOf(ActionRow.of(stickerCountOption.toJDA())),
+                        ) { context, args ->
+                            val deferEdit = context.deferEdit()
+                            val stickersFillCountRaw = args[stickerCountOption]
+                            val stickersFillCount = stickersFillCountRaw.toIntOrNull()
+
+                            if (stickersFillCount == null) {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(I18nKeysData.Commands.InvalidNumber(stickersFillCountRaw))
+                                    )
+                                }
+                                return@sendModal
+                            }
+
+                            if (stickersFillCount > 100) {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.TooManyStickers)
+                                    )
+                                }
+                                return@sendModal
+                            }
+
+                            mutex.withLock {
+                                val result = loritta.transaction {
+                                    // Implementing this is quite a bit annoying
+                                    // The "auto fill" should NOT just "get random stickers that we have lol"
+                                    // It should be "get the stickers that the OTHER user needs, get the stickers that WE have, then fill"
+                                    // It isn't impossible, but it is a bit tricky
+                                    val event = LoriCoolCardsEvents.selectAll().where {
+                                        LoriCoolCardsEvents.endsAt greaterEq now and (LoriCoolCardsEvents.startsAt lessEq now)
+                                    }.firstOrNull() ?: return@transaction SetStickersFillResult.EventUnavailable
+
+                                    val template = Json.decodeFromString<StickerAlbumTemplate>(event[LoriCoolCardsEvents.template])
+
+                                    val giverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                        LoriCoolCardsUserBoughtBoosterPacks.user eq context.user.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                    }.count()
+
+                                    if (template.minimumBoosterPacksToTrade > giverBoughtPacks)
+                                        return@transaction SetStickersFillResult.YouDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, giverBoughtPacks)
+
+                                    val receiverBoughtPacks = LoriCoolCardsUserBoughtBoosterPacks.selectAll().where {
+                                        LoriCoolCardsUserBoughtBoosterPacks.user eq receiverUser.idLong and (LoriCoolCardsUserBoughtBoosterPacks.event eq event[LoriCoolCardsEvents.id])
+                                    }.count()
+
+                                    if (template.minimumBoosterPacksToTrade > receiverBoughtPacks)
+                                        return@transaction SetStickersFillResult.ReceiverDidntBuyEnoughBoosterPacks(template.minimumBoosterPacksToTrade, receiverBoughtPacks)
+
+                                    // Okay, so we CAN trade!
+                                    val player1Stickers = LoriCoolCardsCompareStickersExecutor.getStickers(
+                                        event[LoriCoolCardsEvents.id].value,
+                                        context.user
+                                    )
+
+                                    val player2Stickers = LoriCoolCardsCompareStickersExecutor.getStickers(
+                                        event[LoriCoolCardsEvents.id].value,
+                                        receiverUser
+                                    )
+
+                                    val stickerIdsToBeQueried = mutableSetOf<Long>()
+
+                                    // Technically we don't need to add the "in our inventory" to the query list because they are already included
+                                    stickerIdsToBeQueried.addAll(player1Stickers.stickerIdsThatWeHave)
+                                    stickerIdsToBeQueried.addAll(player2Stickers.stickerIdsThatWeHave)
+
+                                    val eventStickers = LoriCoolCardsEventCards
+                                        .selectAll()
+                                        .where {
+                                            LoriCoolCardsEventCards.event eq event[LoriCoolCardsEvents.id] and (LoriCoolCardsEventCards.id inList stickerIdsToBeQueried)
+                                        }.toList()
+
+                                    val friendStickersMissing = LoriCoolCardsCompareStickersExecutor.getMissingStickers(eventStickers, player2Stickers, player1Stickers)
+
+                                    // From here, we already know which stickers the friend needs
+                                    // And because we know, we can pass it over
+                                    val missingFancy = friendStickersMissing.map {
+                                        it[LoriCoolCardsEventCards.fancyCardId]
+                                    }.take(stickersFillCount)
+                                        .shuffled() // We shuffle it just to avoid always getting the same stickers
+
+                                    if (missingFancy.size != stickersFillCount)
+                                        return@transaction SetStickersFillResult.TryingToGiveMoreStickersThatYouHave(friendStickersMissing.size)
+
+                                    return@transaction SetStickersFillResult.Success(missingFancy)
+                                }
+
+                                when (result) {
+                                    SetStickersFillResult.EventUnavailable -> {
+                                        context.reply(false) {
+                                            styled(
+                                                "Nenhum evento de figurinhas ativo"
+                                            )
+                                        }
+                                    }
+                                    is SetStickersFillResult.YouDidntBuyEnoughBoosterPacks -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.YouDidntBuyEnoughBoosterPacks(result.requiredPacks - result.currentPacks))
+                                            )
+                                        }
+                                    }
+                                    is SetStickersFillResult.ReceiverDidntBuyEnoughBoosterPacks -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.ReceiverDidntBuyEnoughBoosterPacks(receiverUser.asMention, result.requiredPacks - result.currentPacks))
+                                            )
+                                        }
+                                    }
+                                    is SetStickersFillResult.TryingToGiveMoreStickersThatYouHave -> {
+                                        context.reply(true) {
+                                            styled(
+                                                context.i18nContext.get(I18N_PREFIX.TryingToGiveMoreStickersThanYouHave(result.maxStickers, receiverUser.asMention))
+                                            )
+                                        }
+                                    }
+                                    is SetStickersFillResult.Success -> {
+                                        playerThatMatchesThisTrade.stickerFancyIds.clear()
+                                        playerThatMatchesThisTrade.stickerFancyIds.addAll(result.stickerFancyIds)
+                                        deferEdit.editOriginal(
+                                            MessageEdit {
+                                                apply(createTradeMessage())
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                loritta.interactivityManager.button(
+                    context.alwaysEphemeral,
+                    ButtonStyle.PRIMARY,
                     context.i18nContext.get(I18N_PREFIX.SetSonhos),
                     {
                         loriEmoji = Emotes.Sonhos2
                     }
                 ) { context ->
-                    val receiverUser = if (context.user == userThatYouWantToTradeWith)
-                        selfUser
-                    else
-                        userThatYouWantToTradeWith
+                    val receiverUser = getReceiverUser(context.user)
 
                     mutex.withLock {
                         if (usersThatHaveConfirmedTheTrade.isNotEmpty()) {
@@ -957,20 +1152,24 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         tradeOfferThings: TradeThings,
         emptyFunnyMessage: String
     ): InlineEmbed.() -> (Unit) = {
-        val lockStatus = if (usersThatHaveConfirmedTheTrade.contains(user))
+        val hasConfirmedTheTrade = usersThatHaveConfirmedTheTrade.contains(user)
+
+        val lockStatus = if (hasConfirmedTheTrade)
             "\uD83D\uDD12"
         else
             "\uD83D\uDD13"
 
         author(user.name, null, user.effectiveAvatarUrl)
-        title = "${Emotes.LoriHanglooseRight}$lockStatus ${user.name}"
+        title = "${tradeOfferThings.emoji}$lockStatus ${user.name}"
+        if (hasConfirmedTheTrade)
+            color = Color(35, 165, 90).rgb
         description = buildString {
             if (tradeOfferThings.sonhos != null) {
                 appendLine("${Emotes.Sonhos2} ${tradeOfferThings.sonhos} sonhos")
             }
 
             if (tradeOfferThings.stickerFancyIds.isNotEmpty()) {
-                appendLine("${Emotes.LoriCoolSticker} (${tradeOfferThings.stickerFancyIds.size}x) `${tradeOfferThings.stickerFancyIds.joinToString()}`")
+                appendLine("${Emotes.LoriCoolSticker} (${tradeOfferThings.stickerFancyIds.size}x) `${tradeOfferThings.stickerFancyIds.sorted().joinToString()}`")
             }
         }.ifEmpty { "*${emptyFunnyMessage}*" }
     }
@@ -1025,7 +1224,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             LoriCoolCardsEvents.id eq eventId
         }.first()
 
-        val matchResult = matchStickers(
+        val matchResult = LoriCoolCardsGiveStickersExecutor.matchStickers(
             user.idLong,
             event,
             stickersToBeGiven
@@ -1090,7 +1289,6 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         }
     }
 
-    @Serializable
     class TradeOffer(
         var player1: TradeThings,
         var player2: TradeThings,
@@ -1108,10 +1306,10 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         }
     }
 
-    @Serializable
     class TradeThings(
         val stickerFancyIds: MutableList<String>,
-        var sonhos: Long?
+        var sonhos: Long?,
+        val emoji: DiscordEmote
     ) {
         fun isTradeValid(): Boolean {
             val sonhos = sonhos ?: 0
@@ -1128,6 +1326,14 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         data class NotEnoughCards(val stickersMissing: List<ResultRow>) : SetStickersResult()
         data class TryingToGiveStickersThatArentStickedYet(val stickersMissing: List<ResultRow>) : SetStickersResult()
         data class Success(val stickerFancyIds: List<String>) : SetStickersResult()
+    }
+
+    sealed class SetStickersFillResult {
+        data object EventUnavailable : SetStickersFillResult()
+        data class YouDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : SetStickersFillResult()
+        data class ReceiverDidntBuyEnoughBoosterPacks(val requiredPacks: Int, val currentPacks: Long) : SetStickersFillResult()
+        data class TryingToGiveMoreStickersThatYouHave(val maxStickers: Int) : SetStickersFillResult()
+        data class Success(val stickerFancyIds: List<String>) : SetStickersFillResult()
     }
 
     sealed class SetSonhosResult {

@@ -111,6 +111,7 @@ trade:
     - "Vazio, um espaço desprovido de entidades"
     - "Vazio, um vazio existencial"
   setStickers: "Colocar Figurinhas"
+  setStickersFill: "Colocar Figurinhas (Preencher)"
   setSonhos: "Colocar Sonhos"
   acceptTradeButton: "Aceitar Oferta ({totalAccepted,number}/{totalRequiredToAccept,number})"
   tradeHasAlreadyBeenProcessed: "Esta troca já foi processada e não pode ser mais alterada!"
@@ -127,10 +128,12 @@ trade:
   tryingToGiveAnUnknownSticker: "Você está tentando dar uma figurinha que não existe!"
   cantTradeSameStickers: "Vocês dois estão tentando trocar a mesma figurinha!"
   tooManyStickers: "Eu sei que você está caridoso e quer trocar bastante figurinhas, mas você só pode trocar 100 figurinhas por comando!"
+  tryingToGiveMoreStickersThanYouHave: "Você está tentando dar mais figurinhas do que você tem! Atualmente você tem **{stickersCount,plural, =0 {# figurinhas} one {# figurinha} other {# figurinhas}}** que podem ser trocadas e que o {userMention} precisa."
   tradeModal:
     stickerTrade: "Troca de Figurinhas"
     sonhosToBeTraded: "Sonhos que você deseja trocar"
     stickersToBeTraded: "Lista de figurinhas que você deseja trocar"
+    stickersToBeTradedFill: "Quantidade de figurinhas que quer trocar"
 
   options:
     user:

@@ -26,6 +26,69 @@ import java.time.Instant
 class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Compare
+
+        fun getStickers(
+            eventId: Long,
+            user: User,
+        ): UserStickers {
+            // This gets ALL stickers that we have, in the inventory or not
+            val stickersThatYouHave = LoriCoolCardsUserOwnedCards
+                .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.sticked)
+                .where {
+                    LoriCoolCardsUserOwnedCards.event eq eventId and (LoriCoolCardsUserOwnedCards.user eq user.idLong)
+                }
+                .toList()
+                .map { Sticker(it[LoriCoolCardsUserOwnedCards.card].value, it[LoriCoolCardsUserOwnedCards.sticked]) }
+
+            val stickersThatAreSticked = stickersThatYouHave.filter { it.sticked }
+            val stickersThatArentSticked = stickersThatYouHave.filter { !it.sticked }
+            val stickerIdsThatCanBeGiven = mutableSetOf<Long>()
+
+            // Add all sticker IDs that we already have stickied
+            for (sticker in stickersThatArentSticked) {
+                val doWeHaveThisTypeSticked = stickersThatAreSticked.any { it.id == sticker.id }
+
+                // If we already have it stickied, we don't need to worry about any count things
+                if (doWeHaveThisTypeSticked) {
+                    stickerIdsThatCanBeGiven.add(sticker.id)
+                    continue
+                }
+
+                // If we DON'T have it stickied...
+                val amountInInventory = stickersThatArentSticked.filter { it.id == sticker.id }.size
+                if (amountInInventory >= 2) {
+                    // We should only show that we can give it away if we have at least 2 of that type of sticker in our inventory
+                    stickerIdsThatCanBeGiven.add(sticker.id)
+                    continue
+                }
+            }
+
+            return UserStickers(
+                stickersThatYouHave.map { it.id }.toSet(),
+                stickerIdsThatCanBeGiven
+            )
+        }
+
+        fun getMissingStickers(
+            eventStickers: List<ResultRow>,
+            whoNeedsTheStickers: UserStickers,
+            whoHasTheStickers: UserStickers
+        ): List<ResultRow>  {
+            val yourStickersMissing = mutableListOf<ResultRow>()
+
+            // What stickers you need that the other user has?
+            for (stickerId in whoHasTheStickers.stickerIdsThatCanBeGiven) {
+                val doWeHaveIt = whoNeedsTheStickers.stickerIdsThatWeHave.contains(stickerId)
+
+                if (!doWeHaveIt) {
+                    // We don't have it!
+                    val stickerInfo = eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
+                    yourStickersMissing.add(stickerInfo)
+                }
+            }
+
+            return yourStickersMissing
+        }
     }
 
     inner class Options : ApplicationCommandOptions() {
@@ -152,69 +215,6 @@ class LoriCoolCardsCompareStickersExecutor(val loritta: LorittaBot, private val 
                 }
             }
         }
-    }
-
-    private fun getStickers(
-        eventId: Long,
-        user: User,
-    ): UserStickers {
-        // This gets ALL stickers that we have, in the inventory or not
-        val stickersThatYouHave = LoriCoolCardsUserOwnedCards
-            .select(LoriCoolCardsUserOwnedCards.card, LoriCoolCardsUserOwnedCards.sticked)
-            .where {
-                LoriCoolCardsUserOwnedCards.event eq eventId and (LoriCoolCardsUserOwnedCards.user eq user.idLong)
-            }
-            .toList()
-            .map { Sticker(it[LoriCoolCardsUserOwnedCards.card].value, it[LoriCoolCardsUserOwnedCards.sticked]) }
-
-        val stickersThatAreSticked = stickersThatYouHave.filter { it.sticked }
-        val stickersThatArentSticked = stickersThatYouHave.filter { !it.sticked }
-        val stickerIdsThatCanBeGiven = mutableSetOf<Long>()
-
-        // Add all sticker IDs that we already have stickied
-        for (sticker in stickersThatArentSticked) {
-            val doWeHaveThisTypeSticked = stickersThatAreSticked.any { it.id == sticker.id }
-
-            // If we already have it stickied, we don't need to worry about any count things
-            if (doWeHaveThisTypeSticked) {
-                stickerIdsThatCanBeGiven.add(sticker.id)
-                continue
-            }
-
-            // If we DON'T have it stickied...
-            val amountInInventory = stickersThatArentSticked.filter { it.id == sticker.id }.size
-            if (amountInInventory >= 2) {
-                // We should only show that we can give it away if we have at least 2 of that type of sticker in our inventory
-                stickerIdsThatCanBeGiven.add(sticker.id)
-                continue
-            }
-        }
-
-        return UserStickers(
-            stickersThatYouHave.map { it.id }.toSet(),
-            stickerIdsThatCanBeGiven
-        )
-    }
-
-    private fun getMissingStickers(
-        eventStickers: List<ResultRow>,
-        whoNeedsTheStickers: UserStickers,
-        whoHasTheStickers: UserStickers
-    ): List<ResultRow>  {
-        val yourStickersMissing = mutableListOf<ResultRow>()
-
-        // What stickers you need that the other user has?
-        for (stickerId in whoHasTheStickers.stickerIdsThatCanBeGiven) {
-            val doWeHaveIt = whoNeedsTheStickers.stickerIdsThatWeHave.contains(stickerId)
-
-            if (!doWeHaveIt) {
-                // We don't have it!
-                val stickerInfo = eventStickers.first { it[LoriCoolCardsEventCards.id].value == stickerId }
-                yourStickersMissing.add(stickerInfo)
-            }
-        }
-
-        return yourStickersMissing
     }
 
     data class UserStickers(
