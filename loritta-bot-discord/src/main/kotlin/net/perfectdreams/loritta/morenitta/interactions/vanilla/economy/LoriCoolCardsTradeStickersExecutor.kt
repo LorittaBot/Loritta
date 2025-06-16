@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.button.ButtonStyle
@@ -153,13 +154,11 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         val trade = TradeOffer(
             TradeThings(
                 mutableListOf(),
-                null,
-                user1Emote
+                null
             ),
             TradeThings(
                 mutableListOf(),
-                null,
-                user2Emote
+                null
             ),
             hasGiveArbitraryStickerCountSupport
         )
@@ -185,6 +184,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         selfUser,
                         usersThatHaveConfirmedTheTrade,
                         trade.player1,
+                        user1Emote,
                         emptyFunnyMessageForPlayer1
                     )
                 )
@@ -196,6 +196,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
                         userThatYouWantToTradeWith,
                         usersThatHaveConfirmedTheTrade,
                         trade.player2,
+                        user2Emote,
                         emptyFunnyMessageForPlayer2
                     )
                 )
@@ -1176,6 +1177,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         user: User,
         usersThatHaveConfirmedTheTrade: Set<User>,
         tradeOfferThings: TradeThings,
+        userEmoji: DiscordEmote,
         emptyFunnyMessage: String
     ): InlineEmbed.() -> (Unit) = {
         val hasConfirmedTheTrade = usersThatHaveConfirmedTheTrade.contains(user)
@@ -1186,7 +1188,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
             "\uD83D\uDD13"
 
         author(user.name, null, user.effectiveAvatarUrl)
-        title = "${tradeOfferThings.emoji}$lockStatus ${user.name}"
+        title = "$userEmoji$lockStatus ${user.name}"
         if (hasConfirmedTheTrade)
             color = Color(35, 165, 90).rgb
         description = buildString {
@@ -1315,6 +1317,7 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         }
     }
 
+    @Serializable
     class TradeOffer(
         var player1: TradeThings,
         var player2: TradeThings,
@@ -1332,10 +1335,10 @@ class LoriCoolCardsTradeStickersExecutor(val loritta: LorittaBot, private val lo
         }
     }
 
+    @Serializable
     class TradeThings(
         val stickerFancyIds: MutableList<String>,
-        var sonhos: Long?,
-        val emoji: DiscordEmote
+        var sonhos: Long?
     ) {
         fun isTradeValid(): Boolean {
             val sonhos = sonhos ?: 0
