@@ -9,6 +9,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -131,6 +132,18 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 						textChannel.sendMessage(message).queue()
 					}
 				}
+			}
+
+			// Log the punishment to the moderation logs
+			runBlocking {
+				loritta.pudding.moderationLogs.logPunishment(
+					guild.idLong,
+					user.idLong,
+					punisher.idLong,
+					ModerationLogAction.UNBAN,
+					reason,
+					null
+				)
 			}
 
 			guild.unban(user).reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason))

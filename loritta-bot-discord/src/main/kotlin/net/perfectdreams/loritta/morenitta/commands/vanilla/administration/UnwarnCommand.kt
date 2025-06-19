@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -42,8 +43,7 @@ class UnwarnCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, li
             if (args.isEmpty())
                 return@executesDiscord explain()
 
-            val user = AdminUtils.checkUser(this) ?:
-                return@executesDiscord
+            val user = AdminUtils.checkUser(this) ?: return@executesDiscord
             val member = guild.retrieveMemberOrNull(user.handle)
 
             if (member != null) {
@@ -67,7 +67,19 @@ class UnwarnCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, li
 
             if (args.getOrNull(1) == "all") {
                 loritta.newSuspendedTransaction {
-                    Warns.deleteWhere { (Warns.guildId eq guild.idLong) and (Warns.userId eq user.id) }
+                    val removedWarnsCount = Warns.deleteWhere { (Warns.guildId eq guild.idLong) and (Warns.userId eq user.id) }
+
+                    // Log the unwarn action for each warn that was removed
+                    repeat(removedWarnsCount) {
+                        loritta.pudding.moderationLogs.logPunishment(
+                            guild.idLong,
+                            user.id,
+                            this@executesDiscord.user.idLong,
+                            ModerationLogAction.UNWARN,
+                            null,
+                            null
+                        )
+                    }
                 }
 
                 if (warns.size == 1) {
@@ -117,6 +129,16 @@ class UnwarnCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, li
 
             loritta.newSuspendedTransaction {
                 selectedWarn.delete()
+
+                // Log the unwarn action to the moderation logs
+                loritta.pudding.moderationLogs.logPunishment(
+                    guild.idLong,
+                    user.id,
+                    this@executesDiscord.user.idLong,
+                    ModerationLogAction.UNWARN,
+                    null,
+                    null
+                )
             }
 
             reply(

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -148,6 +149,18 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 						}
 					}
 				}
+			}
+
+			// Log the punishment to the database
+			runBlocking {
+				context.loritta.pudding.moderationLogs.logPunishment(
+					context.guild.idLong,
+					user.idLong,
+					context.userHandle.idLong,
+					ModerationLogAction.KICK,
+					reason,
+					null
+				)
 			}
 
 			context.guild.kick(member, AdminUtils.generateAuditLogMessage(locale, context.userHandle, reason))

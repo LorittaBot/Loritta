@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Warns
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -133,6 +134,16 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 							this.punishedById = context.userHandle.idLong
 							this.content = reason
 						}
+
+						// Log the punishment to the moderation logs
+						loritta.pudding.moderationLogs.logPunishment(
+							context.guild.idLong,
+							user.idLong,
+							context.userHandle.idLong,
+							ModerationLogAction.WARN,
+							reason,
+							null
+						)
 					}
 				}
 

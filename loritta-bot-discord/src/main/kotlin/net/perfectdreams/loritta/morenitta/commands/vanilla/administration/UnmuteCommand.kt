@@ -9,6 +9,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -142,6 +143,16 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 						(Mutes.guildId eq guild.idLong) and (Mutes.userId eq user.idLong)
 					}
 				}
+
+				// Log the punishment to the moderation logs
+				loritta.pudding.moderationLogs.logPunishment(
+					guild.idLong,
+					user.idLong,
+					punisher.idLong,
+					ModerationLogAction.UNMUTE,
+					reason,
+					null
+				)
 			}
 
 			// And now remove the "Muted" role if needed!

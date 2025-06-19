@@ -1,0 +1,30 @@
+label: "modlog"
+description: "Veja o histórico de punições de um usuário"
+
+options:
+  user:
+    text: "O usuário que você deseja ver o histórico de punições"
+  page:
+    text: "A página que você deseja ver"
+
+noLogs: "Não encontrei nenhum registro de punição para {userMention}! Lembrando que o meu registro de moderação apenas mostra punições que foram feitas por mim."
+title: "Histórico de Punições de {userMention}"
+footer: "Total de punições: {count,number}"
+unknownUser: "Usuário Desconhecido"
+noReason: "Nenhum motivo fornecido"
+logEntry: "Aplicado por {punisher} • Motivo: {reason}"
+type: "**Tipo:** {type}"
+punishedBy: "**Punido por:** {punishedBy}"
+punishedAt: "**Punido em:** {punishedAt}"
+reason: "**Motivo:** {reason}"
+expiresAt: "**Expira em:** {duration}"
+page: "Página {page}"
+
+actions:
+  ban: "Banimento"
+  kick: "Expulsão"
+  mute: "Silenciamento"
+  warn: "Aviso"
+  unban: "Desbanimento"
+  unmute: "Retirado o Silenciamento"
+  unwarn: "Remoção de Aviso"

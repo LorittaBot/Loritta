@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -138,6 +139,18 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 						textChannel.sendMessage(message).queue()
 					}
 				}
+			}
+
+			// Log the punishment to the database
+			runBlocking {
+				loritta.pudding.moderationLogs.logPunishment(
+					guild.idLong,
+					user.idLong,
+					punisher.idLong,
+					ModerationLogAction.BAN,
+					reason,
+					null
+				)
 			}
 
 			guild.ban(user, delDays, TimeUnit.DAYS)

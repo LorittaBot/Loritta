@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -248,7 +249,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq member.user.idLong)
 					}
 
-					Mute.new {
+					val mute = Mute.new {
 						guildId = context.guild.idLong
 						userId = member.user.idLong
 						punishedById = context.userHandle.idLong
@@ -264,6 +265,17 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 							isTemporary = false
 						}
 					}
+
+					context.loritta.pudding.moderationLogs.logPunishment(
+						context.guild.idLong,
+						member.user.idLong,
+						context.userHandle.idLong,
+						ModerationLogAction.MUTE,
+						reason,
+						time?.let { Instant.ofEpochMilli(it) }
+					)
+
+					mute
 				}
 
 				spawnTimeOutUpdaterThread(context.loritta, context.guild, context.locale, context.i18nContext, user, mute)
