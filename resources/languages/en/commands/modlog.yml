@@ -1,0 +1,4 @@
+options:
+  page:
+    text: "The page that you want to view"
+page: "Page {page}"
