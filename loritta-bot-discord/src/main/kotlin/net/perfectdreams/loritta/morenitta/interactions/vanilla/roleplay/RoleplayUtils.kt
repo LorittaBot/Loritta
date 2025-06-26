@@ -29,6 +29,9 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 object RoleplayUtils {
+    const val FIRST_AFFINITY_REWARD = 1
+    const val MULTIPLE_AFFINITY_REWARD = 1
+
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
         RoleplayAction.HUG,
         RoleplayCommand.I18N_PREFIX.Hug.Options.User.Text,
@@ -305,34 +308,31 @@ object RoleplayUtils {
                 .toInstant()
 
             if (roleplayActionAttributes.givesAffinityReward) {
+                // This checks if the CURRENT USER has sent a roleplay action
                 val sentRoleplayActionTodayNotIncludingCurrent = MarriageRoleplayActions.selectAll()
                     .where {
                         MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy eq context.user.idLong)
                     }
                     .count() != 0L
 
+                // If we haven't sent any roleplay action today, we will give out affinity rewards!
                 giveOutAffinityReward = !sentRoleplayActionTodayNotIncludingCurrent
             }
 
             if (giveOutAffinityReward) {
-                if (now.isAfter(ZonedDateTime.of(2025, 6, 8, 0, 0, 0, 0, Constants.LORITTA_TIMEZONE))) {
-                    // Have any of our other partners sent affinity today?
-                    val sentRoleplayActionOtherPartners = MarriageRoleplayActions.selectAll()
-                        .where {
-                            MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy neq context.user.idLong)
-                        }
-                        .count() != 0L
-
-                    givenAffinity = if (sentRoleplayActionOtherPartners) {
-                        // They did!
-                        3
-                    } else {
-                        // They did not :(
-                        1
+                // Have any of our other partners sent affinity today?
+                val sentRoleplayActionOtherPartners = MarriageRoleplayActions.selectAll()
+                    .where {
+                        MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy neq context.user.idLong)
                     }
+                    .count() != 0L
+
+                givenAffinity = if (sentRoleplayActionOtherPartners) {
+                    // They did!
+                    3
                 } else {
-                    // TODO: Remove this after the date has been elapsed!
-                    givenAffinity = 1
+                    // They did not :(
+                    1
                 }
             }
 
@@ -413,11 +413,20 @@ object RoleplayUtils {
                         }
 
                         if (giveOutAffinityReward) {
-                            context.reply(true) {
-                                styled(
-                                    context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(givenAffinity, context.loritta.commandMentions.marriageView)),
-                                    Emotes.LoriHappy
-                                )
+                            if (givenAffinity == FIRST_AFFINITY_REWARD) {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplayingFirst(givenAffinity, RoleplayUtils.MULTIPLE_AFFINITY_REWARD, context.loritta.commandMentions.marriageView)),
+                                        Emotes.LoriHappy
+                                    )
+                                }
+                            } else {
+                                context.reply(true) {
+                                    styled(
+                                        context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplayingMultiple(givenAffinity, context.loritta.commandMentions.marriageView)),
+                                        Emotes.LoriHappy
+                                    )
+                                }
                             }
                         }
                     }

@@ -69,11 +69,20 @@ class RoleplayCommand {
             }
 
             if (giveOutAffinityReward) {
-                context.reply(true) {
-                    styled(
-                        context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplaying(givenAffinity, context.loritta.commandMentions.marriageView)),
-                        Emotes.LoriHappy
-                    )
+                if (givenAffinity == RoleplayUtils.FIRST_AFFINITY_REWARD) {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplayingFirst(givenAffinity, RoleplayUtils.MULTIPLE_AFFINITY_REWARD, context.loritta.commandMentions.marriageView)),
+                            Emotes.LoriHappy
+                        )
+                    }
+                } else {
+                    context.reply(true) {
+                        styled(
+                            context.i18nContext.get(I18N_PREFIX.YouReceivedAffinityPointsForRoleplayingMultiple(givenAffinity, context.loritta.commandMentions.marriageView)),
+                            Emotes.LoriHappy
+                        )
+                    }
                 }
             }
 
