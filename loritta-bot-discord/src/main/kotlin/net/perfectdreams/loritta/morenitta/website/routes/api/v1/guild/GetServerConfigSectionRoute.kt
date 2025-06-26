@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import io.ktor.server.application.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -19,7 +19,7 @@ class GetServerConfigSectionRoute(
 	val website: LorittaWebsite
 ) : RequiresAPIGuildAuthRoute(loritta, "/config/{sections}") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {

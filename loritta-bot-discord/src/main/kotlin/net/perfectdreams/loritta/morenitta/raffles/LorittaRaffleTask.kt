@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.raffles
 
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -29,7 +29,7 @@ import kotlin.time.toJavaDuration
 
 class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override suspend fun run() {
@@ -317,8 +317,7 @@ class LorittaRaffleTask(val m: LorittaBot) : RunnableCoroutine {
                         is RaffleDM.LostTheRaffle -> {
                             val lastWinnerId = raffleDM.winnerId
                             val lastWinner = if (lastWinnerId != null) {
-                                KotlinLogging.logger {}
-                                    .info { "LorittaRaffleTask#retrieveUserInfoById - UserId: ${lastWinnerId}" }
+                                HarmonyLoggerFactory.logger {}.value.info { "LorittaRaffleTask#retrieveUserInfoById - UserId: ${lastWinnerId}" }
                                 m.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
                             } else {
                                 null

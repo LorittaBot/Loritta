@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentGateway
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PaymentReason
@@ -17,7 +17,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import java.util.*
 
 class PerfectPaymentsClient(val url: String) {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
 
     /**
      * Creates a payment in PerfectPayments, creates a entry in Loritta's payment table and returns the payment URL

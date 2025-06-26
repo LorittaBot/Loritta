@@ -7,7 +7,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : RunnableCoroutine {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		const val DATA_KEY = "youtube_webhooks"
 	}
 

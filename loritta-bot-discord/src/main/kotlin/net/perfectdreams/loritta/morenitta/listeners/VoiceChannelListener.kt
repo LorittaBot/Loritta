@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		private val mutexes = Caffeine.newBuilder()
 			.expireAfterAccess(60, TimeUnit.SECONDS)
 			.build<Long, Mutex>()

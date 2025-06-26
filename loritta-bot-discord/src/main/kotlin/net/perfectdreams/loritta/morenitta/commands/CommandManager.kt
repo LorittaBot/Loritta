@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands
 
 import dev.minn.jda.ktx.messages.MessageCreate
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
@@ -47,7 +47,7 @@ import java.util.concurrent.CancellationException
 
 class CommandManager(val loritta: LorittaBot) {
 	companion object {
-		val logger = KotlinLogging.logger {}
+		val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
@@ -497,7 +497,7 @@ class CommandManager(val loritta: LorittaBot) {
 					}
 				}
 
-				logger.error("Exception ao executar comando ${command.javaClass.simpleName}", e)
+				logger.error(e) { "Exception ao executar comando ${command.javaClass.simpleName}" }
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = "${ev.author.asMention} "

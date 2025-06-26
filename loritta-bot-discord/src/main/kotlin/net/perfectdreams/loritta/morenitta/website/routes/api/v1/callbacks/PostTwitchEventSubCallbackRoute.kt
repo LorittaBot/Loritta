@@ -8,7 +8,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TwitchEventSubEvents
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class PostTwitchEventSubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/twitch-eventsub") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		private const val MESSAGE_SIGNATURE_HEADER = "Twitch-Eventsub-Message-Signature"
 		private const val MESSAGE_ID_HEADER = "Twitch-Eventsub-Message-Id"
 		private const val MESSAGE_TIMESTAMP_HEADER = "Twitch-Eventsub-Message-Timestamp"

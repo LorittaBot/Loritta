@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
@@ -57,7 +57,7 @@ class LorittaWebsite(
 	companion object {
 		lateinit var INSTANCE: LorittaWebsite
 		val versionPrefix = "/v2"
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
 
 		lateinit var ENGINE: PebbleEngine
@@ -429,7 +429,7 @@ class LorittaWebsite(
 				val queryString = call.request.urlQueryString
 				val httpMethod = call.request.httpMethod.value
 
-				logger.info("${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}")
+				logger.info { "${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
 			}
 
 			this.monitor.subscribe(RoutingRoot.RoutingCallFinished) { call: RoutingCall ->
@@ -438,7 +438,7 @@ class LorittaWebsite(
 				val queryString = call.request.urlQueryString
 				val userAgent = call.request.userAgent()
 
-				logger.info("${call.request.trueIp} (${userAgent}): ${call.request.httpMethod.value} ${call.request.path()}${queryString} - OK! ${System.currentTimeMillis() - originalStartTime}ms")
+				logger.info { "${call.request.trueIp} (${userAgent}): ${call.request.httpMethod.value} ${call.request.path()}${queryString} - OK! ${System.currentTimeMillis() - originalStartTime}ms" }
 			}
 		}
 		this.server = server

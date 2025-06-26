@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
@@ -31,7 +31,7 @@ object ProfileUtils {
             marriage.user1
         }
 
-        KotlinLogging.logger {}.info { "ProfileUtils#retrieveUserInfoById - UserId: ${partnerId}" }
+        HarmonyLoggerFactory.logger {}.value.info { "ProfileUtils#retrieveUserInfoById - UserId: ${partnerId}" }
         val partner = loritta.lorittaShards.retrieveUserInfoById(partnerId) ?: return null
 
         return MarriageInfo(

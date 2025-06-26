@@ -5,14 +5,14 @@ import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.request.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.sequins.ktor.BaseRoute
 
 abstract class RequiresAPIAuthenticationRoute(val loritta: LorittaBot, path: String) : BaseRoute(path) {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 
 		fun validate(loritta: LorittaBot, call: ApplicationCall): Boolean {
 			val path = call.request.path()

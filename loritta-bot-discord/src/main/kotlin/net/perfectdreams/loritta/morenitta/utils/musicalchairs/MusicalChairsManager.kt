@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.audio.AudioSendHandler
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -41,7 +41,7 @@ import kotlin.io.path.readBytes
 class MusicalChairsManager(val loritta: LorittaBot) {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Musicalchairs
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val musicalChairsSessions = ConcurrentHashMap.newKeySet<Long>()

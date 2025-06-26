@@ -5,9 +5,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.managers.AudioManager
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import kotlin.time.Duration.Companion.minutes
 
 data class LorittaVoiceConnection(
@@ -18,7 +18,7 @@ data class LorittaVoiceConnection(
     private val audioClipProviderNotificationChannel: Channel<Unit>
 ) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private val audioClips = Channel<AudioClipInfo>(Channel.UNLIMITED)

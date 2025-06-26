@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -10,7 +10,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Giveaway.Setup
-        val logger = KotlinLogging.logger { }
+        val logger by HarmonyLoggerFactory.logger {}
     }
 
     override fun command() = create {

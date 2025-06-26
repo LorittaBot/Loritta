@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
@@ -29,7 +29,7 @@ import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 object NitroBoostUtils {
-	private val logger = KotlinLogging.logger {}
+	private val logger by HarmonyLoggerFactory.logger {}
 	private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 19.00.toBigDecimal()
 
 	internal fun createBoostTask(loritta: LorittaBot, config: LorittaConfig.DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {

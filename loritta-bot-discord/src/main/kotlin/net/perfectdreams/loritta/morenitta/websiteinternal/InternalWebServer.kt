@@ -22,7 +22,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.loricoolcards.LoriCoolCardsEventCards
@@ -68,7 +68,7 @@ import java.io.PrintStream
  */
 class InternalWebServer(val m: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val processors = Processors(this)

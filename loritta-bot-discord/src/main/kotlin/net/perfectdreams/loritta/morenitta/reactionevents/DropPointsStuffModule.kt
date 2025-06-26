@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.reactionevents
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventDrops
@@ -24,7 +24,7 @@ import kotlin.collections.set
 
 class DropPointsStuffModule(val m: LorittaBot) : MessageReceivedModule {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
     private val dropInMessageAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<Long, Long>()
         .asMap()

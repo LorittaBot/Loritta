@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
 import io.ktor.http.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedYouTubeChannelIds
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -29,7 +29,7 @@ import java.net.URL
 
 class GetChannelInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/youtube/channel") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {

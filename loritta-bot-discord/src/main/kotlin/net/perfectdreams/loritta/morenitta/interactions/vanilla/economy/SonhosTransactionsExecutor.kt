@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.interactions.components.option
 import dev.minn.jda.ktx.messages.InlineEmbed
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -66,7 +66,7 @@ class SonhosTransactionsExecutor(val loritta: LorittaBot) : LorittaSlashCommandE
 
             val totalPages = ceil((totalTransactions / TRANSACTIONS_PER_PAGE.toDouble())).toLong()
             val isSelf = viewingTransactionsOfUserId == userId
-            KotlinLogging.logger {}.info { "SonhosTransactionsExecutor#retrieveUserInfoById - UserId: $viewingTransactionsOfUserId" }
+            HarmonyLoggerFactory.logger {}.value.info { "SonhosTransactionsExecutor#retrieveUserInfoById - UserId: $viewingTransactionsOfUserId" }
             val cachedUserInfo = loritta.lorittaShards.retrieveUserInfoById(viewingTransactionsOfUserId) ?: error("Missing cached user info!")
 
             if (page >= totalPages && totalPages != 0L) {

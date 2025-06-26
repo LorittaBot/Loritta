@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 
 class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		const val MARRIAGE_DAILY_TAX = 250L
 		var alreadySentDMs = false
 	}
@@ -53,7 +53,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 		runBlocking {
 			try {
 				if (hour == 18 && !alreadySentDMs) {
-					logger.info("Avisando sobre a taxa diária!")
+					logger.info { "Avisando sobre a taxa diária!" }
 
 					// Dar aquela reaproveitada já que aqui já estamos avisando coisas a cada X horas do dia na moralzinha
 					val alreadyPaymentNotifiedUsers = mutableListOf<Long>()
@@ -189,7 +189,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 					return@runBlocking
 				}
 			} catch (e: Exception) {
-				logger.error("Erro ao atualizar a taxa diária!", e)
+				logger.error(e) { "Erro ao atualizar a taxa diária!" }
 			}
 		}
 	}

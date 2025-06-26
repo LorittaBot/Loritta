@@ -6,7 +6,7 @@ import dev.minn.jda.ktx.interactions.components.TextDisplay
 import dev.minn.jda.ktx.interactions.components.Thumbnail
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEditBuilder
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.components.button.ButtonStyle
@@ -78,7 +78,7 @@ class ReminderCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper 
 
     class ReminderAddExecutor(val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         companion object {
-            private val logger = KotlinLogging.logger {}
+            private val logger by HarmonyLoggerFactory.logger {}
         }
 
         class Options : ApplicationCommandOptions() {

@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import io.ktor.server.application.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.temmiewebsession.LorittaJsonWebSession
@@ -34,7 +34,7 @@ class GetUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 
 		for ((userId, count) in map) {
 			if (idx == 5) break
-			KotlinLogging.logger {}.info { "GetUserReputationsRoute#retrieveUserInfoById - UserId: ${userId}" }
+			HarmonyLoggerFactory.logger {}.value.info { "GetUserReputationsRoute#retrieveUserInfoById - UserId: ${userId}" }
 			val userInfo = loritta.lorittaShards.retrieveUserInfoById(userId) ?: continue
 			rankedUsers.add(
 					jsonObject(

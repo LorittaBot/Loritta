@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.bluesky
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedBlueskyAccounts
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.LorittaMetrics
@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class LorittaBlueskyRelay(val loritta: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val firehoseClient = BlueskyFirehoseClient()

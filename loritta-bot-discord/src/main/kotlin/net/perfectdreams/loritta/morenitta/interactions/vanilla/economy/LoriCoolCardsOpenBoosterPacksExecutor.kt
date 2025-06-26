@@ -5,7 +5,7 @@ import dev.minn.jda.ktx.interactions.components.*
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageEdit
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.components.separator.Separator
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -33,7 +33,7 @@ import kotlin.time.measureTimedValue
 class LoriCoolCardsOpenBoosterPacksExecutor(val loritta: LorittaBot, private val loriCoolCardsCommand: LoriCoolCardsCommand) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loricoolcards.Buy
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {

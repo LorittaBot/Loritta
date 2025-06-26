@@ -7,7 +7,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/perfect-payments") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 
 		suspend fun sendPaymentApprovedDirectMessage(loritta: LorittaBot, userId: Long, locale: BaseLocale, supportUrl: String) {
 			val privateChannel = loritta.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: return

@@ -12,7 +12,7 @@ import io.ktor.server.request.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -40,7 +40,7 @@ import org.jetbrains.exposed.sql.selectAll
 
 class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		private val mutex = Mutex()
 
 		fun sendReputationToCluster(loritta: LorittaBot, guildId: String, channelId: String, giverId: String, receiverId: String, reputationCount: Long) {
@@ -227,7 +227,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 	}
 
 	suspend fun giveReputation(giver: Long, giverIp: String, giverEmail: String, receiver: Long, content: String) {
-		logger.info("$giver ($giverIp/$giverEmail) deu uma reputação para $receiver! Motivo: $content")
+		logger.info { "$giver ($giverIp/$giverEmail) deu uma reputação para $receiver! Motivo: $content" }
 		loritta.newSuspendedTransaction {
 			Reputation.new {
 				this.givenById = giver

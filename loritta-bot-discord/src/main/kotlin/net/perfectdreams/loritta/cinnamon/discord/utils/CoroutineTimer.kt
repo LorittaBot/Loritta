@@ -6,14 +6,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import kotlin.time.Duration
 
 /**
  * Schedules [action] to be executed on [scope] every [period] with a [initialDelay]
  */
 fun scheduleCoroutineAtFixedRate(taskName: String, scope: CoroutineScope, period: Duration, initialDelay: Duration = Duration.ZERO, action: RunnableCoroutine) {
-    val logger = KotlinLogging.logger(taskName)
+    val logger by HarmonyLoggerFactory.logger(taskName)
 
     scope.launch(CoroutineName("$taskName Scheduler")) {
         delay(initialDelay)

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.christmas2022event.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.christmas2022.Christmas2022Drops
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 
 class DropChristmasStuffModule(val m: LorittaBot) : MessageReceivedModule {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
     private val dropInMessageAt = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<Long, Long>()
         .asMap()

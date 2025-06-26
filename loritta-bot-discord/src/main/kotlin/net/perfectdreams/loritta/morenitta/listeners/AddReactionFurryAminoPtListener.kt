@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 
 class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter() {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val config = loritta.config.loritta.quirky

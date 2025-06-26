@@ -4,7 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.internal.requests.LorittaInternalRPCRequest
@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.*
 
 class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		// How many new items should be shown in the shop on every shop rotation?
 		// This exists to avoid Lori always selecting previously sold items instead of selecting never seen before items
 		private const val NEW_ITEMS_TARGET = 2

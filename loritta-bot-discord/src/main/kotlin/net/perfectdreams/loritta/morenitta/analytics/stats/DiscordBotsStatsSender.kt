@@ -9,7 +9,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 
 class DiscordBotsStatsSender(
     private val http: HttpClient,
@@ -17,7 +17,7 @@ class DiscordBotsStatsSender(
     private val token: String
 ) : StatsSender {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override suspend fun send(guildCount: Long) {

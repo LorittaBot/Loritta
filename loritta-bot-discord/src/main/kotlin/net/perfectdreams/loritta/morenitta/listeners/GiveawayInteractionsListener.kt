@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
@@ -40,7 +40,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -513,7 +513,7 @@ class GiveawayInteractionsListener(val m: LorittaBot) : ListenerAdapter() {
                 }
 
                 val members = participants.associateWith {
-                    KotlinLogging.logger {}.info { "GiveawayInteractionsListener#retrieveUserInfoById - UserId: ${it}" }
+                    HarmonyLoggerFactory.logger {}.value.info { "GiveawayInteractionsListener#retrieveUserInfoById - UserId: ${it}" }
                     GiveawayParticipant(m.lorittaShards.retrieveUserInfoById(it.value), it.weight)
                 }
                 val participantsText = StringBuilder()

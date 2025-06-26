@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.twitch
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.datetime.Clock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DonationKeys
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.AlwaysTrackTwitchAccounts
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.AuthorizedTwitchAccounts
@@ -24,7 +24,7 @@ import kotlin.math.ceil
  */
 class TwitchSubscriptionsHandler(val m: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
         private val VALID_STATUS = setOf(
             "enabled",
             "webhook_callback_verification_pending"

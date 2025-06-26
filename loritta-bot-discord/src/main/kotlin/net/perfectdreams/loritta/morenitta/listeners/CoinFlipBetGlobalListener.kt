@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -16,7 +16,7 @@ import java.util.*
 
 class CoinFlipBetGlobalListener(val m: LorittaBot) : ListenerAdapter() {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {

@@ -10,7 +10,7 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserLorittaAPITokens
 import net.perfectdreams.loritta.common.utils.TokenType
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -25,7 +25,7 @@ abstract class LoriPublicAPIRoute(
     val rateLimitOptions: RateLimitOptions
 ) : BaseRoute("/lori-public-api/v1${endpoint.path}") {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private val accesses = mutableMapOf<String, RateLimitData>()

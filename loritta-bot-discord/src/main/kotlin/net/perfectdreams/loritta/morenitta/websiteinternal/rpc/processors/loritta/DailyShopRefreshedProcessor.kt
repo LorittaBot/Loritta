@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.messages.MessageCreate
 import io.ktor.server.application.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.components.button.Button
@@ -46,7 +46,7 @@ import java.time.Instant
 
 class DailyShopRefreshedProcessor(val loritta: LorittaBot) : LorittaInternalRpcProcessor<LorittaInternalRPCRequest.DailyShopRefreshedRequest, LorittaInternalRPCResponse.DailyShopRefreshedResponse> {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override suspend fun process(

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.commands.arguments
@@ -20,8 +20,7 @@ import java.awt.Color
 import java.time.Instant
 
 abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, var aliases: List<String> = listOf(), var category: net.perfectdreams.loritta.common.commands.CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
-	@Transient
-	internal val logger = KotlinLogging.logger {}
+	internal val logger by HarmonyLoggerFactory.logger {}
 
 	val cooldown: Int
 		get() {

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.analytics.stats
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ClusterNotReadyException
@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 
 class LorittaStatsCollector(val m: LorittaBot) : RunnableCoroutine {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private val senders = listOf(

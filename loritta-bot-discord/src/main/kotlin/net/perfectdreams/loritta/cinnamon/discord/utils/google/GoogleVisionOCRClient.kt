@@ -8,7 +8,7 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import java.util.*
 
 class GoogleVisionOCRClient(private val apiKey: String) {
@@ -17,7 +17,7 @@ class GoogleVisionOCRClient(private val apiKey: String) {
             ignoreUnknownKeys = true
         }
 
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private val http = HttpClient(CIO) {}

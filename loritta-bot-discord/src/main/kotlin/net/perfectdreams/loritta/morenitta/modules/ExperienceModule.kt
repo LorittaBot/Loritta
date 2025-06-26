@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit
 
 class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	// Para evitar "could not serialize access due to concurrent update", vamos sincronizar o update de XP usando mutexes

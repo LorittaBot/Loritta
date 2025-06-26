@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -25,7 +25,7 @@ import kotlin.time.measureTime
 
 class Lorifetch(private val loritta: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     /**

@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.common.utils.LegacyWebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.WebsiteVoteUtils
@@ -22,13 +22,13 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 
 class PostDiscordBotsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/discord-bots") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
 		val response = withContext(Dispatchers.IO) { call.receiveText() }
 
-		logger.info("Recebi payload do Discord Bots!")
+		logger.info { "Recebi payload do Discord Bots!" }
 		logger.trace { response }
 
 		val authorizationHeader = call.request.header("Authorization")

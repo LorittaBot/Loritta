@@ -4,7 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector.Companion.queryDailyBypassList
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxNotifiedUsers
@@ -21,7 +21,7 @@ import java.time.ZoneOffset
 
 class DailyTaxWarner(val m: LorittaBot) : RunnableCoroutine {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
 
         /**
          * Processes and inserts the daily tax warning to the database related to the [inactiveDailyUser]

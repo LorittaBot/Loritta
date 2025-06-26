@@ -18,7 +18,7 @@ import io.ktor.http.content.TextContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
@@ -38,7 +38,7 @@ class TwitchAPI(val clientId: String,
 		private const val TOKEN_BASE_URL = "$PREFIX/oauth2/token"
 		private const val USER_AGENT = "Loritta-Morenitta-Twitch-Auth/1.0"
 		private val gson = Gson()
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		val http = HttpClient {
 			this.expectSuccess = false
 		}

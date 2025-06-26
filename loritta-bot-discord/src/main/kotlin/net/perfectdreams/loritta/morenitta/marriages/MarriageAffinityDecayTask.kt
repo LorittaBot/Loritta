@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.marriages
 import dev.minn.jda.ktx.interactions.components.Container
 import dev.minn.jda.ktx.interactions.components.TextDisplay
 import dev.minn.jda.ktx.messages.MessageCreate
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarriageParticipants
@@ -26,7 +26,7 @@ import java.time.Instant
 class MarriageAffinityDecayTask(val m: LorittaBot) : NamedRunnableCoroutine {
     companion object {
         private const val DAILY_DECAY = 2
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override val taskName = "marriage-affinity-decay-task"

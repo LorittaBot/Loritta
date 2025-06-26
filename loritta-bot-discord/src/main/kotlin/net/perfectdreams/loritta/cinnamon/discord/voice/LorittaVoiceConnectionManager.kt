@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.voice
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.ConcurrentHashMap
 
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val voiceConnections = ConcurrentHashMap<Long, LorittaVoiceConnection>()

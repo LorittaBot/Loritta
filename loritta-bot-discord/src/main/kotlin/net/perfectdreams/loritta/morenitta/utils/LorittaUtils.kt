@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
@@ -23,7 +23,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 object LorittaUtils {
-	private val logger = KotlinLogging.logger {}
+	private val logger by HarmonyLoggerFactory.logger {}
 
 	fun canUploadFiles(context: CommandContext): Boolean {
 		if (!context.isPrivateChannel && !context.guild.selfMember.hasPermission(context.event.channel as GuildChannel, Permission.MESSAGE_ATTACH_FILES)) {
@@ -251,7 +251,7 @@ object LorittaUtils {
 
 		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
 			if (!loritta.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
-				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
+				logger.info { "Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ" }
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}
@@ -274,7 +274,7 @@ object LorittaUtils {
 
 		if (blacklisted != null) { // Se o servidor está banido...
 			if (!loritta.isOwner(guild.ownerIdLong)) { // E ele não é o dono do bot!
-				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ *${blacklisted[BlacklistedGuilds.reason]}")
+				logger.info { "Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ *${blacklisted[BlacklistedGuilds.reason]}" }
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}

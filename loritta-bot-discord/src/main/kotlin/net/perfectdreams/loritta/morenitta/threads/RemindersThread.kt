@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.threads
 
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -24,7 +24,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
     private val remindersThatFailedToDelete = mutableSetOf<Long>()
 
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
         private const val SNOOZE_EMOTE = "\uD83D\uDCA4"
         private const val SCHEDULE_EMOTE = "\uD83D\uDCC5"
         private const val CANCEL_EMOTE = "\uD83D\uDE45"

@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.morenitta.utils.networkbans
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 
 class ApplyBansTask : Runnable {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		val banWaveUsers = ConcurrentHashMap<Long, String>()
 	}
 

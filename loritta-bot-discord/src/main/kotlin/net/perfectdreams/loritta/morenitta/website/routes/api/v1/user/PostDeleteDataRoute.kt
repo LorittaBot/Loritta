@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.StoredMessages
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -36,7 +36,7 @@ import org.jetbrains.exposed.sql.update
 
 class PostDeleteDataRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/delete") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 
 		suspend fun deleteAccountData(loritta: LorittaBot, userId: Long) {
 			loritta.newSuspendedTransaction {

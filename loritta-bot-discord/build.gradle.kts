@@ -17,6 +17,9 @@ dependencies {
     implementation(project(":lori-public-http-api-common"))
     implementation(project(":yokye"))
 
+    // Logging
+    implementation("net.perfectdreams.harmony.logging:harmonylogging-slf4j:1.0.2")
+
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.hocon)

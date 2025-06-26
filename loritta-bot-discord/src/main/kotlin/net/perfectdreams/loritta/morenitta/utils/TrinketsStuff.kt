@@ -4,7 +4,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
@@ -23,7 +23,7 @@ import java.util.*
  * Inserts and updates shop items data
  */
 object TrinketsStuff {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
 
     // ===[ PROFILE GROUP UUIDS ]===
     /**

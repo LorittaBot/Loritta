@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageType
@@ -45,7 +45,7 @@ import java.util.regex.Pattern
 
 class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		// Our blacklist of messages (messages that we'll ignore on command execution)
 		private val unavailableMessages = Collections.newSetFromMap(Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<Long, Boolean>().asMap())
 	}
@@ -378,7 +378,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 					logIfEnabled(enableProfiling) { "Checking for similar commands took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 				}
 			} catch (e: Exception) {
-				logger.error("[${event.guild.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}", e)
+				logger.error(e) { "[${event.guild.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}" }
 			}
 		}
 	}
@@ -548,17 +548,17 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	 */
 	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.config.loritta.discord.applicationId.toString()}>"
 
-	fun logIfEnabled(doLog: Boolean, msg: () -> Any?) {
+	fun logIfEnabled(doLog: Boolean, msg: () -> String) {
 		if (doLog)
 			logger.info(msg)
 	}
 
-	fun <T> Deferred<T>.logOnCompletion(doLog: Boolean, msg: () -> Any?): Deferred<T> {
+	fun <T> Deferred<T>.logOnCompletion(doLog: Boolean, msg: () -> String): Deferred<T> {
 		val start = System.nanoTime()
 
 		if (doLog)
 			this.invokeOnCompletion {
-				logger.info(msg.invoke().toString().replace("{time}", (System.nanoTime() - start).toString()))
+				logger.info { msg.invoke().toString().replace("{time}", (System.nanoTime() - start).toString()) }
 			}
 
 		return this

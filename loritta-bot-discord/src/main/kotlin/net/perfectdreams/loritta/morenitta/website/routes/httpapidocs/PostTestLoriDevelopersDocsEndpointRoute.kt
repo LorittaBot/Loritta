@@ -13,7 +13,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -28,7 +28,7 @@ import kotlin.reflect.full.declaredMembers
 
 class PostTestLoriDevelopersDocsEndpointRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/developers/docs/endpoint-tester") {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val http = HttpClient {}

@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
@@ -55,7 +55,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 			val user2Name = config["user2NamePlusDiscriminator"].string
 
 			val user2Id = if (user2Name.isValidSnowflake()) {
-				KotlinLogging.logger {}.info { "PatchProfileRoute#retrieveUserInfoById - UserId: ${user2Name}" }
+				HarmonyLoggerFactory.logger {}.value.info { "PatchProfileRoute#retrieveUserInfoById - UserId: ${user2Name}" }
 				loritta.lorittaShards.retrieveUserInfoById(user2Name.toLong())?.id
 			} else {
 				val split = user2Name.trim().split("#")

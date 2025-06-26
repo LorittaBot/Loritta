@@ -6,7 +6,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedYouTubeChannelIds
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import java.net.URL
 
 object YouTubeWebUtils {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
 
     suspend fun getYouTubeChannelInfoFromChannelId(loritta: LorittaBot, channelId: String): YouTubeChannelInfoResult {
         // Sneaky!

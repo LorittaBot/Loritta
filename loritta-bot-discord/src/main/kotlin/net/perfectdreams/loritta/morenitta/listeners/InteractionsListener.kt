@@ -7,7 +7,7 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.components.button.ButtonStyle
@@ -68,7 +68,7 @@ import java.util.*
 
 class InteractionsListener(private val loritta: LorittaBot) : ListenerAdapter() {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
     val manager = UnleashedCommandManager(loritta, loritta.languageManager)
     private var hasAlreadyGloballyUpdatedTheCommands = false

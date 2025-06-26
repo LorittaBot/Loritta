@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.perfectdreams.harmony.logging.HarmonyLogger
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -27,11 +28,11 @@ object CommandUtils {
 	 * @param logger the logger
 	 * @see logMessageEventComplete
 	 */
-	fun logMessageEvent(event: LorittaMessageEvent, logger: KLogger) {
+	fun logMessageEvent(event: LorittaMessageEvent, logger: HarmonyLogger) {
 		if (event.message.isFromType(ChannelType.TEXT)) {
-			logger.info("(${event.message.guild.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
+			logger.info { "(${event.message.guild.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}" }
 		} else {
-			logger.info("(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
+			logger.info { "(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}" }
 		}
 	}
 
@@ -43,11 +44,11 @@ object CommandUtils {
 	 * @param commandLatency how much time it took to process the event
 	 * @see logMessageEvent
 	 */
-	fun logMessageEventComplete(event: LorittaMessageEvent, logger: KLogger, commandLatency: Long) {
+	fun logMessageEventComplete(event: LorittaMessageEvent, logger: HarmonyLogger, commandLatency: Long) {
 		if (event.message.isFromType(ChannelType.TEXT)) {
-			logger.info("(${event.message.guild.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
+			logger.info { "(${event.message.guild.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay} - OK! Processed in ${commandLatency}ms" }
 		} else {
-			logger.info("(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
+			logger.info { "(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay} - OK! Processed in ${commandLatency}ms" }
 		}
 	}
 

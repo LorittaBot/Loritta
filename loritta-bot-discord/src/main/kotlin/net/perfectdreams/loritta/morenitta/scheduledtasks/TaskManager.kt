@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GlobalTasks
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.selectAll
@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class TaskManager(val m: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     // uuhh how does this work?
@@ -106,7 +106,7 @@ class TaskManager(val m: LorittaBot) {
         logger.info { "Scheduling ${action.taskName} to be ran every $period with a $initialDelay initial delay" }
 
         val taskName = action.taskName
-        val logger = KotlinLogging.logger(taskName)
+        val logger by HarmonyLoggerFactory.logger(taskName)
 
         scope.launch(CoroutineName("$taskName Scheduler")) {
             delay(initialDelay)

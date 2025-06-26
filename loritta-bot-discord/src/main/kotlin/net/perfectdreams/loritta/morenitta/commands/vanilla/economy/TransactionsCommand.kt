@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
@@ -162,7 +162,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 						transaction[SonhosTransaction.receivedBy]
 					}
 
-					KotlinLogging.logger {}.info { "ServerInfoCommand#retrieveUserInfoById - UserId: $receivedByUserId" }
+					HarmonyLoggerFactory.logger {}.value.info { "ServerInfoCommand#retrieveUserInfoById - UserId: $receivedByUserId" }
 					val receivedByUser = loritta.lorittaShards.retrieveUserInfoById(receivedByUserId)
 
 					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
@@ -181,7 +181,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 						transaction[SonhosTransaction.receivedBy]
 					}
 
-					KotlinLogging.logger {}.info { "TransactionsCommand#retrieveUserInfoById - UserId: $receivedByUserId" }
+					HarmonyLoggerFactory.logger {}.value.info { "TransactionsCommand#retrieveUserInfoById - UserId: $receivedByUserId" }
 					val receivedByUser = loritta.lorittaShards.retrieveUserInfoById(receivedByUserId)
 
 					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")

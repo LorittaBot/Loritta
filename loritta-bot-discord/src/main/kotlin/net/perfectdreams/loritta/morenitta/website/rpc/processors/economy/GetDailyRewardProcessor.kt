@@ -13,7 +13,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Activity.ActivityType
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrowserFingerprints
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit
 
 class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val loritta = m.loritta
@@ -229,7 +229,7 @@ class GetDailyRewardProcessor(val m: LorittaWebsite) : LorittaRpcProcessor {
 
                                     if (sponsoredBy != null && multipliedBy != null) {
                                         val sponsoredByUser = if (sponsoredByUserId != null) {
-                                            KotlinLogging.logger {}.info { "GetDailyRewardProcessor#retrieveUserInfoById - UserId: ${sponsoredByUserId}" }
+                                            HarmonyLoggerFactory.logger {}.value.info { "GetDailyRewardProcessor#retrieveUserInfoById - UserId: ${sponsoredByUserId}" }
                                             val sponsoredByUser = loritta.lorittaShards.retrieveUserInfoById(sponsoredByUserId)
 
                                             if (sponsoredByUser != null)

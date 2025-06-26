@@ -12,7 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit
 
 class LorittaCommand : SlashCommandDeclarationWrapper {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Loritta
         private val PING_I18N_PREFIX = I18N_PREFIX.Ping
         private val CLUSTERS_I18N_PREFIX = I18N_PREFIX.Clusters

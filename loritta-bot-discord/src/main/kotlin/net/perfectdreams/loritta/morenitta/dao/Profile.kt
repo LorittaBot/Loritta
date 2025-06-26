@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -18,7 +18,7 @@ import java.time.ZonedDateTime
 
 class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	companion object : EntityClass<Long, Profile>(Profiles) {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	val userId = this.id.value

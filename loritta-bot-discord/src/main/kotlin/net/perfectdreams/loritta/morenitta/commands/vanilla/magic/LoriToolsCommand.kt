@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 
 class LoriToolsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("loritools"), net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override fun command() = create {

@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
@@ -77,8 +77,8 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			.build<Long, Mutex>()
 			.asMap()
 
-		private val logger = KotlinLogging.logger {}
-		private val requestLogger = LoggerFactory.getLogger("requests")
+		private val logger by HarmonyLoggerFactory.logger {}
+		private val requestLogger by HarmonyLoggerFactory.logger("requests")
 
 		suspend fun queueTextChannelTopicUpdates(loritta: LorittaBot, guild: Guild, serverConfig: ServerConfig) {
 			val activeDonationValues = loritta.getOrCreateServerConfig(guild.idLong).getActiveDonationKeysValue(loritta)
@@ -203,11 +203,11 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			val input = buffer.readUtf8()
 			val length = body?.contentLength()
 
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; Content Length: $length; -> ${event.response?.code}; Body: $input")
+			requestLogger.info { "${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; Content Length: $length; -> ${event.response?.code}; Body: $input" }
 		} else if (originalMediaType != null) {
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; -> ${event.response?.code}")
+			requestLogger.info { "${event.route.method.name} ${event.route.compiledRoute} Media Type: $mediaType; -> ${event.response?.code}" }
 		} else {
-			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}")
+			requestLogger.info { "${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}" }
 		}
 	}
 
@@ -237,7 +237,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						try {
 							functions.onReactionAdd!!.invoke(e)
 						} catch (e: Exception) {
-							logger.error("Erro ao tentar processar onReactionAdd", e)
+							logger.error(e) { "Erro ao tentar processar onReactionAdd" }
 						}
 					}
 				}
@@ -248,7 +248,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 							functions.onReactionByAuthor?.invoke(e)
 							functions.onReactionAddByAuthor?.invoke(e)
 						} catch (e: Exception) {
-							logger.error("Erro ao tentar processar onReactionAddByAuthor", e)
+							logger.error(e) { "Erro ao tentar processar onReactionAddByAuthor" }
 						}
 					}
 				}
@@ -260,7 +260,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						try {
 							functions.onReactionRemove!!.invoke(e)
 						} catch (e: Exception) {
-							logger.error("Erro ao tentar processar onReactionRemove", e)
+							logger.error(e) { "Erro ao tentar processar onReactionRemove" }
 						}
 					}
 				}
@@ -271,7 +271,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 							functions.onReactionByAuthor?.invoke(e)
 							functions.onReactionRemoveByAuthor?.invoke(e)
 						} catch (e: Exception) {
-							logger.error("Erro ao tentar processar onReactionRemoveByAuthor", e)
+							logger.error(e) { "Erro ao tentar processar onReactionRemoveByAuthor" }
 						}
 					}
 				}
@@ -290,7 +290,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					loritta.starboardModule.handleStarboardReaction(i18nContext, e, starboardConfig)
 				}
 			} catch (exception: Exception) {
-				logger.error("[${e.guild.name}] Starboard ${e.member?.user?.name}", exception)
+				logger.error(exception) { "[${e.guild.name}] Starboard ${e.member?.user?.name}" }
 			}
 		}
 	}
@@ -435,7 +435,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					MuteCommand.spawnTimeOutUpdaterThread(loritta, event.guild, locale, i18nContext, event.user, mute)
 				}
 			} catch (e: Exception) {
-				logger.error("[${event.guild.name}] Ao entrar no servidor ${event.user.name}", e)
+				logger.error(e) { "[${event.guild.name}] Ao entrar no servidor ${event.user.name}" }
 			}
 		}
 	}
@@ -477,7 +477,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (welcomerConfig != null)
 					loritta.welcomeModule.handleLeave(event, serverConfig, i18nContext, welcomerConfig)
 			} catch (e: Exception) {
-				logger.error("[${event.guild.name}] Ao sair do servidor ${event.user.name}", e)
+				logger.error(e) { "[${event.guild.name}] Ao sair do servidor ${event.user.name}" }
 			}
 		}
 	}
@@ -543,7 +543,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				}
 				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-				logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
+				logger.info { "Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
 				MuteCommand.spawnTimeOutUpdaterThread(loritta, guild.idLong, loritta.localeManager.getLocaleById(serverConfig.localeId), i18nContext, mute.userId, mute)
 			}
 

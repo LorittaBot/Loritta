@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonParser
 import dev.minn.jda.ktx.messages.MessageCreate
 import kotlinx.serialization.SerializationException
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.actionrow.ActionRow
@@ -42,7 +42,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
 import net.perfectdreams.loritta.morenitta.utils.placeholders.RenderableMessagePlaceholder
 
 object MessageUtils {
-	private val logger = KotlinLogging.logger {}
+	private val logger by HarmonyLoggerFactory.logger {}
 	private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
 
 	/**

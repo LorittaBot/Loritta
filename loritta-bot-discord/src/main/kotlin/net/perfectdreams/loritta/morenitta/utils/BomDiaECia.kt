@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -198,7 +198,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 
 	var currentText = randomTexts[0]
 
-	private val logger = KotlinLogging.logger {}
+	private val logger by HarmonyLoggerFactory.logger {}
 
 	var validTextChannels: Set<TextChannel>? = null
 
@@ -208,7 +208,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 
 		triedToCall.clear()
 
-		logger.info("Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)")
+		logger.info { "Vamos anunciar o Bom Dia & Cia! (Agora é a hora!)" }
 
 		val validTextChannels = getActiveTextChannels()
 		this.validTextChannels = validTextChannels
@@ -298,7 +298,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 									it.deferChannelMessage(true)
 
 									val triedToCall = triedToCall.mapNotNull {
-										KotlinLogging.logger {}.info { "BomDiaECia#retrieveUserInfoById - UserId: ${it}" }
+										HarmonyLoggerFactory.logger {}.value.info { "BomDiaECia#retrieveUserInfoById - UserId: ${it}" }
 										loritta.lorittaShards.retrieveUserInfoById(it)
 									}
 

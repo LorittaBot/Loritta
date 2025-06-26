@@ -10,7 +10,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
@@ -22,7 +22,7 @@ import java.net.InetAddress
 import kotlin.time.Duration.Companion.seconds
 
 object MiscUtils {
-	private val logger = KotlinLogging.logger {}
+	private val logger by HarmonyLoggerFactory.logger {}
 
 	fun getResponseError(json: JsonObject): String? {
 		if (!json.has("error"))
@@ -83,7 +83,7 @@ object MiscUtils {
 		// 1 = Bad hostname
 		// 2 = OVH IP
 
-		logger.info("Verifying IP: $ip")
+		logger.info { "Verifying IP: $ip" }
 		// Antes de nós realmente decidir "ele deu upvote então vamos dar o upvote", nós iremos verificar o IP no StopForumSpam
 		try {
 			val stopForumSpamResponse = withTimeout(2.seconds) {
@@ -91,12 +91,12 @@ object MiscUtils {
 					.bodyAsText()
 			}
 
-			logger.info("Stop Forum Spam: $stopForumSpamResponse")
+			logger.info { "Stop Forum Spam: $stopForumSpamResponse" }
 
 			// STOP FORUM SPAM
 			val xmlJSONObj = XML.toJSONObject(stopForumSpamResponse)
 
-			logger.info("as JSON: $xmlJSONObj")
+			logger.info { "as JSON: $xmlJSONObj" }
 
 			val response = JsonParser.parseString(xmlJSONObj.toString(4)).obj["response"]
 

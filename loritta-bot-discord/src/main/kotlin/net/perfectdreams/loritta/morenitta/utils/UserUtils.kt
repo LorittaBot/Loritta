@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.toJavaInstant
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -20,7 +20,7 @@ import org.jetbrains.exposed.sql.and
 import java.util.*
 
 object UserUtils {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
 
     /**
      * Sends the [builder] message to the [userId] via the user's direct message channel.

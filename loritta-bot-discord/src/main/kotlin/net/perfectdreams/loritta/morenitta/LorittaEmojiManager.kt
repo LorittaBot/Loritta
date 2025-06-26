@@ -1,11 +1,9 @@
 package net.perfectdreams.loritta.morenitta
 
-import com.zaxxer.hikari.pool.HikariProxyConnection
 import kotlinx.coroutines.delay
-import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Icon
-import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationEmojis
 import net.perfectdreams.loritta.common.emojis.LorittaEmojiReference
 import net.perfectdreams.loritta.common.emojis.LorittaEmojis
@@ -17,18 +15,16 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.statements.api.ExposedConnection
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.upsert
 import java.security.MessageDigest
-import java.sql.Connection
 
 /**
  * Converts a [LorittaEmojiReference] to a Loritta [Emote]
  */
 class LorittaEmojiManager(private val loritta: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
         private val lockId = "loritta-cinnamon-application-emojis-updater".hashCode()
     }
 

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard
 
 import io.ktor.server.application.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserWebsiteSettings
@@ -14,7 +14,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 abstract class RequiresGuildAuthLocalizedDashboardRoute(loritta: LorittaBot, originalDashboardPath: String) : RequiresGuildAuthLocalizedRoute(loritta, originalDashboardPath) {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override suspend fun onGuildAuthenticatedRequest(

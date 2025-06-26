@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 
@@ -34,7 +34,7 @@ object ContextStringToUserInfoConverter {
 
         // If the snowflake is not null, then it *may* be a user ID!
         if (snowflake != null) {
-            KotlinLogging.logger {}.info { "ContextStringToUserInfoConverter#retrieveUserInfoById - UserId: $snowflake" }
+            HarmonyLoggerFactory.logger {}.value.info { "ContextStringToUserInfoConverter#retrieveUserInfoById - UserId: $snowflake" }
             val cachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoById(snowflake)
             if (cachedUserInfo != null)
                 return cachedUserInfo

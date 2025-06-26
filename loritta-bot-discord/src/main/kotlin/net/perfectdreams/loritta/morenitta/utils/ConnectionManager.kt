@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.lang.RuntimeException
 import java.net.URL
@@ -8,7 +8,7 @@ import java.net.URLConnection
 
 class ConnectionManager(val loritta: LorittaBot) {
     companion object {
-        val logger = KotlinLogging.logger {}
+        val logger by HarmonyLoggerFactory.logger {}
 
         val SLDS = listOf(
                 ".com.ac",

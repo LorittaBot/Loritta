@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
@@ -21,13 +21,13 @@ object CoinFlipBetGlobalSonhosTransactionTransformer :
         val wonTheBet = transaction.user == transaction.winner
         val winnerUserInfo =
             cachedUserInfos.getOrPut(transaction.winner) {
-                KotlinLogging.logger {}.info { "CoinFlipBetGlobalSonhosTransactionTransformer#retrieveUserInfoById - UserId: ${transaction.winner}" }
+                HarmonyLoggerFactory.logger {}.value.info { "CoinFlipBetGlobalSonhosTransactionTransformer#retrieveUserInfoById - UserId: ${transaction.winner}" }
 
                 loritta.lorittaShards.retrieveUserInfoById(transaction.winner)
             }
         val loserUserInfo =
             cachedUserInfos.getOrPut(transaction.loser) {
-                KotlinLogging.logger {}.info { "CoinFlipBetGlobalSonhosTransactionTransformer#retrieveUserInfoById - UserId: ${transaction.loser}" }
+                HarmonyLoggerFactory.logger {}.value.info { "CoinFlipBetGlobalSonhosTransactionTransformer#retrieveUserInfoById - UserId: ${transaction.loser}" }
 
                 loritta.lorittaShards.retrieveUserInfoById(transaction.loser)
             }

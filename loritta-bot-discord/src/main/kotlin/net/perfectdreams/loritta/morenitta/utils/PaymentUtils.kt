@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
@@ -19,7 +19,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.time.Instant
 
 object PaymentUtils {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
     var economyEnabled = true
 
     fun addToTransactionLogNested(

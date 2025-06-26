@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import com.google.common.collect.Sets
 import kotlinx.coroutines.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -147,7 +147,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 
 		// Para guardar as threads, a key deverá ser...
 		// ID da guild#ID do usuário
@@ -314,11 +314,11 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			mute: Mute
 		) {
 			val jobId = "$guildId#$userId"
-			logger.info("Criando timeout updater thread para usuário $userId na guild $guildId!")
+			logger.info { "Criando timeout updater thread para usuário $userId na guild $guildId!" }
 
 			val previousJob = roleRemovalJobs[jobId]
 			if (previousJob != null) {
-				logger.info("Interrompendo job de $userId na guild $guildId! Criar outra removal job enquanto uma já está ativa é feio!")
+				logger.info { "Interrompendo job de $userId na guild $guildId! Criar outra removal job enquanto uma já está ativa é feio!" }
 				roleRemovalJobs.remove("$guildId#$userId")
 				previousJob.cancel() // lol nope
 			}
@@ -326,19 +326,19 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			val currentGuild = loritta.lorittaShards.getGuildById(guildId)
 
 			if (currentGuild == null) {
-				logger.warn("Bem... na verdade a guild $guildId não existe, então não iremos remover o estado de silenciado de $userId por enquanto...")
-				return
+				logger.warn { "Bem... na verdade a guild $guildId não existe, então não iremos remover o estado de silenciado de $userId por enquanto..." }
+                return
 			}
 
 			val muteExpiresAt = mute.expiresAt
 			if (muteExpiresAt != null && System.currentTimeMillis() > muteExpiresAt) {
-				logger.info("Removendo cargo silenciado de $userId na guild $guildId - Motivo: Já expirou!")
+				logger.info { "Removendo cargo silenciado de $userId na guild $guildId - Motivo: Já expirou!" }
 
-				val guild = loritta.lorittaShards.getGuildById(guildId.toString())
+                val guild = loritta.lorittaShards.getGuildById(guildId.toString())
 
 				if (guild == null) {
-					logger.warn("Bem... na verdade a guild $guildId não existe mais, então não iremos remover o estado de silenciado de $userId por enquanto...")
-					return
+					logger.warn { "Bem... na verdade a guild $guildId não existe mais, então não iremos remover o estado de silenciado de $userId por enquanto..." }
+                    return
 				}
 
 				runBlocking {
@@ -354,7 +354,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			}
 
 			roleRemovalJobs["$guildId#$userId"] = GlobalScope.launch(loritta.coroutineDispatcher) {
-				logger.info("Criado timeout updater thread de $userId na guild $guildId, irá expirar em ${mute.expiresAt}, time out irá expirar em ${mute.userTimedOutUntil}")
+				logger.info { "Criado timeout updater thread de $userId na guild $guildId, irá expirar em ${mute.expiresAt}, time out irá expirar em ${mute.userTimedOutUntil}" }
 
 				// Wait until the timeout expires...
 				while (true) {
@@ -363,7 +363,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 					val guild = loritta.lorittaShards.getGuildById(guildId)
 					if (guild == null) {
-						logger.warn("Então... era para atualizar o timeout de $userId na guild $guildId, mas a guild não existe mais!")
+						logger.warn { "Então... era para atualizar o timeout de $userId na guild $guildId, mas a guild não existe mais!" }
 						return@launch
 					}
 
@@ -374,7 +374,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					}
 
 					if (currentMember == null) {
-						logger.warn("Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!")
+						logger.warn { "Ignorando job removal de $userId em $guildId - Motivo: Ela não está mais no servidor!" }
 						notInTheServerUserIds.add(userId)
 
 						runBlocking {
@@ -395,7 +395,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 						roleRemovalJobs.remove(jobId)
 						if (!this.isActive) {
-							logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas pelo visto esta task já tinha sido cancelada, whoops!!")
+							logger.warn { "Então... era para retirar o status de silenciado de $userId na guild $guildId, mas pelo visto esta task já tinha sido cancelada, whoops!!" }
 							return@launch
 						}
 

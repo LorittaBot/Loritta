@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.transactiontransformers
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand

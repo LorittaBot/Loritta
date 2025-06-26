@@ -7,7 +7,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.YouTubeEventSubEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.TrackedYouTubeAccounts
@@ -38,7 +38,7 @@ import javax.crypto.spec.SecretKeySpec
 
 class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		private val streamingSince = CacheBuilder.newBuilder()
 			.expireAfterAccess(4, TimeUnit.HOURS)
 			.build<Long, Long>()
@@ -146,7 +146,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 				}
 			}
 
-			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
+			logger.info { "Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId" }
 
 			if (System.currentTimeMillis() - 86_400_000 > publishedEpoch) {
 				logger.warn { "Notification of video $lastVideoTitle ($videoId) of $channelId was sent more than one day ago! (epoch: $publishedEpoch) Ignoring notification..." }

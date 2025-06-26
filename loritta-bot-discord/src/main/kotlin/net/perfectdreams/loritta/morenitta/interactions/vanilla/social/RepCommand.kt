@@ -4,7 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinTimeZone
 import kotlinx.datetime.toLocalDateTime
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -185,7 +185,7 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                     append("[$day/$month/$year $hour:$minute] ")
 
-                    KotlinLogging.logger {}.info { "RepCommand#retrieveUserInfoById - UserId: ${reputation.givenById}" }
+                    HarmonyLoggerFactory.logger {}.value.info { "RepCommand#retrieveUserInfoById - UserId: ${reputation.givenById}" }
                     val user = context.loritta.lorittaShards.retrieveUserInfoById(reputation.givenById)
                     if (user == null)
                         append("Unknown: ")

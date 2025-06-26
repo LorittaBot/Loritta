@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.platform.discord.utils
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
@@ -19,7 +19,7 @@ import javax.annotation.Nonnegative
  */
 class BucketedController(val loritta: LorittaBot, @Nonnegative bucketFactor: Int = 16, @Nonnegative val maxParallelLogins: Int = 16) : SessionControllerAdapter() {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	private val shardControllers: Array<SessionController?>

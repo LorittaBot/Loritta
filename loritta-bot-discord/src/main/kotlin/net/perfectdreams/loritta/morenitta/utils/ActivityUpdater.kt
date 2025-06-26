@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import dev.minn.jda.ktx.coroutines.await
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Activity.ActivityType
@@ -23,7 +23,7 @@ import java.time.LocalDateTime
  */
 class ActivityUpdater(val loritta: LorittaBot) : RunnableCoroutine {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private var lastActivity: ActivityWrapper? = null

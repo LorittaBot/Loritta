@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 import com.google.common.cache.CacheBuilder
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
@@ -40,7 +40,7 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 		private const val DOKYO_COMBO = 375
 		private const val GESSY_COMBO = 250
 		private const val TOBIAS_COMBO = 130
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		private const val LOCALE_PREFIX = "commands.command"
 	}
 

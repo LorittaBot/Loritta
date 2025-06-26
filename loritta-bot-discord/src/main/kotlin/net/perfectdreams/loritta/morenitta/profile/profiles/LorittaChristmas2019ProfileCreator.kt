@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile.profiles
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.common.locale.BaseLocale

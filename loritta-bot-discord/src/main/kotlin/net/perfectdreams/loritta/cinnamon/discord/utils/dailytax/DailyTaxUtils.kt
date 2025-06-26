@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.dailytax
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds.THRESHOLDS
@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 object DailyTaxUtils {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
 
     /**
      * Gets and processes inactive daily users

@@ -6,7 +6,7 @@ import io.ktor.http.*
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageReaction
 import net.dv8tion.jda.api.entities.Role
@@ -28,7 +28,7 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.time.measureTimedValue
 
 object LoriMessageDataUtils {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
     const val CURRENT_VERSION = 1
     const val SUB_CHUNK_ID = "LORIMESSAGEDATA"
     const val PNG_TEXT_CHUNK_KEYWORD = "Loritta Signed Discord Message Data"

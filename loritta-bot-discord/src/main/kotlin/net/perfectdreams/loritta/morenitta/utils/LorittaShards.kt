@@ -12,7 +12,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit
  */
 class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 	companion object {
-		internal val logger = KotlinLogging.logger {}
+		internal val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	val cachedRetrievedUsers = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)

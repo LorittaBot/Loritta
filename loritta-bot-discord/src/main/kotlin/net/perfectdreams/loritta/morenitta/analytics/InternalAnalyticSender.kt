@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.analytics
 
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
-import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 /**
@@ -9,14 +9,14 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
  */
 class InternalAnalyticSender(val loritta: LorittaBot) : Runnable {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override fun run() {
 		try {
 			DebugLog.showExtendedInfo(loritta)
 		} catch (e: Exception) {
-			logger.error("Erro ao mostrar analytics", e)
+			logger.error(e) { "Erro ao mostrar analytics" }
 		}
 	}
 }

@@ -7,7 +7,7 @@ import dev.minn.jda.ktx.interactions.commands.subcommand
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message.Attachment
 import net.dv8tion.jda.api.entities.Role
@@ -71,7 +71,7 @@ import java.util.*
 
 class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: LanguageManager) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     val slashCommands = mutableListOf<SlashCommandDeclaration>()

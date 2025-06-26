@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.rpc.processors.economy
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.time.ZonedDateTime
 
 object DailyAccountSafetyUtils {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
     private const val EXPANDED_IPV6_HOUSEHOLD_PREFIX = 4
 
     suspend fun checkIfUserCanPayout(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountDailyPayoutCheckResult {

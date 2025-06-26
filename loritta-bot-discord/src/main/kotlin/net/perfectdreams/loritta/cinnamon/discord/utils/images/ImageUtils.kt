@@ -3,9 +3,9 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.images
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import net.perfectdreams.gabrielaimageserver.exceptions.ContentLengthTooLargeException
 import net.perfectdreams.gabrielaimageserver.exceptions.ImageTooLargeException
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -22,7 +22,7 @@ import javax.imageio.ImageIO
 import kotlin.streams.toList
 
 object ImageUtils {
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
     private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
     val DEFAULT_DISCORD_AVATAR = runBlocking { readImageFromResources("/avatars/0.png") }
 

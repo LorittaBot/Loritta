@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.google.common.collect.Queues
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -75,7 +75,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 				"eu"
 		)
 
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override suspend fun matches(
@@ -218,13 +218,14 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 			}
 
 			val raidingPercentage = calculateRaidingPercentage(event.message)
-			logger.info("[${event.guild!!.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider: ${event.message.contentRaw}")
+			requireNotNull(event.guild)
+			logger.info { "[${event.guild.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider: ${event.message.contentRaw}" }
 
 			if (raidingPercentage >= 0.5) {
-				logger.warn("[${event.guild.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider (CHANCE ALTA DEMAIS!): ${event.message.contentRaw}")
+				logger.warn { "[${event.guild.name} -> ${event.channel.name}] ${event.author.id} (${raidingPercentage}% chance de ser raider (CHANCE ALTA DEMAIS!): ${event.message.contentRaw}" }
 			}
 			if (raidingPercentage >= BAN_THRESHOLD) {
-				logger.info("Aplicando punimentos em ${event.guild.name} -> ${event.channel.name}, causado por ${event.author.id}!")
+				logger.info { "Aplicando punimentos em ${event.guild.name} -> ${event.channel.name}, causado por ${event.author.id}!" }
 
 				val settings = AdminUtils.retrieveModerationInfo(loritta, serverConfig)
 
@@ -240,7 +241,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 						if (percentage >= BAN_THRESHOLD) {
 							alreadyBanned.add(storedMessage.author)
 							if (event.guild.selfMember.canInteract(event.member!!)) {
-								logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
+								logger.info { "Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!" }
 								BanCommand.ban(loritta, i18nContext, settings, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 							}
 						}
@@ -250,7 +251,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 						return true
 
 					if (event.guild.selfMember.canInteract(event.member!!)) {
-						logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
+						logger.info { "Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!" }
 						BanCommand.ban(loritta, i18nContext, settings, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 					}
 				}

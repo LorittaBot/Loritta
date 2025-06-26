@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -39,7 +39,7 @@ class LigarCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     companion object {
         private val I18N_PREFIX = I18nKeysData.Commands.Command.Ligar
         val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.ECONOMY, UUID.fromString("a1a03b03-b23d-43b8-93f5-0c714307220e")) {
@@ -167,8 +167,8 @@ class LigarCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         val wordsPerMinute = ((60 * wordsTyped) / (timeDiff / 1000)).toDouble()
                         val wpmAsInt = wordsPerMinute.roundToInt()
 
-                        logger.info("${context.user.id} ganhou ${randomPrize} no Bom Dia & Cia!")
-                        logger.info("Demorou ${timeDiff}ms a acertar o Bom Dia & Cia, num total aproximado de ${wpmAsInt} palavras por minuto!")
+                        logger.info { "${context.user.id} ganhou ${randomPrize} no Bom Dia & Cia!" }
+                        logger.info { "Demorou ${timeDiff}ms a acertar o Bom Dia & Cia, num total aproximado de ${wpmAsInt} palavras por minuto!" }
 
                         context.reply(false) {
                             styled(

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands
 
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
@@ -45,7 +45,7 @@ import java.util.concurrent.CancellationException
 
 class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandContext>> {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	val commands = mutableListOf<Command<CommandContext>>()
@@ -486,7 +486,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 					return true
 				}
 
-				logger.error("Exception ao executar comando ${command.commandName}", e)
+				logger.error(e) { "Exception ao executar comando ${command.commandName}" }
 
 				// Avisar ao usuário que algo deu muito errado
 				val mention = "${ev.author.asMention} "

@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
 import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -18,7 +18,7 @@ import java.time.Instant
 
 class PostTransferBalanceExternalRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/economy/transfer/garticos") {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {

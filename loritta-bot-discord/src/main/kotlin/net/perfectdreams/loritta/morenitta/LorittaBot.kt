@@ -26,7 +26,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
-import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.OnlineStatus
@@ -53,6 +52,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
@@ -187,7 +187,7 @@ class LorittaBot(
 		@JvmStatic
 		var GSON = Gson() // Gson
 
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 
 		// We multiply by 8 because... uuuh, sometimes threads get stuck due to dumb stuff that we need to fix.
 		val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
@@ -537,7 +537,7 @@ class LorittaBot(
 		initPostgreSql()
 
 		try {
-			logger.info("Sucesso! Iniciando Loritta (Website)...")
+			logger.info { "Sucesso! Iniciando Loritta (Website)..." }
 			startWebServer()
 		} catch(e: Exception) {
 			logger.info(e) { "Failed to start Loritta's webserver" }

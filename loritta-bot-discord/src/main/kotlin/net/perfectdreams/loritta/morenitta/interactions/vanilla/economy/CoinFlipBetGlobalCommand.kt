@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
 import dev.minn.jda.ktx.messages.InlineMessage
 import kotlinx.datetime.Clock
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.components.button.Button
@@ -95,7 +95,7 @@ class CoinFlipBetGlobalCommand : SlashCommandDeclarationWrapper {
                     }
 
                     is BetsService.CoinFlipResult -> {
-                        KotlinLogging.logger {}.info { "CoinFlipBetGlobalCommand#retrieveUserInfoById - UserId: ${result.winner} & ${result.loser}" }
+                        HarmonyLoggerFactory.logger {}.value.info { "CoinFlipBetGlobalCommand#retrieveUserInfoById - UserId: ${result.winner} & ${result.loser}" }
                         val winnerCachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoById(result.winner)
                         val loserCachedUserInfo = context.loritta.lorittaShards.retrieveUserInfoById(result.loser)
                         val now24HoursAgo = Clock.System.now()

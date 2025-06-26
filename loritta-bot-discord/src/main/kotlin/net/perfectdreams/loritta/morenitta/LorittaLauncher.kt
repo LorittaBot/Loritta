@@ -5,7 +5,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
+import net.perfectdreams.harmony.logging.slf4j.HarmonyLoggerCreatorSLF4J
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
@@ -25,17 +26,18 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.imageio.ImageIO
 
-
 /**
  * Loritta's Launcher
  *
  * @author MrPowerGamerBR
  */
 object LorittaLauncher {
-	private val logger = KotlinLogging.logger {}
+	private val logger by HarmonyLoggerFactory.logger {}
 
 	@JvmStatic
 	fun main(args: Array<String>) {
+		HarmonyLoggerFactory.setLoggerCreator(HarmonyLoggerCreatorSLF4J())
+
 		// https://github.com/JetBrains/Exposed/issues/1356
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 		installCoroutinesDebugProbes()

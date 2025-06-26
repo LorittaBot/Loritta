@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
  */
 class CommandCooldownManager(val loritta: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private val userCooldown = Caffeine.newBuilder()

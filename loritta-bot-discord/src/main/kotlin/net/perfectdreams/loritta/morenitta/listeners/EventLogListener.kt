@@ -6,7 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
@@ -55,7 +55,7 @@ import javax.imageio.ImageIO
 
 class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
-		private val logger = KotlinLogging.logger {}
+		private val logger by HarmonyLoggerFactory.logger {}
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()
 
 		val bannedUsers = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).maximumSize(100)
@@ -82,7 +82,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		downloadedAvatarJobs[event.entity.id] = GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				logger.info("Baixando avatar de ${event.entity.id} para enviar no event log...")
+				logger.info { "Baixando avatar de ${event.entity.id} para enviar no event log..." }
 
 				val oldAvatarUrl = event.oldAvatarUrl
 					?.replace("gif", "png")
@@ -191,7 +191,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				}
 
 				if (storedMessage != null && textChannel.canTalk() && event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS) && event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL) && event.guild.selfMember.hasPermission(Permission.MESSAGE_ATTACH_FILES)) {
-					KotlinLogging.logger {}.info { "EventLogListener#retrieveUserInfoById (delete) - UserId: ${storedMessage.authorId}" }
+					HarmonyLoggerFactory.logger {}.value.info { "EventLogListener#retrieveUserInfoById (delete) - UserId: ${storedMessage.authorId}" }
 					val user = loritta.lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
 
 					val embed = EmbedBuilder()
@@ -251,7 +251,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					if (storedMessages.isNotEmpty()) {
 						val retrievedUsers = mutableMapOf<Long, CachedUserInfo?>()
 
-						KotlinLogging.logger {}.info { "EventLogListener#retrieveUserInfoById (bulk delete) - UserId: ${storedMessages.first().authorId}" }
+						HarmonyLoggerFactory.logger {}.value.info { "EventLogListener#retrieveUserInfoById (bulk delete) - UserId: ${storedMessages.first().authorId}" }
 						val user = loritta.lorittaShards.retrieveUserInfoById(storedMessages.first().authorId)
 							?: return@launch
 

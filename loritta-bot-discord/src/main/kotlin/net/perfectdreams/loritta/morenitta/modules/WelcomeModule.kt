@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
@@ -58,16 +58,16 @@ class WelcomeModule(val loritta: LorittaBot) {
 		}
 	}
 
-	private val logger = KotlinLogging.logger {}
+	private val logger by HarmonyLoggerFactory.logger {}
 
 	val joinMembersCache = Caffeine.newBuilder()
 		.expireAfterAccess(15, TimeUnit.SECONDS)
 		.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
 			if (k1 != null && v1 != null) {
-				logger.info("Removendo join members cache de $k1... ${v1.size} membros tinham saído durante este período")
+				logger.info { "Removendo join members cache de $k1... ${v1.size} membros tinham saído durante este período" }
 
 				if (v1.size > 20) {
-					logger.info("Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
+					logger.info { "Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!" }
 
 					val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
 					val welcomerConfig = runBlocking {
@@ -100,7 +100,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 												.addFiles(FileUpload.fromData(targetStream, "join-users.log"))
 												.build()
 										).queue()
-										logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
+										logger.info { "Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!" }
 									}
 								}
 							}
@@ -114,10 +114,10 @@ class WelcomeModule(val loritta: LorittaBot) {
 		.expireAfterAccess(15, TimeUnit.SECONDS)
 		.removalListener { k1: Long?, v1: CopyOnWriteArrayList<User>?, removalCause ->
 			if (k1 != null && v1 != null) {
-				logger.info("Removendo left members cache de $k1... ${v1.size} membros tinham saído durante este período")
+				logger.info { "Removendo left members cache de $k1... ${v1.size} membros tinham saído durante este período" }
 
 				if (v1.size > 20) {
-					logger.info("Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
+					logger.info { "Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!" }
 
 					val serverConfig = runBlocking { loritta.getOrCreateServerConfig(k1) }
 					val welcomerConfig = runBlocking {
@@ -146,7 +146,7 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 										textChannel.sendMessage(MessageCreateBuilder().setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFiles(
 											FileUpload.fromData(targetStream, "left-users.log")).queue()
-										logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
+										logger.info { "Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!" }
 									}
 								}
 							}

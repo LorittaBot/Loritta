@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -54,7 +54,7 @@ class ServerInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 		val shardId = guild["shardId"].int
 		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, id.toLong())
 		val ownerId = guild["ownerId"].string
-		KotlinLogging.logger {}.info { "ServerInfoCommand#retrieveUserInfoById - UserId: $ownerId" }
+		HarmonyLoggerFactory.logger {}.value.info { "ServerInfoCommand#retrieveUserInfoById - UserId: $ownerId" }
 		val owner = loritta.lorittaShards.retrieveUserInfoById(ownerId.toLong())
 		val ownerProfile = loritta.getLorittaProfile(ownerId.toLong())
 		val ownerGender = loritta.newSuspendedTransaction { ownerProfile?.settings?.gender ?: Gender.UNKNOWN }

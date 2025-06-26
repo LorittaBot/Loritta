@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.button.Button
 import net.dv8tion.jda.api.components.button.ButtonStyle
@@ -51,7 +51,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     }
 
     var giveawayTasks = ConcurrentHashMap<Long, Job>()
-    private val logger = KotlinLogging.logger {}
+    private val logger by HarmonyLoggerFactory.logger {}
     val giveawayMessageUpdateMutexes = ConcurrentHashMap<Long, Mutex>()
     val giveawayMessageUpdateJobs = ConcurrentHashMap<Long, Job>()
 

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.minn.jda.ktx.messages.InlineMessage
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
  */
 class DiscordSlashCommandScopeWorkaround(private val loritta: LorittaBot) {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private val guildSlashCommandScopeEnabled = Caffeine.newBuilder()

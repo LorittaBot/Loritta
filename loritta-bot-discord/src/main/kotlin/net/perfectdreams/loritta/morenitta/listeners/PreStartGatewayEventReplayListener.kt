@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.*
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.PreProcessedRawGatewayEvent
@@ -38,7 +38,7 @@ class PreStartGatewayEventReplayListener(
 ) : ListenerAdapter() {
     companion object {
         const val FAKE_EVENT_FIELD = "fakeout"
-        private val logger = KotlinLogging.logger {}
+        private val logger by HarmonyLoggerFactory.logger {}
     }
 
     private val replayCache = LinkedBlockingQueue<DataObject>()
@@ -62,7 +62,7 @@ class PreStartGatewayEventReplayListener(
                 // Only cancel dispatch events, we don't want the gateway connection to timeout due to not sending heartbeats
                 WebSocketCode.DISPATCH -> {
                     if (event.type == "RESUMED") {
-                        logger.info("Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now")
+                        logger.info { "Successfully resumed the gateway connection of shard ${event.jda.shardInfo.shardId}! Loading cached data... Took ${gatewayExtras?.shutdownBeganAt?.let { Clock.System.now() - it }} since shard shutdown began to now" }
 
                         // No need to send the resumed event to JDA because we have sent our own faked READY event
                         event.isCancelled = true

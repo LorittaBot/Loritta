@@ -7,7 +7,7 @@ import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
+import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.RaffleTickets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.raffles.Raffles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
@@ -28,7 +28,7 @@ import java.time.Instant
 
 class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
 	companion object {
-		val logger = KotlinLogging.logger {}
+		val logger by HarmonyLoggerFactory.logger {}
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
@@ -80,7 +80,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 				}
 
 				val requiredCount = quantity.toLong() * RaffleType.ORIGINAL.ticketPrice
-				logger.info("$userId irá comprar $quantity tickets por ${requiredCount}!")
+				logger.info { "$userId irá comprar $quantity tickets por ${requiredCount}!" }
 
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
