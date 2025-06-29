@@ -49,7 +49,10 @@ object SonhosUtils {
     )
 
     fun insufficientSonhos(profile: PuddingUserProfile?, howMuchItCosts: Long) = insufficientSonhos(profile?.money ?: 0L, howMuchItCosts)
-    fun insufficientSonhos(userSonhosBalance: Long, howMuchItCosts: Long) = I18nKeysData.Commands.InsufficientFunds(userSonhosBalance, howMuchItCosts - userSonhosBalance)
+    fun insufficientSonhos(userSonhosBalance: Long, howMuchItCosts: Long) = I18nKeysData.Commands.InsufficientFunds(
+        howMuchItCosts,
+        howMuchItCosts - userSonhosBalance
+    )
 
     fun InlineMessage<*>.appendCouponSonhosBundleUpsellInformationIfNotNull(
         loritta: LorittaBot,
