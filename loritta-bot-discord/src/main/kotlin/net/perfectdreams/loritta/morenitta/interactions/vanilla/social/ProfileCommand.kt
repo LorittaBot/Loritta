@@ -17,10 +17,10 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.HiddenUserBadges
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
-import net.perfectdreams.loritta.cinnamon.pudding.tables.reactionevents.ReactionEventPlayers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.utils.LorittaColors
@@ -34,23 +34,27 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.options.Applica
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.modals.options.modalString
 import net.perfectdreams.loritta.morenitta.interactions.vanilla.economy.SonhosCommand
-import net.perfectdreams.loritta.morenitta.interactions.vanilla.reactionevents.ReactionEventRankType
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.profile.profiles.ProfileCreator
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.RankPaginationUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.serializable.UserId
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.update
 import java.sql.Connection
 import java.sql.ResultSet
+import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
 
@@ -390,7 +394,8 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 val badges = loritta.profileDesignManager.getUserBadges(
                     loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
                     context.lorittaUser.profile,
-                    mutualGuildsInAllClusters
+                    mutualGuildsInAllClusters,
+                    false
                 )
 
                 if (badges.isEmpty()) {
@@ -523,6 +528,14 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             context: UnleashedContext,
             badge: Badge
         ): suspend InlineMessage<*>.() -> (Unit) {
+            val isBadgeVisible = loritta.transaction {
+                HiddenUserBadges.selectAll()
+                    .where {
+                        HiddenUserBadges.userId eq context.user.idLong and (HiddenUserBadges.badgeId eq badge.id)
+                    }
+                    .count() == 0L
+            }
+
             return {
                 embed {
                     title = buildString {
@@ -576,6 +589,56 @@ class ProfileCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         }
 
                         it.reply(true) { content = context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgeEquipped) }
+                    }
+                }
+
+                components += loritta.interactivityManager.buttonForUser(
+                    context.user,
+                    context.alwaysEphemeral,
+                    ButtonStyle.PRIMARY,
+                    if (isBadgeVisible) {
+                        context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.HideBadgeInProfile)
+                    } else {
+                        context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.ShowBadgeInProfile)
+                    }
+                ) { context ->
+                    context.deferChannelMessage(true)
+
+                    val hasBeenHidden = loritta.newSuspendedTransaction {
+                        val hiddenEntry = HiddenUserBadges.selectAll()
+                            .where {
+                                HiddenUserBadges.userId eq context.user.idLong and (HiddenUserBadges.badgeId eq badge.id)
+                            }
+                            .limit(1)
+                            .firstOrNull()
+
+                        if (hiddenEntry != null) {
+                            HiddenUserBadges.deleteWhere {
+                                HiddenUserBadges.id eq hiddenEntry[HiddenUserBadges.id]
+                            }
+                            return@newSuspendedTransaction false
+                        } else {
+                            HiddenUserBadges.insert {
+                                it[HiddenUserBadges.userId] = context.user.idLong
+                                it[HiddenUserBadges.badgeId] = badge.id
+                                it[HiddenUserBadges.hiddenAt] = Instant.now()
+                            }
+                            return@newSuspendedTransaction true
+                        }
+                    }
+
+                    if (hasBeenHidden) {
+                        context.reply(true) {
+                            styled(
+                                context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgeHasBeenHidden),
+                            )
+                        }
+                    } else {
+                        context.reply(true) {
+                            styled(
+                                context.i18nContext.get(PROFILE_BADGES_I18N_PREFIX.BadgeHasBeenUnhidden),
+                            )
+                        }
                     }
                 }
 

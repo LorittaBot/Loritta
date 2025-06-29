@@ -101,7 +101,8 @@ object RankingGenerator {
 							profileSettings
 						),
 						userProfile,
-						setOf() // We don't care about mutual guilds badges since users cannot equip guild badges anyway
+						setOf(), // We don't care about mutual guilds badges since users cannot equip guild badges anyway
+						false // We also don't care about filtering out hidden badges because technically the user can equip a hidden badge
 					)
 
 					val activeBadge = badges.firstOrNull { it.id == activeBadgeId }

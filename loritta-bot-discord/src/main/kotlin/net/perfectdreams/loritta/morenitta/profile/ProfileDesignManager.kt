@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.HiddenUserBadges
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
@@ -219,7 +220,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			userToBeViewed,
 			userProfile,
 			setOf(), // We don't need this
-			failIfClusterIsOffline = false // We also don't need this
+			true
 		)
 
 		val equippedBadge = badgesData.firstOrNull { it.id == profileSettings.activeBadge }
@@ -413,7 +414,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val badges = mutableListOf<BufferedImage>()
 
 		badges.addAll(
-			getUserBadges(user, profile, mutualGuilds)
+			getUserBadges(user, profile, mutualGuilds, true)
 				.mapNotNull {
 					it.getImage()
 				}
@@ -447,20 +448,31 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 	 * @param userId                 the user
 	 * @param profile                the user's profile
 	 * @param mutualGuilds           the user's mutual guilds IDs
-	 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
+	 * @param filterHiddenBadges     if true, hidden badges will be filtered out
 	 * @return a list containing all the images of the user's badges
 	 */
 	suspend fun getUserBadges(
 		user: ProfileUserInfoData,
 		profile: Profile,
 		mutualGuilds: Set<Long>,
-		failIfClusterIsOffline: Boolean = false
+		filterHiddenBadges: Boolean
 	): List<Badge> {
 		val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 
-		val guildBadges = mutableListOf<Badge.GuildBadge>()
+		val (guildBadges, hiddenBadgeIds) = loritta.newSuspendedTransaction {
+			val hiddenBadgeIds = if (filterHiddenBadges) {
+				HiddenUserBadges.selectAll()
+					.where {
+						HiddenUserBadges.userId eq user.id
+					}
+					.map {
+						it[HiddenUserBadges.badgeId]
+					}
+					.toSet()
+			} else emptySet()
 
-		loritta.newSuspendedTransaction {
+			val guildBadges = mutableListOf<Badge.GuildBadge>()
+
 			val results = (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs innerJoin net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs)
 				.selectAll().where {
 					net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs.customBadge eq true and (net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs.id inList mutualGuilds)
@@ -488,10 +500,12 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 					)
 				}
 			}
+
+			Pair(guildBadges, hiddenBadgeIds)
 		}
 
 		return (guildBadges + loritta.profileDesignManager.badges)
-			.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
+			.filter { it.id !in hiddenBadgeIds && it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
 			.sortedByDescending { it.priority }
 	}
 
