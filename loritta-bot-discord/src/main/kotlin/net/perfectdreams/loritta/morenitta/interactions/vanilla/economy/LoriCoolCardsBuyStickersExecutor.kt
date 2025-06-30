@@ -177,14 +177,14 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
 
                     when (result) {
                         BuyStickersResult.EventUnavailable -> {
-                            context.reply(true) {
+                            it.reply(true) {
                                 styled(
                                     "Nenhum evento de figurinhas ativo"
                                 )
                             }
                         }
                         is BuyStickersResult.NotEnoughSonhos -> {
-                            context.reply(true) {
+                            it.reply(true) {
                                 styled(
                                     context.i18nContext.get(SonhosUtils.insufficientSonhos(result.userSonhos, result.howMuch)),
                                     Emotes.LoriSob
@@ -200,7 +200,7 @@ class LoriCoolCardsBuyStickersExecutor(val loritta: LorittaBot, private val lori
                             }
                         }
                         is BuyStickersResult.Success -> {
-                            context.reply(false) {
+                            it.reply(false) {
                                 styled(
                                     context.i18nContext.get(I18N_PREFIX.YouBoughtXStickerPacks(stickerPacksCount, loritta.commandMentions.loriCoolCardsOpen)),
                                     Emotes.LoriCoolSticker
