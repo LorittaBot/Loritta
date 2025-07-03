@@ -15,6 +15,11 @@ import net.perfectdreams.loritta.helper.utils.extensions.await
 import net.perfectdreams.loritta.helper.utils.generateserverreport.GenerateAppealsReport
 import net.perfectdreams.loritta.helper.utils.generateserverreport.GenerateServerReport
 import net.perfectdreams.sequins.text.StringUtils
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.OffsetTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class PendingReportsExecutor(helper: LorittaHelper) : HelperExecutor(helper, PermissionLevel.ADMIN) {
     private val logger = KotlinLogging.logger {}
@@ -35,9 +40,11 @@ class PendingReportsExecutor(helper: LorittaHelper) : HelperExecutor(helper, Per
         val channelId = args[options.channel] ?: "${helper.config.guilds.community.channels.serverReports}"
         val channel = jda.getTextChannelById(channelId) ?: return
 
+        val today90DaysAgo = OffsetDateTime.now(ZoneId.of("America/Sao_Paulo"))
+            .minusDays(90)
+
         try {
             val history = channel.history
-            var monthOfTheLastMessageInTheChannel: Int? = null
 
             val messages = mutableListOf<Message>()
 
@@ -46,21 +53,16 @@ class PendingReportsExecutor(helper: LorittaHelper) : HelperExecutor(helper, Per
                 if (newMessages.isEmpty())
                     break
 
-                if (monthOfTheLastMessageInTheChannel == null)
-                    monthOfTheLastMessageInTheChannel = newMessages.first()
-                        .timeCreated
-                        .monthValue
-
-                val onlyMessagesInTheSameDay = newMessages.filter {
-                    it.timeCreated.monthValue == monthOfTheLastMessageInTheChannel
+                val onlyMessagesInTheFilter = newMessages.filter {
+                    it.timeCreated.isAfter(today90DaysAgo)
                 }
 
-                logger.info { "There are ${onlyMessagesInTheSameDay.size} messages that were sent in $monthOfTheLastMessageInTheChannel!" }
+                logger.info { "There are ${onlyMessagesInTheFilter.size} messages that were sent after $today90DaysAgo!" }
 
-                if (onlyMessagesInTheSameDay.isEmpty())
+                if (onlyMessagesInTheFilter.isEmpty())
                     break
 
-                messages += onlyMessagesInTheSameDay
+                messages += onlyMessagesInTheFilter
             }
 
             logger.info { "There are ${messages.size} messages to be sent!" }
@@ -100,7 +102,7 @@ class PendingReportsExecutor(helper: LorittaHelper) : HelperExecutor(helper, Per
             }
 
             val lines = mutableListOf(
-                "**Lista dos reports pendentes do mês:**\n"
+                "**Lista dos reports pendentes dos últimos 90 dias:**\n"
             )
 
             notApprovedMessagesByLevel.entries.sortedByDescending { it.key.level }.forEach { (t, u) ->
