@@ -80,11 +80,6 @@ object DailyRewardQuestions {
             choice(I18nKeysData.Daily.Questions.BanEvasionReport.No, correctAnswer = false)
         }
 
-        question("invites_for_sonhos", I18nKeysData.Daily.Questions.InvitesForSonhos.Title, I18nKeysData.Daily.Questions.InvitesForSonhos.IncorrectExplanation) {
-            choice(I18nKeysData.Daily.Questions.InvitesForSonhos.YesAndTheStaffToo, correctAnswer = true)
-            choice(I18nKeysData.Daily.Questions.InvitesForSonhos.YouArentGoingToGetBanned, correctAnswer = false)
-        }
-
         question("will_i_get_banned_if_i_create_a_new_account", I18nKeysData.Daily.Questions.WillIGetBannedIfICreateANewAccount.Title, I18nKeysData.Daily.Questions.WillIGetBannedIfICreateANewAccount.IncorrectExplanation) {
             choice(I18nKeysData.Daily.Questions.WillIGetBannedIfICreateANewAccount.YesICanDoThis, correctAnswer = false)
             choice(I18nKeysData.Daily.Questions.WillIGetBannedIfICreateANewAccount.NoBecauseIWillGetBannedAgain, correctAnswer = true)
