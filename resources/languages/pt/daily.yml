@@ -38,7 +38,12 @@ daily:
       title: "Usar conteúdo NSFW nas funções da Loritta fará você ser banido da Loritta?"
       'yes': "Sim"
       'no': "Não"
-      incorrectExplanation: "A Loritta gosta de coisas family friendly e não vai gostar de ficar enviando e divulgando coisas NSFW por aí."
+      incorrectExplanation: "A Loritta gosta de coisas family friendly e não vai gostar de ficar enviando e divulgando coisas NSFW por aí. É claro, você só será punido por isso se você estiver usando em locais públicos, ou seja, que de alguma forma a gente receba uma denúncia disso."
+    sparklyPower:
+      title: "SparklyPower é o servidor de Minecraft da Loritta?"
+      'yes': "Sim"
+      'no': "Não"
+      incorrectExplanation: "SparklyPower é o servidor de Minecraft da Loritta!"
     multipleAccountsDaily:
       title: "É proibido usar mais de uma conta para pegar daily na Loritta?"
       'yes': "Sim"
@@ -59,20 +64,15 @@ daily:
       ifTheAccountIsNotMineSure: "Se a conta não for minha, pode"
       yesEvenYouTubeAccounts: "Sim, até se for canal do YouTube ou conta no Discord"
       incorrectExplanation: "A venda de contas por sonhos é proibido pois não queremos ser responsáveis por possíveis roubos e enganações, muito menos ter que resolver esses problemas, além de que vender contas vai contra os termos de uso da maioria dos jogos."
-    sellDiscordServers:
-      title: "Vender servidores de Discord por sonhos é proibido e fará você ser banido da Loritta?"
-      onlyServersWithMembers: "Apenas servidores com membros"
-      anyTypeOfServerSell: "Serei banido só de vender"
-      incorrectExplanation: "O comércio de servidores é contra os Termos de Uso do Discord, não deve ser feito mesmo que seja por sonhos da Loritta. Entretanto, não tem problema em vender um molde de um servidor para outro usuário."
     reportToServerStaffIfYouAreOfferedSonhos:
       title: "Devo reportar para a Equipe se me oferecerem sonhos por dinheiro?"
       ofCourse: "Claro né, é proibido"
-      iWont: "Eu não, ninguém descobre"
+      iWont: "Eu não, ninguém vai descobrir"
       incorrectExplanation: "Você deve reportar pois quando o meliante for descoberto e você tiver comercializado com ele, você será banido junto. Caso você não tenha comprado mas sabia da quebra de regra do outro usuário, você é banido por acobertar (saber e não denunciar). Claro, além disso você ajuda a Staff a banir meliantes, olha que legal!"
     loriStaffProtectBuyingSonhosOutsideOfTheWebsite:
-      title: "A Equipe da Loritta não te protege de roubos ao comprar sonhos fora do Website da Lori?"
-      weDoProtect: "Protege sim, fizeram isso com fulano"
-      weDontProtect: "Verdade e eu vou ser banido junto"
+      title: "A Equipe da Loritta te protegerá de roubos ao comprar sonhos fora do Website da Lori?"
+      weDoProtect: "Irão me proteger"
+      weDontProtect: "Eu irei perder o meu dinheiro e serei banido da Loritta"
       incorrectExplanation: "Além da Equipe não se responsabilizar por resolver o seu problema, você ainda será banido por ter comprado sonhos de um usuário, já que quebrou uma regra de uso da Loritta."
     sellDiscordNitro:
       title: "Comercializar Nitro por sonhos resulta em ban de usar a Loritta?"
@@ -91,19 +91,14 @@ daily:
       incorrectExplanation: "Não existem maneiras de aumentar as suas chances de vitória em comandos da Loritta."
     banEvasionReport:
       title: "Devo denunciar para a Equipe caso eu saiba de alguém que foi banido de usar a Loritta e está em outra conta?"
-      'yes': "Claro, não quero ir junto"
-      'no': "Que nada, não preciso contar, e não sou X9"
+      'yes': "Sim, preciso contar"
+      'no': "Não, preciso contar"
       incorrectExplanation: "Você deve denunciar pois, além de ajudar a Equipe da Loritta a localizar meliantes, você evita ser banido por acobertar a evasão de ban do usuário, pois sabia e não denunciou."
-    invitesForSonhos:
-      title: "Se eu fizer um evento comprando sonhos por convites, serei banido da Loritta? Exemplo: 10 convites por X sonhos."
-      yesAndTheStaffToo: "Sim! A Staff e o servidor também"
-      youArentGoingToGetBanned: "Claro que não, bobagem"
-      incorrectExplanation: "Você será banido pois o Discord proíbe isso nas suas diretrizes, por considerar \"crescimento inorgânico\"."
     willIGetBannedIfICreateANewAccount:
       title: "Se eu for banido e criar outra conta no Discord eu posso usar a Loritta normalmente?"
       noBecauseIWillGetBannedAgain: "Não, pois serei banido novamente"
       yesICanDoThis: "Claro que sim, quem se importa?"
-      incorrectExplanation: "A sua felicidade duraria pouco! Imagina faturar milhões de sonhos na sua alt e do nada tomar ban novamente por evasão (usar outra conta), o que aumenta seu tempo de unban na conta original."
+      incorrectExplanation: "A sua felicidade duraria pouco! Imagina faturar milhões de sonhos na sua alt e do nada tomar ban novamente por evasão (usar outra conta). Evasão de ban torna o seu ban permanente, pois já tivemos muitos casos de pessoas criando mais de 10 contas só para evadir bans, o que causa problemas para a equipe."
     askingMyFriendToAskForMyUnban:
       title: "Caso eu esteja banido e peça para o meu amigo ir solicitar o meu unban nos servidores da Loritta, ele poderá ser banido também?"
       yesTheyCan: "Sim, ele poderá ser banido"
@@ -113,11 +108,11 @@ daily:
       title: "Pedir reembolso ao comprar sonhos da Loritta fará você ser banido da Loritta permanente?"
       'yes': "Sim"
       'no': "Não"
-      incorrectExplanation: "Sim, você é banido de usar a Loritta caso peça reembolso da sua compra! Isso porque é um produto virtual e não podemos simplesmente ver se você usou ou não o produto que você comprou antes de pedir seu dinheiro devolta. Como também pedir reembolso de um produto que você recebeu e usou, é fraude."
+      incorrectExplanation: "Sim, você é banido de usar a Loritta caso peça reembolso da sua compra! Isso porque é um produto virtual e não podemos simplesmente ver se você usou ou não o produto que você comprou antes de pedir seu dinheiro de volta. Como também pedir reembolso de um produto que você recebeu e usou, é fraude."
     sonhosThreat:
       title: "Se você for ameaçado por um usuário e ele pedir sonhos para não te denunciar, você deve pagar?"
-      'yes': "Claro que não irei pagar! Não sou trouxa"
-      'no': "É melhor pagar para garantir"
+      'yes': "Não irei pagar"
+      'no': "Irei pagar, pois tenho medo de ser banido"
       incorrectExplanation: "Quem não deve não teme! Por que você pagaria uma pessoa para não te denunciar se você é inocente? Não caia em golpes dessa forma se você sabe que não fez nada de errado. Inclusive, se alguém fizer isto com você, denuncie o usuário para a equipe da Loritta!"
     foundBugs:
       title: "Se você descobrir um bug na Loritta, você deve avisar a Staff e não abusar do bug?"
@@ -130,7 +125,7 @@ daily:
       'no': "Que nada, amo ser agiota!"
       incorrectExplanation: "Ser agiota é feio pois se a pessoa que você emprestou os sonhos não te devolver o dinheiro, a equipe da Loritta não irá te devolver os sonhos perdidos!"
     cautionWhenReceivingTooManySonhos:
-      title: "Devo tomar cuidado ao receber um pagamento de alta quantia do nada:"
-      'yes': "Claro! Deve ser um meliante..."
-      'no': "Não? É só uma doação inocente"
+      title: "Devo tomar cuidado ao receber um pagamento de alta quantia do nada?"
+      'yes': "Sim"
+      'no': "Não, quero sonhos no bolso do pai"
       incorrectExplanation: "Você sempre deve ter cuidado ao aceitar quantias aleatoriamente por aí, a chance dessa pessoa ser um meliante prestes a ser banido é grande e recebendo uma quantia dela, você pode ser banido junto."

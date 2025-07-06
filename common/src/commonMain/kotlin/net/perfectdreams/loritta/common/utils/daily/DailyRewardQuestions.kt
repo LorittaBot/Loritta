@@ -25,6 +25,11 @@ object DailyRewardQuestions {
             choice(I18nKeysData.Daily.Questions.NsfwContent.No, correctAnswer = false)
         }
 
+        question("sparklypower", I18nKeysData.Daily.Questions.SparklyPower.Title, I18nKeysData.Daily.Questions.SparklyPower.IncorrectExplanation) {
+            choice(I18nKeysData.Daily.Questions.SparklyPower.Yes, correctAnswer = true)
+            choice(I18nKeysData.Daily.Questions.SparklyPower.No, correctAnswer = false)
+        }
+
         question("multiple_accounts_daily", I18nKeysData.Daily.Questions.MultipleAccountsDaily.Title, I18nKeysData.Daily.Questions.MultipleAccountsDaily.IncorrectExplanation) {
             choice(I18nKeysData.Daily.Questions.MultipleAccountsDaily.Yes, correctAnswer = true)
             choice(I18nKeysData.Daily.Questions.MultipleAccountsDaily.No, correctAnswer = false)
@@ -43,11 +48,6 @@ object DailyRewardQuestions {
         question("external_account_sell", I18nKeysData.Daily.Questions.ExternalAccountSell.Title, I18nKeysData.Daily.Questions.ExternalAccountSell.IncorrectExplanation) {
             choice(I18nKeysData.Daily.Questions.ExternalAccountSell.IfTheAccountIsNotMineSure, correctAnswer = false)
             choice(I18nKeysData.Daily.Questions.ExternalAccountSell.YesEvenYouTubeAccounts, correctAnswer = true)
-        }
-
-        question("sell_discord_servers", I18nKeysData.Daily.Questions.SellDiscordServers.Title, I18nKeysData.Daily.Questions.SellDiscordServers.IncorrectExplanation) {
-            choice(I18nKeysData.Daily.Questions.SellDiscordServers.OnlyServersWithMembers, correctAnswer = true)
-            choice(I18nKeysData.Daily.Questions.SellDiscordServers.AnyTypeOfServerSell, correctAnswer = false)
         }
 
         question("report_to_server_staff_if_you_are_offered_sonhos", I18nKeysData.Daily.Questions.ReportToServerStaffIfYouAreOfferedSonhos.Title, I18nKeysData.Daily.Questions.ReportToServerStaffIfYouAreOfferedSonhos.IncorrectExplanation) {
