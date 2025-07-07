@@ -37,10 +37,10 @@ class UnbanCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             add("desbanir")
         }
 
-        executor = BanExecutor(loritta)
+        executor = UnbanExecutor(loritta)
     }
 
-    class BanExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
+    class UnbanExecutor(private val loritta: LorittaBot) : LorittaSlashCommandExecutor(), LorittaLegacyMessageCommandExecutor {
         inner class Options : ApplicationCommandOptions() {
             // May be multiple in the same string
             val users = string("users", CATEGORY_I18N_PREFIX.Options.Users.Text)
