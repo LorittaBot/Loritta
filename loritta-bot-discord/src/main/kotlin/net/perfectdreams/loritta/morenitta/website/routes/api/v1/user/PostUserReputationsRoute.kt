@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
+import dev.minn.jda.ktx.messages.MessageCreate
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -14,6 +15,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
@@ -37,6 +40,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import java.util.EnumSet
 
 class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	companion object {
@@ -103,20 +107,29 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 					val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
 					// Tudo certo? Então vamos enviar!
-					val reply = LorittaReply(
-						locale[
-								"commands.command.reputation.success",
-								"<@${giverId}>",
-								"<@$receiverId>",
-								reputationCount,
-								Emotes.LORI_OWO,
-								"<${loritta.config.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
-								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
-						],
-						Emotes.LORI_HEART
-					)
+					channel.sendMessage(
+						MessageCreate {
+							// We don't *actually* want to mention the users...
+							allowedMentionTypes = EnumSet.of(
+								Message.MentionType.CHANNEL,
+								Message.MentionType.EMOJI,
+								Message.MentionType.SLASH_COMMAND
+							)
 
-					channel.sendMessage(reply.build()).queue()
+							styled(
+								locale[
+									"commands.command.reputation.success",
+									"<@${giverId}>",
+									"<@$receiverId>",
+									reputationCount,
+									Emotes.LORI_OWO,
+									"<${loritta.config.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
+									receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
+								],
+								Emotes.LORI_HEART
+							)
+						}
+					).queue()
 				}
 			}
 		}
