@@ -1356,6 +1356,9 @@ object TrinketsStuff {
         createBackground("mercedesBenz600", true, Rarity.RARE, LocalDate.of(2025, 7, 7), createdBy = listOf("kneezmz")) {
             addDefaultVariant("mercedes-benz-600", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
+        createBackground("leonOnABike", true, Rarity.UNCOMMON, LocalDate.of(2025, 2, 3)) {
+            addDefaultVariant("leon-on-a-bike", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
     }
 
     private fun createProfileDesign(
