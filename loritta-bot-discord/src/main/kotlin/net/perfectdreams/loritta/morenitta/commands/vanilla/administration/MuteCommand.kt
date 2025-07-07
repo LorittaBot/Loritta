@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.HierarchyException
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -20,6 +21,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Mute
+import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
@@ -295,6 +297,150 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						Constants.ERROR
 					)
 				)
+				return false
+			}
+
+			return true
+		}
+
+		// The same thing as above but ooo now it uses UnleashedContext
+		// WE REALLY NEED TO REMOVE THE OLD MUTEUSER AFTER ALL CALLERS ARE MIGRATED TO THIS VERSION!!
+		suspend fun muteUser(context: UnleashedContext, settings: AdminUtils.ModerationConfigSettings, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
+			val delay = if (time != null) {
+				time - System.currentTimeMillis()
+			} else {
+				null
+			}
+
+			if (delay != null && 0 > delay) {
+				// :whatdog:
+				context.reply(true) {
+					styled(
+						context.locale["$LOCALE_PREFIX.mute.negativeTime"],
+						Constants.ERROR
+					)
+				}
+				return false
+			}
+
+			if (!isSilent) {
+				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
+					try {
+						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.user, locale["commands.command.mute.punishAction"], reason)
+
+						val timePretty = if (time != null)
+							DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(time)
+						else context.locale["commands.command.mute.forever"]
+
+						embed.addField(
+							context.locale["commands.command.mute.duration"],
+							timePretty,
+							false
+						)
+
+						context.loritta.getOrRetrievePrivateChannelForUser(user).sendMessageEmbeds(embed.build()).queue()
+					} catch (e: Exception) {
+						e.printStackTrace()
+					}
+				}
+
+				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+					context.loritta,
+					settings,
+					context.guild,
+					PunishmentAction.MUTE
+				)
+
+				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
+					val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
+
+					if (textChannel != null && textChannel.canTalk()) {
+						val message = MessageUtils.generateMessageOrFallbackIfInvalid(
+							context.i18nContext,
+							punishLogMessage,
+							listOf(user, context.guild),
+							context.guild,
+							mutableMapOf(
+								"duration" to if (delay != null) {
+									DateUtils.formatMillis(delay, locale)
+								} else {
+									locale["commands.command.mute.forever"]
+								}
+							) + AdminUtils.getStaffCustomTokens(context.user) + AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.mute"),
+							I18nKeysData.InvalidMessages.MemberModerationMute
+						)
+
+						textChannel.sendMessage(message).queue()
+					}
+				}
+			}
+
+			try {
+				// When adding a timeout, we can't set the timeout to *exactly* the expiration time
+				// So we will play around a bit with it
+				val userWasTimedOutForDuration = if (delay != null) {
+					val howMuchTimeTheUserWillBeTimedOut = Duration.ofMillis(delay)
+
+					// Discord allows you to timeout someone for max 28 days, so we will coerce it for at most 28 days
+					howMuchTimeTheUserWillBeTimedOut.coerceAtMost(Duration.ofDays(28))
+				} else {
+					Duration.ofDays(28)
+				}
+
+				member.timeoutFor(userWasTimedOutForDuration).await()
+				val userTimedOutUntil = Instant.now().plus(userWasTimedOutForDuration)
+
+				val mute = context.loritta.pudding.transaction {
+					Mutes.deleteWhere {
+						(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq member.user.idLong)
+					}
+
+					val mute = Mute.new {
+						guildId = context.guild.idLong
+						userId = member.user.idLong
+						punishedById = context.user.idLong
+						receivedAt = System.currentTimeMillis()
+						content = reason
+						// We will store for how long the user was timed out for, so Loritta can automatically update the timeout time when the timeout expires
+						this.userTimedOutUntil = userTimedOutUntil
+
+						if (time != null) {
+							isTemporary = true
+							expiresAt = time
+						} else {
+							isTemporary = false
+						}
+					}
+
+					context.loritta.pudding.moderationLogs.logPunishment(
+						context.guild.idLong,
+						member.user.idLong,
+						context.user.idLong,
+						ModerationLogAction.MUTE,
+						reason,
+						time?.let { Instant.ofEpochMilli(it) }
+					)
+
+					mute
+				}
+
+				spawnTimeOutUpdaterThread(context.loritta, context.guild, context.locale, context.i18nContext, user, mute)
+			} catch (e: HierarchyException) {
+				val reply = buildString {
+					this.append(context.locale[AdminUtils.ROLE_TOO_LOW_KEY])
+
+					if (context.member.hasPermission(Permission.MANAGE_ROLES)) {
+						this.append(" ")
+						this.append(context.locale[AdminUtils.ROLE_TOO_LOW_HOW_TO_FIX_KEY])
+					}
+				}
+
+				context.reply(true) {
+					styled(
+						reply,
+						Constants.ERROR
+					)
+				}
 				return false
 			}
 
