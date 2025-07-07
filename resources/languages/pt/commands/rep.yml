@@ -32,3 +32,9 @@ delete:
   label: "desligar"
   description: "Desliga o sistema de reputações para você não poder receber reputações de outras pessoas"
   reputationsDisabled: "Você desativou as suas reputações! Usuários não podem mais te enviar novas reputações, mas as suas reputações atuais ainda continuarão."
+
+list:
+  label: "lista"
+  description: "Veja as suas reputações enviadas ou recebidas!"
+  youHaveNoReps: "Você não tem nenhuma reputação..."
+  userHasNoReps: "O usuário não tem reputações... Que tal dar uma reputação para ele?"
