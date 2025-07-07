@@ -54,8 +54,6 @@ commands:
         - "Commands to make your life as a moderator on your servers easier!"
       skipConfirmationTip: "Tired of confirming your punishments? Then use {quickPunishmentCommand} to automatically bypass the punishment confirmations, so you can get the satisfaction of banning that annoying user while they are typing that big text with the sole intent of harrassing you!"
       successfullyPunished: "User punished. No one told you to break the rules, you stupid!"
-      youAreReadyToPunish: "You are about to punish {mentions} from your server with the reason `{reason}`!"
-      confirmPunishment: "Confirm Punishment"
       noneOfTheUsersCanBePunished: "None of the users can be punished!"
       punishmentWillBeSentViaDirectMessage: "The punishment WILL BE SENT via direct message to the user"
       punishmentWillNotBeSentViaDirectMessage: "The punishment WILL NOT BE SENT via direct message to the user"
