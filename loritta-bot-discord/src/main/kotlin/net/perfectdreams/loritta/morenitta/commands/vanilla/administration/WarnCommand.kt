@@ -116,7 +116,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 					loop@ for (punishment in punishments) {
 						when {
 							punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, context.i18nContext, settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
-							member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(context, settings, locale, member, user, reason, isSilent)
+							member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(loritta, context.guild, context.i18nContext, context.userHandle, settings, locale, user, reason, isSilent)
 							member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
 								val metadata = punishment.metadata ?: continue@loop
 								val obj = JsonParser.parseString(metadata).obj

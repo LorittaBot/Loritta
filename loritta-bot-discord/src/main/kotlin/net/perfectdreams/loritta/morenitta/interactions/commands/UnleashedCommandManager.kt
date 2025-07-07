@@ -276,6 +276,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(PredefinedReasonsCommand())
         register(ClearCommand(loritta))
         register(ModLogCommand(loritta))
+        register(BanCommand(loritta))
+        register(KickCommand(loritta))
 
         // ===[ FUN ]===
         register(EventCommand(loritta))
@@ -291,7 +293,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(RateCommand(loritta))
         register(TextTransformCommand())
         register(SoundboxCommand(loritta))
-        register(BanCommand(loritta))
         register(GiveawayCommand(loritta))
 
         // ===[ IMAGES ]==
