@@ -144,7 +144,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(RoleIdCommand(loritta))
 		commandMap.add(UnmuteCommand(loritta))
 		commandMap.add(SlowModeCommand(loritta))
-		commandMap.add(UnbanCommand(loritta))
 		commandMap.add(WarnListCommand(loritta))
 		commandMap.add(QuickPunishmentCommand(loritta))
 		commandMap.add(LockCommand(loritta))

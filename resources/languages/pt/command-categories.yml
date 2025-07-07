@@ -65,6 +65,10 @@ commands:
         youAreReadyToBan: "Você está prestes a banir {mentions} do seu servidor pelo motivo `{reason}`!"
         confirm: "Confirmar Ban"
         confirmSilent: "Confirmar Ban (Silencioso)"
+      unban:
+        youAreReadyToUnban: "Você está prestes a desbanir {mentions} do seu servidor com a justificativa `{reason}`!"
+        confirm: "Confirmar Unban"
+        confirmSilent: "Confirmar Unban (Silencioso)"
       warn:
         youAreReadyToWarn: "Você está prestes a avisar {mentions} no seu servidor pelo motivo `{reason}`!"
         confirm: "Confirmar Aviso"

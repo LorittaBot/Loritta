@@ -440,6 +440,17 @@ object AdminUtils {
 						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
 					)
 				}
+				ConfirmationMessagePunishmentAction.Unban -> {
+					styled(
+						context.i18nContext.get(
+							I18nKeysData.Commands.Category.Moderation.Unban.YouAreReadyToUnban(
+								users.joinToString { it.asMention },
+								reason
+							)
+						),
+						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriAngel
+					)
+				}
                 ConfirmationMessagePunishmentAction.Kick -> {
 					styled(
 						context.i18nContext.get(
@@ -503,6 +514,7 @@ object AdminUtils {
 					context.i18nContext.get(
 						when (type) {
                             ConfirmationMessagePunishmentAction.Ban -> I18nKeysData.Commands.Category.Moderation.Ban.Confirm
+							ConfirmationMessagePunishmentAction.Unban -> I18nKeysData.Commands.Category.Moderation.Unban.Confirm
                             ConfirmationMessagePunishmentAction.Kick -> I18nKeysData.Commands.Category.Moderation.Kick.Confirm
                             is ConfirmationMessagePunishmentAction.Mute -> I18nKeysData.Commands.Category.Moderation.Mute.Confirm
                             ConfirmationMessagePunishmentAction.Warn -> I18nKeysData.Commands.Category.Moderation.Warn.Confirm
@@ -522,6 +534,7 @@ object AdminUtils {
 					context.i18nContext.get(
 						when (type) {
 							ConfirmationMessagePunishmentAction.Ban -> I18nKeysData.Commands.Category.Moderation.Ban.ConfirmSilent
+							ConfirmationMessagePunishmentAction.Unban -> I18nKeysData.Commands.Category.Moderation.Unban.ConfirmSilent
 							ConfirmationMessagePunishmentAction.Kick -> I18nKeysData.Commands.Category.Moderation.Kick.ConfirmSilent
 							is ConfirmationMessagePunishmentAction.Mute -> I18nKeysData.Commands.Category.Moderation.Mute.ConfirmSilent
 							ConfirmationMessagePunishmentAction.Warn -> I18nKeysData.Commands.Category.Moderation.Warn.ConfirmSilent
@@ -781,6 +794,7 @@ object AdminUtils {
 
 	sealed class ConfirmationMessagePunishmentAction {
 		data object Ban : ConfirmationMessagePunishmentAction()
+		data object Unban : ConfirmationMessagePunishmentAction()
 		data object Warn : ConfirmationMessagePunishmentAction()
 		data class Mute(val expiresAt: Instant?) : ConfirmationMessagePunishmentAction()
 		data object Kick : ConfirmationMessagePunishmentAction()
