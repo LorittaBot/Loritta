@@ -84,6 +84,7 @@ import net.perfectdreams.loritta.morenitta.analytics.stats.LorittaStatsCollector
 import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
+import net.perfectdreams.loritta.morenitta.dailies.DailyReminderTask
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -1323,6 +1324,12 @@ class LorittaBot(
 				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
 					LocalTime.MIDNIGHT,
 					MarriageAffinityDecayTask(this@LorittaBot)
+				)
+
+				// at midnight remind about the daily
+				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
+					LocalTime.MIDNIGHT,
+					DailyReminderTask(this@LorittaBot)
 				)
 			}
 		}

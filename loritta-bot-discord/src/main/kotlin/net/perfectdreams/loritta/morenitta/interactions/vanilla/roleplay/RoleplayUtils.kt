@@ -357,7 +357,7 @@ object RoleplayUtils {
             embed {
                 description = buildString {
                     if (data.combo >= 3) {
-                        append("**_[COMBO ${data.combo}X]_**")
+                        append("**_[COMBO ${data.combo}X \uD83D\uDD25]_**")
                         append(" ")
                     }
 

@@ -1,0 +1,8 @@
+dailyRewardReminder:
+  title: "Recompensa Diária"
+  description:
+    - "Yippee! A sua recompensa diária está pronta para ser resgatada!"
+    - ""
+    - "**Não se esqueça:** A recompensa diária é renovada sempre às {resetTime}. Garanta a sua recompensa diária de hoje para não perder ela!"
+    - ""
+    - "[Clique aqui para resgatar!]({dailyLink})"
