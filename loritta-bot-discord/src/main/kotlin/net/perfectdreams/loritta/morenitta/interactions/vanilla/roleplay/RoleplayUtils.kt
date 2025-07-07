@@ -308,10 +308,10 @@ object RoleplayUtils {
                 .toInstant()
 
             if (roleplayActionAttributes.givesAffinityReward) {
-                // This checks if the CURRENT USER has sent a roleplay action
+                // This checks if the CURRENT USER has sent a roleplay action that gave up affinity rewards
                 val sentRoleplayActionTodayNotIncludingCurrent = MarriageRoleplayActions.selectAll()
                     .where {
-                        MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy eq context.user.idLong)
+                        MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy eq context.user.idLong) and (MarriageRoleplayActions.affinityReward eq true)
                     }
                     .count() != 0L
 
@@ -323,7 +323,7 @@ object RoleplayUtils {
                 // Have any of our other partners sent affinity today?
                 val sentRoleplayActionOtherPartners = MarriageRoleplayActions.selectAll()
                     .where {
-                        MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy neq context.user.idLong)
+                        MarriageRoleplayActions.marriage eq selfMarriage[UserMarriages.id] and (MarriageRoleplayActions.sentAt greaterEq todayAtMidnight) and (MarriageRoleplayActions.sentBy neq context.user.idLong) and (MarriageRoleplayActions.affinityReward eq true)
                     }
                     .count() != 0L
 
