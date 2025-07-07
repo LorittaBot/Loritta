@@ -1328,7 +1328,7 @@ class LorittaBot(
 
 				// at midnight remind about the daily
 				taskManager.scheduleCoroutineEveryDayAtSpecificHour(
-					LocalTime.MIDNIGHT,
+					LocalTime.of(3, 0), // Midnight at America/Sao_Paulo
 					DailyReminderTask(this@LorittaBot)
 				)
 			}
