@@ -43,7 +43,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("f5bffe2b-59f0-428e-86b1-ef948eaa91ab")) {
         this.enableLegacyMessageSupport = true
         this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.KICK_MEMBERS)
-        this.botPermissions = setOf(Permission.KICK_MEMBERS, Permission.BAN_MEMBERS)
+        this.botPermissions = setOf(Permission.KICK_MEMBERS, Permission.BAN_MEMBERS, Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
 
         alternativeLegacyLabels.apply {
             add("aviso")
@@ -92,7 +92,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
             val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
             val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
 
-            val warnCallback: (suspend (UnleashedContext, Boolean) -> Unit) = { message, isSilent ->
+            val warnCallback: (suspend (UnleashedContext, Boolean) -> Unit) = { context, isSilent ->
                 for (user in users) {
                     val member = context.guild.retrieveMemberOrNull(user)
                     if (!isSilent) {
@@ -149,7 +149,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                                 val metadata = punishment.metadata ?: continue@loop
                                 val obj = JsonParser.parseString(metadata).obj
                                 val time = obj["time"].nullString?.let { TimeUtils.convertToMillisRelativeToNow(it) }
-                                MuteCommand.muteUser(context, settings, member, time, context.locale, user, reason, isSilent)
+                                MuteCommand.muteUser(context, settings, time, context.locale, user, reason, isSilent)
                             }
                         }
                     }
@@ -183,7 +183,7 @@ class WarnCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            AdminUtils.sendConfirmationMessage(context, users, reason, "warn", warnCallback)
+            AdminUtils.sendConfirmationMessage(context, AdminUtils.ConfirmationMessagePunishmentAction.Warn, users, reason, warnCallback)
         }
 
         override suspend fun convertToInteractionsArguments(

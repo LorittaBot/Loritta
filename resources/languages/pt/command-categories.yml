@@ -61,9 +61,24 @@ commands:
         - "Comandos para tornar sua vida como moderador em seus servidores mais fácil!"
       skipConfirmationTip: "Cansado de confirmar as suas punições? Então use {quickPunishmentCommand} para burlar as confirmações de punições, para que você possa sentir a satisfação de banir aquele usuário chato enquanto ele está digitando um textão para te xingar!"
       successfullyPunished: "Usuário punido. Ninguém mandou quebrar as regras, seu boboca!"
-      youAreReadyToPunish: "Você está prestes a punir {mentions} do seu servidor pelo motivo `{reason}`!"
-      confirmPunishment: "Confirmar Punição"
-      confirmPunishmentSilent: "Confirmar Punição (Silenciosa)"
+      ban:
+        youAreReadyToBan: "Você está prestes a banir {mentions} do seu servidor pelo motivo `{reason}`!"
+        confirm: "Confirmar Ban"
+        confirmSilent: "Confirmar Ban (Silencioso)"
+      warn:
+        youAreReadyToWarn: "Você está prestes a avisar {mentions} no seu servidor pelo motivo `{reason}`!"
+        confirm: "Confirmar Aviso"
+        confirmSilent: "Confirmar Aviso (Silencioso)"
+      kick:
+        youAreReadyToKick: "Você está prestes a chutar da bunda do {mentions} do seu servidor pelo motivo `{reason}`!"
+        confirm: "Confirmar Kick"
+        confirmSilent: "Confirmar Kick (Silencioso)"
+      mute:
+        youAreReadyToMute: "Você está prestes a silenciar o {mentions} do seu servidor pelo motivo `{reason}` até {expiresAt}!"
+        youAreReadyToMutePermanent: "Você está prestes a silenciar o {mentions} do seu servidor pelo motivo `{reason}` permanentemente! (oxe, mas se você quer silenciar alguém permanentemente, não seria melhor banir ela do servidor?)"
+        confirm: "Confirmar Silenciamento"
+        confirmSilent: "Confirmar Silenciamento (Silencioso)"
+
       noneOfTheUsersCanBePunished: "Nenhum dos usuários podem ser punidos!"
       punishmentWillBeSentViaDirectMessage: "A punição SERÁ ENVIADA via mensagem direta para o usuário"
       punishmentWillNotBeSentViaDirectMessage: "A punição NÃO SERÁ ENVIADA via mensagem direta para o usuário"

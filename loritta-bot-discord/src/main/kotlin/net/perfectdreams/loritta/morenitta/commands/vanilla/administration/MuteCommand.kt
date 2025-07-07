@@ -32,121 +32,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
-class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
-	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
-	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
-
-	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
-	}
-
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
-
-	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
-	}
-
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
-			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
-
-			val members = mutableListOf<Member>()
-			for (user in users) {
-				val member = context.guild.retrieveMemberOrNull(user)
-
-				if (member == null) {
-					context.reply(
-						LorittaReply(
-							context.locale["commands.userNotOnTheGuild", "${user.asMention} (`${user.name.stripCodeMarks()}#${user.discriminator} (${user.idLong})`)"],
-							Emotes.LORI_HM
-						)
-					)
-					return
-				}
-
-				if (!AdminUtils.checkForPermissions(context, member))
-					return
-
-				members.add(member)
-			}
-
-			val setHour = context.reply(
-				LorittaReply(
-					context.locale["commands.category.moderation.setPunishmentTime"],
-					"⏰"
-				)
-			)
-
-			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
-
-			suspend fun punishUser(time: Long?) {
-				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
-
-				if (skipConfirmation) {
-					for (member in members) {
-						val result = muteUser(context, settings, member, time, locale, member.user, reason, silent)
-
-						if (!result)
-							continue
-					}
-
-					AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
-					return
-				}
-
-				val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-				val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "mute")
-
-				message.onReactionAddByAuthor(context) {
-					if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
-						val isSilent = it.emoji.isEmote("\uD83D\uDE4A")
-
-						message.delete().queue()
-
-						for (member in members) {
-							val result = muteUser(context, settings, member, time, locale, member.user, reason, isSilent)
-
-							if (!result)
-								continue
-						}
-
-						context.reply(
-							LorittaReply(
-								locale["commands.category.moderation.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
-								"\uD83C\uDF89"
-							)
-						)
-					}
-				}
-
-				message.addReaction("✅").queue()
-				if (hasSilent) {
-					message.addReaction("\uD83D\uDE4A").queue()
-				}
-			}
-
-			setHour.onResponseByAuthor(context) {
-				setHour.delete().queue()
-				val time = TimeUtils.convertToMillisRelativeToNow(it.message.contentDisplay)
-				punishUser(time)
-			}
-
-			setHour.onReactionAddByAuthor(context) {
-				if (it.emoji.isEmote("\uD83D\uDD04")) {
-					setHour.delete().queue()
-					punishUser(null)
-				}
-			}
-
-			setHour.addReaction("\uD83D\uDD04").queue()
-		} else {
-			this.explain(context)
-		}
-	}
-
+class MuteCommand {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 		private val logger by HarmonyLoggerFactory.logger {}
@@ -160,152 +46,10 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 		// This is used to avoid spamming Discord with retrieveMemberById requests, by storing the not in server IDs and NEVER CHECKING IT AGAIN (until they join the server again owo)
 		val notInTheServerUserIds = Sets.newConcurrentHashSet<Long>()
 
-		suspend fun muteUser(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
-			val delay = if (time != null) {
-				time - System.currentTimeMillis()
-			} else {
-				null
-			}
+		suspend fun muteUser(context: UnleashedContext, settings: AdminUtils.ModerationConfigSettings, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
+			// We CANNOT use context.guild.isMember because they may not be in Loritta's cache!
+			val member = context.guild.retrieveMemberOrNull(user)
 
-			if (delay != null && 0 > delay) {
-				// :whatdog:
-				context.reply(
-					LorittaReply(
-						context.locale["$LOCALE_PREFIX.mute.negativeTime"],
-						Constants.ERROR
-					)
-				)
-				return false
-			}
-
-			if (!isSilent) {
-				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
-					try {
-						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.mute.punishAction"], reason)
-
-						val timePretty = if (time != null)
-							DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(time)
-						else context.locale["commands.command.mute.forever"]
-
-						embed.addField(
-							context.locale["commands.command.mute.duration"],
-							timePretty,
-							false
-						)
-
-						context.loritta.getOrRetrievePrivateChannelForUser(user).sendMessageEmbeds(embed.build()).queue()
-					} catch (e: Exception) {
-						e.printStackTrace()
-					}
-				}
-
-				val punishLogMessage = AdminUtils.getPunishmentForMessage(
-					context.loritta,
-					settings,
-					context.guild,
-					PunishmentAction.MUTE
-				)
-
-				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
-					val textChannel = context.guild.getGuildMessageChannelById(settings.punishLogChannelId)
-
-					if (textChannel != null && textChannel.canTalk()) {
-						val message = MessageUtils.generateMessageOrFallbackIfInvalid(
-							context.i18nContext,
-							punishLogMessage,
-							listOf(user, context.guild),
-							context.guild,
-							mutableMapOf(
-								"duration" to if (delay != null) {
-									DateUtils.formatMillis(delay, locale)
-								} else {
-									locale["commands.command.mute.forever"]
-								}
-							) + AdminUtils.getStaffCustomTokens(context.userHandle)
-									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "${LOCALE_PREFIX}.mute"),
-							I18nKeysData.InvalidMessages.MemberModerationMute
-						)
-
-						textChannel.sendMessage(message).queue()
-					}
-				}
-			}
-
-			try {
-				// When adding a timeout, we can't set the timeout to *exactly* the expiration time
-				// So we will play around a bit with it
-				val userWasTimedOutForDuration = if (delay != null) {
-					val howMuchTimeTheUserWillBeTimedOut = Duration.ofMillis(delay)
-
-					// Discord allows you to timeout someone for max 28 days, so we will coerce it for at most 28 days
-					howMuchTimeTheUserWillBeTimedOut.coerceAtMost(Duration.ofDays(28))
-				} else {
-					Duration.ofDays(28)
-				}
-
-				member.timeoutFor(userWasTimedOutForDuration).await()
-				val userTimedOutUntil = Instant.now().plus(userWasTimedOutForDuration)
-
-				val mute = context.loritta.pudding.transaction {
-					Mutes.deleteWhere {
-						(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq member.user.idLong)
-					}
-
-					val mute = Mute.new {
-						guildId = context.guild.idLong
-						userId = member.user.idLong
-						punishedById = context.userHandle.idLong
-						receivedAt = System.currentTimeMillis()
-						content = reason
-						// We will store for how long the user was timed out for, so Loritta can automatically update the timeout time when the timeout expires
-						this.userTimedOutUntil = userTimedOutUntil
-
-						if (time != null) {
-							isTemporary = true
-							expiresAt = time
-						} else {
-							isTemporary = false
-						}
-					}
-
-					context.loritta.pudding.moderationLogs.logPunishment(
-						context.guild.idLong,
-						member.user.idLong,
-						context.userHandle.idLong,
-						ModerationLogAction.MUTE,
-						reason,
-						time?.let { Instant.ofEpochMilli(it) }
-					)
-
-					mute
-				}
-
-				spawnTimeOutUpdaterThread(context.loritta, context.guild, context.locale, context.i18nContext, user, mute)
-			} catch (e: HierarchyException) {
-				val reply = buildString {
-					this.append(context.locale[AdminUtils.ROLE_TOO_LOW_KEY])
-
-					if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
-						this.append(" ")
-						this.append(context.locale[AdminUtils.ROLE_TOO_LOW_HOW_TO_FIX_KEY])
-					}
-				}
-
-				context.reply(
-					LorittaReply(
-						reply,
-						Constants.ERROR
-					)
-				)
-				return false
-			}
-
-			return true
-		}
-
-		// The same thing as above but ooo now it uses UnleashedContext
-		// WE REALLY NEED TO REMOVE THE OLD MUTEUSER AFTER ALL CALLERS ARE MIGRATED TO THIS VERSION!!
-		suspend fun muteUser(context: UnleashedContext, settings: AdminUtils.ModerationConfigSettings, member: Member, time: Long?, locale: BaseLocale, user: User, reason: String, isSilent: Boolean): Boolean {
 			val delay = if (time != null) {
 				time - System.currentTimeMillis()
 			} else {
@@ -324,7 +68,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			}
 
 			if (!isSilent) {
-				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
+				if (settings.sendPunishmentViaDm && member != null) {
 					try {
 						val embed = AdminUtils.createPunishmentEmbedBuilderSentViaDirectMessage(context.guild, locale, context.user, locale["commands.command.mute.punishAction"], reason)
 
@@ -387,17 +131,25 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					Duration.ofDays(28)
 				}
 
-				member.timeoutFor(userWasTimedOutForDuration).await()
+				if (member != null) {
+					try {
+						member.timeoutFor(userWasTimedOutForDuration).await()
+					} catch (e: Exception) {
+						// This may happen if we user left during the timeout process!
+						logger.warn(e) { "Something went wrong while trying to timeout $user in guild ${context.guild.idLong}!" }
+					}
+				}
+
 				val userTimedOutUntil = Instant.now().plus(userWasTimedOutForDuration)
 
 				val mute = context.loritta.pudding.transaction {
 					Mutes.deleteWhere {
-						(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq member.user.idLong)
+						(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq user.idLong)
 					}
 
 					val mute = Mute.new {
 						guildId = context.guild.idLong
-						userId = member.user.idLong
+						userId = user.idLong
 						punishedById = context.user.idLong
 						receivedAt = System.currentTimeMillis()
 						content = reason
@@ -414,7 +166,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 					context.loritta.pudding.moderationLogs.logPunishment(
 						context.guild.idLong,
-						member.user.idLong,
+						user.idLong,
 						context.user.idLong,
 						ModerationLogAction.MUTE,
 						reason,
@@ -473,18 +225,18 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 			if (currentGuild == null) {
 				logger.warn { "Bem... na verdade a guild $guildId não existe, então não iremos remover o estado de silenciado de $userId por enquanto..." }
-                return
+				return
 			}
 
 			val muteExpiresAt = mute.expiresAt
 			if (muteExpiresAt != null && System.currentTimeMillis() > muteExpiresAt) {
 				logger.info { "Removendo cargo silenciado de $userId na guild $guildId - Motivo: Já expirou!" }
 
-                val guild = loritta.lorittaShards.getGuildById(guildId.toString())
+				val guild = loritta.lorittaShards.getGuildById(guildId.toString())
 
 				if (guild == null) {
 					logger.warn { "Bem... na verdade a guild $guildId não existe mais, então não iremos remover o estado de silenciado de $userId por enquanto..." }
-                    return
+					return
 				}
 
 				runBlocking {

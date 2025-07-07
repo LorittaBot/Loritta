@@ -89,7 +89,7 @@ class KickCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 return
             }
 
-            AdminUtils.sendConfirmationMessage(context, users, reason, "kick", kickCallback)
+            AdminUtils.sendConfirmationMessage(context, AdminUtils.ConfirmationMessagePunishmentAction.Kick, users, reason, kickCallback)
         }
 
         override suspend fun convertToInteractionsArguments(

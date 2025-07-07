@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
@@ -421,21 +422,72 @@ object AdminUtils {
 
 	suspend fun sendConfirmationMessage(
 		context: UnleashedContext,
+		type: ConfirmationMessagePunishmentAction,
 		users: List<User>,
 		reason: String,
-		type: String,
 		onBanClick: suspend (UnleashedContext, Boolean) -> (Unit)
 	): InteractionMessage {
 		return context.reply(false) {
-			styled(
-				context.i18nContext.get(
-					I18nKeysData.Commands.Category.Moderation.YouAreReadyToPunish(
-						users.joinToString { it.asMention },
-						reason
+			when (type) {
+                ConfirmationMessagePunishmentAction.Ban -> {
+					styled(
+						context.i18nContext.get(
+							I18nKeysData.Commands.Category.Moderation.Ban.YouAreReadyToBan(
+								users.joinToString { it.asMention },
+								reason
+							)
+						),
+						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
 					)
-				),
-				net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
-			)
+				}
+                ConfirmationMessagePunishmentAction.Kick -> {
+					styled(
+						context.i18nContext.get(
+							I18nKeysData.Commands.Category.Moderation.Kick.YouAreReadyToKick(
+								users.joinToString { it.asMention },
+								reason
+							)
+						),
+						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+					)
+				}
+                is ConfirmationMessagePunishmentAction.Mute -> {
+					val expiresAt = type.expiresAt
+					if (expiresAt != null) {
+						styled(
+							context.i18nContext.get(
+								I18nKeysData.Commands.Category.Moderation.Mute.YouAreReadyToMute(
+									users.joinToString { it.asMention },
+									reason,
+									DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(type.expiresAt)
+								)
+							),
+							net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+						)
+					} else {
+						styled(
+							context.i18nContext.get(
+								I18nKeysData.Commands.Category.Moderation.Mute.YouAreReadyToMutePermanent(
+									users.joinToString { it.asMention },
+									reason
+								)
+							),
+							net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+						)
+					}
+				}
+                ConfirmationMessagePunishmentAction.Warn -> {
+					styled(
+						context.i18nContext.get(
+							I18nKeysData.Commands.Category.Moderation.Warn.YouAreReadyToWarn(
+								users.joinToString { it.asMention },
+								reason
+							)
+						),
+						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+					)
+				}
+            }
 
 			if (!context.config.getUserData(context.loritta, context.user.idLong).quickPunishment) {
 				styled(
@@ -448,7 +500,14 @@ object AdminUtils {
 					context.user,
 					context.alwaysEphemeral,
 					ButtonStyle.PRIMARY,
-					context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ConfirmPunishment),
+					context.i18nContext.get(
+						when (type) {
+                            ConfirmationMessagePunishmentAction.Ban -> I18nKeysData.Commands.Category.Moderation.Ban.Confirm
+                            ConfirmationMessagePunishmentAction.Kick -> I18nKeysData.Commands.Category.Moderation.Kick.Confirm
+                            is ConfirmationMessagePunishmentAction.Mute -> I18nKeysData.Commands.Category.Moderation.Mute.Confirm
+                            ConfirmationMessagePunishmentAction.Warn -> I18nKeysData.Commands.Category.Moderation.Warn.Confirm
+                        }
+					),
 					{
 						loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
 					}
@@ -460,7 +519,14 @@ object AdminUtils {
 					context.user,
 					context.alwaysEphemeral,
 					ButtonStyle.SECONDARY,
-					context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ConfirmPunishmentSilent),
+					context.i18nContext.get(
+						when (type) {
+							ConfirmationMessagePunishmentAction.Ban -> I18nKeysData.Commands.Category.Moderation.Ban.ConfirmSilent
+							ConfirmationMessagePunishmentAction.Kick -> I18nKeysData.Commands.Category.Moderation.Kick.ConfirmSilent
+							is ConfirmationMessagePunishmentAction.Mute -> I18nKeysData.Commands.Category.Moderation.Mute.ConfirmSilent
+							ConfirmationMessagePunishmentAction.Warn -> I18nKeysData.Commands.Category.Moderation.Warn.ConfirmSilent
+                        }
+					),
 					{
 						loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
 					}
@@ -712,4 +778,11 @@ object AdminUtils {
 		val punishLogChannelId: Long? = null,
 		val punishLogMessage: String? = null
 	)
+
+	sealed class ConfirmationMessagePunishmentAction {
+		data object Ban : ConfirmationMessagePunishmentAction()
+		data object Warn : ConfirmationMessagePunishmentAction()
+		data class Mute(val expiresAt: Instant?) : ConfirmationMessagePunishmentAction()
+		data object Kick : ConfirmationMessagePunishmentAction()
+	}
 }

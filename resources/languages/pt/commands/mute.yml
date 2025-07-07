@@ -1,0 +1,7 @@
+label: "mute"
+description: "Silencia usuários do seu servidor"
+setPermanent: "Deixar Permanente"
+
+options:
+  time:
+    text: "O tempo que a pessoa ficará silenciada"
