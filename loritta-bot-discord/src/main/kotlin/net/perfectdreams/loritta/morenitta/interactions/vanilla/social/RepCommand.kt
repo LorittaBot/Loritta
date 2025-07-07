@@ -535,11 +535,11 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         false, // TODO: This should be context.alwaysEphemeral when this is migrated to InteraKTions Unleashed
                         ButtonStyle.PRIMARY,
                         builder = {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronLeft
-                            disabled = allowBack
+                            loriEmoji = Emotes.ChevronLeft
+                            disabled = !allowBack
                         }
                     ) {
-                        val hook = it.updateMessageSetLoadingState()
+                        val hook = it.updateMessageSetLoadingState(updateMessageContent = false)
 
                         val builtMessage = createRepListMessage(
                             context,
@@ -558,16 +558,16 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                         false, // TODO: This should be context.alwaysEphemeral when this is migrated to InteraKTions Unleashed
                         ButtonStyle.PRIMARY,
                         builder = {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronRight
-                            disabled = allowForward
+                            loriEmoji = Emotes.ChevronRight
+                            disabled = !allowForward
                         }
                     ) {
-                        val hook = it.updateMessageSetLoadingState()
+                        val hook = it.updateMessageSetLoadingState(updateMessageContent = false)
 
                         val builtMessage = createRepListMessage(
                             context,
                             user,
-                            page - 1
+                            page + 1
                         )
 
                         hook.editOriginal(
