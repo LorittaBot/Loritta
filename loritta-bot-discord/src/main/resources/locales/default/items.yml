@@ -27,6 +27,7 @@ sets:
   hollowKnight: "Hollow Knight"
   stardewValley: "Stardew Valley"
   minecraft: "Minecraft"
+  lorittaChristmas2024: "Natal da Loritta 2024"
 profileDesigns:
   name: "Design para Perfil"
   defaultDark:
@@ -1293,3 +1294,30 @@ backgrounds:
   gessyLowPoly:
     title: "Gessy Low Poly"
     description: "Com seus 1266 triângulos, ele irá arrebentar como background do seu perfil!"
+  lorittaChristmasGrinchsPranks:
+    title: "Travessuras de Grinch"
+    description: "Loritta em mais uma aventura: ajudar o Papai Noel contra as travessuras de Grinch."
+  lorittaChristmasCollectingSonhos:
+    title: "Coletando Sonhos"
+    description: "Algumas pessoas pediram Sonhos de Natal ao Papai Noel. Ninguém melhor que a Loritta, a Pantufa e a Gabriela para ajudá-lo nisso!"
+  lorittaChristmasRescueOfPresents:
+    title: "Presentes ao Resgate"
+    description: "Parece que os presentes de Natal este ano ficaram presos na alfândega. Só restou para Loritta, Pantufa e Gabriela em suas lindas fantasias ajudarem o Papai Noel a entregar os presentes a tempo. Inclusive, esse Papai Noel me é familiar..."
+  lorittaChristmasSantasHelpers:
+    title: "As Ajudantes do Papai Noel"
+    description: "No Natal, Loritta e suas amigas foram em busca de uma nova aventura: Ajudar o Papai Noel no Polo Norte! Loritta e Gabriela levavam os últimos presentes para o trenó, enquanto Pantufa alimentava as renas antes de partirem para o longo voo da noite.. Ops! Alguém ficou sem nariz..."
+  lorittaChristmasSuperSleigh2000:
+    title: "Super Trenó 2000"
+    description: "Pobre Papai Noel, ouvindo as sugestões de suas ajudantes, decidiu aceitar companhia e a ajuda de uma robô de coração puro conhecida pela juventude. O único problema foi que, enquanto carregavam o novo Super Trenó 2000 com os brinquedos, a curiosidade da cyber-batutinha em apertar as botões foi mais forte..."
+  lorittaChristmasDoYouWantToBuildASnowman:
+    title: "Você quer brincar na neve?"
+    description: "Loritta e seus amigos decidiram sair para brincar na neve neste Natal, mas parece que Gabriela não curtiu muito a ideia."
+  lorittaChristmasMerryChristmas:
+    title: "Feliz Natal!"
+    description: "Loritta e Papai Noel passando na sua tela para te desejar um Feliz Natal!"
+  lorittaFigurittas:
+    title: "Figurittas da Loritta"
+    description: "Loritta virando suas figurittas especiais no bafo! É um lembrete para você completar seu álbum dessa temporada!"
+  mercedesBenz600:
+    title: "1972 Mercedes-Benz 600"
+    description: "O 1972 Mercedes-Benz 600 é um sedã de luxo e uma limusine top de linha, um verdadeiro símbolo de status e inovação para a época."

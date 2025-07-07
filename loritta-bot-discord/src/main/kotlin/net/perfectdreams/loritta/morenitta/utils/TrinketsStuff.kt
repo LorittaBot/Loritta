@@ -91,7 +91,8 @@ object TrinketsStuff {
         "loriCoolCards",
         "valorant",
         "brat",
-        "minecraft"
+        "minecraft",
+        "lorittaChristmas2024"
     )
 
     fun updateTrinkets(pudding: Pudding) {
@@ -1328,6 +1329,32 @@ object TrinketsStuff {
         }
         createBackground("gessyLowPoly", true, Rarity.RARE, LocalDate.of(2025, 3, 21), createdBy = listOf("mrpowergamerbr")) {
             addDefaultVariant("gessy-lowpoly", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaChristmasGrinchsPranks", true, Rarity.EPIC, LocalDate.of(2025, 1, 17), set = "lorittaChristmas2024", createdBy = listOf("andlubar")) {
+            addDefaultVariant("loritta-christmas-grinchs-pranks", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaChristmasRescueOfPresents", true, Rarity.EPIC, LocalDate.of(2025, 1, 17), set = "lorittaChristmas2024", createdBy = listOf("597259977803169835")) {
+            addDefaultVariant("loritta-christmas-rescue-of-presents", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaChristmasSantasHelpers", true, Rarity.EPIC, LocalDate.of(2025, 1, 17), set = "lorittaChristmas2024", createdBy = listOf("framberry")) {
+            addDefaultVariant("loritta-christmas-santas-helpers", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaChristmasSuperSleigh2000", true, Rarity.EPIC, LocalDate.of(2025, 1, 17), set = "lorittaChristmas2024", createdBy = listOf("flamps")) {
+            addDefaultVariant("loritta-christmas-super-sleigh-2000", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaChristmasDoYouWantToBuildASnowman", true, Rarity.EPIC, LocalDate.of(2025, 1, 17), set = "lorittaChristmas2024", createdBy = listOf("emma")) {
+            addDefaultVariant("loritta-christmas-do-you-want-to-build-a-snowman", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-christmas-do-you-want-to-build-a-snowman-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaChristmasMerryChristmas", true, Rarity.EPIC, LocalDate.of(2025, 1, 17), set = "lorittaChristmas2024", createdBy = listOf("soupkk")) {
+            addDefaultVariant("loritta-christmas-merry-christmas", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "loritta-christmas-merry-christmas-center-top", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("lorittaFigurittas", true, Rarity.EPIC, LocalDate.of(2025, 7, 7), createdBy = listOf("framberry")) {
+            addDefaultVariant("loritta-figurittas", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
+        }
+        createBackground("mercedesBenz600", true, Rarity.RARE, LocalDate.of(2025, 7, 7), createdBy = listOf("kneezmz")) {
+            addDefaultVariant("mercedes-benz-600", ContentType.Image.PNG, storageType = BackgroundStorageType.ETHEREAL_GAMBI)
         }
     }
 
