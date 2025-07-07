@@ -273,7 +273,6 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         // ===[ MODERATION ]===
         register(BanInfoCommand(loritta))
         register(DashboardCommand(loritta))
-        register(PredefinedReasonsCommand())
         register(ClearCommand(loritta))
         register(ModLogCommand(loritta))
         register(BanCommand(loritta))
