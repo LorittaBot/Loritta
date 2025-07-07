@@ -142,7 +142,6 @@ class CommandManager(val loritta: LorittaBot) {
 
 		// =======[ ADMIN ]========
 		commandMap.add(RoleIdCommand(loritta))
-		commandMap.add(UnmuteCommand(loritta))
 		commandMap.add(SlowModeCommand(loritta))
 		commandMap.add(WarnListCommand(loritta))
 		commandMap.add(QuickPunishmentCommand(loritta))

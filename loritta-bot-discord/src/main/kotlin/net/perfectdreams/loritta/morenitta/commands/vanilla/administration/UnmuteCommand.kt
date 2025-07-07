@@ -1,102 +1,23 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Mutes
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 
-class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", listOf("desmutar", "desilenciar", "desilenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.unmute.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.command.unmute.examples")
-	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
-
-	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
-	}
-
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
-
-	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS)
-	}
-
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
-			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
-
-			for (user in users) {
-				val member = context.guild.retrieveMemberOrNull(user)
-
-				if (member != null) {
-					if (!AdminUtils.checkForPermissions(context, member))
-						return
-				}
-			}
-
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
-			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
-
-			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				for (user in users)
-					unmute(loritta, context.i18nContext, settings, context.guild, context.userHandle, locale, user, reason, isSilent)
-
-				message?.delete()?.queue()
-
-				context.reply(
-					LorittaReply(
-						locale["commands.command.unmute.successfullyUnmuted"],
-						"\uD83C\uDF89"
-					)
-				)
-			}
-
-			if (skipConfirmation) {
-				banCallback.invoke(null, false)
-				return
-			}
-
-			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "unmute")
-
-			message.onReactionAddByAuthor(context) {
-				if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
-					banCallback.invoke(message, it.emoji.isEmote("\uD83D\uDE4A"))
-				}
-				return@onReactionAddByAuthor
-			}
-
-			message.addReaction("✅").queue()
-			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
-			}
-		} else {
-			this.explain(context)
-		}
-	}
-
+class UnmuteCommand {
 	companion object {
 		fun unmute(loritta: LorittaBot, i18nContext: I18nContext, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {

@@ -498,6 +498,17 @@ object AdminUtils {
 						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
 					)
 				}
+				ConfirmationMessagePunishmentAction.Unmute -> {
+					styled(
+						context.i18nContext.get(
+							I18nKeysData.Commands.Category.Moderation.Warn.YouAreReadyToWarn(
+								users.joinToString { it.asMention },
+								reason
+							)
+						),
+						net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+					)
+				}
             }
 
 			if (!context.config.getUserData(context.loritta, context.user.idLong).quickPunishment) {
@@ -518,6 +529,7 @@ object AdminUtils {
                             ConfirmationMessagePunishmentAction.Kick -> I18nKeysData.Commands.Category.Moderation.Kick.Confirm
                             is ConfirmationMessagePunishmentAction.Mute -> I18nKeysData.Commands.Category.Moderation.Mute.Confirm
                             ConfirmationMessagePunishmentAction.Warn -> I18nKeysData.Commands.Category.Moderation.Warn.Confirm
+                            ConfirmationMessagePunishmentAction.Unmute -> I18nKeysData.Commands.Category.Moderation.Unmute.Confirm
                         }
 					),
 					{
@@ -538,6 +550,7 @@ object AdminUtils {
 							ConfirmationMessagePunishmentAction.Kick -> I18nKeysData.Commands.Category.Moderation.Kick.ConfirmSilent
 							is ConfirmationMessagePunishmentAction.Mute -> I18nKeysData.Commands.Category.Moderation.Mute.ConfirmSilent
 							ConfirmationMessagePunishmentAction.Warn -> I18nKeysData.Commands.Category.Moderation.Warn.ConfirmSilent
+                            ConfirmationMessagePunishmentAction.Unmute -> I18nKeysData.Commands.Category.Moderation.Unmute.ConfirmSilent
                         }
 					),
 					{
@@ -798,5 +811,6 @@ object AdminUtils {
 		data object Warn : ConfirmationMessagePunishmentAction()
 		data class Mute(val expiresAt: Instant?) : ConfirmationMessagePunishmentAction()
 		data object Kick : ConfirmationMessagePunishmentAction()
+		data object Unmute : ConfirmationMessagePunishmentAction()
 	}
 }

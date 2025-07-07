@@ -82,6 +82,10 @@ commands:
         youAreReadyToMutePermanent: "Você está prestes a silenciar o {mentions} do seu servidor pelo motivo `{reason}` permanentemente! (oxe, mas se você quer silenciar alguém permanentemente, não seria melhor banir ela do servidor?)"
         confirm: "Confirmar Silenciamento"
         confirmSilent: "Confirmar Silenciamento (Silencioso)"
+      unmute:
+        youAreReadyToUnmute: "Você está prestes a retirar o silenciamento de {mentions} do seu servidor com a justificativa `{reason}`!"
+        confirm: "Confirmar Retirada de Silenciamento"
+        confirmSilent: "Confirmar Retirada de Silenciamento (Silencioso)"
 
       noneOfTheUsersCanBePunished: "Nenhum dos usuários podem ser punidos!"
       punishmentWillBeSentViaDirectMessage: "A punição SERÁ ENVIADA via mensagem direta para o usuário"
