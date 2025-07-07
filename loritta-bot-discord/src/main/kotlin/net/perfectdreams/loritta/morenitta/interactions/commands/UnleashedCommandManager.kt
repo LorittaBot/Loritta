@@ -281,6 +281,8 @@ class UnleashedCommandManager(val loritta: LorittaBot, val languageManager: Lang
         register(MuteCommand(loritta))
         register(UnbanCommand(loritta))
         register(UnmuteCommand(loritta))
+        register(LockCommand(loritta))
+        register(UnlockCommand(loritta))
 
         // ===[ FUN ]===
         register(EventCommand(loritta))

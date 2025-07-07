@@ -1,0 +1,7 @@
+label: "unlock"
+description: "Destranca um canal trancado pelo lock para que possam voltar a falar nele"
+channelCannotBeUnlocked: "O canal que você deseja trancar não pode ser destrancado!"
+
+options:
+  channel:
+    text: "O canal que você deseja destrancar"

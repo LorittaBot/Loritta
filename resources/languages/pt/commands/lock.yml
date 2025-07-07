@@ -1,0 +1,7 @@
+label: "lock"
+description: "Tranca um canal para que outras pessoas não possam falar nele"
+channelCannotBeLocked: "O canal que você deseja trancar não pode ser trancado!"
+
+options:
+  channel:
+    text: "O canal que você deseja trancar"
