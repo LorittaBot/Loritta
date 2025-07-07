@@ -3,97 +3,19 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.ModerationLogAction
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.getGuildMessageChannelById
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import java.util.concurrent.TimeUnit
 
-class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("banir", "hackban", "forceban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.ban.description")
-	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
-	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
-
-	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.BAN_MEMBERS)
-	}
-
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
-
-	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.BAN_MEMBERS)
-	}
-
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
-			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "ban")
-
-			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
-
-			for (user in users) {
-				val member = context.guild.retrieveMemberOrNull(user)
-
-				if (member != null) {
-					if (!AdminUtils.checkForPermissions(context, member))
-						return
-				}
-			}
-
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
-
-			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
-
-			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
-				for (user in users)
-					ban(loritta, context.i18nContext, settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
-
-				message?.delete()?.queue()
-
-				AdminUtils.sendSuccessfullyPunishedMessage(context, reason, delDays == 0)
-			}
-
-			if (skipConfirmation) {
-				banCallback.invoke(null, silent)
-				return
-			}
-
-			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "ban")
-
-			message.onReactionAddByAuthor(context) {
-				if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
-					banCallback.invoke(message, it.emoji.isEmote("\uD83D\uDE4A"))
-				}
-				return@onReactionAddByAuthor
-			}
-
-			message.addReaction("✅").queue()
-			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
-			}
-		} else {
-			this.explain(context)
-		}
-	}
-
+class BanCommand {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 

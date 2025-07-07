@@ -63,6 +63,7 @@ commands:
       successfullyPunished: "Usuário punido. Ninguém mandou quebrar as regras, seu boboca!"
       youAreReadyToPunish: "Você está prestes a punir {mentions} do seu servidor pelo motivo `{reason}`!"
       confirmPunishment: "Confirmar Punição"
+      confirmPunishmentSilent: "Confirmar Punição (Silenciosa)"
       noneOfTheUsersCanBePunished: "Nenhum dos usuários podem ser punidos!"
       punishmentWillBeSentViaDirectMessage: "A punição SERÁ ENVIADA via mensagem direta para o usuário"
       punishmentWillNotBeSentViaDirectMessage: "A punição NÃO SERÁ ENVIADA via mensagem direta para o usuário"

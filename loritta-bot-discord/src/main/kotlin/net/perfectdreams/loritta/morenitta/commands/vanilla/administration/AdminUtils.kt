@@ -128,6 +128,45 @@ object AdminUtils {
 		return UserMatchesResult(validUsers, split.drop(matchedCount).joinToString(" "))
 	}
 
+	// Used for legacy messages
+	suspend fun checkAndRetrieveAllValidUsersFromMessages(context: LegacyMessageCommandContext): UserMatchesResult? {
+		val split = context.args
+		var matchedCount = 0
+
+		val validUsers = mutableListOf<User>()
+		for (input in split) {
+			// We don't want to query via other means, this would cause issues with Loritta detecting users as messages
+			val shouldUseExtensiveMatching = validUsers.isEmpty()
+
+			val matchedUser = DiscordUtils.extractUserFromString(
+				context.loritta,
+				input,
+				context.event.message.mentions.users,
+				context.guild,
+				extractUserViaEffectiveName = shouldUseExtensiveMatching,
+				extractUserViaUsername = shouldUseExtensiveMatching
+			)
+
+			if (matchedUser != null) {
+				matchedCount++
+				validUsers.add(matchedUser)
+			}
+			else break
+		}
+
+		if (validUsers.isEmpty()) {
+			context.reply(false) {
+				styled(
+					context.locale["commands.userDoesNotExist", context.args[0].stripCodeMarks()],
+					Emotes.LORI_HM
+				)
+			}
+			return null
+		}
+
+		return UserMatchesResult(validUsers, split.drop(matchedCount).joinToString(" "))
+	}
+
 	suspend fun checkAndRetrieveAllValidUsersFromString(context: UnleashedContext, usersAsString: String): UserMatchesResult? {
 		val split = usersAsString.split(" ")
 		var matchedCount = 0
@@ -385,7 +424,7 @@ object AdminUtils {
 		users: List<User>,
 		reason: String,
 		type: String,
-		onBanClick: suspend (UnleashedContext) -> (Unit)
+		onBanClick: suspend (UnleashedContext, Boolean) -> (Unit)
 	): InteractionMessage {
 		return context.reply(false) {
 			styled(
@@ -415,7 +454,19 @@ object AdminUtils {
 					}
 				) {
 					it.deferChannelMessage(false)
-					onBanClick.invoke(it)
+					onBanClick.invoke(it, false)
+				},
+				context.loritta.interactivityManager.buttonForUser(
+					context.user,
+					context.alwaysEphemeral,
+					ButtonStyle.SECONDARY,
+					context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ConfirmPunishmentSilent),
+					{
+						loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLurk
+					}
+				) {
+					it.deferChannelMessage(false)
+					onBanClick.invoke(it, false)
 				}
 			)
 		}
