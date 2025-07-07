@@ -2,3 +2,5 @@
   label: "on"
 'off':
   label: "off"
+list:
+  label: "list"
