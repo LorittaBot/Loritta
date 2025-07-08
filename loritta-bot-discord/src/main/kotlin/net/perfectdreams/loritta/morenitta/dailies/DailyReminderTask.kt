@@ -99,6 +99,8 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
 
                 privateChannel.sendMessage(
                     MessageCreate {
+                        this.useComponentsV2 = true
+                        
                         this.components += Container {
                             this.accentColor = LorittaColors.LorittaAqua.rgb
 
