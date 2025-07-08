@@ -85,6 +85,7 @@ import net.perfectdreams.loritta.morenitta.bluesky.LorittaBlueskyRelay
 import net.perfectdreams.loritta.morenitta.christmas2022event.listeners.ReactionListener
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.dailies.DailyReminderTask
+import net.perfectdreams.loritta.morenitta.dailies.ProcessSubmittedDailyRemindersTask
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -1331,6 +1332,12 @@ class LorittaBot(
 					LocalTime.of(3, 0), // Midnight at America/Sao_Paulo
 					DailyReminderTask(this@LorittaBot)
 				)
+
+				val processSubmittedDailyRemindersTask = ProcessSubmittedDailyRemindersTask(this@LorittaBot)
+
+				GlobalScope.launch {
+					processSubmittedDailyRemindersTask.processDailyReminders()
+				}
 			}
 		}
 	}
