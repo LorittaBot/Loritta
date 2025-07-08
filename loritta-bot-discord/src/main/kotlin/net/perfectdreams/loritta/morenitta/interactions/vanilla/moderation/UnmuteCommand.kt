@@ -28,7 +28,7 @@ class UnmuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("f89d53c7-a439-4149-96d6-1a0c1caa7c0d")) {
         this.enableLegacyMessageSupport = true
-        this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.KICK_MEMBERS)
+        this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS)
         this.botPermissions = setOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
 
         alternativeLegacyLabels.apply {

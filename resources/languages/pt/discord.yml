@@ -38,7 +38,7 @@ permissions:
   sendMessagesInThreads: "Enviar mensagens em threads"
   managePermissions: "Gerenciar permissões"
   manageEvents: "Gerenciar eventos"
-  moderateMembers: "Moderar Membros"
+  moderateMembers: "Membros de castigo"
   useExternalStickers: "Usar figurinhas externas"
   video: "Vídeo"
   startActivities: "Usar atividades"
