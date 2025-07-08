@@ -149,6 +149,18 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			)
 		}
 
+		val dailyRewardInLast14Days = AccountUtils.getUserDailyRewardInTheLastXDays(loritta, userIdentification.id.toLong(), 14)
+		if (dailyRewardInLast14Days == null) {
+			throw WebsiteAPIException(
+				HttpStatusCode.Forbidden,
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.FORBIDDEN,
+					"You need to get the daily reward before giving out a reputation!"
+				)
+			)
+		}
+
 		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val content = json["content"].string
 		val token = json["token"].string
