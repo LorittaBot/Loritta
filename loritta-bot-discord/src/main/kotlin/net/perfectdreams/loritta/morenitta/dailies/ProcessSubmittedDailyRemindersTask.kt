@@ -65,8 +65,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                     logger.info { "Trying to notify user ${pendingNotification[DailyReminderNotifications.userId]} about the daily reward... ($index/${pendingNotifications.size} - total pending: $totalPending)" }
 
                     val userId = pendingNotification[DailyReminderNotifications.userId]
-                    val todayAtMidnight =
-                        pendingNotification[DailyReminderNotifications.triggeredForDaily].atZone(Constants.LORITTA_TIMEZONE)
+                    val todayAtMidnight = pendingNotification[DailyReminderNotifications.triggeredForDaily].atZone(Constants.LORITTA_TIMEZONE)
 
                     // Technically couldn't this be just "pendingNotification[DailyReminderNotifications.triggeredForDaily].toInstant()"?
                     val todayAtMidnightAsEpochMillis = todayAtMidnight.toInstant().toEpochMilli()
@@ -74,8 +73,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                     var success = false
 
                     try {
-                        val privateChannel =
-                            m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
+                        val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
 
                         // We'll calculate the current user streak
                         // Honestly there are better ways to do this, however they get way too complex way too quickly
@@ -94,8 +92,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                         var streak = 0
 
                         for (dailyTime in allReceivedDailiesBeforeMidnight) {
-                            val dailyDate =
-                                Instant.ofEpochMilli(dailyTime).atZone(Constants.LORITTA_TIMEZONE).toLocalDate()
+                            val dailyDate = Instant.ofEpochMilli(dailyTime).atZone(Constants.LORITTA_TIMEZONE).toLocalDate()
 
                             // Fail-safe for when we get two dailies on the same day (mostly useful when debugging things)
                             // Instead of not counting, we'll just ignore it on our streak
@@ -127,7 +124,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                                                 buildString {
                                                     append("### ${Emotes.LoriRich} ${i18nContext.get(I18nKeysData.DailyRewardReminder.Title)}")
                                                     if (streak >= 2)
-                                                        append(" **_[SEQUÊNCIA ${streak}X \uD83D\uDD25]_**")
+                                                        append(" **_[${i18nContext.get(I18nKeysData.DailyRewardReminder.Streak(streak))} \uD83D\uDD25]_**")
                                                 }
                                             )
 
@@ -150,12 +147,25 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                                                 "dm-reminder"
                                             ),
                                             i18nContext.get(I18nKeysData.DailyRewardReminder.ClaimDailyReward)
-                                        ).withEmoji(Emotes.Sonhos3.toJDA())
+                                        ).withEmoji(Emotes.Sonhos3.toJDA()),
+                                        Button.of(
+                                            ButtonStyle.LINK,
+                                            GACampaigns.sonhosBundlesUpsellUrl(
+                                                m.config.loritta.website.url,
+                                                "discord",
+                                                "daily-reminder",
+                                                "sonhos-bundles-upsell",
+                                                "dm-reminder"
+                                            ),
+                                            i18nContext.get(I18nKeysData.DailyRewardReminder.SonhosStore)
+                                        ).withEmoji(Emotes.LoriCard.toJDA())
                                     )
 
                                     +MediaGallery {
-                                        this.item("http://stuff.loritta.website/loritta-daily-yafyr.png")
+                                        this.item("https://stuff.loritta.website/loritta-daily-yafyr.png")
                                     }
+
+                                    +TextDisplay("-# ${i18nContext.get(I18nKeysData.DailyRewardReminder.YouReceivedThisMessageBecauseYouGotDailyRewardYesterday)} ${Emotes.LoriFlushed}")
                                 }
                             }
                         ).await()
