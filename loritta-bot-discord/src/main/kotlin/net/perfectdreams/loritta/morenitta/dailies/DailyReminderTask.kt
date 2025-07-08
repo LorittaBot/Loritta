@@ -95,6 +95,14 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
 
                 for (dailyTime in allReceivedDailiesBeforeMidnight) {
                     val dailyDate = Instant.ofEpochMilli(dailyTime).atZone(Constants.LORITTA_TIMEZONE).toLocalDate()
+
+                    // Fail-safe for when we get two dailies on the same day (mostly useful when debugging things)
+                    // Instead of not counting, we'll just ignore it on our streak
+                    if (dailyDate == lastDate) {
+                        lastDate = dailyDate
+                        continue
+                    }
+
                     if (dailyDate == lastDate.minusDays(1)) {
                         // Yippee, we are on a streak!
                         lastDate = dailyDate
