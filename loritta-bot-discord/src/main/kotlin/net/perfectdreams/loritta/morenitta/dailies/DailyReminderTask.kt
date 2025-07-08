@@ -4,6 +4,9 @@ import dev.minn.jda.ktx.interactions.components.Container
 import dev.minn.jda.ktx.interactions.components.MediaGallery
 import dev.minn.jda.ktx.interactions.components.TextDisplay
 import dev.minn.jda.ktx.messages.MessageCreate
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.perfectdreams.harmony.logging.HarmonyLoggerFactory
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
@@ -19,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageC
 import net.perfectdreams.loritta.morenitta.scheduledtasks.NamedRunnableCoroutine
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.and
@@ -121,16 +125,23 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
                                     for (line in i18nContext.get(
                                         I18nKeysData.DailyRewardReminder.Description(
                                             "<t:1490842800:t>",
-                                            GACampaigns.dailyWebRewardDiscordCampaignUrl(
-                                                m.config.loritta.website.url,
-                                                "daily-reminder",
-                                                "dm-reminder"
-                                            )
                                         )
                                     )) {
                                         appendLine(line)
                                     }
                                 }
+                            )
+
+                            +ActionRow.of(
+                                Button.of(
+                                    ButtonStyle.LINK,
+                                    GACampaigns.dailyWebRewardDiscordCampaignUrl(
+                                        m.config.loritta.website.url,
+                                        "daily-reminder",
+                                        "dm-reminder"
+                                    ),
+                                    i18nContext.get(I18nKeysData.DailyRewardReminder.ClaimDailyReward)
+                                ).withEmoji(Emotes.Sonhos3.toJDA())
                             )
 
                             +MediaGallery {
