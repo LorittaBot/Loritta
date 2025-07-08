@@ -147,18 +147,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
                                                 "dm-reminder"
                                             ),
                                             i18nContext.get(I18nKeysData.DailyRewardReminder.ClaimDailyReward)
-                                        ).withEmoji(Emotes.Sonhos3.toJDA()),
-                                        Button.of(
-                                            ButtonStyle.LINK,
-                                            GACampaigns.sonhosBundlesUpsellUrl(
-                                                m.config.loritta.website.url,
-                                                "discord",
-                                                "daily-reminder",
-                                                "sonhos-bundles-upsell",
-                                                "dm-reminder"
-                                            ),
-                                            i18nContext.get(I18nKeysData.DailyRewardReminder.SonhosStore)
-                                        ).withEmoji(Emotes.LoriCard.toJDA())
+                                        ).withEmoji(Emotes.Sonhos3.toJDA())
                                     )
 
                                     +MediaGallery {

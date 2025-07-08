@@ -5,6 +5,5 @@ dailyRewardReminder:
     - ""
     - "**Não se esqueça:** A recompensa diária é renovada sempre às {resetTime}. Garanta a sua recompensa diária de hoje para não perder ela!"
   claimDailyReward: "Resgatar Recompensa Diária"
-  sonhosStore: "Lojinha de Sonhos"
   streak: "SEQUÊNCIA {streak,number}X"
   youReceivedThisMessageBecauseYouGotDailyRewardYesterday: "Você recebeu esta mensagem pois você pegou a recompensa diária ontem"
