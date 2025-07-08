@@ -33,7 +33,7 @@ class ProcessSubmittedDailyRemindersTask(val m: LorittaBot) {
     suspend fun processDailyReminders() {
         while (true) {
             logger.info { "Processing pending daily reminder notifications..." }
-            
+
             try {
                 val i18nContext = m.languageManager.defaultI18nContext
 
