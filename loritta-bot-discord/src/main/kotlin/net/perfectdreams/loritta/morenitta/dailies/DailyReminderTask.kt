@@ -66,7 +66,9 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
                 .distinct() // This technically is not needed BUT who knows right?
         }
 
+        logger.info { "There are ${usersThatGotDailyYesterday.size} users that will be reminded about their daily reward!" }
         for (userId in usersThatGotDailyYesterday) {
+            logger.info { "Trying to notify user $userId about the daily reward..." }
             try {
                 val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
 
@@ -135,6 +137,8 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
                         }
                     }
                 ).await()
+
+                logger.info { "Successfully notified user $userId about their daily reward!" }
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while trying to remind the user $userId about the daily reward!" }
             }
