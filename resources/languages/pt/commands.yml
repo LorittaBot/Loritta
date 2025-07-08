@@ -11,7 +11,7 @@ commands:
   youArentTheUserSingleUser: "Espere um pouquinho... Você não é {user}! Isso não é para você, sai daqui!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
   invalidNumber: "Desculpe, mas eu não acho que `{number}` seja um número válido... Ou talvez seja só eu sendo burra, afinal, eu estou perdendo o meu tempo no Discord ao invés de prestar atenção na aula de matemática."
   sonhosWithQuantity: "{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
-  wantingMoreSonhosBundlesUpsell: "Psiu, quer mais sonhos Então compre na minha lojinha! Nós aceitamos pagamentos via boleto, cartão de crédito e Pix e comprando por lá você me ajuda a ficar online! Fique tranquilo, a escolha é sua e você pode continuar a usar a Loritta sem se preocupar em tirar dinheiro do seu bolso. Ficou interessado? Então [clique aqui]({sonhosShopWebsiteLink})!"
+  wantingMoreSonhosBundlesUpsell: "Psiu, quer mais sonhos? Então compre na minha lojinha! Nós aceitamos pagamentos via boleto, cartão de crédito e Pix e comprando por lá você me ajuda a ficar online! Fique tranquilo, a escolha é sua e você pode continuar a usar a Loritta sem se preocupar em tirar dinheiro do seu bolso. Ficou interessado? Então [clique aqui]({sonhosShopWebsiteLink})!"
   wantingMoreSonhosDaily: "Psiu, você ainda não pegou a sua Recompensa Diária de Sonhos de hoje! Resgate-a agora e divirta-se! {dailyCommandMention}"
   youNeedToGetDailyRewardBeforeDoingThisAction: "Então... Sei que é chato, mas você precisa pegar o seu prêmio diário de hoje antes de poder continuar! {dailyCommandMention}"
   checkOutNews: "Tenho novidades para você! Descubra tudo que há de novo [clicando aqui]({link})!"
