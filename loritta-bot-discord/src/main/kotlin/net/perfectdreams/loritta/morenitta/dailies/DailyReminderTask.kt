@@ -67,8 +67,8 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
         }
 
         logger.info { "There are ${usersThatGotDailyYesterday.size} users that will be reminded about their daily reward!" }
-        for (userId in usersThatGotDailyYesterday) {
-            logger.info { "Trying to notify user $userId about the daily reward..." }
+        for ((index, userId) in usersThatGotDailyYesterday.withIndex()) {
+            logger.info { "Trying to notify user $userId about the daily reward... ($index/${usersThatGotDailyYesterday.size})" }
             try {
                 val privateChannel = m.getOrRetrievePrivateChannelForUserOrNullIfUserDoesNotExist(userId) ?: continue
 
