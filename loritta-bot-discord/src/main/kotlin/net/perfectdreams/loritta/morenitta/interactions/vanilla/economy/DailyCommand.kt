@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.interactions.vanilla.economy
 
+import dev.minn.jda.ktx.interactions.components.Container
+import dev.minn.jda.ktx.interactions.components.TextDisplay
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import net.dv8tion.jda.api.interactions.IntegrationType
@@ -21,6 +23,7 @@ import net.perfectdreams.loritta.morenitta.interactions.UnleashedContext
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.Daily
 import net.perfectdreams.loritta.serializable.UserId
@@ -53,10 +56,9 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
         override suspend fun execute(context: UnleashedContext, args: SlashCommandArguments) {
             val guild = context.guildOrNull
 
-            context.deferChannelMessage(true)
+            context.deferChannelMessage(false)
 
-            // TODO: Do not hardcode the timezone
-            val dailyResetZoneId = ZoneId.of("America/Sao_Paulo")
+            val dailyResetZoneId = Constants.LORITTA_TIMEZONE
             val dailyTaxZoneOffset = ZoneOffset.UTC
             val nowZDT = ZonedDateTime.now(dailyResetZoneId)
             val nowInstant = nowZDT.toInstant()
@@ -81,7 +83,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 .plusDays(1L)
 
             if (todayDailyReward != null) {
-                context.reply(true) {
+                context.reply(false) {
                     styled(
                         context.i18nContext.get(I18N_PREFIX.PleaseWait("<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:R>")),
                         Emotes.Error
@@ -150,7 +152,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 } else null
             }
 
-            context.reply(true) {
+            context.reply(false) {
                 styled(
                     context.i18nContext.get(I18N_PREFIX.DailyLink(url, "<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:t>")),
                     Emotes.LoriRich
@@ -166,8 +168,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
                 // Check if the user is in a daily tax bracket and, if yes, tell to the user about it
                 if (currentUserThreshold != null) {
-                    val activeUserPayments =
-                        context.loritta.pudding.payments.getActiveMoneyFromDonations(UserId(context.user.idLong))
+                    val activeUserPayments = context.loritta.pudding.payments.getActiveMoneyFromDonations(UserId(context.user.idLong))
                     val activeUserPremiumPlan = UserPremiumPlans.getPlanFromValue(activeUserPayments)
 
                     if (activeUserPremiumPlan.hasDailyInactivityTax) {
@@ -246,17 +247,6 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 styled(
                     context.i18nContext.get(I18N_PREFIX.DailyWarning("${context.loritta.config.loritta.website.url}guidelines")),
                     Emotes.LoriBanHammer
-                )
-
-                styled(
-                    context.i18nContext.get(
-                        GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                            context.loritta.config.loritta.website.url,
-                            "daily",
-                            "daily-reward"
-                        )
-                    ),
-                    Emotes.CreditCard
                 )
 
                 val buttons = mutableListOf<Button>()
