@@ -24,6 +24,8 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.reactionevents.ReactionEventsAttributes
 import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ClaimedWebsiteCoupon
 import net.perfectdreams.loritta.serializable.Daily
 import net.perfectdreams.loritta.serializable.UserId
@@ -154,7 +156,7 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
             context.reply(false) {
                 styled(
-                    context.i18nContext.get(I18N_PREFIX.DailyLink(url, "<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:t>")),
+                    context.i18nContext.get(I18N_PREFIX.DailyLink(DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifferenceWithDiscordMarkdown(tomorrowAtMidnight.toInstant()))),
                     Emotes.LoriRich
                 )
 
@@ -250,6 +252,11 @@ class DailyCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 )
 
                 val buttons = mutableListOf<Button>()
+
+                buttons += Button.link(
+                    url,
+                    context.i18nContext.get(I18N_PREFIX.ClaimDailyReward)
+                ).withEmoji(Emotes.Sonhos3.toJDA())
 
                 appendCouponSonhosBundleUpsellInformationIfNotNull(
                     loritta,
