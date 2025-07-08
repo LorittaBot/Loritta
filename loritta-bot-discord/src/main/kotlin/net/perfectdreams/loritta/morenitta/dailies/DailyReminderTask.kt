@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.interactions.vanilla.social.MarriageC
 import net.perfectdreams.loritta.morenitta.scheduledtasks.NamedRunnableCoroutine
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
@@ -80,6 +81,7 @@ class DailyReminderTask(val m: LorittaBot) : NamedRunnableCoroutine {
                         .where {
                             Dailies.receivedById eq userId and (Dailies.receivedAt less todayAtMidnightAsEpochMillis)
                         }
+                        .orderBy(Dailies.receivedAt, SortOrder.DESC)
                         .map { it[Dailies.receivedAt] }
                 }
 
