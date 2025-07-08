@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.morenitta.interactions.commands.autocomplete.Au
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.OptionReference
 import net.perfectdreams.loritta.morenitta.interactions.commands.slashCommand
+import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
@@ -113,7 +114,7 @@ class RepCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
                 }
             }
 
-            if (!context.loritta.pudding.sonhos.userGotDailyRecently(context.user.id.toLong(), 14)) {
+            if (AccountUtils.getUserTodayDailyReward(loritta, context.user.idLong) == null) {
                 context.fail(true) {
                     this.styled(
                         context.i18nContext.get(

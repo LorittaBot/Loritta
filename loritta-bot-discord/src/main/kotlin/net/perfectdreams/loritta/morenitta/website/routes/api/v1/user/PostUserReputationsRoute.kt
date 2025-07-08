@@ -149,8 +149,8 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			)
 		}
 
-		val dailyRewardInLast14Days = AccountUtils.getUserDailyRewardInTheLastXDays(loritta, userIdentification.id.toLong(), 14)
-		if (dailyRewardInLast14Days == null) {
+		val dailyRewardToday = AccountUtils.getUserTodayDailyReward(loritta, userIdentification.id.toLong())
+		if (dailyRewardToday == null) {
 			throw WebsiteAPIException(
 				HttpStatusCode.Forbidden,
 				WebsiteUtils.createErrorPayload(
