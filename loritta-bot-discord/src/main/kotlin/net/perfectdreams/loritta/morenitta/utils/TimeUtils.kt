@@ -102,7 +102,7 @@ object TimeUtils {
                     .withMonth(month)
                     .withDayOfMonth(day)
             }
-        } else if (foundViaTime && localDateTime.isBefore(LocalDateTime.now().atZone(TIME_ZONE))) {
+        } else if (foundViaTime && localDateTime.isBefore(relativeTo)) {
             // If it was found via time but there isn't any day set, we are going to check if it is in the past and, if true, we are going to add one day
             localDateTime = localDateTime
                 .plusDays(1)
