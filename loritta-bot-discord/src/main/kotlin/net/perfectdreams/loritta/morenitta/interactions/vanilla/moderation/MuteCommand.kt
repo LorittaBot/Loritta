@@ -34,7 +34,7 @@ class MuteCommand(val loritta: LorittaBot) : SlashCommandDeclarationWrapper {
 
     override fun command() = slashCommand(I18N_PREFIX.Label, I18N_PREFIX.Description, CommandCategory.MODERATION, UUID.fromString("a0930e23-a1e4-4387-83ac-630ccdae33a8")) {
         this.enableLegacyMessageSupport = true
-        this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)
+        this.defaultMemberPermissions = DefaultMemberPermissions.enabledFor(Permission.KICK_MEMBERS)
         this.botPermissions = setOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
 
         alternativeLegacyLabels.apply {
